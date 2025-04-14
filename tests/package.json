@@ -1,0 +1,10 @@
+{
+    "name": "my-api",
+    "version": "1.0.0",
+    "main": "src/index.d.ts",
+    "typedoc": {
+        "entryPoints": [
+            "src/index.d.ts"
+        ]
+    }
+}

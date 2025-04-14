@@ -1,0 +1,12 @@
+[package]
+name = "code-runner"
+version = "4.0.0"
+edition = "2024"
+
+[dependencies]
+clap.workspace = true
+eyre.workspace = true
+
+code = { path = "../code" }
+
+[build-dependencies]
