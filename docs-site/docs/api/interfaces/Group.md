@@ -1,0 +1,39 @@
+# Interface: Group
+
+A system group.
+
+```ts
+const groups = await system.os.listGroups();
+const group = groups[0];
+if (group) {
+  println(group.id, group.name);
+}
+```
+
+## Properties
+
+### name
+
+> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Name
+
+***
+
+### id
+
+> `readonly` **id**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+ID
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this group.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

@@ -1,0 +1,60 @@
+# Interface: Motherboard
+
+Motherboard details.
+
+```ts
+const board = system.hardware.motherboard;
+println(board.vendorName, board.name, board.version);
+```
+
+## Properties
+
+### name?
+
+> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Name
+
+***
+
+### vendorName?
+
+> `readonly` `optional` **vendorName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Vendor name
+
+***
+
+### version?
+
+> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Version
+
+***
+
+### serialNumber?
+
+> `readonly` `optional` **serialNumber?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Serial number
+
+***
+
+### assetTag?
+
+> `readonly` `optional` **assetTag?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Asset tag
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this motherboard.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

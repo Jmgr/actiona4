@@ -1,0 +1,21 @@
+[package]
+name = "installer-tools"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows.workspace = true
+winreg.workspace = true
+winrt-toast-reborn.workspace = true
+
+[dependencies]
+config = { path = "../config" }
+updater = { path = "../updater" }
+
+eyre.workspace = true
+tokio.workspace = true
+versions.workspace = true

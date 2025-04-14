@@ -1,0 +1,23 @@
+[package]
+name = "common"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[lib]
+name = "actiona_common"
+
+[dependencies]
+ab_glyph.workspace = true
+color-eyre.workspace = true
+rfd.workspace = true
+sentry.workspace = true
+sentry-rust-minidump.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+
+[build-dependencies]
+built.workspace = true

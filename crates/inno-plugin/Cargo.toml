@@ -1,0 +1,16 @@
+[package]
+name = "inno-plugin"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+installer-tools = { path = "../installer-tools" }
+
+eyre.workspace = true

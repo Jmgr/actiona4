@@ -1,0 +1,71 @@
+# Interface: DirectoryEntry
+
+An entry returned by `Directory.listEntries()`, representing a file, directory,
+or symlink within a directory.
+
+```ts
+const entries = await Directory.listEntries("/home/user");
+for (const entry of entries) {
+    println(entry.fileName, entry.isFile, entry.size);
+}
+```
+
+## Properties
+
+### path
+
+> `readonly` **path**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+The full path to the entry.
+
+***
+
+### fileName
+
+> `readonly` **fileName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+The file name (last component of the path).
+
+***
+
+### isFile
+
+> `readonly` **isFile**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether this entry is a regular file.
+
+***
+
+### isDirectory
+
+> `readonly` **isDirectory**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether this entry is a directory.
+
+***
+
+### isSymlink
+
+> `readonly` **isSymlink**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether this entry is a symbolic link.
+
+***
+
+### size
+
+> `readonly` **size**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+The size of the entry in bytes.
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this directory entry.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

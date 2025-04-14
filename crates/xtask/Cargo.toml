@@ -1,0 +1,22 @@
+[package]
+name = "xtask"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+installer-tools = { path = "../installer-tools" }
+
+[dependencies]
+clap.workspace = true
+color-eyre.workspace = true
+reqwest.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+toml.workspace = true
+versions.workspace = true
+zip.workspace = true

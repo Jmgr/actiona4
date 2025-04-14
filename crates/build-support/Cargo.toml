@@ -1,0 +1,8 @@
+[package]
+name = "build-support"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true

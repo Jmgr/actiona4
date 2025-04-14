@@ -1,0 +1,23 @@
+[package]
+name = "config"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[dependencies]
+color-eyre.workspace = true
+directories.workspace = true
+parking_lot.workspace = true
+serde = { workspace = true, features = ["derive"] }
+strum.workspace = true
+time = { workspace = true, features = ["serde", "formatting", "parsing"] }
+tokio.workspace = true
+toml.workspace = true
+uuid.workspace = true
+versions.workspace = true
+
+[build-dependencies]
+cfg_aliases.workspace = true

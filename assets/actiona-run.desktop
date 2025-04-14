@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Actiona Run
+Exec=actiona-run
+Icon=actiona-run
+Type=Application
+Categories=Utility;
+Terminal=true

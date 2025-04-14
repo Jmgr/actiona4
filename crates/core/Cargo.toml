@@ -1,0 +1,139 @@
+[package]
+name = "core"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+interprocess.workspace = true
+pe-parser.workspace = true
+tray-icon.workspace = true
+windows.workspace = true
+windows-result.workspace = true
+winit.workspace = true
+winrt-toast-reborn.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+ashpd.workspace = true
+ksni.workspace = true
+libwmctl.workspace = true
+memfd.workspace = true
+memmap2.workspace = true
+notify-rust.workspace = true
+procfs.workspace = true
+rustix.workspace = true
+x11rb.workspace = true
+x11rb-async.workspace = true
+xkbcommon.workspace = true
+xkeysym.workspace = true
+zbus.workspace = true
+
+[package.metadata.actiona]
+notification-aumid = "app.actiona.actiona-run"
+
+[package.metadata.cargo-machete]
+ignored = ["built", "cfg_aliases", "rquickjs-serde"]
+
+[lib]
+name = "actiona_core"
+
+[dependencies]
+common = { path = "../common" }
+installer-tools = { path = "../installer-tools" }
+macros = { path = "../macros" }
+
+ab_glyph.workspace = true
+arboard.workspace = true
+arc-swap.workspace = true
+askama.workspace = true
+base64.workspace = true
+bimap.workspace = true
+bytes.workspace = true
+chrono.workspace = true
+color-eyre.workspace = true
+console.workspace = true
+convert_case.workspace = true
+derive-where.workspace = true
+derive_more.workspace = true
+directories.workspace = true
+display-info.workspace = true
+encoding_rs.workspace = true
+enigo.workspace = true
+flate2.workspace = true
+futures.workspace = true
+http-body.workspace = true
+http-body-util.workspace = true
+human-units.workspace = true
+humansize.workspace = true
+humantime.workspace = true
+image.workspace = true
+imageproc.workspace = true
+indexmap.workspace = true
+indicatif.workspace = true
+infer.workspace = true
+ipnet.workspace = true
+itertools.workspace = true
+mime.workspace = true
+mime_guess.workspace = true
+noiselib.workspace = true
+num-traits.workspace = true
+once_cell.workspace = true
+open.workspace = true
+opencv.workspace = true
+parking_lot.workspace = true
+rand.workspace = true
+rand_chacha.workspace = true
+rayon.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+rfd.workspace = true
+rodio.workspace = true
+rquickjs.workspace = true
+rquickjs-serde.workspace = true
+rustydialogs.workspace = true
+serde.workspace = true
+serde-name.workspace = true
+serde_json.workspace = true
+serde_plain.workspace = true
+slotmap.workspace = true
+strum.workspace = true
+swc_common.workspace = true
+swc_ecma_ast.workspace = true
+swc_ecma_codegen.workspace = true
+swc_ecma_parser.workspace = true
+swc_ecma_transforms_base.workspace = true
+swc_ecma_transforms_typescript.workspace = true
+swc_sourcemap.workspace = true
+sys-locale.workspace = true
+sysinfo.workspace = true
+system_shutdown.workspace = true
+thiserror.workspace = true
+time.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+toml.workspace = true
+tracing.workspace = true
+tween.workspace = true
+unicode-segmentation.workspace = true
+url.workspace = true
+uuid.workspace = true
+versions.workspace = true
+wildmatch.workspace = true
+
+[build-dependencies]
+built.workspace = true
+cfg_aliases.workspace = true
+toml.workspace = true
+
+[dev-dependencies]
+base64.workspace = true
+console-subscriber.workspace = true
+httptest.workspace = true
+libtest-mimic-collect.workspace = true
+rstest.workspace = true
+serial_test.workspace = true
+tracing-subscriber.workspace = true
+tracing-test.workspace = true

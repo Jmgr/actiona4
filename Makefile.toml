@@ -1,0 +1,189 @@
+[env]
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = "true"
+
+[config]
+skip_core_tasks = true
+default_to_workspace = false
+
+[tasks.fmt]
+command = "cargo"
+toolchain = "nightly"
+args = ["fmt", "--all"]
+
+[tasks.derivefmt]
+command = "cargo"
+args = ["derivefmt"]
+
+[tasks.sort]
+command = "cargo"
+args = ["sort", "-g", "-w"]
+
+[tasks.format]
+dependencies = ["deps", "fmt", "derivefmt", "sort"]
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--all", "--all-targets", "--all-features"]
+
+[tasks.lint]
+dependencies = ["clippy"]
+
+[tasks.install-rustfmt]
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
+command = "rustup"
+args = ["component", "add", "rustfmt", "--toolchain", "nightly"]
+
+# From https://github.com/dcchut/cargo-derivefmt
+# This package is currently implemented using rust-analyzer internals, so cannot be published on crates.io.
+[tasks.install-derivefmt]
+command = "cargo"
+args = [
+    "install",
+    "--locked",
+    "--git",
+    "https://github.com/dcchut/cargo-derivefmt",
+    "--bin",
+    "cargo-derivefmt",
+]
+
+[tasks.install-sort]
+command = "cargo"
+args = ["install", "cargo-sort"]
+
+[tasks.install-cargo-edit]
+command = "cargo"
+args = ["install", "cargo-edit"]
+
+[tasks.deps]
+dependencies = ["install-rustfmt", "install-derivefmt", "install-sort"]
+
+[tasks.doc]
+condition = { platforms = ["linux"] }
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "doc"]
+
+[tasks.upgrade]
+description = "Upgrade dependencies, including incompatible semver updates."
+dependencies = ["install-cargo-edit"]
+command = "cargo"
+args = ["upgrade", "--incompatible"]
+
+[tasks.appimage-run]
+condition = { platforms = ["linux"] }
+description = "Build a signed AppImage for the actiona-run executable."
+dependencies = ["release-symbols"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "app-image"]
+
+[tasks.appimage-run-nosign]
+condition = { platforms = ["linux"] }
+description = "Build an unsigned AppImage for the actiona-run executable."
+dependencies = ["release-symbols"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "app-image-no-sign"]
+
+[tasks.bundle-run]
+condition = { platforms = ["windows"] }
+description = "Build the Windows bundle for actiona-run, including the selection sidecar."
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/crates/run"
+dependencies = ["install-tauri-cli", "prepare-selection-sidecar"]
+script_runner = "bash"
+script_extension = "sh"
+script = [
+    "TAURI_CONFIG='{\"bundle\":{\"externalBin\":[\"binaries/selection\"]}}' cargo tauri build",
+]
+
+[tasks.release-run]
+description = "Build the actiona-run binary in release mode."
+command = "cargo"
+args = ["build", "-p", "run", "--release", "--bin", "actiona-run"]
+
+[tasks.release-runw]
+condition = { platforms = ["windows"] }
+description = "Build the actiona-runw binary in release mode (Windows only)."
+command = "cargo"
+args = [
+    "build",
+    "-p",
+    "run",
+    "--release",
+    "--bin",
+    "actiona-runw",
+    "--features",
+    "windows-bin",
+]
+
+[tasks.release-selection]
+description = "Build the selection binary in release mode."
+command = "cargo"
+args = ["build", "-p", "selection-tool", "--release"]
+
+[tasks.release]
+description = "Build release binaries, including actiona-runw on Windows."
+dependencies = ["release-run", "release-runw"]
+
+[tasks.symbols]
+description = "Generate Breakpad symbol files (.sym) and strip release binaries."
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "symbols"]
+
+[tasks.release-symbols]
+description = "Build all release binaries (including selection) and generate Breakpad symbol files."
+dependencies = ["release", "release-selection", "symbols"]
+
+[tasks.upload-symbols]
+description = "Build release binaries, generate Breakpad symbol files, and upload them to Sentry using sentry-cli."
+dependencies = ["release-symbols"]
+command = "sentry-cli"
+args = ["debug-files", "upload", "--project", "actiona-run", "--wait", "target/symbols"]
+
+[tasks.symbolicate]
+description = "Symbolicate a minidump. Usage: cargo make symbolicate <path/to/dump.dmp>"
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "symbolicate", "${@}"]
+
+[tasks.sign]
+condition = { platforms = ["windows"] }
+description = "Sign packaged Windows release binaries with signtool (Windows only)."
+dependencies = ["build-inno-plugin"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "sign-binaries"]
+
+[tasks.release-signed]
+condition = { platforms = ["windows"] }
+description = "Build and sign actiona-run release executables (Windows only)."
+dependencies = ["release", "sign"]
+
+[tasks.build-inno-plugin]
+condition = { platforms = ["windows"] }
+description = "Build the Inno Setup plugin DLL as 32-bit for the installer (Windows only)."
+command = "cargo"
+args = ["build", "-p", "inno-plugin", "--release", "--target", "i686-pc-windows-msvc"]
+
+[tasks.installer]
+condition = { platforms = ["windows"] }
+description = "Build the signed Actiona Run installer with Inno Setup (Windows only)."
+dependencies = ["release-symbols", "sign"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "installer"]
+
+[tasks.installer-nosign]
+condition = { platforms = ["windows"] }
+description = "Build the unsigned Actiona Run installer with Inno Setup (Windows only)."
+dependencies = ["release-symbols", "build-inno-plugin"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "installer-no-sign"]
+
+[tasks.archive]
+condition = { platforms = ["windows"] }
+description = "Build a signed Actiona Run zip archive (Windows only)."
+dependencies = ["release-symbols", "sign"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "archive"]
+
+[tasks.archive-nosign]
+condition = { platforms = ["windows"] }
+description = "Build an unsigned Actiona Run zip archive (Windows only)."
+dependencies = ["release-symbols"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "archive-no-sign"]

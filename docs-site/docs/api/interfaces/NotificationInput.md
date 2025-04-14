@@ -1,0 +1,71 @@
+# Interface: NotificationInput
+
+
+A toast input field.
+
+## Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
+</div>
+
+## Properties
+
+### id?
+
+> `optional` **id?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Unique identifier for this input.
+
+#### Default Value
+
+`""`
+
+***
+
+### inputType?
+
+> `optional` **inputType?**: [`NotificationInputType`](../enumerations/NotificationInputType.md)
+
+Type of input field.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### placeholder?
+
+> `optional` **placeholder?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Placeholder text shown when the input is empty.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### title?
+
+> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Title displayed above the input.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### defaultInput?
+
+> `optional` **defaultInput?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Default value for the input.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

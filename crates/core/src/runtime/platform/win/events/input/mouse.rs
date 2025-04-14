@@ -1,0 +1,328 @@
+use std::sync::{
+    Arc, Weak,
+    atomic::{AtomicUsize, Ordering},
+};
+
+use color_eyre::Result;
+use once_cell::sync::Lazy;
+use parking_lot::Mutex;
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use windows::Win32::{
+    Foundation::{LPARAM, LRESULT, WPARAM},
+    UI::WindowsAndMessaging::{
+        CallNextHookEx, HC_ACTION, HOOKPROC, LLMHF_INJECTED, MSLLHOOKSTRUCT, WH_MOUSE_LL,
+        WINDOWS_HOOK_ID, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDOWN, WM_MBUTTONUP,
+        WM_MOUSEHWHEEL, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_RBUTTONDOWN, WM_RBUTTONUP, WM_XBUTTONDOWN,
+        WM_XBUTTONUP, XBUTTON1, XBUTTON2,
+    },
+};
+
+use crate::{
+    api::{
+        mouse::{Axis, Button},
+        point::point,
+    },
+    runtime::{
+        events::{
+            AllSignals, Guard, LatestOnlySignals, MouseButtonEvent, MouseMoveEvent,
+            MouseScrollEvent, Topic, TopicWrapper,
+        },
+        platform::win::{
+            SafeMessagePump,
+            events::input::{HookSpec, LowLevelHookRunner, MSG_START, MSG_STOP},
+        },
+    },
+    types::input::Direction,
+};
+
+static MOUSE_INPUT_DISPATCHER: Lazy<Mutex<Weak<MouseInputDispatcher>>> =
+    Lazy::new(|| Mutex::new(Weak::new()));
+
+#[allow(clippy::as_conversions)] // bit extraction: mask guarantees value fits in u16
+const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
+    ((mouse_data >> 16) & 0xFFFF) as u16
+}
+
+#[derive(Default)]
+pub struct MouseHook {}
+
+impl HookSpec for MouseHook {
+    const ID: WINDOWS_HOOK_ID = WH_MOUSE_LL;
+
+    fn proc() -> HOOKPROC {
+        Some(low_level_mouse_proc)
+    }
+}
+
+#[derive(Debug)]
+pub struct MouseInputDispatcher {
+    mouse_buttons: TopicWrapper<MouseButtonsTopic>,
+    mouse_move: TopicWrapper<MouseMoveTopic>,
+    mouse_scroll: TopicWrapper<MouseScrollTopic>,
+    subscribers: AtomicUsize,
+    message_pump: SafeMessagePump,
+}
+
+impl MouseInputDispatcher {
+    pub async fn new(
+        cancellation_token: CancellationToken,
+        task_tracker: TaskTracker,
+    ) -> Result<Arc<Self>> {
+        let message_pump = SafeMessagePump::new::<LowLevelHookRunner<MouseHook>>(
+            "input_dispatcher",
+            cancellation_token.clone(),
+            task_tracker.clone(),
+        )
+        .await?;
+
+        Ok(Arc::new_cyclic(|me| {
+            *MOUSE_INPUT_DISPATCHER.lock() = me.clone();
+
+            Self {
+                mouse_buttons: TopicWrapper::new(
+                    MouseButtonsTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                ),
+                mouse_move: TopicWrapper::new(
+                    MouseMoveTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                ),
+                mouse_scroll: TopicWrapper::new(
+                    MouseScrollTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                ),
+                subscribers: AtomicUsize::new(0),
+                message_pump,
+            }
+        }))
+    }
+
+    #[must_use]
+    pub fn subscribe_mouse_buttons(&self) -> Guard<MouseButtonsTopic> {
+        self.mouse_buttons.subscribe()
+    }
+
+    #[must_use]
+    pub fn subscribe_mouse_move(&self) -> Guard<MouseMoveTopic> {
+        self.mouse_move.subscribe()
+    }
+
+    #[must_use]
+    pub fn subscribe_mouse_scroll(&self) -> Guard<MouseScrollTopic> {
+        self.mouse_scroll.subscribe()
+    }
+
+    pub fn publish_mouse_buttons(&self, value: <MouseButtonsTopic as Topic>::T) {
+        self.mouse_buttons.publish(value);
+    }
+
+    pub fn publish_mouse_move(&self, value: <MouseMoveTopic as Topic>::T) {
+        self.mouse_move.publish(value);
+    }
+
+    pub fn publish_mouse_scroll(&self, value: <MouseScrollTopic as Topic>::T) {
+        self.mouse_scroll.publish(value);
+    }
+
+    async fn on_start(&self) -> Result<()> {
+        if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
+            self.message_pump.send_message(MSG_START);
+        }
+        Ok(())
+    }
+
+    async fn on_stop(&self) -> Result<()> {
+        if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
+            self.message_pump.send_message(MSG_STOP);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct MouseButtonsTopic {
+    dispatcher: Weak<MouseInputDispatcher>,
+}
+
+impl Topic for MouseButtonsTopic {
+    type T = MouseButtonEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await?;
+        }
+        Ok(())
+    }
+
+    async fn on_stop(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct MouseMoveTopic {
+    dispatcher: Weak<MouseInputDispatcher>,
+}
+
+impl Topic for MouseMoveTopic {
+    type T = MouseMoveEvent;
+    type Signal = LatestOnlySignals<Self::T>;
+
+    async fn on_start(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await?;
+        }
+        Ok(())
+    }
+
+    async fn on_stop(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct MouseScrollTopic {
+    dispatcher: Weak<MouseInputDispatcher>,
+}
+
+impl Topic for MouseScrollTopic {
+    type T = MouseScrollEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await?;
+        }
+        Ok(())
+    }
+
+    async fn on_stop(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await?;
+        }
+        Ok(())
+    }
+}
+
+#[allow(clippy::as_conversions)] // pointer/integer casts required by Windows hook callback
+unsafe extern "system" fn low_level_mouse_proc(
+    n_code: i32,
+    w_param: WPARAM,
+    l_param: LPARAM,
+) -> LRESULT {
+    if n_code != HC_ACTION as i32 {
+        return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
+    }
+
+    let Some(dispatcher) = MOUSE_INPUT_DISPATCHER.lock().upgrade() else {
+        return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
+    };
+
+    let mouse_buttons = &dispatcher.mouse_buttons;
+    let mouse_move = &dispatcher.mouse_move;
+    let mouse_scroll = &dispatcher.mouse_scroll;
+
+    let mouse_struct = unsafe { *(l_param.0 as *const MSLLHOOKSTRUCT) };
+    let injected = mouse_struct.flags & LLMHF_INJECTED == LLMHF_INJECTED;
+
+    match w_param.0 as u32 {
+        WM_LBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Left,
+            Direction::Press,
+            injected,
+        )),
+        WM_RBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Right,
+            Direction::Press,
+            injected,
+        )),
+        WM_MBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Middle,
+            Direction::Press,
+            injected,
+        )),
+        WM_XBUTTONDOWN => match get_xbutton_wparam(mouse_struct.mouseData) {
+            XBUTTON1 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Back,
+                Direction::Press,
+                injected,
+            )),
+            XBUTTON2 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Forward,
+                Direction::Press,
+                injected,
+            )),
+            _ => {}
+        },
+        WM_LBUTTONUP => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Left,
+            Direction::Release,
+            injected,
+        )),
+        WM_RBUTTONUP => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Right,
+            Direction::Release,
+            injected,
+        )),
+        WM_MBUTTONUP => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Middle,
+            Direction::Release,
+            injected,
+        )),
+        WM_XBUTTONUP => match get_xbutton_wparam(mouse_struct.mouseData) {
+            XBUTTON1 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Back,
+                Direction::Release,
+                injected,
+            )),
+            XBUTTON2 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Forward,
+                Direction::Release,
+                injected,
+            )),
+            _ => {}
+        },
+        WM_MOUSEMOVE => {
+            mouse_move.publish(MouseMoveEvent::new(
+                point(mouse_struct.pt.x, mouse_struct.pt.y),
+                injected,
+            ));
+        }
+        WM_MOUSEWHEEL => {
+            // High word of mouseData is a signed delta; WHEEL_DELTA == 120.
+            // Positive delta = scrolled away from user (up); we treat down/right as positive.
+            let wheel_delta = (mouse_struct.mouseData >> 16) as i16;
+            let length = -(i32::from(wheel_delta) / 120);
+            if length != 0 {
+                mouse_scroll.publish(MouseScrollEvent::new(Axis::Vertical, length, injected));
+            }
+        }
+        WM_MOUSEHWHEEL => {
+            // Positive delta = scrolled right.
+            let wheel_delta = (mouse_struct.mouseData >> 16) as i16;
+            let length = i32::from(wheel_delta) / 120;
+            if length != 0 {
+                mouse_scroll.publish(MouseScrollEvent::new(Axis::Horizontal, length, injected));
+            }
+        }
+        _ => {}
+    };
+
+    unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
+}
