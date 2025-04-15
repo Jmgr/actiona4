@@ -4,9 +4,9 @@ use std::{
     time::{Duration, Instant},
 };
 
-use macros::FromJsObject;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
+use macros::FromJsObject;
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use platform::MouseImplTrait;
 use rand::RngCore;
@@ -60,7 +60,7 @@ pub enum MouseError {
 pub type Result<T> = std::result::Result<T, MouseError>;
 
 impl JsButton {
-    fn into_enigo(self) -> enigo::Button {
+    const fn into_enigo(self) -> enigo::Button {
         use JsButton::*;
 
         match self {
@@ -74,7 +74,7 @@ impl JsButton {
 }
 
 impl JsAxis {
-    fn into_enigo(self) -> enigo::Axis {
+    const fn into_enigo(self) -> enigo::Axis {
         use JsAxis::*;
 
         match self {
@@ -306,7 +306,7 @@ impl Mouse {
             let time = tween.current_time;
             let progress = (time / duration).min(1.0);
 
-            let eased_progress = sigmoid(progress * 12. - 6.);
+            let eased_progress = sigmoid(progress.mul_add(12., -6.));
 
             let noise_factor = eased_progress * options.perlin_scale;
             let noise = perlin_noise_1d(&mut perlin_rng, noise_factor, perlin_seed)

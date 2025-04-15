@@ -20,13 +20,13 @@ use crate::{
 };
 
 impl JsButton {
-    fn from_event(detail: u32) -> Option<Self> {
+    const fn from_event(detail: u32) -> Option<Self> {
         Some(match detail {
-            1 => JsButton::Left,
-            2 => JsButton::Middle,
-            3 => JsButton::Right,
-            8 => JsButton::Back,
-            9 => JsButton::Forward,
+            1 => Self::Left,
+            2 => Self::Middle,
+            3 => Self::Right,
+            8 => Self::Back,
+            9 => Self::Forward,
             _ => return None,
         })
     }
@@ -140,7 +140,7 @@ impl Runtime {
         self.x11_connection.clone()
     }
 
-    pub fn has_shm(&self) -> bool {
+    pub const fn has_shm(&self) -> bool {
         self.has_shm
     }
 }

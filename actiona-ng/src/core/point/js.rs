@@ -368,10 +368,10 @@ mod tests {
             setup(&js_context);
 
             let result = eval::<bool>(&js_context, "p1.isOrigin()").unwrap();
-            assert_eq!(result, false);
+            assert!(!result);
 
             let result = eval::<bool>(&js_context, "new Point(0, 0).isOrigin()").unwrap();
-            assert_eq!(result, true);
+            assert!(result);
         });
     }
 
@@ -383,10 +383,10 @@ mod tests {
             eval::<()>(&js_context, "let pc = p1.clone()").unwrap();
 
             let result = eval::<bool>(&js_context, "pc.equals(p1)").unwrap();
-            assert_eq!(result, true);
+            assert!(result);
 
             let result = eval::<bool>(&js_context, "pc == p1").unwrap();
-            assert_eq!(result, false);
+            assert!(!result);
         });
     }
 

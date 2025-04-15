@@ -20,10 +20,7 @@ use crate::core::{
     SingletonClass, ValueClass,
     color::js::JsColor,
     console::js::JsConsole,
-    displays::{
-        Displays,
-        js::JsDisplays,
-    },
+    displays::{Displays, js::JsDisplays},
     file::js::JsFile,
     image::js::JsImage,
     keyboard::js::JsKeyboard,
@@ -294,10 +291,9 @@ impl Runtime {
                 }
             });
 
-            let (runtime, js_context) =
-                Self::new(cancellation_token.clone(), task_tracker.clone())
-                    .await
-                    .unwrap();
+            let (runtime, js_context) = Self::new(cancellation_token.clone(), task_tracker.clone())
+                .await
+                .unwrap();
 
             f(runtime, js_context).await.unwrap();
 

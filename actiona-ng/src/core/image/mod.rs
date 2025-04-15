@@ -4,10 +4,10 @@ use std::{
     time::Instant,
 };
 
-use macros::FromJsObject;
 use eyre::Result;
 use image::{ColorType, DynamicImage, GrayImage, RgbImage, RgbaImage};
 use imageproc::drawing::draw_hollow_rect_mut;
+use macros::FromJsObject;
 use opencv::{
     core::{CV_32FC1, Mat, MatExprTraitConst, MatTraitConst},
     imgproc::{COLOR_RGB2BGR, COLOR_RGBA2BGRA, cvt_color},

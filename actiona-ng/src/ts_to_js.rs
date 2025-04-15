@@ -92,4 +92,58 @@ impl TsToJs {
     pub fn code(&self) -> &str {
         &self.js_code
     }
+
+    /// Returns the generated sourcemap as a string.
+    pub fn sourcemap_string(&self) -> Result<String> {
+        let mut writer = Vec::new();
+        self.sourcemap.to_writer(&mut writer)?;
+        Ok(String::from_utf8(writer)?)
+    }
+
+    /// Looks up the original TypeScript location for a given JavaScript line and column.
+    ///
+    /// # Arguments
+    ///
+    /// * `js_line` - The 1-based line number in the generated JavaScript code.
+    /// * `js_col` - The 1-based column number in the generated JavaScript code.
+    ///
+    /// # Returns
+    ///
+    /// An `Option` containing a tuple `(filename, ts_line, ts_col)` if a mapping exists:
+    /// * `filename`: The original source file name (e.g., "file.ts").
+    /// * `ts_line`: The 1-based line number in the original TypeScript file.
+    /// * `ts_col`: The 1-based column number in the original TypeScript file.
+    ///
+    /// Returns `None` if no mapping is found for the given JavaScript location.
+    pub fn lookup_source_location(&self, js_line: u32, js_col: u32) -> Option<(String, u32, u32)> {
+        // Input validation: lines and columns are typically 1-based for users,
+        // but the sourcemap crate expects 0-based.
+        if js_line == 0 || js_col == 0 {
+            return None; // Or handle as an error, 1-based indexing is conventional
+        }
+
+        // Convert 1-based user input to 0-based for the lookup
+        let zero_based_line = js_line - 1;
+        let zero_based_col = js_col - 1;
+
+        // Perform the lookup using the sourcemap crate
+        self.sourcemap
+            .lookup_token(zero_based_line, zero_based_col)
+            .and_then(|token| {
+                // Check if the token has source information
+                match (
+                    token.get_source(),
+                    token.get_src_line(),
+                    token.get_src_col(),
+                ) {
+                    (Some(filename), src_line, src_col) => {
+                        // Convert 0-based source location back to 1-based for the user
+                        let one_based_ts_line = src_line + 1;
+                        let one_based_ts_col = src_col + 1;
+                        Some((filename.to_string(), one_based_ts_line, one_based_ts_col))
+                    }
+                    _ => None, // No mapping found for this specific token
+                }
+            })
+    }
 }

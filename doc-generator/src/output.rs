@@ -6,7 +6,7 @@ use itertools::Itertools;
 
 use crate::{
     built_info,
-    types::{strip_modules, Context, File, Type},
+    types::{Context, File, Type, strip_modules},
 };
 
 fn write_comments<W: Write>(comments: &[String], prefix: &str, file: &mut W) -> Result<()> {
@@ -49,7 +49,7 @@ impl Type {
                 let type_ = strip_modules(type_);
 
                 // Remove "Js" prefix and "Param" suffix if present
-                let type_ = type_.strip_prefix("Js").unwrap_or(&type_);
+                let type_ = type_.strip_prefix("Js").unwrap_or(type_);
                 let type_ = type_.strip_suffix("Param").unwrap_or(type_);
 
                 type_.to_string()

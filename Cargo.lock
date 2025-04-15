@@ -1531,6 +1531,7 @@ dependencies = [
 name = "doc-generator"
 version = "0.1.0"
 dependencies = [
+ "actiona-ng",
  "built",
  "convert_case 0.8.0",
  "env_logger",

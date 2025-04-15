@@ -7,11 +7,11 @@ use image::Rgba;
 pub mod js;
 
 /// Color.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Color(Rgba<u8>);
 
 impl Color {
-    pub fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
+    pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self(Rgba([r, g, b, a]))
     }
 }

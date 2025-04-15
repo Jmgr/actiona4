@@ -103,12 +103,7 @@ impl Rect {
             self.height
         };
 
-        (
-            clamped_x,
-            clamped_y,
-            adjusted_width,
-            adjusted_height,
-        )
+        (clamped_x, clamped_y, adjusted_width, adjusted_height)
     }
 
     pub fn center(&self) -> Point {

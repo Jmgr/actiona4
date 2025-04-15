@@ -1,6 +1,5 @@
 use std::io;
 
-use macros::{ExposeEnum, FromJsObject};
 use convert_case::{Case, Casing};
 use image::{
     ColorType, DynamicImage, GenericImage, GenericImageView, ImageReader, ImageResult, RgbaImage,
@@ -15,6 +14,7 @@ use imageproc::{
     },
     geometric_transformations::{self, rotate, rotate_about_center},
 };
+use macros::{ExposeEnum, FromJsObject};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -649,12 +649,7 @@ impl JsImage {
     }
 
     /// Draw a line on a copy of this image.
-    pub fn with_line(
-        &self,
-        start: JsPointParam,
-        end: JsPointParam,
-        color: JsColorParam,
-    ) -> Self {
+    pub fn with_line(&self, start: JsPointParam, end: JsPointParam, color: JsColorParam) -> Self {
         super::Image(DynamicImage::ImageRgba8(draw_line_segment(
             &self.inner.0,
             (start.0.x as f32, start.0.y as f32),

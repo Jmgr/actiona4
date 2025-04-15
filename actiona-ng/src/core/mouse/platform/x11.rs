@@ -18,13 +18,13 @@ pub struct MouseImpl {
 }
 
 impl JsButton {
-    fn into_button_mask(self) -> u32 {
+    const fn into_button_mask(self) -> u32 {
         match self {
-            JsButton::Left => 1 << 1,
-            JsButton::Middle => 1 << 2,
-            JsButton::Right => 1 << 3,
-            JsButton::Back => 1 << 8,
-            JsButton::Forward => 1 << 9,
+            Self::Left => 1 << 1,
+            Self::Middle => 1 << 2,
+            Self::Right => 1 << 3,
+            Self::Back => 1 << 8,
+            Self::Forward => 1 << 9,
         }
     }
 }
@@ -106,7 +106,7 @@ impl MouseImplTrait for MouseImpl {
         })
         .unwrap();
 
-        let mask = buttons.first().ok_or(MouseError::Unexpected(
+        let mask = buttons.first().ok_or_else(|| MouseError::Unexpected(
             "button mask should have at least one entry".into(),
         ))?;
 

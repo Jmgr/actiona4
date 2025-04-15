@@ -14,9 +14,7 @@ use crate::{
         SingletonClass,
         displays::{Displays, js::JsDisplayInfo},
         image::js,
-
         point::js::JsPoint,
-  
     },
     runtime::Runtime,
 };

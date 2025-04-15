@@ -254,8 +254,6 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                             .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
                             .wrap_err_with(|| format!("{struct_name}::{function_name}"));
 
-                        
-
                         match return_ {
                             Ok(return_) => return_,
                             Err(err) => {

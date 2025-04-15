@@ -126,12 +126,10 @@ impl<'js> FromParam<'js> for JsNameParam<'js> {
                     "Unexpected object type",
                 ))
             }
-            n => {
-                Err(Exception::throw_message(
-                    params.ctx(),
-                    &format!("Unexpected number of parameter: {n}"),
-                ))
-            }
+            n => Err(Exception::throw_message(
+                params.ctx(),
+                &format!("Unexpected number of parameter: {n}"),
+            )),
         }
     }
 }

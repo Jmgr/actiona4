@@ -1,5 +1,6 @@
 use std::{collections::BTreeMap, mem::take};
 
+use actiona_ng::newtype;
 use enums::process_enums;
 use eyre::{Result, bail, eyre};
 use itertools::Itertools;
@@ -9,45 +10,14 @@ use regex::Regex;
 use rustdoc_types::{Crate, ItemEnum};
 use structs::process_structs;
 
-use crate::types::{strip_modules, File, Instruction, InstructionDiscriminants, RustdocContext, Type, Variable};
+use crate::types::{
+    File, Instruction, InstructionDiscriminants, RustdocContext, Type, Variable, strip_modules,
+};
 
 pub mod enums;
 pub mod structs;
 
-macro_rules! newtype {
-    ($name:ident, $inner:ty) => {
-        #[derive(Debug, Clone, Default, PartialEq)]
-        pub struct $name($inner);
-
-        impl std::ops::Deref for $name {
-            type Target = $inner;
-
-            fn deref(&self) -> &Self::Target {
-                &self.0
-            }
-        }
-
-        impl std::ops::DerefMut for $name {
-            fn deref_mut(&mut self) -> &mut Self::Target {
-                &mut self.0
-            }
-        }
-
-        impl From<$inner> for $name {
-            fn from(value: $inner) -> Self {
-                $name(value)
-            }
-        }
-
-        impl From<$name> for $inner {
-            fn from(value: $name) -> Self {
-                value.0
-            }
-        }
-    };
-}
-
-newtype!(Comments, Vec<String>);
+newtype!(pub Comments, Vec<String>);
 
 impl Comments {
     pub fn trimmed(mut self) -> Self {
@@ -65,7 +35,7 @@ impl Comments {
     }
 }
 
-newtype!(Instructions, Vec<Instruction>);
+newtype!(pub Instructions, Vec<Instruction>);
 
 impl Instructions {
     pub fn has_skip(&self) -> bool {
@@ -123,7 +93,7 @@ impl Instructions {
     }
 }
 
-newtype!(Overloads, Vec<(Instructions, Comments)>);
+newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
 static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+)(.*)$"#).unwrap());
 static RETURNS_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^(\w+)$"#).unwrap());

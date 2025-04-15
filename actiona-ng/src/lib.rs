@@ -40,34 +40,49 @@ where
 
 #[macro_export]
 macro_rules! newtype {
-    ($name:ident, $inner:ty) => {
-        #[derive(Debug, Clone, Default, PartialEq)]
-        pub struct $name($inner);
+    // --- Internal Rule ---
+    // This rule generates the actual struct and impls.
+    // It's marked non-exported by convention (starting with `@` or being non-pub).
+    (@impls $(#[$attr:meta])* $vis:vis $name:ident, $inner:ty) => {
+        $(#[$attr])* // Apply derives passed to this rule
+        $vis struct $name($inner); // Assume inner field has same visibility or is private
 
         impl std::ops::Deref for $name {
             type Target = $inner;
-
-            fn deref(&self) -> &Self::Target {
-                &self.0
-            }
+            fn deref(&self) -> &Self::Target { &self.0 }
         }
-
         impl std::ops::DerefMut for $name {
-            fn deref_mut(&mut self) -> &mut Self::Target {
-                &mut self.0
-            }
+            fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 }
         }
-
         impl From<$inner> for $name {
-            fn from(value: $inner) -> Self {
-                $name(value)
-            }
+            fn from(value: $inner) -> Self { $name(value) }
         }
-
         impl From<$name> for $inner {
-            fn from(value: $name) -> Self {
-                value.0
-            }
+            fn from(value: $name) -> Self { value.0 }
         }
+    };
+
+    // --- Public Rules ---
+
+    // Rule 1: Explicit attributes provided (at least one attribute)
+    // We use `+` (one or more) to ensure this rule matches only when attributes are present.
+    (
+        $(#[$attr:meta])+ // Match one or more attributes
+        $vis:vis $name:ident, $inner:ty
+    ) => {
+        // Call the internal rule, passing the captured attributes
+        $crate::newtype!(@impls $(#[$attr])* $vis $name, $inner);
+    };
+
+    // Rule 2: No attributes provided (use defaults)
+    // This rule matches if Rule 1 didn't (because there were zero attributes).
+    (
+        $vis:vis $name:ident, $inner:ty
+    ) => {
+        // Call the internal rule, passing the default derives
+        $crate::newtype!(@impls
+            #[derive(Debug, Clone, Default, PartialEq)] // Default derives
+            $vis $name, $inner
+        );
     };
 }

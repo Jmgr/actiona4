@@ -9,7 +9,7 @@ use std::{
 
 use macros::FromJsObject;
 use rquickjs::{
-    Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray, 
+    Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{Args, Constructor},

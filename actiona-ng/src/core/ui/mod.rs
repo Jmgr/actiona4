@@ -20,10 +20,7 @@ impl Ui {
             .await;
 
         if result.has_errors() {
-            bail!(
-                "Compilation failed: {}",
-                result.diagnostics().join("\n")
-            );
+            bail!("Compilation failed: {}", result.diagnostics().join("\n"));
         }
 
         let definition = result
@@ -73,7 +70,7 @@ export component Demo {
 
     #[tokio::test]
     async fn test_ui() {
-        let ui = Ui::new();
+        let ui = Ui::default();
         ui.load(CODE, "Demo").await.unwrap();
     }
 }
