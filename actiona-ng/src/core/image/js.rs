@@ -1,6 +1,6 @@
 use std::io;
 
-use code_macros::{ExposeEnum, FromJsObject};
+use macros::{ExposeEnum, FromJsObject};
 use convert_case::{Case, Casing};
 use image::{
     ColorType, DynamicImage, GenericImage, GenericImageView, ImageReader, ImageResult, RgbaImage,

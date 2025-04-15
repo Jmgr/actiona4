@@ -7,7 +7,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use code_macros::FromJsObject;
+use macros::FromJsObject;
 use rquickjs::{
     Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray, 
     atom::PredefinedAtom,

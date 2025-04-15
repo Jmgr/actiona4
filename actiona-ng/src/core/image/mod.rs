@@ -4,7 +4,7 @@ use std::{
     time::Instant,
 };
 
-use code_macros::FromJsObject;
+use macros::FromJsObject;
 use eyre::Result;
 use image::{ColorType, DynamicImage, GrayImage, RgbImage, RgbaImage};
 use imageproc::drawing::draw_hollow_rect_mut;

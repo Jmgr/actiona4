@@ -3,7 +3,7 @@
 use std::{fs, path::PathBuf};
 
 use clap::Parser;
-use code::{runtime::Runtime, ts_to_js::TsToJs};
+use actiona_ng::{runtime::Runtime, ts_to_js::TsToJs};
 use eyre::{Result, eyre};
 
 #[derive(Debug, Parser)]

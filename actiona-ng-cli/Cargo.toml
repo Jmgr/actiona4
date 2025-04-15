@@ -1,0 +1,16 @@
+[package]
+name = "actiona-ng-cli"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+
+[dependencies]
+actiona-ng = { path = "../actiona-ng" }
+
+clap.workspace = true
+eyre.workspace = true
+
+[[bin]]
+name = "actiona-ng"

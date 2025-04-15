@@ -1,7 +1,10 @@
 [package]
 name = "doc-generator"
-version = "1.0.0"
-edition = "2024"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
 
 [dependencies]
 convert_case.workspace = true

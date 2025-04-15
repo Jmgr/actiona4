@@ -1,6 +1,6 @@
 use std::{sync::Arc, thread::sleep};
 
-use code_macros::ExposeEnum;
+use macros::ExposeEnum;
 use convert_case::{Case, Casing};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Result,

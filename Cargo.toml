@@ -1,6 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["code", "code-runner", "code-macros", "doc-generator"]
+members = ["actiona-ng", "actiona-ng-cli", "macros", "doc-generator"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Jonathan Mercier-Ganady"]
+description = "Cross-platform desktop automation tool"
+documentation = "https://actiona.tools"
 
 [workspace.dependencies]
 async-compat = "0.2"

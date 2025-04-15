@@ -1,10 +1,13 @@
 [package]
-name = "code"
-version = "4.0.0"
-edition = "2024"
+name = "actiona-ng"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
 
 [dependencies]
-code-macros = { path = "../code-macros" }
+macros = { path = "../macros" }
 
 async-compat.workspace = true
 console.workspace = true

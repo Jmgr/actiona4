@@ -1,6 +1,6 @@
 use std::{rc::Rc, sync::Arc};
 
-use code_macros::FromJsObject;
+use macros::FromJsObject;
 use rquickjs::{
     Ctx, JsLifetime, Result,
     class::{Trace, Tracer},

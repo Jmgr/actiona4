@@ -4,7 +4,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use code_macros::FromJsObject;
+use macros::FromJsObject;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
