@@ -58,7 +58,7 @@ strum = { version = "0.27", features = ["derive"] }
 swc_common = { version = "8.1.0", features = ["tty-emitter", "sourcemap"] }
 swc_ecma_ast = "8.1.2"
 swc_ecma_codegen = "10.0.0"
-swc_ecma_parser = "11.1.1"
+swc_ecma_parser = "11.1.2"
 swc_ecma_transforms_base = "12.2.0"
 swc_ecma_transforms_typescript = "13.0.0"
 syn = { version = "2.0", features = ["parsing"] }
