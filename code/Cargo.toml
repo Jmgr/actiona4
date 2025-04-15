@@ -6,75 +6,54 @@ edition = "2024"
 [dependencies]
 code-macros = { path = "../code-macros" }
 
-thiserror.workspace = true
-eyre.workspace = true
-serde.workspace = true
-rquickjs.workspace = true
-itertools.workspace = true
-tokio = { workspace = true, features = [
-    "rt-multi-thread",
-    "signal",
-    "macros",
-    "time",
-    "process",
-    "sync",
-] }
-tokio-util.workspace = true
-slint.workspace = true
-slint-interpreter.workspace = true
-serde_json.workspace = true
+async-compat.workspace = true
+console.workspace = true
 convert_case.workspace = true
-
-strum = { version = "0.27", features = ["derive"] }
-slotmap = { version = "1.0.6", features = ["serde"] }
-indexmap = { version = "2.7", features = ["serde"] }
-tracing = "0.1"
-tween = "2.0"
-derive_more = { version = "2.0", features = ["add", "mul"] }
-rand = "0.9"
-noiselib = "0.2"
-num-traits = "0.2"
-display-info = "0.5"
-async-compat = "0.2"
-image = "0.25"
-imageproc = "0.25"
-rayon = "1.10"
-opencv = { version = "0.94", default-features = false, features = ["imgproc"] }
-enigo = "0.3"
-humantime = "2.2"
-console = "0.15"
-wildmatch = "2.4"
-
-swc_common = { version = "8.0.0", features = ["tty-emitter", "sourcemap"] }
-swc_ecma_ast = "8.0.1"
-swc_ecma_codegen = "10.0.0"
-swc_ecma_parser = "11.1.1"
-swc_ecma_transforms_base = "12.2.0"
-swc_ecma_transforms_typescript = "13.0.0"
-sourcemap = "9.1"
+derive_more.workspace = true
+display-info.workspace = true
+enigo.workspace = true
+eyre.workspace = true
+humantime.workspace = true
+image.workspace = true
+imageproc.workspace = true
+indexmap.workspace = true
+itertools.workspace = true
+noiselib.workspace = true
+num-traits.workspace = true
+opencv.workspace = true
+rand.workspace = true
+rayon.workspace = true
+rquickjs.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+slint-interpreter.workspace = true
+slint.workspace = true
+slotmap.workspace = true
+sourcemap.workspace = true
+strum.workspace = true
+swc_common.workspace = true
+swc_ecma_ast.workspace = true
+swc_ecma_codegen.workspace = true
+swc_ecma_parser.workspace = true
+swc_ecma_transforms_base.workspace = true
+swc_ecma_transforms_typescript.workspace = true
+thiserror.workspace = true
+tokio-util.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tween.workspace = true
+wildmatch.workspace = true
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.61", features = [
-    "Win32_UI_Input_KeyboardAndMouse",
-    "Win32_UI_WindowsAndMessaging",
-    "Win32_System_Threading",
-    "Win32_System_LibraryLoader",
-    "Win32_Graphics_Gdi",
-    "Win32_System_Memory",
-] }
+windows.workspace = true
 
 [target.'cfg(unix)'.dependencies]
-x11rb-async = { version = "0.13", features = [
-    "xinput",
-    "randr",
-    "shm",
-    "extra-traits",
-] }
-nix = { version = "0.29", features = ["poll", "mman"] }
-memfd = "0.6"
-zbus = "5.5"
+memfd.workspace = true
+nix.workspace = true
+x11rb-async.workspace = true
+zbus.workspace = true
 
 [dev-dependencies]
-pretty_assertions = "1.4"
-tempfile = "3.17"
-tracing-test = "0.2"
+pretty_assertions.workspace = true
+tempfile.workspace = true
+tracing-test.workspace = true

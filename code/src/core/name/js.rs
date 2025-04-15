@@ -29,7 +29,7 @@ impl PartialEq for JsWildcard {
 
 impl JsWildcard {
     /// @skip
-    pub fn inner(&self) -> &WildMatch {
+    pub const fn inner(&self) -> &WildMatch {
         &self.inner
     }
 }

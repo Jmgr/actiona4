@@ -52,7 +52,7 @@ impl<'js> FromParam<'js> for JsRectParam {
     }
 }
 
-#[derive(Clone, Copy, Debug, JsLifetime, PartialEq)]
+#[derive(Clone, Copy, Debug, JsLifetime, PartialEq, Eq)]
 #[rquickjs::class(rename = "Rect")]
 pub struct JsRect {
     inner: super::Rect,
@@ -96,49 +96,49 @@ impl JsRect {
 
     /// @skip
     #[qjs(get, rename = "x")]
-    pub fn get_x(&self) -> i32 {
+    pub const fn get_x(&self) -> i32 {
         self.inner.x
     }
 
     /// @skip
     #[qjs(set, rename = "x")]
-    pub fn set_x(&mut self, x: i32) {
+    pub const fn set_x(&mut self, x: i32) {
         self.inner.x = x;
     }
 
     /// @skip
     #[qjs(get, rename = "y")]
-    pub fn get_y(&self) -> i32 {
+    pub const fn get_y(&self) -> i32 {
         self.inner.y
     }
 
     /// @skip
     #[qjs(set, rename = "y")]
-    pub fn set_y(&mut self, y: i32) {
+    pub const fn set_y(&mut self, y: i32) {
         self.inner.y = y;
     }
 
     /// @skip
     #[qjs(get, rename = "width")]
-    pub fn get_width(&self) -> u32 {
+    pub const fn get_width(&self) -> u32 {
         self.inner.width
     }
 
     /// @skip
     #[qjs(set, rename = "width")]
-    pub fn set_width(&mut self, width: u32) {
+    pub const fn set_width(&mut self, width: u32) {
         self.inner.width = width;
     }
 
     /// @skip
     #[qjs(get, rename = "height")]
-    pub fn get_height(&self) -> u32 {
+    pub const fn get_height(&self) -> u32 {
         self.inner.height
     }
 
     /// @skip
     #[qjs(set, rename = "height")]
-    pub fn set_height(&mut self, height: u32) {
+    pub const fn set_height(&mut self, height: u32) {
         self.inner.height = height;
     }
 
@@ -159,7 +159,7 @@ impl JsRect {
     }
 
     #[qjs(rename = "clone")]
-    pub fn clone_js(&self) -> Self {
+    pub const fn clone_js(&self) -> Self {
         *self
     }
 
@@ -179,7 +179,7 @@ impl JsRect {
 
     /// @skip
     #[qjs(skip)]
-    pub fn inner(&self) -> super::Rect {
+    pub const fn inner(&self) -> super::Rect {
         self.inner
     }
 }

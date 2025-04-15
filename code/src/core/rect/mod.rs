@@ -5,7 +5,7 @@ use super::point::{Point, point};
 
 pub mod js;
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]
 pub struct Rect {
     pub x: i32,
     pub y: i32,
@@ -28,7 +28,7 @@ pub fn rect<X: ToPrimitive, Y: ToPrimitive, Width: ToPrimitive, Height: ToPrimit
 }
 
 impl Rect {
-    pub fn new(x: i32, y: i32, width: u32, height: u32) -> Self {
+    pub const fn new(x: i32, y: i32, width: u32, height: u32) -> Self {
         Self {
             x,
             y,
@@ -41,14 +41,14 @@ impl Rect {
         *self == other
     }
 
-    pub fn contains(&self, point: Point) -> bool {
+    pub const fn contains(&self, point: Point) -> bool {
         point.x >= self.x
             && point.x < self.x + self.width as i32
             && point.y >= self.y
             && point.y < self.y + self.height as i32
     }
 
-    pub fn intersects(&self, other: Self) -> bool {
+    pub const fn intersects(&self, other: Self) -> bool {
         !(self.x + self.width as i32 <= other.x
             || other.x + other.width as i32 <= self.x
             || self.y + self.height as i32 <= other.y
@@ -118,7 +118,7 @@ impl Rect {
         )
     }
 
-    pub fn surface(&self) -> u32 {
+    pub const fn surface(&self) -> u32 {
         self.width * self.height
     }
 }

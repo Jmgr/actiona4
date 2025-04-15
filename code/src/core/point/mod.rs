@@ -8,7 +8,7 @@ use tween::TweenValue;
 
 pub mod js;
 
-#[derive(Add, Clone, Copy, Debug, Deserialize, Mul, PartialEq, Serialize, Sub)]
+#[derive(Add, Clone, Copy, Debug, Deserialize, Mul, PartialEq, Eq, Serialize, Sub)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -31,12 +31,12 @@ impl TweenValue for Point {
 }
 
 impl Point {
-    pub fn new(x: i32, y: i32) -> Self {
+    pub const fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 
     pub fn length(&self) -> f32 {
-        ((self.x as f32).powi(2) + (self.y as f32).powi(2)).sqrt()
+        (self.x as f32).hypot(self.y as f32)
     }
 
     pub fn normalize(self) -> Self {
@@ -56,17 +56,17 @@ impl Point {
 
         let theta = rng.random_range(0.0..TAU);
         let r = radius * rng.random::<f32>().sqrt();
-        let x = (center.x as f32 + r * theta.cos()).round() as i32;
-        let y = (center.y as f32 + r * theta.sin()).round() as i32;
+        let x = r.mul_add(theta.cos(), center.x as f32).round() as i32;
+        let y = r.mul_add(theta.sin(), center.y as f32).round() as i32;
 
         Self { x, y }
     }
 
     pub fn distance_to(&self, other: Self) -> f32 {
-        (((self.x - other.x) as f32).powi(2) + ((self.y - other.y) as f32).powi(2)).sqrt()
+        ((self.x - other.x) as f32).hypot((self.y - other.y) as f32)
     }
 
-    pub fn is_origin(&self) -> bool {
+    pub const fn is_origin(&self) -> bool {
         self.x == 0 && self.y == 0
     }
 

@@ -16,8 +16,8 @@ impl Display for EnigoError {
             f,
             "{}",
             match self {
-                EnigoError::InputError(input_error) => input_error.to_string(),
-                EnigoError::NewConError(new_con_error) => new_con_error.to_string(),
+                Self::InputError(input_error) => input_error.to_string(),
+                Self::NewConError(new_con_error) => new_con_error.to_string(),
             }
         )
     }

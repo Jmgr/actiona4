@@ -83,7 +83,7 @@ slint::slint! {
 impl JsUi {
     /// @skip
     #[qjs(skip)]
-    pub fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> eyre::Result<Self> {
+    pub const fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> eyre::Result<Self> {
         Ok(Self { runtime, displays })
     }
 

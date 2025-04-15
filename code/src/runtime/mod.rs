@@ -125,7 +125,7 @@ pub(crate) struct JsUserData {
 }
 
 impl JsUserData {
-    fn new(displays: Arc<Displays>) -> Self {
+    const fn new(displays: Arc<Displays>) -> Self {
         Self { displays }
     }
 
@@ -248,7 +248,7 @@ impl Runtime {
         let local_cancellation_token = cancellation_token.clone();
 
         let handle = slint::spawn_local(Compat::new(async move {
-            let (runtime, js_context) = Runtime::new(local_cancellation_token, local_task_tracker)
+            let (runtime, js_context) = Self::new(local_cancellation_token, local_task_tracker)
                 .await
                 .unwrap();
 
@@ -295,7 +295,7 @@ impl Runtime {
             });
 
             let (runtime, js_context) =
-                Runtime::new(cancellation_token.clone(), task_tracker.clone())
+                Self::new(cancellation_token.clone(), task_tracker.clone())
                     .await
                     .unwrap();
 
@@ -311,7 +311,7 @@ impl Runtime {
     }
 
     #[cfg(unix)]
-    pub fn platform(&self) -> &x11::Runtime {
+    pub const fn platform(&self) -> &x11::Runtime {
         &self.runtime
     }
 

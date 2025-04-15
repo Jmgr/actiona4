@@ -26,9 +26,7 @@ impl TsToJs {
         );
 
         let lexer = Lexer::new(
-            Syntax::Typescript(TsSyntax {
-                ..Default::default()
-            }),
+            Syntax::Typescript(Default::default()),
             EsVersion::Es2020,
             StringInput::from(&*fm),
             None,

@@ -57,7 +57,7 @@ impl<'js> FromParam<'js> for JsPointParam {
 /// ```js
 /// let p = new Point(1, 2);
 /// ```
-#[derive(Clone, Copy, Debug, JsLifetime, PartialEq)]
+#[derive(Clone, Copy, Debug, JsLifetime, PartialEq, Eq)]
 #[rquickjs::class(rename = "Point")]
 pub struct JsPoint {
     inner: super::Point,
@@ -137,25 +137,25 @@ impl JsPoint {
 
     /// @skip
     #[qjs(get, rename = "x")]
-    pub fn get_x(&self) -> i32 {
+    pub const fn get_x(&self) -> i32 {
         self.inner.x
     }
 
     /// @skip
     #[qjs(set, rename = "x")]
-    pub fn set_x(&mut self, x: i32) {
+    pub const fn set_x(&mut self, x: i32) {
         self.inner.x = x;
     }
 
     /// @skip
     #[qjs(get, rename = "y")]
-    pub fn get_y(&self) -> i32 {
+    pub const fn get_y(&self) -> i32 {
         self.inner.y
     }
 
     /// @skip
     #[qjs(set, rename = "y")]
-    pub fn set_y(&mut self, y: i32) {
+    pub const fn set_y(&mut self, y: i32) {
         self.inner.y = y;
     }
 
@@ -186,7 +186,7 @@ impl JsPoint {
     }
 
     /// Returns true if this Point is at the origin, (0, 0).
-    pub fn is_origin(&self) -> bool {
+    pub const fn is_origin(&self) -> bool {
         self.inner.is_origin()
     }
 
@@ -224,7 +224,7 @@ impl JsPoint {
 
     /// Clones this Point.
     #[qjs(rename = "clone")]
-    pub fn clone_js(&self) -> Self {
+    pub const fn clone_js(&self) -> Self {
         *self
     }
 
@@ -245,7 +245,7 @@ impl JsPoint {
 
     /// @skip
     #[qjs(skip)]
-    pub fn inner(&self) -> super::Point {
+    pub const fn inner(&self) -> super::Point {
         self.inner
     }
 }

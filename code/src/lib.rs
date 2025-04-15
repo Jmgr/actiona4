@@ -1,4 +1,6 @@
 //#![recursion_limit = "1024"] // TODO: is this still needed?
+//#![warn(clippy::all, clippy::dbg_macro, clippy::float_cmp_const, clippy::get_unwrap, clippy::mem_forget, clippy::nursery, clippy::pedantic)]
+#![warn(clippy::all, clippy::nursery)]
 
 use eyre::{Result, eyre};
 use rquickjs::{Context as JsContext, Ctx, FromJs};
