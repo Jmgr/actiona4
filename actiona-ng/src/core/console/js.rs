@@ -189,7 +189,7 @@ impl JsConsole {
         this: This<Class<'js, Self>>,
         name: Opt<String>,
     ) -> Class<'js, Self> {
-        let name = name.clone().unwrap_or(DEFAULT_NAME.to_string());
+        let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         self.timers.insert(name, Instant::now());
 
         this.0
@@ -201,7 +201,7 @@ impl JsConsole {
         ctx: Ctx<'_>,
         name: Opt<String>,
     ) -> Result<Class<'js, Self>> {
-        let name = name.clone().unwrap_or(DEFAULT_NAME.to_string());
+        let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         if let Some(timer_start) = self.timers.remove(&name) {
             println!(
                 "{name}: {} - timer ended",
@@ -222,7 +222,7 @@ impl JsConsole {
         this: This<Class<'js, Self>>,
         name: Opt<String>,
     ) -> Class<'js, Self> {
-        let name = name.clone().unwrap_or(DEFAULT_NAME.to_string());
+        let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         let value = self.counters.entry(name.clone()).or_default();
         *value += 1;
         println!("{name}: {}", value);

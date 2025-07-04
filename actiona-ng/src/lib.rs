@@ -12,30 +12,10 @@ pub mod core;
 pub mod enigo;
 pub(crate) mod platform;
 pub mod runtime;
-pub mod ts_to_js;
+pub mod scripting;
 
 pub trait IntoJS<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T>;
-}
-
-pub fn eval<T>(js_context: &JsContext, source: &str) -> Result<T>
-where
-    for<'any_js> T: FromJs<'any_js> + Send,
-{
-    js_context.with(|ctx| {
-        // TODO: use .catch
-        ctx.eval::<T, _>(source).map_err(|_| {
-            let e = ctx.catch();
-            eprintln!("err {:?}", e); // TMP
-            eyre!(
-                "{}",
-                e.as_exception()
-                    .expect("caught value should be an exception")
-                    .message()
-                    .expect("exception should have a message")
-            )
-        })
-    })
 }
 
 #[macro_export]

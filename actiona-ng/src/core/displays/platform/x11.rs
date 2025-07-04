@@ -10,10 +10,10 @@ pub struct DisplaysImpl {}
 
 impl DisplaysImpl {
     pub fn new(_runtime: Arc<Runtime>) -> Result<Self> {
-        Ok(DisplaysImpl {})
+        Ok(Self {})
     }
 
-    pub fn randr_event_mask() -> NotifyMask {
+    pub const fn randr_event_mask() -> NotifyMask {
         NotifyMask::SCREEN_CHANGE
     }
 }

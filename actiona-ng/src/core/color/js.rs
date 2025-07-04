@@ -210,7 +210,7 @@ impl<'js> FromParam<'js> for JsColorParam {
 /// ```js
 /// let c = new Color(128, 255, 255, 255);
 /// ```
-#[derive(Clone, Copy, Debug, JsLifetime, PartialEq)]
+#[derive(Clone, Copy, Debug, JsLifetime, PartialEq, Eq)]
 #[rquickjs::class(rename = "Color")]
 pub struct JsColor {
     inner: super::Color,
@@ -370,7 +370,7 @@ impl<'js> ValueClass<'js> for JsColor {
 
 impl JsColor {
     /// @skip
-    pub fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
+    pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self {
             inner: super::Color::new(r, g, b, a),
         }
@@ -491,7 +491,7 @@ impl JsColor {
     }
 
     #[qjs(rename = "clone")]
-    pub fn clone_js(&self) -> Self {
+    pub const fn clone_js(&self) -> Self {
         *self
     }
 
@@ -542,7 +542,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_button() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             js_context.with(|ctx| {
                 let color = ctx.globals().get::<_, Object>("Color").unwrap(); // TODO: add a macro? Or a helper function
                 let val = JsColor {

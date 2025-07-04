@@ -79,7 +79,7 @@ impl X11Connection {
         &self.screen
     }
 
-    pub fn screen_index(&self) -> usize {
+    pub const fn screen_index(&self) -> usize {
         self.screen_index
     }
 }

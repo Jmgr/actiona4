@@ -37,7 +37,7 @@ impl<'js> Trace<'js> for JsDisplays {
 
 impl JsDisplays {
     /// @skip
-    pub fn new(displays: Arc<super::Displays>) -> Result<Self> {
+    pub const fn new(displays: Arc<super::Displays>) -> Result<Self> {
         Ok(Self { inner: displays })
     }
 }
@@ -133,18 +133,20 @@ impl From<runtime::DisplayInfo> for JsDisplayInfo {
 impl JsDisplayInfo {
     /// @skip
     #[qjs(get)]
-    pub fn id(&self) -> u32 {
+    pub const fn id(&self) -> u32 {
         self.inner.id
     }
 
     /// @skip
     #[qjs(get)]
+    #[allow(clippy::missing_const_for_fn)]
     pub fn name(&self) -> &str {
         &self.inner.name
     }
 
     /// @skip
     #[qjs(get)]
+    #[allow(clippy::missing_const_for_fn)]
     pub fn friendly_name(&self) -> &str {
         &self.inner.friendly_name
     }
@@ -157,37 +159,37 @@ impl JsDisplayInfo {
 
     /// @skip
     #[qjs(get)]
-    pub fn width_mm(&self) -> i32 {
+    pub const fn width_mm(&self) -> i32 {
         self.inner.width_mm
     }
 
     /// @skip
     #[qjs(get)]
-    pub fn height_mm(&self) -> i32 {
+    pub const fn height_mm(&self) -> i32 {
         self.inner.height_mm
     }
 
     /// @skip
     #[qjs(get)]
-    pub fn rotation(&self) -> f32 {
+    pub const fn rotation(&self) -> f32 {
         self.inner.rotation
     }
 
     /// @skip
     #[qjs(get)]
-    pub fn scale_factor(&self) -> f32 {
+    pub const fn scale_factor(&self) -> f32 {
         self.inner.scale_factor
     }
 
     /// @skip
     #[qjs(get)]
-    pub fn frequency(&self) -> f32 {
+    pub const fn frequency(&self) -> f32 {
         self.inner.frequency
     }
 
     /// @skip
     #[qjs(get)]
-    pub fn is_primary(&self) -> bool {
+    pub const fn is_primary(&self) -> bool {
         self.inner.is_primary
     }
 }
@@ -201,7 +203,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_random_point() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             let point: JsPoint = eval(&js_context, "displays.randomPoint()").unwrap();
 
             println!("point: {}", point.inner());

@@ -166,7 +166,7 @@ impl JsFile {
     }
 
     /// Returns true if the file is open.
-    pub fn is_open(&self) -> bool {
+    pub const fn is_open(&self) -> bool {
         self.inner.is_some()
     }
 
@@ -463,7 +463,7 @@ impl JsFile {
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
-    pub fn to_string_js(&self) -> String {
+    pub const fn to_string_js(&self) -> String {
         String::new()
     }
 }
@@ -482,7 +482,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             //eval::<()>(&js_context, "").unwrap();
         });
     }

@@ -268,26 +268,20 @@ impl From<super::Point> for JsPoint {
 
 #[cfg(test)]
 mod tests {
-    use rquickjs::Context as JsContext;
-
     use super::JsPoint;
-    use crate::{core::point::point, eval, runtime::Runtime};
+    use crate::{core::point::point, eval, runtime::Runtime, scripting::Engine as ScriptEngine};
 
-    fn setup(js_context: &JsContext) {
-        eval::<()>(
-            &js_context,
-            r#"
+    async fn setup(script_engine: &ScriptEngine) {
+        script_engine.eval(r#"
                 let p1 = new Point({x: 1, y: 2});
                 let p2 = new Point(2, 3);
                 let p3 = new Point(p2);
-            "#,
-        )
-        .unwrap();
+            "#).await.unwrap();
     }
 
     #[test]
     fn test_point_equals() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             let result = eval::<bool>(&js_context, "p1 == p2").unwrap();
@@ -303,7 +297,7 @@ mod tests {
 
     #[test]
     fn test_point_attributes() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             eval::<()>(
@@ -325,7 +319,7 @@ mod tests {
 
     #[test]
     fn test_add_subtract_scale() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             let result = eval::<JsPoint>(&js_context, "p1.add(new Point(1, 3))").unwrap();
@@ -341,7 +335,7 @@ mod tests {
 
     #[test]
     fn test_distance() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             let result = eval::<f32>(&js_context, "p1.distanceTo(new Point(4, 6))").unwrap();
@@ -354,7 +348,7 @@ mod tests {
 
     #[test]
     fn test_json() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             let result = eval::<String>(&js_context, "p1.toJson()").unwrap();
@@ -364,7 +358,7 @@ mod tests {
 
     #[test]
     fn test_origin() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             let result = eval::<bool>(&js_context, "p1.isOrigin()").unwrap();
@@ -377,7 +371,7 @@ mod tests {
 
     #[test]
     fn test_clone() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             eval::<()>(&js_context, "let pc = p1.clone()").unwrap();
@@ -392,7 +386,7 @@ mod tests {
 
     #[test]
     fn test_random() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             setup(&js_context);
 
             eval::<JsPoint>(&js_context, "Point.random()").unwrap();

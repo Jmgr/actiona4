@@ -46,6 +46,8 @@ tokio.workspace = true
 tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
+once_cell.workspace = true
+regex.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true

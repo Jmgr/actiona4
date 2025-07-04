@@ -2,9 +2,9 @@
 
 use std::{fs, path::PathBuf};
 
-use actiona_ng::{runtime::Runtime, ts_to_js::TsToJs};
+use actiona_ng::runtime::Runtime;
 use clap::Parser;
-use eyre::{Result, eyre};
+use eyre::Result;
 
 #[derive(Debug, Parser)]
 struct Args {
@@ -15,44 +15,11 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     // Read the input file
-    let ts = fs::read_to_string(args.filepath)?;
+    let script = fs::read_to_string(args.filepath)?;
 
-    // Convert the TS code into JS
-    let to_to_js = TsToJs::new(&ts)?;
-
-    /*
-    Runtime::run(move |_runtime, js_context| async move {
-        js_context.with(|ctx| {
-            ctx.eval::<(), _>(to_to_js.code()).map_err(|_| {
-                let e = ctx.catch();
-                eprintln!("err {:?}", e); // TMP
-                eyre!(
-                    "{}",
-                    e.as_exception()
-                        .expect("caught value should be an exception")
-                        .message()
-                        .expect("exception should have a message")
-                )
-            })
-        })?;
-
-        Ok(())
-    })?;
-    */
-    Runtime::run_without_ui(move |_runtime, js_context| async move {
-        js_context.with(|ctx| {
-            ctx.eval::<(), _>(to_to_js.code()).map_err(|_| {
-                let e = ctx.catch();
-                eprintln!("err {:?}", e); // TMP
-                eyre!(
-                    "{}",
-                    e.as_exception()
-                        .expect("caught value should be an exception")
-                        .message()
-                        .expect("exception should have a message")
-                )
-            })
-        })?;
+    Runtime::run_without_ui(move |_runtime, mut script_engine| async move {
+        script_engine.eval_async::<()>(&script).await?;
+        let _unhandled_exceptions = script_engine.idle().await; // TODO: check unhandled exceptions
 
         Ok(())
     })

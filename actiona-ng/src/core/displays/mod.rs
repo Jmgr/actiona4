@@ -84,6 +84,8 @@ impl Displays {
             .ok_or(DisplaysError::NoDisplays)?;
         let rect = random_display.rect;
 
+        drop(displays_info);
+
         let random_point = point(
             rng.random_range(rect.x..(rect.x + rect.width as i32)),
             rng.random_range(rect.y..(rect.y + rect.height as i32)),
@@ -101,7 +103,7 @@ impl Displays {
             .ok_or(DisplaysError::NoPrimaryDisplay)
     }
 
-    pub fn displays_info(&self) -> &Arc<Mutex<DisplayInfoVec>> {
+    pub const fn displays_info(&self) -> &Arc<Mutex<DisplayInfoVec>> {
         &self.displays_info
     }
 

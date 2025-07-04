@@ -1050,7 +1050,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             // Load images using image crate
             let source_img = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/input.png")
                 .unwrap()
@@ -1116,7 +1116,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_options() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             eval::<()>(
                 &js_context,
                 "let image = new Image(100, 100); image.test({

@@ -140,8 +140,7 @@ mod tests {
 
     use super::{JsNameParam, JsWildcard};
     use crate::{
-        core::{SingletonClass, name::Name},
-        eval,
+        core::SingletonClass,
         runtime::Runtime,
     };
 
@@ -176,31 +175,19 @@ mod tests {
 
     #[test]
     fn test_name() {
-        Runtime::test_with_js(async |js_context| {
-            js_context.with(|ctx| {
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine.with(|ctx| {
                 JsTest::register(&ctx, JsTest::default()).unwrap();
             });
 
-            assert!(eval::<bool>(&js_context, r#"test.nameMatch("foo", "foo")"#).unwrap());
-            assert!(!eval::<bool>(&js_context, r#"test.nameMatch("foo", "bar")"#).unwrap());
+            assert!(script_engine.eval::<bool>(r#"test.nameMatch("foo", "foo")"#).await.unwrap());
+            assert!(!script_engine.eval::<bool>(r#"test.nameMatch("foo", "bar")"#).await.unwrap());
 
-            assert!(
-                eval::<bool>(
-                    &js_context,
-                    r#"test.nameMatch(new Wildcard("foo*"), "football")"#
-                )
-                .unwrap()
-            );
-            assert!(
-                !eval::<bool>(
-                    &js_context,
-                    r#"test.nameMatch(new Wildcard("foo"), "football")"#
-                )
-                .unwrap()
-            );
+            assert!(script_engine.eval::<bool>(r#"test.nameMatch(new Wildcard("foo*"), "football")"#).await.unwrap());
+            assert!(!script_engine.eval::<bool>(r#"test.nameMatch(new Wildcard("foo"), "football")"#).await.unwrap());
 
-            assert!(eval::<bool>(&js_context, r#"test.nameMatch(/^\d+$/, "123456")"#).unwrap());
-            assert!(!eval::<bool>(&js_context, r#"test.nameMatch(/^\d+$/, "abc123def")"#).unwrap());
+            assert!(script_engine.eval::<bool>(r#"test.nameMatch(/^\d+$/, "123456")"#).await.unwrap());
+            assert!(!script_engine.eval::<bool>(r#"test.nameMatch(/^\d+$/, "abc123def")"#).await.unwrap());
         });
     }
 }

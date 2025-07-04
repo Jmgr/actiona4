@@ -23,7 +23,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Ui")]
 pub struct JsUi {
-    runtime: Arc<Runtime>,
+    _runtime: Arc<Runtime>,
     displays: Arc<Displays>,
 }
 
@@ -82,7 +82,10 @@ impl JsUi {
     /// @skip
     #[qjs(skip)]
     pub const fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> eyre::Result<Self> {
-        Ok(Self { runtime, displays })
+        Ok(Self {
+            _runtime: runtime,
+            displays,
+        })
     }
 
     pub fn display_image(
@@ -91,7 +94,7 @@ impl JsUi {
         image: &js::JsImage,
         options: Opt<JsWindowOptions>,
     ) -> Result<()> {
-        let options = options.clone().unwrap_or_default();
+        let _options = options.clone().unwrap_or_default();
 
         let h = Rc::new(ImageWindow::new().unwrap());
 

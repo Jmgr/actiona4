@@ -6,10 +6,7 @@ use x11rb_async::protocol::xinput::{
 };
 
 use super::{JsButton, MouseImplTrait, Result};
-use crate::{
-    core::mouse::MouseError,
-    runtime::{RecordEvent, Runtime},
-};
+use crate::{core::mouse::MouseError, runtime::Runtime};
 
 #[derive(Debug)]
 pub struct MouseImpl {
@@ -56,16 +53,18 @@ impl MouseImpl {
                 select! {
                     _ = cancellation_token.cancelled() => { break; }
                     event = event_receiver.recv() => {
-                        let Ok(event) = event else {
+                        let Ok(_event) = event else {
                             break;
                         };
 
+                        /*
                         match event {
                             RecordEvent::MouseButton(_button, _direction) => {
                                 // TODO
                             }
                             _ => (),
                         }
+                        */
                     }
                 }
             }
@@ -84,7 +83,7 @@ impl MouseImpl {
 
 impl MouseImplTrait for MouseImpl {
     fn is_button_pressed(&mut self, button: JsButton) -> Result<bool> {
-        let x11_connection = self.runtime.platform().x11_connection().clone();
+        let x11_connection = self.runtime.platform().x11_connection();
         let master_pointer_device_id = self.master_pointer_device_id;
 
         let buttons = Runtime::block_on(async move {
@@ -106,9 +105,9 @@ impl MouseImplTrait for MouseImpl {
         })
         .unwrap();
 
-        let mask = buttons.first().ok_or_else(|| MouseError::Unexpected(
-            "button mask should have at least one entry".into(),
-        ))?;
+        let mask = buttons.first().ok_or_else(|| {
+            MouseError::Unexpected("button mask should have at least one entry".into())
+        })?;
 
         Ok(mask & button.into_button_mask() != 0)
     }

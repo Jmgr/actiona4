@@ -7,7 +7,8 @@ use async_compat::Compat;
 use enigo::{Enigo, Settings};
 use eyre::Result;
 use itertools::Itertools;
-use rquickjs::{Context as JsContext, JsLifetime, Runtime as JsRuntime};
+use rquickjs::JsLifetime;
+use scripting::Engine as ScriptEngine;
 use tokio::{
     runtime::Handle,
     select, signal,
@@ -16,20 +17,23 @@ use tokio::{
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
-use crate::core::{
-    SingletonClass, ValueClass,
-    color::js::JsColor,
-    console::js::JsConsole,
-    displays::{Displays, js::JsDisplays},
-    file::js::JsFile,
-    image::js::JsImage,
-    keyboard::js::JsKeyboard,
-    mouse::{JsButton, js::JsMouse},
-    name::js::{JsName, JsWildcard},
-    point::js::JsPoint,
-    rect::{Rect, js::JsRect, rect},
-    screenshot::js::JsScreenshot,
-    ui::js::JsUi,
+use crate::{
+    core::{
+        SingletonClass, ValueClass,
+        color::js::JsColor,
+        console::js::JsConsole,
+        displays::{Displays, js::JsDisplays},
+        file::js::JsFile,
+        image::js::JsImage,
+        keyboard::js::JsKeyboard,
+        mouse::{JsButton, js::JsMouse},
+        name::js::{JsName, JsWildcard},
+        point::js::JsPoint,
+        rect::{Rect, js::JsRect, rect},
+        screenshot::js::JsScreenshot,
+        ui::js::JsUi,
+    },
+    scripting,
 };
 
 pub mod platform;
@@ -150,7 +154,7 @@ impl Runtime {
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
-    ) -> Result<(Arc<Self>, JsContext)> {
+    ) -> Result<(Arc<Self>, ScriptEngine)> {
         let (events_sender, _) = broadcast::channel(128);
 
         #[cfg(unix)]
@@ -169,8 +173,7 @@ impl Runtime {
         )
         .await?;
 
-        let js_runtime = JsRuntime::new()?;
-        let js_context = JsContext::full(&js_runtime)?;
+        let script_engine = ScriptEngine::new().await?;
 
         let runtime = Arc::new(Self {
             runtime,
@@ -189,35 +192,37 @@ impl Runtime {
         let js_displays = JsDisplays::new(displays.clone())?;
         let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
 
-        js_context.with(|ctx| -> Result<()> {
-            ctx.store_userdata(JsUserData::new(displays)).unwrap();
+        script_engine
+            .with(|ctx| -> Result<()> {
+                ctx.store_userdata(JsUserData::new(displays)).unwrap();
 
-            // Value classes
-            JsPoint::register(&ctx)?;
-            JsRect::register(&ctx)?;
-            JsColor::register(&ctx)?;
-            JsImage::register(&ctx)?;
-            JsFile::register(&ctx)?;
-            JsWildcard::register(&ctx)?;
-            JsName::register(&ctx)?;
+                // Value classes
+                JsPoint::register(&ctx)?;
+                JsRect::register(&ctx)?;
+                JsColor::register(&ctx)?;
+                JsImage::register(&ctx)?;
+                JsFile::register(&ctx)?;
+                JsWildcard::register(&ctx)?;
+                JsName::register(&ctx)?;
 
-            // Singletons
-            JsMouse::register(&ctx, mouse)?;
-            JsKeyboard::register(&ctx, keyboard)?;
-            JsUi::register(&ctx, ui)?;
-            JsConsole::register(&ctx, console)?;
-            JsDisplays::register(&ctx, js_displays)?;
-            JsScreenshot::register(&ctx, screenshot)?;
+                // Singletons
+                JsMouse::register(&ctx, mouse)?;
+                JsKeyboard::register(&ctx, keyboard)?;
+                JsUi::register(&ctx, ui)?;
+                JsConsole::register(&ctx, console)?;
+                JsDisplays::register(&ctx, js_displays)?;
+                JsScreenshot::register(&ctx, screenshot)?;
 
-            Ok(())
-        })?;
+                Ok(())
+            })
+            .await?;
 
-        Ok((runtime, js_context))
+        Ok((runtime, script_engine))
     }
 
     pub fn run<F, Fut>(f: F) -> Result<()>
     where
-        F: FnOnce(Arc<Self>, JsContext) -> Fut + 'static,
+        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + 'static,
         Fut: Future<Output = Result<()>>,
     {
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
@@ -269,7 +274,7 @@ impl Runtime {
 
     pub fn run_without_ui<F, Fut>(f: F) -> Result<()>
     where
-        F: FnOnce(Arc<Self>, JsContext) -> Fut + 'static,
+        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + 'static,
         Fut: Future<Output = Result<()>>,
     {
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
@@ -291,11 +296,11 @@ impl Runtime {
                 }
             });
 
-            let (runtime, js_context) = Self::new(cancellation_token.clone(), task_tracker.clone())
+            let (runtime, script_engine) = Self::new(cancellation_token.clone(), task_tracker.clone())
                 .await
                 .unwrap();
 
-            f(runtime, js_context).await.unwrap();
+            f(runtime, script_engine).await.unwrap();
 
             task_tracker.close();
             cancellation_token.cancel();
@@ -351,7 +356,7 @@ impl Runtime {
 
     pub fn test_with_js<F, Fut>(f: F)
     where
-        F: FnOnce(JsContext) -> Fut + 'static,
+        F: FnOnce(ScriptEngine) -> Fut + 'static,
         Fut: Future,
     {
         Self::run_without_ui(|_runtime, js_context| async {

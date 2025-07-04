@@ -309,15 +309,14 @@ mod tests {
     use super::JsButton;
     use crate::{
         core::point::{js::JsPoint, point},
-        eval,
         runtime::Runtime,
     };
 
     #[test]
     #[traced_test]
     fn test_position() {
-        Runtime::test_with_js(async |js_context| {
-            let mut position: JsPoint = eval(&js_context, "mouse.position()").unwrap();
+        Runtime::test_with_js(async |script_engine| {
+            let mut position: JsPoint = script_engine.eval("mouse.position()").await.unwrap();
             position = point(position.get_x() + 5, position.get_y() + 5).into();
 
             eval::<()>(
@@ -354,7 +353,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_button() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             let button: JsButton = eval(&js_context, "Button.LEFT").unwrap();
             assert_eq!(button, JsButton::Left);
 
@@ -366,7 +365,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_press_release() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             eval::<()>(&js_context, "mouse.press()").unwrap();
 
             let pressed: bool = eval(&js_context, "mouse.isPressed(Button.LEFT)").unwrap();
@@ -382,7 +381,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_scroll() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             eval::<()>(&js_context, "mouse.scroll(1)").unwrap();
             eval::<()>(&js_context, "mouse.scroll(-1)").unwrap();
 
@@ -394,7 +393,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_measure_speed() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             let speed: f64 = eval(&js_context, "mouse.measureSpeed(2000)").unwrap();
             println!("speed: {speed}");
         });
@@ -403,7 +402,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_wait() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             eval::<()>(&js_context, "mouse.wait(100).wait(200);").unwrap();
         });
     }
@@ -411,7 +410,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_chain() {
-        Runtime::test_with_js(async |js_context| {
+        Runtime::test_with_js(async |script_engine| {
             eval::<()>(
                 &js_context,
                 r#"
