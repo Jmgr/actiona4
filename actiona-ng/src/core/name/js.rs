@@ -139,10 +139,7 @@ mod tests {
     use rquickjs::{Ctx, JsLifetime, class::Trace};
 
     use super::{JsNameParam, JsWildcard};
-    use crate::{
-        core::SingletonClass,
-        runtime::Runtime,
-    };
+    use crate::{core::SingletonClass, runtime::Runtime};
 
     #[derive(Clone, Default, JsLifetime, Trace)]
     #[rquickjs::class(rename = "Test")]
@@ -176,18 +173,50 @@ mod tests {
     #[test]
     fn test_name() {
         Runtime::test_with_js(async |mut script_engine| {
-            script_engine.with(|ctx| {
-                JsTest::register(&ctx, JsTest::default()).unwrap();
-            });
+            script_engine
+                .with(|ctx| {
+                    JsTest::register(&ctx, JsTest::default()).unwrap();
+                })
+                .await;
 
-            assert!(script_engine.eval::<bool>(r#"test.nameMatch("foo", "foo")"#).await.unwrap());
-            assert!(!script_engine.eval::<bool>(r#"test.nameMatch("foo", "bar")"#).await.unwrap());
+            assert!(
+                script_engine
+                    .eval::<bool>(r#"test.nameMatch("foo", "foo")"#)
+                    .await
+                    .unwrap()
+            );
+            assert!(
+                !script_engine
+                    .eval::<bool>(r#"test.nameMatch("foo", "bar")"#)
+                    .await
+                    .unwrap()
+            );
 
-            assert!(script_engine.eval::<bool>(r#"test.nameMatch(new Wildcard("foo*"), "football")"#).await.unwrap());
-            assert!(!script_engine.eval::<bool>(r#"test.nameMatch(new Wildcard("foo"), "football")"#).await.unwrap());
+            assert!(
+                script_engine
+                    .eval::<bool>(r#"test.nameMatch(new Wildcard("foo*"), "football")"#)
+                    .await
+                    .unwrap()
+            );
+            assert!(
+                !script_engine
+                    .eval::<bool>(r#"test.nameMatch(new Wildcard("foo"), "football")"#)
+                    .await
+                    .unwrap()
+            );
 
-            assert!(script_engine.eval::<bool>(r#"test.nameMatch(/^\d+$/, "123456")"#).await.unwrap());
-            assert!(!script_engine.eval::<bool>(r#"test.nameMatch(/^\d+$/, "abc123def")"#).await.unwrap());
+            assert!(
+                script_engine
+                    .eval::<bool>(r#"test.nameMatch(/^\d+$/, "123456")"#)
+                    .await
+                    .unwrap()
+            );
+            assert!(
+                !script_engine
+                    .eval::<bool>(r#"test.nameMatch(/^\d+$/, "abc123def")"#)
+                    .await
+                    .unwrap()
+            );
         });
     }
 }

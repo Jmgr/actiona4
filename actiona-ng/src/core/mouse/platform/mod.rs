@@ -1,8 +1,8 @@
 #[cfg(unix)]
-pub(crate) mod x11;
+pub mod x11;
 
 #[cfg(windows)]
-pub(crate) mod win;
+pub mod win;
 
 pub use super::{JsButton, Result};
 

@@ -22,14 +22,17 @@ impl KeyboardImpl {
                 select! {
                     _ = cancellation_token.cancelled() => { break; }
                     event = event_receiver.recv() => {
-                        let Ok(event) = event else {
+                        let Ok(_event) = event else {
                             break;
                         };
 
+                        // TODO
+                        /*
                         match event {
-                            // TODO
+
                             _ => (),
                         }
+                        */
                     }
                 }
             }

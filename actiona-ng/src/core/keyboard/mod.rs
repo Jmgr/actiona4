@@ -123,7 +123,7 @@ pub enum JsKey {
 }
 
 impl JsKey {
-    fn into_enigo(self) -> enigo::Key {
+    const fn into_enigo(self) -> enigo::Key {
         use JsKey::*;
 
         match self {
@@ -220,9 +220,7 @@ impl Keyboard {
     pub fn text(&self, text: &str) -> Result<()> {
         use enigo::Keyboard;
 
-        let mut enigo = self.enigo.lock().unwrap();
-
-        enigo.text(text)?;
+        self.enigo.lock().unwrap().text(text)?;
 
         Ok(())
     }
@@ -231,9 +229,10 @@ impl Keyboard {
     pub fn key(&self, key: JsKey, direction: Direction) -> Result<()> {
         use enigo::Keyboard;
 
-        let mut enigo = self.enigo.lock().unwrap();
-
-        enigo.key(key.into_enigo(), direction)?;
+        self.enigo
+            .lock()
+            .unwrap()
+            .key(key.into_enigo(), direction)?;
 
         Ok(())
     }
@@ -242,9 +241,7 @@ impl Keyboard {
     pub fn raw(&self, keycode: u16, direction: Direction) -> Result<()> {
         use enigo::Keyboard;
 
-        let mut enigo = self.enigo.lock().unwrap();
-
-        enigo.raw(keycode, direction)?;
+        self.enigo.lock().unwrap().raw(keycode, direction)?;
 
         Ok(())
     }
@@ -260,13 +257,12 @@ mod tests {
 
     use tracing_test::traced_test;
 
-    use super::Keyboard;
     use crate::runtime::Runtime;
 
     #[test]
     #[traced_test]
     fn test_keyboard() {
-        Runtime::test(async |runtime| {
+        Runtime::test(async |_runtime| {
             //let _keyboard = Keyboard::new(runtime).unwrap();
 
             //keyboard.text("hello").unwrap();

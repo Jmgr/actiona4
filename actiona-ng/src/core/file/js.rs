@@ -154,12 +154,12 @@ impl JsFile {
             .truncate(options.truncate)
             .open(&path)
             .map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error opening the file: {}", err))
+                Exception::throw_message(&ctx, &format!("Error opening the file: {err}"))
             })?;
 
         Ok(Self {
             inner: Some(OpenedFile {
-                path: path.clone(),
+                path,
                 file: Arc::new(file),
             }),
         })
@@ -193,14 +193,14 @@ impl JsFile {
                 .file
                 .write(typed_array.as_bytes().unwrap())
                 .map_err(|err| {
-                    Exception::throw_message(&ctx, &format!("Error writing file: {}", err))
+                    Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
                 })?;
         } else if let Some(text) = value.as_string() {
             opened_file
                 .file
                 .write(text.to_string().unwrap().as_bytes())
                 .map_err(|err| {
-                    Exception::throw_message(&ctx, &format!("Error writing file: {}", err))
+                    Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
                 })?;
         } else {
             return Err(Exception::throw_message(
@@ -225,11 +225,11 @@ impl JsFile {
     pub fn write<'js>(ctx: Ctx<'js>, path: String, value: Object<'js>) -> Result<()> {
         if let Some(typed_array) = value.as_typed_array::<u8>() {
             fs::write(path, typed_array.as_bytes().unwrap()).map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error writing file: {}", err))
+                Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
             })?;
         } else if let Some(text) = value.as_string() {
             fs::write(path, text.to_string().unwrap()).map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error writing file: {}", err))
+                Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
             })?;
         } else {
             return Err(Exception::throw_message(
@@ -251,7 +251,7 @@ impl JsFile {
             .file
             .read_to_string(&mut result)
             .map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error reading from the file: {}", err))
+                Exception::throw_message(&ctx, &format!("Error reading from the file: {err}"))
             })?;
 
         Ok(result)
@@ -260,7 +260,7 @@ impl JsFile {
     #[qjs(static)]
     pub fn read_all_text(ctx: Ctx<'_>, path: String) -> Result<String> {
         fs::read_to_string(path)
-            .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {}", err)))
+            .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {err}")))
     }
 
     pub fn read_bytes<'js>(
@@ -277,7 +277,7 @@ impl JsFile {
             opened_file.file.read_exact(&mut result)?;
         } else {
             opened_file.file.read_to_end(&mut result).map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error reading from the file: {}", err))
+                Exception::throw_message(&ctx, &format!("Error reading from the file: {err}"))
             })?;
         }
 
@@ -286,9 +286,8 @@ impl JsFile {
 
     #[qjs(static)]
     pub fn read_all_bytes(ctx: Ctx<'_>, path: String) -> Result<TypedArray<'_, u8>> {
-        let result = fs::read(path).map_err(|err| {
-            Exception::throw_message(&ctx, &format!("Error reading file: {}", err))
-        })?;
+        let result = fs::read(path)
+            .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {err}")))?;
 
         TypedArray::new(ctx, result)
     }

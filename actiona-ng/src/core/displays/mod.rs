@@ -145,9 +145,6 @@ impl Displays {
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
-
-    use tokio::time::sleep;
     use tracing_test::traced_test;
 
     use crate::{core::displays::Displays, runtime::Runtime};

@@ -39,6 +39,7 @@ regex = "1.11.1"
 rquickjs = { path = "../rquickjs", default-features = false, features = [
     "macro",
     "futures",
+    "parallel",
 ] }
 rustdoc-types = "0.53.0"
 serde = "1.0.219"
@@ -80,6 +81,7 @@ tokio-util = { version = "0.7.15", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.4.0"
+spin_on = "0.1.1"
 
 # Windows
 windows = { version = "0.61.3", features = [

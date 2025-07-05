@@ -10,6 +10,6 @@ pub mod win;
 
 pub trait ScreenshotImplTrait {
     async fn capture_rect(&mut self, rect: Rect) -> Result<Image>;
-    async fn capture_display(&mut self, display_id: u32) -> Result<Image>;
-    async fn capture_pixel(&mut self, position: Point) -> Result<Color>;
+    async fn _capture_display(&mut self, display_id: u32) -> Result<Image>;
+    async fn _capture_pixel(&mut self, position: Point) -> Result<Color>;
 }

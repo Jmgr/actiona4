@@ -1,9 +1,8 @@
 use std::{
-    cell::RefCell,
     collections::{HashMap, hash_map::Entry},
     hash::{DefaultHasher, Hash, Hasher},
     mem::take,
-    rc::Rc,
+    sync::{Arc, Mutex},
 };
 
 use eyre::{Result, eyre};
@@ -112,12 +111,14 @@ impl TsToJs {
         &self.js_code
     }
 
+    /*
     /// Returns the generated sourcemap as a string.
     pub fn sourcemap_string(&self) -> Result<String> {
         let mut writer = Vec::new();
         self.sourcemap.to_writer(&mut writer)?;
         Ok(String::from_utf8(writer)?)
     }
+    */
 
     /// Looks up the original TypeScript location for a given JavaScript line and column.
     ///
@@ -167,11 +168,13 @@ impl TsToJs {
     }
 }
 
+pub type UnhandledException = (String, Vec<CallStackFrame>);
+
 pub struct Engine {
     runtime: AsyncRuntime,
     context: AsyncContext,
-    sourcemaps: Rc<RefCell<HashMap<u64, TsToJs>>>,
-    unhandled_exceptions: Rc<RefCell<Vec<(String, Vec<CallStackFrame>)>>>,
+    sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
+    unhandled_exceptions: Arc<Mutex<Vec<UnhandledException>>>,
 }
 
 static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
@@ -181,7 +184,7 @@ static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
 
 #[derive(Debug)]
 pub struct CallStackFrame {
-    function: String,
+    _function: String,
     file: String,
     line: usize,
     col: usize,
@@ -199,7 +202,7 @@ fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
             let col = caps.name("col")?.as_str().parse::<usize>().ok()?;
 
             Some(CallStackFrame {
-                function,
+                _function: function,
                 file,
                 line,
                 col,
@@ -212,8 +215,8 @@ impl Engine {
     pub async fn new() -> Result<Self> {
         let runtime = AsyncRuntime::new()?;
         let context = AsyncContext::full(&runtime).await?;
-        let sourcemaps = Rc::new(RefCell::new(Default::default()));
-        let unhandled_exceptions = Rc::new(RefCell::new(Vec::default()));
+        let sourcemaps = Arc::new(Mutex::new(Default::default()));
+        let unhandled_exceptions = Arc::new(Mutex::new(Vec::default()));
 
         let sourcemaps_clone = sourcemaps.clone();
         let unhandled_exceptions_clone = unhandled_exceptions.clone();
@@ -229,7 +232,7 @@ impl Engine {
                             Self::process_exception(object, sourcemaps_clone.clone()).unwrap();
 
                         let mut unhandled_exceptions_clone =
-                            unhandled_exceptions_clone.borrow_mut();
+                            unhandled_exceptions_clone.lock().unwrap();
                         unhandled_exceptions_clone.push((message, stack));
                     }
                 },
@@ -252,12 +255,13 @@ impl Engine {
         self.context.with(f).await
     }
 
-    fn ts_to_js(&mut self, script: &str) -> Result<(u64, String)> {
+    #[allow(clippy::significant_drop_tightening)]
+    fn ts_to_js(&self, script: &str) -> Result<(u64, String)> {
         let mut hasher = DefaultHasher::new();
         script.hash(&mut hasher);
         let hash = hasher.finish();
 
-        let mut sourcemaps = self.sourcemaps.borrow_mut();
+        let mut sourcemaps = self.sourcemaps.lock().unwrap();
         let sourcemap = sourcemaps.entry(hash);
 
         Ok((
@@ -271,7 +275,7 @@ impl Engine {
 
     pub async fn eval<T>(&mut self, script: &str) -> Result<T>
     where
-        for<'any_js> T: FromJs<'any_js>,
+        for<'any_js> T: FromJs<'any_js> + Send,
     {
         let (hash, js_code) = self.ts_to_js(script)?;
         let sourcemaps = self.sourcemaps.clone();
@@ -312,10 +316,11 @@ impl Engine {
         .await
     }
 
+    #[allow(clippy::significant_drop_tightening)]
     fn process_exception(
         exception: Exception,
-        sourcemaps: Rc<RefCell<HashMap<u64, TsToJs>>>,
-    ) -> Result<(String, Vec<CallStackFrame>)> {
+        sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
+    ) -> Result<UnhandledException> {
         let message = exception.message().unwrap();
         let stack = exception.stack().unwrap();
         let lines = stack.lines().map(|line| parse_callstack_line(line.trim()));
@@ -323,7 +328,7 @@ impl Engine {
 
         let stack = stack.into_iter().map(|mut frame| {
             let source_hash = frame.file.parse()?;
-            let sourcemaps = sourcemaps.borrow();
+            let sourcemaps = sourcemaps.lock().unwrap();
             let ts_to_js = sourcemaps.get(&source_hash).ok_or_else(|| {
                 eyre!("failed to find sourcemap for code with hash {source_hash}")
             })?;
@@ -341,7 +346,7 @@ impl Engine {
 
     fn process_caught_result<T>(
         result: rquickjs::CaughtResult<T>,
-        sourcemaps: Rc<RefCell<HashMap<u64, TsToJs>>>,
+        sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
     ) -> Result<T> {
         match result {
             Ok(value) => Ok(value),
@@ -357,11 +362,10 @@ impl Engine {
         }
     }
 
-    pub async fn idle(&self) -> Vec<(String, Vec<CallStackFrame>)> {
+    pub async fn idle(&self) -> Vec<UnhandledException> {
         self.runtime.idle().await;
 
-        let mut unhandled_exceptions: std::cell::RefMut<'_, Vec<(String, Vec<CallStackFrame>)>> =
-            self.unhandled_exceptions.borrow_mut();
+        let mut unhandled_exceptions = self.unhandled_exceptions.lock().unwrap();
 
         take(&mut *unhandled_exceptions)
     }
@@ -370,7 +374,6 @@ impl Engine {
 #[cfg(test)]
 mod tests {
     use regex::Regex;
-    use rquickjs::{Value, qjs::JSContext};
     use tokio::time::Duration;
 
     use super::*;
@@ -488,13 +491,13 @@ outer();
         // first compile + run
         let first: i32 = engine.eval(script).await.unwrap();
         assert_eq!(first, 42);
-        let maps_after_first = engine.sourcemaps.borrow().len();
+        let maps_after_first = engine.sourcemaps.lock().unwrap().len();
 
         // second run should *not* add a new TsToJs
         let second: i32 = engine.eval(script).await.unwrap();
         assert_eq!(second, 42);
         assert_eq!(
-            engine.sourcemaps.borrow().len(),
+            engine.sourcemaps.lock().unwrap().len(),
             maps_after_first,
             "running the identical script twice should hit the cache"
         );

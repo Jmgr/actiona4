@@ -186,7 +186,7 @@ impl Image {
         */
 
         let duration = start.elapsed();
-        println!("template matching took {:?}", duration);
+        println!("template matching took {duration:?}");
 
         // Set a threshold for good matches
         let match_threshold = 0.8;
@@ -286,7 +286,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_find_image() {
-        Runtime::test(async |runtime| {
+        Runtime::test(async |_runtime| {
             let source = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/input.png")
                 .unwrap()
                 .with_guessed_format()

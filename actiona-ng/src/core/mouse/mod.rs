@@ -250,7 +250,7 @@ impl Default for MoveOptions {
             perlin_scale: 50.,
             perlin_amplitude: 5.,
             target_randomness: 0.,
-            interval: JsDuration(Duration::from_millis(10)),
+            interval: Duration::from_millis(10).into(),
         }
     }
 }
@@ -352,8 +352,8 @@ impl Default for ClickOptions {
         Self {
             press: PressOptions::default(),
             amount: 1,
-            interval: JsDuration(Duration::ZERO),
-            duration: JsDuration(Duration::ZERO),
+            interval: Duration::ZERO.into(),
+            duration: Duration::ZERO.into(),
         }
     }
 }
@@ -370,11 +370,15 @@ impl Mouse {
         };
 
         let mut action = {
-            let mut enigo = self.enigo.lock().unwrap();
-
             if let Some(position) = &options.press.position {
-                enigo.move_mouse(position.inner().x, position.inner().y, coordinate)?;
+                self.enigo.lock().unwrap().move_mouse(
+                    position.inner().x,
+                    position.inner().y,
+                    coordinate,
+                )?;
             }
+
+            let mut enigo = self.enigo.lock().unwrap();
 
             move |direction| enigo.button(options.press.button.into_enigo(), direction)
         };
@@ -424,7 +428,7 @@ impl Default for DoubleClickOptions {
     fn default() -> Self {
         Self {
             click: ClickOptions::default(),
-            delay: JsDuration(Duration::from_millis(250)),
+            delay: Duration::from_millis(250).into(),
         }
     }
 }

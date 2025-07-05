@@ -105,7 +105,7 @@ pub trait ResultExt<T> {
 
 impl<T> ResultExt<T> for Option<T> {
     fn or_throw_message(self, ctx: &Ctx, msg: &str) -> Result<T> {
-        self.ok_or(Exception::throw_message(ctx, msg))
+        self.ok_or_else(|| Exception::throw_message(ctx, msg))
     }
 }
 

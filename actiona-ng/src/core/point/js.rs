@@ -287,23 +287,23 @@ mod tests {
     #[test]
     fn test_point_equals() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             let result = script_engine.eval::<bool>("p1 == p2").await.unwrap();
-            assert_eq!(result, false);
+            assert!(!result);
 
             let result = script_engine.eval::<bool>("p1 != p2").await.unwrap();
-            assert_eq!(result, true);
+            assert!(result);
 
             let result = script_engine.eval::<bool>("p2.equals(p3)").await.unwrap();
-            assert_eq!(result, true);
+            assert!(result);
         });
     }
 
     #[test]
     fn test_point_attributes() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             script_engine
                 .eval::<()>(
@@ -326,7 +326,7 @@ mod tests {
     #[test]
     fn test_add_subtract_scale() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             let result = script_engine
                 .eval::<JsPoint>("p1.add(new Point(1, 3))")
@@ -348,7 +348,7 @@ mod tests {
     #[test]
     fn test_distance() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             let result = script_engine
                 .eval::<f32>("p1.distanceTo(new Point(4, 6))")
@@ -367,7 +367,7 @@ mod tests {
     #[test]
     fn test_json() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
             assert_eq!(result, r#"{"x":1,"y":2}"#);
@@ -377,7 +377,7 @@ mod tests {
     #[test]
     fn test_origin() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             let result = script_engine.eval::<bool>("p1.isOrigin()").await.unwrap();
             assert!(!result);
@@ -393,7 +393,7 @@ mod tests {
     #[test]
     fn test_clone() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             script_engine
                 .eval::<()>("let pc = p1.clone()")
@@ -411,7 +411,7 @@ mod tests {
     #[test]
     fn test_random() {
         Runtime::test_with_js(async |mut script_engine| {
-            setup(&mut script_engine);
+            setup(&mut script_engine).await;
 
             script_engine
                 .eval::<JsPoint>("Point.random()")

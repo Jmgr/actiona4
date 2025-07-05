@@ -63,11 +63,11 @@ impl From<JsResizeFilter> for FilterType {
         use JsResizeFilter::*;
 
         match value {
-            Nearest => FilterType::Nearest,
-            Linear => FilterType::Triangle,
-            Cubic => FilterType::CatmullRom,
-            Gaussian => FilterType::Gaussian,
-            Lanczos3 => FilterType::Lanczos3,
+            Nearest => Self::Nearest,
+            Linear => Self::Triangle,
+            Cubic => Self::CatmullRom,
+            Gaussian => Self::Gaussian,
+            Lanczos3 => Self::Lanczos3,
         }
     }
 }
@@ -86,9 +86,9 @@ impl From<JsInterpolation> for geometric_transformations::Interpolation {
         use JsInterpolation::*;
 
         match value {
-            Nearest => geometric_transformations::Interpolation::Nearest,
-            Bilinear => geometric_transformations::Interpolation::Bilinear,
-            Bicubic => geometric_transformations::Interpolation::Bicubic,
+            Nearest => Self::Nearest,
+            Bilinear => Self::Bilinear,
+            Bicubic => Self::Bicubic,
         }
     }
 }
@@ -191,7 +191,7 @@ pub struct JsImage {
 }
 
 impl JsImage {
-    pub fn inner(&self) -> &super::Image {
+    pub const fn inner(&self) -> &super::Image {
         &self.inner
     }
 }
@@ -210,7 +210,7 @@ impl<'js> ValueClass<'js> for JsImage {
 impl JsImage {
     /// @skip
     #[qjs(skip)]
-    pub fn new(inner: super::Image) -> Self {
+    pub const fn new(inner: super::Image) -> Self {
         Self { inner }
     }
 
@@ -353,16 +353,8 @@ impl JsImage {
     pub fn rotated(&self, angle: f32, options: Opt<JsRotationOptions>) -> Self {
         let options = options.unwrap_or_default();
 
-        let result = if let Some(center) = options.center {
-            DynamicImage::ImageRgba8(rotate(
-                &self.inner.to_rgba8(),
-                (center.get_x() as f32, center.get_y() as f32),
-                angle.to_radians(),
-                options.interpolation.into(),
-                options.default_color.into(),
-            ))
-        } else {
-            match angle {
+        let result = options.center.map_or_else(
+            || match angle {
                 0. => self.inner.clone().into(),
                 90. => self.inner.rotate90(),
                 180. => self.inner.rotate180(),
@@ -373,8 +365,17 @@ impl JsImage {
                     options.interpolation.into(),
                     options.default_color.into(),
                 )),
-            }
-        };
+            },
+            |center| {
+                DynamicImage::ImageRgba8(rotate(
+                    &self.inner.to_rgba8(),
+                    (center.get_x() as f32, center.get_y() as f32),
+                    angle.to_radians(),
+                    options.interpolation.into(),
+                    options.default_color.into(),
+                ))
+            },
+        );
 
         super::Image(result).into()
     }
@@ -548,7 +549,7 @@ impl JsImage {
         {
             return Err(Exception::throw_message(
                 ctx,
-                &format!("Invalid position: {}", position),
+                &format!("Invalid position: {position}"),
             ));
         }
 

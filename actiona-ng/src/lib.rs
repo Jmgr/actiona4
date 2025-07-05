@@ -2,8 +2,7 @@
 //#![warn(clippy::all, clippy::dbg_macro, clippy::float_cmp_const, clippy::get_unwrap, clippy::mem_forget, clippy::nursery, clippy::pedantic)]
 #![warn(clippy::all, clippy::nursery)]
 
-use eyre::{Result, eyre};
-use rquickjs::{Context as JsContext, Ctx, FromJs};
+use rquickjs::Ctx;
 pub use slotmap::{
     Key as SlotmapKey, KeyData as SlotmapKeyData, SecondaryMap as SlotmapSecondaryMap,
 };

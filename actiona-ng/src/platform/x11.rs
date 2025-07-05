@@ -71,11 +71,11 @@ impl X11Connection {
         })
     }
 
-    pub fn connection(&self) -> &RustConnection {
+    pub const fn connection(&self) -> &RustConnection {
         &self.connection
     }
 
-    pub fn screen(&self) -> &Screen {
+    pub const fn screen(&self) -> &Screen {
         &self.screen
     }
 

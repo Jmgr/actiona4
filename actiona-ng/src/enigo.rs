@@ -27,6 +27,6 @@ pub type EnigoResult<T> = Result<T, EnigoError>;
 
 impl<T> IntoJS<T> for EnigoResult<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
-        self.map_err(|err| Exception::throw_message(ctx, &format!("Enigo: {}", err)))
+        self.map_err(|err| Exception::throw_message(ctx, &format!("Enigo: {err}")))
     }
 }

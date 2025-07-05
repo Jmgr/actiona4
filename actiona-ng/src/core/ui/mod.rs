@@ -1,23 +1,29 @@
-use std::fmt::Debug;
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
 use eyre::{Result, bail, eyre};
 use itertools::Itertools;
 use slint::ComponentHandle;
 use slint_interpreter::Compiler;
+use spin_on::spin_on;
 
 pub mod js;
 
 #[derive(Default)]
 pub struct Ui {
-    compiler: Compiler,
+    compiler: Arc<Mutex<Compiler>>,
 }
 
 impl Ui {
-    pub async fn load(&self, source: &str, component_name: &str) -> Result<()> {
-        let result = self
-            .compiler
-            .build_from_source(source.to_string(), "source".into())
-            .await;
+    pub fn load(&self, source: &str, component_name: &str) -> Result<()> {
+        let result = spin_on(
+            self.compiler
+                .lock()
+                .unwrap()
+                .build_from_source(source.to_string(), "source".into()),
+        );
 
         if result.has_errors() {
             bail!("Compilation failed: {}", result.diagnostics().join("\n"));
@@ -25,7 +31,7 @@ impl Ui {
 
         let definition = result
             .component(component_name)
-            .ok_or(eyre!("Component {component_name} not found"))?;
+            .ok_or_else(|| eyre!("Component {component_name} not found"))?;
 
         let instance = definition.create()?;
 
@@ -71,6 +77,6 @@ export component Demo {
     #[tokio::test]
     async fn test_ui() {
         let ui = Ui::default();
-        ui.load(CODE, "Demo").await.unwrap();
+        ui.load(CODE, "Demo").unwrap();
     }
 }

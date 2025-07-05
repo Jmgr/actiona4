@@ -173,8 +173,6 @@ impl Runtime {
         )
         .await?;
 
-        let script_engine = ScriptEngine::new().await?;
-
         let runtime = Arc::new(Self {
             runtime,
             enigo: Arc::new(Mutex::new(Enigo::new(&Settings::default())?)),
@@ -191,6 +189,8 @@ impl Runtime {
         let console = JsConsole::new(runtime.clone())?;
         let js_displays = JsDisplays::new(displays.clone())?;
         let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
+
+        let script_engine = ScriptEngine::new().await?;
 
         script_engine
             .with(|ctx| -> Result<()> {
@@ -296,9 +296,10 @@ impl Runtime {
                 }
             });
 
-            let (runtime, script_engine) = Self::new(cancellation_token.clone(), task_tracker.clone())
-                .await
-                .unwrap();
+            let (runtime, script_engine) =
+                Self::new(cancellation_token.clone(), task_tracker.clone())
+                    .await
+                    .unwrap();
 
             f(runtime, script_engine).await.unwrap();
 

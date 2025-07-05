@@ -36,7 +36,9 @@ struct ShmData {
     x11_connection: Arc<X11Connection>,
 }
 
+// TODO: Safety?
 unsafe impl Send for ShmData {}
+unsafe impl Sync for ShmData {}
 
 impl Drop for ShmData {
     fn drop(&mut self) {
@@ -228,6 +230,7 @@ impl ScreenshotImpl {
         Ok(result)
     }
 
+    #[allow(clippy::significant_drop_tightening)]
     async fn update_displays(
         runtime: Arc<Runtime>,
         display_map: Arc<Mutex<HashMap<u32, Display>>>,
@@ -254,16 +257,17 @@ impl ScreenshotImplTrait for ScreenshotImpl {
         capture_get_image(self.x11_connection.clone(), rect).await
     }
 
-    async fn capture_display(&mut self, display_id: u32) -> Result<Image> {
+    #[allow(clippy::significant_drop_tightening)]
+    async fn _capture_display(&mut self, display_id: u32) -> Result<Image> {
         let display_map = self.display_map.lock().await;
         let display = display_map
             .get(&display_id)
-            .ok_or(eyre!("unknown display id: {display_id}"))?;
+            .ok_or_else(|| eyre!("unknown display id: {display_id}"))?;
 
         display.capture().await
     }
 
-    async fn capture_pixel(&mut self, position: Point) -> Result<Color> {
+    async fn _capture_pixel(&mut self, position: Point) -> Result<Color> {
         let result = self
             .capture_rect(rect(position.x, position.y, 1, 1))
             .await?;
@@ -386,7 +390,7 @@ mod tests {
             for display in displays_info.iter() {
                 let start = Instant::now();
 
-                let image = imp.capture_display(display.id).await.unwrap();
+                let image = imp._capture_display(display.id).await.unwrap();
 
                 println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
 

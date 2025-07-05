@@ -142,6 +142,7 @@ dependencies = [
  "slint-interpreter",
  "slotmap",
  "sourcemap",
+ "spin_on",
  "strum",
  "swc_common",
  "swc_ecma_ast",

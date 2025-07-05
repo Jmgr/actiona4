@@ -225,7 +225,7 @@ impl JsConsole {
         let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         let value = self.counters.entry(name.clone()).or_default();
         *value += 1;
-        println!("{name}: {}", value);
+        println!("{name}: {value}");
 
         this.0
     }
