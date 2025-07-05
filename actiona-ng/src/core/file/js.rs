@@ -475,14 +475,13 @@ impl<'js> Trace<'js> for JsFile {
 #[cfg(test)]
 mod tests {
     use tracing_test::traced_test;
-    use zbus::blocking::Connection;
 
-    use crate::{eval, runtime::Runtime};
+    use crate::runtime::Runtime;
 
     #[test]
     #[traced_test]
     fn test_() {
-        Runtime::test_with_js(async |script_engine| {
+        Runtime::test_with_js(async |_script_engine| {
             //eval::<()>(&js_context, "").unwrap();
         });
     }

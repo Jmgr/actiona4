@@ -198,13 +198,13 @@ impl JsDisplayInfo {
 mod tests {
     use tracing_test::traced_test;
 
-    use crate::{core::point::js::JsPoint, eval, runtime::Runtime};
+    use crate::{core::point::js::JsPoint, runtime::Runtime};
 
     #[test]
     #[traced_test]
     fn test_random_point() {
-        Runtime::test_with_js(async |script_engine| {
-            let point: JsPoint = eval(&js_context, "displays.randomPoint()").unwrap();
+        Runtime::test_with_js(async |mut script_engine| {
+            let point: JsPoint = script_engine.eval("displays.randomPoint()").await.unwrap();
 
             println!("point: {}", point.inner());
         })

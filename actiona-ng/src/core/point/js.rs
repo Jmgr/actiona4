@@ -269,127 +269,154 @@ impl From<super::Point> for JsPoint {
 #[cfg(test)]
 mod tests {
     use super::JsPoint;
-    use crate::{core::point::point, eval, runtime::Runtime, scripting::Engine as ScriptEngine};
+    use crate::{core::point::point, runtime::Runtime, scripting::Engine as ScriptEngine};
 
-    async fn setup(script_engine: &ScriptEngine) {
-        script_engine.eval(r#"
+    async fn setup(script_engine: &mut ScriptEngine) {
+        script_engine
+            .eval::<()>(
+                r#"
                 let p1 = new Point({x: 1, y: 2});
                 let p2 = new Point(2, 3);
                 let p3 = new Point(p2);
-            "#).await.unwrap();
+            "#,
+            )
+            .await
+            .unwrap();
     }
 
     #[test]
     fn test_point_equals() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            let result = eval::<bool>(&js_context, "p1 == p2").unwrap();
+            let result = script_engine.eval::<bool>("p1 == p2").await.unwrap();
             assert_eq!(result, false);
 
-            let result = eval::<bool>(&js_context, "p1 != p2").unwrap();
+            let result = script_engine.eval::<bool>("p1 != p2").await.unwrap();
             assert_eq!(result, true);
 
-            let result = eval::<bool>(&js_context, "p2.equals(p3)").unwrap();
+            let result = script_engine.eval::<bool>("p2.equals(p3)").await.unwrap();
             assert_eq!(result, true);
         });
     }
 
     #[test]
     fn test_point_attributes() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            eval::<()>(
-                &js_context,
-                r#"
+            script_engine
+                .eval::<()>(
+                    r#"
                 p1.x = 42;
                 p1.y = 43;
             "#,
-            )
-            .unwrap();
+                )
+                .await
+                .unwrap();
 
-            let result = eval::<i64>(&js_context, "p1.x").unwrap();
+            let result = script_engine.eval::<i64>("p1.x").await.unwrap();
             assert_eq!(result, 42);
 
-            let result = eval::<i64>(&js_context, "p1.y").unwrap();
+            let result = script_engine.eval::<i64>("p1.y").await.unwrap();
             assert_eq!(result, 43);
         });
     }
 
     #[test]
     fn test_add_subtract_scale() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            let result = eval::<JsPoint>(&js_context, "p1.add(new Point(1, 3))").unwrap();
+            let result = script_engine
+                .eval::<JsPoint>("p1.add(new Point(1, 3))")
+                .await
+                .unwrap();
             assert_eq!(result, point(2, 5).into());
 
-            let result = eval::<JsPoint>(&js_context, "p1.subtract(new Point(1, 3))").unwrap();
+            let result = script_engine
+                .eval::<JsPoint>("p1.subtract(new Point(1, 3))")
+                .await
+                .unwrap();
             assert_eq!(result, point(0, -1).into());
 
-            let result = eval::<JsPoint>(&js_context, "p1.scale(2)").unwrap();
+            let result = script_engine.eval::<JsPoint>("p1.scale(2)").await.unwrap();
             assert_eq!(result, point(2, 4).into());
         });
     }
 
     #[test]
     fn test_distance() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            let result = eval::<f32>(&js_context, "p1.distanceTo(new Point(4, 6))").unwrap();
+            let result = script_engine
+                .eval::<f32>("p1.distanceTo(new Point(4, 6))")
+                .await
+                .unwrap();
             assert_eq!(result, 5.);
 
-            let result = eval::<f32>(&js_context, "Point.distance(p1, new Point(4, 6))").unwrap();
+            let result = script_engine
+                .eval::<f32>("Point.distance(p1, new Point(4, 6))")
+                .await
+                .unwrap();
             assert_eq!(result, 5.);
         });
     }
 
     #[test]
     fn test_json() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            let result = eval::<String>(&js_context, "p1.toJson()").unwrap();
+            let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
             assert_eq!(result, r#"{"x":1,"y":2}"#);
         });
     }
 
     #[test]
     fn test_origin() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            let result = eval::<bool>(&js_context, "p1.isOrigin()").unwrap();
+            let result = script_engine.eval::<bool>("p1.isOrigin()").await.unwrap();
             assert!(!result);
 
-            let result = eval::<bool>(&js_context, "new Point(0, 0).isOrigin()").unwrap();
+            let result = script_engine
+                .eval::<bool>("new Point(0, 0).isOrigin()")
+                .await
+                .unwrap();
             assert!(result);
         });
     }
 
     #[test]
     fn test_clone() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            eval::<()>(&js_context, "let pc = p1.clone()").unwrap();
+            script_engine
+                .eval::<()>("let pc = p1.clone()")
+                .await
+                .unwrap();
 
-            let result = eval::<bool>(&js_context, "pc.equals(p1)").unwrap();
+            let result = script_engine.eval::<bool>("pc.equals(p1)").await.unwrap();
             assert!(result);
 
-            let result = eval::<bool>(&js_context, "pc == p1").unwrap();
+            let result = script_engine.eval::<bool>("pc == p1").await.unwrap();
             assert!(!result);
         });
     }
 
     #[test]
     fn test_random() {
-        Runtime::test_with_js(async |script_engine| {
-            setup(&js_context);
+        Runtime::test_with_js(async |mut script_engine| {
+            setup(&mut script_engine);
 
-            eval::<JsPoint>(&js_context, "Point.random()").unwrap();
+            script_engine
+                .eval::<JsPoint>("Point.random()")
+                .await
+                .unwrap();
         });
     }
 }

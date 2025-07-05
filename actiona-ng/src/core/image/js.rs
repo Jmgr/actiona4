@@ -1032,7 +1032,7 @@ mod tests {
     };
     use tracing_test::traced_test;
 
-    use crate::{eval, runtime::Runtime};
+    use crate::runtime::Runtime;
 
     /// Convert `image::DynamicImage` to `opencv::core::Mat` in BGR format
     fn dynamic_image_to_mat(img: &DynamicImage) -> Result<Mat> {
@@ -1050,7 +1050,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_() {
-        Runtime::test_with_js(async |script_engine| {
+        Runtime::test_with_js(async |_script_engine| {
             // Load images using image crate
             let source_img = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/input.png")
                 .unwrap()
@@ -1116,15 +1116,16 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_options() {
-        Runtime::test_with_js(async |script_engine| {
-            eval::<()>(
-                &js_context,
-                "let image = new Image(100, 100); image.test({
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine
+                .eval::<()>(
+                    "let image = new Image(100, 100); image.test({
                     default_color: Color.WHITE,
                     center: new Point(42, 42),
                 })",
-            )
-            .unwrap();
+                )
+                .await
+                .unwrap();
         });
     }
 }

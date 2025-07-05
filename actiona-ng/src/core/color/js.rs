@@ -537,21 +537,23 @@ mod tests {
     use rquickjs::Object;
     use tracing_test::traced_test;
 
-    use crate::{core::color::js::JsColor, eval, runtime::Runtime};
+    use crate::{core::color::js::JsColor, runtime::Runtime};
 
     #[test]
     #[traced_test]
     fn test_button() {
-        Runtime::test_with_js(async |script_engine| {
-            js_context.with(|ctx| {
-                let color = ctx.globals().get::<_, Object>("Color").unwrap(); // TODO: add a macro? Or a helper function
-                let val = JsColor {
-                    inner: Rgba([255, 0, 0, 255]).into(),
-                };
-                color.prop("RED", val).unwrap();
-            });
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine
+                .with(|ctx| {
+                    let color = ctx.globals().get::<_, Object>("Color").unwrap(); // TODO: add a macro? Or a helper function
+                    let val = JsColor {
+                        inner: Rgba([255, 0, 0, 255]).into(),
+                    };
+                    color.prop("RED", val).unwrap();
+                })
+                .await;
 
-            let color = eval::<JsColor>(&js_context, "Color.RED2").unwrap();
+            let color = script_engine.eval::<JsColor>("Color.RED2").await.unwrap();
             println!("RED2: {color:?}");
         });
     }

@@ -315,37 +315,37 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_position() {
-        Runtime::test_with_js(async |script_engine| {
+        Runtime::test_with_js(async |mut script_engine| {
             let mut position: JsPoint = script_engine.eval("mouse.position()").await.unwrap();
             position = point(position.get_x() + 5, position.get_y() + 5).into();
 
-            eval::<()>(
-                &js_context,
-                &format!("mouse.setPosition(new Point{})", position.to_string_js()),
-            )
-            .unwrap();
+            script_engine
+                .eval::<()>(&format!(
+                    "mouse.setPosition(new Point{})",
+                    position.to_string_js()
+                ))
+                .await
+                .unwrap();
 
-            eval::<()>(
-                &js_context,
-                &format!(
+            script_engine
+                .eval::<()>(&format!(
                     "mouse.setPosition({}, {})",
                     position.get_x(),
                     position.get_y()
-                ),
-            )
-            .unwrap();
+                ))
+                .await
+                .unwrap();
 
-            eval::<()>(
-                &js_context,
-                &format!(
+            script_engine
+                .eval::<()>(&format!(
                     "mouse.setPosition({{ x: {}, y: {} }})",
                     position.get_x(),
                     position.get_y()
-                ),
-            )
-            .unwrap();
+                ))
+                .await
+                .unwrap();
 
-            let new_position: JsPoint = eval(&js_context, "mouse.position()").unwrap();
+            let new_position: JsPoint = script_engine.eval("mouse.position()").await.unwrap();
             assert_eq!(position, new_position);
         });
     }
@@ -353,11 +353,11 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_button() {
-        Runtime::test_with_js(async |script_engine| {
-            let button: JsButton = eval(&js_context, "Button.LEFT").unwrap();
+        Runtime::test_with_js(async |mut script_engine| {
+            let button: JsButton = script_engine.eval("Button.LEFT").await.unwrap();
             assert_eq!(button, JsButton::Left);
 
-            let button: JsButton = eval(&js_context, "Button.RIGHT").unwrap();
+            let button: JsButton = script_engine.eval("Button.RIGHT").await.unwrap();
             assert_eq!(button, JsButton::Right);
         });
     }
@@ -365,15 +365,21 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_press_release() {
-        Runtime::test_with_js(async |script_engine| {
-            eval::<()>(&js_context, "mouse.press()").unwrap();
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine.eval::<()>("mouse.press()").await.unwrap();
 
-            let pressed: bool = eval(&js_context, "mouse.isPressed(Button.LEFT)").unwrap();
+            let pressed: bool = script_engine
+                .eval("mouse.isPressed(Button.LEFT)")
+                .await
+                .unwrap();
             assert!(pressed);
 
-            eval::<()>(&js_context, "mouse.release()").unwrap();
+            script_engine.eval::<()>("mouse.release()").await.unwrap();
 
-            let pressed: bool = eval(&js_context, "mouse.isPressed(Button.LEFT)").unwrap();
+            let pressed: bool = script_engine
+                .eval("mouse.isPressed(Button.LEFT)")
+                .await
+                .unwrap();
             assert!(!pressed);
         });
     }
@@ -381,20 +387,29 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_scroll() {
-        Runtime::test_with_js(async |script_engine| {
-            eval::<()>(&js_context, "mouse.scroll(1)").unwrap();
-            eval::<()>(&js_context, "mouse.scroll(-1)").unwrap();
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine.eval::<()>("mouse.scroll(1)").await.unwrap();
+            script_engine.eval::<()>("mouse.scroll(-1)").await.unwrap();
 
-            eval::<()>(&js_context, "mouse.scroll(1, Axis.HORIZONTAL)").unwrap();
-            eval::<()>(&js_context, "mouse.scroll(-1, Axis.HORIZONTAL)").unwrap();
+            script_engine
+                .eval::<()>("mouse.scroll(1, Axis.HORIZONTAL)")
+                .await
+                .unwrap();
+            script_engine
+                .eval::<()>("mouse.scroll(-1, Axis.HORIZONTAL)")
+                .await
+                .unwrap();
         });
     }
 
     #[test]
     #[traced_test]
     fn test_measure_speed() {
-        Runtime::test_with_js(async |script_engine| {
-            let speed: f64 = eval(&js_context, "mouse.measureSpeed(2000)").unwrap();
+        Runtime::test_with_js(async |mut script_engine| {
+            let speed: f64 = script_engine
+                .eval("mouse.measureSpeed(2000)")
+                .await
+                .unwrap();
             println!("speed: {speed}");
         });
     }
@@ -402,22 +417,26 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_wait() {
-        Runtime::test_with_js(async |script_engine| {
-            eval::<()>(&js_context, "mouse.wait(100).wait(200);").unwrap();
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine
+                .eval::<()>("mouse.wait(100).wait(200);")
+                .await
+                .unwrap();
         });
     }
 
     #[test]
     #[traced_test]
     fn test_chain() {
-        Runtime::test_with_js(async |script_engine| {
-            eval::<()>(
-                &js_context,
-                r#"
+        Runtime::test_with_js(async |mut script_engine| {
+            script_engine
+                .eval::<()>(
+                    r#"
 mouse.move(2000, 1000).wait(2000).move(3000, 800);
             "#,
-            )
-            .unwrap();
+                )
+                .await
+                .unwrap();
         });
     }
 }

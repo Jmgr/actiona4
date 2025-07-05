@@ -10,60 +10,65 @@ description = "Cross-platform desktop automation tool"
 documentation = "https://actiona.tools"
 
 [workspace.dependencies]
-async-compat = "0.2"
-ciborium = "0.2"
-clap = { version = "4.5", features = ["cargo", "derive"] }
-console = "0.15"
-convert_case = "0.8"
-derive_more = { version = "2.0", features = ["add", "mul"] }
-display-info = "0.5"
-enigo = "0.3"
-env_logger = "0.11"
-eyre = "0.6"
-humantime = "2.2"
-image = "0.25"
-imageproc = "0.25"
-indexmap = { version = "2.9", features = ["serde"] }
+async-compat = "0.2.4"
+ciborium = "0.2.2"
+clap = { version = "4.5.40", features = ["cargo", "derive"] }
+console = "0.16.0"
+convert_case = "0.8.0"
+derive_more = { version = "2.0.1", features = ["add", "mul"] }
+display-info = "0.5.4"
+enigo = "0.5.0"
+env_logger = "0.11.8"
+eyre = "0.6.12"
+humantime = "2.2.0"
+image = "0.25.6"
+imageproc = "0.25.0"
+indexmap = { version = "2.10.0", features = ["serde"] }
 itertools = "0.14.0"
-log = "0.4"
-noiselib = "0.2"
-num-traits = "0.2"
-once_cell = "1.21"
-opencv = { version = "0.94", default-features = false, features = ["imgproc"] }
-quote = "1.0"
-rand = "0.9"
-rayon = "1.10"
-regex = "1.11"
-rquickjs = { path = "../rquickjs", default-features = false, features = ["macro", "futures"] }
-rustdoc-types = "0.41"
-serde = "1.0"
-serde_json = "1.0"
+log = "0.4.27"
+noiselib = "0.2.4"
+num-traits = "0.2.19"
+once_cell = "1.21.3"
+opencv = { version = "0.95.0", default-features = false, features = [
+    "imgproc",
+] }
+quote = "1.0.40"
+rand = "0.9.1"
+rayon = "1.10.0"
+regex = "1.11.1"
+rquickjs = { path = "../rquickjs", default-features = false, features = [
+    "macro",
+    "futures",
+] }
+rustdoc-types = "0.53.0"
+serde = "1.0.219"
+serde_json = "1.0.140"
 slotmap = { version = "1.0.7", features = ["serde"] }
-slint = { version = "1.10", default-features = false, features = [
+slint = { version = "1.12.1", default-features = false, features = [
     "compat-1-2",
     "accessibility",
     "renderer-software",
     "std",
     "backend-winit-x11",
 ] }
-slint-interpreter = { version = "1.10", default-features = false, features = [
+slint-interpreter = { version = "1.12.1", default-features = false, features = [
     "compat-1-2",
     "accessibility",
     "renderer-software",
     "std",
     "backend-winit-x11",
 ] }
-sourcemap = "9.1"
-strum = { version = "0.27", features = ["derive"] }
-swc_common = { version = "8.1.0", features = ["tty-emitter", "sourcemap"] }
+sourcemap = "9.2.2"
+strum = { version = "0.27.1", features = ["derive"] }
+swc_common = { version = "8.1.1", features = ["tty-emitter", "sourcemap"] }
 swc_ecma_ast = "8.1.2"
-swc_ecma_codegen = "10.0.0"
-swc_ecma_parser = "11.1.2"
+swc_ecma_codegen = "10.0.1"
+swc_ecma_parser = "11.1.4"
 swc_ecma_transforms_base = "12.2.0"
 swc_ecma_transforms_typescript = "13.0.0"
 syn = { version = "2.0", features = ["parsing"] }
-thiserror = "2.0"
-tokio = { version = "1.44", features = [
+thiserror = "2.0.12"
+tokio = { version = "1.46.1", features = [
     "rt-multi-thread",
     "signal",
     "macros",
@@ -71,13 +76,13 @@ tokio = { version = "1.44", features = [
     "process",
     "sync",
 ] }
-tokio-util = { version = "0.7", features = ["rt"] }
-tracing = "0.1"
-tween = "2.0"
-wildmatch = "2.4"
+tokio-util = { version = "0.7.15", features = ["rt"] }
+tracing = "0.1.41"
+tween = "2.1.0"
+wildmatch = "2.4.0"
 
 # Windows
-windows = { version = "0.61", features = [
+windows = { version = "0.61.3", features = [
     "Win32_UI_Input_KeyboardAndMouse",
     "Win32_UI_WindowsAndMessaging",
     "Win32_System_Threading",
@@ -87,23 +92,23 @@ windows = { version = "0.61", features = [
 ] }
 
 # Unix
-memfd = "0.6"
-nix = { version = "0.29", features = ["poll", "mman"] }
-x11rb-async = { version = "0.13", features = [
+memfd = "0.6.4"
+nix = { version = "0.30.1", features = ["poll", "mman"] }
+x11rb-async = { version = "0.13.1", features = [
     "xinput",
     "randr",
     "shm",
     "extra-traits",
 ] }
-zbus = "5.5"
+zbus = "5.7.1"
 
 # Dev dependencies
-pretty_assertions = "1.4"
-tempfile = "3.19"
-tracing-test = "0.2"
+pretty_assertions = "1.4.1"
+tempfile = "3.20.0"
+tracing-test = "0.2.5"
 
 # Build dependencies
-built = "0.7"
+built = "0.8.0"
 
 [profile.release]
 strip = true
