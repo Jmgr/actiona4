@@ -542,7 +542,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_button() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .with(|ctx| {
                     let color = ctx.globals().get::<_, Object>("Color").unwrap(); // TODO: add a macro? Or a helper function

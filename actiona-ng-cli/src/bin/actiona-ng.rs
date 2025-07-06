@@ -17,10 +17,8 @@ fn main() -> Result<()> {
     // Read the input file
     let script = fs::read_to_string(args.filepath)?;
 
-    Runtime::run_without_ui(move |_runtime, mut script_engine| async move {
+    Runtime::run_without_ui(async move |_runtime, script_engine| {
         script_engine.eval_async::<()>(&script).await?;
-        let _unhandled_exceptions = script_engine.idle().await; // TODO: check unhandled exceptions
-
         Ok(())
     })
     .unwrap();

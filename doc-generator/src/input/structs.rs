@@ -185,6 +185,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                     || !overload_instructions.is_empty();
 
                 let is_constructor = instructions.has_constructor();
+                let is_private = instructions.has_private();
                 let mut is_static;
                 let has_rest_params = instructions.has_rest();
 
@@ -340,7 +341,9 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                     name: function_name.clone(),
                     overloads,
                     is_constructor,
+                    is_private,
                     is_static,
+                    is_async: function.header.is_async,
                 });
             }
         }

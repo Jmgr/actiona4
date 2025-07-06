@@ -355,7 +355,11 @@ impl Engine {
                 CaughtError::Exception(exception) => {
                     let (message, stack) = Self::process_exception(exception, sourcemaps)?;
 
-                    Err(eyre!("script exception: '{message}' {stack:?}"))
+                    Err(if stack.is_empty() {
+                        eyre!("{message}")
+                    } else {
+                        eyre!("{message}: {stack:?}")
+                    })
                 }
                 CaughtError::Value(value) => Err(eyre!("script value: {value:?}")),
             },

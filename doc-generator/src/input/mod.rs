@@ -48,6 +48,11 @@ impl Instructions {
             .any(|instruction| matches!(instruction, Instruction::Constructor))
     }
 
+    pub fn has_private(&self) -> bool {
+        self.iter()
+            .any(|instruction| matches!(instruction, Instruction::Private))
+    }
+
     pub fn has_static(&self) -> bool {
         self.iter()
             .any(|instruction| matches!(instruction, Instruction::Static))
@@ -184,6 +189,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Constructor
         }
 
+        // @private
+        "private" => {
+            if !parameters.is_empty() {
+                bail!("unexpected parameters");
+            }
+
+            Instruction::Private
+        }
+
         // @overload
         "overload" => {
             if !parameters.is_empty() {
@@ -278,6 +292,7 @@ const fn allowed_context_per_instruction(
 
     match instruction {
         Constructor => &[RustdocContext::Method],
+        Private => &[RustdocContext::Method],
         Property => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Parameter => &[RustdocContext::Method, RustdocContext::MethodOverload],
         Overload => &[RustdocContext::Method, RustdocContext::MethodOverload],

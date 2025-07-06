@@ -315,7 +315,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_position() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             let mut position: JsPoint = script_engine.eval("mouse.position()").await.unwrap();
             position = point(position.get_x() + 5, position.get_y() + 5).into();
 
@@ -353,7 +353,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_button() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             let button: JsButton = script_engine.eval("Button.LEFT").await.unwrap();
             assert_eq!(button, JsButton::Left);
 
@@ -365,7 +365,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_press_release() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             script_engine.eval::<()>("mouse.press()").await.unwrap();
 
             let pressed: bool = script_engine
@@ -387,7 +387,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_scroll() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             script_engine.eval::<()>("mouse.scroll(1)").await.unwrap();
             script_engine.eval::<()>("mouse.scroll(-1)").await.unwrap();
 
@@ -405,7 +405,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_measure_speed() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             let speed: f64 = script_engine
                 .eval("mouse.measureSpeed(2000)")
                 .await
@@ -417,7 +417,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_wait() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval::<()>("mouse.wait(100).wait(200);")
                 .await
@@ -428,7 +428,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_chain() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval::<()>(
                     r#"

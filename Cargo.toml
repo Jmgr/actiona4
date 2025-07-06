@@ -76,12 +76,16 @@ tokio = { version = "1.46.1", features = [
     "time",
     "process",
     "sync",
+    "fs",
+    "io-util",
 ] }
 tokio-util = { version = "0.7.15", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.4.0"
 spin_on = "0.1.1"
+async-tempfile = "0.7.0"
+async-trait = "0.1.88"
 
 # Windows
 windows = { version = "0.61.3", features = [

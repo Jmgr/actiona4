@@ -77,7 +77,9 @@ pub struct Method {
     pub name: String,
     pub overloads: Vec<MethodOverload>,
     pub is_constructor: bool,
+    pub is_private: bool,
     pub is_static: bool,
+    pub is_async: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -110,6 +112,7 @@ pub struct File {
 #[strum_discriminants(derive(Display))]
 pub enum Instruction {
     Constructor,
+    Private,
     Property(Variable),
     Parameter(Variable),
     Overload,

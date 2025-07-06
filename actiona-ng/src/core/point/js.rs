@@ -286,7 +286,7 @@ mod tests {
 
     #[test]
     fn test_point_equals() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             let result = script_engine.eval::<bool>("p1 == p2").await.unwrap();
@@ -302,7 +302,7 @@ mod tests {
 
     #[test]
     fn test_point_attributes() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             script_engine
@@ -325,7 +325,7 @@ mod tests {
 
     #[test]
     fn test_add_subtract_scale() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             let result = script_engine
@@ -347,7 +347,7 @@ mod tests {
 
     #[test]
     fn test_distance() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             let result = script_engine
@@ -366,7 +366,7 @@ mod tests {
 
     #[test]
     fn test_json() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
@@ -376,7 +376,7 @@ mod tests {
 
     #[test]
     fn test_origin() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             let result = script_engine.eval::<bool>("p1.isOrigin()").await.unwrap();
@@ -392,7 +392,7 @@ mod tests {
 
     #[test]
     fn test_clone() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             script_engine
@@ -410,7 +410,7 @@ mod tests {
 
     #[test]
     fn test_random() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |mut script_engine| {
             setup(&mut script_engine).await;
 
             script_engine

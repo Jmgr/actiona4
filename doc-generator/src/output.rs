@@ -327,15 +327,24 @@ impl File {
                     }
 
                     write_comments(&overload.comments, "    ", &mut output_file)?;
+
+                    let private = if method.is_private { "private " } else { "" };
+
                     if method.is_constructor {
-                        writeln!(output_file, "    constructor({parameters});")?;
+                        writeln!(output_file, "    {private}constructor({parameters});")?;
                     } else {
+                        let mut return_ = overload.return_.to_string(Context::ReturnValue)?;
+
+                        if method.is_async {
+                            return_ = format!("Promise<{return_}>");
+                        }
+
                         writeln!(
                             output_file,
-                            "    {}{}({parameters}): {};",
+                            "    {private}{}{}({parameters}): {};",
                             if method.is_static { "static " } else { "" },
                             method.name,
-                            overload.return_.to_string(Context::ReturnValue)?
+                            return_
                         )?;
                     }
                 }

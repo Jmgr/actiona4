@@ -1,13 +1,18 @@
+use std::fmt::Debug;
+use std::fs::Metadata;
+use std::pin::Pin;
 use std::{
-    fs,
     fs::FileTimes,
-    io::{Read, Seek, SeekFrom, Write},
+    io::SeekFrom,
     os::unix::fs::PermissionsExt,
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
+use async_tempfile::TempFile;
+use async_trait::async_trait;
 use macros::FromJsObject;
+use rquickjs::IntoJs;
 use rquickjs::{
     Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray,
     atom::PredefinedAtom,
@@ -15,6 +20,11 @@ use rquickjs::{
     function::{Args, Constructor},
     prelude::Opt,
 };
+use tokio::io::{self, AsyncReadExt};
+use tokio::io::{AsyncRead, AsyncSeekExt, AsyncWrite};
+use tokio::io::{AsyncSeek, AsyncWriteExt};
+use tokio::sync::Mutex;
+use tokio::{fs, task::spawn_blocking};
 
 use crate::core::ValueClass;
 
@@ -37,6 +47,10 @@ pub struct JsOpenOptions {
     /// When writing, truncate the file (erase all contents)
     /// @default false
     pub truncate: bool,
+
+    /// When writing, append to the end of the file
+    /// @default false
+    pub append: bool,
 }
 
 impl Default for JsOpenOptions {
@@ -46,14 +60,56 @@ impl Default for JsOpenOptions {
             write: true,
             create: true,
             truncate: false,
+            append: false,
         }
+    }
+}
+
+// TODO: macro
+impl<'js> IntoJs<'js> for JsOpenOptions {
+    fn into_js(self, ctx: &Ctx<'js>) -> Result<rquickjs::Value<'js>> {
+        let result = rquickjs::Object::new(ctx.clone())?;
+        result.set("read", self.read)?;
+        result.set("write", self.write)?;
+        result.set("create", self.create)?;
+        result.set("truncate", self.truncate)?;
+        result.set("append", self.append)?;
+        Ok(result.into_value())
+    }
+}
+
+#[async_trait]
+trait AsyncReadWrite: Debug + AsyncRead + AsyncWrite + AsyncSeek + Send + 'static {
+    async fn metadata(&self) -> io::Result<Metadata>;
+    async fn set_len(&self, size: u64) -> io::Result<()>;
+}
+
+#[async_trait]
+impl AsyncReadWrite for fs::File {
+    async fn metadata(&self) -> io::Result<Metadata> {
+        self.metadata().await
+    }
+
+    async fn set_len(&self, size: u64) -> io::Result<()> {
+        self.set_len(size).await
+    }
+}
+
+#[async_trait]
+impl AsyncReadWrite for TempFile {
+    async fn metadata(&self) -> io::Result<Metadata> {
+        self.metadata().await
+    }
+
+    async fn set_len(&self, size: u64) -> io::Result<()> {
+        self.set_len(size).await
     }
 }
 
 #[derive(Clone, Debug, JsLifetime)]
 struct OpenedFile {
     path: String,
-    file: Arc<fs::File>,
+    file: Arc<Mutex<Pin<Box<dyn AsyncReadWrite>>>>,
 }
 
 impl PartialEq for OpenedFile {
@@ -115,36 +171,29 @@ impl JsFile {
     }
 }
 
-// TODO: move, copy, rename
 // TODO: directory
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsFile {
-    /// Creates a new file.
-    ///
-    /// Example
-    /// ```js
-    /// let file = new File();
-    /// ```
-    ///
     /// @constructor
+    /// @private
     #[qjs(constructor)]
     pub fn new() -> Result<Self> {
         Ok(Self::default())
     }
 
-    /// Opens a new file.
+    /// Opens a file.
     ///
     /// Example
     /// ```js
-    /// let file = new File.open("my_file.txt");
-    /// let file = new File.open("my_file.txt", {
+    /// let file = await File.open("my_file.txt");
+    /// let file = await File.open("my_file.txt", {
     ///     read: true,
     ///     write: false,
     /// });
     /// ```
     #[qjs(static)]
-    pub fn open(ctx: Ctx<'_>, path: String, options: Opt<JsOpenOptions>) -> Result<Self> {
+    pub async fn open(ctx: Ctx<'_>, path: String, options: Opt<JsOpenOptions>) -> Result<Self> {
         let options = options.unwrap_or_default();
 
         let file = fs::OpenOptions::new()
@@ -152,7 +201,9 @@ impl JsFile {
             .write(options.write)
             .create(options.create)
             .truncate(options.truncate)
+            .append(options.append)
             .open(&path)
+            .await
             .map_err(|err| {
                 Exception::throw_message(&ctx, &format!("Error opening the file: {err}"))
             })?;
@@ -160,96 +211,194 @@ impl JsFile {
         Ok(Self {
             inner: Some(OpenedFile {
                 path,
-                file: Arc::new(file),
+                file: Arc::new(Mutex::new(Box::pin(file))),
+            }),
+        })
+    }
+
+    /// Creates a temporary file.
+    ///
+    /// Example
+    /// ```js
+    /// let file = await File.temporary();
+    /// ```
+    #[qjs(static)]
+    pub async fn temporary(ctx: Ctx<'_>) -> Result<Self> {
+        let file = TempFile::new().await.map_err(|err| {
+            Exception::throw_message(&ctx, &format!("Error creating the file: {err}"))
+        })?;
+        let path = file
+            .file_path()
+            .to_str()
+            .ok_or(Exception::throw_message(
+                &ctx,
+                &format!("File path is not valid UTF-8"),
+            ))?
+            .to_string();
+
+        Ok(Self {
+            inner: Some(OpenedFile {
+                path,
+                file: Arc::new(Mutex::new(Box::pin(file))),
             }),
         })
     }
 
     /// Returns true if the file is open.
-    pub const fn is_open(&self) -> bool {
+    pub async fn is_open(&self) -> bool {
         self.inner.is_some()
     }
 
     /// Closes this file handle.
     /// Please note that the actual file might not be closed until all other handles to it are also closed.
     /// This can happen if you cloned() this File.
-    pub fn close(&mut self) {
+    pub async fn close(&mut self) {
         self.inner = None;
     }
 
-    /// @rename write
+    /// @rename writeBytes
     ///
-    /// @overload
-    /// @param text: string
-    ///
-    /// @overload
-    /// @param data: Uint8Array
-    #[qjs(rename = "write")]
-    pub fn write_instance<'js>(&mut self, ctx: Ctx<'js>, value: Object<'js>) -> Result<()> {
+    /// @param bytes: Uint8Array
+    #[qjs(rename = "writeBytes")]
+    pub async fn write_bytes_instance<'js>(
+        &mut self,
+        ctx: Ctx<'js>,
+        bytes: TypedArray<'js, u8>,
+    ) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
-        if let Some(typed_array) = value.as_typed_array::<u8>() {
-            opened_file
-                .file
-                .write(typed_array.as_bytes().unwrap())
-                .map_err(|err| {
-                    Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
-                })?;
-        } else if let Some(text) = value.as_string() {
-            opened_file
-                .file
-                .write(text.to_string().unwrap().as_bytes())
-                .map_err(|err| {
-                    Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
-                })?;
-        } else {
-            return Err(Exception::throw_message(
-                &ctx,
-                "Expected a string or a Uint8Array",
-            ));
-        }
+        opened_file
+            .file
+            .lock()
+            .await
+            .write(bytes.as_bytes().unwrap())
+            .await
+            .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
+        opened_file.file.lock().await.flush().await?;
 
         Ok(())
     }
 
     /// @static
     ///
-    /// @overload
     /// @param path: string
-    /// @param data: Uint8Array
-    ///
-    /// @overload
-    /// @param path: string
-    /// @param text: string
+    /// @param bytes: Uint8Array
     #[qjs(static)]
-    pub fn write<'js>(ctx: Ctx<'js>, path: String, value: Object<'js>) -> Result<()> {
-        if let Some(typed_array) = value.as_typed_array::<u8>() {
-            fs::write(path, typed_array.as_bytes().unwrap()).map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
-            })?;
-        } else if let Some(text) = value.as_string() {
-            fs::write(path, text.to_string().unwrap()).map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error writing file: {err}"))
-            })?;
-        } else {
-            return Err(Exception::throw_message(
-                &ctx,
-                "Expected a string or a Uint8Array",
-            ));
-        }
+    pub async fn write_bytes<'js>(
+        ctx: Ctx<'js>,
+        path: String,
+        bytes: TypedArray<'js, u8>,
+    ) -> Result<()> {
+        fs::write(path, bytes.as_bytes().unwrap())
+            .await
+            .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
 
         Ok(())
     }
 
-    /// @rename readAllText
-    #[qjs(rename = "readAllText")]
-    pub fn read_all_text_instance(&mut self, ctx: Ctx<'_>) -> Result<String> {
+    /// @rename writeText
+    ///
+    /// @param text: string
+    #[qjs(rename = "writeText")]
+    pub async fn write_text_instance<'js>(&mut self, ctx: Ctx<'js>, text: String) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
-        let mut result = String::new();
         opened_file
             .file
+            .lock()
+            .await
+            .write(text.as_bytes())
+            .await
+            .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
+        opened_file.file.lock().await.flush().await?;
+
+        Ok(())
+    }
+
+    /// @static
+    ///
+    /// @param path: string
+    /// @param text: string
+    #[qjs(static)]
+    pub async fn write_text<'js>(ctx: Ctx<'js>, path: String, text: String) -> Result<()> {
+        fs::write(path, text)
+            .await
+            .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
+
+        Ok(())
+    }
+
+    /// @rename readBytes
+    ///
+    /// @param amount?: number
+    ///
+    /// @returns Uint8Array
+    #[qjs(rename = "readBytes")]
+    pub async fn read_bytes_instance<'js>(
+        &mut self,
+        ctx: Ctx<'js>,
+        amount: Opt<u64>,
+    ) -> Result<TypedArray<'js, u8>> {
+        let opened_file = self.opened_file_mut(&ctx)?;
+        let mut result = Vec::new();
+
+        if let Some(amount) = amount.0 {
+            result.resize(amount as usize, 0);
+            opened_file
+                .file
+                .lock()
+                .await
+                .read_exact(&mut result)
+                .await?;
+        } else {
+            // Note that we can't just call file.metadata here as that would cause a stack overflow
+            let len = fs::metadata(&opened_file.path).await?.len();
+            result.reserve(len as usize);
+            opened_file
+                .file
+                .lock()
+                .await
+                .read_to_end(&mut result)
+                .await?;
+        }
+
+        TypedArray::new(ctx, result)
+    }
+
+    #[qjs(static)]
+    pub async fn read_bytes(
+        ctx: Ctx<'_>,
+        path: String,
+        amount: Opt<u64>,
+    ) -> Result<TypedArray<'_, u8>> {
+        let result = if let Some(amount) = amount.0 {
+            let mut result = vec![0; amount as usize];
+            let mut file = fs::File::open(path).await?;
+            file.read_exact(&mut result).await?;
+            result
+        } else {
+            fs::read(path).await.map_err(|err| {
+                Exception::throw_message(&ctx, &format!("Error reading file: {err}"))
+            })?
+        };
+
+        TypedArray::new(ctx, result)
+    }
+
+    /// @rename readText
+    ///
+    /// @returns string
+    #[qjs(rename = "readText")]
+    pub async fn read_text_instance<'js>(&mut self, ctx: Ctx<'js>) -> Result<String> {
+        let opened_file = self.opened_file_mut(&ctx)?;
+        let mut result = String::new();
+
+        opened_file
+            .file
+            .lock()
+            .await
             .read_to_string(&mut result)
+            .await
             .map_err(|err| {
                 Exception::throw_message(&ctx, &format!("Error reading from the file: {err}"))
             })?;
@@ -258,64 +407,46 @@ impl JsFile {
     }
 
     #[qjs(static)]
-    pub fn read_all_text(ctx: Ctx<'_>, path: String) -> Result<String> {
+    pub async fn read_text(ctx: Ctx<'_>, path: String) -> Result<String> {
         fs::read_to_string(path)
+            .await
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {err}")))
     }
 
-    pub fn read_bytes<'js>(
-        &mut self,
-        ctx: Ctx<'js>,
-        amount: Opt<u64>,
-    ) -> Result<TypedArray<'js, u8>> {
-        let opened_file = self.opened_file_mut(&ctx)?;
-
-        let mut result = Vec::new();
-
-        if let Some(amount) = amount.0 {
-            result.resize(amount as usize, 0);
-            opened_file.file.read_exact(&mut result)?;
-        } else {
-            opened_file.file.read_to_end(&mut result).map_err(|err| {
-                Exception::throw_message(&ctx, &format!("Error reading from the file: {err}"))
-            })?;
-        }
-
-        TypedArray::new(ctx, result)
-    }
-
-    #[qjs(static)]
-    pub fn read_all_bytes(ctx: Ctx<'_>, path: String) -> Result<TypedArray<'_, u8>> {
-        let result = fs::read(path)
-            .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {err}")))?;
-
-        TypedArray::new(ctx, result)
-    }
-
-    pub fn size(&self, ctx: Ctx<'_>) -> Result<u64> {
+    pub async fn size(&self, ctx: Ctx<'_>) -> Result<u64> {
         let opened_file = self.opened_file(&ctx)?;
 
-        Ok(opened_file.file.metadata()?.len())
+        Ok(opened_file.file.lock().await.metadata().await?.len())
     }
 
-    pub fn set_size(&self, ctx: Ctx<'_>, size: u64) -> Result<()> {
+    pub async fn set_size(&self, ctx: Ctx<'_>, size: u64) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
 
-        Ok(opened_file.file.set_len(size)?)
+        Ok(opened_file.file.lock().await.set_len(size).await?)
     }
 
-    pub fn readonly(&self, ctx: Ctx<'_>) -> Result<bool> {
+    pub async fn readonly(&self, ctx: Ctx<'_>) -> Result<bool> {
         let opened_file = self.opened_file(&ctx)?;
 
-        Ok(opened_file.file.metadata()?.permissions().readonly())
+        Ok(opened_file
+            .file
+            .lock()
+            .await
+            .metadata()
+            .await?
+            .permissions()
+            .readonly())
     }
 
-    pub fn set_readonly(&self, ctx: Ctx<'_>, readonly: bool) -> Result<()> {
+    pub async fn set_readonly(&self, ctx: Ctx<'_>, readonly: bool) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
 
         opened_file
             .file
-            .metadata()?
+            .lock()
+            .await
+            .metadata()
+            .await?
             .permissions()
             .set_readonly(readonly);
 
@@ -323,23 +454,37 @@ impl JsFile {
     }
 
     /// Note that this returns 0 on Windows.
-    pub fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
+    pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
         let opened_file = self.opened_file(&ctx)?;
 
         #[cfg(unix)]
-        return Ok(opened_file.file.metadata()?.permissions().mode());
+        return Ok(opened_file
+            .file
+            .lock()
+            .await
+            .metadata()
+            .await?
+            .permissions()
+            .mode());
 
         #[cfg(windows)]
         return Ok(0);
     }
 
     /// Note that this does nothing on Windows.
-    pub fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
+    pub async fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
 
         #[cfg(unix)]
         return {
-            opened_file.file.metadata()?.permissions().set_mode(mode);
+            opened_file
+                .file
+                .lock()
+                .await
+                .metadata()
+                .await?
+                .permissions()
+                .set_mode(mode);
             Ok(())
         };
 
@@ -348,54 +493,64 @@ impl JsFile {
     }
 
     /// @returns Date
-    pub fn modified_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
+    pub async fn modified_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
-        let metadata = opened_file.file.metadata()?;
+        let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.modified()?;
         Ok(Self::date_from_system_time(&ctx, &modified))
     }
 
+    #[qjs(skip)]
+    async fn set_times(opened_file: &OpenedFile, times: FileTimes) -> Result<()> {
+        let path = opened_file.path.clone();
+        spawn_blocking(move || {
+            let file = std::fs::File::options().write(true).open(path)?;
+            file.set_times(times)?;
+            Result::<_>::Ok(())
+        })
+        .await
+        .unwrap()
+    }
+
     /// @param date: Date
-    pub fn set_modified_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
-        let opened_file = self.opened_file_mut(&ctx)?;
+    pub async fn set_modified_time<'js>(&self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
+        let opened_file = self.opened_file(&ctx)?;
         let system_time = Self::system_time_from_date(ctx, date)?;
 
-        opened_file.file.set_modified(system_time)?;
+        Self::set_times(&opened_file, FileTimes::new().set_modified(system_time)).await?;
 
         Ok(())
     }
 
     /// @returns Date
-    pub fn accessed_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
+    pub async fn accessed_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
-        let metadata = opened_file.file.metadata()?;
+        let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.accessed()?;
         Ok(Self::date_from_system_time(&ctx, &modified))
     }
 
     /// @param date: Date
-    pub fn set_accessed_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
+    pub async fn set_accessed_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
         let system_time = Self::system_time_from_date(ctx, date)?;
 
-        opened_file
-            .file
-            .set_times(FileTimes::new().set_accessed(system_time))?;
+        Self::set_times(&opened_file, FileTimes::new().set_accessed(system_time)).await?;
 
         Ok(())
     }
 
     /// @returns Date
-    pub fn created_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
+    pub async fn created_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
-        let metadata = opened_file.file.metadata()?;
+        let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.created()?;
         Ok(Self::date_from_system_time(&ctx, &modified))
     }
 
     /// @param date: Date
     /// Note that this does nothing on Linux.
-    pub fn set_created_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
+    pub async fn set_created_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         #[cfg(unix)]
         {
             let _ = ctx;
@@ -405,51 +560,101 @@ impl JsFile {
 
         #[cfg(windows)]
         {
-            let opened_file = self.opened_file_mut(&ctx)?;
+            let opened_file = self.opened_file(&ctx)?;
             let system_time = Self::system_time_from_date(ctx, date)?;
 
-            opened_file
-                .file
-                .set_times(FileTimes::new().set_created(system_time))?;
+            Self::set_times(&opened_file, FileTimes::new().set_created(system_time)).await?;
 
             Ok(())
         }
     }
 
-    pub fn position(&mut self, ctx: Ctx<'_>) -> Result<u64> {
+    pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<u64> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
-        Ok(opened_file.file.stream_position()?)
+        Ok(opened_file.file.lock().await.stream_position().await?)
     }
 
-    pub fn set_position(&mut self, ctx: Ctx<'_>, position: u64) -> Result<()> {
+    pub async fn set_position(&mut self, ctx: Ctx<'_>, position: u64) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
-        opened_file.file.seek(SeekFrom::Start(position))?;
+        opened_file
+            .file
+            .lock()
+            .await
+            .seek(SeekFrom::Start(position))
+            .await?;
 
         Ok(())
     }
 
-    pub fn set_relative_position(&mut self, ctx: Ctx<'_>, offset: i64) -> Result<()> {
+    pub async fn set_relative_position(&mut self, ctx: Ctx<'_>, offset: i64) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
-        opened_file.file.seek_relative(offset)?;
+        opened_file
+            .file
+            .lock()
+            .await
+            .seek(SeekFrom::Current(offset))
+            .await?;
 
         Ok(())
     }
 
-    pub fn rewind(&mut self, ctx: Ctx<'_>) -> Result<()> {
+    pub async fn rewind(&mut self, ctx: Ctx<'_>) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
-        opened_file.file.rewind()?;
+        opened_file.file.lock().await.rewind().await?;
 
         Ok(())
     }
 
-    pub fn path(&self, ctx: Ctx<'_>) -> Result<&str> {
+    pub async fn path(&self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file(&ctx)?;
 
-        Ok(&opened_file.path)
+        Ok(opened_file.path.to_string())
+    }
+
+    #[qjs(static)]
+    pub async fn exists(path: String) -> Result<bool> {
+        let result = fs::try_exists(path).await?;
+
+        Ok(result)
+    }
+
+    /// Removes a file from the filesystem.
+    ///
+    /// Note that there is no guarantee that the file is immediately deleted (e.g. depending on platform, other open file descriptors may prevent immediate removal).
+    #[qjs(static)]
+    pub async fn remove(path: String) -> Result<()> {
+        fs::remove_file(path).await?;
+
+        Ok(())
+    }
+
+    #[qjs(static)]
+    pub async fn copy(source: String, destination: String) -> Result<()> {
+        fs::copy(source, destination).await?;
+
+        Ok(())
+    }
+
+    #[qjs(static)]
+    pub async fn rename(source: String, destination: String) -> Result<()> {
+        match fs::rename(&source, &destination).await {
+            Ok(()) => Ok(()),
+            Err(err) if err.kind() == io::ErrorKind::CrossesDevices => {
+                fs::copy(&source, &destination).await?;
+                fs::remove_file(&source).await?;
+                Ok(())
+            }
+            Err(err) => Err(err)?,
+        }
+    }
+
+    #[qjs(static)]
+    pub async fn r#move(source: String, destination: String) -> Result<()> {
+        Self::rename(source, destination).await
     }
 
     #[qjs(rename = "clone")]
@@ -463,7 +668,7 @@ impl JsFile {
 
     #[qjs(rename = PredefinedAtom::ToString)]
     pub const fn to_string_js(&self) -> String {
-        String::new()
+        String::new() // TODO
     }
 }
 
@@ -473,15 +678,265 @@ impl<'js> Trace<'js> for JsFile {
 
 #[cfg(test)]
 mod tests {
+    use std::env;
+
+    use rquickjs::{IntoJs, TypedArray};
     use tracing_test::traced_test;
 
-    use crate::runtime::Runtime;
+    use crate::{core::file::js::JsOpenOptions, runtime::Runtime, scripting::Engine};
+
+    fn test_files<F>(f: F)
+    where
+        F: AsyncFn(&mut Engine) + Clone + 'static,
+    {
+        test_files_with_options(f, JsOpenOptions::default())
+    }
+
+    fn test_files_with_options<F>(f: F, options: JsOpenOptions)
+    where
+        F: AsyncFn(&mut Engine) + Clone + 'static,
+    {
+        let local_f = f.clone();
+        Runtime::test_with_script_engine(async move |script_engine| {
+            script_engine
+                .eval_async::<()>("const file = await File.temporary()")
+                .await
+                .unwrap();
+
+            local_f(script_engine).await;
+        });
+
+        /*
+                let local_f = f.clone();
+                Runtime::test_with_script_engine(async move |script_engine| {
+                    script_engine
+                        .with(|ctx| {
+                            ctx.globals().set("options", options.into_js(&ctx)).unwrap();
+                        })
+                        .await;
+
+                    let file_path = env::temp_dir().join("test.txt");
+                    script_engine
+                        .eval_async::<()>(&format!(
+                            r#"const file = await File.open("{}", options)"#,
+                            file_path.display()
+                        ))
+                        .await
+                        .unwrap();
+
+                    local_f(script_engine).await;
+                });
+
+        */
+    }
 
     #[test]
     #[traced_test]
-    fn test_() {
-        Runtime::test_with_js(async |_script_engine| {
-            //eval::<()>(&js_context, "").unwrap();
+    fn test_is_open() {
+        test_files(async move |script_engine| {
+            let is_open = script_engine
+                .eval_async::<bool>("await file.isOpen()")
+                .await
+                .unwrap();
+            assert!(is_open);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_close() {
+        test_files(async move |script_engine| {
+            let is_open = script_engine
+                .eval_async::<bool>(
+                    "
+                await file.close();
+                await file.isOpen()
+                ",
+                )
+                .await
+                .unwrap();
+            assert!(!is_open);
+
+            let result = script_engine
+                .eval_async::<()>(r#"await file.setSize(42)"#)
+                .await;
+            assert_eq!(result.unwrap_err().to_string(), "File is not open");
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_write_read_text_instance() {
+        const TEXT: &str = "test";
+
+        test_files(async move |script_engine| {
+            let result = script_engine
+                .eval_async::<String>(&format!(
+                    r#"
+                await file.writeText("{TEXT}");
+                await file.rewind();
+                await file.readText()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, TEXT);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_write_read_text_static() {
+        const TEXT: &str = "test";
+
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let file_path = env::temp_dir().join("test.txt");
+            let result = script_engine
+                .eval_async::<String>(&format!(
+                    r#"
+                await File.writeText("{}", "{TEXT}");
+                await File.readText("{}")
+                "#,
+                    file_path.display(),
+                    file_path.display()
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, TEXT);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_write_read_bytes_instance() {
+        const BYTES: &[u8] = b"test";
+
+        test_files(async move |script_engine| {
+            script_engine
+                .with(|ctx| {
+                    ctx.globals()
+                        .set("bytes", TypedArray::new_copy(ctx, BYTES).unwrap())
+                        .unwrap();
+                })
+                .await;
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.writeBytes(bytes);
+                await file.rewind();
+                var result = await file.readBytes();
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .with::<_, Vec<u8>>(|ctx| {
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
+                    result.as_bytes().unwrap().to_vec()
+                })
+                .await;
+
+            assert_eq!(result, BYTES);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.rewind();
+                result = await file.readBytes(2);
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .with::<_, Vec<u8>>(|ctx| {
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
+                    result.as_bytes().unwrap().to_vec()
+                })
+                .await;
+
+            assert_eq!(result, b"te");
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_write_read_bytes_static() {
+        const BYTES: &[u8] = b"test";
+
+        Runtime::test_with_script_engine(async move |script_engine| {
+            script_engine
+                .with(|ctx| {
+                    ctx.globals()
+                        .set("bytes", TypedArray::new_copy(ctx, BYTES).unwrap())
+                        .unwrap();
+                })
+                .await;
+
+            let file_path = env::temp_dir().join("test.txt");
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await File.writeBytes("{}", bytes);
+                var result = await File.readBytes("{}");
+                "#,
+                    file_path.display(),
+                    file_path.display()
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .with::<_, Vec<u8>>(|ctx| {
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
+                    result.as_bytes().unwrap().to_vec()
+                })
+                .await;
+
+            assert_eq!(result, BYTES);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                var result = await File.readBytes("{}", 2);
+                "#,
+                    file_path.display()
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .with::<_, Vec<u8>>(|ctx| {
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
+                    result.as_bytes().unwrap().to_vec()
+                })
+                .await;
+
+            assert_eq!(result, b"te");
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_size() {
+        const TEXT: &str = "test";
+
+        test_files(async move |script_engine| {
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.writeText("{TEXT}");
+                await file.size()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, TEXT.len());
         });
     }
 }

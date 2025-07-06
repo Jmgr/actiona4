@@ -172,7 +172,7 @@ mod tests {
 
     #[test]
     fn test_name() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .with(|ctx| {
                     JsTest::register(&ctx, JsTest::default()).unwrap();

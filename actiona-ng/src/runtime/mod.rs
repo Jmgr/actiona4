@@ -220,10 +220,9 @@ impl Runtime {
         Ok((runtime, script_engine))
     }
 
-    pub fn run<F, Fut>(f: F) -> Result<()>
+    pub fn run<F>(f: F) -> Result<()>
     where
-        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + 'static,
-        Fut: Future<Output = Result<()>>,
+        F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
     {
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
@@ -250,11 +249,19 @@ impl Runtime {
         let local_cancellation_token = cancellation_token.clone();
 
         let handle = slint::spawn_local(Compat::new(async move {
-            let (runtime, js_context) = Self::new(local_cancellation_token, local_task_tracker)
-                .await
-                .unwrap();
+            let (runtime, mut script_engine) =
+                Self::new(local_cancellation_token, local_task_tracker)
+                    .await
+                    .unwrap();
 
-            f(runtime, js_context).await.unwrap();
+            f(runtime, &mut script_engine).await.unwrap();
+
+            // TODO: proper error
+            let unhandled_exceptions = script_engine.idle().await;
+            assert!(
+                unhandled_exceptions.is_empty(),
+                "unhandled exceptions found: {unhandled_exceptions:?}"
+            );
 
             slint::quit_event_loop().unwrap();
 
@@ -272,10 +279,9 @@ impl Runtime {
         Ok(())
     }
 
-    pub fn run_without_ui<F, Fut>(f: F) -> Result<()>
+    pub fn run_without_ui<F>(f: F) -> Result<()>
     where
-        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + 'static,
-        Fut: Future<Output = Result<()>>,
+        F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
     {
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
@@ -296,12 +302,12 @@ impl Runtime {
                 }
             });
 
-            let (runtime, script_engine) =
+            let (runtime, mut script_engine) =
                 Self::new(cancellation_token.clone(), task_tracker.clone())
                     .await
                     .unwrap();
 
-            f(runtime, script_engine).await.unwrap();
+            f(runtime, &mut script_engine).await.unwrap();
 
             task_tracker.close();
             cancellation_token.cancel();
@@ -343,25 +349,37 @@ impl Runtime {
         block_in_place(|| -> R { Handle::current().block_on(f) })
     }
 
-    pub fn test<F, Fut>(f: F)
+    pub fn test<F>(f: F)
     where
-        F: FnOnce(Arc<Self>) -> Fut + 'static,
-        Fut: Future,
+        F: AsyncFnOnce(Arc<Self>) -> () + 'static,
     {
-        Self::run_without_ui(|runtime, _js_context| async {
+        Self::run_without_ui(async |runtime, script_engine| {
             f(runtime).await;
+
+            let unhandled_exceptions = script_engine.idle().await;
+            assert!(
+                unhandled_exceptions.is_empty(),
+                "unhandled exceptions found: {unhandled_exceptions:?}"
+            );
+
             Ok(())
         })
         .unwrap();
     }
 
-    pub fn test_with_js<F, Fut>(f: F)
+    pub fn test_with_script_engine<F>(f: F)
     where
-        F: FnOnce(ScriptEngine) -> Fut + 'static,
-        Fut: Future,
+        F: AsyncFnOnce(&mut ScriptEngine) -> () + 'static,
     {
-        Self::run_without_ui(|_runtime, js_context| async {
-            f(js_context).await;
+        Self::run_without_ui(async move |_runtime, mut script_engine| {
+            f(&mut script_engine).await;
+
+            let unhandled_exceptions = script_engine.idle().await;
+            assert!(
+                unhandled_exceptions.is_empty(),
+                "unhandled exceptions found: {unhandled_exceptions:?}"
+            );
+
             Ok(())
         })
         .unwrap();

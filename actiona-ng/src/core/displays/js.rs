@@ -203,7 +203,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_random_point() {
-        Runtime::test_with_js(async |mut script_engine| {
+        Runtime::test_with_script_engine(async |script_engine| {
             let point: JsPoint = script_engine.eval("displays.randomPoint()").await.unwrap();
 
             println!("point: {}", point.inner());
