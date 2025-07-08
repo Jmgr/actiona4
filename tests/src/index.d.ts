@@ -434,6 +434,21 @@ declare interface Console {
     count(name?: string): this;
 }
 declare const console: Console;
+/**
+ * Directory options
+ */
+declare interface DirectoryOptions {
+    /**
+     * Should the directories be created or removed recursively?
+     * @defaultValue true
+     */
+    recursive?: boolean;
+}
+declare class Directory {
+    private constructor();
+    static create(path: string, options?: DirectoryOptions): Promise<void>;
+    static remove(path: string, options?: DirectoryOptions): Promise<void>;
+}
 declare interface Displays {
     randomPoint(): Point;
     fromPoint(point: Point): DisplayInfo | undefined;
@@ -707,41 +722,74 @@ declare class Rect {
     union(o: {x: number, y: number, width: number, height: number}): Rect;
 }
 /**
- * Open options
+ * File open options
  */
 declare interface OpenOptions {
     /**
-     * Open the file for reading
+     * Should the file be opened with read access?
      * @defaultValue true
      */
     read?: boolean;
     /**
-     * Open the file for writing
-     * @defaultValue true
+     * Should the file be opened with write access?
+     * @defaultValue false
      */
     write?: boolean;
     /**
-     * When writing, create a new file if it doesn't exist already
-     * @defaultValue true
+     * Writing: open the file in append mode.
+     * Note that setting this to `true` implies setting `write` to `true`.
+     * @defaultValue false
      */
-    create?: boolean;
+    append?: boolean;
     /**
-     * When writing, truncate the file (erase all contents)
+     * Writing: truncate (remove all contents of) the file.
+     * Note that this only works if `write` is `true`.
      * @defaultValue false
      */
     truncate?: boolean;
+    /**
+     * Writing: create a new file if it doesn't exist.
+     * Note that this only works if `write` or `append` are set to `true`.
+     * @defaultValue false
+     */
+    create?: boolean;
+    /**
+     * Writing: always create a new file, even if one already exists.
+     * Note that this only works if `write` or `append` are set to `true`.
+     * Note that `create` and `truncate` are ignored if this is set to `true`.
+     * @defaultValue false
+     */
+    createNew?: boolean;
 }
+/**
+ * File represents a file handle.
+ */
 declare class File {
+    /**
+     * The file path
+     */
+    readonly path: string;
     private constructor();
     /**
      * Opens a file.
      * 
      * Example
      * ```js
-     * let file = await File.open("my_file.txt");
+     * // Open a file for reading
      * let file = await File.open("my_file.txt", {
      * read: true,
-     * write: false,
+     * });
+     * 
+     * // Create a new file for writing.
+     * let file = await File.open("my_file.txt", {
+     * write: true,
+     * createNew: true,
+     * });
+     * 
+     * // Append to an existing file.
+     * let file = await File.open("my_file.txt", {
+     * write: true,
+     * append: true,
      * });
      * ```
      */
@@ -749,13 +797,13 @@ declare class File {
     /**
      * Returns true if the file is open.
      */
-    isOpen(): Promise<boolean>;
+    isOpen(): boolean;
     /**
      * Closes this file handle.
      * Please note that the actual file might not be closed until all other handles to it are also closed.
      * This can happen if you cloned() this File.
      */
-    close(): Promise<void>;
+    close(): void;
     writeBytes(bytes: Uint8Array): Promise<void>;
     static writeBytes(path: string, bytes: Uint8Array): Promise<void>;
     writeText(text: string): Promise<void>;
@@ -773,6 +821,8 @@ declare class File {
      */
     mode(): Promise<number>;
     /**
+     * Sets the file mode.
+     * You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
      * Note that this does nothing on Windows.
      */
     setMode(mode: number): Promise<void>;
@@ -780,16 +830,15 @@ declare class File {
     setModifiedTime(date: Date): Promise<void>;
     accessedTime(): Promise<Date>;
     setAccessedTime(date: Date): Promise<void>;
-    createdTime(): Promise<Date>;
+    creationTime(): Promise<Date>;
     /**
      * Note that this does nothing on Linux.
      */
-    setCreatedTime(date: Date): Promise<void>;
+    setCreationTime(date: Date): Promise<void>;
     position(): Promise<number>;
     setPosition(position: number): Promise<void>;
     setRelativePosition(offset: number): Promise<void>;
     rewind(): Promise<void>;
-    path(): Promise<string>;
     static exists(path: string): Promise<boolean>;
     /**
      * Removes a file from the filesystem.
@@ -804,6 +853,13 @@ declare class File {
     equals(other: File): boolean;
     toString(): string;
 }
+declare class Filesystem {
+    private constructor();
+    static exists(path: string): Promise<boolean>;
+    static isFile(path: string): Promise<boolean>;
+    static isDirectory(path: string): Promise<boolean>;
+    static isSymlink(path: string): Promise<boolean>;
+}
 /**
  * Resize options
  */
@@ -812,7 +868,7 @@ declare interface ResizeOptions {
      * Should the aspect ratio be kept?
      * @defaultValue false
      */
-    keep_aspect_ratio?: boolean;
+    keepAspectRatio?: boolean;
     /**
      * What filter to use
      * @defaultValue ResizeFilter.CUBIC
@@ -842,7 +898,7 @@ declare interface DrawImageOptions {
      * Source rectangle
      * @defaultValue Whole image
      */
-    source_rect?: Rect;
+    sourceRect?: Rect;
 }
 /**
  * Rotation options
@@ -862,7 +918,7 @@ declare interface RotationOptions {
      * Default color, used if the rotation triggers more pixels to be displayed
      * @defaultValue Color.BLACK
      */
-    default_color?: Color;
+    defaultColor?: Color;
 }
 /**
  * Drawing options
@@ -1983,8 +2039,8 @@ declare class Image {
      */
     findImage(_image: Image, options?: FindImageOptions): void;
     test(options: RotationOptions): void;
-    width(): number;
     height(): number;
+    width(): number;
 }
 declare interface Keyboard {
 }
@@ -2030,6 +2086,19 @@ declare class Name {
      */
     constructor(regexp: RegExp);
 }
+declare class Path {
+    private constructor();
+    static join(...args: string[]): string;
+    static filename(path: string): string;
+    static basename(path: string): string;
+    static parent(path: string): string;
+    static dirname(path: string): string;
+    static isAbsolute(path: string): boolean;
+    static isRelative(path: string): boolean;
+    static extension(path: string): string;
+    static extname(path: string): string;
+    static setExtension(path: string, extension: string): string;
+}
 declare interface Screenshot {
 }
 declare const screenshot: Screenshot;
@@ -2062,15 +2131,15 @@ declare interface MoveOptions {
     /**
      * @defaultValue 50
      */
-    perlin_scale?: number;
+    perlinScale?: number;
     /**
      * @defaultValue 5
      */
-    perlin_amplitude?: number;
+    perlinAmplitude?: number;
     /**
      * @defaultValue 0
      */
-    target_randomness?: number;
+    targetRandomness?: number;
     /**
      * Interval in milliseconds
      * @defaultValue 10
@@ -2118,5 +2187,5 @@ declare interface PressOptions {
     /**
      * @defaultValue false
      */
-    relative_position?: boolean;
+    relativePosition?: boolean;
 }

@@ -12,3 +12,4 @@ proc-macro = true
 [dependencies]
 quote.workspace = true
 syn.workspace = true
+convert_case.workspace = true

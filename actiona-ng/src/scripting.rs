@@ -55,7 +55,7 @@ impl TsToJs {
         let module = parser
             .parse_program()
             .map_err(|e| e.into_diagnostic(&handler).emit())
-            .expect("failed to parse module.");
+            .map_err(|_| eyre!("Module parsing failed"))?;
 
         let globals = Globals::default();
         let (code, srcmap) = GLOBALS.set(

@@ -1,15 +1,21 @@
+use std::{env::temp_dir, path::PathBuf};
+
 use convert_case::{Case, Casing};
+use rand::{Rng, distr::Alphanumeric};
 use rquickjs::{Class, Ctx, Exception, IntoJs, Object, Result, Value, class::JsClass};
 
 pub mod color;
 pub mod console;
+pub mod directory;
 pub mod displays;
 pub mod file;
+pub mod filesystem;
 pub mod image;
 pub mod js;
 pub mod keyboard;
 pub mod mouse;
 pub mod name;
+pub mod path;
 pub mod point;
 pub mod rect;
 pub mod screenshot;
@@ -121,4 +127,16 @@ pub fn check_min_arg_count(min: usize, ctx: &Ctx, args: &[Value<'_>]) -> Result<
     }
 
     Ok(())
+}
+
+pub(crate) fn random_name() -> String {
+    rand::rng()
+        .sample_iter(&Alphanumeric)
+        .take(10)
+        .map(char::from)
+        .collect()
+}
+
+pub(crate) fn random_temp_filename() -> PathBuf {
+    temp_dir().join(format!("text_{}.txt", random_name()))
 }

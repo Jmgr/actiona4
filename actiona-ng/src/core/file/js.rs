@@ -1,6 +1,4 @@
 use std::fmt::Debug;
-use std::fs::Metadata;
-use std::pin::Pin;
 use std::{
     fs::FileTimes,
     io::SeekFrom,
@@ -9,10 +7,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use async_tempfile::TempFile;
-use async_trait::async_trait;
 use macros::FromJsObject;
-use rquickjs::IntoJs;
 use rquickjs::{
     Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray,
     atom::PredefinedAtom,
@@ -20,96 +15,18 @@ use rquickjs::{
     function::{Args, Constructor},
     prelude::Opt,
 };
+use tokio::io::AsyncSeekExt;
+use tokio::io::AsyncWriteExt;
 use tokio::io::{self, AsyncReadExt};
-use tokio::io::{AsyncRead, AsyncSeekExt, AsyncWrite};
-use tokio::io::{AsyncSeek, AsyncWriteExt};
 use tokio::sync::Mutex;
 use tokio::{fs, task::spawn_blocking};
 
 use crate::core::ValueClass;
 
-/// Open options
-/// @options
-#[derive(Clone, Copy, Debug, FromJsObject)]
-pub struct JsOpenOptions {
-    /// Open the file for reading
-    /// @default true
-    pub read: bool,
-
-    /// Open the file for writing
-    /// @default true
-    pub write: bool,
-
-    /// When writing, create a new file if it doesn't exist already
-    /// @default true
-    pub create: bool,
-
-    /// When writing, truncate the file (erase all contents)
-    /// @default false
-    pub truncate: bool,
-
-    /// When writing, append to the end of the file
-    /// @default false
-    pub append: bool,
-}
-
-impl Default for JsOpenOptions {
-    fn default() -> Self {
-        Self {
-            read: true,
-            write: true,
-            create: true,
-            truncate: false,
-            append: false,
-        }
-    }
-}
-
-// TODO: macro
-impl<'js> IntoJs<'js> for JsOpenOptions {
-    fn into_js(self, ctx: &Ctx<'js>) -> Result<rquickjs::Value<'js>> {
-        let result = rquickjs::Object::new(ctx.clone())?;
-        result.set("read", self.read)?;
-        result.set("write", self.write)?;
-        result.set("create", self.create)?;
-        result.set("truncate", self.truncate)?;
-        result.set("append", self.append)?;
-        Ok(result.into_value())
-    }
-}
-
-#[async_trait]
-trait AsyncReadWrite: Debug + AsyncRead + AsyncWrite + AsyncSeek + Send + 'static {
-    async fn metadata(&self) -> io::Result<Metadata>;
-    async fn set_len(&self, size: u64) -> io::Result<()>;
-}
-
-#[async_trait]
-impl AsyncReadWrite for fs::File {
-    async fn metadata(&self) -> io::Result<Metadata> {
-        self.metadata().await
-    }
-
-    async fn set_len(&self, size: u64) -> io::Result<()> {
-        self.set_len(size).await
-    }
-}
-
-#[async_trait]
-impl AsyncReadWrite for TempFile {
-    async fn metadata(&self) -> io::Result<Metadata> {
-        self.metadata().await
-    }
-
-    async fn set_len(&self, size: u64) -> io::Result<()> {
-        self.set_len(size).await
-    }
-}
-
 #[derive(Clone, Debug, JsLifetime)]
 struct OpenedFile {
     path: String,
-    file: Arc<Mutex<Pin<Box<dyn AsyncReadWrite>>>>,
+    file: Arc<Mutex<fs::File>>,
 }
 
 impl PartialEq for OpenedFile {
@@ -118,6 +35,69 @@ impl PartialEq for OpenedFile {
     }
 }
 
+/// File open options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct JsOpenOptions {
+    /// Should the file be opened with read access?
+    /// @default true
+    pub read: bool,
+
+    /// Should the file be opened with write access?
+    /// @default false
+    pub write: bool,
+
+    /// Writing: open the file in append mode.
+    /// Note that setting this to `true` implies setting `write` to `true`.
+    /// @default false
+    pub append: bool,
+
+    /// Writing: truncate (remove all contents of) the file.
+    /// Note that this only works if `write` is `true`.
+    /// @default false
+    pub truncate: bool,
+
+    /// Writing: create a new file if it doesn't exist.
+    /// Note that this only works if `write` or `append` are set to `true`.
+    /// @default false
+    pub create: bool,
+
+    /// Writing: always create a new file, even if one already exists.
+    /// Note that this only works if `write` or `append` are set to `true`.
+    /// Note that `create` and `truncate` are ignored if this is set to `true`.
+    /// @default false
+    pub create_new: bool,
+}
+
+impl Default for JsOpenOptions {
+    fn default() -> Self {
+        Self {
+            read: true,
+            write: false,
+            append: false,
+            truncate: false,
+            create: false,
+            create_new: false,
+        }
+    }
+}
+
+impl From<JsOpenOptions> for fs::OpenOptions {
+    fn from(value: JsOpenOptions) -> Self {
+        Self::new()
+            .read(value.read)
+            .write(value.write)
+            .append(value.append)
+            .truncate(value.truncate)
+            .create(value.create)
+            .create_new(value.create_new)
+            .clone()
+    }
+}
+
+/// File represents a file handle.
+///
+/// @prop readonly path: string // The file path
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "File")]
 pub struct JsFile {
@@ -171,8 +151,6 @@ impl JsFile {
     }
 }
 
-// TODO: directory
-
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsFile {
     /// @constructor
@@ -186,22 +164,28 @@ impl JsFile {
     ///
     /// Example
     /// ```js
-    /// let file = await File.open("my_file.txt");
+    /// // Open a file for reading
     /// let file = await File.open("my_file.txt", {
     ///     read: true,
-    ///     write: false,
+    /// });
+    ///
+    /// // Create a new file for writing.
+    /// let file = await File.open("my_file.txt", {
+    ///     write: true,
+    ///     createNew: true,
+    /// });
+    ///
+    /// // Append to an existing file.
+    /// let file = await File.open("my_file.txt", {
+    ///     write: true,
+    ///     append: true,
     /// });
     /// ```
     #[qjs(static)]
     pub async fn open(ctx: Ctx<'_>, path: String, options: Opt<JsOpenOptions>) -> Result<Self> {
         let options = options.unwrap_or_default();
 
-        let file = fs::OpenOptions::new()
-            .read(options.read)
-            .write(options.write)
-            .create(options.create)
-            .truncate(options.truncate)
-            .append(options.append)
+        let file = fs::OpenOptions::from(options)
             .open(&path)
             .await
             .map_err(|err| {
@@ -211,48 +195,20 @@ impl JsFile {
         Ok(Self {
             inner: Some(OpenedFile {
                 path,
-                file: Arc::new(Mutex::new(Box::pin(file))),
-            }),
-        })
-    }
-
-    /// Creates a temporary file.
-    ///
-    /// Example
-    /// ```js
-    /// let file = await File.temporary();
-    /// ```
-    #[qjs(static)]
-    pub async fn temporary(ctx: Ctx<'_>) -> Result<Self> {
-        let file = TempFile::new().await.map_err(|err| {
-            Exception::throw_message(&ctx, &format!("Error creating the file: {err}"))
-        })?;
-        let path = file
-            .file_path()
-            .to_str()
-            .ok_or(Exception::throw_message(
-                &ctx,
-                &format!("File path is not valid UTF-8"),
-            ))?
-            .to_string();
-
-        Ok(Self {
-            inner: Some(OpenedFile {
-                path,
-                file: Arc::new(Mutex::new(Box::pin(file))),
+                file: Arc::new(Mutex::new(file)),
             }),
         })
     }
 
     /// Returns true if the file is open.
-    pub async fn is_open(&self) -> bool {
+    pub fn is_open(&self) -> bool {
         self.inner.is_some()
     }
 
     /// Closes this file handle.
     /// Please note that the actual file might not be closed until all other handles to it are also closed.
     /// This can happen if you cloned() this File.
-    pub async fn close(&mut self) {
+    pub fn close(&mut self) {
         self.inner = None;
     }
 
@@ -413,7 +369,8 @@ impl JsFile {
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {err}")))
     }
 
-    pub async fn size(&self, ctx: Ctx<'_>) -> Result<u64> {
+    #[qjs(rename = "size")]
+    pub async fn size<'js>(&mut self, ctx: Ctx<'js>) -> Result<u64> {
         let opened_file = self.opened_file(&ctx)?;
 
         Ok(opened_file.file.lock().await.metadata().await?.len())
@@ -441,14 +398,13 @@ impl JsFile {
     pub async fn set_readonly(&self, ctx: Ctx<'_>, readonly: bool) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
 
-        opened_file
-            .file
-            .lock()
-            .await
-            .metadata()
-            .await?
-            .permissions()
-            .set_readonly(readonly);
+        let file = opened_file.file.lock().await;
+
+        let mut permissions = file.metadata().await?.permissions();
+
+        permissions.set_readonly(readonly);
+
+        file.set_permissions(permissions).await?;
 
         Ok(())
     }
@@ -471,20 +427,21 @@ impl JsFile {
         return Ok(0);
     }
 
+    /// Sets the file mode.
+    /// You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
     /// Note that this does nothing on Windows.
     pub async fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
-        let opened_file = self.opened_file(&ctx)?;
-
         #[cfg(unix)]
         return {
-            opened_file
-                .file
-                .lock()
-                .await
-                .metadata()
-                .await?
-                .permissions()
-                .set_mode(mode);
+            let opened_file = self.opened_file(&ctx)?;
+            let file = opened_file.file.lock().await;
+
+            let mut permissions = file.metadata().await?.permissions();
+
+            permissions.set_mode(mode);
+
+            file.set_permissions(permissions).await?;
+
             Ok(())
         };
 
@@ -541,7 +498,7 @@ impl JsFile {
     }
 
     /// @returns Date
-    pub async fn created_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
+    pub async fn creation_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.created()?;
@@ -550,7 +507,7 @@ impl JsFile {
 
     /// @param date: Date
     /// Note that this does nothing on Linux.
-    pub async fn set_created_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
+    pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         #[cfg(unix)]
         {
             let _ = ctx;
@@ -609,7 +566,9 @@ impl JsFile {
         Ok(())
     }
 
-    pub async fn path(&self, ctx: Ctx<'_>) -> Result<String> {
+    /// @skip
+    #[qjs(get)]
+    pub fn path(&self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file(&ctx)?;
 
         Ok(opened_file.path.to_string())
@@ -678,62 +637,44 @@ impl<'js> Trace<'js> for JsFile {
 
 #[cfg(test)]
 mod tests {
-    use std::env;
+    use std::env::{self};
 
-    use rquickjs::{IntoJs, TypedArray};
+    use chrono::{DateTime, Datelike, Timelike, Utc};
+    use rquickjs::{Object, TypedArray};
+    use tokio::fs;
     use tracing_test::traced_test;
 
-    use crate::{core::file::js::JsOpenOptions, runtime::Runtime, scripting::Engine};
+    use crate::{
+        core::{file::js::JsFile, random_temp_filename},
+        runtime::Runtime,
+        scripting::Engine,
+    };
 
-    fn test_files<F>(f: F)
+    fn test_with_file<F>(f: F)
     where
         F: AsyncFn(&mut Engine) + Clone + 'static,
     {
-        test_files_with_options(f, JsOpenOptions::default())
-    }
-
-    fn test_files_with_options<F>(f: F, options: JsOpenOptions)
-    where
-        F: AsyncFn(&mut Engine) + Clone + 'static,
-    {
-        let local_f = f.clone();
         Runtime::test_with_script_engine(async move |script_engine| {
+            let file_path = random_temp_filename();
+
             script_engine
-                .eval_async::<()>("const file = await File.temporary()")
+                .eval_async::<()>(&format!(
+                    r#"const file = await File.open("{}", {{ read: true, write: true, createNew: true }})"#,
+                    file_path.display()
+                ))
                 .await
                 .unwrap();
 
-            local_f(script_engine).await;
+            f(script_engine).await;
+
+            let _ = fs::remove_file(&file_path).await;
         });
-
-        /*
-                let local_f = f.clone();
-                Runtime::test_with_script_engine(async move |script_engine| {
-                    script_engine
-                        .with(|ctx| {
-                            ctx.globals().set("options", options.into_js(&ctx)).unwrap();
-                        })
-                        .await;
-
-                    let file_path = env::temp_dir().join("test.txt");
-                    script_engine
-                        .eval_async::<()>(&format!(
-                            r#"const file = await File.open("{}", options)"#,
-                            file_path.display()
-                        ))
-                        .await
-                        .unwrap();
-
-                    local_f(script_engine).await;
-                });
-
-        */
     }
 
     #[test]
     #[traced_test]
     fn test_is_open() {
-        test_files(async move |script_engine| {
+        test_with_file(async move |script_engine| {
             let is_open = script_engine
                 .eval_async::<bool>("await file.isOpen()")
                 .await
@@ -745,7 +686,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_close() {
-        test_files(async move |script_engine| {
+        test_with_file(async move |script_engine| {
             let is_open = script_engine
                 .eval_async::<bool>(
                     "
@@ -769,7 +710,7 @@ mod tests {
     fn test_write_read_text_instance() {
         const TEXT: &str = "test";
 
-        test_files(async move |script_engine| {
+        test_with_file(async move |script_engine| {
             let result = script_engine
                 .eval_async::<String>(&format!(
                     r#"
@@ -791,7 +732,7 @@ mod tests {
         const TEXT: &str = "test";
 
         Runtime::test_with_script_engine(async move |script_engine| {
-            let file_path = env::temp_dir().join("test.txt");
+            let file_path = env::temp_dir().join("test_write_read_text_static.txt");
             let result = script_engine
                 .eval_async::<String>(&format!(
                     r#"
@@ -813,7 +754,7 @@ mod tests {
     fn test_write_read_bytes_instance() {
         const BYTES: &[u8] = b"test";
 
-        test_files(async move |script_engine| {
+        test_with_file(async move |script_engine| {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
@@ -877,7 +818,7 @@ mod tests {
                 })
                 .await;
 
-            let file_path = env::temp_dir().join("test.txt");
+            let file_path = env::temp_dir().join("test_write_read_bytes_static.txt");
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
@@ -925,7 +866,7 @@ mod tests {
     fn test_size() {
         const TEXT: &str = "test";
 
-        test_files(async move |script_engine| {
+        test_with_file(async move |script_engine| {
             let result = script_engine
                 .eval_async::<usize>(&format!(
                     r#"
@@ -937,6 +878,418 @@ mod tests {
                 .unwrap();
 
             assert_eq!(result, TEXT.len());
+
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.setSize(42);
+                await file.size()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, 42);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_readonly() {
+        test_with_file(async move |script_engine| {
+            let readonly = script_engine
+                .eval_async::<bool>(&format!(
+                    r#"
+                await file.readonly()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert!(!readonly);
+
+            let readonly = script_engine
+                .eval_async::<bool>(&format!(
+                    r#"
+                await file.setReadonly(true);
+                await file.readonly()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert!(readonly);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_mode() {
+        test_with_file(async move |script_engine| {
+            let mode = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.setMode(0o445);
+                await file.mode()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            #[cfg(unix)]
+            assert_eq!(mode & 0o777, 0o445);
+
+            #[cfg(windows)]
+            assert_eq!(mode & 0o777, 0);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_times() {
+        const YEAR: i32 = 1996;
+        const MONTH: u32 = 2;
+        const DAY: u32 = 10;
+        const HOUR: u32 = 6;
+        const MINUTE: u32 = 46;
+        const SECOND: u32 = 16;
+        const MILLISECOND: u32 = 468;
+
+        test_with_file(async move |script_engine| {
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.setModifiedTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
+                var result = await file.modifiedTime()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let time = script_engine
+                .with::<_, DateTime<Utc>>(|ctx| {
+                    let result = ctx.globals().get::<_, Object>("result").unwrap();
+                    JsFile::system_time_from_date(ctx, result).unwrap().into()
+                })
+                .await;
+
+            assert_eq!(time.year(), YEAR);
+            assert_eq!(time.month0(), MONTH);
+            assert_eq!(time.day(), DAY);
+            assert_eq!(time.hour(), HOUR);
+            assert_eq!(time.minute(), MINUTE);
+            assert_eq!(time.second(), SECOND);
+            assert_eq!(time.timestamp_subsec_millis(), MILLISECOND);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.setAccessedTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
+                var result = await file.accessedTime()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let time = script_engine
+                .with::<_, DateTime<Utc>>(|ctx| {
+                    let result = ctx.globals().get::<_, Object>("result").unwrap();
+                    JsFile::system_time_from_date(ctx, result).unwrap().into()
+                })
+                .await;
+
+            assert_eq!(time.year(), YEAR);
+            assert_eq!(time.month0(), MONTH);
+            assert_eq!(time.day(), DAY);
+            assert_eq!(time.hour(), HOUR);
+            assert_eq!(time.minute(), MINUTE);
+            assert_eq!(time.second(), SECOND);
+            assert_eq!(time.timestamp_subsec_millis(), MILLISECOND);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.setCreationTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
+                var result = await file.creationTime()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let time = script_engine
+                .with::<_, DateTime<Utc>>(|ctx| {
+                    let result = ctx.globals().get::<_, Object>("result").unwrap();
+                    JsFile::system_time_from_date(ctx, result).unwrap().into()
+                })
+                .await;
+
+            #[cfg(unix)]
+            let _ = time;
+
+            #[cfg(windows)]
+            {
+                assert_eq!(time.year(), YEAR);
+                assert_eq!(time.month0(), MONTH);
+                assert_eq!(time.day(), DAY);
+                assert_eq!(time.hour(), HOUR);
+                assert_eq!(time.minute(), MINUTE);
+                assert_eq!(time.second(), SECOND);
+                assert_eq!(time.timestamp_subsec_millis(), MILLISECOND);
+            }
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_position() {
+        test_with_file(async move |script_engine| {
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.position()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, 0);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.setPosition(2)
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.position()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, 2);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.setRelativePosition(1)
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.position()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, 3);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.setRelativePosition(-1)
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.position()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, 2);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                await file.rewind()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval_async::<usize>(&format!(
+                    r#"
+                await file.position()
+                "#
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(result, 0);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_path() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let file_path = env::temp_dir().join("test_with_script_engine.txt");
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                var file = await File.open("{}", {{ create: true, write: true }})
+                "#,
+                    file_path.to_string_lossy()
+                ))
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval_async::<String>("file.path")
+                .await
+                .unwrap();
+
+            assert_eq!(result, file_path.to_string_lossy());
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_exists() {
+        test_with_file(async move |script_engine| {
+            let file_path = env::temp_dir().join("test_exists.txt");
+
+            let result = script_engine
+                .eval_async::<bool>(
+                    r#"
+                    await File.exists(file.path)
+                "#,
+                )
+                .await
+                .unwrap();
+            assert!(result);
+
+            let result = script_engine
+                .eval_async::<bool>(&format!(
+                    r#"
+                    await File.exists("{}")
+                "#,
+                    file_path.to_string_lossy()
+                ))
+                .await
+                .unwrap();
+            assert!(!result);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_remove() {
+        test_with_file(async move |script_engine| {
+            let result = script_engine
+                .eval_async::<bool>(
+                    r#"
+                    await File.exists(file.path)
+                "#,
+                )
+                .await
+                .unwrap();
+            assert!(result);
+
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    await File.remove(file.path)
+                "#,
+                )
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval_async::<bool>(
+                    r#"
+                    await File.exists(file.path)
+                "#,
+                )
+                .await
+                .unwrap();
+            assert!(!result);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_copy() {
+        const TEXT: &str = "test";
+
+        test_with_file(async move |script_engine| {
+            let file_path = env::temp_dir().join("test_copy.txt");
+
+            let result = script_engine
+                .eval_async::<String>(&format!(
+                    r#"
+                await file.writeText("{TEXT}");
+                await File.copy(file.path, "{}");
+                await File.readText("{}")
+                "#,
+                    file_path.to_string_lossy(),
+                    file_path.to_string_lossy()
+                ))
+                .await
+                .unwrap();
+            assert_eq!(result, TEXT);
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_rename() {
+        const TEXT: &str = "test";
+
+        test_with_file(async move |script_engine| {
+            let file_path = env::temp_dir().join("test_rename.txt");
+
+            let result = script_engine
+                .eval_async::<String>(&format!(
+                    r#"
+                await file.writeText("{TEXT}");
+                await File.rename(file.path, "{}");
+                await File.readText("{}")
+                "#,
+                    file_path.to_string_lossy(),
+                    file_path.to_string_lossy()
+                ))
+                .await
+                .unwrap();
+            assert_eq!(result, TEXT);
+
+            let result = script_engine
+                .eval_async::<bool>(
+                    r#"
+                    await File.exists(file.path)
+                "#,
+                )
+                .await
+                .unwrap();
+            assert!(!result);
+
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                    await File.remove("{}")
+                "#,
+                    file_path.to_string_lossy()
+                ))
+                .await
+                .unwrap();
         });
     }
 }

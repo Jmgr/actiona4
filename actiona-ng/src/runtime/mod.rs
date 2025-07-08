@@ -5,7 +5,7 @@ use std::{
 
 use async_compat::Compat;
 use enigo::{Enigo, Settings};
-use eyre::Result;
+use eyre::{Result, eyre};
 use itertools::Itertools;
 use rquickjs::JsLifetime;
 use scripting::Engine as ScriptEngine;
@@ -22,12 +22,15 @@ use crate::{
         SingletonClass, ValueClass,
         color::js::JsColor,
         console::js::JsConsole,
+        directory::js::JsDirectory,
         displays::{Displays, js::JsDisplays},
         file::js::JsFile,
+        filesystem::js::JsFilesystem,
         image::js::JsImage,
         keyboard::js::JsKeyboard,
         mouse::{JsButton, js::JsMouse},
         name::js::{JsName, JsWildcard},
+        path::js::JsPath,
         point::js::JsPoint,
         rect::{Rect, js::JsRect, rect},
         screenshot::js::JsScreenshot,
@@ -196,22 +199,33 @@ impl Runtime {
             .with(|ctx| -> Result<()> {
                 ctx.store_userdata(JsUserData::new(displays)).unwrap();
 
-                // Value classes
-                JsPoint::register(&ctx)?;
-                JsRect::register(&ctx)?;
-                JsColor::register(&ctx)?;
-                JsImage::register(&ctx)?;
-                JsFile::register(&ctx)?;
-                JsWildcard::register(&ctx)?;
-                JsName::register(&ctx)?;
+                (|| -> rquickjs::Result<()> {
+                    // Value classes
+                    JsPoint::register(&ctx)?;
+                    JsRect::register(&ctx)?;
+                    JsColor::register(&ctx)?;
+                    JsImage::register(&ctx)?;
+                    JsFile::register(&ctx)?;
+                    JsWildcard::register(&ctx)?;
+                    JsName::register(&ctx)?;
+                    JsDirectory::register(&ctx)?;
+                    JsPath::register(&ctx)?;
+                    JsFilesystem::register(&ctx)?;
 
-                // Singletons
-                JsMouse::register(&ctx, mouse)?;
-                JsKeyboard::register(&ctx, keyboard)?;
-                JsUi::register(&ctx, ui)?;
-                JsConsole::register(&ctx, console)?;
-                JsDisplays::register(&ctx, js_displays)?;
-                JsScreenshot::register(&ctx, screenshot)?;
+                    // Singletons
+                    JsMouse::register(&ctx, mouse)?;
+                    JsKeyboard::register(&ctx, keyboard)?;
+                    JsUi::register(&ctx, ui)?;
+                    JsConsole::register(&ctx, console)?;
+                    JsDisplays::register(&ctx, js_displays)?;
+                    JsScreenshot::register(&ctx, screenshot)?;
+
+                    Ok(())
+                })()
+                .map_err(|_| {
+                    let caught_error = ctx.catch();
+                    eyre!("registration error: {:?}", caught_error)
+                })?;
 
                 Ok(())
             })

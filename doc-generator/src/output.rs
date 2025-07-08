@@ -281,7 +281,7 @@ impl File {
                     } else {
                         ""
                     },
-                    property.name,
+                    property.name.to_case(Case::Camel),
                     optional,
                     property.type_.to_string(Context::Property)?
                 )?;
@@ -298,8 +298,15 @@ impl File {
                     let mut parameters = String::new();
                     let mut is_first = true;
 
-                    if overload.has_rest_params {
-                        parameters = "...args: any[]".to_string();
+                    if let Some(rest_params) = &overload.rest_params {
+                        parameters = format!(
+                            "...args: {}[]",
+                            if let Some(type_) = &rest_params.type_ {
+                                &type_
+                            } else {
+                                "any"
+                            }
+                        );
                     } else {
                         for parameter in &overload.parameters {
                             if matches!(parameter.type_, Type::Ignore) {
@@ -401,7 +408,7 @@ mod tests {
                             },
                         ],
                         return_: Type::Verbatim("Foo".to_string()),
-                        has_rest_params: false,
+                        rest_params: None,
                     },
                     MethodOverload {
                         comments: Comments::default(),
@@ -413,7 +420,7 @@ mod tests {
                             default_value: None,
                         }],
                         return_: Type::Verbatim("Foo".to_string()),
-                        has_rest_params: false,
+                        rest_params: None,
                     },
                 ],
                 is_constructor: true,
@@ -436,7 +443,7 @@ mod tests {
                         default_value: None,
                     }],
                     return_: Type::Verbatim("Bar".to_string()),
-                    has_rest_params: false,
+                    rest_params: None,
                 }],
                 is_constructor: true,
                 ..Default::default()

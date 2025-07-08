@@ -11,7 +11,8 @@ use rustdoc_types::{Crate, ItemEnum};
 use structs::process_structs;
 
 use crate::types::{
-    File, Instruction, InstructionDiscriminants, RustdocContext, Type, Variable, strip_modules,
+    File, Instruction, InstructionDiscriminants, RestParams, RustdocContext, Type, Variable,
+    strip_modules,
 };
 
 pub mod enums;
@@ -63,9 +64,16 @@ impl Instructions {
             .any(|instruction| matches!(instruction, Instruction::Global))
     }
 
-    pub fn has_rest(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Rest))
+    pub fn rest_params(&self) -> Option<RestParams> {
+        self.iter().find_map(|instruction| {
+            if let Instruction::Rest(type_) = instruction {
+                Some(RestParams {
+                    type_: type_.clone(),
+                })
+            } else {
+                None
+            }
+        })
     }
 
     pub fn is_options(&self) -> bool {
@@ -234,15 +242,6 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Options
         }
 
-        // @rest
-        "rest" => {
-            if !parameters.is_empty() {
-                bail!("unexpected parameters");
-            }
-
-            Instruction::Rest
-        }
-
         // @static
         "static" => {
             if !parameters.is_empty() {
@@ -251,6 +250,13 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
 
             Instruction::Static
         }
+
+        // @rest
+        "rest" => Instruction::Rest(if parameters.is_empty() {
+            None
+        } else {
+            Some(parameters.to_string())
+        }),
 
         // @const
         "const" => Instruction::Const(parameters.to_string()),

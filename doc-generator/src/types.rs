@@ -83,11 +83,16 @@ pub struct Method {
 }
 
 #[derive(Clone, Debug)]
+pub struct RestParams {
+    pub type_: Option<String>,
+}
+
+#[derive(Clone, Debug)]
 pub struct MethodOverload {
     pub parameters: Vec<Variable>,
     pub return_: Type,
     pub comments: Comments,
-    pub has_rest_params: bool,
+    pub rest_params: Option<RestParams>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -123,7 +128,7 @@ pub enum Instruction {
     Default(String),
     Options,
     Extends(String),
-    Rest,
+    Rest(Option<String>),
     Rename(String),
     Static,
 }

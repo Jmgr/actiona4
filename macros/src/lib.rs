@@ -1,3 +1,4 @@
+use convert_case::{Case, Casing};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, Fields, parse_macro_input};
@@ -75,8 +76,8 @@ pub fn derive_from_js_object(input: TokenStream) -> TokenStream {
     };
 
     let build_fields = fields.iter().map(|f| {
-        let name = &f.ident; // e.g. "center"
-        let name_str = name.as_ref().unwrap().to_string(); // "center"
+        let name = &f.ident; // e.g. "create_new"
+        let name_str = name.as_ref().unwrap().to_string().to_case(Case::Camel); // "createNew"
         quote! {
             if let Ok(#name) = object.get(#name_str) {
                 result.#name = #name;

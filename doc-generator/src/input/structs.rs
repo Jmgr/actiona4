@@ -187,7 +187,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                 let is_constructor = instructions.has_constructor();
                 let is_private = instructions.has_private();
                 let mut is_static;
-                let has_rest_params = instructions.has_rest();
+                let rest_params = instructions.rest_params();
 
                 if let Some(new_name) = instructions.rename() {
                     function_name = new_name;
@@ -214,7 +214,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                                 continue;
                             }
                             Ok(Type::Unknown) => {
-                                if instructions.has_rest() {
+                                if instructions.rest_params().is_some() {
                                     continue;
                                 }
 
@@ -268,7 +268,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                         parameters,
                         return_,
                         comments,
-                        has_rest_params,
+                        rest_params,
                     });
                 } else {
                     is_static = instructions.has_static();
@@ -304,7 +304,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                             parameters,
                             return_: return_.unwrap_or(default_result.clone()),
                             comments: comments.clone(),
-                            has_rest_params,
+                            rest_params: rest_params.clone(),
                         });
                     }
 
@@ -327,12 +327,12 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                         }
                     });
 
-                    if has_rest_params || !parameters.is_empty() {
+                    if rest_params.is_some() || !parameters.is_empty() {
                         overloads.push(MethodOverload {
                             parameters,
                             return_: return_.unwrap_or(default_result.clone()),
                             comments: comments.clone(),
-                            has_rest_params,
+                            rest_params,
                         });
                     }
                 };
