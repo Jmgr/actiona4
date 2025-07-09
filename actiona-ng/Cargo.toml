@@ -50,6 +50,7 @@ once_cell.workspace = true
 regex.workspace = true
 spin_on.workspace = true
 chrono.workspace = true
+arboard.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true

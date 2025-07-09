@@ -409,7 +409,7 @@ impl JsFile {
         Ok(())
     }
 
-    /// Note that this returns 0 on Windows.
+    /// @platforms -windows
     pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
         let opened_file = self.opened_file(&ctx)?;
 
@@ -429,7 +429,7 @@ impl JsFile {
 
     /// Sets the file mode.
     /// You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
-    /// Note that this does nothing on Windows.
+    /// @platforms -windows
     pub async fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
         #[cfg(unix)]
         return {
@@ -460,9 +460,10 @@ impl JsFile {
     #[qjs(skip)]
     async fn set_times(opened_file: &OpenedFile, times: FileTimes) -> Result<()> {
         let path = opened_file.path.clone();
+
         spawn_blocking(move || {
             let file = std::fs::File::options().write(true).open(path)?;
-            file.set_times(times)?;
+            file.set_times(times)?; // No implemented in tokio::fs
             Result::<_>::Ok(())
         })
         .await
@@ -506,7 +507,7 @@ impl JsFile {
     }
 
     /// @param date: Date
-    /// Note that this does nothing on Linux.
+    /// @platforms -linux
     pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         #[cfg(unix)]
         {

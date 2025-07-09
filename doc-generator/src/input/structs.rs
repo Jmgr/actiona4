@@ -76,6 +76,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                     comments,
                     is_readonly: false,
                     default_value,
+                    platforms: instructions.platforms(),
                 });
             }
         } else {
@@ -230,6 +231,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                                     comments: Default::default(), // TODO
                                     is_readonly: false,
                                     default_value: None,
+                                    platforms: instructions.platforms(),
                                 });
                             }
                             Err(err) => error!("{err:?}"),
@@ -269,6 +271,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                         return_,
                         comments,
                         rest_params,
+                        platforms: instructions.platforms(),
                     });
                 } else {
                     is_static = instructions.has_static();
@@ -305,6 +308,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                             return_: return_.unwrap_or(default_result.clone()),
                             comments: comments.clone(),
                             rest_params: rest_params.clone(),
+                            platforms: instructions.platforms(),
                         });
                     }
 
@@ -333,6 +337,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
                             return_: return_.unwrap_or(default_result.clone()),
                             comments: comments.clone(),
                             rest_params,
+                            platforms: instructions.platforms(),
                         });
                     }
                 };
@@ -360,6 +365,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
             consts,
             is_options,
             extends,
+            platforms: struct_instructions.platforms(),
         });
     }
 

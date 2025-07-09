@@ -20,6 +20,7 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use crate::{
     core::{
         SingletonClass, ValueClass,
+        clipboard::js::JsClipboard,
         color::js::JsColor,
         console::js::JsConsole,
         directory::js::JsDirectory,
@@ -219,6 +220,7 @@ impl Runtime {
                     JsConsole::register(&ctx, console)?;
                     JsDisplays::register(&ctx, js_displays)?;
                     JsScreenshot::register(&ctx, screenshot)?;
+                    JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
 
                     Ok(())
                 })()

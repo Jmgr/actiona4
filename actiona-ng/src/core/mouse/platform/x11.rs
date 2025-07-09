@@ -82,28 +82,23 @@ impl MouseImpl {
 }
 
 impl MouseImplTrait for MouseImpl {
-    fn is_button_pressed(&mut self, button: JsButton) -> Result<bool> {
+    async fn is_button_pressed(&mut self, button: JsButton) -> Result<bool> {
         let x11_connection = self.runtime.platform().x11_connection();
         let master_pointer_device_id = self.master_pointer_device_id;
 
-        let buttons = Runtime::block_on(async move {
-            let cookie = xi_query_pointer(
-                x11_connection.connection(),
-                x11_connection.screen().root,
-                master_pointer_device_id,
-            )
+        let cookie = xi_query_pointer(
+            x11_connection.connection(),
+            x11_connection.screen().root,
+            master_pointer_device_id,
+        )
+        .await
+        .map_err(|err| MouseError::ConnectionError(err.to_string()))?;
+
+        let buttons = cookie
+            .reply()
             .await
-            .map_err(|err| MouseError::ConnectionError(err.to_string()))?;
-
-            let buttons = cookie
-                .reply()
-                .await
-                .map_err(|err| MouseError::ReplyError(err.to_string()))?
-                .buttons;
-
-            Result::Ok(buttons)
-        })
-        .unwrap();
+            .map_err(|err| MouseError::ReplyError(err.to_string()))?
+            .buttons;
 
         let mask = buttons.first().ok_or_else(|| {
             MouseError::Unexpected("button mask should have at least one entry".into())

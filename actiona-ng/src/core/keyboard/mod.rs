@@ -253,8 +253,9 @@ impl Keyboard {
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration};
+    use std::time::Duration;
 
+    use tokio::time::sleep;
     use tracing_test::traced_test;
 
     use crate::runtime::Runtime;
@@ -267,7 +268,7 @@ mod tests {
 
             //keyboard.text("hello").unwrap();
 
-            sleep(Duration::from_secs(1))
+            sleep(Duration::from_secs(1)).await
         });
     }
 }

@@ -1,3 +1,7 @@
+use std::fmt::Display;
+
+use eyre::{Result, eyre};
+use itertools::Itertools;
 use strum::{Display, EnumDiscriminants};
 
 use crate::input::Comments;
@@ -6,6 +10,7 @@ use crate::input::Comments;
 pub struct EnumVariant {
     pub name: String,
     pub comments: Comments,
+    pub platforms: Platforms,
 }
 
 #[derive(Debug)]
@@ -13,6 +18,7 @@ pub struct Enum {
     pub name: String,
     pub variants: Vec<EnumVariant>,
     pub comments: Comments,
+    pub platforms: Platforms,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -70,6 +76,7 @@ pub struct Variable {
     pub comments: Comments,
     pub is_readonly: bool,
     pub default_value: Option<String>,
+    pub platforms: Platforms,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -93,6 +100,7 @@ pub struct MethodOverload {
     pub return_: Type,
     pub comments: Comments,
     pub rest_params: Option<RestParams>,
+    pub platforms: Platforms,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -105,12 +113,130 @@ pub struct Struct {
     pub consts: Vec<String>,
     pub is_options: bool,
     pub extends: Option<String>,
+    pub platforms: Platforms,
 }
 
 #[derive(Debug, Default)]
 pub struct File {
     pub enums: Vec<Enum>,
     pub structs: Vec<Struct>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum PlatformConstraint {
+    Only,
+    Not,
+}
+
+impl TryFrom<char> for PlatformConstraint {
+    type Error = eyre::Error;
+
+    fn try_from(value: char) -> std::result::Result<Self, Self::Error> {
+        Ok(match value {
+            '=' => Self::Only,
+            '-' => Self::Not,
+            _ => return Err(eyre!("unknown platform constraint character: {value}")),
+        })
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Display)]
+pub enum PlatformType {
+    Linux,
+    Windows,
+    X11,
+    Wayland,
+}
+
+impl TryFrom<&str> for PlatformType {
+    type Error = eyre::Error;
+
+    fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+        Ok(match value {
+            "linux" => Self::Linux,
+            "windows" => Self::Windows,
+            "x11" => Self::X11,
+            "wayland" => Self::Wayland,
+            _ => return Err(eyre!("unknown platform: {value}")),
+        })
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Platform {
+    pub constraint: PlatformConstraint,
+    pub type_: PlatformType,
+}
+
+impl TryFrom<&str> for Platform {
+    type Error = eyre::Error;
+
+    fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+        let mut chars = value.chars();
+        let constraint = chars
+            .next()
+            .ok_or(eyre!("unexpected empty platform string"))?;
+
+        Ok(Self {
+            constraint: constraint.try_into()?,
+            type_: chars.as_str().try_into()?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Platforms(Vec<Platform>);
+
+impl TryFrom<&str> for Platforms {
+    type Error = eyre::Error;
+
+    fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+        let platforms = value
+            .split_whitespace()
+            .into_iter()
+            .map(Platform::try_from)
+            .collect::<Result<Vec<_>>>()?;
+
+        if platforms.is_empty() {
+            return Ok(Self::default());
+        }
+
+        Ok(Self(platforms))
+    }
+}
+
+impl Display for Platforms {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut result = Vec::new();
+
+        let only_platforms = self.to_string_with_constraint(PlatformConstraint::Only);
+        let not_platforms = self.to_string_with_constraint(PlatformConstraint::Not);
+
+        if !only_platforms.is_empty() {
+            result.push(format!("only works on {only_platforms}"));
+        }
+        if !not_platforms.is_empty() {
+            result.push(format!("does not work on {not_platforms}"));
+        }
+
+        write!(f, "{}", result.join(", "))
+    }
+}
+
+impl Platforms {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    fn to_string_with_constraint(&self, constraint: PlatformConstraint) -> String {
+        self.0
+            .iter()
+            .filter(|platform| platform.constraint == constraint)
+            .map(|platform| platform.type_.to_string())
+            .sorted()
+            .collect_vec()
+            .join(", ")
+    }
 }
 
 #[derive(Clone, Debug, EnumDiscriminants, PartialEq)]
@@ -131,6 +257,7 @@ pub enum Instruction {
     Rest(Option<String>),
     Rename(String),
     Static,
+    Platforms(Platforms),
 }
 
 pub fn strip_modules(name: &str) -> &str {

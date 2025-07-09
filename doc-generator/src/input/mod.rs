@@ -11,8 +11,8 @@ use rustdoc_types::{Crate, ItemEnum};
 use structs::process_structs;
 
 use crate::types::{
-    File, Instruction, InstructionDiscriminants, RestParams, RustdocContext, Type, Variable,
-    strip_modules,
+    File, Instruction, InstructionDiscriminants, Platforms, RestParams, RustdocContext, Type,
+    Variable, strip_modules,
 };
 
 pub mod enums;
@@ -74,6 +74,18 @@ impl Instructions {
                 None
             }
         })
+    }
+
+    pub fn platforms(&self) -> Platforms {
+        self.iter()
+            .find_map(|instruction| {
+                if let Instruction::Platforms(platforms) = instruction {
+                    Some(platforms.clone())
+                } else {
+                    None
+                }
+            })
+            .unwrap_or_default()
     }
 
     pub fn is_options(&self) -> bool {
@@ -169,6 +181,7 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
         comments: comments.into(),
         is_readonly,
         default_value: default,
+        platforms: Default::default(),
     })
 }
 
@@ -270,6 +283,9 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         // @rename
         "rename" => Instruction::Rename(parameters.to_string()),
 
+        // @platforms
+        "platforms" => Instruction::Platforms(Platforms::try_from(parameters)?),
+
         // @returns type // comment
         "returns" => {
             let captures = RETURNS_REGEX
@@ -316,6 +332,14 @@ const fn allowed_context_per_instruction(
         Rest => &[RustdocContext::Method],
         Rename => &[RustdocContext::Method],
         Static => &[RustdocContext::Method],
+        Platforms => &[
+            RustdocContext::Method,
+            RustdocContext::MethodOverload,
+            RustdocContext::Struct,
+            RustdocContext::Property,
+            RustdocContext::Enum,
+            RustdocContext::EnumVariant,
+        ],
     }
 }
 
@@ -671,6 +695,7 @@ mod tests {
                             comments: Comments(vec!["X coordinate".to_string()]),
                             is_readonly: false,
                             default_value: None,
+                            platforms: instructions.platforms(),
                         }),
                         Instruction::Parameter(Variable {
                             name: "y".to_string(),
@@ -678,6 +703,7 @@ mod tests {
                             comments: Comments(vec!["Y coordinate".to_string()]),
                             is_readonly: false,
                             default_value: Some("42".to_string()),
+                            platforms: instructions.platforms(),
                         })
                     ]),
                     Comments(vec!["Comment for the first overload".to_string()])
@@ -693,6 +719,7 @@ mod tests {
                             ]),
                             is_readonly: false,
                             default_value: None,
+                            platforms: instructions.platforms(),
                         })
                     ]),
                     Comments(vec![])
@@ -706,6 +733,7 @@ mod tests {
                             comments: Comments(vec!["Other point".to_string()]),
                             is_readonly: false,
                             default_value: None,
+                            platforms: instructions.platforms(),
                         })
                     ]),
                     Comments(vec!["Comment for the last overload".to_string()])

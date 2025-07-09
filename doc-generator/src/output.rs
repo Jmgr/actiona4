@@ -214,7 +214,13 @@ impl File {
         )?;
 
         for enum_ in self.enums.iter() {
-            write_comments(&enum_.comments, "", &mut output_file)?;
+            let mut comments = enum_.comments.clone();
+
+            if !enum_.platforms.is_empty() {
+                comments.push(format!("@platform {}", enum_.platforms));
+            }
+
+            write_comments(&comments, "", &mut output_file)?;
 
             writeln!(output_file, "declare enum {} {{", enum_.name)?;
 
@@ -225,7 +231,13 @@ impl File {
                     writeln!(output_file)?;
                 }
 
-                write_comments(&variant.comments, "    ", &mut output_file)?;
+                let mut comments = variant.comments.clone();
+
+                if !variant.platforms.is_empty() {
+                    comments.push(format!("@platform {}", variant.platforms));
+                }
+
+                write_comments(&comments, "    ", &mut output_file)?;
 
                 writeln!(output_file, "    {},", variant.name)?;
             }
@@ -234,7 +246,13 @@ impl File {
         }
 
         for struct_ in self.structs.iter() {
-            write_comments(&struct_.comments, "", &mut output_file)?;
+            let mut comments = struct_.comments.clone();
+
+            if !struct_.platforms.is_empty() {
+                comments.push(format!("@platform {}", struct_.platforms));
+            }
+
+            write_comments(&comments, "", &mut output_file)?;
 
             let has_constructor = struct_.methods.iter().any(|method| method.is_constructor);
 
@@ -267,6 +285,10 @@ impl File {
 
                 if let Some(default) = &property.default_value {
                     comments.push(format!("@defaultValue {default}"));
+                }
+
+                if !property.platforms.is_empty() {
+                    comments.push(format!("@platform {}", property.platforms));
                 }
 
                 write_comments(&comments, "    ", &mut output_file)?;
@@ -333,7 +355,13 @@ impl File {
                         }
                     }
 
-                    write_comments(&overload.comments, "    ", &mut output_file)?;
+                    let mut comments = overload.comments.clone();
+
+                    if !overload.platforms.is_empty() {
+                        comments.push(format!("@platform {}", overload.platforms));
+                    }
+
+                    write_comments(&comments, "    ", &mut output_file)?;
 
                     let private = if method.is_private { "private " } else { "" };
 
@@ -398,6 +426,7 @@ mod tests {
                                 comments: Comments::default(),
                                 is_readonly: false,
                                 default_value: None,
+                                platforms: Default::default(),
                             },
                             Variable {
                                 name: "b".to_string(),
@@ -405,10 +434,12 @@ mod tests {
                                 comments: Comments::default(),
                                 is_readonly: false,
                                 default_value: None,
+                                platforms: Default::default(),
                             },
                         ],
                         return_: Type::Verbatim("Foo".to_string()),
                         rest_params: None,
+                        platforms: Default::default(),
                     },
                     MethodOverload {
                         comments: Comments::default(),
@@ -418,9 +449,11 @@ mod tests {
                             comments: Comments::default(),
                             is_readonly: false,
                             default_value: None,
+                            platforms: Default::default(),
                         }],
                         return_: Type::Verbatim("Foo".to_string()),
                         rest_params: None,
+                        platforms: Default::default(),
                     },
                 ],
                 is_constructor: true,
@@ -441,9 +474,11 @@ mod tests {
                         comments: Comments::default(),
                         is_readonly: false,
                         default_value: None,
+                        platforms: Default::default(),
                     }],
                     return_: Type::Verbatim("Bar".to_string()),
                     rest_params: None,
+                    platforms: Default::default(),
                 }],
                 is_constructor: true,
                 ..Default::default()

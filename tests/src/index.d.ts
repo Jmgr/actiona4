@@ -223,6 +223,10 @@ declare enum Tween {
      */
     SINE_OUT,
 }
+declare interface Clipboard {
+    setText(text: string): void;
+}
+declare const clipboard: Clipboard;
 /**
  * A Color.
  * 
@@ -817,13 +821,13 @@ declare class File {
     readonly(): Promise<boolean>;
     setReadonly(readonly: boolean): Promise<void>;
     /**
-     * Note that this returns 0 on Windows.
+     * @platform does not work on Windows
      */
     mode(): Promise<number>;
     /**
      * Sets the file mode.
      * You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
-     * Note that this does nothing on Windows.
+     * @platform does not work on Windows
      */
     setMode(mode: number): Promise<void>;
     modifiedTime(): Promise<Date>;
@@ -832,7 +836,7 @@ declare class File {
     setAccessedTime(date: Date): Promise<void>;
     creationTime(): Promise<Date>;
     /**
-     * Note that this does nothing on Linux.
+     * @platform does not work on Linux
      */
     setCreationTime(date: Date): Promise<void>;
     position(): Promise<number>;
@@ -2046,24 +2050,29 @@ declare interface Keyboard {
 }
 declare const keyboard: Keyboard;
 declare interface Mouse {
-    isPressed(button: Button): boolean;
-    scroll(length: number, axis?: Axis): this;
-    position(): Point;
-    measureSpeed(duration?: number): number;
-    move(point: Point, options?: MoveOptions): this;
-    move(x: number, y: number, options?: MoveOptions): this;
-    move(o: {x: number, y: number}, options?: MoveOptions): this;
-    setPosition(point: Point): this;
-    setPosition(x: number, y: number): this;
-    setPosition(o: {x: number, y: number}): this;
-    setRelativePosition(point: Point): this;
-    setRelativePosition(x: number, y: number): this;
-    setRelativePosition(o: {x: number, y: number}): this;
-    click(options?: ClickOptions): this;
-    doubleClick(options?: DoubleClickOptions): this;
-    press(options?: PressOptions): this;
-    release(button?: Button): this;
-    wait(duration: number): this;
+    /**
+     * @platform does not work on Wayland
+     */
+    isPressed(button: Button): Promise<boolean>;
+    scroll(length: number, axis?: Axis): Promise<void>;
+    /**
+     * @platform does not work on Wayland
+     */
+    position(): Promise<Point>;
+    measureSpeed(duration?: number): Promise<number>;
+    move(point: Point, options?: MoveOptions): Promise<void>;
+    move(x: number, y: number, options?: MoveOptions): Promise<void>;
+    move(o: {x: number, y: number}, options?: MoveOptions): Promise<void>;
+    setPosition(point: Point): Promise<void>;
+    setPosition(x: number, y: number): Promise<void>;
+    setPosition(o: {x: number, y: number}): Promise<void>;
+    setRelativePosition(point: Point): Promise<void>;
+    setRelativePosition(x: number, y: number): Promise<void>;
+    setRelativePosition(o: {x: number, y: number}): Promise<void>;
+    click(options?: ClickOptions): Promise<void>;
+    doubleClick(options?: DoubleClickOptions): Promise<void>;
+    press(options?: PressOptions): Promise<void>;
+    release(button?: Button): Promise<void>;
 }
 declare const mouse: Mouse;
 declare class Wildcard {

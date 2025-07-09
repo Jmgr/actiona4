@@ -65,6 +65,7 @@ pub fn process_enums<'a, I: Iterator<Item = &'a Item>>(
             result_variants.push(EnumVariant {
                 name: name.clone(),
                 comments,
+                platforms: instructions.platforms(),
             });
         }
 
@@ -81,6 +82,7 @@ pub fn process_enums<'a, I: Iterator<Item = &'a Item>>(
             name: enum_name.to_string(),
             variants: result_variants,
             comments,
+            platforms: instructions.platforms(),
         });
     }
 

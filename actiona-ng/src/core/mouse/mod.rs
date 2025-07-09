@@ -1,6 +1,5 @@
 use std::{
     sync::{Arc, Mutex},
-    thread::sleep,
     time::{Duration, Instant},
 };
 
@@ -11,6 +10,7 @@ use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use platform::MouseImplTrait;
 use rand::RngCore;
 use thiserror::Error;
+use tokio::time::sleep;
 use tracing::{info, instrument};
 use tween::FixedTweener;
 
@@ -145,9 +145,8 @@ impl Mouse {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn is_pressed(&mut self, button: JsButton) -> Result<bool> {
-        // TODO: TEST
-        self.implementation.is_button_pressed(button)
+    pub async fn is_pressed(&mut self, button: JsButton) -> Result<bool> {
+        self.implementation.is_button_pressed(button).await
     }
 
     #[instrument(skip(self), err, ret)]
@@ -182,7 +181,7 @@ impl Mouse {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn measure_speed(&self, duration: Duration) -> Result<f32> {
+    pub async fn measure_speed(&self, duration: Duration) -> Result<f32> {
         let mut last_position = self.position()?;
         let mut last_time = Instant::now();
 
@@ -192,7 +191,7 @@ impl Mouse {
         let start_time = Instant::now();
 
         while start_time.elapsed() < duration {
-            sleep(Duration::from_millis(10));
+            sleep(Duration::from_millis(10)).await;
 
             let current_position = self.position()?;
             let current_time = Instant::now();
@@ -261,7 +260,7 @@ fn sigmoid(x: f32) -> f32 {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub fn move_(&mut self, mut target_position: Point, options: MoveOptions) -> Result<()> {
+    pub async fn move_(&mut self, mut target_position: Point, options: MoveOptions) -> Result<()> {
         if options.target_randomness > 0. {
             target_position = Point::random_in_circle(target_position, options.target_randomness);
         }
@@ -319,7 +318,7 @@ impl Mouse {
 
             self.set_position(position, Coordinate::Abs)?;
 
-            sleep(options.interval.0);
+            sleep(options.interval.0).await;
         }
 
         self.set_position(target_position, Coordinate::Abs)?;
@@ -360,7 +359,7 @@ impl Default for ClickOptions {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub fn click(&mut self, options: ClickOptions) -> Result<()> {
+    pub async fn click(&mut self, options: ClickOptions) -> Result<()> {
         use enigo::Mouse;
 
         let coordinate = if options.press.relative_position {
@@ -393,7 +392,7 @@ impl Mouse {
                         options.press.button
                     );
                 }
-                sleep(options.duration.0);
+                sleep(options.duration.0).await;
                 action(enigo::Direction::Release)?;
             } else {
                 action(enigo::Direction::Click)?;
@@ -403,7 +402,7 @@ impl Mouse {
             self.pressed_buttons.shift_remove(&options.press.button);
 
             if !options.interval.0.is_zero() && i + 1 < options.amount {
-                sleep(options.interval.0);
+                sleep(options.interval.0).await;
             }
         }
 
@@ -435,10 +434,10 @@ impl Default for DoubleClickOptions {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub fn double_click(&mut self, options: DoubleClickOptions) -> Result<()> {
-        self.click(options.click)?;
-        sleep(options.delay.0);
-        self.click(options.click)?;
+    pub async fn double_click(&mut self, options: DoubleClickOptions) -> Result<()> {
+        self.click(options.click).await?;
+        sleep(options.delay.0).await;
+        self.click(options.click).await?;
 
         Ok(())
     }
@@ -568,6 +567,7 @@ mod tests {
                             ..Default::default()
                         },
                     )
+                    .await
                     .unwrap()
             }
 

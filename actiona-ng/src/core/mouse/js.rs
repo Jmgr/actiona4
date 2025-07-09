@@ -1,9 +1,9 @@
-use std::{sync::Arc, thread::sleep};
+use std::sync::Arc;
 
 use convert_case::{Case, Casing};
 use macros::ExposeEnum;
 use rquickjs::{
-    Class, Ctx, Exception, JsLifetime, Result,
+    Ctx, Exception, JsLifetime, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -171,134 +171,87 @@ pub type JsDoubleClickOptions = super::DoubleClickOptions;
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsMouse {
-    pub fn is_pressed(&mut self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
-        self.inner.is_pressed(button).into_js(&ctx)
+    /// @platforms -wayland
+    pub async fn is_pressed(&mut self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
+        self.inner.is_pressed(button).await.into_js(&ctx)
     }
 
-    pub fn scroll<'js>(
+    pub async fn scroll<'js>(
         &mut self,
-        this: This<Class<'js, Self>>,
         ctx: Ctx<'_>,
         length: i32,
         axis: Opt<JsAxis>,
-    ) -> Result<Class<'js, Self>> {
+    ) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+            .into_js(&ctx)
     }
 
-    pub fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
+    /// @platforms -wayland
+    pub async fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position().into_js(&ctx)?.into())
     }
 
-    pub fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f32> {
+    pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f32> {
         let duration = ms_to_duration(duration.unwrap_or(2000.));
-        self.inner.measure_speed(duration).into_js(&ctx)
+        self.inner.measure_speed(duration).await.into_js(&ctx)
     }
 
     #[qjs(rename = "move")]
-    pub fn r#move<'js>(
+    pub async fn r#move<'js>(
         &mut self,
-        this: This<Class<'js, Self>>,
         ctx: Ctx<'js>,
         point: JsPointParam,
         options: Opt<JsMoveOptions>,
-    ) -> Result<Class<'js, Self>> {
+    ) -> Result<()> {
         self.inner
             .move_(point.0, options.unwrap_or_default())
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+            .await
+            .into_js(&ctx)
     }
 
-    pub fn set_position<'js>(
-        &self,
-        this: This<Class<'js, Self>>,
-        ctx: Ctx<'js>,
-        point: JsPointParam,
-    ) -> Result<Class<'js, Self>> {
+    pub async fn set_position<'js>(&self, ctx: Ctx<'js>, point: JsPointParam) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+            .into_js(&ctx)
     }
 
-    pub fn set_relative_position<'js>(
+    pub async fn set_relative_position<'js>(
         &self,
-        this: This<Class<'js, Self>>,
         ctx: Ctx<'js>,
         point: JsPointParam,
-    ) -> Result<Class<'js, Self>> {
+    ) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+            .into_js(&ctx)
     }
 
-    pub fn click<'js>(
-        &mut self,
-        this: This<Class<'js, Self>>,
-        ctx: Ctx<'_>,
-        options: Opt<JsClickOptions>,
-    ) -> Result<Class<'js, Self>> {
+    pub async fn click<'js>(&mut self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
         self.inner
             .click(options.unwrap_or_default())
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+            .await
+            .into_js(&ctx)
     }
 
-    pub fn double_click<'js>(
+    pub async fn double_click<'js>(
         &mut self,
-        this: This<Class<'js, Self>>,
         ctx: Ctx<'_>,
         options: Opt<JsDoubleClickOptions>,
-    ) -> Result<Class<'js, Self>> {
+    ) -> Result<()> {
         self.inner
             .double_click(options.unwrap_or_default())
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+            .await
+            .into_js(&ctx)
     }
 
-    pub fn press<'js>(
-        &mut self,
-        this: This<Class<'js, Self>>,
-        ctx: Ctx<'_>,
-        options: Opt<JsPressOptions>,
-    ) -> Result<Class<'js, Self>> {
-        self.inner
-            .press(options.unwrap_or_default())
-            .into_js(&ctx)?;
-
-        Ok(this.0)
+    pub async fn press<'js>(&mut self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
+        self.inner.press(options.unwrap_or_default()).into_js(&ctx)
     }
 
-    pub fn release<'js>(
-        &mut self,
-        this: This<Class<'js, Self>>,
-        ctx: Ctx<'_>,
-        button: Opt<JsButton>,
-    ) -> Result<Class<'js, Self>> {
+    pub async fn release<'js>(&mut self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))
-            .into_js(&ctx)?;
-
-        Ok(this.0)
-    }
-
-    pub fn wait<'js>(
-        &self,
-        this: This<Class<'js, Self>>,
-        duration: f64,
-    ) -> Result<Class<'js, Self>> {
-        sleep(ms_to_duration(duration));
-
-        Ok(this.0)
+            .into_js(&ctx)
     }
 }
 
@@ -316,20 +269,23 @@ mod tests {
     #[traced_test]
     fn test_position() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let mut position: JsPoint = script_engine.eval("mouse.position()").await.unwrap();
+            let mut position: JsPoint = script_engine
+                .eval_async("await mouse.position()")
+                .await
+                .unwrap();
             position = point(position.get_x() + 5, position.get_y() + 5).into();
 
             script_engine
-                .eval::<()>(&format!(
-                    "mouse.setPosition(new Point{})",
+                .eval_async::<()>(&format!(
+                    "await mouse.setPosition(new Point{})",
                     position.to_string_js()
                 ))
                 .await
                 .unwrap();
 
             script_engine
-                .eval::<()>(&format!(
-                    "mouse.setPosition({}, {})",
+                .eval_async::<()>(&format!(
+                    "await mouse.setPosition({}, {})",
                     position.get_x(),
                     position.get_y()
                 ))
@@ -337,15 +293,18 @@ mod tests {
                 .unwrap();
 
             script_engine
-                .eval::<()>(&format!(
-                    "mouse.setPosition({{ x: {}, y: {} }})",
+                .eval_async::<()>(&format!(
+                    "await mouse.setPosition({{ x: {}, y: {} }})",
                     position.get_x(),
                     position.get_y()
                 ))
                 .await
                 .unwrap();
 
-            let new_position: JsPoint = script_engine.eval("mouse.position()").await.unwrap();
+            let new_position: JsPoint = script_engine
+                .eval_async("await mouse.position()")
+                .await
+                .unwrap();
             assert_eq!(position, new_position);
         });
     }
@@ -369,7 +328,7 @@ mod tests {
             script_engine.eval::<()>("mouse.press()").await.unwrap();
 
             let pressed: bool = script_engine
-                .eval("mouse.isPressed(Button.LEFT)")
+                .eval_async("await mouse.isPressed(Button.LEFT)")
                 .await
                 .unwrap();
             assert!(pressed);
@@ -377,7 +336,7 @@ mod tests {
             script_engine.eval::<()>("mouse.release()").await.unwrap();
 
             let pressed: bool = script_engine
-                .eval("mouse.isPressed(Button.LEFT)")
+                .eval_async("await mouse.isPressed(Button.LEFT)")
                 .await
                 .unwrap();
             assert!(!pressed);
@@ -388,15 +347,21 @@ mod tests {
     #[traced_test]
     fn test_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
-            script_engine.eval::<()>("mouse.scroll(1)").await.unwrap();
-            script_engine.eval::<()>("mouse.scroll(-1)").await.unwrap();
-
             script_engine
-                .eval::<()>("mouse.scroll(1, Axis.HORIZONTAL)")
+                .eval_async::<()>("await mouse.scroll(1)")
                 .await
                 .unwrap();
             script_engine
-                .eval::<()>("mouse.scroll(-1, Axis.HORIZONTAL)")
+                .eval_async::<()>("await mouse.scroll(-1)")
+                .await
+                .unwrap();
+
+            script_engine
+                .eval_async::<()>("await mouse.scroll(1, Axis.HORIZONTAL)")
+                .await
+                .unwrap();
+            script_engine
+                .eval_async::<()>("await mouse.scroll(-1, Axis.HORIZONTAL)")
                 .await
                 .unwrap();
         });
@@ -407,36 +372,10 @@ mod tests {
     fn test_measure_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
             let speed: f64 = script_engine
-                .eval("mouse.measureSpeed(2000)")
+                .eval_async("await mouse.measureSpeed(2000)")
                 .await
                 .unwrap();
             println!("speed: {speed}");
-        });
-    }
-
-    #[test]
-    #[traced_test]
-    fn test_wait() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval::<()>("mouse.wait(100).wait(200);")
-                .await
-                .unwrap();
-        });
-    }
-
-    #[test]
-    #[traced_test]
-    fn test_chain() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval::<()>(
-                    r#"
-mouse.move(2000, 1000).wait(2000).move(3000, 800);
-            "#,
-                )
-                .await
-                .unwrap();
         });
     }
 }

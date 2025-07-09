@@ -1,9 +1,13 @@
+#[cfg(test)]
 use std::{env::temp_dir, path::PathBuf};
 
-use convert_case::{Case, Casing};
+#[cfg(test)]
 use rand::{Rng, distr::Alphanumeric};
+
+use convert_case::{Case, Casing};
 use rquickjs::{Class, Ctx, Exception, IntoJs, Object, Result, Value, class::JsClass};
 
+pub mod clipboard;
 pub mod color;
 pub mod console;
 pub mod directory;
@@ -129,6 +133,7 @@ pub fn check_min_arg_count(min: usize, ctx: &Ctx, args: &[Value<'_>]) -> Result<
     Ok(())
 }
 
+#[cfg(test)]
 pub(crate) fn random_name() -> String {
     rand::rng()
         .sample_iter(&Alphanumeric)
@@ -137,6 +142,7 @@ pub(crate) fn random_name() -> String {
         .collect()
 }
 
+#[cfg(test)]
 pub(crate) fn random_temp_filename() -> PathBuf {
     temp_dir().join(format!("text_{}.txt", random_name()))
 }
