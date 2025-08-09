@@ -1,26 +1,25 @@
 use std::{borrow::Cow, fmt::Debug};
 
-use arboard::Get;
-use arboard::ImageData;
-use arboard::Set;
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
-use convert_case::Case;
-use convert_case::Casing;
+use arboard::{Get, ImageData, Set};
+use convert_case::{Case, Casing};
 use eyre::eyre;
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
 use macros::ExposeEnum;
-use rquickjs::Exception;
 use rquickjs::{
-    JsLifetime, Result,
+    Exception, JsLifetime, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
 use strum::Display;
 
-use crate::core::{SingletonClass, image::js::JsImage};
-use crate::{IntoJS, newtype};
+use crate::{
+    IntoJS,
+    core::{SingletonClass, image::js::JsImage},
+    newtype,
+};
 
 impl<T> IntoJS<T> for super::Result<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {

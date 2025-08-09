@@ -1,10 +1,9 @@
 #[cfg(test)]
 use std::{env::temp_dir, path::PathBuf};
 
+use convert_case::{Case, Casing};
 #[cfg(test)]
 use rand::{Rng, distr::Alphanumeric};
-
-use convert_case::{Case, Casing};
 use rquickjs::{Class, Ctx, Exception, IntoJs, Object, Result, Value, class::JsClass};
 
 pub mod clipboard;

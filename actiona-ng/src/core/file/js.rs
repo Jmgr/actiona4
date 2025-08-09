@@ -1,5 +1,5 @@
-use std::fmt::Debug;
 use std::{
+    fmt::Debug,
     fs::FileTimes,
     io::SeekFrom,
     os::unix::fs::PermissionsExt,
@@ -15,11 +15,12 @@ use rquickjs::{
     function::{Args, Constructor},
     prelude::Opt,
 };
-use tokio::io::AsyncSeekExt;
-use tokio::io::AsyncWriteExt;
-use tokio::io::{self, AsyncReadExt};
-use tokio::sync::Mutex;
-use tokio::{fs, task::spawn_blocking};
+use tokio::{
+    fs,
+    io::{self, AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
+    sync::Mutex,
+    task::spawn_blocking,
+};
 
 use crate::core::ValueClass;
 
