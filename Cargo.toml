@@ -59,14 +59,14 @@ slint-interpreter = { version = "1.12.1", default-features = false, features = [
     "std",
     "backend-winit-x11",
 ] }
-sourcemap = "9.2.2"
 strum = { version = "0.27.1", features = ["derive"] }
-swc_common = { version = "8.1.1", features = ["tty-emitter", "sourcemap"] }
-swc_ecma_ast = "8.1.2"
-swc_ecma_codegen = "10.0.1"
-swc_ecma_parser = "11.1.4"
-swc_ecma_transforms_base = "12.2.0"
-swc_ecma_transforms_typescript = "13.0.0"
+swc_common = { version = "14.0.2", features = ["tty-emitter", "sourcemap"] }
+swc_ecma_ast = "14.0.0"
+swc_ecma_codegen = "16.0.0"
+swc_ecma_parser = "22.0.3"
+swc_ecma_transforms_base = "24.0.0"
+swc_ecma_transforms_typescript = "26.0.0"
+swc_sourcemap = "9.3.3"
 syn = { version = "2.0", features = ["parsing"] }
 thiserror = "2.0.12"
 tokio = { version = "1.46.1", features = [

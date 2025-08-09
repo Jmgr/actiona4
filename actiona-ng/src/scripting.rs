@@ -12,10 +12,10 @@ use rquickjs::{
     AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
     Promise, Value, async_with, context::EvalOptions, markers::ParallelSend,
 };
-use sourcemap::SourceMap;
 use swc_common::{
-    FileName, GLOBALS, Globals, Mark, SourceMap as SwcSourceMap,
+    FileName, FilePathMapping, GLOBALS, Globals, Mark, SourceMap,
     errors::{ColorConfig, Handler},
+    source_map::DefaultSourceMapGenConfig,
     sync::Lrc,
 };
 use swc_ecma_ast::EsVersion;
@@ -26,12 +26,12 @@ use swc_ecma_transforms_typescript::strip;
 
 struct TsToJs {
     js_code: String,
-    sourcemap: SourceMap,
+    sourcemap: swc_sourcemap::SourceMap,
 }
 
 impl TsToJs {
     pub fn new(code: &str) -> Result<Self> {
-        let cm: Lrc<SwcSourceMap> = Default::default();
+        let cm = Lrc::new(SourceMap::new(FilePathMapping::empty()));
         let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
 
         let fm = cm.new_source_file(
@@ -60,7 +60,7 @@ impl TsToJs {
         let globals = Globals::default();
         let (code, srcmap) = GLOBALS.set(
             &globals,
-            || -> Result<(std::string::String, sourcemap::SourceMap)> {
+            || -> Result<(std::string::String, swc_sourcemap::SourceMap)> {
                 let unresolved_mark = Mark::new();
                 let top_level_mark = Mark::new();
 
@@ -93,7 +93,7 @@ impl TsToJs {
                     emitter.emit_program(&program)?;
                 }
 
-                let srcmap = cm.build_source_map(&srcmap);
+                let srcmap = cm.build_source_map(&srcmap, None, DefaultSourceMapGenConfig);
                 let code = String::from_utf8(code)?;
 
                 Ok((code, srcmap))
