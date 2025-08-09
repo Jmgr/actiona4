@@ -114,7 +114,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
             .cloned()
             .collect_vec();
 
-        let has_global_instance = struct_instructions.has_global();
+        let is_singleton = struct_instructions.is_singleton();
         let is_options = struct_instructions.is_options();
         let extends = struct_instructions.extends();
 
@@ -361,7 +361,7 @@ pub fn process_structs<'a, I: Iterator<Item = &'a Item>>(
             properties,
             methods,
             comments: struct_comments,
-            has_global_instance,
+            is_singleton,
             consts,
             is_options,
             extends,

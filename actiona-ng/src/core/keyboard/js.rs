@@ -17,7 +17,7 @@ impl<'js> Trace<'js> for super::Keyboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-/// @global
+/// @singleton
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Keyboard")]
 pub struct JsKeyboard {

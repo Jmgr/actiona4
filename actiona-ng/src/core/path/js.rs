@@ -3,15 +3,11 @@ use std::{
     path::{self, Path, PathBuf},
 };
 
-use rquickjs::{
-    JsLifetime, Result,
-    class::{Trace, Tracer},
-    prelude::Rest,
-};
+use rquickjs::{JsLifetime, Result, class::Trace, prelude::Rest};
 
 use crate::core::ValueClass;
 
-#[derive(Clone, Debug, Default, JsLifetime)]
+#[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Path")]
 pub struct JsPath {}
 
@@ -28,7 +24,7 @@ impl JsPath {
 
     /// @rest string
     #[qjs(static)]
-    pub fn join<'js>(args: Rest<String>) -> String {
+    pub fn join(args: Rest<String>) -> String {
         let mut path = PathBuf::new();
         for part in args.iter() {
             path.push(part);
@@ -88,11 +84,7 @@ impl JsPath {
     #[qjs(static)]
     pub fn set_extension(path: String, extension: String) -> String {
         // Avoid a panic if `extension` contains a separator
-        if extension
-            .chars()
-            .into_iter()
-            .any(|char| path::is_separator(char))
-        {
+        if extension.chars().into_iter().any(path::is_separator) {
             return String::new();
         }
 
@@ -104,10 +96,6 @@ impl JsPath {
 
         path.to_string_lossy().into_owned()
     }
-}
-
-impl<'js> Trace<'js> for JsPath {
-    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 #[cfg(test)]

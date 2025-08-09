@@ -413,7 +413,7 @@ impl JsColor {
     /// Constructor with another Color.
     /// @param c: Color
     #[qjs(constructor)]
-    pub fn new_js<'js>(_ctx: Ctx<'js>, _args: Rest<Value<'js>>) -> Result<Self> {
+    pub fn new_js(_ctx: Ctx<'_>, _args: Rest<Value<'_>>) -> Result<Self> {
         //let (point, _) = Self::from_args(&ctx, &args.0)?;
         //Ok(point)
         Ok(JsColor {

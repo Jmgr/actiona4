@@ -1,14 +1,40 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, path::PathBuf};
 
 use macros::FromJsObject;
-use rquickjs::{
-    JsLifetime, Result,
-    class::{Trace, Tracer},
-    prelude::Opt,
-};
-use tokio::fs;
+use rquickjs::{Ctx, JsLifetime, Result, class::Trace, prelude::Opt};
+use tokio::fs::{self};
 
 use crate::core::ValueClass;
+
+/// Directory entry
+///
+/// @prop readonly path: string
+/// @prop readonly file_name: string
+/// @prop readonly is_file: boolean
+/// @prop readonly is_directory: boolean
+/// @prop readonly is_symlink: boolean
+/// @prop readonly size: number
+#[derive(Clone, Debug, Default, PartialEq, Eq, JsLifetime, Trace)]
+#[rquickjs::class(rename = "DirectoryEntry")]
+pub struct JsDirectoryEntry {
+    pub path: String,
+    pub file_name: String,
+    pub is_file: bool,
+    pub is_directory: bool,
+    pub is_symlink: bool,
+    pub size: u64,
+}
+
+impl ValueClass<'_> for JsDirectoryEntry {}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsDirectoryEntry {
+    /// @skip
+    #[qjs(constructor)]
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
 
 /// Directory options
 /// @options
@@ -25,11 +51,44 @@ impl Default for JsDirectoryOptions {
     }
 }
 
-#[derive(Clone, Debug, Default, JsLifetime)]
+/// Directory list options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct JsDirectoryListOptions {
+    /// Should the entries be sorted?
+    /// @default true
+    pub sort: bool,
+
+    /// Should each entry's absolute path be computed?
+    /// @default true
+    pub absolute_path: bool,
+
+    /// Should each entry's size be fetched?
+    /// @default true
+    pub fetch_size: bool,
+}
+
+impl Default for JsDirectoryListOptions {
+    fn default() -> Self {
+        Self {
+            sort: true,
+            absolute_path: true,
+            fetch_size: true,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Directory")]
 pub struct JsDirectory {}
 
-impl ValueClass<'_> for JsDirectory {}
+impl ValueClass<'_> for JsDirectory {
+    fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
+        JsDirectoryEntry::register(ctx)?;
+
+        Ok(())
+    }
+}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDirectory {
@@ -65,17 +124,71 @@ impl JsDirectory {
 
         Ok(())
     }
-}
 
-impl<'js> Trace<'js> for JsDirectory {
-    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+    /// @returns DirectoryEntry[]
+    #[qjs(static)]
+    pub async fn list_entries(
+        path: String,
+        options: Opt<JsDirectoryListOptions>,
+    ) -> Result<Vec<JsDirectoryEntry>> {
+        let options = options.unwrap_or_default();
+        let dir_path = PathBuf::from(path);
+        let mut read_dir = fs::read_dir(&dir_path).await?;
+        let mut result = Vec::new();
+
+        while let Some(entry) = read_dir.next_entry().await? {
+            let (is_file, is_directory, is_symlink) =
+                (entry.file_type().await).map_or((false, false, false), |file_type| {
+                    (
+                        file_type.is_file(),
+                        file_type.is_dir(),
+                        file_type.is_symlink(),
+                    )
+                });
+
+            let path = if options.absolute_path {
+                fs::canonicalize(entry.path()).await?
+            } else {
+                entry.path()
+            }
+            .to_string_lossy()
+            .to_string();
+
+            let size = if options.fetch_size {
+                let metadata = fs::metadata(entry.path()).await?;
+                metadata.len()
+            } else {
+                0
+            };
+
+            result.push(JsDirectoryEntry {
+                path,
+                file_name: entry.file_name().to_string_lossy().to_string(),
+                is_file,
+                is_directory,
+                is_symlink,
+                size,
+            });
+        }
+
+        if options.sort {
+            result.sort_by(|a, b| a.file_name.cmp(&b.file_name));
+        }
+
+        Ok(result)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::env;
+    use std::{env, path::Path};
 
-    use crate::{core::random_name, runtime::Runtime};
+    use tokio::fs;
+
+    use crate::{
+        core::{directory::js::JsDirectoryEntry, random_name},
+        runtime::Runtime,
+    };
 
     #[test]
     fn test_create_directory() {
@@ -88,7 +201,7 @@ mod tests {
                     r#"
                 await Directory.remove("{}")
                 "#,
-                    file_path.display(),
+                    file_path.to_string_lossy(),
                 ))
                 .await;
             assert!(
@@ -104,7 +217,7 @@ mod tests {
                     r#"
                 await Filesystem.exists("{}")
                 "#,
-                    file_path.display(),
+                    file_path.to_string_lossy(),
                 ))
                 .await
                 .unwrap();
@@ -116,7 +229,7 @@ mod tests {
                     r#"
                 await Directory.create("{}")
                 "#,
-                    file_path.display(),
+                    file_path.to_string_lossy(),
                 ))
                 .await
                 .unwrap();
@@ -127,7 +240,7 @@ mod tests {
                     r#"
                 await Filesystem.exists("{}")
                 "#,
-                    file_path.display(),
+                    file_path.to_string_lossy(),
                 ))
                 .await
                 .unwrap();
@@ -139,10 +252,65 @@ mod tests {
                     r#"
                 await Directory.remove("{}")
                 "#,
-                    file_path.display(),
+                    file_path.to_string_lossy(),
                 ))
                 .await
                 .unwrap();
+        });
+    }
+
+    #[test]
+    fn test_list() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            env::set_current_dir(env::temp_dir()).unwrap();
+            let parent_path = Path::new(".").join(random_name());
+            let directory_path = parent_path.join("a");
+            fs::create_dir_all(&directory_path).await.unwrap();
+            let file_path = parent_path.join("b");
+            fs::write(&file_path, b"test").await.unwrap();
+
+            // We need to manually compute the directory "size" because it can vary between OSes.
+            let directory_size = fs::metadata(&directory_path).await.unwrap().len();
+
+            let result = script_engine
+                .eval_async::<Vec<JsDirectoryEntry>>(&format!(
+                    r#"
+                await Directory.listEntries("{}")
+                "#,
+                    parent_path.to_string_lossy(),
+                ))
+                .await
+                .unwrap();
+
+            assert_eq!(
+                result,
+                vec![
+                    JsDirectoryEntry {
+                        path: fs::canonicalize(directory_path)
+                            .await
+                            .unwrap()
+                            .to_string_lossy()
+                            .to_string(),
+                        file_name: "a".to_string(),
+                        is_file: false,
+                        is_directory: true,
+                        is_symlink: false,
+                        size: directory_size,
+                    },
+                    JsDirectoryEntry {
+                        path: fs::canonicalize(file_path)
+                            .await
+                            .unwrap()
+                            .to_string_lossy()
+                            .to_string(),
+                        file_name: "b".to_string(),
+                        is_file: true,
+                        is_directory: false,
+                        is_symlink: false,
+                        size: 4,
+                    }
+                ]
+            );
         });
     }
 }

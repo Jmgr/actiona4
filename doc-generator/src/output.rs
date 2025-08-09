@@ -387,7 +387,7 @@ impl File {
 
             writeln!(output_file, "}}")?;
 
-            if struct_.has_global_instance {
+            if struct_.is_singleton {
                 writeln!(
                     output_file,
                     "declare const {}: {};",

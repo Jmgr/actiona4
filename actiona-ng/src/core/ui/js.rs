@@ -19,7 +19,7 @@ use crate::{
     runtime::Runtime,
 };
 
-/// @global
+/// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Ui")]
 pub struct JsUi {
@@ -98,7 +98,7 @@ impl JsUi {
 
         let h = Rc::new(ImageWindow::new().unwrap());
 
-        let image = image.inner().to_rgba8();
+        let image = image.to_inner().to_rgba8();
 
         let primary_display = self.displays.primary_display().into_js(&ctx)?;
         let center = primary_display.rect.center();

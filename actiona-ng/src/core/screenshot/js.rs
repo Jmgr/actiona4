@@ -21,7 +21,7 @@ impl<'js> Trace<'js> for super::Screenshot {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-/// @global
+/// @singleton
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Screenshot")]
 pub struct JsScreenshot {

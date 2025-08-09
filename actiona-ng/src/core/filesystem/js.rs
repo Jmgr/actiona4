@@ -1,14 +1,11 @@
 use std::fmt::Debug;
 
-use rquickjs::{
-    JsLifetime, Result,
-    class::{Trace, Tracer},
-};
+use rquickjs::{JsLifetime, Result, class::Trace};
 use tokio::fs;
 
 use crate::core::ValueClass;
 
-#[derive(Clone, Debug, Default, JsLifetime)]
+#[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Filesystem")]
 pub struct JsFilesystem {}
 
@@ -30,34 +27,24 @@ impl JsFilesystem {
 
     #[qjs(static)]
     pub async fn is_file(path: String) -> bool {
-        if let Ok(metadata) = fs::metadata(path).await {
-            metadata.is_file()
-        } else {
-            false
-        }
+        fs::metadata(path)
+            .await
+            .is_ok_and(|metadata| metadata.is_file())
     }
 
     #[qjs(static)]
     pub async fn is_directory(path: String) -> bool {
-        if let Ok(metadata) = fs::metadata(path).await {
-            metadata.is_dir()
-        } else {
-            false
-        }
+        fs::metadata(path)
+            .await
+            .is_ok_and(|metadata| metadata.is_dir())
     }
 
     #[qjs(static)]
     pub async fn is_symlink(path: String) -> bool {
-        if let Ok(metadata) = fs::metadata(path).await {
-            metadata.is_symlink()
-        } else {
-            false
-        }
+        fs::metadata(path)
+            .await
+            .is_ok_and(|metadata| metadata.is_symlink())
     }
-}
-
-impl<'js> Trace<'js> for JsFilesystem {
-    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 #[cfg(test)]

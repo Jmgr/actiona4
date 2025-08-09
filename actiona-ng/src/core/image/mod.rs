@@ -48,7 +48,7 @@ impl Default for JsFindImageOptions {
 }
 
 impl Image {
-    pub fn to_rgb8(&self) -> Cow<RgbImage> {
+    pub fn to_rgb8(&'_ self) -> Cow<'_, RgbImage> {
         if let DynamicImage::ImageRgb8(image) = &self.0 {
             Cow::Borrowed(image)
         } else {
@@ -56,7 +56,7 @@ impl Image {
         }
     }
 
-    pub fn to_rgba8(&self) -> Cow<RgbaImage> {
+    pub fn to_rgba8(&'_ self) -> Cow<'_, RgbaImage> {
         if let DynamicImage::ImageRgba8(image) = &self.0 {
             Cow::Borrowed(image)
         } else {
@@ -64,7 +64,7 @@ impl Image {
         }
     }
 
-    pub fn to_luma8(&self) -> Cow<GrayImage> {
+    pub fn to_luma8(&'_ self) -> Cow<'_, GrayImage> {
         if let DynamicImage::ImageLuma8(image) = &self.0 {
             Cow::Borrowed(image)
         } else {

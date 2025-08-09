@@ -201,7 +201,7 @@ impl JsFile {
     }
 
     /// Returns true if the file is open.
-    pub fn is_open(&self) -> bool {
+    pub const fn is_open(&self) -> bool {
         self.inner.is_some()
     }
 
@@ -216,10 +216,10 @@ impl JsFile {
     ///
     /// @param bytes: Uint8Array
     #[qjs(rename = "writeBytes")]
-    pub async fn write_bytes_instance<'js>(
+    pub async fn write_bytes_instance(
         &mut self,
-        ctx: Ctx<'js>,
-        bytes: TypedArray<'js, u8>,
+        ctx: Ctx<'_>,
+        bytes: TypedArray<'_, u8>,
     ) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
@@ -240,11 +240,7 @@ impl JsFile {
     /// @param path: string
     /// @param bytes: Uint8Array
     #[qjs(static)]
-    pub async fn write_bytes<'js>(
-        ctx: Ctx<'js>,
-        path: String,
-        bytes: TypedArray<'js, u8>,
-    ) -> Result<()> {
+    pub async fn write_bytes(ctx: Ctx<'_>, path: String, bytes: TypedArray<'_, u8>) -> Result<()> {
         fs::write(path, bytes.as_bytes().unwrap())
             .await
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
@@ -256,7 +252,7 @@ impl JsFile {
     ///
     /// @param text: string
     #[qjs(rename = "writeText")]
-    pub async fn write_text_instance<'js>(&mut self, ctx: Ctx<'js>, text: String) -> Result<()> {
+    pub async fn write_text_instance(&mut self, ctx: Ctx<'_>, text: String) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
         opened_file
@@ -276,7 +272,7 @@ impl JsFile {
     /// @param path: string
     /// @param text: string
     #[qjs(static)]
-    pub async fn write_text<'js>(ctx: Ctx<'js>, path: String, text: String) -> Result<()> {
+    pub async fn write_text(ctx: Ctx<'_>, path: String, text: String) -> Result<()> {
         fs::write(path, text)
             .await
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
@@ -345,7 +341,7 @@ impl JsFile {
     ///
     /// @returns string
     #[qjs(rename = "readText")]
-    pub async fn read_text_instance<'js>(&mut self, ctx: Ctx<'js>) -> Result<String> {
+    pub async fn read_text_instance(&mut self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file_mut(&ctx)?;
         let mut result = String::new();
 
@@ -370,7 +366,7 @@ impl JsFile {
     }
 
     #[qjs(rename = "size")]
-    pub async fn size<'js>(&mut self, ctx: Ctx<'js>) -> Result<u64> {
+    pub async fn size(&mut self, ctx: Ctx<'_>) -> Result<u64> {
         let opened_file = self.opened_file(&ctx)?;
 
         Ok(opened_file.file.lock().await.metadata().await?.len())
@@ -475,7 +471,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let system_time = Self::system_time_from_date(ctx, date)?;
 
-        Self::set_times(&opened_file, FileTimes::new().set_modified(system_time)).await?;
+        Self::set_times(opened_file, FileTimes::new().set_modified(system_time)).await?;
 
         Ok(())
     }
@@ -493,7 +489,7 @@ impl JsFile {
         let opened_file = self.opened_file_mut(&ctx)?;
         let system_time = Self::system_time_from_date(ctx, date)?;
 
-        Self::set_times(&opened_file, FileTimes::new().set_accessed(system_time)).await?;
+        Self::set_times(opened_file, FileTimes::new().set_accessed(system_time)).await?;
 
         Ok(())
     }
@@ -508,7 +504,7 @@ impl JsFile {
 
     /// @param date: Date
     /// @platforms -linux
-    pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
+    pub async fn set_creation_time(&mut self, ctx: Ctx<'_>, date: Object<'_>) -> Result<()> {
         #[cfg(unix)]
         {
             let _ = ctx;

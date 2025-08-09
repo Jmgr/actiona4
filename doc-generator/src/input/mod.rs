@@ -59,9 +59,9 @@ impl Instructions {
             .any(|instruction| matches!(instruction, Instruction::Static))
     }
 
-    pub fn has_global(&self) -> bool {
+    pub fn is_singleton(&self) -> bool {
         self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Global))
+            .any(|instruction| matches!(instruction, Instruction::Singleton))
     }
 
     pub fn rest_params(&self) -> Option<RestParams> {
@@ -121,7 +121,7 @@ impl Instructions {
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
 static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+)(.*)$"#).unwrap());
-static RETURNS_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^(\w+)$"#).unwrap());
+static RETURNS_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^([\w\[\]]+)$"#).unwrap());
 static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r#"(?x)
@@ -237,13 +237,13 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Skip
         }
 
-        // @global
-        "global" => {
+        // @singleton
+        "singleton" => {
             if !parameters.is_empty() {
                 bail!("unexpected parameters");
             }
 
-            Instruction::Global
+            Instruction::Singleton
         }
 
         // @options
@@ -307,7 +307,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
     })
 }
 
-const fn allowed_context_per_instruction(
+const fn allowed_context_for_instruction(
     instruction: InstructionDiscriminants,
 ) -> &'static [RustdocContext] {
     use InstructionDiscriminants::*;
@@ -324,7 +324,7 @@ const fn allowed_context_per_instruction(
             RustdocContext::Property,
         ],
         Returns => &[RustdocContext::Method],
-        Global => &[RustdocContext::Struct, RustdocContext::StructAlias],
+        Singleton => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Const => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Default => &[RustdocContext::Property],
         Options => &[RustdocContext::Struct, RustdocContext::StructAlias],
@@ -345,7 +345,7 @@ const fn allowed_context_per_instruction(
 
 fn check_instruction(instruction: &Instruction, context: &RustdocContext) -> Result<()> {
     let instruction = instruction.into();
-    if !allowed_context_per_instruction(instruction).contains(context) {
+    if !allowed_context_for_instruction(instruction).contains(context) {
         bail!("Instruction {instruction} is not allowed within context {context}");
     }
 

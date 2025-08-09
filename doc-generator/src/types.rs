@@ -109,7 +109,7 @@ pub struct Struct {
     pub properties: Vec<Variable>,
     pub methods: Vec<Method>,
     pub comments: Comments,
-    pub has_global_instance: bool,
+    pub is_singleton: bool,
     pub consts: Vec<String>,
     pub is_options: bool,
     pub extends: Option<String>,
@@ -193,7 +193,6 @@ impl TryFrom<&str> for Platforms {
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         let platforms = value
             .split_whitespace()
-            .into_iter()
             .map(Platform::try_from)
             .collect::<Result<Vec<_>>>()?;
 
@@ -249,7 +248,7 @@ pub enum Instruction {
     Overload,
     Skip,
     Returns(Type),
-    Global,
+    Singleton,
     Const(String),
     Default(String),
     Options,

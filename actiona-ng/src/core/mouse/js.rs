@@ -139,7 +139,7 @@ pub enum JsTween {
     SineOut,
 }
 
-/// @global
+/// @singleton
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Mouse")]
 pub struct JsMouse {
@@ -176,12 +176,7 @@ impl JsMouse {
         self.inner.is_pressed(button).await.into_js(&ctx)
     }
 
-    pub async fn scroll<'js>(
-        &mut self,
-        ctx: Ctx<'_>,
-        length: i32,
-        axis: Opt<JsAxis>,
-    ) -> Result<()> {
+    pub async fn scroll(&mut self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
             .into_js(&ctx)
@@ -198,9 +193,9 @@ impl JsMouse {
     }
 
     #[qjs(rename = "move")]
-    pub async fn r#move<'js>(
+    pub async fn r#move(
         &mut self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         point: JsPointParam,
         options: Opt<JsMoveOptions>,
     ) -> Result<()> {
@@ -210,30 +205,26 @@ impl JsMouse {
             .into_js(&ctx)
     }
 
-    pub async fn set_position<'js>(&self, ctx: Ctx<'js>, point: JsPointParam) -> Result<()> {
+    pub async fn set_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
             .into_js(&ctx)
     }
 
-    pub async fn set_relative_position<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        point: JsPointParam,
-    ) -> Result<()> {
+    pub async fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
             .into_js(&ctx)
     }
 
-    pub async fn click<'js>(&mut self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
+    pub async fn click(&mut self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
         self.inner
             .click(options.unwrap_or_default())
             .await
             .into_js(&ctx)
     }
 
-    pub async fn double_click<'js>(
+    pub async fn double_click(
         &mut self,
         ctx: Ctx<'_>,
         options: Opt<JsDoubleClickOptions>,
@@ -244,11 +235,11 @@ impl JsMouse {
             .into_js(&ctx)
     }
 
-    pub async fn press<'js>(&mut self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
+    pub async fn press(&mut self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
         self.inner.press(options.unwrap_or_default()).into_js(&ctx)
     }
 
-    pub async fn release<'js>(&mut self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
+    pub async fn release(&mut self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))
             .into_js(&ctx)

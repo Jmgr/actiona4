@@ -12,7 +12,7 @@ use rquickjs::{
 
 use crate::{core::SingletonClass, runtime::Runtime};
 
-/// @global
+/// @singleton
 #[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Console")]
 pub struct JsConsole {
@@ -63,14 +63,14 @@ impl JsConsole {
                 let global_prototype = ctx.globals().get_prototype().unwrap();
                 let default_to_string = global_prototype.get::<_, Function>("toString").unwrap();
 
-                if let Ok(to_string) = obj.get::<_, Function>("toString") {
-                    if to_string != default_to_string {
-                        let mut args = Args::new(ctx.clone(), 0);
-                        args.this(value.clone()).unwrap();
+                if let Ok(to_string) = obj.get::<_, Function>("toString")
+                    && to_string != default_to_string
+                {
+                    let mut args = Args::new(ctx.clone(), 0);
+                    args.this(value.clone()).unwrap();
 
-                        if let Ok(string_val) = to_string.call_arg::<String>(args) {
-                            return string_val.to_string().unwrap();
-                        }
+                    if let Ok(string_val) = to_string.call_arg::<String>(args) {
+                        return string_val.to_string().unwrap();
                     }
                 }
 

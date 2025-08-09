@@ -9,6 +9,7 @@ pub use slotmap::{
 
 pub mod core;
 pub mod enigo;
+pub mod error;
 pub(crate) mod platform;
 pub mod runtime;
 pub mod scripting;

@@ -22,7 +22,7 @@ impl<T> IntoJS<T> for super::Result<T> {
     }
 }
 
-/// @global
+/// @singleton
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "Displays")]
 pub struct JsDisplays {

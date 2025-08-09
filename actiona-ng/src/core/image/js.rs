@@ -191,8 +191,14 @@ pub struct JsImage {
 }
 
 impl JsImage {
-    pub const fn inner(&self) -> &super::Image {
+    /// @skip
+    pub const fn to_inner(&self) -> &super::Image {
         &self.inner
+    }
+
+    /// @skip
+    pub fn into_inner(self) -> super::Image {
+        self.inner
     }
 }
 
@@ -981,12 +987,6 @@ impl JsImage {
             );
         }
         */
-
-        Ok(())
-    }
-
-    pub fn test(&self, options: JsRotationOptions) -> Result<()> {
-        println!("{options:?}");
 
         Ok(())
     }
