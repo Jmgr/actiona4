@@ -5,7 +5,7 @@ use x11rb_async::protocol::xinput::{
     Device, DeviceType, XIEventMask, xi_query_device, xi_query_pointer,
 };
 
-use super::{JsButton, MouseImplTrait, Result};
+use super::{Button, MouseImplTrait, Result};
 use crate::{core::mouse::MouseError, runtime::Runtime};
 
 #[derive(Debug)]
@@ -14,7 +14,7 @@ pub struct MouseImpl {
     master_pointer_device_id: u16,
 }
 
-impl JsButton {
+impl Button {
     const fn into_button_mask(self) -> u32 {
         match self {
             Self::Left => 1 << 1,
@@ -82,7 +82,7 @@ impl MouseImpl {
 }
 
 impl MouseImplTrait for MouseImpl {
-    async fn is_button_pressed(&mut self, button: JsButton) -> Result<bool> {
+    async fn is_button_pressed(&self, button: Button) -> Result<bool> {
         let x11_connection = self.runtime.platform().x11_connection();
         let master_pointer_device_id = self.master_pointer_device_id;
 

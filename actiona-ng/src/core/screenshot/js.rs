@@ -7,7 +7,7 @@ use rquickjs::{
 
 use crate::{
     IntoJS,
-    core::{SingletonClass, displays::Displays},
+    core::{displays::Displays, js::classes::SingletonClass},
     runtime::Runtime,
 };
 

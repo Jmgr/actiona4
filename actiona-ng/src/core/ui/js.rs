@@ -11,9 +11,9 @@ use slint::*;
 use crate::{
     IntoJS,
     core::{
-        SingletonClass,
         displays::{Displays, js::JsDisplayInfo},
         image::js,
+        js::classes::SingletonClass,
         point::js::JsPoint,
     },
     runtime::Runtime,

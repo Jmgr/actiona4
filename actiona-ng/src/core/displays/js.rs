@@ -8,7 +8,7 @@ use rquickjs::{
 use crate::{
     IntoJS,
     core::{
-        SingletonClass, ValueClass,
+        js::classes::{SingletonClass, ValueClass},
         name::js::JsNameParam,
         point::js::{JsPoint, JsPointParam},
         rect::js::JsRect,

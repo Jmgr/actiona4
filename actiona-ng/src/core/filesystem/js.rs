@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use rquickjs::{JsLifetime, Result, class::Trace};
 use tokio::fs;
 
-use crate::core::ValueClass;
+use crate::core::js::classes::ValueClass;
 
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Filesystem")]

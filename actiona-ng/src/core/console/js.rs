@@ -10,7 +10,7 @@ use rquickjs::{
     prelude::*,
 };
 
-use crate::{core::SingletonClass, runtime::Runtime};
+use crate::{core::js::classes::SingletonClass, runtime::Runtime};
 
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]

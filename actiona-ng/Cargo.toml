@@ -51,6 +51,8 @@ regex.workspace = true
 spin_on.workspace = true
 chrono.workspace = true
 arboard.workspace = true
+reqwest.workspace = true
+futures.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true

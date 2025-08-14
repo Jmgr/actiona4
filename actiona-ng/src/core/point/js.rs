@@ -9,8 +9,9 @@ use rquickjs::{
 use crate::{
     IntoJS,
     core::{
-        ResultExt, ValueClass,
+        ResultExt,
         displays::{self},
+        js::classes::ValueClass,
     },
     runtime::JsUserData,
 };
@@ -231,9 +232,7 @@ impl JsPoint {
     /// Returns a random point on any display.
     #[qjs(static)]
     pub fn random(ctx: Ctx<'_>) -> Result<Self> {
-        let user_data = ctx
-            .userdata::<JsUserData>()
-            .expect("Runtime not set as userdata");
+        let user_data = ctx.userdata::<JsUserData>().expect("userdata not set");
 
         let point: displays::Result<JsPoint> = user_data
             .displays()

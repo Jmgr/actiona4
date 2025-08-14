@@ -4,7 +4,7 @@ use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, class::Trace, prelude::Opt};
 use tokio::fs::{self};
 
-use crate::core::ValueClass;
+use crate::core::js::classes::ValueClass;
 
 /// Directory entry
 ///

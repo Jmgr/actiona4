@@ -31,7 +31,7 @@ impl MouseImpl {
 }
 
 impl MouseImplTrait for MouseImpl {
-    fn is_button_pressed(&mut self, button: Button) -> Result<bool> {
+    fn is_button_pressed(&self, button: Button) -> Result<bool> {
         Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000u16 != 0 })
     }
 }

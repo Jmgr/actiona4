@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::select;
 use x11rb_async::protocol::xinput::XIEventMask;
 
-use super::{JsKey, KeyboardImplTrait, Result};
+use super::{Key, KeyboardImplTrait, Result};
 use crate::runtime::Runtime;
 
 #[derive(Debug)]
@@ -47,7 +47,7 @@ impl KeyboardImpl {
 }
 
 impl KeyboardImplTrait for KeyboardImpl {
-    fn is_key_pressed(&self, _key: JsKey) -> Result<bool> {
+    fn is_key_pressed(&self, _key: Key) -> Result<bool> {
         // TODO
         Ok(false)
     }

@@ -14,12 +14,12 @@ use x11rb_async::{
 };
 
 use crate::{
-    core::{displays, keyboard, mouse, mouse::JsButton},
+    core::{displays, keyboard, mouse, mouse::Button},
     platform::x11::X11Connection,
     runtime::{Direction, RecordEvent},
 };
 
-impl JsButton {
+impl Button {
     const fn from_event(detail: u32) -> Option<Self> {
         Some(match detail {
             1 => Self::Left,
@@ -116,13 +116,13 @@ impl Runtime {
 
     fn process_event(event: Event, sender: &Sender<RecordEvent>) {
         let event = match event {
-            Event::XinputRawButtonPress(event) => JsButton::from_event(event.detail)
+            Event::XinputRawButtonPress(event) => Button::from_event(event.detail)
                 .map(|button| RecordEvent::MouseButton(button, Direction::Pressed)),
-            Event::XinputRawButtonRelease(event) => JsButton::from_event(event.detail)
+            Event::XinputRawButtonRelease(event) => Button::from_event(event.detail)
                 .map(|button| RecordEvent::MouseButton(button, Direction::Released)),
-            Event::XinputRawKeyPress(event) => JsButton::from_event(event.detail)
+            Event::XinputRawKeyPress(event) => Button::from_event(event.detail)
                 .map(|button| RecordEvent::MouseButton(button, Direction::Pressed)), // TODO: keys
-            Event::XinputRawKeyRelease(event) => JsButton::from_event(event.detail)
+            Event::XinputRawKeyRelease(event) => Button::from_event(event.detail)
                 .map(|button| RecordEvent::MouseButton(button, Direction::Released)), // TODO: keys
             Event::RandrScreenChangeNotify(_event) => {
                 let infos = display_info::DisplayInfo::all().unwrap();

@@ -71,7 +71,6 @@ export component Demo {
         HorizontalLayout { alignment: center; Button { text: "OK!"; } }
     }
 }
-
 "#;
 
     #[tokio::test]

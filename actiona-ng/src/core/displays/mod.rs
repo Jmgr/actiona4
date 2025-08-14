@@ -78,20 +78,45 @@ impl Displays {
         let displays_info = self.displays_info.lock().unwrap();
         let mut rng = rand::rng();
 
-        let random_display = displays_info
-            .0
-            .get(rng.random_range(0..displays_info.len()))
-            .ok_or(DisplaysError::NoDisplays)?;
-        let rect = random_display.rect;
+        // Total area across all displays (skip zero-area just in case)
+        let mut total_area: u64 = 0;
+        for display_info in &displays_info.0 {
+            let rect = display_info.rect;
+            total_area += (rect.width as u64) * (rect.height as u64);
+        }
+        if total_area == 0 {
+            return Err(DisplaysError::NoDisplays);
+        }
 
-        drop(displays_info);
+        // Pick a display with probability proportional to its area
+        let pick = rng.random_range(0..total_area); // [0, total_area)
+        let mut acc = 0;
+        let mut chosen = None;
+        for display_info in &displays_info.0 {
+            let rect = display_info.rect;
+            let area = (rect.width as u64) * (rect.height as u64);
+            if area == 0 {
+                continue;
+            }
+            acc += area;
+            if pick < acc {
+                chosen = Some(rect);
+                break;
+            }
+        }
 
-        let random_point = point(
-            rng.random_range(rect.x..(rect.x + rect.width as i32)),
-            rng.random_range(rect.y..(rect.y + rect.height as i32)),
-        );
+        let rect = chosen.ok_or(DisplaysError::NoDisplays)?;
+        drop(displays_info); // release the lock before sampling inside the rect
 
-        Ok(random_point)
+        // Sample uniformly inside the chosen rect.
+        // Use i64 for the range math to avoid overflows on x + width, etc.
+        let x_end = rect.x as i64 + rect.width as i64;
+        let y_end = rect.y as i64 + rect.height as i64;
+
+        let x = rng.random_range(rect.x as i64..x_end) as i32;
+        let y = rng.random_range(rect.y as i64..y_end) as i32;
+
+        Ok(point(x, y))
     }
 
     pub fn primary_display(&self) -> Result<DisplayInfo> {
@@ -145,21 +170,28 @@ impl Displays {
 
 #[cfg(test)]
 mod tests {
+    use enigo::Coordinate;
     use tracing_test::traced_test;
 
-    use crate::{core::displays::Displays, runtime::Runtime};
+    use crate::{
+        core::{displays::Displays, mouse::Mouse},
+        runtime::Runtime,
+    };
 
     #[test]
     #[traced_test]
     fn test_displays() {
         Runtime::test(async |runtime| {
-            //let mut mouse = Mouse::new().unwrap();
+            let mouse = Mouse::new(runtime.clone()).await.unwrap();
+            let displays = Displays::new(runtime).unwrap();
 
+            /*
             let displays = Displays::new(runtime).unwrap();
             let displays_info = displays.displays_info().lock().unwrap();
             for display_info in displays_info.iter() {
                 println!("display_info {display_info:?}");
             }
+            */
 
             /*
             display_info DisplayInfo { id: 65537, name: "\\\\.\\DISPLAY1", friendly_name: "Acer XB281HK", raw_handle: HMONITOR(0x10001), x: 0, y: 0, width: 3840, height: 2160, width_mm: 621, height_mm: 341, rotation: 0.0, scale_factor: 1.5, frequency: 60.0, is_primary: true }
@@ -170,6 +202,10 @@ mod tests {
             display_info DisplayInfo { id: 469, name: "DP-0", friendly_name: "DP-0", x: 0, y: 649, width: 1920, height: 1080, width_mm: 527, height_mm: 296, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
             display_info DisplayInfo { id: 444, name: "HDMI-0", friendly_name: "HDMI-0", x: 5760, y: 601, width: 1920, height: 1080, width_mm: 510, height_mm: 287, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
                          */
+
+            mouse
+                .set_position(displays.random_point().unwrap(), Coordinate::Abs)
+                .unwrap();
 
             //for _ in 0..60 {
             //mouse

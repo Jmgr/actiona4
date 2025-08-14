@@ -3,31 +3,35 @@ use std::{
     time::{Duration, Instant},
 };
 
+use convert_case::{Case, Casing};
+use derive_more::Display;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
-use macros::FromJsObject;
+use macros::{ExposeEnum, FromJsObject};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use platform::MouseImplTrait;
 use rand::RngCore;
+use rquickjs::{JsLifetime, class::Trace};
 use thiserror::Error;
-use tokio::time::sleep;
+use tokio::{select, time::sleep};
+use tokio_util::sync::CancellationToken;
 use tracing::{info, instrument};
 use tween::FixedTweener;
 
-use crate::core::point::js::JsPoint;
+use crate::core::{js::duration::JsDuration, point::js::JsPoint};
 
 pub(crate) mod platform;
 
 pub mod js;
 
 pub use enigo::Coordinate;
-pub use js::{JsAxis, JsButton, JsTween};
+pub use js::{JsAxis, JsTween};
 #[cfg(windows)]
 use platform::win::MouseImpl;
 #[cfg(unix)]
 use platform::x11::MouseImpl;
 
-use super::{js::JsDuration, point::Point};
+use super::point::Point;
 use crate::{core::point::point, runtime::Runtime};
 
 #[derive(Debug, Error)]
@@ -59,11 +63,31 @@ pub enum MouseError {
 
 pub type Result<T> = std::result::Result<T, MouseError>;
 
-impl JsButton {
-    const fn into_enigo(self) -> enigo::Button {
-        use JsButton::*;
+/// Mouse button.
+#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
+#[rquickjs::class]
+pub enum Button {
+    /// Left button
+    Left,
 
-        match self {
+    /// Middle button
+    Middle,
+
+    /// Right button
+    Right,
+
+    /// Back button
+    Back,
+
+    /// Forward button
+    Forward,
+}
+
+impl From<Button> for enigo::Button {
+    fn from(value: Button) -> Self {
+        use Button::*;
+
+        match value {
             Left => enigo::Button::Left,
             Middle => enigo::Button::Middle,
             Right => enigo::Button::Right,
@@ -73,20 +97,105 @@ impl JsButton {
     }
 }
 
-impl JsAxis {
-    const fn into_enigo(self) -> enigo::Axis {
-        use JsAxis::*;
+#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
+#[rquickjs::class]
+pub enum Axis {
+    Horizontal,
+    Vertical,
+}
 
-        match self {
+impl From<Axis> for enigo::Axis {
+    fn from(value: Axis) -> Self {
+        use Axis::*;
+
+        match value {
             Horizontal => enigo::Axis::Horizontal,
             Vertical => enigo::Axis::Vertical,
         }
     }
 }
 
-impl JsTween {
+/// Tweening functions for smooth movement.
+#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
+#[rquickjs::class]
+pub enum Tween {
+    /// Starts slowly, then accelerates with an overshoot.
+    BackIn,
+    /// Starts and ends with an overshoot, accelerating in between.
+    BackInOut,
+    /// Starts quickly, then decelerates with an overshoot.
+    BackOut,
+
+    /// Starts by bouncing off the start point.
+    BounceIn,
+    /// Bounces at both the start and end points.
+    BounceInOut,
+    /// Ends with a bounce effect.
+    BounceOut,
+
+    /// Starts slowly and accelerates in a circular motion.
+    CircIn,
+    /// Starts and ends slowly with a circular motion.
+    CircInOut,
+    /// Ends slowly with a circular motion.
+    CircOut,
+
+    /// Starts slowly and accelerates cubically.
+    CubicIn,
+    /// Starts and ends slowly with a cubic acceleration.
+    CubicInOut,
+    /// Ends slowly with a cubic deceleration.
+    CubicOut,
+
+    /// Starts with an elastic effect, overshooting the target.
+    ElasticIn,
+    /// Starts and ends with an elastic effect.
+    ElasticInOut,
+    /// Ends with an elastic effect, overshooting the target.
+    ElasticOut,
+
+    /// Starts slowly and accelerates exponentially.
+    ExpoIn,
+    /// Starts and ends slowly with an exponential acceleration.
+    ExpoInOut,
+    /// Ends slowly with an exponential deceleration.
+    ExpoOut,
+
+    /// A linear tween with no acceleration or deceleration.
+    Linear,
+
+    /// Starts slowly and accelerates quadratically.
+    QuadIn,
+    /// Starts and ends slowly with a quadratic acceleration.
+    QuadInOut,
+    /// Ends slowly with a quadratic deceleration.
+    QuadOut,
+
+    /// Starts slowly and accelerates quartically.
+    QuartIn,
+    /// Starts and ends slowly with a quartic acceleration.
+    QuartInOut,
+    /// Ends slowly with a quartic deceleration.
+    QuartOut,
+
+    /// Starts slowly and accelerates quintically.
+    QuintIn,
+    /// Starts and ends slowly with a quintic acceleration.
+    QuintInOut,
+    /// Ends slowly with a quintic deceleration.
+    QuintOut,
+
+    /// Starts slowly and accelerates sinusoidally.
+    SineIn,
+    /// Starts and ends slowly with a sinusoidal acceleration.
+    SineInOut,
+    /// Ends slowly with a sinusoidal deceleration.
+    SineOut,
+}
+
+impl Tween {
     fn into_tween<Value: tween::TweenValue>(self) -> Box<dyn tween::Tween<Value>> {
-        use JsTween::*;
+        use Tween::*;
 
         match self {
             Linear => Box::new(tween::Linear),
@@ -128,7 +237,7 @@ impl JsTween {
 pub struct Mouse {
     enigo: Arc<Mutex<Enigo>>,
     implementation: MouseImpl,
-    pressed_buttons: IndexSet<JsButton>,
+    pressed_buttons: Mutex<IndexSet<Button>>,
 }
 
 // TODO: record
@@ -140,24 +249,20 @@ impl Mouse {
         Ok(Self {
             enigo: runtime.enigo(),
             implementation: MouseImpl::new(runtime).await?,
-            pressed_buttons: Default::default(),
+            pressed_buttons: Mutex::new(Default::default()),
         })
     }
 
     #[instrument(skip(self), err, ret)]
-    pub async fn is_pressed(&mut self, button: JsButton) -> Result<bool> {
+    pub async fn is_pressed(&self, button: Button) -> Result<bool> {
         self.implementation.is_button_pressed(button).await
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn scroll(&mut self, length: i32, axis: JsAxis) -> Result<()> {
+    pub fn scroll(&self, length: i32, axis: Axis) -> Result<()> {
         use enigo::Mouse;
 
-        Ok(self
-            .enigo
-            .lock()
-            .unwrap()
-            .scroll(length, axis.into_enigo())?)
+        Ok(self.enigo.lock().unwrap().scroll(length, axis.into())?)
     }
 
     #[instrument(skip(self), err, ret)]
@@ -225,7 +330,7 @@ pub struct MoveOptions {
     pub speed: f32,
 
     /// @default Tween.SINE_OUT
-    pub tween: JsTween,
+    pub tween: Tween,
 
     /// @default 50
     pub perlin_scale: f32,
@@ -245,7 +350,7 @@ impl Default for MoveOptions {
     fn default() -> Self {
         Self {
             speed: 2000.,
-            tween: JsTween::SineOut,
+            tween: Tween::SineOut,
             perlin_scale: 50.,
             perlin_amplitude: 5.,
             target_randomness: 0.,
@@ -260,7 +365,12 @@ fn sigmoid(x: f32) -> f32 {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub async fn move_(&mut self, mut target_position: Point, options: MoveOptions) -> Result<()> {
+    pub async fn move_(
+        &self,
+        mut target_position: Point,
+        cancellation_token: CancellationToken,
+        options: MoveOptions,
+    ) -> Result<()> {
         if options.target_randomness > 0. {
             target_position = Point::random_in_circle(target_position, options.target_randomness);
         }
@@ -318,7 +428,12 @@ impl Mouse {
 
             self.set_position(position, Coordinate::Abs)?;
 
-            sleep(options.interval.0).await;
+            select! {
+                _ = cancellation_token.cancelled() => {
+                    return Ok(());
+                },
+                _ = sleep(options.interval.0) => {},
+            }
         }
 
         self.set_position(target_position, Coordinate::Abs)?;
@@ -359,7 +474,7 @@ impl Default for ClickOptions {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub async fn click(&mut self, options: ClickOptions) -> Result<()> {
+    pub async fn click(&self, options: ClickOptions) -> Result<()> {
         use enigo::Mouse;
 
         let coordinate = if options.press.relative_position {
@@ -379,12 +494,17 @@ impl Mouse {
 
             let mut enigo = self.enigo.lock().unwrap();
 
-            move |direction| enigo.button(options.press.button.into_enigo(), direction)
+            move |direction| enigo.button(options.press.button.into(), direction)
         };
 
         for i in 0..options.amount {
             if !options.duration.0.is_zero() {
-                if !self.pressed_buttons.contains(&options.press.button) {
+                let contains = {
+                    let lock = self.pressed_buttons.lock().unwrap();
+                    lock.contains(&options.press.button)
+                };
+
+                if !contains {
                     action(enigo::Direction::Press)?;
                 } else {
                     info!(
@@ -399,7 +519,11 @@ impl Mouse {
             }
 
             info!("removing {} from the pressed buttons", options.press.button);
-            self.pressed_buttons.shift_remove(&options.press.button);
+
+            {
+                let mut lock = self.pressed_buttons.lock().unwrap();
+                lock.shift_remove(&options.press.button);
+            }
 
             if !options.interval.0.is_zero() && i + 1 < options.amount {
                 sleep(options.interval.0).await;
@@ -434,7 +558,7 @@ impl Default for DoubleClickOptions {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub async fn double_click(&mut self, options: DoubleClickOptions) -> Result<()> {
+    pub async fn double_click(&self, options: DoubleClickOptions) -> Result<()> {
         self.click(options.click).await?;
         sleep(options.delay.0).await;
         self.click(options.click).await?;
@@ -449,7 +573,7 @@ impl Mouse {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PressOptions {
     /// @default Button.LEFT
-    pub button: JsButton,
+    pub button: Button,
 
     /// @default undefined
     pub position: Option<JsPoint>,
@@ -461,7 +585,7 @@ pub struct PressOptions {
 impl Default for PressOptions {
     fn default() -> Self {
         Self {
-            button: JsButton::Left,
+            button: Button::Left,
             position: None,
             relative_position: false,
         }
@@ -470,10 +594,15 @@ impl Default for PressOptions {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub fn press(&mut self, options: PressOptions) -> Result<()> {
+    pub fn press(&self, options: PressOptions) -> Result<()> {
         use enigo::Mouse;
 
-        if self.pressed_buttons.contains(&options.button) {
+        let contains = {
+            let lock = self.pressed_buttons.lock().unwrap();
+            lock.contains(&options.button)
+        };
+
+        if contains {
             info!("button {} is already pressed, ignoring", options.button);
 
             return Ok(());
@@ -496,43 +625,63 @@ impl Mouse {
         self.enigo
             .lock()
             .unwrap()
-            .button(options.button.into_enigo(), enigo::Direction::Press)?;
+            .button(options.button.into(), enigo::Direction::Press)?;
 
         info!("adding {} to the pressed buttons", options.button);
-        self.pressed_buttons.insert(options.button);
+
+        {
+            let mut lock = self.pressed_buttons.lock().unwrap();
+            lock.insert(options.button);
+        }
 
         Ok(())
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn release(&mut self, button: Option<JsButton>) -> Result<()> {
+    pub fn release(&self, button: Option<Button>) -> Result<()> {
         use enigo::Mouse;
 
         let button = if let Some(button) = button {
-            if !self.pressed_buttons.contains(&button) {
+            let contains = {
+                let lock = self.pressed_buttons.lock().unwrap();
+                lock.contains(&button)
+            };
+
+            if !contains {
                 info!("button {button} is not pressed, ignoring");
 
                 return Ok(());
             }
 
             button
-        } else if let Some(last_pressed_button) = self.pressed_buttons.pop() {
-            info!("releasing last pressed button, {last_pressed_button}");
-
-            last_pressed_button
         } else {
-            info!("no pressed button, ignoring");
+            let last_pressed_button = {
+                let mut lock = self.pressed_buttons.lock().unwrap();
+                lock.pop()
+            };
 
-            return Ok(());
+            if let Some(last_pressed_button) = last_pressed_button {
+                info!("releasing last pressed button, {last_pressed_button}");
+
+                last_pressed_button
+            } else {
+                info!("no pressed button, ignoring");
+
+                return Ok(());
+            }
         };
 
         self.enigo
             .lock()
             .unwrap()
-            .button(button.into_enigo(), Direction::Release)?;
+            .button(button.into(), Direction::Release)?;
 
         info!("removing {} from the pressed buttons", button);
-        self.pressed_buttons.shift_remove(&button);
+
+        {
+            let mut lock = self.pressed_buttons.lock().unwrap();
+            lock.shift_remove(&button);
+        }
 
         Ok(())
     }
@@ -540,9 +689,12 @@ impl Mouse {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
+    use tokio_util::sync::CancellationToken;
     use tracing_test::traced_test;
 
-    use super::{JsTween, Mouse};
+    use super::{Mouse, Tween};
     use crate::{
         core::{mouse::MoveOptions, point::point},
         runtime::Runtime,
@@ -552,15 +704,18 @@ mod tests {
     #[traced_test]
     fn test_position() {
         Runtime::test(async |runtime| {
-            let mut mouse = Mouse::new(runtime).await.unwrap();
+            let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
+            let cancellation_token = CancellationToken::new();
 
             for target in [point(5000, 1000), point(7000, 800), point(4000, 1200)] {
                 mouse
+                    .clone()
                     .move_(
                         target,
+                        cancellation_token.clone(),
                         MoveOptions {
                             speed: 2000.,
-                            tween: JsTween::SineOut,
+                            tween: Tween::SineOut,
                             perlin_scale: 50.,
                             perlin_amplitude: 5.,
                             target_randomness: 10.,

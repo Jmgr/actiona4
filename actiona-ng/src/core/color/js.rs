@@ -7,7 +7,7 @@ use rquickjs::{
     prelude::*,
 };
 
-use crate::core::{ResultExt, ValueClass};
+use crate::core::{ResultExt, js::classes::ValueClass};
 
 pub struct JsColorParam(pub super::Color);
 
@@ -422,12 +422,6 @@ impl JsColor {
     }
 
     /// @skip
-    #[qjs(static, get, rename = "RED")] // TODO: remove, doesn't work
-    pub fn red(&self) -> Self {
-        Rgba([255, 0, 0, 255]).into()
-    }
-
-    /// @skip
     #[qjs(get, rename = "r")]
     pub fn get_r(&self) -> u8 {
         self.inner.0[0]
@@ -493,11 +487,6 @@ impl JsColor {
     #[qjs(rename = "clone")]
     pub const fn clone_js(&self) -> Self {
         *self
-    }
-
-    pub fn print(&self) {
-        // TODO TMP
-        println!("{:?}", self.inner.0);
     }
 }
 

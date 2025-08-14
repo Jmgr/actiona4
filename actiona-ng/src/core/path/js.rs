@@ -5,7 +5,7 @@ use std::{
 
 use rquickjs::{JsLifetime, Result, class::Trace, prelude::Rest};
 
-use crate::core::ValueClass;
+use crate::core::js::classes::ValueClass;
 
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Path")]

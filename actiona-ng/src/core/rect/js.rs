@@ -6,7 +6,7 @@ use rquickjs::{
 };
 
 use super::rect;
-use crate::core::{ResultExt, ValueClass, point::js::JsPoint};
+use crate::core::{ResultExt, js::classes::ValueClass, point::js::JsPoint};
 
 pub struct JsRectParam(pub super::Rect);
 

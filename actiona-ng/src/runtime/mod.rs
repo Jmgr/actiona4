@@ -8,7 +8,6 @@ use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
 use itertools::Itertools;
 use rquickjs::JsLifetime;
-use scripting::Engine as ScriptEngine;
 use tokio::{
     runtime::Handle,
     select, signal,
@@ -19,7 +18,6 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
     core::{
-        SingletonClass, ValueClass,
         clipboard::js::JsClipboard,
         color::js::JsColor,
         console::js::JsConsole,
@@ -28,8 +26,12 @@ use crate::{
         file::js::JsFile,
         filesystem::js::JsFilesystem,
         image::js::JsImage,
+        js::{
+            classes::{SingletonClass, ValueClass},
+            concurrency::JsConcurrency,
+        },
         keyboard::js::JsKeyboard,
-        mouse::{JsButton, js::JsMouse},
+        mouse::{Button, js::JsMouse},
         name::js::{JsName, JsWildcard},
         path::js::JsPath,
         point::js::JsPoint,
@@ -37,7 +39,7 @@ use crate::{
         screenshot::js::JsScreenshot,
         ui::js::JsUi,
     },
-    scripting,
+    scripting::Engine as ScriptEngine,
 };
 
 pub mod platform;
@@ -120,22 +122,34 @@ pub enum Direction {
 
 #[derive(Clone, Debug)]
 pub enum RecordEvent {
-    MouseButton(JsButton, Direction),
+    MouseButton(Button, Direction),
     DisplayChanged(DisplayInfoVec),
 }
 
 #[derive(Debug, JsLifetime)]
 pub(crate) struct JsUserData {
     displays: Arc<Displays>,
+    cancellation_token: CancellationToken,
 }
 
 impl JsUserData {
-    const fn new(displays: Arc<Displays>) -> Self {
-        Self { displays }
+    const fn new(displays: Arc<Displays>, cancellation_token: CancellationToken) -> Self {
+        Self {
+            displays,
+            cancellation_token,
+        }
     }
 
     pub(crate) fn displays(&self) -> Arc<Displays> {
         self.displays.clone()
+    }
+
+    pub(crate) fn cancellation_token(&self) -> CancellationToken {
+        self.cancellation_token.clone()
+    }
+
+    pub(crate) fn child_cancellation_token(&self) -> CancellationToken {
+        self.cancellation_token.child_token()
     }
 }
 
@@ -198,7 +212,8 @@ impl Runtime {
 
         script_engine
             .with(|ctx| -> Result<()> {
-                ctx.store_userdata(JsUserData::new(displays)).unwrap();
+                ctx.store_userdata(JsUserData::new(displays, cancellation_token.clone()))
+                    .unwrap();
 
                 (|| -> rquickjs::Result<()> {
                     // Value classes
@@ -221,6 +236,9 @@ impl Runtime {
                     JsDisplays::register(&ctx, js_displays)?;
                     JsScreenshot::register(&ctx, screenshot)?;
                     JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
+
+                    // Tools
+                    JsConcurrency::register(&ctx)?;
 
                     Ok(())
                 })()

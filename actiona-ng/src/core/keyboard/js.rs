@@ -5,7 +5,7 @@ use rquickjs::{
     class::{Trace, Tracer},
 };
 
-use crate::{IntoJS, core::SingletonClass, runtime::Runtime};
+use crate::{IntoJS, core::js::classes::SingletonClass, runtime::Runtime};
 
 impl<T> IntoJS<T> for super::Result<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
@@ -16,6 +16,8 @@ impl<T> IntoJS<T> for super::Result<T> {
 impl<'js> Trace<'js> for super::Keyboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
+
+pub type JsKey = super::Key;
 
 /// @singleton
 #[derive(Debug, JsLifetime, Trace)]

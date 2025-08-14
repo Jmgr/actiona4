@@ -1,20 +1,20 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
-use convert_case::{Case, Casing};
-use macros::ExposeEnum;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
-use strum::Display;
 
 use super::Coordinate;
 use crate::{
     IntoJS,
     core::{
-        SingletonClass,
-        js::ms_to_duration,
+        js::{
+            cancellable_promise::{JsCancellablePromise, cancellable_future},
+            classes::SingletonClass,
+            duration::ms_to_duration,
+        },
         point::js::{JsPoint, JsPointParam},
     },
     runtime::Runtime,
@@ -28,122 +28,20 @@ impl<T> IntoJS<T> for super::Result<T> {
 
 impl<'js> Trace<'js> for super::Mouse {
     fn trace<'a>(&self, tracer: Tracer<'a, 'js>) {
-        self.pressed_buttons
-            .iter()
-            .for_each(|button| button.trace(tracer));
+        let lock = self.pressed_buttons.lock().unwrap();
+        lock.iter().for_each(|button| button.trace(tracer));
     }
 }
 
-/// Mouse button.
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "Button")]
-pub enum JsButton {
-    /// Left button
-    Left,
-
-    /// Middle button
-    Middle,
-
-    /// Right button
-    Right,
-
-    /// Back button
-    Back,
-
-    /// Forward button
-    Forward,
-}
-
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "Axis")]
-pub enum JsAxis {
-    Horizontal,
-    Vertical,
-}
-
-/// Tweening functions for smooth movement.
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "Tween")]
-pub enum JsTween {
-    /// Starts slowly, then accelerates with an overshoot.
-    BackIn,
-    /// Starts and ends with an overshoot, accelerating in between.
-    BackInOut,
-    /// Starts quickly, then decelerates with an overshoot.
-    BackOut,
-
-    /// Starts by bouncing off the start point.
-    BounceIn,
-    /// Bounces at both the start and end points.
-    BounceInOut,
-    /// Ends with a bounce effect.
-    BounceOut,
-
-    /// Starts slowly and accelerates in a circular motion.
-    CircIn,
-    /// Starts and ends slowly with a circular motion.
-    CircInOut,
-    /// Ends slowly with a circular motion.
-    CircOut,
-
-    /// Starts slowly and accelerates cubically.
-    CubicIn,
-    /// Starts and ends slowly with a cubic acceleration.
-    CubicInOut,
-    /// Ends slowly with a cubic deceleration.
-    CubicOut,
-
-    /// Starts with an elastic effect, overshooting the target.
-    ElasticIn,
-    /// Starts and ends with an elastic effect.
-    ElasticInOut,
-    /// Ends with an elastic effect, overshooting the target.
-    ElasticOut,
-
-    /// Starts slowly and accelerates exponentially.
-    ExpoIn,
-    /// Starts and ends slowly with an exponential acceleration.
-    ExpoInOut,
-    /// Ends slowly with an exponential deceleration.
-    ExpoOut,
-
-    /// A linear tween with no acceleration or deceleration.
-    Linear,
-
-    /// Starts slowly and accelerates quadratically.
-    QuadIn,
-    /// Starts and ends slowly with a quadratic acceleration.
-    QuadInOut,
-    /// Ends slowly with a quadratic deceleration.
-    QuadOut,
-
-    /// Starts slowly and accelerates quartically.
-    QuartIn,
-    /// Starts and ends slowly with a quartic acceleration.
-    QuartInOut,
-    /// Ends slowly with a quartic deceleration.
-    QuartOut,
-
-    /// Starts slowly and accelerates quintically.
-    QuintIn,
-    /// Starts and ends slowly with a quintic acceleration.
-    QuintInOut,
-    /// Ends slowly with a quintic deceleration.
-    QuintOut,
-
-    /// Starts slowly and accelerates sinusoidally.
-    SineIn,
-    /// Starts and ends slowly with a sinusoidal acceleration.
-    SineInOut,
-    /// Ends slowly with a sinusoidal deceleration.
-    SineOut,
-}
+pub type JsButton = super::Button;
+pub type JsAxis = super::Axis;
+pub type JsTween = super::Tween;
 
 /// @singleton
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Mouse")]
 pub struct JsMouse {
-    inner: super::Mouse,
+    inner: Arc<super::Mouse>,
 }
 
 impl<'js> SingletonClass<'js> for JsMouse {
@@ -159,7 +57,7 @@ impl JsMouse {
     /// @skip
     pub async fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
         Ok(Self {
-            inner: super::Mouse::new(runtime).await?,
+            inner: Arc::new(super::Mouse::new(runtime).await?),
         })
     }
 }
@@ -172,11 +70,11 @@ pub type JsDoubleClickOptions = super::DoubleClickOptions;
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsMouse {
     /// @platforms -wayland
-    pub async fn is_pressed(&mut self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
+    pub async fn is_pressed(&self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
         self.inner.is_pressed(button).await.into_js(&ctx)
     }
 
-    pub async fn scroll(&mut self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
+    pub async fn scroll(&self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
             .into_js(&ctx)
@@ -193,16 +91,21 @@ impl JsMouse {
     }
 
     #[qjs(rename = "move")]
-    pub async fn r#move(
-        &mut self,
-        ctx: Ctx<'_>,
+    pub fn r#move<'js>(
+        &self,
+        ctx: Ctx<'js>,
         point: JsPointParam,
         options: Opt<JsMoveOptions>,
-    ) -> Result<()> {
-        self.inner
-            .move_(point.0, options.unwrap_or_default())
-            .await
-            .into_js(&ctx)
+    ) -> Result<JsCancellablePromise<'js>> {
+        let local_ctx = ctx.clone();
+        let local_mouse = self.inner.clone();
+
+        cancellable_future::<'js>(ctx, async move |token| {
+            local_mouse
+                .move_(point.0, token, options.unwrap_or_default())
+                .await
+                .into_js(&local_ctx)
+        })
     }
 
     pub async fn set_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
@@ -217,7 +120,7 @@ impl JsMouse {
             .into_js(&ctx)
     }
 
-    pub async fn click(&mut self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
+    pub async fn click(&self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
         self.inner
             .click(options.unwrap_or_default())
             .await
@@ -225,7 +128,7 @@ impl JsMouse {
     }
 
     pub async fn double_click(
-        &mut self,
+        &self,
         ctx: Ctx<'_>,
         options: Opt<JsDoubleClickOptions>,
     ) -> Result<()> {
@@ -235,14 +138,21 @@ impl JsMouse {
             .into_js(&ctx)
     }
 
-    pub async fn press(&mut self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
+    pub async fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
         self.inner.press(options.unwrap_or_default()).into_js(&ctx)
     }
 
-    pub async fn release(&mut self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
+    pub async fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))
             .into_js(&ctx)
+    }
+
+    // TMP
+    #[qjs(static)]
+    pub async fn pause(&self, ctx: Ctx<'_>, duration: u32) -> Result<()> {
+        tokio::time::sleep(Duration::from_millis(duration as u64)).await;
+        Ok(())
     }
 }
 
@@ -367,6 +277,33 @@ mod tests {
                 .await
                 .unwrap();
             println!("speed: {speed}");
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_random_move_timeout() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    async function timeout(ms) {
+                        await mouse.pause(ms);
+                    }
+                    async function timeConsumingTask() {
+                        while(true) {
+                            let pos = displays.randomPoint();
+                            await mouse.move(pos);
+                        }
+                    }
+                    Promise.race([
+                        timeout(2000),
+                        timeConsumingTask(),
+                    ]);
+                    "#,
+                )
+                .await
+                .unwrap();
         });
     }
 }

@@ -2,7 +2,7 @@
 //#![warn(clippy::all, clippy::dbg_macro, clippy::float_cmp_const, clippy::get_unwrap, clippy::mem_forget, clippy::nursery, clippy::pedantic)]
 #![warn(clippy::all, clippy::nursery)]
 
-use rquickjs::Ctx;
+use rquickjs::{Ctx, Exception};
 pub use slotmap::{
     Key as SlotmapKey, KeyData as SlotmapKeyData, SecondaryMap as SlotmapSecondaryMap,
 };
@@ -14,8 +14,26 @@ pub(crate) mod platform;
 pub mod runtime;
 pub mod scripting;
 
+pub trait IntoJSError: ToString {
+    fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Error
+    where
+        Self: Sized,
+    {
+        Exception::throw_message(ctx, &self.to_string())
+    }
+}
+
 pub trait IntoJS<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T>;
+}
+
+impl<T, E> IntoJS<T> for std::result::Result<T, E>
+where
+    E: IntoJSError,
+{
+    fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
+        self.map_err(|err| err.into_js(ctx))
+    }
 }
 
 #[macro_export]

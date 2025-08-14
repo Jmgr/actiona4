@@ -563,8 +563,7 @@ impl TryFrom<Crate> for File {
             })
             .cloned();
 
-        let mut structs = process_structs(items.clone(), &crate_.index)?;
-        let alias_structs = items
+        let aliases = items
             .clone()
             .filter_map(|item| match &item.inner {
                 ItemEnum::TypeAlias(alias) => Some(alias.type_.clone()),
@@ -582,14 +581,16 @@ impl TryFrom<Crate> for File {
                     None
                 }
             });
-        //let mut struct_aliases = process_aliases(items.clone())?; // TODO: remove?
-        let mut struct_aliases = process_structs(alias_structs, &crate_.index)?;
+
+        let mut structs = process_structs(items.clone(), &crate_.index)?;
+        let mut struct_aliases = process_structs(aliases.clone(), &crate_.index)?;
         structs.append(&mut struct_aliases);
 
-        Ok(File {
-            enums: process_enums(items.clone(), &crate_.index)?,
-            structs,
-        })
+        let mut enums = process_enums(items.clone(), &crate_.index)?;
+        let mut enum_aliases = process_enums(aliases, &crate_.index)?;
+        enums.append(&mut enum_aliases);
+
+        Ok(File { enums, structs })
     }
 }
 

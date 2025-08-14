@@ -26,8 +26,8 @@ use strum::Display;
 use crate::{
     IntoJS,
     core::{
-        ValueClass,
         color::js::{JsColor, JsColorParam},
+        js::classes::ValueClass,
         point::{
             self,
             js::{JsPoint, JsPointParam},

@@ -48,8 +48,8 @@ pub enum KeyboardError {
 pub type Result<T> = std::result::Result<T, KeyboardError>;
 
 #[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "Key")]
-pub enum JsKey {
+#[rquickjs::class]
+pub enum Key {
     Alt,
     Backspace,
     Cancel,
@@ -122,11 +122,11 @@ pub enum JsKey {
     Windows,
 }
 
-impl JsKey {
-    const fn into_enigo(self) -> enigo::Key {
-        use JsKey::*;
+impl From<Key> for enigo::Key {
+    fn from(value: Key) -> Self {
+        use Key::*;
 
-        match self {
+        match value {
             Alt => enigo::Key::Alt,
             Backspace => enigo::Key::Backspace,
             Cancel => enigo::Key::Cancel,
@@ -226,13 +226,10 @@ impl Keyboard {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn key(&self, key: JsKey, direction: Direction) -> Result<()> {
+    pub fn key(&self, key: Key, direction: Direction) -> Result<()> {
         use enigo::Keyboard;
 
-        self.enigo
-            .lock()
-            .unwrap()
-            .key(key.into_enigo(), direction)?;
+        self.enigo.lock().unwrap().key(key.into(), direction)?;
 
         Ok(())
     }
@@ -246,7 +243,7 @@ impl Keyboard {
         Ok(())
     }
 
-    pub fn is_key_pressed(&self, key: JsKey) -> Result<bool> {
+    pub fn is_key_pressed(&self, key: Key) -> Result<bool> {
         self.implementation.is_key_pressed(key)
     }
 }

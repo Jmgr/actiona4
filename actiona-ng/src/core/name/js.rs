@@ -6,7 +6,7 @@ use rquickjs::{
 };
 use wildmatch::WildMatch;
 
-use crate::core::{ResultExt, ValueClass};
+use crate::core::{ResultExt, js::classes::ValueClass};
 
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "Wildcard")]
@@ -139,7 +139,7 @@ mod tests {
     use rquickjs::{Ctx, JsLifetime, class::Trace};
 
     use super::{JsNameParam, JsWildcard};
-    use crate::{core::SingletonClass, runtime::Runtime};
+    use crate::{core::js::classes::SingletonClass, runtime::Runtime};
 
     #[derive(Clone, Default, JsLifetime, Trace)]
     #[rquickjs::class(rename = "Test")]

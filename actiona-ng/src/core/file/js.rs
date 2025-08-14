@@ -22,7 +22,7 @@ use tokio::{
     task::spawn_blocking,
 };
 
-use crate::core::ValueClass;
+use crate::core::js::classes::ValueClass;
 
 #[derive(Clone, Debug, JsLifetime)]
 struct OpenedFile {
@@ -624,8 +624,12 @@ impl JsFile {
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
-    pub const fn to_string_js(&self) -> String {
-        String::new() // TODO
+    pub fn to_string_js(&self) -> String {
+        if let Some(file) = &self.inner {
+            format!("(path: {})", file.path)
+        } else {
+            "()".to_string()
+        }
     }
 }
 

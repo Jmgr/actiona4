@@ -1,42 +1,19 @@
-use std::{borrow::Cow, fmt::Debug};
+use std::fmt::Debug;
 
 #[cfg(linux)]
-use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
-use arboard::{Get, ImageData, Set};
-use convert_case::{Case, Casing};
-use eyre::eyre;
-use image::{DynamicImage, RgbaImage};
-use itertools::Itertools;
-use macros::ExposeEnum;
 use rquickjs::{
-    Exception, JsLifetime, Result,
+    JsLifetime, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
-use strum::Display;
 
 use crate::{
-    IntoJS,
-    core::{SingletonClass, image::js::JsImage},
+    IntoJS, IntoJSError,
+    core::{image::js::JsImage, js::classes::SingletonClass},
     newtype,
 };
 
-impl<T> IntoJS<T> for super::Result<T> {
-    fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
-        // TODO
-        self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
-    }
-}
-
-#[derive(Clone, Copy, Debug, Default, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "ClipboardMode")]
-pub enum JsClipboardMode {
-    #[default]
-    Clipboard,
-
-    /// @platforms =linux
-    Selection,
-}
+impl IntoJSError for super::Error {}
 
 newtype!(
     #[derive(JsLifetime)]
@@ -50,6 +27,8 @@ impl Debug for Clipboard {
     }
 }
 
+pub type JsClipboardMode = super::ClipboardMode;
+
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Clipboard")]
@@ -62,7 +41,7 @@ impl<'js> Trace<'js> for JsClipboard {
 }
 
 impl<'js> SingletonClass<'js> for JsClipboard {
-    fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+    fn register_dependencies(ctx: &Ctx<'js>) -> Result<()> {
         JsClipboardMode::register(ctx)?;
 
         Ok(())
@@ -71,42 +50,10 @@ impl<'js> SingletonClass<'js> for JsClipboard {
 
 impl JsClipboard {
     /// @skip
-    pub fn new(ctx: &Ctx<'_>) -> rquickjs::Result<Self> {
+    pub fn new(ctx: &Ctx<'_>) -> Result<Self> {
         Ok(Self {
             inner: super::Clipboard::new().into_js(ctx)?,
         })
-    }
-
-    /// @skip
-    fn set(&'_ mut self, mode: Opt<JsClipboardMode>) -> Set<'_> {
-        let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner.inner;
-
-        #[cfg(linux)]
-        if mode == JsClipboardMode::Selection {
-            inner.set().clipboard(LinuxClipboardKind::Primary)
-        } else {
-            inner.set()
-        }
-
-        #[cfg(not(linux))]
-        inner.set()
-    }
-
-    /// @skip
-    fn get(&'_ mut self, mode: Opt<JsClipboardMode>) -> Get<'_> {
-        let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner.inner;
-
-        #[cfg(linux)]
-        if mode == JsClipboardMode::Selection {
-            inner.get().clipboard(LinuxClipboardKind::Primary)
-        } else {
-            inner.get()
-        }
-
-        #[cfg(not(linux))]
-        inner.get()
     }
 }
 
@@ -118,34 +65,11 @@ impl JsClipboard {
         text: String,
         mode: Opt<JsClipboardMode>,
     ) -> Result<()> {
-        let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner.inner;
-
-        let clipboard = {
-            #[cfg(linux)]
-            if mode == JsClipboardMode::Selection {
-                inner.set().clipboard(LinuxClipboardKind::Primary)
-            } else {
-                inner.set()
-            }
-
-            #[cfg(not(linux))]
-            inner.set()
-        };
-
-        clipboard
-            .text(text)
-            .map_err(|err| eyre!("{err}"))
-            .into_js(&ctx)
+        self.inner.set_text(text, *mode).await.into_js(&ctx)
     }
 
     pub async fn get_text(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
-        self.get(mode)
-            .text()
-            .map_err(|err| eyre!("{err}"))
-            .into_js(&ctx)
-        // TODO: fails if the clipboard is empty?
-        // TODO: errors?
+        self.inner.get_text(*mode).await.into_js(&ctx)
     }
 
     pub async fn set_image(
@@ -154,37 +78,16 @@ impl JsClipboard {
         image: JsImage,
         mode: Opt<JsClipboardMode>,
     ) -> Result<()> {
-        let image = image.into_inner().to_rgba8().into_owned();
-        let (width, height) = image.dimensions();
-        let bytes = Cow::Owned(image.into_raw());
-
-        self.set(mode)
-            .image(ImageData {
-                width: width as usize,
-                height: height as usize,
-                bytes,
-            })
-            .map_err(|err| eyre!("{err}"))
-            .into_js(&ctx)?;
-
-        Ok(())
+        self.inner
+            .set_image(image.into_inner(), *mode)
+            .await
+            .into_js(&ctx)
     }
 
     pub async fn get_image(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
-        let image = self
-            .get(mode)
-            .image()
-            .map_err(|err| eyre!("{err}"))
-            .into_js(&ctx)?;
+        let image = self.inner.get_image(*mode).await.into_js(&ctx)?;
 
-        let img = RgbaImage::from_vec(
-            image.width as u32,
-            image.height as u32,
-            image.bytes.to_vec(),
-        )
-        .unwrap();
-
-        Ok(JsImage::new(DynamicImage::ImageRgba8(img).into()))
+        Ok(image.into())
     }
 
     /// @returns string[]
@@ -193,18 +96,7 @@ impl JsClipboard {
         ctx: Ctx<'_>,
         mode: Opt<JsClipboardMode>,
     ) -> Result<Vec<String>> {
-        let result = self
-            .get(mode)
-            .file_list()
-            .map_err(|err| eyre!("{err}"))
-            .into_js(&ctx)?;
-
-        let result = result
-            .into_iter()
-            .map(|path| path.to_string_lossy().to_string())
-            .collect_vec();
-
-        Ok(result)
+        self.inner.get_file_list(*mode).await.into_js(&ctx)
     }
 
     pub async fn set_html(
@@ -214,38 +106,18 @@ impl JsClipboard {
         alt_text: Opt<String>,
         mode: Opt<JsClipboardMode>,
     ) -> Result<()> {
-        self.set(mode)
-            .html(html, alt_text.0)
-            .map_err(|err| eyre!("{err}"))
+        self.inner
+            .set_html(html, alt_text.0, *mode)
+            .await
             .into_js(&ctx)
     }
 
     pub async fn get_html(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
-        self.get(mode)
-            .html()
-            .map_err(|err| eyre!("{err}"))
-            .into_js(&ctx)
+        self.inner.get_html(*mode).await.into_js(&ctx)
     }
 
     pub async fn clear(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
-        let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner.inner;
-
-        #[cfg(linux)]
-        if mode == JsClipboardMode::Selection {
-            inner
-                .clear_with()
-                .clipboard(LinuxClipboardKind::Primary)
-                .map_err(|err| eyre!("{err}"))
-                .into_js(&ctx)?;
-        } else {
-            inner.clear().map_err(|err| eyre!("{err}")).into_js(&ctx)?;
-        }
-
-        #[cfg(not(linux))]
-        inner.clear().map_err(|err| eyre!("{err}")).into_js(&ctx)?;
-
-        Ok(())
+        self.inner.clear(*mode).await.into_js(&ctx)
     }
 }
 
@@ -316,7 +188,8 @@ mod tests {
             script_engine
                 .eval_async::<()>(
                     r#"
-                await clipboard.setHtml("<b>test</b>", "test")                "#,
+                await clipboard.setHtml("<b>test</b>", "test")
+                "#,
                 )
                 .await
                 .unwrap();
