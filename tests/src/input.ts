@@ -43,6 +43,8 @@ console.log("hello: " + Button.LEFT, "sss");
 const f = await File.open("/home/jmgr/Downloads/tmp/test.txt");
 await f.setModifiedTime(new Date());
 await File.writeText("/home/jmgr/Downloads/tmp/test2.txt", "dfdfdf");
+let n = await mouse.measureSpeed();
+let r = await mouse.move(0, 0);
 //for (let i = 0; i < 1; ++i) {
 //    ui.displayImage(source.rotated(i * 15));
 //}

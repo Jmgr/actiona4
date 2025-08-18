@@ -3,10 +3,19 @@ use tokio_util::sync::CancellationToken;
 
 use crate::runtime::JsUserData;
 
-/// Represents a promise that can be cancelled.
-pub struct JsCancellablePromise<'js>(Value<'js>);
+// TODO: replace more Promise with CancelablePromise when relevant
 
-impl<'js> JsCancellablePromise<'js> {
+/// Represents a promise that can be cancelled.
+/// @generic
+/// @extends Promise<T>
+/// @method cancel(): void
+#[derive(Clone, Debug)]
+pub struct JsCancelablePromise<'js> {
+    inner: Value<'js>,
+}
+
+impl<'js> JsCancelablePromise<'js> {
+    /// @skip
     pub fn new(
         ctx: Ctx<'js>,
         promise: Promise<'js>,
@@ -19,21 +28,30 @@ impl<'js> JsCancellablePromise<'js> {
             .expect("Promise should be an Object")
             .set("cancel", cancel_fn)?;
 
-        Ok(Self(promise.into_value()))
+        Ok(Self {
+            inner: promise.into_value(),
+        })
     }
 }
 
-impl<'js> IntoJs<'js> for JsCancellablePromise<'js> {
+impl<'js> IntoJs<'js> for JsCancelablePromise<'js> {
     fn into_js(self, ctx: &Ctx<'js>) -> Result<Value<'js>> {
-        self.0.into_js(&ctx)
+        self.inner.into_js(&ctx)
+    }
+}
+
+impl<'js> JsCancelablePromise<'js> {
+    /// @skip
+    pub fn register(ctx: &Ctx<'_>) -> Result<()> {
+        ctx.eval::<(), _>("class CancelablePromise extends Promise {}")
     }
 }
 
 /// Cancellable future wrapper.
-pub(crate) fn cancellable_future<'js, R, Fut, F>(
+pub(crate) fn cancelable_promise<'js, R, Fut, F>(
     ctx: Ctx<'js>,
     future: F,
-) -> Result<JsCancellablePromise<'js>>
+) -> Result<JsCancelablePromise<'js>>
 where
     F: FnOnce(CancellationToken) -> Fut,
     Fut: Future<Output = Result<R>> + 'js,
@@ -44,13 +62,13 @@ where
         .expect("userdata not set")
         .child_cancellation_token();
 
-    let r = future(token.clone());
+    let fut = future(token.clone());
 
     let local_ctx = ctx.clone();
     let fut = async move {
-        let r = r.await?;
-        r.into_js(&local_ctx)
+        let result = fut.await?;
+        result.into_js(&local_ctx)
     };
 
-    JsCancellablePromise::new(ctx.clone(), Promise::wrap_future(&ctx, fut)?, token)
+    JsCancelablePromise::new(ctx.clone(), Promise::wrap_future(&ctx, fut)?, token)
 }

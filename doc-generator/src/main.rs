@@ -5,6 +5,7 @@ use rustdoc_types::Crate;
 use types::File;
 
 mod input;
+pub mod items;
 mod output;
 mod types;
 

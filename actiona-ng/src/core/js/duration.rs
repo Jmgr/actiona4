@@ -24,6 +24,6 @@ impl<'js> FromJs<'js> for JsDuration {
     }
 }
 
-pub fn ms_to_duration(ms: f64) -> Duration {
+pub(crate) fn ms_to_duration(ms: f64) -> Duration {
     Duration::from_secs_f64(ms / 1000_f64)
 }

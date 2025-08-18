@@ -87,6 +87,7 @@ pub struct Method {
     pub is_private: bool,
     pub is_static: bool,
     pub is_async: bool,
+    pub is_generic: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -114,12 +115,15 @@ pub struct Struct {
     pub is_options: bool,
     pub extends: Option<String>,
     pub platforms: Platforms,
+    pub is_generic: bool,
+    pub extra_methods: Vec<String>,
 }
 
 #[derive(Debug, Default)]
 pub struct File {
     pub enums: Vec<Enum>,
     pub structs: Vec<Struct>,
+    pub functions: Vec<Method>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -257,6 +261,8 @@ pub enum Instruction {
     Rename(String),
     Static,
     Platforms(Platforms),
+    Generic,
+    Method(String),
 }
 
 pub fn strip_modules(name: &str) -> &str {

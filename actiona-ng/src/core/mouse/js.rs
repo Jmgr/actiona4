@@ -11,7 +11,7 @@ use crate::{
     IntoJS,
     core::{
         js::{
-            cancellable_promise::{JsCancellablePromise, cancellable_future},
+            cancelable_promise::{JsCancelablePromise, cancelable_promise},
             classes::SingletonClass,
             duration::ms_to_duration,
         },
@@ -90,17 +90,18 @@ impl JsMouse {
         self.inner.measure_speed(duration).await.into_js(&ctx)
     }
 
+    /// @returns CancellablePromise<void>
     #[qjs(rename = "move")]
     pub fn r#move<'js>(
         &self,
         ctx: Ctx<'js>,
         point: JsPointParam,
         options: Opt<JsMoveOptions>,
-    ) -> Result<JsCancellablePromise<'js>> {
+    ) -> Result<JsCancelablePromise<'js>> {
         let local_ctx = ctx.clone();
         let local_mouse = self.inner.clone();
 
-        cancellable_future::<'js>(ctx, async move |token| {
+        cancelable_promise(ctx, async move |token| {
             local_mouse
                 .move_(point.0, token, options.unwrap_or_default())
                 .await
@@ -146,13 +147,6 @@ impl JsMouse {
         self.inner
             .release(button.map(|button| button))
             .into_js(&ctx)
-    }
-
-    // TMP
-    #[qjs(static)]
-    pub async fn pause(&self, ctx: Ctx<'_>, duration: u32) -> Result<()> {
-        tokio::time::sleep(Duration::from_millis(duration as u64)).await;
-        Ok(())
     }
 }
 

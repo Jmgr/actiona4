@@ -1,21 +1,25 @@
-use std::{collections::BTreeMap, mem::take};
+use std::mem::take;
 
 use actiona_ng::newtype;
 use enums::process_enums;
 use eyre::{Result, bail, eyre};
 use itertools::Itertools;
-use log::error;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use rustdoc_types::{Crate, ItemEnum};
+use rustdoc_types::Crate;
 use structs::process_structs;
 
-use crate::types::{
-    File, Instruction, InstructionDiscriminants, Platforms, RestParams, RustdocContext, Type,
-    Variable, strip_modules,
+use crate::{
+    input::functions::process_functions,
+    items::Items,
+    types::{
+        File, Instruction, InstructionDiscriminants, Platforms, RestParams, RustdocContext, Type,
+        Variable, strip_modules,
+    },
 };
 
 pub mod enums;
+pub mod functions;
 pub mod structs;
 
 newtype!(pub Comments, Vec<String>);
@@ -62,6 +66,11 @@ impl Instructions {
     pub fn is_singleton(&self) -> bool {
         self.iter()
             .any(|instruction| matches!(instruction, Instruction::Singleton))
+    }
+
+    pub fn is_generic(&self) -> bool {
+        self.iter()
+            .any(|instruction| matches!(instruction, Instruction::Generic))
     }
 
     pub fn rest_params(&self) -> Option<RestParams> {
@@ -116,12 +125,25 @@ impl Instructions {
             })
             .cloned()
     }
+
+    pub fn extra_methods(&self) -> Vec<String> {
+        self.iter()
+            .filter_map(|instruction| {
+                if let Instruction::Method(method) = instruction {
+                    Some(method)
+                } else {
+                    None
+                }
+            })
+            .cloned()
+            .collect_vec()
+    }
 }
 
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
 static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+)(.*)$"#).unwrap());
-static RETURNS_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^([\w\[\]]+)$"#).unwrap());
+static RETURNS_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^([\w\[\]<>]+)$"#).unwrap());
 static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r#"(?x)
@@ -264,6 +286,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Static
         }
 
+        // @generic
+        "generic" => {
+            if !parameters.is_empty() {
+                bail!("unexpected parameters");
+            }
+
+            Instruction::Generic
+        }
+
         // @rest
         "rest" => Instruction::Rest(if parameters.is_empty() {
             None
@@ -303,6 +334,9 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         // @param name: type // comment
         "param" => Instruction::Parameter(extract_variable(parameters)?),
 
+        // @method
+        "method" => Instruction::Method(parameters.to_string()),
+
         _ => bail!("unknown instruction {name}"),
     })
 }
@@ -340,6 +374,8 @@ const fn allowed_context_for_instruction(
             RustdocContext::Enum,
             RustdocContext::EnumVariant,
         ],
+        Generic => &[RustdocContext::Struct, RustdocContext::Method],
+        Method => &[RustdocContext::Struct],
     }
 }
 
@@ -463,11 +499,15 @@ fn unwrap_generic(path: &rustdoc_types::Path) -> Result<&rustdoc_types::Type> {
     Ok(type_)
 }
 
-fn convert_type(output: &rustdoc_types::Type, struct_name: &str) -> Result<Type> {
+fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Result<Type> {
     Ok(match output {
         rustdoc_types::Type::Primitive(primitive) => primitive_to_type(primitive)?,
         rustdoc_types::Type::Generic(generic) => match generic.as_str() {
-            "Self" => Type::Verbatim(struct_name.to_string()),
+            "Self" => Type::Verbatim(
+                struct_name
+                    .ok_or_else(|| eyre!("expected struct name, but none set (free function?)"))?
+                    .to_string(),
+            ),
             _ => {
                 bail!("Unsupported generic type: {generic}");
             }
@@ -544,53 +584,23 @@ impl TryFrom<Crate> for File {
     type Error = eyre::Error;
 
     fn try_from(crate_: Crate) -> Result<Self, Self::Error> {
-        // Store the index into a BTree so we get all entries sorted by ID.
-        let items = BTreeMap::from_iter(crate_.index.iter().map(|(key, value)| (key.0, value)));
+        let items = Items::new(crate_);
 
-        let items = items
-            .values()
-            // From a js.rs file
-            .filter(|item| {
-                item.span
-                    .as_ref()
-                    .is_some_and(|span| span.filename.ends_with("js.rs"))
-            })
-            // With a name that doesn't start with _
-            .filter(|item| {
-                item.name
-                    .as_ref()
-                    .is_some_and(|name| !name.starts_with("_"))
-            })
-            .cloned();
-
-        let aliases = items
-            .clone()
-            .filter_map(|item| match &item.inner {
-                ItemEnum::TypeAlias(alias) => Some(alias.type_.clone()),
-                _ => None,
-            })
-            .filter_map(|item| match &item {
-                rustdoc_types::Type::ResolvedPath(path) => Some(path.id),
-                _ => None,
-            })
-            .filter_map(|id| {
-                if let Some(item) = crate_.index.get(&id) {
-                    Some(item)
-                } else {
-                    error!("No item found for ID {id:?}");
-                    None
-                }
-            });
-
-        let mut structs = process_structs(items.clone(), &crate_.index)?;
-        let mut struct_aliases = process_structs(aliases.clone(), &crate_.index)?;
+        let mut structs = process_structs(&items)?;
+        let mut struct_aliases = process_structs(&items.aliases())?;
         structs.append(&mut struct_aliases);
 
-        let mut enums = process_enums(items.clone(), &crate_.index)?;
-        let mut enum_aliases = process_enums(aliases, &crate_.index)?;
+        let mut enums = process_enums(&items)?;
+        let mut enum_aliases = process_enums(&items.aliases())?;
         enums.append(&mut enum_aliases);
 
-        Ok(File { enums, structs })
+        let functions = process_functions(&items)?;
+
+        Ok(File {
+            enums,
+            structs,
+            functions,
+        })
     }
 }
 

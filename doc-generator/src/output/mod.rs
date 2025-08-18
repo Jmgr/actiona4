@@ -6,7 +6,7 @@ use itertools::Itertools;
 
 use crate::{
     built_info,
-    types::{Context, File, Type, strip_modules},
+    types::{Context, File, Method, Type, strip_modules},
 };
 
 fn write_comments<W: Write>(comments: &[String], prefix: &str, file: &mut W) -> Result<()> {
@@ -212,6 +212,9 @@ impl File {
             "",
             &mut output_file,
         )?;
+        writeln!(output_file)?;
+
+        output_methods(&self.functions, true, &mut output_file)?;
 
         for enum_ in self.enums.iter() {
             let mut comments = enum_.comments.clone();
@@ -258,13 +261,14 @@ impl File {
 
             writeln!(
                 output_file,
-                "declare {} {}{} {{",
+                "declare {} {}{}{} {{",
                 if struct_.methods.is_empty() || !has_constructor {
                     "interface"
                 } else {
                     "class"
                 },
                 struct_.name,
+                if struct_.is_generic { "<T>" } else { "" },
                 if let Some(name) = &struct_.extends {
                     format!(" extends {name}")
                 } else {
@@ -309,81 +313,11 @@ impl File {
                 )?;
             }
 
-            // Used for overloading methods
-            let mut methods = struct_.methods.clone();
-
-            // Make sure constructors are displayed first
-            methods.sort_by(|a, b| b.is_constructor.cmp(&a.is_constructor));
-
-            for method in &methods {
-                for overload in &method.overloads {
-                    let mut parameters = String::new();
-                    let mut is_first = true;
-
-                    if let Some(rest_params) = &overload.rest_params {
-                        parameters = format!(
-                            "...args: {}[]",
-                            if let Some(type_) = &rest_params.type_ {
-                                &type_
-                            } else {
-                                "any"
-                            }
-                        );
-                    } else {
-                        for parameter in &overload.parameters {
-                            if matches!(parameter.type_, Type::Ignore) {
-                                continue;
-                            }
-
-                            if !is_first {
-                                use std::fmt::Write;
-                                write!(parameters, ", ")?;
-                            }
-
-                            is_first = false;
-
-                            let is_optional = matches!(parameter.type_, Type::Option(_));
-
-                            use std::fmt::Write;
-                            write!(
-                                parameters,
-                                "{}{}: {}",
-                                parameter.name,
-                                if is_optional { "?" } else { "" },
-                                parameter.type_.to_string(Context::Variable)?
-                            )?;
-                        }
-                    }
-
-                    let mut comments = overload.comments.clone();
-
-                    if !overload.platforms.is_empty() {
-                        comments.push(format!("@platform {}", overload.platforms));
-                    }
-
-                    write_comments(&comments, "    ", &mut output_file)?;
-
-                    let private = if method.is_private { "private " } else { "" };
-
-                    if method.is_constructor {
-                        writeln!(output_file, "    {private}constructor({parameters});")?;
-                    } else {
-                        let mut return_ = overload.return_.to_string(Context::ReturnValue)?;
-
-                        if method.is_async {
-                            return_ = format!("Promise<{return_}>");
-                        }
-
-                        writeln!(
-                            output_file,
-                            "    {private}{}{}({parameters}): {};",
-                            if method.is_static { "static " } else { "" },
-                            method.name,
-                            return_
-                        )?;
-                    }
-                }
+            for extra_method in &struct_.extra_methods {
+                writeln!(output_file, "    {};", extra_method)?;
             }
+
+            output_methods(&struct_.methods, false, &mut output_file)?;
 
             writeln!(output_file, "}}")?;
 
@@ -399,6 +333,106 @@ impl File {
 
         Ok(())
     }
+}
+
+fn output_methods(
+    methods: &[Method],
+    is_free_function: bool,
+    output_file: &mut std::fs::File,
+) -> Result<()> {
+    // Used for overloading methods
+    let mut methods = methods.to_vec();
+
+    // Make sure constructors are displayed first
+    methods.sort_by(|a, b| b.is_constructor.cmp(&a.is_constructor));
+
+    for method in &methods {
+        for overload in &method.overloads {
+            let mut parameters = String::new();
+            let mut is_first = true;
+
+            if let Some(rest_params) = &overload.rest_params {
+                parameters = format!(
+                    "...args: {}[]",
+                    if let Some(type_) = &rest_params.type_ {
+                        &type_
+                    } else {
+                        "any"
+                    }
+                );
+            } else {
+                for parameter in &overload.parameters {
+                    if matches!(parameter.type_, Type::Ignore) {
+                        continue;
+                    }
+
+                    if !is_first {
+                        use std::fmt::Write;
+                        write!(parameters, ", ")?;
+                    }
+
+                    is_first = false;
+
+                    let is_optional = matches!(parameter.type_, Type::Option(_));
+
+                    use std::fmt::Write;
+                    write!(
+                        parameters,
+                        "{}{}: {}",
+                        parameter.name,
+                        if is_optional { "?" } else { "" },
+                        parameter.type_.to_string(Context::Variable)?
+                    )?;
+                }
+            }
+
+            let mut comments = overload.comments.clone();
+
+            if !overload.platforms.is_empty() {
+                comments.push(format!("@platform {}", overload.platforms));
+            }
+
+            write_comments(
+                &comments,
+                if is_free_function { "" } else { "    " },
+                output_file,
+            )?;
+
+            let private = if method.is_private { "private " } else { "" };
+
+            if method.is_constructor {
+                writeln!(output_file, "    {private}constructor({parameters});")?;
+            } else {
+                let mut return_ = overload.return_.to_string(Context::ReturnValue)?;
+
+                if method.is_async {
+                    return_ = format!("Promise<{return_}>");
+                }
+
+                let prefix = if is_free_function {
+                    "declare function "
+                } else {
+                    "    "
+                };
+
+                writeln!(
+                    output_file,
+                    "{}{private}{}{}{}({parameters}): {};",
+                    prefix,
+                    if method.is_static && !is_free_function {
+                        "static "
+                    } else {
+                        ""
+                    },
+                    method.name,
+                    if method.is_generic { "<T>" } else { "" },
+                    return_
+                )?;
+            }
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]

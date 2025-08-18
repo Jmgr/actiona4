@@ -1,9 +1,11 @@
+use std::pin::Pin;
+
 use futures::future::select_all;
 use rquickjs::{
     Array, Ctx, Function, JsLifetime, Promise, Result, Value, class::Trace, function::Args,
 };
 
-use crate::core::js::cancellable_promise::{JsCancellablePromise, cancellable_future};
+use crate::core::js::cancelable_promise::{JsCancelablePromise, cancelable_promise};
 
 // TODO: test
 #[derive(Debug, JsLifetime, Trace)]
@@ -12,14 +14,17 @@ pub struct JsConcurrency {}
 
 #[rquickjs::methods]
 impl JsConcurrency {
+    /// @skip
     pub fn new() -> Self {
         Self {}
     }
 
-    #[qjs(static)]
-    pub fn race<'js>(ctx: Ctx<'js>, promises: Array<'js>) -> Result<JsCancellablePromise<'js>> {
+    /// @generic
+    /// @param promises: Iterable<T|PromiseLike<T>>
+    /// @returns CancellablePromise<Awaited<T>>
+    pub fn race<'js>(ctx: Ctx<'js>, promises: Array<'js>) -> Result<JsCancelablePromise<'js>> {
         let local_ctx = ctx.clone();
-        cancellable_future(ctx, async move |token| {
+        cancelable_promise(ctx, async move |token| {
             let promises: Vec<Promise<'js>> = promises
                 .iter::<Value<'js>>()
                 .collect::<Result<Vec<_>>>()?
@@ -27,15 +32,32 @@ impl JsConcurrency {
                 .filter_map(|v| v.into_promise())
                 .collect();
 
+            if promises.is_empty() {
+                return Ok(Value::new_undefined(local_ctx.clone()));
+            }
+
             let mut futures: Vec<_> = promises
                 .iter()
                 .map(|p| p.clone().into_future::<Value<'js>>())
                 .collect();
 
             // Add the cancellation token to the futures, so this "race" can be stopped.
-            let cancelled_promise =
-                Promise::wrap_future(&local_ctx, async move { token.cancelled().await })?;
-            futures.push(cancelled_promise.into_future::<Value<'js>>());
+            let mut futures: Vec<Pin<Box<dyn Future<Output = Result<Value<'js>>> + 'js>>> =
+                promises
+                    .iter()
+                    .map(|p| {
+                        let fut = p.clone().into_future::<Value<'js>>(); // Output = Result<Value<'js>>
+                        Box::pin(fut) as Pin<Box<dyn Future<Output = Result<Value<'js>>> + 'js>>
+                    })
+                    .collect();
+
+            // Add a *pure Rust* future for cancellation (no nested wrap_future!)
+            let cancel_ctx = local_ctx.clone();
+            let cancel_fut = async move {
+                token.cancelled().await;
+                Ok(Value::new_undefined(cancel_ctx))
+            };
+            futures.push(Box::pin(cancel_fut));
 
             let (result, idx, _rest) = select_all(futures).await;
 
@@ -57,7 +79,47 @@ impl JsConcurrency {
 }
 
 impl JsConcurrency {
+    /// @skip
     pub fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
         ctx.globals().prop("Concurrency", JsConcurrency::new())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Instant;
+
+    use crate::runtime::Runtime;
+
+    #[test]
+    fn test_race() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let start = Instant::now();
+
+            script_engine
+                .eval_async::<()>("await Concurrency.race([sleep(100), sleep(1000)])")
+                .await
+                .unwrap();
+
+            let duration = Instant::now() - start;
+            assert!(duration.as_millis() >= 100 && duration.as_millis() < 1000);
+        });
+    }
+
+    #[test]
+    fn test_race_of_race() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let start = Instant::now();
+
+            script_engine
+                .eval_async::<()>(
+                    "await Concurrency.race([Concurrency.race([sleep(100)]), sleep(1000)])",
+                )
+                .await
+                .unwrap();
+
+            let duration = Instant::now() - start;
+            assert!(duration.as_millis() >= 100 && duration.as_millis() < 1000);
+        });
     }
 }

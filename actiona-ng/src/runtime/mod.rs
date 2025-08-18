@@ -27,8 +27,10 @@ use crate::{
         filesystem::js::JsFilesystem,
         image::js::JsImage,
         js::{
+            cancelable_promise::JsCancelablePromise,
             classes::{SingletonClass, ValueClass},
             concurrency::JsConcurrency,
+            global,
         },
         keyboard::js::JsKeyboard,
         mouse::{Button, js::JsMouse},
@@ -216,6 +218,11 @@ impl Runtime {
                     .unwrap();
 
                 (|| -> rquickjs::Result<()> {
+                    // Tools
+                    JsCancelablePromise::register(&ctx)?;
+                    JsConcurrency::register(&ctx)?;
+                    global::register(&ctx)?;
+
                     // Value classes
                     JsPoint::register(&ctx)?;
                     JsRect::register(&ctx)?;
@@ -236,9 +243,6 @@ impl Runtime {
                     JsDisplays::register(&ctx, js_displays)?;
                     JsScreenshot::register(&ctx, screenshot)?;
                     JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
-
-                    // Tools
-                    JsConcurrency::register(&ctx)?;
 
                     Ok(())
                 })()
