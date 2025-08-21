@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
@@ -11,13 +11,12 @@ use crate::{
     IntoJS,
     core::{
         js::{
-            cancelable_promise::{JsCancelablePromise, cancelable_promise},
-            classes::SingletonClass,
+            cancelable_promise::cancelable_promise, classes::SingletonClass,
             duration::ms_to_duration,
         },
         point::js::{JsPoint, JsPointParam},
     },
-    runtime::Runtime,
+    runtime::{Runtime, WithUserData},
 };
 
 impl<T> IntoJS<T> for super::Result<T> {
@@ -38,7 +37,7 @@ pub type JsAxis = super::Axis;
 pub type JsTween = super::Tween;
 
 /// @singleton
-#[derive(Debug, JsLifetime, Trace)]
+#[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Mouse")]
 pub struct JsMouse {
     inner: Arc<super::Mouse>,
@@ -51,6 +50,10 @@ impl<'js> SingletonClass<'js> for JsMouse {
 
         Ok(())
     }
+}
+
+impl<'js> Trace<'js> for JsMouse {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsMouse {
@@ -90,20 +93,21 @@ impl JsMouse {
         self.inner.measure_speed(duration).await.into_js(&ctx)
     }
 
-    /// @returns CancellablePromise<void>
+    /// @returns Promise<void>
     #[qjs(rename = "move")]
     pub fn r#move<'js>(
         &self,
         ctx: Ctx<'js>,
         point: JsPointParam,
         options: Opt<JsMoveOptions>,
-    ) -> Result<JsCancelablePromise<'js>> {
+    ) -> Result<Promise<'js>> {
         let local_ctx = ctx.clone();
         let local_mouse = self.inner.clone();
+        let rng = ctx.user_data().rng();
 
         cancelable_promise(ctx, async move |token| {
             local_mouse
-                .move_(point.0, token, options.unwrap_or_default())
+                .move_(point.0, token, options.unwrap_or_default(), rng)
                 .await
                 .into_js(&local_ctx)
         })

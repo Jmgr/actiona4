@@ -7,13 +7,8 @@ use rquickjs::{
 };
 
 use crate::{
-    IntoJS,
-    core::{
-        ResultExt,
-        displays::{self},
-        js::classes::ValueClass,
-    },
-    runtime::JsUserData,
+    core::{ResultExt, js::classes::ValueClass},
+    runtime::WithUserData,
 };
 
 pub struct JsPointParam(pub super::Point);
@@ -172,8 +167,10 @@ impl JsPoint {
 
     /// Returns a random point around this point.
     #[qjs(static)]
-    pub fn random_in_circle(center: Self, radius: f32) -> Self {
-        super::Point::random_in_circle(center.into(), radius).into()
+    pub fn random_in_circle(ctx: Ctx<'_>, center: Self, radius: f32) -> Self {
+        let user_data = ctx.user_data();
+
+        super::Point::random_in_circle(center.into(), radius, user_data.rng()).into()
     }
 
     /// Calculates the distance between this point and another.
@@ -227,19 +224,6 @@ impl JsPoint {
     #[qjs(rename = "clone")]
     pub const fn clone_js(&self) -> Self {
         *self
-    }
-
-    /// Returns a random point on any display.
-    #[qjs(static)]
-    pub fn random(ctx: Ctx<'_>) -> Result<Self> {
-        let user_data = ctx.userdata::<JsUserData>().expect("userdata not set");
-
-        let point: displays::Result<JsPoint> = user_data
-            .displays()
-            .random_point()
-            .map(|point| point.into());
-
-        point.into_js(&ctx)
     }
 
     /// @skip

@@ -1,0 +1,179 @@
+use std::fmt::Debug;
+
+use rquickjs::{
+    Array, Ctx, Exception, JsLifetime, Result, Value,
+    class::{Trace, Tracer},
+    prelude::{Opt, Rest},
+};
+
+use crate::{
+    IntoJS,
+    core::{displays, js::classes::SingletonClass, point::js::JsPoint},
+    runtime::{WithUserData, shared_rng::SharedRng},
+};
+
+/// @singleton
+#[derive(Debug, JsLifetime)]
+#[rquickjs::class(rename = "Random")]
+pub struct JsRandom {
+    rng: SharedRng,
+}
+
+impl<'js> Trace<'js> for JsRandom {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl<'js> SingletonClass<'js> for JsRandom {}
+
+impl JsRandom {
+    /// @skip
+    pub fn new(rng: SharedRng) -> Self {
+        Self { rng }
+    }
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsRandom {
+    /// @overload
+    /// Returns a number between 0 (inclusive) and 1 (exclusive)
+    ///
+    /// @overload
+    /// Returns a number between 0 (inclusive) and max (exclusive)
+    /// @param max: number
+    ///
+    /// @overload
+    /// Returns a number between min (inclusive) and max (exclusive)
+    /// @param min: number
+    /// @param max: number
+    pub fn number(&self, ctx: Ctx<'_>, args: Rest<f64>) -> Result<f64> {
+        Ok(match args.as_slice() {
+            [min, max, ..] => {
+                if min >= max {
+                    return Err(Exception::throw_message(
+                        &ctx,
+                        "min should be less than max",
+                    ));
+                }
+                self.rng.random_range(*min..*max)
+            }
+            [max] => {
+                if *max <= 0.0 {
+                    return Err(Exception::throw_message(&ctx, "max must be greater than 0"));
+                }
+                self.rng.random_range(0.0..*max)
+            }
+            [] => self.rng.random(),
+        })
+    }
+
+    /// @overload
+    /// Returns an integer between 0 (inclusive) and max (inclusive)
+    /// @param max: number
+    ///
+    /// @overload
+    /// Returns an integer between min (inclusive) and max (inclusive)
+    /// @param min: number
+    /// @param max: number
+    pub fn integer(&self, ctx: Ctx<'_>, args: Rest<i64>) -> Result<i64> {
+        if args.len() < 1 {
+            return Err(Exception::throw_message(
+                &ctx,
+                "expected at least 1 argument",
+            ));
+        }
+
+        Ok(match args.as_slice() {
+            [min, max, ..] => {
+                if min > max {
+                    return Err(Exception::throw_message(
+                        &ctx,
+                        "min should be less or equal than max",
+                    ));
+                }
+                self.rng.random_range(*min..=*max)
+            }
+            [max] => {
+                if *max < 0 {
+                    return Err(Exception::throw_message(
+                        &ctx,
+                        "max must be greater or equal than 0",
+                    ));
+                }
+                self.rng.random_range(0..=*max)
+            }
+            [] => self.rng.random(),
+        })
+    }
+
+    /// Sets the seed to a value.
+    /// This seed is used for all random number generation. Since the random number generator is
+    /// deterministic that means that setting it to a particular number will always generate the same
+    /// random numbers.
+    pub fn set_seed(&self, seed: u64) {
+        self.rng.set_seed(seed);
+    }
+
+    /// Resets the seed to be a random one.
+    pub fn reset_seed(&self) {
+        self.rng.reset_seed();
+    }
+
+    /// Returns a random position on any display.
+    pub fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
+        let user_data = ctx.user_data();
+
+        let point: displays::Result<JsPoint> = user_data
+            .displays()
+            .random_point(user_data.rng())
+            .map(|point| point.into());
+
+        point.into_js(&ctx)
+    }
+
+    /// Chooses one random entry in an array.
+    /// A fallback can be provided, in case the array is empty.
+    ///
+    /// @generic
+    /// @param array: Array<T>
+    /// @param fallback?: T
+    /// @returns T
+    pub fn choice<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        array: Array<'js>,
+        fallback: Opt<Value<'js>>,
+    ) -> Result<Value<'js>> {
+        if array.is_empty() {
+            if let Some(fallback) = fallback.0 {
+                return Ok(fallback);
+            } else {
+                return Err(Exception::throw_message(
+                    &ctx,
+                    "empty array and no fallback set",
+                ));
+            }
+        }
+
+        let index = self.rng.random_range(0..array.len());
+        let value = array.get(index)?;
+
+        Ok(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::runtime::Runtime;
+
+    // TODO: add tests
+    #[test]
+    fn test_random() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let result = script_engine
+                .eval::<i64>("random.integer(10)")
+                .await
+                .unwrap();
+            println!("{result}");
+        });
+    }
+}

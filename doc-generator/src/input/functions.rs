@@ -167,7 +167,12 @@ pub fn extract_functions(
                         .to_string(),
                 )
             } else {
-                Type::Void
+                function
+                    .sig
+                    .output
+                    .as_ref()
+                    .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
+                    .wrap_err_with(|| format!("{function_name}"))?
             };
 
             for (instructions, comments) in overload_instructions.iter() {

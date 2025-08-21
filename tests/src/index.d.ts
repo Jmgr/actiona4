@@ -5,7 +5,11 @@
 /**
  * Pauses the execution.
  */
-declare function sleep(ms: number): CancellablePromise<void>;
+declare function sleep(ms: number): Promise<void>;
+/**
+ * Stops the execution.
+ */
+declare function exit(): void;
 declare enum FlipDirection {
     HORIZONTAL,
 
@@ -1934,10 +1938,6 @@ declare class Point {
      * Clones this Point.
      */
     clone(): Point;
-    /**
-     * Returns a random point on any display.
-     */
-    static random(): Point;
 }
 /**
  * Display info
@@ -2236,12 +2236,6 @@ declare interface DrawingOptions {
      */
     hollow?: boolean;
 }
-/**
- * Represents a promise that can be cancelled.
- */
-declare interface CancellablePromise<T> extends Promise<T> {
-    cancel(): void;
-}
 declare interface Keyboard {
 }
 declare const keyboard: Keyboard;
@@ -2256,9 +2250,9 @@ declare interface Mouse {
      */
     position(): Promise<Point>;
     measureSpeed(duration?: number): Promise<number>;
-    move(point: Point, options?: MoveOptions): CancellablePromise<void>;
-    move(x: number, y: number, options?: MoveOptions): CancellablePromise<void>;
-    move(o: {x: number, y: number}, options?: MoveOptions): CancellablePromise<void>;
+    move(point: Point, options?: MoveOptions): Promise<void>;
+    move(x: number, y: number, options?: MoveOptions): Promise<void>;
+    move(o: {x: number, y: number}, options?: MoveOptions): Promise<void>;
     setPosition(point: Point): Promise<void>;
     setPosition(x: number, y: number): Promise<void>;
     setPosition(o: {x: number, y: number}): Promise<void>;
@@ -2271,6 +2265,49 @@ declare interface Mouse {
     release(button?: Button): Promise<void>;
 }
 declare const mouse: Mouse;
+declare interface Random {
+    /**
+     * Returns a number between 0 (inclusive) and 1 (exclusive)
+     */
+    number(): number;
+    /**
+     * Returns a number between 0 (inclusive) and max (exclusive)
+     */
+    number(max: number): number;
+    /**
+     * Returns a number between min (inclusive) and max (exclusive)
+     */
+    number(min: number, max: number): number;
+    /**
+     * Returns an integer between 0 (inclusive) and max (inclusive)
+     */
+    integer(max: number): number;
+    /**
+     * Returns an integer between min (inclusive) and max (inclusive)
+     */
+    integer(min: number, max: number): number;
+    /**
+     * Sets the seed to a value.
+     * This seed is used for all random number generation. Since the random number generator is
+     * deterministic that means that setting it to a particular number will always generate the same
+     * random numbers.
+     */
+    setSeed(seed: number): void;
+    /**
+     * Resets the seed to be a random one.
+     */
+    resetSeed(): void;
+    /**
+     * Returns a random position on any display.
+     */
+    position(): Point;
+    /**
+     * Chooses one random entry in an array.
+     * A fallback can be provided, in case the array is empty.
+     */
+    choice<T>(array: Array<T>, fallback?: T): T;
+}
+declare const random: Random;
 declare interface Screenshot {
 }
 declare const screenshot: Screenshot;
@@ -2278,6 +2315,9 @@ declare interface Ui {
     displayImage(image: Image, options?: WindowOptions): void;
 }
 declare const ui: Ui;
+declare interface Web {
+}
+declare const web: Web;
 declare class Wildcard {
     /**
      * Constructor.
@@ -2312,7 +2352,7 @@ declare class Path {
     static setExtension(path: string, extension: string): string;
 }
 declare interface Concurrency {
-    race<T>(promises: Iterable<T|PromiseLike<T>>): CancellablePromise<Awaited<T>>;
+    race<T>(promises: Iterable<T|PromiseLike<T>>): Promise<Awaited<T>>;
 }
 /**
  * Window options

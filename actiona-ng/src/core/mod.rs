@@ -1,8 +1,6 @@
 #[cfg(test)]
 use std::{env::temp_dir, path::PathBuf};
 
-#[cfg(test)]
-use rand::{Rng, distr::Alphanumeric};
 use rquickjs::{Ctx, Exception, Result, Value};
 
 pub mod clipboard;
@@ -19,6 +17,7 @@ pub mod mouse;
 pub mod name;
 pub mod path;
 pub mod point;
+pub mod random;
 pub mod rect;
 pub mod screenshot;
 pub mod ui;
@@ -50,6 +49,8 @@ pub fn check_min_arg_count(min: usize, ctx: &Ctx, args: &[Value<'_>]) -> Result<
 
 #[cfg(test)]
 pub(crate) fn random_name() -> String {
+    use rand::{Rng, distr::Alphanumeric};
+
     rand::rng()
         .sample_iter(&Alphanumeric)
         .take(10)

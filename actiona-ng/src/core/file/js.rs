@@ -339,8 +339,6 @@ impl JsFile {
     }
 
     /// @rename readText
-    ///
-    /// @returns string
     #[qjs(rename = "readText")]
     pub async fn read_text_instance(&mut self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file_mut(&ctx)?;

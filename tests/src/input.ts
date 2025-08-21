@@ -1,4 +1,4 @@
-export { }
+//export { }
 /*
 let m = new Point(1, 2);
 m = new Point({ x: 0, y: 0 });
@@ -40,11 +40,14 @@ console.log("hello: " + Button.LEFT, "sss");
 //source.save("/media/jmgr/Main/rust/test_ai_actiona/output.png");
 
 
-const f = await File.open("/home/jmgr/Downloads/tmp/test.txt");
-await f.setModifiedTime(new Date());
-await File.writeText("/home/jmgr/Downloads/tmp/test2.txt", "dfdfdf");
-let n = await mouse.measureSpeed();
-let r = await mouse.move(0, 0);
+//const f = await File.open("/home/jmgr/Downloads/tmp/test.txt");
+//await f.setModifiedTime(new Date());
+//await File.writeText("/home/jmgr/Downloads/tmp/test2.txt", "dfdfdf");
+//let n = await mouse.measureSpeed();
+//let r = await mouse.move(0, 0);
+let array = [4, 5, "foo"];
+let value = random.choice(array, 42);
+console.log("value: ", random.position());
 //for (let i = 0; i < 1; ++i) {
 //    ui.displayImage(source.rotated(i * 15));
 //}

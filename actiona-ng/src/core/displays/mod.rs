@@ -1,11 +1,10 @@
 use std::sync::{Arc, Mutex};
 
 use display_info::error::DIError;
-use rand::Rng;
 use thiserror::Error;
 use tokio::select;
 
-use crate::runtime::{DisplayInfo, DisplayInfoVec, RecordEvent, Runtime};
+use crate::runtime::{DisplayInfo, DisplayInfoVec, RecordEvent, Runtime, shared_rng::SharedRng};
 
 pub(crate) mod platform;
 
@@ -74,10 +73,8 @@ impl Displays {
         })
     }
 
-    pub fn random_point(&self) -> Result<Point> {
+    pub fn random_point(&self, rng: SharedRng) -> Result<Point> {
         let displays_info = self.displays_info.lock().unwrap();
-        let mut rng = rand::rng();
-
         // Total area across all displays (skip zero-area just in case)
         let mut total_area: u64 = 0;
         for display_info in &displays_info.0 {
@@ -170,7 +167,6 @@ impl Displays {
 
 #[cfg(test)]
 mod tests {
-    use enigo::Coordinate;
     use tracing_test::traced_test;
 
     use crate::{
@@ -203,9 +199,9 @@ mod tests {
             display_info DisplayInfo { id: 444, name: "HDMI-0", friendly_name: "HDMI-0", x: 5760, y: 601, width: 1920, height: 1080, width_mm: 510, height_mm: 287, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
                          */
 
-            mouse
-                .set_position(displays.random_point().unwrap(), Coordinate::Abs)
-                .unwrap();
+            //mouse
+            //    .set_position(displays.random_point().unwrap(), Coordinate::Abs)
+            //   .unwrap();
 
             //for _ in 0..60 {
             //mouse

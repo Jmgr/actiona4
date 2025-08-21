@@ -5,7 +5,7 @@ use rquickjs::{
     Array, Ctx, Function, JsLifetime, Promise, Result, Value, class::Trace, function::Args,
 };
 
-use crate::core::js::cancelable_promise::{JsCancelablePromise, cancelable_promise};
+use crate::core::js::cancelable_promise::cancelable_promise;
 
 // TODO: test
 #[derive(Debug, JsLifetime, Trace)]
@@ -21,8 +21,8 @@ impl JsConcurrency {
 
     /// @generic
     /// @param promises: Iterable<T|PromiseLike<T>>
-    /// @returns CancellablePromise<Awaited<T>>
-    pub fn race<'js>(ctx: Ctx<'js>, promises: Array<'js>) -> Result<JsCancelablePromise<'js>> {
+    /// @returns Promise<Awaited<T>>
+    pub fn race<'js>(ctx: Ctx<'js>, promises: Array<'js>) -> Result<Promise<'js>> {
         let local_ctx = ctx.clone();
         cancelable_promise(ctx, async move |token| {
             let promises: Vec<Promise<'js>> = promises
@@ -35,11 +35,6 @@ impl JsConcurrency {
             if promises.is_empty() {
                 return Ok(Value::new_undefined(local_ctx.clone()));
             }
-
-            let mut futures: Vec<_> = promises
-                .iter()
-                .map(|p| p.clone().into_future::<Value<'js>>())
-                .collect();
 
             // Add the cancellation token to the futures, so this "race" can be stopped.
             let mut futures: Vec<Pin<Box<dyn Future<Output = Result<Value<'js>>> + 'js>>> =

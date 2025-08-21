@@ -1,13 +1,13 @@
 use std::time::Duration;
 
-use rquickjs::{Ctx, Function, Result};
+use rquickjs::{Ctx, Function, Promise, Result};
 use tokio::select;
 
-use crate::core::js::cancelable_promise::{JsCancelablePromise, cancelable_promise};
+use crate::{core::js::cancelable_promise::cancelable_promise, runtime::WithUserData};
 
 /// Pauses the execution.
-/// @returns CancellablePromise<void>
-pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<JsCancelablePromise<'js>> {
+/// @returns Promise<void>
+pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<Promise<'js>> {
     cancelable_promise(ctx, async move |token| {
         select! {
             _ = token.cancelled() => {},
@@ -18,9 +18,18 @@ pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<JsCancelablePromise<'js>> {
     })
 }
 
+/// Stops the execution.
+pub fn exit<'js>(ctx: Ctx<'js>) {
+    let token = ctx.user_data().cancellation_token();
+
+    token.cancel();
+}
+
 pub(crate) fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
     ctx.globals()
         .prop("sleep", Function::new(ctx.clone(), sleep))?;
+    ctx.globals()
+        .prop("exit", Function::new(ctx.clone(), exit))?;
     Ok(())
 }
 
@@ -42,6 +51,13 @@ mod tests {
 
             let duration = Instant::now() - start;
             assert!(duration.as_millis() >= 100);
+        });
+    }
+
+    #[test]
+    fn test_exit() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            script_engine.eval::<()>("exit()").await.unwrap();
         });
     }
 }

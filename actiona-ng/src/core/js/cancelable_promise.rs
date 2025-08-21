@@ -1,74 +1,38 @@
-use rquickjs::{Ctx, Function, IntoJs, Promise, Result, Value};
+use rquickjs::{Ctx, Function, IntoJs, Promise, Result};
 use tokio_util::sync::CancellationToken;
 
-use crate::runtime::JsUserData;
+use crate::runtime::WithUserData;
 
-// TODO: replace more Promise with CancelablePromise when relevant
-
-/// Represents a promise that can be cancelled.
-/// @generic
-/// @extends Promise<T>
-/// @method cancel(): void
-#[derive(Clone, Debug)]
-pub struct JsCancelablePromise<'js> {
-    inner: Value<'js>,
-}
-
-impl<'js> JsCancelablePromise<'js> {
-    /// @skip
-    pub fn new(
-        ctx: Ctx<'js>,
-        promise: Promise<'js>,
-        token: CancellationToken,
-    ) -> rquickjs::Result<Self> {
-        let cancel_fn = Function::new(ctx.clone(), move || token.cancel())?;
-
-        promise
-            .as_object()
-            .expect("Promise should be an Object")
-            .set("cancel", cancel_fn)?;
-
-        Ok(Self {
-            inner: promise.into_value(),
-        })
-    }
-}
-
-impl<'js> IntoJs<'js> for JsCancelablePromise<'js> {
-    fn into_js(self, ctx: &Ctx<'js>) -> Result<Value<'js>> {
-        self.inner.into_js(&ctx)
-    }
-}
-
-impl<'js> JsCancelablePromise<'js> {
-    /// @skip
-    pub fn register(ctx: &Ctx<'_>) -> Result<()> {
-        ctx.eval::<(), _>("class CancelablePromise extends Promise {}")
-    }
-}
+// TODO: use cancelable_promise in more places
 
 /// Cancellable future wrapper.
-pub(crate) fn cancelable_promise<'js, R, Fut, F>(
-    ctx: Ctx<'js>,
-    future: F,
-) -> Result<JsCancelablePromise<'js>>
+pub(crate) fn cancelable_promise<'js, R, Fut, F>(ctx: Ctx<'js>, future: F) -> Result<Promise<'js>>
 where
     F: FnOnce(CancellationToken) -> Fut,
     Fut: Future<Output = Result<R>> + 'js,
     R: IntoJs<'js> + 'js,
 {
-    let token = ctx
-        .userdata::<JsUserData>()
-        .expect("userdata not set")
-        .child_cancellation_token();
+    //let user_data = JsUserData::from_ctx(&ctx);
+    let user_data = ctx.user_data();
+    let token = user_data.child_cancellation_token();
 
     let fut = future(token.clone());
 
-    let local_ctx = ctx.clone();
-    let fut = async move {
-        let result = fut.await?;
-        result.into_js(&local_ctx)
-    };
+    // TMP
+    //let local_ctx = ctx.clone();
+    //let fut = async move {
+    //    let result = fut.await?;
+    //    result.into_js(&local_ctx)
+    //};
 
-    JsCancelablePromise::new(ctx.clone(), Promise::wrap_future(&ctx, fut)?, token)
+    let promise = Promise::wrap_future(&ctx, fut)?;
+
+    let cancel_fn = Function::new(ctx.clone(), move || token.cancel())?;
+
+    promise
+        .as_object()
+        .expect("Promise should be an Object")
+        .set("cancel", cancel_fn)?;
+
+    Ok(promise)
 }

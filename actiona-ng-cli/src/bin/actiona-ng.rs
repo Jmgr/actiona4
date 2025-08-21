@@ -20,8 +20,7 @@ fn main() -> Result<()> {
     Runtime::run_without_ui(async move |_runtime, script_engine| {
         script_engine.eval_async::<()>(&script).await?;
         Ok(())
-    })
-    .unwrap();
+    })?;
 
     Ok(())
 }

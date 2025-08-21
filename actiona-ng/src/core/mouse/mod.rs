@@ -1,4 +1,5 @@
 use std::{
+    fmt::Debug,
     sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
@@ -10,7 +11,6 @@ use indexmap::IndexSet;
 use macros::{ExposeEnum, FromJsObject};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use platform::MouseImplTrait;
-use rand::RngCore;
 use rquickjs::{JsLifetime, class::Trace};
 use thiserror::Error;
 use tokio::{select, time::sleep};
@@ -18,7 +18,10 @@ use tokio_util::sync::CancellationToken;
 use tracing::{info, instrument};
 use tween::FixedTweener;
 
-use crate::core::{js::duration::JsDuration, point::js::JsPoint};
+use crate::{
+    core::{js::duration::JsDuration, point::js::JsPoint},
+    runtime::shared_rng::SharedRng,
+};
 
 pub(crate) mod platform;
 
@@ -370,9 +373,11 @@ impl Mouse {
         mut target_position: Point,
         cancellation_token: CancellationToken,
         options: MoveOptions,
+        rng: SharedRng,
     ) -> Result<()> {
         if options.target_randomness > 0. {
-            target_position = Point::random_in_circle(target_position, options.target_randomness);
+            target_position =
+                Point::random_in_circle(target_position, options.target_randomness, rng.clone());
         }
 
         let start_position = self.position()?;
@@ -388,7 +393,6 @@ impl Mouse {
             return Err(MouseError::ParameterError("interval cannot be zero".into()));
         }
 
-        let mut rng = rand::rng();
         let mut perlin_rng = UniformRandomGen::new(rng.next_u32());
         let perlin_seed = rng.next_u32();
 
@@ -697,7 +701,7 @@ mod tests {
     use super::{Mouse, Tween};
     use crate::{
         core::{mouse::MoveOptions, point::point},
-        runtime::Runtime,
+        runtime::{Runtime, shared_rng::SharedRng},
     };
 
     #[test]
@@ -706,6 +710,7 @@ mod tests {
         Runtime::test(async |runtime| {
             let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
             let cancellation_token = CancellationToken::new();
+            let rng = SharedRng::default();
 
             for target in [point(5000, 1000), point(7000, 800), point(4000, 1200)] {
                 mouse
@@ -721,6 +726,7 @@ mod tests {
                             target_randomness: 10.,
                             ..Default::default()
                         },
+                        rng.clone(),
                     )
                     .await
                     .unwrap()

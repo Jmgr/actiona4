@@ -7,7 +7,7 @@ use async_compat::Compat;
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
 use itertools::Itertools;
-use rquickjs::JsLifetime;
+use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use tokio::{
     runtime::Handle,
     select, signal,
@@ -27,7 +27,6 @@ use crate::{
         filesystem::js::JsFilesystem,
         image::js::JsImage,
         js::{
-            cancelable_promise::JsCancelablePromise,
             classes::{SingletonClass, ValueClass},
             concurrency::JsConcurrency,
             global,
@@ -37,14 +36,17 @@ use crate::{
         name::js::{JsName, JsWildcard},
         path::js::JsPath,
         point::js::JsPoint,
+        random::js::JsRandom,
         rect::{Rect, js::JsRect, rect},
         screenshot::js::JsScreenshot,
         ui::js::JsUi,
     },
+    runtime::shared_rng::SharedRng,
     scripting::Engine as ScriptEngine,
 };
 
 pub mod platform;
+pub mod shared_rng;
 
 #[cfg(windows)]
 use platform::win;
@@ -128,17 +130,29 @@ pub enum RecordEvent {
     DisplayChanged(DisplayInfoVec),
 }
 
+pub(crate) trait WithUserData {
+    fn user_data<'a>(&'a self) -> UserDataGuard<'a, JsUserData>;
+}
+
+impl<'js> WithUserData for Ctx<'js> {
+    fn user_data<'a>(&'a self) -> UserDataGuard<'a, JsUserData> {
+        self.userdata::<JsUserData>().expect("userdata not set")
+    }
+}
+
 #[derive(Debug, JsLifetime)]
 pub(crate) struct JsUserData {
     displays: Arc<Displays>,
     cancellation_token: CancellationToken,
+    rng: SharedRng,
 }
 
 impl JsUserData {
-    const fn new(displays: Arc<Displays>, cancellation_token: CancellationToken) -> Self {
+    fn new(displays: Arc<Displays>, cancellation_token: CancellationToken, rng: SharedRng) -> Self {
         Self {
             displays,
             cancellation_token,
+            rng,
         }
     }
 
@@ -152,6 +166,10 @@ impl JsUserData {
 
     pub(crate) fn child_cancellation_token(&self) -> CancellationToken {
         self.cancellation_token.child_token()
+    }
+
+    pub(crate) fn rng(&self) -> SharedRng {
+        self.rng.clone()
     }
 }
 
@@ -203,6 +221,8 @@ impl Runtime {
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
 
+        let rng = SharedRng::default();
+
         let mouse = JsMouse::new(runtime.clone()).await?;
         let keyboard = JsKeyboard::new(runtime.clone())?;
         let ui = JsUi::new(runtime.clone(), displays.clone())?;
@@ -212,14 +232,18 @@ impl Runtime {
 
         let script_engine = ScriptEngine::new().await?;
 
+        let local_rng = rng.clone();
         script_engine
             .with(|ctx| -> Result<()> {
-                ctx.store_userdata(JsUserData::new(displays, cancellation_token.clone()))
-                    .unwrap();
+                ctx.store_userdata(JsUserData::new(
+                    displays,
+                    cancellation_token.clone(),
+                    local_rng,
+                ))
+                .unwrap();
 
                 (|| -> rquickjs::Result<()> {
                     // Tools
-                    JsCancelablePromise::register(&ctx)?;
                     JsConcurrency::register(&ctx)?;
                     global::register(&ctx)?;
 
@@ -243,6 +267,7 @@ impl Runtime {
                     JsDisplays::register(&ctx, js_displays)?;
                     JsScreenshot::register(&ctx, screenshot)?;
                     JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
+                    JsRandom::register(&ctx, JsRandom::new(rng.clone()))?;
 
                     Ok(())
                 })()
@@ -288,11 +313,9 @@ impl Runtime {
 
         let handle = slint::spawn_local(Compat::new(async move {
             let (runtime, mut script_engine) =
-                Self::new(local_cancellation_token, local_task_tracker)
-                    .await
-                    .unwrap();
+                Self::new(local_cancellation_token, local_task_tracker).await?;
 
-            f(runtime, &mut script_engine).await.unwrap();
+            f(runtime, &mut script_engine).await?;
 
             // TODO: proper error
             let unhandled_exceptions = script_engine.idle().await;
@@ -341,17 +364,17 @@ impl Runtime {
             });
 
             let (runtime, mut script_engine) =
-                Self::new(cancellation_token.clone(), task_tracker.clone())
-                    .await
-                    .unwrap();
+                Self::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
-            f(runtime, &mut script_engine).await.unwrap();
+            f(runtime, &mut script_engine).await?;
 
             task_tracker.close();
             cancellation_token.cancel();
 
             task_tracker.wait().await;
-        });
+
+            Result::<()>::Ok(())
+        })?;
 
         Ok(())
     }

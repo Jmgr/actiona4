@@ -56,6 +56,7 @@ pub struct JsName<'js> {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl<'js> JsName<'js> {
+    // TODO: The first part before the first overload is ignored
     /// Creates a new Name.
     ///
     /// Example

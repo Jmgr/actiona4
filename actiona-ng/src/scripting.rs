@@ -178,7 +178,7 @@ pub struct Engine {
 }
 
 static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"^\s*at (?P<func>.+?) \((?P<file>.+?):(?P<line>\d+):(?P<col>\d+)\)$")
+    Regex::new(r"^\s*at(?: (?P<func>.+?) \()?(?P<file>.+?):(?P<line>\d+):(?P<col>\d+)\)?$")
         .expect("Failed to compile regex")
 });
 
@@ -195,15 +195,23 @@ fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
         .captures(line)
         .and_then(|caps| {
             // Use and_then to chain Option results, returning None if any part fails
-            let function = caps.name("func")?.as_str().to_string();
-            let file = caps.name("file")?.as_str().to_string();
+            let function = if let Some(cap) = caps.name("func") {
+                cap.as_str()
+            } else {
+                ""
+            };
+            let file = if let Some(cap) = caps.name("file") {
+                cap.as_str()
+            } else {
+                ""
+            };
             // Parse line and col, converting parse errors into None
             let line = caps.name("line")?.as_str().parse::<usize>().ok()?;
             let col = caps.name("col")?.as_str().parse::<usize>().ok()?;
 
             Some(CallStackFrame {
-                _function: function,
-                file,
+                _function: function.to_string(),
+                file: file.to_string(),
                 line,
                 col,
             })
@@ -327,7 +335,14 @@ impl Engine {
         let stack = lines.collect::<Result<Vec<_>>>()?;
 
         let stack = stack.into_iter().map(|mut frame| {
-            let source_hash = frame.file.parse()?;
+            let Ok(source_hash) = frame.file.parse() else {
+                return Ok(CallStackFrame {
+                    _function: "unknown".to_string(),
+                    file: "unknown".to_string(),
+                    line: 0,
+                    col: 0,
+                });
+            };
             let sourcemaps = sourcemaps.lock().unwrap();
             let ts_to_js = sourcemaps.get(&source_hash).ok_or_else(|| {
                 eyre!("failed to find sourcemap for code with hash {source_hash}")

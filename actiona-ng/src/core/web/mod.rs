@@ -1,3 +1,5 @@
+use eyre::Result;
+
 pub mod js;
 
 #[derive(Clone, Debug)]

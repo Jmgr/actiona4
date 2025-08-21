@@ -2,9 +2,10 @@ use std::{f32::consts::TAU, fmt::Display};
 
 use derive_more::{Add, Mul, Sub};
 use num_traits::ToPrimitive;
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use tween::TweenValue;
+
+use crate::runtime::shared_rng::SharedRng;
 
 pub mod js;
 
@@ -51,9 +52,7 @@ impl Point {
         }
     }
 
-    pub fn random_in_circle(center: Self, radius: f32) -> Self {
-        let mut rng = rand::rng();
-
+    pub fn random_in_circle(center: Self, radius: f32, rng: SharedRng) -> Self {
         let theta = rng.random_range(0.0..TAU);
         let r = radius * rng.random::<f32>().sqrt();
         let x = r.mul_add(theta.cos(), center.x as f32).round() as i32;

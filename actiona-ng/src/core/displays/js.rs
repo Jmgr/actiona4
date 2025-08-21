@@ -13,7 +13,7 @@ use crate::{
         point::js::{JsPoint, JsPointParam},
         rect::js::JsRect,
     },
-    runtime,
+    runtime::{self, WithUserData},
 };
 
 impl<T> IntoJS<T> for super::Result<T> {
@@ -45,7 +45,11 @@ impl JsDisplays {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDisplays {
     pub fn random_point(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
-        Ok(self.inner.random_point().into_js(&ctx)?.into())
+        Ok(self
+            .inner
+            .random_point(ctx.user_data().rng())
+            .into_js(&ctx)?
+            .into())
     }
 
     pub fn from_point(&self, point: JsPointParam) -> Option<JsDisplayInfo> {
