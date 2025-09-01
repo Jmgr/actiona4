@@ -16,15 +16,15 @@ use imageproc::{
 };
 use macros::{ExposeEnum, FromJsObject};
 use rquickjs::{
-    Class, Ctx, Exception, JsLifetime, Result,
+    Class, Ctx, Exception, JsLifetime, Result, TypedArray,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
-    prelude::*,
+    prelude::{Opt, This},
 };
 use strum::Display;
 
 use crate::{
-    IntoJS,
+    IntoJsResult,
     core::{
         color::js::{JsColor, JsColorParam},
         js::classes::ValueClass,
@@ -38,6 +38,7 @@ use crate::{
             rect,
         },
     },
+    error::CommonError,
 };
 
 #[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
@@ -233,6 +234,18 @@ impl JsImage {
         Self {
             inner: super::Image::new(width, height),
         }
+    }
+
+    #[qjs(static)]
+    pub fn from_bytes(ctx: Ctx<'_>, bytes: TypedArray<'_, u8>) -> Result<Self> {
+        let bytes = bytes
+            .as_bytes()
+            .ok_or(CommonError::DetachedArrayBuffer)
+            .into_js(&ctx)?;
+
+        Ok(Self {
+            inner: super::Image::from_bytes(bytes).into_js(&ctx)?,
+        })
     }
 
     pub fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
@@ -1004,13 +1017,13 @@ impl From<super::Image> for JsImage {
     }
 }
 
-impl<T> IntoJS<T> for io::Result<T> {
+impl<T> IntoJsResult<T> for io::Result<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
 }
 
-impl<T> IntoJS<T> for ImageResult<T> {
+impl<T> IntoJsResult<T> for ImageResult<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }

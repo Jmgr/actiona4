@@ -303,7 +303,7 @@ impl Engine {
     #[allow(unsafe_op_in_unsafe_fn)]
     pub async fn eval_async<T>(&mut self, script: &str) -> Result<T>
     where
-        for<'any_js> T: FromJs<'any_js> + Send + 'static,
+        for<'any_js> T: FromJs<'any_js> + Send + 'static + std::fmt::Debug,
     {
         let (hash, js_code) = self.ts_to_js(script)?;
         let sourcemaps = self.sourcemaps.clone();

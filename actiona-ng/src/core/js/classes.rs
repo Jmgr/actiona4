@@ -34,7 +34,7 @@ pub trait SingletonClass<'js>: JsClass<'js> + IntoJs<'js> {
         // Remove "Js" prefix if present
         let name = Self::NAME.strip_prefix("Js").unwrap_or(Self::NAME);
 
-        let name = name.to_case(Case::Snake);
+        let name = name.to_case(Case::Camel);
 
         ctx.globals().prop(&name, instance)?;
 

@@ -214,6 +214,13 @@ impl File {
         )?;
         writeln!(output_file)?;
 
+        for module in self.modules.iter() {
+            let verbatim = module.verbatim.join("\n");
+            if !verbatim.is_empty() {
+                writeln!(output_file, "{}", verbatim)?;
+            }
+        }
+
         output_methods(&self.functions, true, &mut output_file)?;
 
         for enum_ in self.enums.iter() {
@@ -257,77 +264,82 @@ impl File {
 
             write_comments(&comments, "", &mut output_file)?;
 
-            let has_constructor = struct_.methods.iter().any(|method| method.is_constructor);
-
-            writeln!(
-                output_file,
-                "declare {} {}{}{} {{",
-                if struct_.methods.is_empty() || !has_constructor {
-                    "interface"
-                } else {
-                    "class"
-                },
-                struct_.name,
-                if struct_.is_generic { "<T>" } else { "" },
-                if let Some(name) = &struct_.extends {
-                    format!(" extends {name}")
-                } else {
-                    String::new()
-                },
-            )?;
-
-            for const_ in &struct_.consts {
-                writeln!(
-                    output_file,
-                    "    static readonly {}: {};",
-                    const_, struct_.name
-                )?;
-            }
-
-            for property in struct_.properties.iter() {
-                let mut comments = property.comments.clone();
-
-                if let Some(default) = &property.default_value {
-                    comments.push(format!("@defaultValue {default}"));
-                }
-
-                if !property.platforms.is_empty() {
-                    comments.push(format!("@platform {}", property.platforms));
-                }
-
-                write_comments(&comments, "    ", &mut output_file)?;
-
-                let optional = if struct_.is_options { "?" } else { "" };
+            let verbatim = struct_.verbatim.join("\n");
+            if verbatim.is_empty() {
+                let has_constructor = struct_.methods.iter().any(|method| method.is_constructor);
 
                 writeln!(
                     output_file,
-                    "    {}{}{}: {};",
-                    if property.is_readonly {
-                        "readonly "
+                    "declare {} {}{}{} {{",
+                    if struct_.methods.is_empty() || !has_constructor {
+                        "interface"
                     } else {
-                        ""
+                        "class"
                     },
-                    property.name.to_case(Case::Camel),
-                    optional,
-                    property.type_.to_string(Context::Property)?
+                    struct_.name,
+                    if struct_.is_generic { "<T>" } else { "" },
+                    if let Some(name) = &struct_.extends {
+                        format!(" extends {name}")
+                    } else {
+                        String::new()
+                    },
                 )?;
-            }
 
-            for extra_method in &struct_.extra_methods {
-                writeln!(output_file, "    {};", extra_method)?;
-            }
+                for const_ in &struct_.consts {
+                    writeln!(
+                        output_file,
+                        "    static readonly {}: {};",
+                        const_, struct_.name
+                    )?;
+                }
 
-            output_methods(&struct_.methods, false, &mut output_file)?;
+                for property in struct_.properties.iter() {
+                    let mut comments = property.comments.clone();
 
-            writeln!(output_file, "}}")?;
+                    if let Some(default) = &property.default_value {
+                        comments.push(format!("@defaultValue {default}"));
+                    }
 
-            if struct_.is_singleton {
-                writeln!(
-                    output_file,
-                    "declare const {}: {};",
-                    struct_.name.to_case(Case::Snake),
-                    struct_.name
-                )?;
+                    if !property.platforms.is_empty() {
+                        comments.push(format!("@platform {}", property.platforms));
+                    }
+
+                    write_comments(&comments, "    ", &mut output_file)?;
+
+                    let optional = if struct_.is_options { "?" } else { "" };
+
+                    writeln!(
+                        output_file,
+                        "    {}{}{}: {};",
+                        if property.is_readonly {
+                            "readonly "
+                        } else {
+                            ""
+                        },
+                        property.name.to_case(Case::Camel),
+                        optional,
+                        property.type_.to_string(Context::Property)?
+                    )?;
+                }
+
+                for extra_method in &struct_.extra_methods {
+                    writeln!(output_file, "    {};", extra_method)?;
+                }
+
+                output_methods(&struct_.methods, false, &mut output_file)?;
+
+                writeln!(output_file, "}}")?;
+
+                if struct_.is_singleton {
+                    writeln!(
+                        output_file,
+                        "declare const {}: {};",
+                        struct_.name.to_case(Case::Snake),
+                        struct_.name
+                    )?;
+                }
+            } else {
+                writeln!(output_file, "{}", verbatim)?;
             }
         }
 

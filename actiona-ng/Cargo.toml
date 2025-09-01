@@ -54,6 +54,10 @@ chrono.workspace = true
 arboard.workspace = true
 reqwest.workspace = true
 futures.workspace = true
+futures-util.workspace = true
+mime.workspace = true
+encoding_rs.workspace = true
+indicatif.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
@@ -68,6 +72,8 @@ zbus.workspace = true
 pretty_assertions.workspace = true
 tempfile.workspace = true
 tracing-test.workspace = true
+httptest.workspace = true
+base64.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true

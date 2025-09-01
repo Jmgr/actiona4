@@ -5,9 +5,9 @@ use rquickjs::{
     class::{Trace, Tracer},
 };
 
-use crate::{IntoJS, core::js::classes::SingletonClass, runtime::Runtime};
+use crate::{IntoJsResult, core::js::classes::SingletonClass, runtime::Runtime};
 
-impl<T> IntoJS<T> for super::Result<T> {
+impl<T> IntoJsResult<T> for super::Result<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }

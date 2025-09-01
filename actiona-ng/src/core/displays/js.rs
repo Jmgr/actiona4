@@ -6,7 +6,7 @@ use rquickjs::{
 };
 
 use crate::{
-    IntoJS,
+    IntoJsResult,
     core::{
         js::classes::{SingletonClass, ValueClass},
         name::js::JsNameParam,
@@ -16,7 +16,7 @@ use crate::{
     runtime::{self, WithUserData},
 };
 
-impl<T> IntoJS<T> for super::Result<T> {
+impl<T> IntoJsResult<T> for super::Result<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }

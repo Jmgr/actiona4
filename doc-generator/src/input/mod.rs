@@ -10,7 +10,7 @@ use rustdoc_types::Crate;
 use structs::process_structs;
 
 use crate::{
-    input::functions::process_functions,
+    input::{functions::process_functions, modules::process_modules},
     items::Items,
     types::{
         File, Instruction, InstructionDiscriminants, Platforms, RestParams, RustdocContext, Type,
@@ -20,6 +20,7 @@ use crate::{
 
 pub mod enums;
 pub mod functions;
+pub mod modules;
 pub mod structs;
 
 newtype!(pub Comments, Vec<String>);
@@ -85,6 +86,26 @@ impl Instructions {
         })
     }
 
+    pub fn returns(&self) -> Option<Type> {
+        self.iter().find_map(|instruction| {
+            if let Instruction::Returns(type_) = instruction {
+                Some(type_.clone())
+            } else {
+                None
+            }
+        })
+    }
+
+    pub fn type_(&self) -> Option<Type> {
+        self.iter().find_map(|instruction| {
+            if let Instruction::Type(type_) = instruction {
+                Some(type_.clone())
+            } else {
+                None
+            }
+        })
+    }
+
     pub fn platforms(&self) -> Platforms {
         self.iter()
             .find_map(|instruction| {
@@ -126,6 +147,19 @@ impl Instructions {
             .cloned()
     }
 
+    pub fn verbatim(&self) -> Vec<String> {
+        self.iter()
+            .filter_map(|instruction| {
+                if let Instruction::Verbatim(verbatim) = instruction {
+                    Some(verbatim)
+                } else {
+                    None
+                }
+            })
+            .cloned()
+            .collect_vec()
+    }
+
     pub fn extra_methods(&self) -> Vec<String> {
         self.iter()
             .filter_map(|instruction| {
@@ -142,8 +176,9 @@ impl Instructions {
 
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
-static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+)(.*)$"#).unwrap());
-static RETURNS_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^([\w\[\]<>]+)$"#).unwrap());
+static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+) ?(.*)$"#).unwrap());
+static RETURNS_AND_TYPE_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r#"^([\w\s\[\]<>,]+)$"#).unwrap());
 static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r#"(?x)
@@ -210,7 +245,7 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
 fn parse_instruction(line: &str) -> Result<Instruction> {
     let captures = INSTRUCTION_REGEX
         .captures(line)
-        .ok_or(eyre!("expected instruction format"))?;
+        .ok_or(eyre!("expected instruction format: {line}"))?;
 
     let name = captures
         .get(1)
@@ -220,7 +255,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         .get(2)
         .ok_or(eyre!("expected instruction parameters"))?
         .as_str()
-        .trim();
+        .trim_end();
 
     Ok(match name {
         // @constructor
@@ -314,12 +349,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         // @rename
         "rename" => Instruction::Rename(parameters.to_string()),
 
+        // @verbatim
+        "verbatim" => Instruction::Verbatim(parameters.to_string()),
+
         // @platforms
         "platforms" => Instruction::Platforms(Platforms::try_from(parameters)?),
 
         // @returns type // comment
         "returns" => {
-            let captures = RETURNS_REGEX
+            let captures = RETURNS_AND_TYPE_REGEX
                 .captures(parameters)
                 .ok_or(eyre!("expected returns parameters"))?;
 
@@ -336,6 +374,17 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
 
         // @method
         "method" => Instruction::Method(parameters.to_string()),
+
+        // @type type // comment
+        "type" => {
+            let captures = RETURNS_AND_TYPE_REGEX
+                .captures(parameters)
+                .ok_or(eyre!("expected type parameters"))?;
+
+            let type_ = captures.get(1).ok_or(eyre!("expected type"))?.as_str();
+
+            Instruction::Type(Type::Verbatim(type_.to_string()))
+        }
 
         _ => bail!("unknown instruction {name}"),
     })
@@ -356,6 +405,7 @@ const fn allowed_context_for_instruction(
             RustdocContext::Method,
             RustdocContext::Struct,
             RustdocContext::Property,
+            RustdocContext::Module,
         ],
         Returns => &[RustdocContext::Method],
         Singleton => &[RustdocContext::Struct, RustdocContext::StructAlias],
@@ -376,6 +426,8 @@ const fn allowed_context_for_instruction(
         ],
         Generic => &[RustdocContext::Struct, RustdocContext::Method],
         Method => &[RustdocContext::Struct],
+        Type => &[RustdocContext::Property],
+        Verbatim => &[RustdocContext::Struct, RustdocContext::Module],
     }
 }
 
@@ -509,7 +561,7 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
                     .to_string(),
             ),
             _ => {
-                bail!("Unsupported generic type: {generic}");
+                bail!("Unsupported generic type: {generic}, struct: {struct_name:?}");
             }
         },
         rustdoc_types::Type::ResolvedPath(path) => match strip_modules(path.path.as_str()) {
@@ -586,6 +638,9 @@ impl TryFrom<Crate> for File {
     fn try_from(crate_: Crate) -> Result<Self, Self::Error> {
         let items = Items::new(crate_);
 
+        // TODO: get rustdoc from Modules
+        let modules = process_modules(&items)?;
+
         let mut structs = process_structs(&items)?;
         let mut struct_aliases = process_structs(&items.aliases())?;
         structs.append(&mut struct_aliases);
@@ -600,6 +655,7 @@ impl TryFrom<Crate> for File {
             enums,
             structs,
             functions,
+            modules,
         })
     }
 }

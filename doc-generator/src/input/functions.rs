@@ -87,7 +87,8 @@ pub fn extract_functions(
             let mut parameters = Vec::new();
 
             for (parameter_name, parameter_type) in &function.sig.inputs {
-                let parameter_type = convert_type(parameter_type, struct_name);
+                let parameter_type = convert_type(parameter_type, struct_name)
+                    .wrap_err_with(|| function_name.clone());
                 match parameter_type {
                     Ok(Type::This) => {
                         // If we have a "this" parameter ("self" in Rust) that means we should ignore it, and mark
@@ -120,14 +121,7 @@ pub fn extract_functions(
                 }
             }
 
-            let return_ = instructions.iter().find_map(|instruction| {
-                if let Instruction::Returns(type_) = instruction {
-                    // TODO: return comments
-                    Some(type_.clone())
-                } else {
-                    None
-                }
-            });
+            let return_ = instructions.returns();
 
             let return_ = if let Some(return_) = return_ {
                 return_
@@ -187,14 +181,7 @@ pub fn extract_functions(
                     })
                     .collect_vec();
 
-                let return_ = instructions.iter().find_map(|instruction| {
-                    if let Instruction::Returns(type_) = instruction {
-                        // TODO: return comments
-                        Some(type_.clone())
-                    } else {
-                        None
-                    }
-                });
+                let return_ = instructions.returns();
 
                 overloads.push(MethodOverload {
                     parameters,
@@ -216,13 +203,7 @@ pub fn extract_functions(
                 })
                 .collect_vec();
 
-            let return_ = instructions.iter().find_map(|instruction| {
-                if let Instruction::Returns(type_) = instruction {
-                    Some(type_.clone())
-                } else {
-                    None
-                }
-            });
+            let return_ = instructions.returns();
 
             if rest_params.is_some() || !parameters.is_empty() {
                 overloads.push(MethodOverload {

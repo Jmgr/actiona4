@@ -5,7 +5,7 @@ use rquickjs::{
     Array, Ctx, Function, JsLifetime, Promise, Result, Value, class::Trace, function::Args,
 };
 
-use crate::core::js::cancelable_promise::cancelable_promise;
+use crate::core::js::task::task;
 
 // TODO: test
 #[derive(Debug, JsLifetime, Trace)]
@@ -21,10 +21,9 @@ impl JsConcurrency {
 
     /// @generic
     /// @param promises: Iterable<T|PromiseLike<T>>
-    /// @returns Promise<Awaited<T>>
+    /// @returns Task<Awaited<T>>
     pub fn race<'js>(ctx: Ctx<'js>, promises: Array<'js>) -> Result<Promise<'js>> {
-        let local_ctx = ctx.clone();
-        cancelable_promise(ctx, async move |token| {
+        task(ctx, async move |ctx, token| {
             let promises: Vec<Promise<'js>> = promises
                 .iter::<Value<'js>>()
                 .collect::<Result<Vec<_>>>()?
@@ -33,7 +32,7 @@ impl JsConcurrency {
                 .collect();
 
             if promises.is_empty() {
-                return Ok(Value::new_undefined(local_ctx.clone()));
+                return Ok(Value::new_undefined(ctx.clone()));
             }
 
             // Add the cancellation token to the futures, so this "race" can be stopped.
@@ -47,7 +46,7 @@ impl JsConcurrency {
                     .collect();
 
             // Add a *pure Rust* future for cancellation (no nested wrap_future!)
-            let cancel_ctx = local_ctx.clone();
+            let cancel_ctx = ctx.clone();
             let cancel_fut = async move {
                 token.cancelled().await;
                 Ok(Value::new_undefined(cancel_ctx))
@@ -63,7 +62,7 @@ impl JsConcurrency {
                 }
                 if let Some(obj) = p.as_object() {
                     if let Ok(cancel) = obj.get::<_, Function<'js>>("cancel") {
-                        let _ = cancel.call_arg::<()>(Args::new(local_ctx.clone(), 0));
+                        let _ = cancel.call_arg::<()>(Args::new(ctx.clone(), 0));
                     }
                 }
             }

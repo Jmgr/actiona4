@@ -9,7 +9,7 @@ use rquickjs::{
 use slint::*;
 
 use crate::{
-    IntoJS,
+    IntoJsResult,
     core::{
         displays::{Displays, js::JsDisplayInfo},
         image::js,

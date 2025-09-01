@@ -6,6 +6,9 @@ use rquickjs::{Ctx, Exception};
 pub use slotmap::{
     Key as SlotmapKey, KeyData as SlotmapKeyData, SecondaryMap as SlotmapSecondaryMap,
 };
+use tokio_util::sync::CancellationToken;
+
+use crate::error::{CommonError, Error};
 
 pub mod core;
 pub mod enigo;
@@ -23,11 +26,11 @@ pub trait IntoJSError: ToString {
     }
 }
 
-pub trait IntoJS<T> {
+pub trait IntoJsResult<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T>;
 }
 
-impl<T, E> IntoJS<T> for std::result::Result<T, E>
+impl<T, E> IntoJsResult<T> for std::result::Result<T, E>
 where
     E: IntoJSError,
 {
@@ -84,3 +87,18 @@ macro_rules! newtype {
         );
     };
 }
+
+async fn cancel_on<T, F>(token: &CancellationToken, fut: F) -> Result<T, Error>
+where
+    F: Future<Output = T>,
+{
+    tokio::select! {
+        _ = token.cancelled() => Err(Error::CommonError(CommonError::Cancelled)),
+        v = fut => Ok(v),
+    }
+}
+
+// TODO: check all errors
+// TODO: check all token cancellation return a Cancelled error
+// TODO: check all unwraps
+// TODO: check if we can use cancel_on in a few places where select! is used

@@ -7,30 +7,21 @@ use rquickjs::{
 };
 
 use crate::{
-    IntoJS,
+    IntoJsResult,
     core::{displays, js::classes::SingletonClass, point::js::JsPoint},
-    runtime::{WithUserData, shared_rng::SharedRng},
+    runtime::WithUserData,
 };
 
 /// @singleton
-#[derive(Debug, JsLifetime)]
+#[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Random")]
-pub struct JsRandom {
-    rng: SharedRng,
-}
+pub struct JsRandom {}
 
 impl<'js> Trace<'js> for JsRandom {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl<'js> SingletonClass<'js> for JsRandom {}
-
-impl JsRandom {
-    /// @skip
-    pub fn new(rng: SharedRng) -> Self {
-        Self { rng }
-    }
-}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsRandom {
@@ -54,15 +45,15 @@ impl JsRandom {
                         "min should be less than max",
                     ));
                 }
-                self.rng.random_range(*min..*max)
+                ctx.user_data().rng().random_range(*min..*max)
             }
             [max] => {
                 if *max <= 0.0 {
                     return Err(Exception::throw_message(&ctx, "max must be greater than 0"));
                 }
-                self.rng.random_range(0.0..*max)
+                ctx.user_data().rng().random_range(0.0..*max)
             }
-            [] => self.rng.random(),
+            [] => ctx.user_data().rng().random(),
         })
     }
 
@@ -90,7 +81,7 @@ impl JsRandom {
                         "min should be less or equal than max",
                     ));
                 }
-                self.rng.random_range(*min..=*max)
+                ctx.user_data().rng().random_range(*min..=*max)
             }
             [max] => {
                 if *max < 0 {
@@ -99,9 +90,9 @@ impl JsRandom {
                         "max must be greater or equal than 0",
                     ));
                 }
-                self.rng.random_range(0..=*max)
+                ctx.user_data().rng().random_range(0..=*max)
             }
-            [] => self.rng.random(),
+            [] => ctx.user_data().rng().random(),
         })
     }
 
@@ -109,13 +100,13 @@ impl JsRandom {
     /// This seed is used for all random number generation. Since the random number generator is
     /// deterministic that means that setting it to a particular number will always generate the same
     /// random numbers.
-    pub fn set_seed(&self, seed: u64) {
-        self.rng.set_seed(seed);
+    pub fn set_seed(&self, ctx: Ctx<'_>, seed: u64) {
+        ctx.user_data().rng().set_seed(seed);
     }
 
     /// Resets the seed to be a random one.
-    pub fn reset_seed(&self) {
-        self.rng.reset_seed();
+    pub fn reset_seed(&self, ctx: Ctx<'_>) {
+        ctx.user_data().rng().reset_seed();
     }
 
     /// Returns a random position on any display.
@@ -154,7 +145,7 @@ impl JsRandom {
             }
         }
 
-        let index = self.rng.random_range(0..array.len());
+        let index = ctx.user_data().rng().random_range(0..array.len());
         let value = array.get(index)?;
 
         Ok(value)

@@ -22,7 +22,7 @@ use tokio::{
     task::spawn_blocking,
 };
 
-use crate::core::js::classes::ValueClass;
+use crate::{IntoJsResult, core::js::classes::ValueClass, error::CommonError};
 
 #[derive(Clone, Debug, JsLifetime)]
 struct OpenedFile {
@@ -242,7 +242,12 @@ impl JsFile {
     /// @param bytes: Uint8Array
     #[qjs(static)]
     pub async fn write_bytes(ctx: Ctx<'_>, path: String, bytes: TypedArray<'_, u8>) -> Result<()> {
-        fs::write(path, bytes.as_bytes().unwrap())
+        let bytes = bytes
+            .as_bytes()
+            .ok_or(CommonError::DetachedArrayBuffer)
+            .into_js(&ctx)?;
+
+        fs::write(path, bytes)
             .await
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
 
@@ -645,7 +650,7 @@ mod tests {
     use tracing_test::traced_test;
 
     use crate::{
-        core::{file::js::JsFile, random_temp_filename},
+        core::{file::js::JsFile, test_helpers::random_temp_filename},
         runtime::Runtime,
         scripting::Engine,
     };

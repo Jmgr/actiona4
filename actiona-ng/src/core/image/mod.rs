@@ -1,11 +1,12 @@
 use std::{
     borrow::Cow,
+    io::Cursor,
     ops::{Deref, DerefMut},
     time::Instant,
 };
 
 use eyre::Result;
-use image::{ColorType, DynamicImage, GrayImage, RgbImage, RgbaImage};
+use image::{ColorType, DynamicImage, GrayImage, ImageReader, RgbImage, RgbaImage};
 use imageproc::drawing::draw_hollow_rect_mut;
 use macros::FromJsObject;
 use opencv::{
@@ -27,6 +28,17 @@ pub struct Image(DynamicImage);
 impl Image {
     pub fn new(width: u32, height: u32) -> Self {
         Self(DynamicImage::new(width, height, ColorType::Rgba8))
+    }
+
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
+        let image = ImageReader::new(Cursor::new(bytes))
+            .with_guessed_format()?
+            .decode()?;
+        Ok(Self(image))
+    }
+
+    pub fn into_inner(self) -> DynamicImage {
+        self.0
     }
 }
 

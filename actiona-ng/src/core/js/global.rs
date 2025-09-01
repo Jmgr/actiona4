@@ -3,18 +3,16 @@ use std::time::Duration;
 use rquickjs::{Ctx, Function, Promise, Result};
 use tokio::select;
 
-use crate::{core::js::cancelable_promise::cancelable_promise, runtime::WithUserData};
+use crate::{IntoJsResult, core::js::task::task, error::CommonError, runtime::WithUserData};
 
 /// Pauses the execution.
-/// @returns Promise<void>
+/// @returns Task<void>
 pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<Promise<'js>> {
-    cancelable_promise(ctx, async move |token| {
+    task(ctx, async move |ctx, token| {
         select! {
-            _ = token.cancelled() => {},
-            _ = tokio::time::sleep(Duration::from_secs_f64(ms / 1000.)) => {},
+            _ = token.cancelled() => { Err(CommonError::Cancelled).into_js(&ctx) },
+            _ = tokio::time::sleep(Duration::from_secs_f64(ms / 1000.)) => { Ok(()) },
         }
-
-        Ok(())
     })
 }
 

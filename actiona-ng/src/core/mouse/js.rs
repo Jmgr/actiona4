@@ -8,18 +8,15 @@ use rquickjs::{
 
 use super::Coordinate;
 use crate::{
-    IntoJS,
+    IntoJsResult,
     core::{
-        js::{
-            cancelable_promise::cancelable_promise, classes::SingletonClass,
-            duration::ms_to_duration,
-        },
+        js::{classes::SingletonClass, duration::ms_to_duration, task::task},
         point::js::{JsPoint, JsPointParam},
     },
     runtime::{Runtime, WithUserData},
 };
 
-impl<T> IntoJS<T> for super::Result<T> {
+impl<T> IntoJsResult<T> for super::Result<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
@@ -93,7 +90,7 @@ impl JsMouse {
         self.inner.measure_speed(duration).await.into_js(&ctx)
     }
 
-    /// @returns Promise<void>
+    /// @returns Task<void>
     #[qjs(rename = "move")]
     pub fn r#move<'js>(
         &self,
@@ -101,15 +98,18 @@ impl JsMouse {
         point: JsPointParam,
         options: Opt<JsMoveOptions>,
     ) -> Result<Promise<'js>> {
-        let local_ctx = ctx.clone();
         let local_mouse = self.inner.clone();
-        let rng = ctx.user_data().rng();
 
-        cancelable_promise(ctx, async move |token| {
+        task(ctx, async move |ctx, token| {
             local_mouse
-                .move_(point.0, token, options.unwrap_or_default(), rng)
+                .move_(
+                    point.0,
+                    token,
+                    options.unwrap_or_default(),
+                    ctx.user_data().rng(),
+                )
                 .await
-                .into_js(&local_ctx)
+                .into_js(&ctx)
         })
     }
 

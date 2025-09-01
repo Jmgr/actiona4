@@ -67,6 +67,7 @@ pub enum RustdocContext {
     Enum,
     EnumVariant,
     Property,
+    Module,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -117,6 +118,7 @@ pub struct Struct {
     pub platforms: Platforms,
     pub is_generic: bool,
     pub extra_methods: Vec<String>,
+    pub verbatim: Vec<String>,
 }
 
 #[derive(Debug, Default)]
@@ -124,6 +126,12 @@ pub struct File {
     pub enums: Vec<Enum>,
     pub structs: Vec<Struct>,
     pub functions: Vec<Method>,
+    pub modules: Vec<Module>,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct Module {
+    pub verbatim: Vec<String>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -263,6 +271,8 @@ pub enum Instruction {
     Platforms(Platforms),
     Generic,
     Method(String),
+    Type(Type),
+    Verbatim(String),
 }
 
 pub fn strip_modules(name: &str) -> &str {

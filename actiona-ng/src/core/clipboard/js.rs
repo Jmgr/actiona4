@@ -8,7 +8,7 @@ use rquickjs::{
 };
 
 use crate::{
-    IntoJS, IntoJSError,
+    IntoJSError, IntoJsResult,
     core::{image::js::JsImage, js::classes::SingletonClass},
     newtype,
 };

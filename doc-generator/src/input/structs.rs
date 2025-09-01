@@ -58,9 +58,15 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                     }
                 });
 
+                let type_ = if let Some(type_) = instructions.type_() {
+                    type_
+                } else {
+                    convert_type(field, Some(&struct_name))?
+                };
+
                 result.push(Variable {
                     name: field_name.to_string(),
-                    type_: convert_type(field, Some(&struct_name))?,
+                    type_,
                     comments,
                     is_readonly: false,
                     default_value,
@@ -107,6 +113,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let extends = struct_instructions.extends();
         let is_struct_generic = struct_instructions.is_generic();
         let extra_methods = struct_instructions.extra_methods();
+        let verbatim = struct_instructions.verbatim();
 
         let properties = list_properties(items, struct_name, fields, struct_docs)?;
 
@@ -146,6 +153,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
             platforms: struct_instructions.platforms(),
             is_generic: is_struct_generic,
             extra_methods,
+            verbatim,
         });
     }
 

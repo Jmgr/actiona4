@@ -3,9 +3,22 @@
  */
 
 /**
+ * Task: cancellable promise.
+ */
+type Task<Result> = Promise<Result> & {
+    cancel(): void;
+};
+
+/**
+ * ProgressTask: task with progress.
+ */
+type ProgressTask<Result, Progress> = Task<Result> & {
+    [Symbol.asyncIterator](): AsyncIterator<Progress>;
+};
+/**
  * Pauses the execution.
  */
-declare function sleep(ms: number): Promise<void>;
+declare function sleep(ms: number): Task<void>;
 /**
  * Stops the execution.
  */
@@ -381,6 +394,19 @@ declare enum Tween {
      */
     SINE_OUT,
 }
+declare enum Method {
+    GET,
+
+    POST,
+
+    PUT,
+
+    PATCH,
+
+    DELETE,
+
+    HEAD,
+}
 declare interface Clipboard {
     setText(text: string, mode?: ClipboardMode): Promise<void>;
     getText(mode?: ClipboardMode): Promise<string>;
@@ -402,6 +428,7 @@ declare class Image {
      * ```
      */
     constructor(width: number, height: number);
+    static fromBytes(bytes: Uint8Array): Image;
     save(path: string): void;
     static load(path: string): Image;
     equals(other: Image): boolean;
@@ -1499,8 +1526,8 @@ declare class Image {
      * TODO
      */
     findImage(_image: Image, options?: FindImageOptions): void;
-    width(): number;
     height(): number;
+    width(): number;
 }
 /**
  * A Color.
@@ -2236,6 +2263,14 @@ declare interface DrawingOptions {
      */
     hollow?: boolean;
 }
+declare class AbortSignal {
+    private constructor();
+}
+declare class AbortController {
+    readonly signal: AbortSignal;
+    constructor();
+    abort(): void;
+}
 declare interface Keyboard {
 }
 declare const keyboard: Keyboard;
@@ -2250,9 +2285,9 @@ declare interface Mouse {
      */
     position(): Promise<Point>;
     measureSpeed(duration?: number): Promise<number>;
-    move(point: Point, options?: MoveOptions): Promise<void>;
-    move(x: number, y: number, options?: MoveOptions): Promise<void>;
-    move(o: {x: number, y: number}, options?: MoveOptions): Promise<void>;
+    move(point: Point, options?: MoveOptions): Task<void>;
+    move(x: number, y: number, options?: MoveOptions): Task<void>;
+    move(o: {x: number, y: number}, options?: MoveOptions): Task<void>;
     setPosition(point: Point): Promise<void>;
     setPosition(x: number, y: number): Promise<void>;
     setPosition(o: {x: number, y: number}): Promise<void>;
@@ -2316,6 +2351,22 @@ declare interface Ui {
 }
 declare const ui: Ui;
 declare interface Web {
+    /**
+     * Downloads a binary file.
+     */
+    download(url: string, options?: WebOptions): ProgressTask<Uint8Array, WebProgress>;
+    /**
+     * Downloads a text file.
+     */
+    downloadText(url: string, options?: WebOptions): ProgressTask<string, WebProgress>;
+    /**
+     * Downloads an image.
+     */
+    downloadImage(url: string, options?: WebOptions): ProgressTask<Image, WebProgress>;
+    /**
+     * Downloads a file to a directory.
+     */
+    downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
 }
 declare const web: Web;
 declare class Wildcard {
@@ -2351,13 +2402,44 @@ declare class Path {
     static extname(path: string): string;
     static setExtension(path: string, extension: string): string;
 }
+declare class WebProgress {
+    total: number;
+    current: number;
+    finished: boolean;
+    private constructor();
+}
 declare interface Concurrency {
-    race<T>(promises: Iterable<T|PromiseLike<T>>): Promise<Awaited<T>>;
+    race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
 }
 /**
  * Window options
  */
 declare interface WindowOptions {
+}
+/**
+ * Web options
+ */
+declare interface WebOptions {
+    /**
+     * @defaultValue undefined
+     */
+    signal?: AbortSignal;
+    /**
+     * @defaultValue undefined
+     */
+    userName?: string;
+    /**
+     * @defaultValue undefined
+     */
+    password?: string;
+    /**
+     * @defaultValue undefined
+     */
+    headers?: Record<string, string>;
+    /**
+     * @defaultValue Method.GET
+     */
+    method?: Method;
 }
 /**
  * Find image options

@@ -5,7 +5,7 @@ use std::{
 
 use async_compat::Compat;
 use enigo::{Enigo, Settings};
-use eyre::{Result, eyre};
+use eyre::{Context, Result, eyre};
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use tokio::{
@@ -27,6 +27,7 @@ use crate::{
         filesystem::js::JsFilesystem,
         image::js::JsImage,
         js::{
+            abort_controller::{JsAbortController, JsAbortSignal},
             classes::{SingletonClass, ValueClass},
             concurrency::JsConcurrency,
             global,
@@ -40,6 +41,7 @@ use crate::{
         rect::{Rect, js::JsRect, rect},
         screenshot::js::JsScreenshot,
         ui::js::JsUi,
+        web::js::JsWeb,
     },
     runtime::shared_rng::SharedRng,
     scripting::Engine as ScriptEngine,
@@ -145,14 +147,21 @@ pub(crate) struct JsUserData {
     displays: Arc<Displays>,
     cancellation_token: CancellationToken,
     rng: SharedRng,
+    task_tracker: TaskTracker,
 }
 
 impl JsUserData {
-    fn new(displays: Arc<Displays>, cancellation_token: CancellationToken, rng: SharedRng) -> Self {
+    fn new(
+        displays: Arc<Displays>,
+        cancellation_token: CancellationToken,
+        rng: SharedRng,
+        task_tracker: TaskTracker,
+    ) -> Self {
         Self {
             displays,
             cancellation_token,
             rng,
+            task_tracker,
         }
     }
 
@@ -170,6 +179,10 @@ impl JsUserData {
 
     pub(crate) fn rng(&self) -> SharedRng {
         self.rng.clone()
+    }
+
+    pub(crate) fn task_tracker(&self) -> TaskTracker {
+        self.task_tracker.clone()
     }
 }
 
@@ -239,6 +252,7 @@ impl Runtime {
                     displays,
                     cancellation_token.clone(),
                     local_rng,
+                    task_tracker,
                 ))
                 .unwrap();
 
@@ -258,6 +272,8 @@ impl Runtime {
                     JsDirectory::register(&ctx)?;
                     JsPath::register(&ctx)?;
                     JsFilesystem::register(&ctx)?;
+                    //JsAbortSignal::register(&ctx)?; // TODO
+                    //JsAbortController::register(&ctx)?;
 
                     // Singletons
                     JsMouse::register(&ctx, mouse)?;
@@ -267,7 +283,8 @@ impl Runtime {
                     JsDisplays::register(&ctx, js_displays)?;
                     JsScreenshot::register(&ctx, screenshot)?;
                     JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
-                    JsRandom::register(&ctx, JsRandom::new(rng.clone()))?;
+                    JsRandom::register(&ctx, JsRandom::default())?;
+                    JsWeb::register(&ctx, JsWeb::default())?;
 
                     Ok(())
                 })()
@@ -444,5 +461,131 @@ impl Runtime {
             Ok(())
         })
         .unwrap();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use convert_case::{Case, Casing};
+    use derive_more::Display;
+    use macros::ExposeEnum;
+    use rquickjs::{Function, Object, Value, atom::PredefinedAtom, class::Trace};
+
+    use super::*;
+
+    fn print<'js>(value: Value<'js>) {
+        println!("{value:?}");
+    }
+
+    #[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
+    #[rquickjs::class]
+    enum TestEnum {
+        A,
+        B,
+    }
+
+    #[derive(JsLifetime, Trace, Clone)]
+    #[rquickjs::class]
+    pub struct TestGenerator {
+        n: i32,
+    }
+
+    #[rquickjs::methods(rename_all = "camelCase")]
+    impl TestGenerator {
+        #[qjs(constructor)]
+        pub fn new() -> Self {
+            Self { n: 0 }
+        }
+
+        #[qjs(rename = PredefinedAtom::SymbolAsyncIterator)]
+        pub fn async_iter(&self) -> Self {
+            self.clone()
+        }
+
+        pub async fn next<'js>(&mut self, ctx: Ctx<'js>) -> rquickjs::Result<Value<'js>> {
+            let obj = Object::new(ctx)?;
+            obj.prop("done", self.n == 2)?;
+            obj.prop("value", self.n)?;
+            self.n += 1;
+
+            Ok(obj.into_value())
+        }
+    }
+
+    impl ValueClass<'_> for TestGenerator {}
+
+    #[derive(JsLifetime, Trace)]
+    #[rquickjs::class]
+    pub struct TestSingletonStruct {
+        string: String,
+        integer: i64,
+        float: f64,
+    }
+
+    #[rquickjs::methods(rename_all = "camelCase")]
+    impl TestSingletonStruct {}
+
+    impl Default for TestSingletonStruct {
+        fn default() -> Self {
+            Self {
+                string: Default::default(),
+                integer: Default::default(),
+                float: Default::default(),
+            }
+        }
+    }
+
+    impl SingletonClass<'_> for TestSingletonStruct {}
+
+    async fn setup(script_engine: &mut ScriptEngine) {
+        script_engine
+            .with(|ctx| {
+                ctx.globals()
+                    .prop("print", Function::new(ctx.clone(), print))
+                    .unwrap();
+                TestEnum::register(&ctx).unwrap();
+                TestSingletonStruct::register(&ctx, TestSingletonStruct::default()).unwrap();
+                TestGenerator::register(&ctx).unwrap();
+            })
+            .await;
+    }
+
+    #[test]
+    fn test_enum() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            setup(script_engine).await;
+
+            let result = script_engine.eval::<TestEnum>("TestEnum.B").await.unwrap();
+            assert_eq!(result, TestEnum::B)
+        });
+    }
+
+    #[test]
+    fn test_singleton() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            setup(script_engine).await;
+
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                const gen = TestGenerator();
+                for await (const ev of gen) {
+                    print(ev);
+                }
+                /*
+                test_singleton_struct.string = "foo";
+                test_singleton_struct.integer = 42;
+                test_singleton_struct.float = 42.5;
+                test_singleton_struct.setCallback(() => { print("callback called"); });
+                test_singleton_struct.call();
+                test_singleton_struct.clear();
+                */
+                //test_singleton_struct.setRustCallback(() => { print("rust callback called"); });
+                //test_singleton_struct.callRust();
+                "#,
+                )
+                .await
+                .unwrap();
+        });
     }
 }

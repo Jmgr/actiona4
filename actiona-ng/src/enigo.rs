@@ -3,7 +3,7 @@ use std::fmt::Display;
 use enigo::{InputError, NewConError};
 use rquickjs::{Ctx, Exception};
 
-use crate::IntoJS;
+use crate::IntoJsResult;
 
 pub enum EnigoError {
     InputError(InputError),
@@ -25,7 +25,7 @@ impl Display for EnigoError {
 
 pub type EnigoResult<T> = Result<T, EnigoError>;
 
-impl<T> IntoJS<T> for EnigoResult<T> {
+impl<T> IntoJsResult<T> for EnigoResult<T> {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &format!("Enigo: {err}")))
     }

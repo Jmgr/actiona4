@@ -324,7 +324,6 @@ impl Mouse {
     }
 }
 
-// IMPORTANT: please update default values below!
 /// Move options
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
@@ -446,7 +445,6 @@ impl Mouse {
     }
 }
 
-// IMPORTANT: please update default values below!
 /// Button click options
 /// @extends PressOptions
 /// @options
@@ -538,7 +536,6 @@ impl Mouse {
     }
 }
 
-// IMPORTANT: please update default values below!
 /// Button double click options
 /// @extends ClickOptions
 /// @options
@@ -571,7 +568,6 @@ impl Mouse {
     }
 }
 
-// IMPORTANT: please update default values below!
 /// Button press options
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]

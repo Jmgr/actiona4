@@ -186,7 +186,7 @@ mod tests {
     use tokio::fs;
 
     use crate::{
-        core::{directory::js::JsDirectoryEntry, random_name},
+        core::{directory::js::JsDirectoryEntry, test_helpers::random_name},
         runtime::Runtime,
     };
 
