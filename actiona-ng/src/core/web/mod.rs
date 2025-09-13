@@ -1,15 +1,24 @@
-use std::path::Path;
+use std::{
+    cmp,
+    collections::HashMap,
+    path::{Path, PathBuf},
+    sync::Arc,
+    time::Duration,
+};
 
+use bytes::Bytes;
 use convert_case::{Case, Casing};
 use derive_more::Display;
 use encoding_rs::{Encoding, UTF_8};
 use eyre::Result;
 use futures_util::StreamExt;
+use indexmap::IndexMap;
 use macros::ExposeEnum;
 use mime::Mime;
 use reqwest::{
     RequestBuilder, Response,
-    header::{self, HeaderMap},
+    header::{self, CONTENT_TYPE, HeaderMap},
+    multipart::{Form, Part},
 };
 use rquickjs::{JsLifetime, class::Trace};
 use tokio::{
@@ -17,7 +26,7 @@ use tokio::{
     io::{AsyncWrite, AsyncWriteExt},
     sync::watch,
 };
-use tokio_util::sync::CancellationToken;
+use tokio_util::{io::ReaderStream, sync::CancellationToken};
 
 use crate::{
     cancel_on,
@@ -52,18 +61,136 @@ impl From<Method> for reqwest::Method {
     }
 }
 
+#[derive(Clone, Default, Debug)]
+pub struct MultipartForm {
+    texts: IndexMap<String, String>,
+    files: IndexMap<String, PathBuf>,
+    bytes: IndexMap<String, Vec<u8>>,
+}
+
+impl MultipartForm {
+    async fn into_reqwest_form(self) -> Result<reqwest::multipart::Form> {
+        let mut result = reqwest::multipart::Form::new();
+
+        for (name, text) in self.texts {
+            result = result.text(name, text);
+        }
+        for (name, filepath) in self.files {
+            result = result.file(name, filepath).await?; // TODO: async?
+        }
+        for (name, bytes) in self.bytes {
+            result = result.part(name, Part::bytes(bytes).file_name("TODO")); // TODO: add filename option and MIME option to all
+        }
+
+        Ok(result)
+    }
+}
+
 /// Web options
 #[derive(Clone, Default)]
 pub struct WebOptions {
     pub user_name: Option<String>,
     pub password: Option<String>,
-    pub headers: Option<HeaderMap>,
+    pub headers: HeaderMap,
     pub method: Method,
     pub progress: Option<watch::Sender<Progress>>,
-    // TODO
-    // postData
-    // rawData?
-    // query?
+    pub timeout: Option<Duration>,
+    pub query: IndexMap<String, String>,
+    pub request_body: Body,
+}
+
+#[derive(Clone)]
+pub struct FormField {
+    pub name: String,
+    pub value: String,
+}
+
+#[derive(Clone)]
+pub struct MultipartField {
+    pub name: String,
+    pub value: MultipartValue,
+    pub filename: Option<String>,
+    pub mimetype: Option<Mime>,
+}
+
+#[derive(Clone)]
+pub enum MultipartValue {
+    Text(String),
+    File(PathBuf),
+    Bytes(Bytes),
+}
+
+#[derive(Clone, Default)]
+pub enum Body {
+    #[default]
+    None,
+    Text {
+        text: String,
+        content_type: Option<Mime>,
+    },
+    Bytes {
+        bytes: Bytes,
+        content_type: Option<Mime>,
+    },
+    Form(Vec<FormField>),
+    Multipart(Vec<MultipartField>),
+}
+
+impl Body {
+    fn set_content_type(mut request: RequestBuilder, content_type: Option<Mime>) -> RequestBuilder {
+        if let Some(content_type) = content_type {
+            request = request.header(CONTENT_TYPE, content_type.to_string());
+        }
+
+        request
+    }
+
+    fn apply_to(self, mut request: RequestBuilder) -> Result<RequestBuilder> {
+        match self {
+            Body::None => {}
+            Body::Text { text, content_type } => {
+                request = request.body(text);
+                request = Self::set_content_type(request, content_type);
+            }
+            Body::Bytes {
+                bytes,
+                content_type,
+            } => {
+                request = request.body(bytes);
+                request = Self::set_content_type(request, content_type);
+            }
+            Body::Form(form_fields) => {
+                request = request.form(
+                    &form_fields
+                        .into_iter()
+                        .map(|field| (field.name, field.value))
+                        .collect::<Vec<_>>(),
+                );
+            }
+            Body::Multipart(multipart_fields) => {
+                let form = Form::new();
+                for field in multipart_fields {
+                    let mut part = match field.value {
+                        MultipartValue::Text(text) => Part::text(text),
+                        MultipartValue::File(path_buf) => Part::stream(path_buf), // TODO: streaming
+                        MultipartValue::Bytes(bytes) => Part::bytes(bytes.into()),
+                    };
+
+                    if let Some(filename) = field.filename {
+                        part = part.file_name(filename);
+                    }
+                    if let Some(mimetype) = field.mimetype {
+                        part = part.mime_str(&mimetype.to_string())?;
+                    }
+
+                    form.part(field.name, part);
+                }
+                request = request.multipart(form);
+            }
+        }
+
+        Ok(request)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -127,17 +254,20 @@ impl Default for Web {
 }
 
 impl Web {
-    fn build_request(&self, url: &str, options: &WebOptions) -> RequestBuilder {
+    async fn build_request(&self, url: &str, options: WebOptions) -> Result<RequestBuilder> {
         let mut result = self.inner.request(options.method.into(), url);
 
-        if let Some(user_name) = &options.user_name {
-            result = result.basic_auth(user_name, options.password.clone());
+        if let Some(user_name) = options.user_name {
+            result = result.basic_auth(user_name, options.password);
         }
-        if let Some(headers) = &options.headers {
-            result = result.headers(headers.clone());
+        result = result.headers(options.headers);
+        if let Some(timeout) = options.timeout {
+            result = result.timeout(timeout);
         }
+        result = options.request_body.apply_to(result)?;
+        result = result.query(&options.query);
 
-        result
+        Ok(result)
     }
 
     /// Downloads a binary file.
@@ -147,10 +277,11 @@ impl Web {
         token: CancellationToken,
         options: Option<WebOptions>,
     ) -> Result<Vec<u8>> {
-        let options = options.unwrap_or_default();
-        let response = self.fetch_response(url, &token, &options).await?;
+        let mut options = options.unwrap_or_default();
+        let progress = options.progress.take();
+        let response = self.fetch_response(url, &token, &progress, options).await?;
         let buffer = self
-            .download_impl_with_buffer(token, response, &options)
+            .download_impl_with_buffer(token, response, &progress)
             .await?;
         Ok(buffer)
     }
@@ -162,8 +293,9 @@ impl Web {
         token: CancellationToken,
         options: Option<WebOptions>,
     ) -> Result<String> {
-        let options = options.unwrap_or_default();
-        let response = self.fetch_response(url, &token, &options).await?;
+        let mut options = options.unwrap_or_default();
+        let progress = options.progress.take();
+        let response = self.fetch_response(url, &token, &progress, options).await?;
 
         // This is basically the same as in reqwest::async_impl::response::Response::text_with_charset
         let content_type = response
@@ -178,7 +310,7 @@ impl Web {
         let encoding = Encoding::for_label(encoding_name.as_bytes()).unwrap_or(UTF_8);
 
         let buffer = self
-            .download_impl_with_buffer(token, response, &options)
+            .download_impl_with_buffer(token, response, &progress)
             .await?;
         let (text, _, _) = encoding.decode(&buffer);
 
@@ -192,10 +324,11 @@ impl Web {
         token: CancellationToken,
         options: Option<WebOptions>,
     ) -> Result<Image> {
-        let options = options.unwrap_or_default();
-        let response = self.fetch_response(url, &token, &options).await?;
+        let mut options = options.unwrap_or_default();
+        let progress = options.progress.take();
+        let response = self.fetch_response(url, &token, &progress, options).await?;
         let buffer = self
-            .download_impl_with_buffer(token, response, &options)
+            .download_impl_with_buffer(token, response, &progress)
             .await?;
         let image = Image::from_bytes(&buffer)?;
 
@@ -210,8 +343,9 @@ impl Web {
         directory: Option<&Path>,
         options: Option<WebOptions>,
     ) -> Result<String> {
-        let options = options.unwrap_or_default();
-        let response = self.fetch_response(url, &token, &options).await?;
+        let mut options = options.unwrap_or_default();
+        let progress = options.progress.take();
+        let response = self.fetch_response(url, &token, &progress, options).await?;
 
         let directory = directory
             .map(|directory| directory.to_path_buf())
@@ -223,7 +357,7 @@ impl Web {
 
         let file = cancel_on(&token, File::create(&tmp_filepath)).await??;
 
-        self.download_impl(token.clone(), response, &options, file)
+        self.download_impl(token.clone(), response, &progress, file)
             .await?;
 
         cancel_on(&token, fs::rename(&tmp_filepath, &filepath)).await??;
@@ -235,13 +369,36 @@ impl Web {
         &self,
         url: &str,
         token: &CancellationToken,
-        options: &WebOptions,
+        progress: &Option<watch::Sender<Progress>>,
+        options: WebOptions,
     ) -> Result<Response> {
-        let request = self.build_request(url, &options);
-
-        if let Some(progress) = &options.progress {
+        if let Some(progress) = &progress {
             progress.send_replace(Progress::InitialRequest);
         }
+
+        let request = self.build_request(url, options).await?;
+
+        let file = tokio::fs::File::open("")
+            .await
+            .expect("Cannot open input file for HTTPS read");
+        let mut reader_stream = ReaderStream::with_capacity(file, 2 * 8192); // 16 KiB
+        let async_stream = async_stream::stream! {
+            while let Some(chunk) = reader_stream.next().await {
+                if let Ok(chunk) = &chunk {
+                    /*
+                    let new = cmp::min(uploaded + (chunk.len() as u64), total_size);
+                    uploaded = new;
+                    bar.set_position(new);
+                    if uploaded >= total_size {
+                        bar.finish_upload(&input_, &output_);
+                    }
+                    */
+                }
+                yield chunk;
+            }
+        };
+
+        let request = request.body(reqwest::Body::wrap_stream(async_stream));
 
         let response = cancel_on(token, request.send()).await??;
         let response = response.error_for_status()?;
@@ -253,13 +410,13 @@ impl Web {
         &self,
         token: CancellationToken,
         response: Response,
-        options: &WebOptions,
+        progress: &Option<watch::Sender<Progress>>,
         mut writer: W,
     ) -> Result<()> {
         let total_size = response.content_length();
         let mut current = 0;
 
-        if let Some(progress) = &options.progress {
+        if let Some(progress) = &progress {
             progress.send_replace(Progress::ReceivedResponse { total: total_size });
         }
 
@@ -277,7 +434,7 @@ impl Web {
 
             current += chunk.len() as u64;
 
-            if let Some(progress) = &options.progress {
+            if let Some(progress) = &progress {
                 progress.send_replace(Progress::Downloading {
                     current,
                     total: total_size,
@@ -285,7 +442,7 @@ impl Web {
             }
         }
 
-        if let Some(progress) = &options.progress {
+        if let Some(progress) = &progress {
             progress.send_replace(Progress::Finished {
                 current,
                 total: total_size,
@@ -299,7 +456,7 @@ impl Web {
         &self,
         token: CancellationToken,
         response: Response,
-        options: &WebOptions,
+        progress: &Option<watch::Sender<Progress>>,
     ) -> Result<Vec<u8>> {
         let mut buffer = if let Some(length) = response.content_length() {
             Vec::with_capacity(length as usize)
@@ -307,7 +464,7 @@ impl Web {
             Vec::new()
         };
 
-        self.download_impl(token, response, options, &mut buffer)
+        self.download_impl(token, response, progress, &mut buffer)
             .await?;
 
         Ok(buffer)

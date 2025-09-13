@@ -18,14 +18,29 @@ use crate::{
         js::{
             abort_controller::JsAbortSignal,
             classes::{SingletonClass, ValueClass},
+            duration::JsDuration,
             task::{IsDone, progress_task_with_token},
         },
-        web::{Progress, WebOptions},
+        web::{MultipartForm, Progress, WebOptions},
     },
     error::CommonError,
 };
 
 pub type JsMethod = super::Method;
+
+// TODO: Options
+/// Multipart form
+#[derive(Clone, Debug, Default, JsLifetime)]
+#[rquickjs::class(rename = "MultipartForm")]
+pub struct JsMultipartForm {
+    inner: MultipartForm,
+}
+
+impl<'js> Trace<'js> for JsMultipartForm {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl ValueClass<'_> for JsMultipartForm {}
 
 /// Web options
 /// @options
@@ -46,6 +61,34 @@ pub struct JsWebOptions {
 
     /// @default Method.GET
     pub method: JsMethod,
+
+    /// @default undefined
+    pub timeout: Option<JsDuration>,
+
+    /// Sets the content-type header.
+    /// Overrides any content-type set by other fields.
+    ///
+    /// @default undefined
+    pub content_type: Option<String>,
+
+    /// Form data as strings.
+    /// Sets content-type to "application/x-www-form-urlencoded".
+    ///
+    /// @type Record<string, string>
+    /// @default undefined
+    pub form: Option<IndexMap<String, String>>,
+
+    /// Additional query parameters.
+    ///
+    /// @type Record<string, string>
+    /// @default undefined
+    pub query: Option<IndexMap<String, String>>,
+
+    /// Form multipart data.
+    /// Sets content-type and content-length appropriately.
+    ///
+    /// @default undefined
+    pub multipart: Option<JsMultipartForm>,
 }
 
 impl JsWebOptions {
@@ -73,6 +116,11 @@ impl JsWebOptions {
             headers,
             method: self.method,
             progress: None,
+            timeout: self.timeout.map(|timeout| timeout.into()),
+            content_type: self.content_type,
+            form: self.form,
+            query: self.query,
+            multipart: self.multipart.map(|multipart| multipart.inner),
         })
     }
 }
@@ -137,6 +185,7 @@ pub struct JsWeb {
 
 impl SingletonClass<'_> for JsWeb {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
+        JsMultipartForm::register(&ctx)?;
         JsMethod::register(&ctx)?;
 
         Ok(())
