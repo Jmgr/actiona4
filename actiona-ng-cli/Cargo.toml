@@ -5,6 +5,7 @@ version.workspace = true
 authors.workspace = true
 description.workspace = true
 documentation.workspace = true
+default-run = "actiona-ng"
 
 [dependencies]
 actiona-ng = { path = "../actiona-ng" }

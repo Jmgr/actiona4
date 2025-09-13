@@ -272,8 +272,8 @@ impl Runtime {
                     JsDirectory::register(&ctx)?;
                     JsPath::register(&ctx)?;
                     JsFilesystem::register(&ctx)?;
-                    //JsAbortSignal::register(&ctx)?; // TODO
-                    //JsAbortController::register(&ctx)?;
+                    JsAbortSignal::register(&ctx)?;
+                    JsAbortController::register(&ctx)?;
 
                     // Singletons
                     JsMouse::register(&ctx, mouse)?;

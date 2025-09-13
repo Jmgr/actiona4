@@ -1526,8 +1526,8 @@ declare class Image {
      * TODO
      */
     findImage(_image: Image, options?: FindImageOptions): void;
-    height(): number;
     width(): number;
+    height(): number;
 }
 /**
  * A Color.
@@ -2402,11 +2402,16 @@ declare class Path {
     static extname(path: string): string;
     static setExtension(path: string, extension: string): string;
 }
+/**
+ * Multipart form
+ */
+declare interface MultipartForm {
+}
 declare class WebProgress {
-    total: number;
-    current: number;
-    finished: boolean;
     private constructor();
+    current(): number;
+    total(): number;
+    finished(): boolean;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
@@ -2440,6 +2445,33 @@ declare interface WebOptions {
      * @defaultValue Method.GET
      */
     method?: Method;
+    /**
+     * @defaultValue undefined
+     */
+    timeout?: number;
+    /**
+     * Sets the content-type header.
+     * Overrides any content-type set by other fields.
+     * @defaultValue undefined
+     */
+    contentType?: string;
+    /**
+     * Form data as strings.
+     * Sets content-type to "application/x-www-form-urlencoded".
+     * @defaultValue undefined
+     */
+    form?: Record<string, string>;
+    /**
+     * Additional query parameters.
+     * @defaultValue undefined
+     */
+    query?: Record<string, string>;
+    /**
+     * Form data as strings.
+     * Sets content-type and content-length appropriately.
+     * @defaultValue undefined
+     */
+    multipart?: MultipartForm;
 }
 /**
  * Find image options

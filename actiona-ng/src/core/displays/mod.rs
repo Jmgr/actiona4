@@ -36,7 +36,7 @@ pub type Result<T> = std::result::Result<T, DisplaysError>;
 
 #[derive(Debug)]
 pub struct Displays {
-    _implementation: DisplaysImpl,
+    implementation: DisplaysImpl,
     displays_info: Arc<Mutex<DisplayInfoVec>>,
 }
 
@@ -68,7 +68,7 @@ impl Displays {
         });
 
         Ok(Self {
-            _implementation: DisplaysImpl::new(runtime)?,
+            implementation: DisplaysImpl::new(runtime)?,
             displays_info,
         })
     }

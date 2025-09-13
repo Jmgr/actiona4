@@ -20,11 +20,19 @@ use rquickjs::{Ctx, Function, IntoJs, Object, Promise, Result, Value, atom::Pred
 use tokio::{select, sync::watch};
 use tokio_util::sync::CancellationToken;
 
-use crate::{
-    IntoJsResult, core::js::abort_controller::IntoToken, error::CommonError, runtime::WithUserData,
-};
+use crate::{IntoJsResult, error::CommonError, runtime::WithUserData};
 
 // TODO: use task in more places
+
+pub trait IntoToken {
+    fn into_token(self) -> Option<CancellationToken>;
+}
+
+impl IntoToken for CancellationToken {
+    fn into_token(self) -> Option<CancellationToken> {
+        Some(self)
+    }
+}
 
 /// Cancelable future wrapper.
 pub(crate) fn task<'js, R, Fut, F>(ctx: Ctx<'js>, future: F) -> Result<Promise<'js>>
@@ -200,6 +208,7 @@ mod tests {
         },
         error::CommonError,
         runtime::Runtime,
+        scripting,
     };
 
     // TODO: skip everything in "tests" mod
@@ -294,6 +303,17 @@ mod tests {
         }
     }
 
+    async fn setup(script_engine: &mut scripting::Engine, test: TestStruct) {
+        script_engine
+            .with(|ctx| {
+                TestStruct::register(&ctx, test).unwrap();
+                JsCounter::register(&ctx).unwrap();
+                Result::<()>::Ok(())
+            })
+            .await
+            .unwrap();
+    }
+
     #[test]
     fn test_task() {
         Runtime::test_with_script_engine(async move |script_engine| {
@@ -301,13 +321,7 @@ mod tests {
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
 
-            script_engine
-                .with(|ctx| {
-                    TestStruct::register(&ctx, test).unwrap();
-                    Result::<()>::Ok(())
-                })
-                .await
-                .unwrap();
+            setup(script_engine, test).await;
 
             let result = script_engine
                 .eval_async::<()>(
@@ -333,13 +347,7 @@ mod tests {
             let was_canceled = test.was_canceled.clone();
             let token = test.token.clone();
 
-            script_engine
-                .with(|ctx| {
-                    TestStruct::register(&ctx, test).unwrap();
-                    Result::<()>::Ok(())
-                })
-                .await
-                .unwrap();
+            setup(script_engine, test).await;
 
             token.cancel();
 
@@ -364,16 +372,7 @@ mod tests {
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
 
-            // TODO: factorize
-
-            script_engine
-                .with(|ctx| {
-                    TestStruct::register(&ctx, test).unwrap();
-                    JsCounter::register(&ctx).unwrap();
-                    Result::<()>::Ok(())
-                })
-                .await
-                .unwrap();
+            setup(script_engine, test).await;
 
             let counter = script_engine
                 .eval_async::<u64>(

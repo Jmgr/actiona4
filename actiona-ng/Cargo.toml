@@ -58,6 +58,8 @@ futures-util.workspace = true
 mime.workspace = true
 encoding_rs.workspace = true
 indicatif.workspace = true
+async-stream.workspace = true
+bytes.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
