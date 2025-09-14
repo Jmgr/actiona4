@@ -21,7 +21,7 @@ use crate::{
             duration::JsDuration,
             task::{IsDone, progress_task_with_token},
         },
-        web::{MultipartForm, Progress, WebOptions},
+        web::{Progress, WebOptions},
     },
     error::CommonError,
 };
@@ -33,7 +33,7 @@ pub type JsMethod = super::Method;
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "MultipartForm")]
 pub struct JsMultipartForm {
-    inner: MultipartForm,
+    //inner: MultipartForm,
 }
 
 impl<'js> Trace<'js> for JsMultipartForm {
@@ -110,6 +110,10 @@ impl JsWebOptions {
             None
         };
 
+        todo!();
+
+        /*
+
         Ok(WebOptions {
             user_name: self.user_name,
             password: self.password,
@@ -122,6 +126,7 @@ impl JsWebOptions {
             query: self.query,
             multipart: self.multipart.map(|multipart| multipart.inner),
         })
+        */
     }
 }
 
@@ -144,9 +149,9 @@ impl IsDone for JsWebProgress {
 impl From<Progress> for JsWebProgress {
     fn from(value: Progress) -> Self {
         Self {
-            total: value.total().unwrap_or_default(),
-            current: value.current(),
-            finished: value.is_finished(),
+            total: 0,       //value.total().unwrap_or_default(),
+            current: 0,     //value.current(),
+            finished: true, //value.is_finished(),
         }
     }
 }
@@ -185,7 +190,7 @@ pub struct JsWeb {
 
 impl SingletonClass<'_> for JsWeb {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
-        JsMultipartForm::register(&ctx)?;
+        //JsMultipartForm::register(&ctx)?;
         JsMethod::register(&ctx)?;
 
         Ok(())

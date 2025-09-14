@@ -16,6 +16,7 @@ pub mod error;
 pub(crate) mod platform;
 pub mod runtime;
 pub mod scripting;
+pub mod sized_body;
 
 pub trait IntoJSError: ToString {
     fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Error

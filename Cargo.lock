@@ -38,16 +38,20 @@ dependencies = [
  "eyre",
  "futures",
  "futures-util",
+ "http-body",
+ "http-body-util",
  "httptest",
  "humantime",
  "image",
  "imageproc",
  "indexmap",
  "indicatif",
+ "infer",
  "itertools 0.14.0",
  "macros",
  "memfd",
  "mime",
+ "mime_guess",
  "nix",
  "noiselib",
  "num-traits",
@@ -773,6 +777,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6fac387a98bb7c37292057cffc56d62ecb629900026402633ae9160df93a8766"
 dependencies = [
  "nom 7.1.3",
+]
+
+[[package]]
+name = "cfb"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d38f2da7a0a2c4ccf0065be06397cc26a81f4e528be095826eee9d4adbb8c60f"
+dependencies = [
+ "byteorder",
+ "fnv",
+ "uuid",
 ]
 
 [[package]]
@@ -2682,6 +2697,15 @@ dependencies = [
  "unicode-width 0.2.0",
  "unit-prefix",
  "web-time",
+]
+
+[[package]]
+name = "infer"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a588916bfdfd92e71cacef98a63d9b1f0d74d6599980d11894290e7ddefffcf7"
+dependencies = [
+ "cfb",
 ]
 
 [[package]]

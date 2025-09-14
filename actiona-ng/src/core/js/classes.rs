@@ -1,5 +1,8 @@
 use convert_case::{Case, Casing};
+use eyre::Context;
 use rquickjs::{Class, Ctx, IntoJs, Object, class::JsClass};
+
+use crate::IntoJsResult;
 
 /// Represents a JavaScript class that exists as a single instance in the global scope.
 ///
@@ -70,17 +73,27 @@ pub trait ValueClass<'js>: JsClass<'js> {
     ///
     /// This defines the class in the global scope, making it available for instantiation.
     fn register(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        Self::register_dependencies(ctx)?;
-
-        Class::<Self>::define(&ctx.globals())?;
-
         // Remove "Js" prefix if present
         let name = Self::NAME.strip_prefix("Js").unwrap_or(Self::NAME);
 
-        let object = ctx.globals().get::<_, Object>(name)?;
+        move || -> rquickjs::Result<()> {
+            Self::register_dependencies(ctx)
+                .wrap_err("register dependencies")
+                .into_js(ctx)?;
 
-        Self::extra_registration(&object)?;
+            Class::<Self>::define(&ctx.globals())
+                .wrap_err("define constructor")
+                .into_js(ctx)?;
 
-        Ok(())
+            let object = ctx.globals().get::<_, Object>(name)?;
+
+            Self::extra_registration(&object)
+                .wrap_err("extra registration")
+                .into_js(ctx)?;
+
+            Ok(())
+        }()
+        .wrap_err_with(|| format!("registering {name} (missing constructor?)"))
+        .into_js(ctx)
     }
 }

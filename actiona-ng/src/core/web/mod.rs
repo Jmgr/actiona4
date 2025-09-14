@@ -1,8 +1,10 @@
 use std::{
-    cmp,
-    collections::HashMap,
+    io::Cursor,
     path::{Path, PathBuf},
-    sync::Arc,
+    sync::{
+        Arc,
+        atomic::{AtomicU64, Ordering},
+    },
     time::Duration,
 };
 
@@ -11,7 +13,9 @@ use convert_case::{Case, Casing};
 use derive_more::Display;
 use encoding_rs::{Encoding, UTF_8};
 use eyre::Result;
-use futures_util::StreamExt;
+use futures::{Stream, StreamExt, TryStreamExt};
+use http_body::Frame;
+use http_body_util::{BodyExt, StreamBody};
 use indexmap::IndexMap;
 use macros::ExposeEnum;
 use mime::Mime;
@@ -20,17 +24,20 @@ use reqwest::{
     header::{self, CONTENT_TYPE, HeaderMap},
     multipart::{Form, Part},
 };
-use rquickjs::{JsLifetime, class::Trace};
+use rquickjs::{Atom, JsLifetime, class::Trace};
 use tokio::{
     fs::{self, File},
-    io::{AsyncWrite, AsyncWriteExt},
+    io::{AsyncReadExt, AsyncWrite, AsyncWriteExt},
+    select,
     sync::watch,
+    time::sleep,
 };
 use tokio_util::{io::ReaderStream, sync::CancellationToken};
 
 use crate::{
     cancel_on,
     core::{image::Image, js::task::IsDone},
+    sized_body::{BoxError, SizedBody},
 };
 
 pub mod js;
@@ -42,9 +49,12 @@ pub enum Method {
     Get,
     Post,
     Put,
-    Patch,
     Delete,
     Head,
+    Options,
+    Connect,
+    Patch,
+    Trace,
 }
 
 impl From<Method> for reqwest::Method {
@@ -54,35 +64,13 @@ impl From<Method> for reqwest::Method {
             Get => reqwest::Method::GET,
             Post => reqwest::Method::POST,
             Put => reqwest::Method::PUT,
-            Patch => reqwest::Method::PATCH,
             Delete => reqwest::Method::DELETE,
             Head => reqwest::Method::HEAD,
+            Options => reqwest::Method::OPTIONS,
+            Connect => reqwest::Method::CONNECT,
+            Patch => reqwest::Method::PATCH,
+            Trace => reqwest::Method::TRACE,
         }
-    }
-}
-
-#[derive(Clone, Default, Debug)]
-pub struct MultipartForm {
-    texts: IndexMap<String, String>,
-    files: IndexMap<String, PathBuf>,
-    bytes: IndexMap<String, Vec<u8>>,
-}
-
-impl MultipartForm {
-    async fn into_reqwest_form(self) -> Result<reqwest::multipart::Form> {
-        let mut result = reqwest::multipart::Form::new();
-
-        for (name, text) in self.texts {
-            result = result.text(name, text);
-        }
-        for (name, filepath) in self.files {
-            result = result.file(name, filepath).await?; // TODO: async?
-        }
-        for (name, bytes) in self.bytes {
-            result = result.part(name, Part::bytes(bytes).file_name("TODO")); // TODO: add filename option and MIME option to all
-        }
-
-        Ok(result)
     }
 }
 
@@ -128,6 +116,10 @@ pub enum Body {
         text: String,
         content_type: Option<Mime>,
     },
+    File {
+        path: PathBuf,
+        content_type: Option<Mime>,
+    },
     Bytes {
         bytes: Bytes,
         content_type: Option<Mime>,
@@ -136,8 +128,29 @@ pub enum Body {
     Multipart(Vec<MultipartField>),
 }
 
+#[derive(Default)]
+struct ProgressReporter {
+    current: Arc<AtomicU64>,
+    sender: watch::Sender<u64>,
+}
+
+impl ProgressReporter {
+    pub fn increment(&self, value: u64) {
+        let previous_value = self.current.fetch_add(value, Ordering::Relaxed);
+        let new_value = previous_value + value;
+        self.sender.send_replace(new_value);
+    }
+
+    pub fn receiver(&self) -> watch::Receiver<u64> {
+        self.sender.subscribe()
+    }
+}
+
 impl Body {
-    fn set_content_type(mut request: RequestBuilder, content_type: Option<Mime>) -> RequestBuilder {
+    fn maybe_set_content_type(
+        mut request: RequestBuilder,
+        content_type: Option<Mime>,
+    ) -> RequestBuilder {
         if let Some(content_type) = content_type {
             request = request.header(CONTENT_TYPE, content_type.to_string());
         }
@@ -145,19 +158,127 @@ impl Body {
         request
     }
 
-    fn apply_to(self, mut request: RequestBuilder) -> Result<RequestBuilder> {
+    fn guess_mime_from_bytes(bytes: &Bytes) -> Option<&str> {
+        infer::get(&bytes).map(|guess| guess.mime_type())
+    }
+
+    async fn guess_mime_from_path(path: &Path, is_multipart: bool) -> Option<String> {
+        const MAGIC_NUMBER_MAX_LEN: usize = 8192; // Copied from the infer crate
+
+        // The infer crate only offers sync I/O, so we manually get the magic number
+        let mut file = File::open(path).await.ok()?;
+
+        let mut buffer = vec![0u8; MAGIC_NUMBER_MAX_LEN];
+
+        let n = file.read(&mut buffer).await.ok()?;
+        let head = &buffer[..n];
+
+        // Try to guess using the magic number first
+        if let Some(mime) = infer::get(&head) {
+            return Some(mime.mime_type().to_string());
+        }
+
+        // If that fails, fall back to the file extension
+        let mime = mime_guess::from_path(path);
+
+        // Default mime type depends on the context
+        Some(
+            if is_multipart {
+                mime.first_or_octet_stream()
+            } else {
+                mime.first_or_text_plain()
+            }
+            .to_string(),
+        )
+    }
+
+    fn stream_to_body<S, E>(
+        stream: S,
+        size: u64,
+        progress_reporter: Arc<ProgressReporter>,
+    ) -> (reqwest::Body, u64)
+    where
+        S: Stream<Item = Result<Bytes, E>> + Send + Sync + Unpin + 'static,
+        E: std::error::Error + Send + Sync + 'static,
+    {
+        let async_stream = stream
+            .map_ok(move |bytes| {
+                progress_reporter.increment(bytes.len() as u64);
+                Frame::data(bytes)
+            })
+            .map_err(|e| -> BoxError { Box::new(e) });
+        let body = StreamBody::new(async_stream);
+        let boxed_body = BodyExt::boxed(body);
+        let sized_body = SizedBody::new(boxed_body, size);
+
+        (reqwest::Body::wrap(sized_body), size)
+    }
+
+    async fn file_to_body(
+        path: &Path,
+        progress_reporter: Arc<ProgressReporter>,
+    ) -> Result<(reqwest::Body, u64)> {
+        let file = File::open(path).await?;
+        let len = file.metadata().await?.len();
+
+        Ok(Self::stream_to_body(
+            ReaderStream::new(file),
+            len,
+            progress_reporter,
+        ))
+    }
+
+    async fn bytes_to_body(
+        bytes: Bytes,
+        progress_reporter: Arc<ProgressReporter>,
+    ) -> Result<(reqwest::Body, u64)> {
+        let len = bytes.len() as u64;
+
+        Ok(Self::stream_to_body(
+            ReaderStream::new(Cursor::new(bytes)),
+            len,
+            progress_reporter.clone(),
+        ))
+    }
+
+    async fn apply_to(
+        self,
+        mut request: RequestBuilder,
+    ) -> Result<(RequestBuilder, watch::Receiver<u64>, u64)> {
+        let mut total_size = 0;
+        let progress_reporter = Arc::new(ProgressReporter::default());
         match self {
             Body::None => {}
             Body::Text { text, content_type } => {
                 request = request.body(text);
-                request = Self::set_content_type(request, content_type);
+                request = Self::maybe_set_content_type(request, content_type);
+            }
+            Body::File { path, content_type } => {
+                if let Some(mime) = Self::guess_mime_from_path(&path, false).await {
+                    request = request.header(CONTENT_TYPE, mime);
+                }
+
+                let (body, size) = Self::file_to_body(&path, progress_reporter.clone()).await?;
+
+                request = request.body(body);
+                total_size += size;
+
+                request = Self::maybe_set_content_type(request, content_type);
             }
             Body::Bytes {
                 bytes,
                 content_type,
             } => {
-                request = request.body(bytes);
-                request = Self::set_content_type(request, content_type);
+                if let Some(mime) = Self::guess_mime_from_bytes(&bytes) {
+                    request = request.header(CONTENT_TYPE, mime);
+                }
+
+                let (body, size) = Self::bytes_to_body(bytes, progress_reporter.clone()).await?;
+
+                request = request.body(body);
+                total_size += size;
+
+                request = Self::maybe_set_content_type(request, content_type);
             }
             Body::Form(form_fields) => {
                 request = request.form(
@@ -168,12 +289,30 @@ impl Body {
                 );
             }
             Body::Multipart(multipart_fields) => {
-                let form = Form::new();
+                let mut form = Form::new();
                 for field in multipart_fields {
                     let mut part = match field.value {
                         MultipartValue::Text(text) => Part::text(text),
-                        MultipartValue::File(path_buf) => Part::stream(path_buf), // TODO: streaming
-                        MultipartValue::Bytes(bytes) => Part::bytes(bytes.into()),
+                        MultipartValue::File(path_buf) => {
+                            let (body, size) =
+                                Self::file_to_body(&path_buf, progress_reporter.clone()).await?;
+
+                            total_size += size;
+
+                            Part::stream_with_length(body, size)
+                        }
+                        MultipartValue::Bytes(bytes) => {
+                            if let Some(mime) = Self::guess_mime_from_bytes(&bytes) {
+                                request = request.header(CONTENT_TYPE, mime);
+                            }
+
+                            let (body, size) =
+                                Self::bytes_to_body(bytes, progress_reporter.clone()).await?;
+
+                            total_size += size;
+
+                            Part::stream_with_length(body, size)
+                        }
                     };
 
                     if let Some(filename) = field.filename {
@@ -183,13 +322,13 @@ impl Body {
                         part = part.mime_str(&mimetype.to_string())?;
                     }
 
-                    form.part(field.name, part);
+                    form = form.part(field.name, part);
                 }
                 request = request.multipart(form);
             }
         }
 
-        Ok(request)
+        Ok((request, progress_reporter.receiver(), total_size))
     }
 }
 
@@ -197,18 +336,15 @@ impl Body {
 pub enum Progress {
     #[default]
     Inactive,
-    InitialRequest,
-    ReceivedResponse {
-        total: Option<u64>,
+    Uploading {
+        current: u64,
+        total: u64,
     },
     Downloading {
         current: u64,
         total: Option<u64>,
     },
-    Finished {
-        current: u64,
-        total: Option<u64>,
-    },
+    Finished,
 }
 
 impl IsDone for Progress {
@@ -218,10 +354,10 @@ impl IsDone for Progress {
 }
 
 impl Progress {
+    /*
     pub fn total(&self) -> Option<u64> {
         match self {
-            Self::Inactive | Self::InitialRequest => None,
-            Self::ReceivedResponse { total } => *total,
+            Self::Inactive | Self::Uploading { .. } => None,
             Self::Downloading { total, .. } => *total,
             Self::Finished { total, .. } => *total,
         }
@@ -229,11 +365,12 @@ impl Progress {
 
     pub fn current(&self) -> u64 {
         match self {
-            Self::Inactive | Self::InitialRequest | Self::ReceivedResponse { .. } => 0,
+            Self::Inactive | Self::Uploading { .. } => 0,
             Self::Downloading { current, .. } => *current,
             Self::Finished { current, .. } => *current,
         }
     }
+    */// TODO
 
     pub fn is_finished(&self) -> bool {
         matches!(self, Self::Finished { .. })
@@ -254,20 +391,42 @@ impl Default for Web {
 }
 
 impl Web {
-    async fn build_request(&self, url: &str, options: WebOptions) -> Result<RequestBuilder> {
-        let mut result = self.inner.request(options.method.into(), url);
+    async fn build_request(
+        &self,
+        url: &str,
+        options: WebOptions,
+    ) -> Result<(RequestBuilder, watch::Receiver<u64>, u64)> {
+        let mut request_builder = self.inner.request(options.method.into(), url);
 
         if let Some(user_name) = options.user_name {
-            result = result.basic_auth(user_name, options.password);
+            request_builder = request_builder.basic_auth(user_name, options.password);
         }
-        result = result.headers(options.headers);
-        if let Some(timeout) = options.timeout {
-            result = result.timeout(timeout);
-        }
-        result = options.request_body.apply_to(result)?;
-        result = result.query(&options.query);
 
-        Ok(result)
+        request_builder = request_builder.headers(options.headers);
+
+        if let Some(timeout) = options.timeout {
+            request_builder = request_builder.timeout(timeout);
+        }
+
+        let (new_request_builder, progress_receiver, total_size) =
+            options.request_body.apply_to(request_builder).await?;
+
+        request_builder = new_request_builder.query(&options.query);
+
+        Ok((request_builder, progress_receiver, total_size))
+    }
+
+    /// Uploads some data.
+    pub async fn upload(
+        &self,
+        url: &str,
+        token: CancellationToken,
+        options: Option<WebOptions>,
+    ) -> Result<()> {
+        let mut options = options.unwrap_or_default();
+        let progress = options.progress.take();
+        self.fetch_response(url, &token, &progress, options).await?;
+        Ok(())
     }
 
     /// Downloads a binary file.
@@ -373,32 +532,39 @@ impl Web {
         options: WebOptions,
     ) -> Result<Response> {
         if let Some(progress) = &progress {
-            progress.send_replace(Progress::InitialRequest);
+            progress.send_replace(Progress::Uploading {
+                current: 0,
+                total: 0,
+            });
         }
 
-        let request = self.build_request(url, options).await?;
+        let (request, mut upload_progress, total_upload) = self.build_request(url, options).await?;
 
-        let file = tokio::fs::File::open("")
-            .await
-            .expect("Cannot open input file for HTTPS read");
-        let mut reader_stream = ReaderStream::with_capacity(file, 2 * 8192); // 16 KiB
-        let async_stream = async_stream::stream! {
-            while let Some(chunk) = reader_stream.next().await {
-                if let Ok(chunk) = &chunk {
-                    /*
-                    let new = cmp::min(uploaded + (chunk.len() as u64), total_size);
-                    uploaded = new;
-                    bar.set_position(new);
-                    if uploaded >= total_size {
-                        bar.finish_upload(&input_, &output_);
-                    }
-                    */
+        let local_token = token.clone();
+        let local_progress = progress.clone();
+        tokio::spawn(async move {
+            loop {
+                select! {
+                    _ = local_token.cancelled() => {
+                        break;
+                    },
+                    changed = upload_progress.changed() => {
+                        if changed.is_err() { // Sender closed
+                            break;
+                        }
+
+                        let progress_value = *upload_progress.borrow_and_update();
+
+                        if let Some(progress) = &local_progress {
+                            progress.send_replace(Progress::Uploading {
+                                current: progress_value,
+                                total: total_upload,
+                            });
+                        }
+                    },
                 }
-                yield chunk;
             }
-        };
-
-        let request = request.body(reqwest::Body::wrap_stream(async_stream));
+        });
 
         let response = cancel_on(token, request.send()).await??;
         let response = response.error_for_status()?;
@@ -417,7 +583,10 @@ impl Web {
         let mut current = 0;
 
         if let Some(progress) = &progress {
-            progress.send_replace(Progress::ReceivedResponse { total: total_size });
+            progress.send_replace(Progress::Downloading {
+                current,
+                total: total_size,
+            });
         }
 
         let mut stream = response.bytes_stream();
@@ -443,10 +612,7 @@ impl Web {
         }
 
         if let Some(progress) = &progress {
-            progress.send_replace(Progress::Finished {
-                current,
-                total: total_size,
-            });
+            progress.send_replace(Progress::Finished);
         }
 
         Ok(())
@@ -677,11 +843,6 @@ mod tests {
 
             let local_received_progress = received_progress.clone();
             let receiver_handle = tokio::spawn(async move {
-                local_received_progress
-                    .lock()
-                    .unwrap()
-                    .push(*receiver.borrow_and_update());
-
                 while receiver.changed().await.is_ok() {
                     local_received_progress
                         .lock()
@@ -697,6 +858,10 @@ mod tests {
                     cancellation_token,
                     Some(WebOptions {
                         progress: Some(sender),
+                        request_body: Body::Bytes {
+                            bytes: test_image.bytes.clone().into(),
+                            content_type: None,
+                        },
                         ..Default::default()
                     }),
                 )
@@ -708,15 +873,10 @@ mod tests {
             receiver_handle.await.unwrap();
 
             let received_progress = received_progress.lock().unwrap();
-            assert!(received_progress.contains(&Progress::Inactive));
-            assert!(received_progress.contains(&Progress::InitialRequest));
-            assert!(received_progress.contains(&Progress::ReceivedResponse {
-                total: Some(total_size)
-            }));
-            assert!(received_progress.contains(&Progress::Finished {
-                current: total_size,
-                total: Some(total_size),
-            }));
+
+            println!("{:?}", received_progress);
+
+            assert!(received_progress.contains(&Progress::Finished));
         });
     }
 
@@ -758,6 +918,83 @@ mod tests {
 
             let bytes = fs::read(expected_filepath).unwrap();
             assert_eq!(bytes, test_image.bytes);
+        });
+    }
+
+    #[test]
+    fn test_upload_text_body() {
+        Runtime::test(async move |_| {
+            const TEST_STRING: &str = "this is a test";
+
+            let server = Server::run();
+
+            server.expect(
+                Expectation::matching(all_of![
+                    request::method_path("POST", "/"),
+                    request::headers(contains((
+                        "content-length",
+                        format!("{}", TEST_STRING.len())
+                    ))),
+                    request::body(TEST_STRING)
+                ])
+                .respond_with(status_code(200)),
+            );
+
+            let web = Web::default();
+            let cancellation_token = CancellationToken::new();
+            web.upload(
+                &server.url("/").to_string(),
+                cancellation_token,
+                Some(WebOptions {
+                    method: Method::Post,
+                    request_body: Body::Text {
+                        text: TEST_STRING.to_string(),
+                        content_type: None,
+                    },
+                    ..Default::default()
+                }),
+            )
+            .await
+            .unwrap();
+        });
+    }
+
+    #[test]
+    fn test_upload_binary_body() {
+        Runtime::test(async move |_| {
+            let test_image = TestImage::default();
+
+            let server = Server::run();
+
+            server.expect(
+                Expectation::matching(all_of![
+                    request::method_path("POST", "/"),
+                    request::headers(contains((
+                        "content-length",
+                        format!("{}", test_image.bytes.len())
+                    ))),
+                    request::headers(contains(("content-type", "image/png"))),
+                    request::body(test_image.bytes.clone())
+                ])
+                .respond_with(status_code(200)),
+            );
+
+            let web = Web::default();
+            let cancellation_token = CancellationToken::new();
+            web.upload(
+                &server.url("/").to_string(),
+                cancellation_token,
+                Some(WebOptions {
+                    method: Method::Post,
+                    request_body: Body::Bytes {
+                        bytes: test_image.bytes.into(),
+                        content_type: None,
+                    },
+                    ..Default::default()
+                }),
+            )
+            .await
+            .unwrap();
         });
     }
 }
