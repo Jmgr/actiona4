@@ -45,33 +45,36 @@ pub struct JsWindowOptions {
     position: Option<JsPoint>,
 }
 
-#[cfg(not(doc))]
-slint::slint! {
-    import { Button, StandardButton } from "std-widgets.slint";
+#[allow(unsafe_code)]
+mod ui {
+    #[cfg(not(doc))]
+    slint::slint! {
+        import { Button, StandardButton } from "std-widgets.slint";
 
-    export component ImageWindow inherits Window {
-        callback closed;
+        export component ImageWindow inherits Window {
+            callback closed;
 
-        in property <image> image;
-        in property <length> window_width;
-        in property <length> window_height;
+            in property <image> image;
+            in property <length> window_width;
+            in property <length> window_height;
 
-        width: self.window_width;
-        height: self.window_height;
+            width: self.window_width;
+            height: self.window_height;
 
-        Image {
-            source: image;
-            image-fit: contain;
-            image-rendering: pixelated;
-        }
+            Image {
+                source: image;
+                image-fit: contain;
+                image-rendering: pixelated;
+            }
 
-        forward-focus: my-key-handler;
-        my-key-handler := FocusScope {
-            key-pressed(event) => {
-                if (event.text == Key.Escape || event.text == Key.Return) {
-                    root.closed();
+            forward-focus: my-key-handler;
+            my-key-handler := FocusScope {
+                key-pressed(event) => {
+                    if (event.text == Key.Escape || event.text == Key.Return) {
+                        root.closed();
+                    }
+                    accept
                 }
-                accept
             }
         }
     }
@@ -96,7 +99,7 @@ impl JsUi {
     ) -> Result<()> {
         let _options = options.clone().unwrap_or_default();
 
-        let h = Rc::new(ImageWindow::new().unwrap());
+        let h = Rc::new(ui::ImageWindow::new().unwrap());
 
         let image = image.to_inner().to_rgba8();
 

@@ -5,6 +5,7 @@ version.workspace = true
 authors.workspace = true
 description.workspace = true
 documentation.workspace = true
+license.workspace = true
 
 [dependencies]
 macros = { path = "../macros" }
@@ -58,12 +59,16 @@ futures-util.workspace = true
 mime.workspace = true
 encoding_rs.workspace = true
 indicatif.workspace = true
-async-stream.workspace = true
 bytes.workspace = true
 http-body.workspace = true
 http-body-util.workspace = true
 infer.workspace = true
 mime_guess.workspace = true
+sysinfo.workspace = true
+version-number.workspace = true
+derive-where.workspace = true
+humansize.workspace = true
+ipnet.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true

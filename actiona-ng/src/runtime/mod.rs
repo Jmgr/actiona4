@@ -8,6 +8,7 @@ use enigo::{Enigo, Settings};
 use eyre::{Context, Result, eyre};
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
+use sysinfo::System;
 use tokio::{
     runtime::Handle,
     select, signal,
@@ -198,6 +199,7 @@ pub struct Runtime {
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
     events_sender: Sender<RecordEvent>,
+    system: Arc<Mutex<System>>,
 }
 
 impl Runtime {
@@ -230,6 +232,7 @@ impl Runtime {
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
             events_sender,
+            system: Arc::new(Mutex::new(System::new())),
         });
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
@@ -420,6 +423,10 @@ impl Runtime {
 
     pub fn enigo(&self) -> Arc<Mutex<Enigo>> {
         self.enigo.clone()
+    }
+
+    pub fn system(&self) -> Arc<Mutex<System>> {
+        self.system.clone()
     }
 
     #[inline]

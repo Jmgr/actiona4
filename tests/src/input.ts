@@ -48,6 +48,7 @@ console.log("hello: " + Button.LEFT, "sss");
 let array = [4, 5, "foo"];
 let value = random.choice(array, 42);
 console.log("value: ", random.position());
+
 //for (let i = 0; i < 1; ++i) {
 //    ui.displayImage(source.rotated(i * 15));
 //}

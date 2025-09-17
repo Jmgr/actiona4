@@ -20,6 +20,7 @@ pub mod point;
 pub mod random;
 pub mod rect;
 pub mod screenshot;
+pub mod system;
 pub mod ui;
 pub mod web;
 

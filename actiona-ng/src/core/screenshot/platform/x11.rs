@@ -1,3 +1,5 @@
+#![allow(unsafe_code)]
+
 use std::{
     collections::HashMap,
     ffi::c_void,
