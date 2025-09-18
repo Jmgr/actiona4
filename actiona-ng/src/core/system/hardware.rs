@@ -8,8 +8,11 @@ use sysinfo::Product;
 
 use crate::core::system::normalize_string;
 
-#[derive(Debug)]
+#[derive_where::derive_where(Debug)]
 pub struct Component {
+    #[derive_where(skip)]
+    components: Arc<Mutex<sysinfo::Components>>,
+
     label: String,
     id: Option<String>,
     temperature: Option<f32>,
@@ -31,15 +34,52 @@ impl Display for Component {
     }
 }
 
-impl From<&sysinfo::Component> for Component {
-    fn from(value: &sysinfo::Component) -> Self {
+impl Component {
+    pub fn new(
+        components: Arc<Mutex<sysinfo::Components>>,
+        component: &sysinfo::Component,
+    ) -> Self {
         Self {
-            label: value.label().to_string(),
-            id: normalize_string(value.id().map(|id| id.to_string())),
-            temperature: value.temperature(),
-            max_temperature: value.max(),
-            critical_temperature: value.critical(),
+            components,
+            label: component.label().to_string(),
+            id: normalize_string(component.id().map(|id| id.to_string())),
+            temperature: component.temperature(),
+            max_temperature: component.max(),
+            critical_temperature: component.critical(),
         }
+    }
+
+    pub fn refresh(&mut self) -> bool {
+        let mut components = self.components.lock().unwrap();
+
+        let component = if let Some(id) = self.id.as_deref() {
+            components
+                .list_mut()
+                .iter_mut()
+                .find(|c| c.id() == Some(id))
+        } else {
+            components
+                .list_mut()
+                .iter_mut()
+                .find(|c| c.label() == self.label)
+        };
+
+        let Some(component) = component else {
+            return false;
+        };
+
+        component.refresh();
+
+        self.label = component.label().to_string();
+        if self.id.is_none() {
+            // Only overwrite id if we don't already have one
+            self.id = normalize_string(component.id().map(|id| id.to_string()));
+        }
+        self.temperature = component.temperature();
+        self.max_temperature = component.max();
+        self.critical_temperature = component.critical();
+
+        true
     }
 }
 
@@ -108,7 +148,7 @@ impl Hardware {
         components
             .list()
             .iter()
-            .map(|component| component.into())
+            .map(|component| Component::new(self.components.clone(), component))
             .collect_vec()
     }
 }

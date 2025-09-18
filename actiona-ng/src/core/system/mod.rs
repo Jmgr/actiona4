@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::core::system::{
     cpu::Cpu, hardware::Hardware, memory::Memory, motherboard::Motherboard, network::Network,
-    os::Os,
+    os::Os, storage::Storage,
 };
 
 pub mod cpu;
@@ -11,6 +11,7 @@ pub mod memory;
 pub mod motherboard;
 pub mod network;
 pub mod os;
+pub mod storage;
 
 #[derive(Debug)]
 pub struct System {
@@ -20,6 +21,7 @@ pub struct System {
     os: Arc<Os>,
     network: Arc<Network>,
     hardware: Arc<Hardware>,
+    storage: Arc<Storage>,
 }
 
 impl System {
@@ -36,6 +38,7 @@ impl System {
             os: Arc::new(Os::default()),
             network: Arc::new(Network::default()),
             hardware: Arc::new(Hardware::default()),
+            storage: Arc::new(Storage::default()),
         }
     }
 
@@ -63,7 +66,11 @@ impl System {
         self.hardware.clone()
     }
 
-    // TODO: processes, disk
+    pub fn storage(&self) -> Arc<Storage> {
+        self.storage.clone()
+    }
+
+    // TODO: processes
 }
 
 pub(crate) fn normalize_string<S: AsRef<str>>(s: Option<S>) -> Option<String> {
@@ -116,6 +123,7 @@ mod tests {
             println!("users: {:#?}", system.os().users());
             println!("groups: {:#?}", system.os().groups());
             println!("components: {:#?}", system.hardware().components());
+            println!("storage: {:#?}", system.storage());
         });
     }
 }

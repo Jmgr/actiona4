@@ -69,6 +69,7 @@ version-number.workspace = true
 derive-where.workspace = true
 humansize.workspace = true
 ipnet.workspace = true
+uom.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
