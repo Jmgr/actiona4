@@ -5,7 +5,6 @@ use std::{
 };
 
 use convert_case::{Case, Casing};
-use derive_more::Display;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
 use macros::{ExposeEnum, FromJsObject};
@@ -67,7 +66,9 @@ pub enum MouseError {
 pub type Result<T> = std::result::Result<T, MouseError>;
 
 /// Mouse button.
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
+#[derive(
+    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace,
+)]
 #[rquickjs::class]
 pub enum Button {
     /// Left button
@@ -100,7 +101,9 @@ impl From<Button> for enigo::Button {
     }
 }
 
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
+#[derive(
+    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace,
+)]
 #[rquickjs::class]
 pub enum Axis {
     Horizontal,
@@ -119,7 +122,9 @@ impl From<Axis> for enigo::Axis {
 }
 
 /// Tweening functions for smooth movement.
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
+#[derive(
+    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace,
+)]
 #[rquickjs::class]
 pub enum Tween {
     /// Starts slowly, then accelerates with an overshoot.

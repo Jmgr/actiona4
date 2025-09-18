@@ -17,6 +17,8 @@ use tokio::{
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
+#[cfg(feature = "slint")]
+use crate::core::ui::js::JsUi;
 use crate::{
     core::{
         clipboard::js::JsClipboard,
@@ -41,7 +43,6 @@ use crate::{
         random::js::JsRandom,
         rect::{Rect, js::JsRect, rect},
         screenshot::js::JsScreenshot,
-        ui::js::JsUi,
         web::js::JsWeb,
     },
     runtime::shared_rng::SharedRng,
@@ -241,6 +242,7 @@ impl Runtime {
 
         let mouse = JsMouse::new(runtime.clone()).await?;
         let keyboard = JsKeyboard::new(runtime.clone())?;
+        #[cfg(feature = "slint")]
         let ui = JsUi::new(runtime.clone(), displays.clone())?;
         let console = JsConsole::new(runtime.clone())?;
         let js_displays = JsDisplays::new(displays.clone())?;
@@ -281,6 +283,7 @@ impl Runtime {
                     // Singletons
                     JsMouse::register(&ctx, mouse)?;
                     JsKeyboard::register(&ctx, keyboard)?;
+                    #[cfg(feature = "slint")]
                     JsUi::register(&ctx, ui)?;
                     JsConsole::register(&ctx, console)?;
                     JsDisplays::register(&ctx, js_displays)?;
@@ -303,6 +306,7 @@ impl Runtime {
         Ok((runtime, script_engine))
     }
 
+    #[cfg(feature = "slint")]
     pub fn run<F>(f: F) -> Result<()>
     where
         F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,

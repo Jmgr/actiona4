@@ -9,7 +9,7 @@ license.workspace = true
 default-run = "actiona-ng"
 
 [dependencies]
-actiona-ng = { path = "../actiona-ng" }
+actiona-ng = { path = "../actiona-ng", features = ["slint"] }
 
 clap.workspace = true
 eyre.workspace = true

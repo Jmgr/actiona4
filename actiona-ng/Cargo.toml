@@ -10,6 +10,9 @@ license.workspace = true
 [dependencies]
 macros = { path = "../macros" }
 
+slint-interpreter = { workspace = true, optional = true }
+slint = { workspace = true, optional = true }
+
 async-compat.workspace = true
 console.workspace = true
 convert_case.workspace = true
@@ -31,8 +34,6 @@ rayon.workspace = true
 rquickjs.workspace = true
 serde_json.workspace = true
 serde.workspace = true
-slint-interpreter.workspace = true
-slint.workspace = true
 slotmap.workspace = true
 strum.workspace = true
 swc_common.workspace = true
@@ -89,3 +90,7 @@ base64.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true
+
+[features]
+default = []
+slint = ["dep:slint", "dep:slint-interpreter"]

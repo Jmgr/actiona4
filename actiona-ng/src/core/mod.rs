@@ -21,8 +21,10 @@ pub mod random;
 pub mod rect;
 pub mod screenshot;
 pub mod system;
-pub mod ui;
 pub mod web;
+
+#[cfg(feature = "slint")]
+pub mod ui;
 
 pub trait ResultExt<T> {
     fn or_throw_message(self, ctx: &Ctx, msg: &str) -> Result<T>;
