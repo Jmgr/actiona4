@@ -19,10 +19,12 @@ use tokio::{
     fs,
     io::{self, AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
     sync::Mutex,
-    task::spawn_blocking,
 };
+use tokio_util::task::TaskTracker;
 
-use crate::{IntoJsResult, core::js::classes::ValueClass, error::CommonError};
+use crate::{
+    IntoJsResult, core::js::classes::ValueClass, error::CommonError, runtime::WithUserData,
+};
 
 #[derive(Clone, Debug, JsLifetime)]
 struct OpenedFile {
@@ -458,24 +460,34 @@ impl JsFile {
     }
 
     #[qjs(skip)]
-    async fn set_times(opened_file: &OpenedFile, times: FileTimes) -> Result<()> {
+    async fn set_times(
+        opened_file: &OpenedFile,
+        times: FileTimes,
+        task_tracker: TaskTracker,
+    ) -> Result<()> {
         let path = opened_file.path.clone();
 
-        spawn_blocking(move || {
-            let file = std::fs::File::options().write(true).open(path)?;
-            file.set_times(times)?; // No implemented in tokio::fs
-            Result::<_>::Ok(())
-        })
-        .await
-        .unwrap()
+        task_tracker
+            .spawn_blocking(move || {
+                let file = std::fs::File::options().write(true).open(path)?;
+                file.set_times(times)?; // No implemented in tokio::fs
+                Result::<_>::Ok(())
+            })
+            .await
+            .unwrap()
     }
 
     /// @param date: Date
     pub async fn set_modified_time<'js>(&self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
-        let system_time = Self::system_time_from_date(ctx, date)?;
+        let system_time = Self::system_time_from_date(ctx.clone(), date)?;
 
-        Self::set_times(opened_file, FileTimes::new().set_modified(system_time)).await?;
+        Self::set_times(
+            opened_file,
+            FileTimes::new().set_modified(system_time),
+            ctx.user_data().task_tracker(),
+        )
+        .await?;
 
         Ok(())
     }
@@ -491,9 +503,14 @@ impl JsFile {
     /// @param date: Date
     pub async fn set_accessed_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
-        let system_time = Self::system_time_from_date(ctx, date)?;
+        let system_time = Self::system_time_from_date(ctx.clone(), date)?;
 
-        Self::set_times(opened_file, FileTimes::new().set_accessed(system_time)).await?;
+        Self::set_times(
+            opened_file,
+            FileTimes::new().set_accessed(system_time),
+            ctx.user_data().task_tracker(),
+        )
+        .await?;
 
         Ok(())
     }

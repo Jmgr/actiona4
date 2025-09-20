@@ -5,7 +5,7 @@ use std::{
 
 use async_compat::Compat;
 use enigo::{Enigo, Settings};
-use eyre::{Context, Result, eyre};
+use eyre::{Result, eyre};
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use sysinfo::System;
@@ -257,7 +257,7 @@ impl Runtime {
                     displays,
                     cancellation_token.clone(),
                     local_rng,
-                    task_tracker,
+                    task_tracker.clone(),
                 ))
                 .unwrap();
 
@@ -290,7 +290,7 @@ impl Runtime {
                     JsScreenshot::register(&ctx, screenshot)?;
                     JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
                     JsRandom::register(&ctx, JsRandom::default())?;
-                    JsWeb::register(&ctx, JsWeb::default())?;
+                    JsWeb::register(&ctx, JsWeb::new(task_tracker))?;
 
                     Ok(())
                 })()
@@ -307,7 +307,7 @@ impl Runtime {
     }
 
     #[cfg(feature = "slint")]
-    pub fn run<F>(f: F) -> Result<()>
+    pub fn run_with_ui<F>(f: F) -> Result<()>
     where
         F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
     {
@@ -364,7 +364,7 @@ impl Runtime {
         Ok(())
     }
 
-    pub fn run_without_ui<F>(f: F) -> Result<()>
+    pub fn run<F>(f: F) -> Result<()>
     where
         F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
     {
@@ -442,7 +442,7 @@ impl Runtime {
     where
         F: AsyncFnOnce(Arc<Self>) -> () + 'static,
     {
-        Self::run_without_ui(async |runtime, script_engine| {
+        Self::run(async |runtime, script_engine| {
             f(runtime).await;
 
             let unhandled_exceptions = script_engine.idle().await;
@@ -460,7 +460,7 @@ impl Runtime {
     where
         F: AsyncFnOnce(&mut ScriptEngine) -> () + 'static,
     {
-        Self::run_without_ui(async move |_runtime, mut script_engine| {
+        Self::run(async move |_runtime, mut script_engine| {
             f(&mut script_engine).await;
 
             let unhandled_exceptions = script_engine.idle().await;

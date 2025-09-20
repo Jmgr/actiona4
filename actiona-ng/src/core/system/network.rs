@@ -5,9 +5,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use humansize::BINARY;
 use ipnet::IpNet;
 use itertools::Itertools;
+
+use crate::types::ByteCount;
 
 #[derive(Debug)]
 pub struct Subnet {
@@ -36,7 +37,7 @@ impl From<&sysinfo::IpNetwork> for Subnet {
 
 #[derive(Debug)]
 pub struct Counters {
-    data: u64,
+    data: ByteCount,
     packets: u64,
     errors: u64,
 }
@@ -46,9 +47,7 @@ impl Display for Counters {
         write!(
             f,
             "(data: {}, packets: {}, errors: {})",
-            humansize::format_size(self.data, BINARY),
-            self.packets,
-            self.errors
+            self.data, self.packets, self.errors
         )
     }
 }
@@ -93,24 +92,24 @@ impl From<&sysinfo::NetworkData> for NetworkInterface {
         Self {
             inbound: Traffic {
                 total: Counters {
-                    data: value.total_received(),
+                    data: value.total_received().into(),
                     packets: value.total_packets_received(),
                     errors: value.total_errors_on_received(),
                 },
                 delta: Counters {
-                    data: value.received(),
+                    data: value.received().into(),
                     packets: value.packets_received(),
                     errors: value.errors_on_received(),
                 },
             },
             outbound: Traffic {
                 total: Counters {
-                    data: value.total_transmitted(),
+                    data: value.total_transmitted().into(),
                     packets: value.total_packets_transmitted(),
                     errors: value.total_errors_on_transmitted(),
                 },
                 delta: Counters {
-                    data: value.transmitted(),
+                    data: value.transmitted().into(),
                     packets: value.packets_transmitted(),
                     errors: value.errors_on_transmitted(),
                 },

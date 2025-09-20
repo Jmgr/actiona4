@@ -1,35 +1,31 @@
-use version_number::Version;
-
-use crate::core::system::normalize_string;
+use crate::types::OptionalString;
 
 #[derive(Debug)]
 pub struct Motherboard {
-    name: Option<String>,
-    vendor_name: Option<String>,
-    version: Option<Version>,
-    serial_number: Option<String>,
-    asset_tag: Option<String>,
+    name: OptionalString,
+    vendor_name: OptionalString,
+    version: OptionalString,
+    serial_number: OptionalString,
+    asset_tag: OptionalString,
 }
 
 impl Default for Motherboard {
     fn default() -> Self {
         if let Some(motherboard) = sysinfo::Motherboard::new() {
             Self {
-                name: normalize_string(motherboard.name()),
-                vendor_name: normalize_string(motherboard.vendor_name()),
-                version: motherboard
-                    .version()
-                    .and_then(|version| Version::parse(&version).ok()),
-                serial_number: normalize_string(motherboard.serial_number()),
-                asset_tag: normalize_string(motherboard.asset_tag()),
+                name: motherboard.name().into(),
+                vendor_name: motherboard.vendor_name().into(),
+                version: motherboard.version().into(),
+                serial_number: motherboard.serial_number().into(),
+                asset_tag: motherboard.asset_tag().into(),
             }
         } else {
             Self {
-                name: None,
-                vendor_name: None,
-                version: None,
-                serial_number: None,
-                asset_tag: None,
+                name: OptionalString::none(),
+                vendor_name: OptionalString::none(),
+                version: OptionalString::none(),
+                serial_number: OptionalString::none(),
+                asset_tag: OptionalString::none(),
             }
         }
     }
@@ -44,8 +40,8 @@ impl Motherboard {
         self.vendor_name.as_deref()
     }
 
-    pub fn version(&self) -> Option<&Version> {
-        self.version.as_ref()
+    pub fn version(&self) -> Option<&str> {
+        self.version.as_deref()
     }
 
     pub fn serial_number(&self) -> Option<&str> {

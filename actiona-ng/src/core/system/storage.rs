@@ -1,58 +1,93 @@
-use version_number::Version;
+use std::{
+    fmt::Display,
+    path::PathBuf,
+    sync::{Arc, Mutex},
+};
 
-use crate::core::system::normalize_string;
+use itertools::Itertools;
+use sysinfo::DiskKind;
+
+use crate::types::{ByteCount, OptionalString};
 
 #[derive(Debug)]
+pub struct Disk {
+    kind: DiskKind,
+    name: OptionalString,
+    file_system: OptionalString,
+    mount_point: PathBuf,
+    total_space: ByteCount,
+    available_space: ByteCount,
+    is_removable: bool,
+    is_read_only: bool,
+
+    // TODO: split usage
+    total_written_bytes: ByteCount,
+    written_bytes: ByteCount,
+    total_read_bytes: ByteCount,
+    read_bytes: ByteCount,
+}
+
+impl Display for Disk {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "(kind: {}, name: {}, file_system: {}, mount_point: {}, total_space: {},
+            available_space: {}, is_removable: {}, is_read_only: {}, total_written_bytes: {},
+            written_bytes: {}, total_read_bytes: {}, read_bytes: {})",
+            self.kind,
+            self.name,
+            self.file_system,
+            self.mount_point.display(),
+            self.total_space,
+            self.available_space,
+            self.is_removable,
+            self.is_read_only,
+            self.total_written_bytes,
+            self.written_bytes,
+            self.total_read_bytes,
+            self.read_bytes
+        )
+    }
+}
+
+impl From<&sysinfo::Disk> for Disk {
+    fn from(value: &sysinfo::Disk) -> Self {
+        Self {
+            kind: value.kind(),
+            name: value.name().into(),
+            file_system: value.file_system().into(),
+            mount_point: value.mount_point().to_path_buf(),
+            total_space: value.total_space().into(),
+            available_space: value.available_space().into(),
+            is_removable: value.is_removable(),
+            is_read_only: value.is_read_only(),
+            total_written_bytes: value.usage().total_written_bytes.into(),
+            written_bytes: value.usage().written_bytes.into(),
+            total_read_bytes: value.usage().total_read_bytes.into(),
+            read_bytes: value.usage().read_bytes.into(),
+        }
+    }
+}
+
+#[derive_where::derive_where(Debug)]
 pub struct Storage {
-    name: Option<String>,
-    vendor_name: Option<String>,
-    version: Option<Version>,
-    serial_number: Option<String>,
-    asset_tag: Option<String>,
+    #[derive_where(skip)]
+    disks: Arc<Mutex<sysinfo::Disks>>,
 }
 
 impl Default for Storage {
     fn default() -> Self {
-        if let Some(motherboard) = sysinfo::Motherboard::new() {
-            Self {
-                name: normalize_string(motherboard.name()),
-                vendor_name: normalize_string(motherboard.vendor_name()),
-                version: motherboard
-                    .version()
-                    .and_then(|version| Version::parse(&version).ok()),
-                serial_number: normalize_string(motherboard.serial_number()),
-                asset_tag: normalize_string(motherboard.asset_tag()),
-            }
-        } else {
-            Self {
-                name: None,
-                vendor_name: None,
-                version: None,
-                serial_number: None,
-                asset_tag: None,
-            }
+        Self {
+            disks: Arc::new(Mutex::new(sysinfo::Disks::new())),
         }
     }
 }
 
 impl Storage {
-    pub fn name(&self) -> Option<&str> {
-        self.name.as_deref()
-    }
+    pub fn disks(&self) -> Vec<Disk> {
+        let mut disks = self.disks.lock().unwrap();
+        disks.refresh(true);
 
-    pub fn vendor_name(&self) -> Option<&str> {
-        self.vendor_name.as_deref()
-    }
-
-    pub fn version(&self) -> Option<&Version> {
-        self.version.as_ref()
-    }
-
-    pub fn serial_number(&self) -> Option<&str> {
-        self.serial_number.as_deref()
-    }
-
-    pub fn asset_tag(&self) -> Option<&str> {
-        self.asset_tag.as_deref()
+        disks.list().iter().map(|disk| disk.into()).collect_vec()
     }
 }

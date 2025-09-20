@@ -6,7 +6,7 @@ use std::{
 use itertools::Itertools;
 use sysinfo::Product;
 
-use crate::core::system::normalize_string;
+use crate::types::{OptionalDegreesCelsius, OptionalString};
 
 #[derive_where::derive_where(Debug)]
 pub struct Component {
@@ -14,10 +14,10 @@ pub struct Component {
     components: Arc<Mutex<sysinfo::Components>>,
 
     label: String,
-    id: Option<String>,
-    temperature: Option<f32>,
-    max_temperature: Option<f32>,
-    critical_temperature: Option<f32>,
+    id: OptionalString,
+    temperature: OptionalDegreesCelsius,
+    max_temperature: OptionalDegreesCelsius,
+    critical_temperature: OptionalDegreesCelsius,
 }
 
 impl Display for Component {
@@ -25,11 +25,7 @@ impl Display for Component {
         write!(
             f,
             "(label: {}, id: {}, temperature: {}, max_temperature: {}, critical_temperature: {})",
-            self.label,
-            self.id.as_deref().unwrap_or_default(),
-            self.temperature.unwrap_or_default(),
-            self.max_temperature.unwrap_or_default(),
-            self.critical_temperature.unwrap_or_default()
+            self.label, self.id, self.temperature, self.max_temperature, self.critical_temperature
         )
     }
 }
@@ -42,17 +38,17 @@ impl Component {
         Self {
             components,
             label: component.label().to_string(),
-            id: normalize_string(component.id().map(|id| id.to_string())),
-            temperature: component.temperature(),
-            max_temperature: component.max(),
-            critical_temperature: component.critical(),
+            id: component.id().into(),
+            temperature: component.temperature().into(),
+            max_temperature: component.max().into(),
+            critical_temperature: component.critical().into(),
         }
     }
 
     pub fn refresh(&mut self) -> bool {
         let mut components = self.components.lock().unwrap();
 
-        let component = if let Some(id) = self.id.as_deref() {
+        let component = if let Some(id) = self.id.as_ref() {
             components
                 .list_mut()
                 .iter_mut()
@@ -73,11 +69,11 @@ impl Component {
         self.label = component.label().to_string();
         if self.id.is_none() {
             // Only overwrite id if we don't already have one
-            self.id = normalize_string(component.id().map(|id| id.to_string()));
+            self.id = component.id().into();
         }
-        self.temperature = component.temperature();
-        self.max_temperature = component.max();
-        self.critical_temperature = component.critical();
+        self.temperature = component.temperature().into();
+        self.max_temperature = component.max().into();
+        self.critical_temperature = component.critical().into();
 
         true
     }
@@ -88,26 +84,26 @@ pub struct Hardware {
     #[derive_where(skip)]
     components: Arc<Mutex<sysinfo::Components>>,
 
-    name: Option<String>,
-    family: Option<String>,
-    serial_number: Option<String>,
-    stock_keeping_unit: Option<String>,
-    uuid: Option<String>,
-    version: Option<String>,
-    vendor_name: Option<String>,
+    name: OptionalString,
+    family: OptionalString,
+    serial_number: OptionalString,
+    stock_keeping_unit: OptionalString,
+    uuid: OptionalString,
+    version: OptionalString,
+    vendor_name: OptionalString,
 }
 
 impl Default for Hardware {
     fn default() -> Self {
         Self {
             components: Arc::new(Mutex::new(sysinfo::Components::new())),
-            name: normalize_string(Product::name()),
-            family: normalize_string(Product::family()),
-            serial_number: normalize_string(Product::serial_number()),
-            stock_keeping_unit: normalize_string(Product::stock_keeping_unit()),
-            uuid: normalize_string(Product::uuid()),
-            version: normalize_string(Product::version()),
-            vendor_name: normalize_string(Product::vendor_name()),
+            name: Product::name().into(),
+            family: Product::family().into(),
+            serial_number: Product::serial_number().into(),
+            stock_keeping_unit: Product::stock_keeping_unit().into(),
+            uuid: Product::uuid().into(),
+            version: Product::version().into(),
+            vendor_name: Product::vendor_name().into(),
         }
     }
 }

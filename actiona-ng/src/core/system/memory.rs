@@ -3,15 +3,16 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use humansize::{BINARY, format_size};
 use sysinfo::MemoryRefreshKind;
+
+use crate::types::ByteCount;
 
 #[derive(Debug)]
 pub struct MemoryUsage {
-    used: u64,
-    free: u64,
-    available: u64,
-    total: u64,
+    used: ByteCount,
+    free: ByteCount,
+    available: ByteCount,
+    total: ByteCount,
 }
 
 impl Display for MemoryUsage {
@@ -19,47 +20,44 @@ impl Display for MemoryUsage {
         write!(
             f,
             "(used: {}, free: {}, available: {}, total: {})",
-            format_size(self.used, BINARY),
-            format_size(self.free, BINARY),
-            format_size(self.available, BINARY),
-            format_size(self.total, BINARY)
+            self.used, self.free, self.available, self.total,
         )
     }
 }
 
 impl MemoryUsage {
-    pub fn used(&self) -> u64 {
+    pub fn used(&self) -> ByteCount {
         self.used
     }
 
-    pub fn free(&self) -> u64 {
+    pub fn free(&self) -> ByteCount {
         self.free
     }
 
-    pub fn available(&self) -> u64 {
+    pub fn available(&self) -> ByteCount {
         self.available
     }
 
-    pub fn total(&self) -> u64 {
+    pub fn total(&self) -> ByteCount {
         self.total
     }
 }
 
 #[derive(Debug)]
 pub struct CGroupLimits {
-    total_memory: u64,
-    free_memory: u64,
-    free_swap: u64,
-    rss: u64,
+    total_memory: ByteCount,
+    free_memory: ByteCount,
+    free_swap: ByteCount,
+    rss: ByteCount,
 }
 
 impl From<sysinfo::CGroupLimits> for CGroupLimits {
     fn from(value: sysinfo::CGroupLimits) -> Self {
         Self {
-            total_memory: value.total_memory,
-            free_memory: value.free_memory,
-            free_swap: value.free_swap,
-            rss: value.rss,
+            total_memory: value.total_memory.into(),
+            free_memory: value.free_memory.into(),
+            free_swap: value.free_swap.into(),
+            rss: value.rss.into(),
         }
     }
 }
@@ -69,28 +67,25 @@ impl Display for CGroupLimits {
         write!(
             f,
             "(total memory: {}, free memory: {}, free swap: {}, rss: {})",
-            format_size(self.total_memory, BINARY),
-            format_size(self.free_memory, BINARY),
-            format_size(self.free_swap, BINARY),
-            format_size(self.rss, BINARY)
+            self.total_memory, self.free_memory, self.free_swap, self.rss,
         )
     }
 }
 
 impl CGroupLimits {
-    pub fn total_memory(&self) -> u64 {
+    pub fn total_memory(&self) -> ByteCount {
         self.total_memory
     }
 
-    pub fn free_memory(&self) -> u64 {
+    pub fn free_memory(&self) -> ByteCount {
         self.free_memory
     }
 
-    pub fn free_swap(&self) -> u64 {
+    pub fn free_swap(&self) -> ByteCount {
         self.free_swap
     }
 
-    pub fn rss(&self) -> u64 {
+    pub fn rss(&self) -> ByteCount {
         self.rss
     }
 }
@@ -111,10 +106,10 @@ impl Memory {
         system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
 
         MemoryUsage {
-            used: system_guard.used_memory(),
-            free: system_guard.free_memory(),
-            available: system_guard.available_memory(),
-            total: system_guard.total_memory(),
+            used: system_guard.used_memory().into(),
+            free: system_guard.free_memory().into(),
+            available: system_guard.available_memory().into(),
+            total: system_guard.total_memory().into(),
         }
     }
 
@@ -124,10 +119,10 @@ impl Memory {
         system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_swap());
 
         MemoryUsage {
-            used: system_guard.used_swap(),
-            free: system_guard.free_swap(),
-            available: system_guard.free_swap(), // We use "free" here
-            total: system_guard.total_swap(),
+            used: system_guard.used_swap().into(),
+            free: system_guard.free_swap().into(),
+            available: system_guard.free_swap().into(), // We use "free" here
+            total: system_guard.total_swap().into(),
         }
     }
 

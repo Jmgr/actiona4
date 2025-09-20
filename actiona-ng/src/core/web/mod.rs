@@ -23,15 +23,14 @@ use reqwest::{
     header::{self, CONTENT_TYPE, HeaderMap},
     multipart::{Form, Part},
 };
-use rquickjs::{Atom, JsLifetime, class::Trace};
+use rquickjs::{JsLifetime, class::Trace};
 use tokio::{
     fs::{self, File},
     io::{AsyncReadExt, AsyncWrite, AsyncWriteExt},
     select,
     sync::watch,
-    time::sleep,
 };
-use tokio_util::{io::ReaderStream, sync::CancellationToken};
+use tokio_util::{io::ReaderStream, sync::CancellationToken, task::TaskTracker};
 
 use crate::{
     cancel_on,
@@ -381,17 +380,17 @@ impl Progress {
 #[derive(Clone)]
 pub struct Web {
     inner: reqwest::Client,
-}
-
-impl Default for Web {
-    fn default() -> Self {
-        Self {
-            inner: reqwest::Client::new(),
-        }
-    }
+    task_tracker: TaskTracker,
 }
 
 impl Web {
+    pub fn new(task_tracker: TaskTracker) -> Self {
+        Self {
+            inner: reqwest::Client::new(),
+            task_tracker,
+        }
+    }
+
     async fn build_request(
         &self,
         url: &str,
@@ -543,7 +542,7 @@ impl Web {
 
         let local_token = token.clone();
         let local_progress = progress.clone();
-        tokio::spawn(async move {
+        self.task_tracker.spawn(async move {
             loop {
                 select! {
                     _ = local_token.cancelled() => {
@@ -710,7 +709,7 @@ mod tests {
 
     #[test]
     fn test_download_text() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let server = Server::run();
 
             server.expect(
@@ -718,7 +717,7 @@ mod tests {
                     .respond_with(status_code(200).body("hello")),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             let result = web
                 .download_text(&server.url("/foo").to_string(), cancellation_token, None)
@@ -731,7 +730,7 @@ mod tests {
 
     #[test]
     fn test_download_image() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let server = Server::run();
 
             let test_image = TestImage::default();
@@ -744,7 +743,7 @@ mod tests {
                 ),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             let result = web
                 .download_image(
@@ -762,7 +761,7 @@ mod tests {
 
     #[test]
     fn test_download_binary() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let server = Server::run();
 
             let test_image = TestImage::default();
@@ -775,7 +774,7 @@ mod tests {
                 ),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             let result = web
                 .download(&server.url("/binary").to_string(), cancellation_token, None)
@@ -788,7 +787,7 @@ mod tests {
 
     #[test]
     fn test_download_basic_auth() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let server = Server::run();
 
             let auth_header = format!("Basic {}", BASE64.encode("user:password"));
@@ -801,7 +800,7 @@ mod tests {
                 .respond_with(status_code(200).body("hello")),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             let result = web
                 .download_text(
@@ -823,7 +822,7 @@ mod tests {
 
     #[test]
     fn test_download_progress() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let server = Server::run();
 
             let test_image = TestImage::default();
@@ -837,7 +836,7 @@ mod tests {
                 ),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let (sender, mut receiver) = watch::channel(Progress::Inactive);
 
             let received_progress = Arc::new(Mutex::new(Vec::new()));
@@ -883,7 +882,7 @@ mod tests {
 
     #[test]
     fn test_download_file() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let server = Server::run();
 
             let test_image = TestImage::default();
@@ -902,7 +901,7 @@ mod tests {
                 ),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             let filepath = web
                 .download_file(
@@ -924,7 +923,7 @@ mod tests {
 
     #[test]
     fn test_upload_text_body() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             const TEST_STRING: &str = "this is a test";
 
             let server = Server::run();
@@ -941,7 +940,7 @@ mod tests {
                 .respond_with(status_code(200)),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             web.upload(
                 &server.url("/").to_string(),
@@ -962,7 +961,7 @@ mod tests {
 
     #[test]
     fn test_upload_binary_body() {
-        Runtime::test(async move |_| {
+        Runtime::test(async move |runtime| {
             let test_image = TestImage::default();
 
             let server = Server::run();
@@ -980,7 +979,7 @@ mod tests {
                 .respond_with(status_code(200)),
             );
 
-            let web = Web::default();
+            let web = Web::new(runtime.task_tracker());
             let cancellation_token = CancellationToken::new();
             web.upload(
                 &server.url("/").to_string(),

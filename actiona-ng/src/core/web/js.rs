@@ -9,6 +9,7 @@ use rquickjs::{
     prelude::Opt,
 };
 use tokio::sync::watch;
+use tokio_util::task::TaskTracker;
 
 use crate::{
     IntoJsResult,
@@ -201,15 +202,13 @@ impl<'js> Trace<'js> for JsWeb {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl Default for JsWeb {
-    fn default() -> Self {
+impl JsWeb {
+    pub fn new(task_tracker: TaskTracker) -> Self {
         Self {
-            inner: super::Web::default(),
+            inner: super::Web::new(task_tracker),
         }
     }
-}
 
-impl JsWeb {
     fn make_progress_receiver<'js>(
         ctx: &Ctx<'js>,
         options: &mut WebOptions,

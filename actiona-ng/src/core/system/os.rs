@@ -7,7 +7,7 @@ use std::{
 
 use itertools::Itertools;
 
-use crate::core::system::normalize_string;
+use crate::types::OptionalString;
 
 #[derive(Debug)]
 pub struct Group {
@@ -75,10 +75,10 @@ pub struct Os {
     #[derive_where(skip)]
     groups: Arc<Mutex<sysinfo::Groups>>,
 
-    name: Option<String>,
-    kernel_version: Option<String>,
-    version: Option<String>,
-    long_version: Option<String>,
+    name: OptionalString,
+    kernel_version: OptionalString,
+    version: OptionalString,
+    long_version: OptionalString,
     distribution_id: String,
     distribution_id_like: Vec<String>,
     kernel_long_version: String,
@@ -89,10 +89,10 @@ impl Default for Os {
         Self {
             users: Arc::new(Mutex::new(sysinfo::Users::new())),
             groups: Arc::new(Mutex::new(sysinfo::Groups::new())),
-            name: normalize_string(sysinfo::System::name()),
-            kernel_version: normalize_string(sysinfo::System::kernel_version()),
-            version: normalize_string(sysinfo::System::os_version()),
-            long_version: normalize_string(sysinfo::System::long_os_version()),
+            name: sysinfo::System::name().into(),
+            kernel_version: sysinfo::System::kernel_version().into(),
+            version: sysinfo::System::os_version().into(),
+            long_version: sysinfo::System::long_os_version().into(),
             distribution_id: sysinfo::System::distribution_id(),
             distribution_id_like: sysinfo::System::distribution_id_like(),
             kernel_long_version: sysinfo::System::kernel_long_version(),

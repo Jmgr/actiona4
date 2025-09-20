@@ -5,6 +5,7 @@ use std::{
 
 use itertools::Itertools;
 use tokio::time::sleep;
+use tokio_util::task::TaskTracker;
 
 pub type LastRefresh = Arc<tokio::sync::Mutex<Option<Instant>>>;
 
@@ -21,10 +22,11 @@ pub struct Cpu {
     cores: Vec<CpuCore>,
     physical_core_count: Option<usize>,
     architecture: String,
+    task_tracker: TaskTracker,
 }
 
 impl Cpu {
-    pub fn new(system: Arc<Mutex<sysinfo::System>>) -> Self {
+    pub fn new(system: Arc<Mutex<sysinfo::System>>, task_tracker: TaskTracker) -> Self {
         let last_usage_refresh = Arc::new(tokio::sync::Mutex::new(None));
         let cores = {
             let system_guard = system.lock().unwrap();
@@ -34,7 +36,13 @@ impl Cpu {
                 .iter()
                 .enumerate()
                 .map(|(index, cpu)| {
-                    CpuCore::new(cpu, index, system.clone(), last_usage_refresh.clone())
+                    CpuCore::new(
+                        cpu,
+                        index,
+                        system.clone(),
+                        task_tracker.clone(),
+                        last_usage_refresh.clone(),
+                    )
                 })
                 .collect_vec()
         };
@@ -45,6 +53,7 @@ impl Cpu {
             cores,
             physical_core_count: sysinfo::System::physical_core_count(),
             architecture: sysinfo::System::cpu_arch(),
+            task_tracker,
         }
     }
 
@@ -52,6 +61,7 @@ impl Cpu {
         cpu_usage_operation(
             self.last_usage_refresh.clone(),
             self.system.clone(),
+            self.task_tracker.clone(),
             |system| system.global_cpu_usage(),
         )
         .await
@@ -85,11 +95,13 @@ pub struct CpuCore {
     name: String,
     vendor_id: String,
     brand: String,
+    task_tracker: TaskTracker,
 }
 
 pub(crate) async fn cpu_usage_operation<F, R>(
     last_usage_refresh: LastRefresh,
     system: Arc<Mutex<sysinfo::System>>,
+    task_tracker: TaskTracker,
     operation: F,
 ) -> R
 where
@@ -104,17 +116,28 @@ where
         }
     }
 
-    {
-        let mut system = system.lock().unwrap();
-        system.refresh_cpu_usage();
-    }
+    let local_system = system.clone();
+    task_tracker
+        .spawn_blocking(move || {
+            let mut system = local_system.lock().unwrap();
+            system.refresh_cpu_usage();
+        })
+        .await
+        .unwrap();
 
     sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL).await;
 
-    {
-        let mut system = system.lock().unwrap();
-        system.refresh_cpu_usage();
+    let local_system = system.clone();
+    task_tracker
+        .spawn_blocking(move || {
+            let mut system = local_system.lock().unwrap();
+            system.refresh_cpu_usage();
+        })
+        .await
+        .unwrap();
 
+    {
+        let system = system.lock().unwrap();
         *last_usage_refresh = Some(Instant::now());
         operation(&*system)
     }
@@ -125,10 +148,12 @@ impl CpuCore {
         cpu: &sysinfo::Cpu,
         index: usize,
         system: Arc<Mutex<sysinfo::System>>,
+        task_tracker: TaskTracker,
         last_usage_refresh: LastRefresh,
     ) -> Self {
         Self {
             system,
+            task_tracker,
             last_usage_refresh,
             last_frequency_refresh: Arc::new(tokio::sync::Mutex::new(None)),
             index,
@@ -142,6 +167,7 @@ impl CpuCore {
         cpu_usage_operation(
             self.last_usage_refresh.clone(),
             self.system.clone(),
+            self.task_tracker.clone(),
             |system| system.cpus()[self.index].cpu_usage(),
         )
         .await

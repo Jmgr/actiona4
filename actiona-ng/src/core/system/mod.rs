@@ -1,5 +1,7 @@
 use std::sync::{Arc, Mutex};
 
+use tokio_util::task::TaskTracker;
+
 use crate::core::system::{
     cpu::Cpu, hardware::Hardware, memory::Memory, motherboard::Motherboard, network::Network,
     os::Os, storage::Storage,
@@ -25,14 +27,15 @@ pub struct System {
 }
 
 impl System {
-    pub fn new(system: Arc<Mutex<sysinfo::System>>) -> Self {
-        {
-            let mut system_guard = system.lock().unwrap();
+    pub fn new(system: Arc<Mutex<sysinfo::System>>, task_tracker: TaskTracker) -> Self {
+        let local_system = system.clone();
+        task_tracker.spawn_blocking(move || {
+            let mut system_guard = local_system.lock().unwrap();
             system_guard.refresh_all();
-        }
+        });
 
         Self {
-            cpu: Arc::new(Cpu::new(system.clone())),
+            cpu: Arc::new(Cpu::new(system.clone(), task_tracker.clone())),
             memory: Arc::new(Memory::new(system.clone())),
             motherboard: Arc::new(Motherboard::default()),
             os: Arc::new(Os::default()),
@@ -73,18 +76,6 @@ impl System {
     // TODO: processes
 }
 
-pub(crate) fn normalize_string<S: AsRef<str>>(s: Option<S>) -> Option<String> {
-    match s.as_ref().map(|s| s.as_ref().trim()) {
-        Some("Default string")
-        | Some("To be filled by O.E.M.")
-        | Some("System Product Name")
-        | Some("Not Specified") => None,
-        Some(s) if s.is_empty() => None,
-        Some(s) => Some(s.to_string()),
-        None => None,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -93,7 +84,7 @@ mod tests {
     #[test]
     fn test_cpu_usage() {
         Runtime::test(async move |runtime| {
-            let system = System::new(runtime.system());
+            let system = System::new(runtime.system(), runtime.task_tracker());
 
             assert!(system.cpu().usage().await > 0.)
         });
@@ -102,7 +93,7 @@ mod tests {
     #[test]
     fn test_name() {
         Runtime::test(async move |runtime| {
-            let system = System::new(runtime.system());
+            let system = System::new(runtime.system(), runtime.task_tracker());
 
             println!("{:#?}", system);
 
@@ -123,7 +114,9 @@ mod tests {
             println!("users: {:#?}", system.os().users());
             println!("groups: {:#?}", system.os().groups());
             println!("components: {:#?}", system.hardware().components());
-            println!("storage: {:#?}", system.storage());
+            for disk in system.storage().disks() {
+                println!("disk: {}", disk);
+            }
         });
     }
 }
