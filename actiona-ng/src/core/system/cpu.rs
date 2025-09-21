@@ -1,74 +1,226 @@
 use std::{
+    collections::HashSet,
+    fmt::Display,
     sync::{Arc, Mutex},
-    time::{Duration, Instant},
+    thread::sleep,
 };
 
+use eyre::Result;
 use itertools::Itertools;
-use tokio::time::sleep;
+use sysinfo::{CpuRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
+use tracing::instrument;
 
-pub type LastRefresh = Arc<tokio::sync::Mutex<Option<Instant>>>;
+use crate::types::{DisplayFields, Frequency, Percent, display_list};
 
-const MINIMUM_CPU_FREQUENCY_UPDATE_INTERVAL: Duration = Duration::from_millis(10);
+#[derive(Debug)]
+pub struct CpuCore {
+    index: usize,
+    name: String,
+    vendor: String,
+    brand: String,
+    usage: Percent,
+    frequency: Frequency,
+}
+
+impl CpuCore {
+    pub fn new(cpu: &sysinfo::Cpu, index: usize) -> Self {
+        Self {
+            index,
+            name: cpu.name().to_string(),
+            vendor: cpu.vendor_id().to_string(),
+            brand: cpu.brand().to_string(),
+            usage: cpu.cpu_usage().into(),
+            frequency: cpu.frequency().into(),
+        }
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn vendor_id(&self) -> &str {
+        &self.vendor
+    }
+
+    pub fn brand(&self) -> &str {
+        &self.brand
+    }
+
+    pub fn usage(&self) -> &Percent {
+        &self.usage
+    }
+
+    pub fn frequency(&self) -> &Frequency {
+        &self.frequency
+    }
+}
+
+impl Display for CpuCore {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("name", &self.name)
+            .display("vendor", &self.vendor)
+            .display("brand", &self.brand)
+            .display("usage", &self.usage)
+            .display("frequency", &self.frequency)
+            .finish(f)
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+struct CpuVariant {
+    vendor: String,
+    brand: String,
+}
+
+impl Display for CpuVariant {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("vendor", &self.vendor)
+            .display("brand", &self.brand)
+            .finish(f)
+    }
+}
 
 #[derive_where::derive_where(Debug)]
 pub struct Cpu {
     #[derive_where(skip)]
     system: Arc<Mutex<sysinfo::System>>,
 
-    #[derive_where(skip)]
-    last_usage_refresh: LastRefresh,
-
-    cores: Vec<CpuCore>,
     physical_core_count: Option<usize>,
     architecture: String,
+    cpu_variants: Vec<CpuVariant>,
+
+    #[derive_where(skip)]
     task_tracker: TaskTracker,
 }
 
-impl Cpu {
-    pub fn new(system: Arc<Mutex<sysinfo::System>>, task_tracker: TaskTracker) -> Self {
-        let last_usage_refresh = Arc::new(tokio::sync::Mutex::new(None));
-        let cores = {
-            let system_guard = system.lock().unwrap();
+impl Display for Cpu {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if f.alternate() {
+            DisplayFields::default()
+                .display("architecture", &self.architecture)
+                .display_if_some("physical_core_count", &self.physical_core_count)
+                .display("cores", display_list(&self.cores()))
+                .finish(f)
+        } else {
+            let mut fields = DisplayFields::default()
+                .display("architecture", &self.architecture)
+                .display("core_count", &self.cores().len())
+                .display_if_some("physical_core_count", &self.physical_core_count);
 
-            system_guard
-                .cpus()
-                .iter()
-                .enumerate()
-                .map(|(index, cpu)| {
-                    CpuCore::new(
-                        cpu,
-                        index,
-                        system.clone(),
-                        task_tracker.clone(),
-                        last_usage_refresh.clone(),
-                    )
-                })
-                .collect_vec()
-        };
+            if let Some(variant) = self.cpu_variants.first()
+                && self.cpu_variants.len() == 1
+            {
+                fields = fields.display("vendor", &variant.vendor);
+                fields = fields.display("brand", &variant.brand);
+            } else {
+                fields = fields.display("variants", display_list(&self.cpu_variants));
+            }
 
-        Self {
-            system,
-            last_usage_refresh,
-            cores,
-            physical_core_count: sysinfo::System::physical_core_count(),
-            architecture: sysinfo::System::cpu_arch(),
-            task_tracker,
+            fields.finish(f)
         }
     }
+}
 
-    pub async fn usage(&self) -> f32 {
-        cpu_usage_operation(
-            self.last_usage_refresh.clone(),
-            self.system.clone(),
-            self.task_tracker.clone(),
-            |system| system.global_cpu_usage(),
-        )
-        .await
+impl Cpu {
+    #[instrument(name = "cpu", skip_all)]
+    pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
+        let system = task_tracker
+            .spawn_blocking(move || {
+                sysinfo::System::new_with_specifics(
+                    RefreshKind::nothing().with_cpu(CpuRefreshKind::nothing().with_frequency()),
+                )
+            })
+            .await?;
+
+        let cpu_variants = system
+            .cpus()
+            .iter()
+            .map(|cpu| CpuVariant {
+                vendor: cpu.vendor_id().to_string(),
+                brand: cpu.brand().to_string(),
+            })
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .collect_vec();
+
+        Ok(Self {
+            system: Arc::new(Mutex::new(system)),
+            physical_core_count: sysinfo::System::physical_core_count(),
+            architecture: sysinfo::System::cpu_arch(),
+            cpu_variants,
+            task_tracker,
+        })
     }
 
-    pub fn cores(&self) -> &Vec<CpuCore> {
-        &self.cores
+    pub async fn refresh_global_usage(&self) -> Result<Percent> {
+        let local_system = self.system.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut system = local_system.lock().unwrap();
+                system.refresh_cpu_usage();
+
+                sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+
+                system.refresh_cpu_usage();
+                system.global_cpu_usage().into()
+            })
+            .await?;
+        Ok(result)
+    }
+
+    pub fn global_usage(&self) -> Percent {
+        let system = self.system.lock().unwrap();
+        system.global_cpu_usage().into()
+    }
+
+    pub async fn refresh_core_usage(&self, core: &CpuCore) -> Result<Percent> {
+        let index = core.index;
+        let local_system = self.system.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut system = local_system.lock().unwrap();
+                system.refresh_cpu_usage();
+
+                sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+
+                system.refresh_cpu_usage();
+                system.cpus()[index].cpu_usage().into()
+            })
+            .await?;
+        Ok(result)
+    }
+
+    pub async fn refresh_frequencies(&self) -> Result<Vec<CpuCore>> {
+        let local_system = self.system.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut system = local_system.lock().unwrap();
+                system.refresh_cpu_frequency();
+                system
+                    .cpus()
+                    .iter()
+                    .enumerate()
+                    .map(|(index, cpu)| CpuCore::new(cpu, index))
+                    .collect_vec()
+            })
+            .await?;
+        Ok(result)
+    }
+
+    pub fn cores(&self) -> Vec<CpuCore> {
+        let system = self.system.lock().unwrap();
+        system
+            .cpus()
+            .iter()
+            .enumerate()
+            .map(|(index, cpu)| CpuCore::new(cpu, index))
+            .collect_vec()
     }
 
     pub fn physical_core_count(&self) -> Option<usize> {
@@ -77,127 +229,5 @@ impl Cpu {
 
     pub fn architecture(&self) -> &str {
         &self.architecture
-    }
-}
-
-#[derive_where::derive_where(Debug)]
-pub struct CpuCore {
-    #[derive_where(skip)]
-    system: Arc<Mutex<sysinfo::System>>,
-
-    #[derive_where(skip)]
-    last_usage_refresh: LastRefresh,
-
-    #[derive_where(skip)]
-    last_frequency_refresh: LastRefresh,
-
-    index: usize,
-    name: String,
-    vendor_id: String,
-    brand: String,
-    task_tracker: TaskTracker,
-}
-
-pub(crate) async fn cpu_usage_operation<F, R>(
-    last_usage_refresh: LastRefresh,
-    system: Arc<Mutex<sysinfo::System>>,
-    task_tracker: TaskTracker,
-    operation: F,
-) -> R
-where
-    F: FnOnce(&sysinfo::System) -> R,
-{
-    let mut last_usage_refresh = last_usage_refresh.lock().await;
-
-    if let Some(last_refresh) = *last_usage_refresh {
-        if last_refresh.elapsed() < sysinfo::MINIMUM_CPU_UPDATE_INTERVAL {
-            let system = system.lock().unwrap();
-            return operation(&*system);
-        }
-    }
-
-    let local_system = system.clone();
-    task_tracker
-        .spawn_blocking(move || {
-            let mut system = local_system.lock().unwrap();
-            system.refresh_cpu_usage();
-        })
-        .await
-        .unwrap();
-
-    sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL).await;
-
-    let local_system = system.clone();
-    task_tracker
-        .spawn_blocking(move || {
-            let mut system = local_system.lock().unwrap();
-            system.refresh_cpu_usage();
-        })
-        .await
-        .unwrap();
-
-    {
-        let system = system.lock().unwrap();
-        *last_usage_refresh = Some(Instant::now());
-        operation(&*system)
-    }
-}
-
-impl CpuCore {
-    pub fn new(
-        cpu: &sysinfo::Cpu,
-        index: usize,
-        system: Arc<Mutex<sysinfo::System>>,
-        task_tracker: TaskTracker,
-        last_usage_refresh: LastRefresh,
-    ) -> Self {
-        Self {
-            system,
-            task_tracker,
-            last_usage_refresh,
-            last_frequency_refresh: Arc::new(tokio::sync::Mutex::new(None)),
-            index,
-            name: cpu.name().to_string(),
-            vendor_id: cpu.vendor_id().to_string(),
-            brand: cpu.brand().to_string(),
-        }
-    }
-
-    pub async fn usage(&self) -> f32 {
-        cpu_usage_operation(
-            self.last_usage_refresh.clone(),
-            self.system.clone(),
-            self.task_tracker.clone(),
-            |system| system.cpus()[self.index].cpu_usage(),
-        )
-        .await
-    }
-
-    pub async fn frequency(&self) -> u64 {
-        let mut last_frequency_refresh = self.last_frequency_refresh.lock().await;
-
-        let mut system = self.system.lock().unwrap();
-
-        if let Some(last_refresh) = *last_frequency_refresh {
-            if last_refresh.elapsed() >= MINIMUM_CPU_FREQUENCY_UPDATE_INTERVAL {
-                system.refresh_cpu_frequency();
-
-                *last_frequency_refresh = Some(Instant::now());
-            }
-        }
-
-        system.cpus()[self.index].frequency()
-    }
-
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-
-    pub fn vendor_id(&self) -> &str {
-        &self.vendor_id
-    }
-
-    pub fn brand(&self) -> &str {
-        &self.brand
     }
 }

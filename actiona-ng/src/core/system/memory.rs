@@ -3,9 +3,12 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use sysinfo::MemoryRefreshKind;
+use eyre::Result;
+use sysinfo::{MemoryRefreshKind, RefreshKind};
+use tokio_util::task::TaskTracker;
+use tracing::instrument;
 
-use crate::types::ByteCount;
+use crate::types::{ByteCount, DisplayFields};
 
 #[derive(Debug)]
 pub struct MemoryUsage {
@@ -17,15 +20,35 @@ pub struct MemoryUsage {
 
 impl Display for MemoryUsage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "(used: {}, free: {}, available: {}, total: {})",
-            self.used, self.free, self.available, self.total,
-        )
+        DisplayFields::default()
+            .display("used", &self.used)
+            .display("free", &self.free)
+            .display("available", &self.available)
+            .display("total", &self.total)
+            .finish(f)
     }
 }
 
 impl MemoryUsage {
+    fn new_with_memory(system: &sysinfo::System) -> Self {
+        Self {
+            used: system.used_memory().into(),
+            free: system.free_memory().into(),
+            available: system.available_memory().into(),
+            total: system.total_memory().into(),
+        }
+    }
+
+    /// Note that "available" is the same as "free" for swap.
+    fn new_with_swap(system: &sysinfo::System) -> Self {
+        Self {
+            used: system.used_swap().into(),
+            free: system.free_swap().into(),
+            available: system.free_swap().into(), // We use "free" here
+            total: system.total_swap().into(),
+        }
+    }
+
     pub fn used(&self) -> ByteCount {
         self.used
     }
@@ -64,11 +87,12 @@ impl From<sysinfo::CGroupLimits> for CGroupLimits {
 
 impl Display for CGroupLimits {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "(total memory: {}, free memory: {}, free swap: {}, rss: {})",
-            self.total_memory, self.free_memory, self.free_swap, self.rss,
-        )
+        DisplayFields::default()
+            .display("free_memory", &self.free_memory)
+            .display("free_swap", &self.free_swap)
+            .display("rss", &self.rss)
+            .display("total", &self.total_memory)
+            .finish(f)
     }
 }
 
@@ -94,41 +118,78 @@ impl CGroupLimits {
 pub struct Memory {
     #[derive_where(skip)]
     system: Arc<Mutex<sysinfo::System>>,
+
+    #[derive_where(skip)]
+    task_tracker: TaskTracker,
+}
+
+impl Display for Memory {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("memory", &self.memory_usage())
+            .display("swap", &self.swap_usage())
+            .finish(f)
+    }
 }
 
 impl Memory {
-    pub fn new(system: Arc<Mutex<sysinfo::System>>) -> Self {
-        Self { system }
+    #[instrument(name = "memory", skip_all)]
+    pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
+        let system = task_tracker
+            .spawn_blocking(move || {
+                sysinfo::System::new_with_specifics(
+                    RefreshKind::nothing().with_memory(MemoryRefreshKind::everything()),
+                )
+            })
+            .await?;
+
+        Ok(Self {
+            system: Arc::new(Mutex::new(system)),
+            task_tracker,
+        })
     }
 
-    pub fn usage(&self) -> MemoryUsage {
-        let mut system_guard = self.system.lock().unwrap();
-        system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
-
-        MemoryUsage {
-            used: system_guard.used_memory().into(),
-            free: system_guard.free_memory().into(),
-            available: system_guard.available_memory().into(),
-            total: system_guard.total_memory().into(),
-        }
+    pub async fn refresh_memory_usage(&self) -> Result<MemoryUsage> {
+        let local_system = self.system.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut system_guard = local_system.lock().unwrap();
+                system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
+                MemoryUsage::new_with_memory(&system_guard)
+            })
+            .await?;
+        Ok(result)
     }
 
-    /// Note that "available" is the same as "free" for swap.
+    pub fn memory_usage(&self) -> MemoryUsage {
+        let system_guard = self.system.lock().unwrap();
+
+        MemoryUsage::new_with_memory(&system_guard)
+    }
+
+    pub async fn refresh_swap_usage(&self) -> Result<MemoryUsage> {
+        let local_system = self.system.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut system_guard = local_system.lock().unwrap();
+                system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_swap());
+                MemoryUsage::new_with_swap(&system_guard)
+            })
+            .await?;
+        Ok(result)
+    }
+
     pub fn swap_usage(&self) -> MemoryUsage {
-        let mut system_guard = self.system.lock().unwrap();
-        system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_swap());
+        let system_guard = self.system.lock().unwrap();
 
-        MemoryUsage {
-            used: system_guard.used_swap().into(),
-            free: system_guard.free_swap().into(),
-            available: system_guard.free_swap().into(), // We use "free" here
-            total: system_guard.total_swap().into(),
-        }
+        MemoryUsage::new_with_swap(&system_guard)
     }
 
     /// Note: only works on Linux
     pub fn cgroup_limits(&self) -> Option<CGroupLimits> {
         let system_guard = self.system.lock().unwrap();
-        system_guard.cgroup_limits().map(|limits| limits.into())
+        system_guard.cgroup_limits().map(CGroupLimits::from)
     }
 }

@@ -1,48 +1,73 @@
-use std::sync::{Arc, Mutex};
+use std::{fmt::Display, sync::Arc};
 
+use eyre::Result;
+use tokio::join;
 use tokio_util::task::TaskTracker;
+use tracing::instrument;
 
-use crate::core::system::{
-    cpu::Cpu, hardware::Hardware, memory::Memory, motherboard::Motherboard, network::Network,
-    os::Os, storage::Storage,
+use crate::{
+    core::system::{
+        cpu::Cpu, hardware::Hardware, memory::Memory, network::Network, os::Os,
+        processes::Processes, storage::Storage,
+    },
+    types::DisplayFields,
 };
 
 pub mod cpu;
 pub mod hardware;
 pub mod memory;
-pub mod motherboard;
 pub mod network;
 pub mod os;
+pub mod processes;
 pub mod storage;
 
 #[derive(Debug)]
 pub struct System {
     cpu: Arc<Cpu>,
     memory: Arc<Memory>,
-    motherboard: Arc<Motherboard>,
     os: Arc<Os>,
     network: Arc<Network>,
     hardware: Arc<Hardware>,
     storage: Arc<Storage>,
+    processes: Arc<Processes>,
+}
+
+impl Display for System {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("cpu", &self.cpu())
+            .display("memory", &self.memory())
+            .display("os", &self.os())
+            .display("network", &self.network())
+            .display("hardware", &self.hardware())
+            .display("storage", &self.storage())
+            .display("processes", &self.processes())
+            .finish(f)
+    }
 }
 
 impl System {
-    pub fn new(system: Arc<Mutex<sysinfo::System>>, task_tracker: TaskTracker) -> Self {
-        let local_system = system.clone();
-        task_tracker.spawn_blocking(move || {
-            let mut system_guard = local_system.lock().unwrap();
-            system_guard.refresh_all();
-        });
+    #[instrument(name = "system", skip_all)]
+    pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
+        let (cpu, os, network, storage, memory, hardware, processes) = join!(
+            Cpu::new(task_tracker.clone()),
+            Os::new(task_tracker.clone()),
+            Network::new(task_tracker.clone()),
+            Storage::new(task_tracker.clone()),
+            Memory::new(task_tracker.clone()),
+            Hardware::new(task_tracker.clone()),
+            Processes::new(task_tracker.clone()),
+        );
 
-        Self {
-            cpu: Arc::new(Cpu::new(system.clone(), task_tracker.clone())),
-            memory: Arc::new(Memory::new(system.clone())),
-            motherboard: Arc::new(Motherboard::default()),
-            os: Arc::new(Os::default()),
-            network: Arc::new(Network::default()),
-            hardware: Arc::new(Hardware::default()),
-            storage: Arc::new(Storage::default()),
-        }
+        Ok(Self {
+            cpu: Arc::new(cpu?),
+            memory: Arc::new(memory?),
+            os: Arc::new(os?),
+            network: Arc::new(network?),
+            hardware: Arc::new(hardware?),
+            storage: Arc::new(storage?),
+            processes: Arc::new(processes?),
+        })
     }
 
     pub fn cpu(&self) -> Arc<Cpu> {
@@ -51,10 +76,6 @@ impl System {
 
     pub fn memory(&self) -> Arc<Memory> {
         self.memory.clone()
-    }
-
-    pub fn motherboard(&self) -> Arc<Motherboard> {
-        self.motherboard.clone()
     }
 
     pub fn os(&self) -> Arc<Os> {
@@ -73,50 +94,45 @@ impl System {
         self.storage.clone()
     }
 
-    // TODO: processes
+    pub fn processes(&self) -> Arc<Processes> {
+        self.processes.clone()
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan, prelude::*};
+
     use super::*;
     use crate::runtime::Runtime;
 
     #[test]
     fn test_cpu_usage() {
         Runtime::test(async move |runtime| {
-            let system = System::new(runtime.system(), runtime.task_tracker());
+            let system = System::new(runtime.task_tracker()).await.unwrap();
 
-            assert!(system.cpu().usage().await > 0.)
+            assert!(*system.cpu().refresh_global_usage().await.unwrap() > 0.)
         });
     }
 
     #[test]
-    fn test_name() {
+    fn init_test() {
         Runtime::test(async move |runtime| {
-            let system = System::new(runtime.system(), runtime.task_tracker());
+            let console_layer = console_subscriber::spawn(); // serves to tokio-console
+            let fmt_layer = fmt::layer()
+                .with_test_writer()
+                .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE); // TODO
 
-            println!("{:#?}", system);
+            let filter =
+                EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("trace"));
 
-            println!("memory: {}", system.memory.usage());
-            println!("swap: {}", system.memory.swap_usage());
-            println!("uptime: {}", humantime::format_duration(system.os.uptime()));
-            println!(
-                "boot_time: {}",
-                humantime::format_rfc3339(system.os.boot_time())
-            );
-            println!("cgroup limits: {:?}", system.memory().cgroup_limits());
-            println!("hostname: {:?}", system.network().hostname());
-            for (name, interface) in system.network().interfaces() {
-                println!("{name}: {interface}");
-            }
-            println!("hardware: {:?}", system.hardware());
-            println!("motherboard: {:?}", system.motherboard());
-            println!("users: {:#?}", system.os().users());
-            println!("groups: {:#?}", system.os().groups());
-            println!("components: {:#?}", system.hardware().components());
-            for disk in system.storage().disks() {
-                println!("disk: {}", disk);
-            }
+            tracing_subscriber::registry()
+                .with(filter)
+                .with(console_layer)
+                .with(fmt_layer)
+                .init();
+
+            let system = System::new(runtime.task_tracker()).await.unwrap();
         });
     }
 }

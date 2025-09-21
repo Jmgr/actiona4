@@ -1,7 +1,18 @@
 use core::fmt::Display;
-use std::{ffi::OsStr, marker::PhantomData, ops::Deref};
+use std::{
+    collections::HashSet,
+    ffi::{OsStr, OsString},
+    fmt::{self, Formatter, Write},
+    marker::PhantomData,
+    ops::Deref,
+    path::PathBuf,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 
 use humansize::BINARY;
+use itertools::Itertools;
+
+use crate::core::system::processes::ThreadKind;
 
 #[repr(transparent)]
 #[derive(Debug, Default)]
@@ -17,6 +28,12 @@ impl<T: Copy, Tag> Copy for Unit<T, Tag> {}
 impl<T, Tag> From<T> for Unit<T, Tag> {
     fn from(value: T) -> Self {
         Self(value, PhantomData)
+    }
+}
+impl<T, Tag> Deref for Unit<T, Tag> {
+    type Target = T;
+    fn deref(&self) -> &T {
+        &self.0
     }
 }
 
@@ -60,7 +77,7 @@ pub type DegreesCelsius = Unit<f64, DegreesCelsiusTag>;
 
 impl Display for DegreesCelsius {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} °C", self.0)
+        write!(f, "{:.0}°C", self.0)
     }
 }
 
@@ -102,9 +119,9 @@ impl From<Option<u32>> for OptionalByteCount {
     }
 }
 
-pub type OptionalString = OptionalUnit<String>;
+pub type OptionalSystemString = OptionalUnit<String>;
 
-impl From<Option<&str>> for OptionalString {
+impl From<Option<&str>> for OptionalSystemString {
     fn from(value: Option<&str>) -> Self {
         Self(match value.map(|s| s.trim()) {
             Some("Default string")
@@ -118,14 +135,235 @@ impl From<Option<&str>> for OptionalString {
     }
 }
 
-impl From<Option<String>> for OptionalString {
+impl From<Option<String>> for OptionalSystemString {
     fn from(value: Option<String>) -> Self {
         Self::from(value.as_deref())
     }
 }
 
-impl From<&OsStr> for OptionalString {
+impl From<&OsStr> for OptionalSystemString {
     fn from(value: &OsStr) -> Self {
-        Self::from(value.to_str())
+        Self(Some(value.to_string_lossy().to_string()))
     }
+}
+
+#[derive(Debug)]
+pub struct PercentTag;
+pub type Percent = Unit<f32, PercentTag>;
+
+impl Display for Percent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}%", self.0)
+    }
+}
+
+pub type OptionalPercent = OptionalUnit<Percent>;
+
+#[derive(Debug)]
+pub struct FrequencyTag;
+pub type Frequency = Unit<u64, FrequencyTag>;
+
+impl Display for Frequency {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} Hz", self.0)
+    }
+}
+
+pub type OptionalFrequency = OptionalUnit<Frequency>;
+
+#[derive(Debug)]
+pub struct OsStringListTag;
+pub type OsStringList = Unit<Vec<String>, OsStringListTag>;
+
+impl Display for OsStringList {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}]", self.iter().join(", "))
+    }
+}
+
+impl From<&[OsString]> for OsStringList {
+    fn from(value: &[OsString]) -> Self {
+        value
+            .iter()
+            .map(|cmd| cmd.to_string_lossy().into_owned())
+            .collect_vec()
+            .into()
+    }
+}
+
+#[derive(Debug)]
+pub struct PathTag;
+pub type Path = Unit<PathBuf, PathTag>;
+
+impl Display for Path {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.display())
+    }
+}
+
+impl From<&std::path::Path> for Path {
+    fn from(value: &std::path::Path) -> Self {
+        value.to_path_buf().into()
+    }
+}
+
+pub type OptionalPath = OptionalUnit<Path>;
+
+impl From<Option<&std::path::Path>> for OptionalPath {
+    fn from(value: Option<&std::path::Path>) -> Self {
+        Self(value.map(|path| path.into()))
+    }
+}
+
+pub type OptionalU32 = OptionalUnit<u32>;
+
+impl From<Option<u32>> for OptionalU32 {
+    fn from(value: Option<u32>) -> Self {
+        Self(value.map(|value| value.into()))
+    }
+}
+
+pub type OptionalUSize = OptionalUnit<usize>;
+
+impl From<Option<usize>> for OptionalUSize {
+    fn from(value: Option<usize>) -> Self {
+        Self(value.map(|value| value.into()))
+    }
+}
+
+#[derive(Debug)]
+pub struct TaskListTag;
+pub type TaskList = Unit<HashSet<u32>, TaskListTag>;
+
+impl Display for TaskList {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}]", self.0.iter().join(", "))
+    }
+}
+
+pub type OptionalTaskList = OptionalUnit<TaskList>;
+
+impl From<Option<HashSet<u32>>> for OptionalTaskList {
+    fn from(value: Option<HashSet<u32>>) -> Self {
+        Self(value.map(|path| path.into()))
+    }
+}
+
+pub type OptionalThreadKind = OptionalUnit<ThreadKind>;
+
+impl From<Option<sysinfo::ThreadKind>> for OptionalThreadKind {
+    // TODO: automate this?
+    fn from(value: Option<sysinfo::ThreadKind>) -> Self {
+        Self(value.map(|path| path.into()))
+    }
+}
+
+#[derive(Debug)]
+pub struct SystemTimeUnitTag;
+pub type SystemTimeUnit = Unit<SystemTime, SystemTimeUnitTag>;
+
+impl SystemTimeUnit {
+    pub fn from_unix_epoch(secs: u64) -> Self {
+        (UNIX_EPOCH + Duration::from_secs(secs)).into()
+    }
+}
+
+impl Display for SystemTimeUnit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", humantime::format_rfc3339(self.0))
+    }
+}
+
+#[derive(Debug)]
+pub struct DurationUnitTag;
+pub type DurationUnit = Unit<Duration, DurationUnitTag>;
+
+impl Display for DurationUnit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", humantime::format_duration(self.0))
+    }
+}
+
+impl DurationUnit {
+    pub fn from_secs(secs: u64) -> Self {
+        Duration::from_secs(secs).into()
+    }
+}
+
+#[derive(Default)]
+pub struct DisplayFields {
+    buffer: String,
+    not_first: bool,
+}
+
+impl DisplayFields {
+    fn maybe_space(&mut self) {
+        if self.not_first {
+            let _ = write!(self.buffer, ", ");
+        } else {
+            self.not_first = true;
+        }
+    }
+
+    pub fn display<T: Display>(mut self, name: &str, value: T) -> Self {
+        self.maybe_space();
+        let _ = write!(self.buffer, "{name}: {value}");
+        self
+    }
+
+    pub fn display_if_some<T: Display>(mut self, name: &str, value: &Option<T>) -> Self {
+        if let Some(value) = value {
+            self.maybe_space();
+            let _ = write!(self.buffer, "{name}: {value}");
+        }
+        self
+    }
+
+    pub fn finish<'a, 'f>(self, f: &'a mut Formatter<'f>) -> fmt::Result {
+        write!(f, "({})", self.buffer)
+    }
+}
+
+pub struct DisplayList<'a, T>(&'a [T]);
+
+impl<'a, T: Display> Display for DisplayList<'a, T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str("[")?;
+        for (i, item) in self.0.iter().enumerate() {
+            if i > 0 {
+                f.write_str(", ")?;
+            }
+            Display::fmt(item, f)?;
+        }
+        f.write_str("]")
+    }
+}
+
+pub fn display_list<T: Display>(v: &[T]) -> DisplayList<'_, T> {
+    DisplayList(v)
+}
+
+pub struct DisplayMap<I>(pub I);
+
+impl<I, K, V> Display for DisplayMap<I>
+where
+    I: Clone + IntoIterator<Item = (K, V)>,
+    K: Display,
+    V: Display,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str("{")?;
+        let mut it = self.0.clone().into_iter();
+        if let Some((k, v)) = it.next() {
+            write!(f, "{k}: {v}")?;
+            for (k, v) in it {
+                write!(f, ", {k}: {v}")?;
+            }
+        }
+        f.write_str("}")
+    }
+}
+
+pub fn display_map<I>(iter: I) -> DisplayMap<I> {
+    DisplayMap(iter)
 }

@@ -5,10 +5,13 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use eyre::Result;
 use ipnet::IpNet;
 use itertools::Itertools;
+use tokio_util::task::TaskTracker;
+use tracing::instrument;
 
-use crate::types::ByteCount;
+use crate::types::{ByteCount, DisplayFields, display_list, display_map};
 
 #[derive(Debug)]
 pub struct Subnet {
@@ -44,11 +47,11 @@ pub struct Counters {
 
 impl Display for Counters {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "(data: {}, packets: {}, errors: {})",
-            self.data, self.packets, self.errors
-        )
+        DisplayFields::default()
+            .display("data", &self.data)
+            .display("packets", &self.packets)
+            .display("errors", &self.errors)
+            .finish(f)
     }
 }
 
@@ -60,7 +63,10 @@ pub struct Traffic {
 
 impl Display for Traffic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(total: {}, delta: {})", self.total, self.delta)
+        DisplayFields::default()
+            .display("total", &self.total)
+            .display("delta", &self.delta)
+            .finish(f)
     }
 }
 
@@ -75,15 +81,13 @@ pub struct NetworkInterface {
 
 impl Display for NetworkInterface {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "(inbound: {}, outbound: {}, mtu: {}, mac address: {}, subnets: [{}])",
-            self.inbound,
-            self.outbound,
-            self.mtu,
-            self.mac_address.as_deref().unwrap_or(""),
-            self.subnets.iter().join(", ")
-        )
+        DisplayFields::default()
+            .display("inbound", &self.inbound)
+            .display("outbound", &self.outbound)
+            .display("mtu", &self.mtu)
+            .display_if_some("mac_address", &self.mac_address)
+            .display("subnets", display_list(&self.subnets))
+            .finish(f)
     }
 }
 
@@ -117,11 +121,7 @@ impl From<&sysinfo::NetworkData> for NetworkInterface {
             mtu: value.mtu(),
             mac_address: (!value.mac_address().is_unspecified())
                 .then(|| value.mac_address().to_string()),
-            subnets: value
-                .ip_networks()
-                .iter()
-                .map(|ip_network| ip_network.into())
-                .collect_vec(),
+            subnets: value.ip_networks().iter().map(Subnet::from).collect_vec(),
         }
     }
 }
@@ -130,30 +130,63 @@ impl From<&sysinfo::NetworkData> for NetworkInterface {
 pub struct Network {
     #[derive_where(skip)]
     networks: Arc<Mutex<sysinfo::Networks>>,
+
+    #[derive_where(skip)]
+    task_tracker: TaskTracker,
 }
 
-impl Default for Network {
-    fn default() -> Self {
-        Self {
-            networks: Arc::new(Mutex::new(sysinfo::Networks::new())),
-        }
+impl Display for Network {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display_if_some("hostname", &self.hostname())
+            .display("interfaces", display_map(&self.interfaces()))
+            .finish(f)
     }
 }
 
 impl Network {
+    #[instrument(name = "network", skip_all)]
+    pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
+        let networks = task_tracker
+            .spawn_blocking(|| sysinfo::Networks::new_with_refreshed_list())
+            .await?;
+
+        Ok(Self {
+            networks: Arc::new(Mutex::new(networks)),
+            task_tracker,
+        })
+    }
+
     pub fn hostname(&self) -> Option<String> {
         sysinfo::System::host_name()
     }
 
+    pub async fn refresh_interfaces(
+        &self,
+        rescan: bool,
+    ) -> Result<HashMap<String, NetworkInterface>> {
+        let networks = self.networks.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut networks = networks.lock().unwrap();
+                networks.refresh(rescan);
+                networks
+                    .list()
+                    .iter()
+                    .map(|(name, data)| (name.clone(), data.into()))
+                    .collect::<HashMap<_, _>>()
+            })
+            .await?;
+        Ok(result)
+    }
+
     pub fn interfaces(&self) -> HashMap<String, NetworkInterface> {
-        let mut networks = self.networks.lock().unwrap();
-        networks.refresh(true);
-        let interfaces = networks
+        let networks = self.networks.lock().unwrap();
+        networks
             .list()
             .iter()
             .map(|(name, data)| (name.clone(), data.into()))
-            .collect::<HashMap<_, _>>();
-
-        interfaces
+            .collect::<HashMap<_, _>>()
     }
 }
