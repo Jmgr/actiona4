@@ -10,9 +10,13 @@ use image::{ColorType, DynamicImage, GrayImage, ImageReader, RgbImage, RgbaImage
 use imageproc::drawing::draw_hollow_rect_mut;
 use macros::FromJsObject;
 use opencv::{
-    core::{AlgorithmHint, Mat, MatExprTraitConst, MatTraitConst, CV_32FC1},
-    imgproc::{cvt_color, COLOR_RGB2BGR, COLOR_RGBA2BGRA},
+    core::{CV_32FC1, Mat, MatExprTraitConst, MatTraitConst},
+    imgproc::{COLOR_RGB2BGR, COLOR_RGBA2BGRA, cvt_color},
 };
+
+opencv::opencv_has_inherent_feature_algorithm_hint! {{
+    use opencv::core::AlgorithmHint;
+}}
 
 use crate::core::{
     color::Color,
@@ -98,7 +102,13 @@ impl Image {
         let mat_boxed = Mat::from_slice(data)?;
         let mat = mat_boxed.reshape(3, height as i32)?;
         let mut mat_bgr = Mat::default();
-        cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+        opencv::opencv_has_inherent_feature_algorithm_hint! {
+            {
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+            } else {
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)?;
+            };
+        }
         Ok(mat_bgr)
     }
 
@@ -108,7 +118,13 @@ impl Image {
         let mat_boxed = Mat::from_slice(data)?;
         let mat = mat_boxed.reshape(4, height as i32)?;
         let mut mat_bgr = Mat::default();
-        cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+        opencv::opencv_has_inherent_feature_algorithm_hint! {
+            {
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+            } else {
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0)?;
+            };
+        }
         Ok(mat_bgr)
     }
 

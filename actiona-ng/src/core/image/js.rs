@@ -1037,11 +1037,18 @@ impl<'js> Trace<'js> for JsImage {
 mod tests {
     use image::{DynamicImage, ImageReader};
     use opencv::{
+        Result,
         core::{
-            min_max_loc, no_array, normalize, AlgorithmHint, Mat, MatExprTraitConst, MatTraitConst, Point, CV_32FC1, NORM_MINMAX
-        }, imgproc, Result
+            CV_32FC1, Mat, MatExprTraitConst, MatTraitConst, NORM_MINMAX, Point, min_max_loc,
+            no_array, normalize,
+        },
+        imgproc::{self, COLOR_RGB2BGR, cvt_color},
     };
     use tracing_test::traced_test;
+
+    opencv::opencv_has_inherent_feature_algorithm_hint! {{
+        use opencv::core::AlgorithmHint;
+    }}
 
     use crate::runtime::Runtime;
 
@@ -1054,7 +1061,15 @@ mod tests {
         let mat = mat.reshape(3, height as i32)?; // 3 channels (RGB)
 
         let mut mat_bgr = Mat::default();
-        opencv::imgproc::cvt_color(&mat, &mut mat_bgr, imgproc::COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+
+        opencv::opencv_has_inherent_feature_algorithm_hint! {
+            {
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+            } else {
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)?;
+            };
+        }
+
         Ok(mat_bgr)
     }
 
