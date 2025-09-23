@@ -1,7 +1,7 @@
 use std::{ffi::c_void, sync::Arc};
 
 use eyre::Result;
-use image::RgbaImage;
+use image::{DynamicImage, RgbaImage};
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 use windows::Win32::Graphics::Gdi::{
     BI_RGB, BITMAPINFO, BITMAPINFOHEADER, BitBlt, CreateCompatibleBitmap, CreateCompatibleDC,
@@ -11,7 +11,7 @@ use windows::Win32::Graphics::Gdi::{
 
 use super::ScreenshotImplTrait;
 use crate::{
-    core::{color::Color, displays::Displays, image::Image, rect::Rect},
+    core::{color::Color, displays::Displays, image::Image, point::Point, rect::Rect},
     runtime::Runtime,
 };
 
@@ -24,6 +24,7 @@ impl ScreenshotImpl {
     }
 }
 
+#[allow(unsafe_code)]
 impl ScreenshotImplTrait for ScreenshotImpl {
     async fn capture_rect(&mut self, rect: Rect) -> Result<Image> {
         let hdc_screen = unsafe { GetDC(None) };
@@ -99,15 +100,17 @@ impl ScreenshotImplTrait for ScreenshotImpl {
             let _ = DeleteObject(hbm.into());
         };
 
-        Ok(image.into())
+        Ok(DynamicImage::ImageRgba8(image).into())
     }
 
-    async fn capture_display(&mut self, _display_id: u32) -> Result<Image> {
-        todo!()
+    async fn _capture_display(&mut self, display_id: u32) -> Result<Image> {
+        let _ = display_id;
+        todo!();
     }
-
-    async fn capture_pixel(&mut self, _position: crate::core::point::Point) -> Result<Color> {
-        todo!()
+    
+    async fn _capture_pixel(&mut self, position: Point) -> Result<Color> {
+        let _ = position;
+        todo!();
     }
 }
 

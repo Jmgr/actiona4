@@ -12,9 +12,7 @@ use tracing::instrument;
 use crate::{
     core::system::storage::DiskUsage,
     types::{
-        ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalSystemString,
-        OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OsStringList, Percent,
-        SystemTimeUnit, display_map,
+        display_map, ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalSystemString, OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit, OsStringList, Percent, SystemTimeUnit
     },
 };
 
@@ -90,8 +88,8 @@ pub struct Process {
     cpu_usage: Percent,                 // dyn
     accumulated_cpu_time: DurationUnit, // dyn
     disk_usage: DiskUsage,              // dyn
-    user_id: OptionalU32,
-    effective_user_id: OptionalU32,  // Linux only
+    user_id: OptionalUidUnit,
+    effective_user_id: OptionalUidUnit,  // Linux only
     group_id: OptionalU32,           // Linux only
     effective_group_id: OptionalU32, // Linux only
     session_id: OptionalU32,
@@ -121,10 +119,10 @@ impl From<&sysinfo::Process> for Process {
             cpu_usage: value.cpu_usage().into(),
             accumulated_cpu_time: DurationUnit::from_secs(value.accumulated_cpu_time()),
             disk_usage: value.disk_usage().into(),
-            user_id: value.user_id().map(|pid| **pid).into(),
-            effective_user_id: value.effective_user_id().map(|pid| **pid).into(),
-            group_id: value.group_id().map(|pid| *pid).into(),
-            effective_group_id: value.effective_group_id().map(|pid| *pid).into(),
+            user_id: value.user_id().cloned().into(),
+            effective_user_id: value.effective_user_id().cloned().into(),
+            group_id: value.group_id().map(|gid| *gid).into(),
+            effective_group_id: value.effective_group_id().map(|gid| *gid).into(),
             session_id: value.session_id().map(|pid| pid.as_u32()).into(),
             tasks: value
                 .tasks()

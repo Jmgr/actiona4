@@ -2,10 +2,15 @@ use std::{
     fmt::Debug,
     fs::FileTimes,
     io::SeekFrom,
-    os::unix::fs::PermissionsExt,
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
+
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+
+#[cfg(windows)]
+use std::os::windows::fs::FileTimesExt;
 
 use macros::FromJsObject;
 use rquickjs::{
@@ -413,20 +418,25 @@ impl JsFile {
 
     /// @platforms -windows
     pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
-        let opened_file = self.opened_file(&ctx)?;
-
         #[cfg(unix)]
-        return Ok(opened_file
-            .file
-            .lock()
-            .await
-            .metadata()
-            .await?
-            .permissions()
-            .mode());
+        {
+            let opened_file = self.opened_file(&ctx)?;
+
+            return Ok(opened_file
+                .file
+                .lock()
+                .await
+                .metadata()
+                .await?
+                .permissions()
+                .mode());
+        }
 
         #[cfg(windows)]
-        return Ok(0);
+        {
+            let _ = ctx;
+            return Ok(0);
+        }
     }
 
     /// Sets the file mode.
@@ -448,7 +458,11 @@ impl JsFile {
         };
 
         #[cfg(windows)]
-        return Ok(());
+        {
+            let _ = ctx;
+            let _ = mode;
+            return Ok(());
+        }
     }
 
     /// @returns Date
@@ -525,7 +539,7 @@ impl JsFile {
 
     /// @param date: Date
     /// @platforms -linux
-    pub async fn set_creation_time(&mut self, ctx: Ctx<'_>, date: Object<'_>) -> Result<()> {
+    pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         #[cfg(unix)]
         {
             let _ = ctx;
@@ -535,10 +549,16 @@ impl JsFile {
 
         #[cfg(windows)]
         {
-            let opened_file = self.opened_file(&ctx)?;
-            let system_time = Self::system_time_from_date(ctx, date)?;
+            let task_tracker = ctx.user_data().task_tracker();
+            let system_time = Self::system_time_from_date(ctx.clone(), date)?;
+            let opened_file = self.opened_file(&ctx.clone())?;
 
-            Self::set_times(&opened_file, FileTimes::new().set_created(system_time)).await?;
+            Self::set_times(
+                &opened_file,
+                FileTimes::new().set_created(system_time),
+                task_tracker,
+            )
+            .await?;
 
             Ok(())
         }

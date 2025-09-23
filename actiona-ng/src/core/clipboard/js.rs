@@ -1,6 +1,5 @@
 use std::fmt::Debug;
 
-#[cfg(linux)]
 use rquickjs::{
     JsLifetime, Result,
     class::{Trace, Tracer},

@@ -102,6 +102,7 @@ impl KeyboardImpl {
     }
 }
 
+#[allow(unsafe_code)]
 impl KeyboardImplTrait for KeyboardImpl {
     fn is_key_pressed(&self, key: Key) -> Result<bool> {
         Ok(unsafe { GetAsyncKeyState(key.into_vkey()) as u16 & 0x8000u16 != 0 })

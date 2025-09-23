@@ -11,11 +11,12 @@ use std::{
 
 use humansize::BINARY;
 use itertools::Itertools;
+use sysinfo::Uid;
 
 use crate::core::system::processes::ThreadKind;
 
 #[repr(transparent)]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq, Eq, Hash)]
 pub struct Unit<T, Tag>(T, PhantomData<Tag>);
 
 impl<T: Clone, Tag> Clone for Unit<T, Tag> {
@@ -287,6 +288,25 @@ impl Display for DurationUnit {
 impl DurationUnit {
     pub fn from_secs(secs: u64) -> Self {
         Duration::from_secs(secs).into()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub struct UidTag;
+pub type UidUnit = Unit<Uid, UidTag>;
+
+impl Display for UidUnit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.0) // TODO
+    }
+}
+
+pub type OptionalUidUnit = OptionalUnit<UidUnit>;
+
+impl From<Option<Uid>> for OptionalUidUnit {
+    // TODO: automate this?
+    fn from(value: Option<Uid>) -> Self {
+        Self(value.map(|uid| uid.into()))
     }
 }
 

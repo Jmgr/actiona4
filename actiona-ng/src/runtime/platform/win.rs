@@ -31,6 +31,7 @@ const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
     ((mouse_data >> 16) & 0xFFFF) as u16
 }
 
+#[allow(unsafe_code)]
 unsafe extern "system" fn low_level_mouse_proc(
     n_code: i32,
     w_param: WPARAM,
@@ -70,6 +71,7 @@ unsafe extern "system" fn low_level_mouse_proc(
     unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
 }
 
+#[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
     unsafe {
         match msg {
@@ -94,6 +96,7 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
 
 struct SafeHook(HHOOK);
 
+#[allow(unsafe_code)]
 impl Drop for SafeHook {
     fn drop(&mut self) {
         unsafe { UnhookWindowsHookEx(self.0).unwrap() }
@@ -108,6 +111,7 @@ pub struct Runtime {
     thread_id: u32,
 }
 
+#[allow(unsafe_code)]
 impl Runtime {
     pub async fn new(
         cancellation_token: CancellationToken,
@@ -185,7 +189,7 @@ impl Runtime {
         // Register the class
         let atom = unsafe { RegisterClassW(&wnd_class) };
         if atom == 0 {
-            return Err(Error::from_win32().into());
+            return Err(Error::from_thread().into());
         }
 
         let hwnd = unsafe {
@@ -206,7 +210,7 @@ impl Runtime {
         };
 
         if hwnd.0.is_null() {
-            return Err(Error::from_win32().into());
+            return Err(Error::from_thread().into());
         }
 
         Ok(())

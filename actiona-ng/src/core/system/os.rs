@@ -10,7 +10,7 @@ use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
 use crate::types::{
-    DisplayFields, DurationUnit, OptionalSystemString, SystemTimeUnit, display_list, display_map,
+    display_list, display_map, DisplayFields, DurationUnit, OptionalSystemString, SystemTimeUnit, UidUnit
 };
 
 #[derive(Debug)]
@@ -196,7 +196,7 @@ impl Os {
         sysinfo::System::open_files_limit()
     }
 
-    pub async fn refresh_users(&self) -> Result<HashMap<u32, User>> {
+    pub async fn refresh_users(&self) -> Result<HashMap<UidUnit, User>> {
         let users = self.users.clone();
         let result = self
             .task_tracker
@@ -207,7 +207,7 @@ impl Os {
                 users
                     .list()
                     .iter()
-                    .map(|user| (**user.id(), user.into()))
+                    .map(|user| (user.id().clone().into(), user.into()))
                     .collect()
             })
             .await?;
@@ -215,12 +215,12 @@ impl Os {
         Ok(result)
     }
 
-    pub fn users(&self) -> HashMap<u32, User> {
+    pub fn users(&self) -> HashMap<UidUnit, User> {
         let users = self.users.lock().unwrap();
         users
             .list()
             .iter()
-            .map(|user| (**user.id(), user.into()))
+            .map(|user| (user.id().clone().into(), user.into()))
             .collect()
     }
 

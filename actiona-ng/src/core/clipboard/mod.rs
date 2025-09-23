@@ -78,7 +78,10 @@ impl Clipboard {
         }
 
         #[cfg(not(linux))]
-        inner.set()
+        {
+            let _ = mode;
+            inner.set()
+        }
     }
 
     #[must_use]
@@ -94,7 +97,10 @@ impl Clipboard {
         }
 
         #[cfg(not(linux))]
-        inner.get()
+        {
+            let _ = mode;
+            inner.get()
+        }
     }
 
     pub async fn set_text<'a, T: Into<Cow<'a, str>>>(
@@ -114,7 +120,10 @@ impl Clipboard {
             }
 
             #[cfg(not(linux))]
-            inner.set()
+            {
+                let _ = mode;
+                inner.set()
+            }
         };
 
         clipboard.text(text)?;
@@ -199,7 +208,10 @@ impl Clipboard {
         }
 
         #[cfg(not(linux))]
-        inner.clear()?;
+        {
+            let _ = mode;
+            inner.clear()?;
+        }
 
         Ok(())
     }

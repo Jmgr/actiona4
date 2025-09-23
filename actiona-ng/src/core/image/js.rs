@@ -1037,12 +1037,9 @@ impl<'js> Trace<'js> for JsImage {
 mod tests {
     use image::{DynamicImage, ImageReader};
     use opencv::{
-        Result,
         core::{
-            CV_32FC1, Mat, MatExprTraitConst, MatTraitConst, NORM_MINMAX, Point, min_max_loc,
-            no_array, normalize,
-        },
-        imgproc,
+            min_max_loc, no_array, normalize, AlgorithmHint, Mat, MatExprTraitConst, MatTraitConst, Point, CV_32FC1, NORM_MINMAX
+        }, imgproc, Result
     };
     use tracing_test::traced_test;
 
@@ -1057,7 +1054,7 @@ mod tests {
         let mat = mat.reshape(3, height as i32)?; // 3 channels (RGB)
 
         let mut mat_bgr = Mat::default();
-        opencv::imgproc::cvt_color(&mat, &mut mat_bgr, imgproc::COLOR_RGB2BGR, 0)?;
+        opencv::imgproc::cvt_color(&mat, &mut mat_bgr, imgproc::COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
         Ok(mat_bgr)
     }
 
