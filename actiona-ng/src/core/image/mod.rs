@@ -14,10 +14,6 @@ use opencv::{
     imgproc::{COLOR_RGB2BGR, COLOR_RGBA2BGRA, cvt_color},
 };
 
-opencv::opencv_has_inherent_feature_algorithm_hint! {{
-    use opencv::core::AlgorithmHint;
-}}
-
 use crate::core::{
     color::Color,
     point::{Point, point},
@@ -102,13 +98,17 @@ impl Image {
         let mat_boxed = Mat::from_slice(data)?;
         let mat = mat_boxed.reshape(3, height as i32)?;
         let mut mat_bgr = Mat::default();
+
+        (|| {
         opencv::opencv_has_inherent_feature_algorithm_hint! {
             {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
             } else {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)?;
-            };
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
+            }
         }
+        })()?;
+
         Ok(mat_bgr)
     }
 
@@ -118,13 +118,17 @@ impl Image {
         let mat_boxed = Mat::from_slice(data)?;
         let mat = mat_boxed.reshape(4, height as i32)?;
         let mut mat_bgr = Mat::default();
+
+        (|| {
         opencv::opencv_has_inherent_feature_algorithm_hint! {
             {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
             } else {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0)?;
-            };
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0)
+            }
         }
+        })()?;
+
         Ok(mat_bgr)
     }
 

@@ -1046,10 +1046,6 @@ mod tests {
     };
     use tracing_test::traced_test;
 
-    opencv::opencv_has_inherent_feature_algorithm_hint! {{
-        use opencv::core::AlgorithmHint;
-    }}
-
     use crate::runtime::Runtime;
 
     /// Convert `image::DynamicImage` to `opencv::core::Mat` in BGR format
@@ -1062,13 +1058,15 @@ mod tests {
 
         let mut mat_bgr = Mat::default();
 
+        (|| {
         opencv::opencv_has_inherent_feature_algorithm_hint! {
             {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, AlgorithmHint::ALGO_HINT_DEFAULT)?;
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
             } else {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)?;
-            };
+                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
+            }
         }
+        })()?;
 
         Ok(mat_bgr)
     }

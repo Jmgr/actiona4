@@ -77,27 +77,6 @@ pub enum Signal {
     Usr2,
 }
 
-impl From<Signal> for rustix::process::Signal {
-    fn from(signal: Signal) -> Self {
-        use rustix::process::Signal as RustixSignal;
-        match signal {
-            Signal::Hup => RustixSignal::HUP,
-            Signal::Int => RustixSignal::INT,
-            Signal::Quit => RustixSignal::QUIT,
-            Signal::Term => RustixSignal::TERM,
-            Signal::Kill => RustixSignal::KILL,
-            Signal::Stop => RustixSignal::STOP,
-            Signal::Tstp => RustixSignal::TSTP,
-            Signal::Cont => RustixSignal::CONT,
-            Signal::Ttin => RustixSignal::TTIN,
-            Signal::Ttou => RustixSignal::TTOU,
-            Signal::Winch => RustixSignal::WINCH,
-            Signal::Usr1 => RustixSignal::USR1,
-            Signal::Usr2 => RustixSignal::USR2,
-        }
-    }
-}
-
 #[derive(Debug, derive_more::Display)]
 pub enum Status {
     Idle,
