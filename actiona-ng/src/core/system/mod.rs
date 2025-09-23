@@ -18,6 +18,7 @@ pub mod hardware;
 pub mod memory;
 pub mod network;
 pub mod os;
+pub mod platform;
 pub mod processes;
 pub mod storage;
 
@@ -101,10 +102,13 @@ impl System {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
+    use tokio::{process::Command, time::sleep};
     use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan, prelude::*};
 
     use super::*;
-    use crate::runtime::Runtime;
+    use crate::{core::system::processes::Signal, runtime::Runtime};
 
     #[test]
     fn test_cpu_usage() {
@@ -112,6 +116,41 @@ mod tests {
             let system = System::new(runtime.task_tracker()).await.unwrap();
 
             assert!(*system.cpu().refresh_global_usage().await.unwrap() > 0.)
+        });
+    }
+
+    #[test]
+    fn test_signal() {
+        Runtime::test(async move |runtime| {
+            let system = System::new(runtime.task_tracker()).await.unwrap();
+
+            let child = Command::new("gnome-calculator")
+                .spawn()
+                .expect("failed to spawn xeyes");
+
+            let pid = child.id().unwrap(); // u32
+
+            println!("pid: {pid}");
+
+            sleep(Duration::from_secs(3)).await;
+
+            let result = system
+                .processes()
+                .send_signal_and_wait(pid, Signal::Term, runtime.cancellation_token())
+                .await
+                .unwrap();
+            println!("result: {result:?}");
+
+            sleep(Duration::from_secs(3)).await;
+
+            /*
+            let process = system.processes().from_pid(pid).await.unwrap().unwrap();
+            system
+                .processes()
+                .send_signal_and_wait(&process)
+                .await
+                .unwrap();
+            */
         });
     }
 
@@ -132,7 +171,7 @@ mod tests {
                 .with(fmt_layer)
                 .init();
 
-            let system = System::new(runtime.task_tracker()).await.unwrap();
+            let _system = System::new(runtime.task_tracker()).await.unwrap();
         });
     }
 }

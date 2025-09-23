@@ -6,15 +6,97 @@ use std::{
 
 use eyre::Result;
 use sysinfo::{Pid, ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
-use tokio_util::task::TaskTracker;
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::instrument;
 
+#[cfg(unix)]
+use super::platform::linux::ProcessSignalImpl;
+#[cfg(windows)]
+use super::platform::win::ProcessSignalImpl;
 use crate::{
-    core::system::storage::DiskUsage,
+    core::system::{platform::ProcessSignal, storage::DiskUsage},
     types::{
-        display_map, ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalSystemString, OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit, OsStringList, Percent, SystemTimeUnit
+        ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalSystemString,
+        OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit,
+        OsStringList, Percent, SystemTimeUnit, display_map,
     },
 };
+
+#[derive(Debug, Clone, Copy, derive_more::Display)]
+pub enum Signal {
+    /// `SIGHUP` — “hang up”. Traditionally sent when a terminal disconnects.
+    /// Commonly repurposed by daemons to mean “reload configuration”.
+    Hup,
+
+    /// `SIGINT` — “interrupt” (like pressing Ctrl-C). Asks the process to stop.
+    /// Processes can handle/ignore it.
+    Int,
+
+    /// `SIGQUIT` — “quit” (like Ctrl-\\ on many systems). Similar to `SIGINT`
+    /// but often triggers a core dump for diagnostics.
+    Quit,
+
+    /// `SIGTERM` — “terminate”. The *polite* way to ask a process to exit
+    /// cleanly; gives it a chance to shut down.
+    Term,
+
+    /// `SIGKILL` — “kill immediately”. Cannot be caught, blocked, or ignored.
+    /// Use as a last resort when `SIGTERM` fails.
+    Kill,
+
+    /// `SIGSTOP` — stop/suspend execution immediately (cannot be caught/ignored).
+    /// Kernel-enforced stop (not the same as `TSTP`). Resume with `SIGCONT`.
+    Stop,
+
+    /// `SIGTSTP` — terminal stop (like pressing Ctrl-Z). Job-control friendly,
+    /// can be caught/ignored. Resume with `SIGCONT`.
+    Tstp,
+
+    /// `SIGCONT` — continue a process that’s stopped (by `STOP`/`TSTP`/`TTIN`/`TTOU`).
+    /// Has no effect if the process isn’t stopped.
+    Cont,
+
+    /// `SIGTTIN` — background process attempted to read from its controlling TTY.
+    /// Typically stops the process (job control). Rarely sent manually but
+    /// included due to common job-control semantics.
+    Ttin,
+
+    /// `SIGTTOU` — background process attempted to write to its controlling TTY.
+    /// Typically stops the process (job control). Symmetric to `TTIN`.
+    Ttou,
+
+    /// `SIGWINCH` — window size change. Often used to notify TUI apps that the
+    /// terminal size changed; safe to nudge full-screen apps to reflow.
+    Winch,
+
+    /// `SIGUSR1` — user-defined signal #1. App-specific semantic (reload, rotate logs, etc.).
+    /// Check the target app’s docs.
+    Usr1,
+
+    /// `SIGUSR2` — user-defined signal #2. App-specific semantic, like `USR1`.
+    Usr2,
+}
+
+impl From<Signal> for rustix::process::Signal {
+    fn from(signal: Signal) -> Self {
+        use rustix::process::Signal as RustixSignal;
+        match signal {
+            Signal::Hup => RustixSignal::HUP,
+            Signal::Int => RustixSignal::INT,
+            Signal::Quit => RustixSignal::QUIT,
+            Signal::Term => RustixSignal::TERM,
+            Signal::Kill => RustixSignal::KILL,
+            Signal::Stop => RustixSignal::STOP,
+            Signal::Tstp => RustixSignal::TSTP,
+            Signal::Cont => RustixSignal::CONT,
+            Signal::Ttin => RustixSignal::TTIN,
+            Signal::Ttou => RustixSignal::TTOU,
+            Signal::Winch => RustixSignal::WINCH,
+            Signal::Usr1 => RustixSignal::USR1,
+            Signal::Usr2 => RustixSignal::USR2,
+        }
+    }
+}
 
 #[derive(Debug, derive_more::Display)]
 pub enum Status {
@@ -79,25 +161,25 @@ pub struct Process {
     env: OsStringList,
     cwd: OptionalPath,
     root: OptionalPath,
-    memory: ByteCount,         // dyn
-    virtual_memory: ByteCount, // dyn
+    memory: ByteCount,
+    virtual_memory: ByteCount,
     parent: OptionalU32,
-    status: Status, // dyn
+    status: Status,
     start_time: SystemTimeUnit,
     run_time: DurationUnit,             // dyn
     cpu_usage: Percent,                 // dyn
     accumulated_cpu_time: DurationUnit, // dyn
     disk_usage: DiskUsage,              // dyn
     user_id: OptionalUidUnit,
-    effective_user_id: OptionalUidUnit,  // Linux only
-    group_id: OptionalU32,           // Linux only
-    effective_group_id: OptionalU32, // Linux only
+    effective_user_id: OptionalUidUnit, // Linux only
+    group_id: OptionalU32,              // Linux only
+    effective_group_id: OptionalU32,    // Linux only
     session_id: OptionalU32,
     tasks: OptionalTaskList,         // Linux only
     thread_kind: OptionalThreadKind, // Linux only
     exists: bool,
-    open_files: OptionalUSize,       // dyn
-    open_files_limit: OptionalUSize, // dyn
+    open_files: OptionalUSize,
+    open_files_limit: OptionalUSize,
 }
 
 impl From<&sysinfo::Process> for Process {
@@ -199,6 +281,8 @@ pub struct Processes {
 
     #[derive_where(skip)]
     task_tracker: TaskTracker,
+
+    process_signal: ProcessSignalImpl,
 }
 
 impl Display for Processes {
@@ -224,6 +308,7 @@ impl Processes {
         Ok(Self {
             system: Arc::new(Mutex::new(system)),
             task_tracker,
+            process_signal: Default::default(),
         })
     }
 
@@ -288,4 +373,39 @@ impl Processes {
             .map(|(pid, process)| (pid.as_u32(), process.into()))
             .collect::<HashMap<_, _>>()
     }
+
+    pub fn send_signal(&self, pid: u32, signal: Signal) -> Result<()> {
+        ProcessSignalImpl::send_signal(pid, signal)
+    }
+
+    pub async fn send_signal_and_wait(
+        &self,
+        pid: u32,
+        signal: Signal,
+        cancellation_token: CancellationToken,
+    ) -> Result<Option<i32>> {
+        ProcessSignalImpl::send_signal_and_wait(pid, signal, cancellation_token).await
+    }
+
+    pub async fn from_pid(&self, pid: u32) -> Result<Option<Process>> {
+        let process_id = Pid::from_u32(pid);
+        let system = self.system.clone();
+        let result = self
+            .task_tracker
+            .spawn_blocking(move || {
+                let mut system = system.lock().unwrap();
+                system.refresh_processes_specifics(
+                    ProcessesToUpdate::Some(&[process_id]),
+                    false,
+                    ProcessRefreshKind::everything().without_tasks(),
+                );
+                system
+                    .process(process_id)
+                    .map(|process| Process::from(&*process))
+            })
+            .await?;
+        Ok(result)
+    }
+
+    // TODO: send signals to processes: process_signal
 }
