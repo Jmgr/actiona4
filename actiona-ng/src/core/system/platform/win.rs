@@ -1,3 +1,5 @@
+#![allow(unsafe_code)]
+
 use eyre::Result;
 
 use crate::core::system::platform::ProcessSignal;
@@ -18,3 +20,5 @@ impl ProcessSignal for ProcessSignalImpl {
         todo!()
     }
 }
+
+// TODO: "graceful" process kill

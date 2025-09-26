@@ -72,6 +72,7 @@ ipnet.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
+pe-parser.workspace = true
 
 [target.'cfg(unix)'.dependencies]
 memfd.workspace = true
