@@ -1,89 +1,93 @@
-use std::sync::Arc;
-
-use eyre::Result;
-use x11rb_async::{
-    protocol::xproto::{Atom, AtomEnum, ConnectionExt, GetPropertyReply, Window},
-    rust_connection::RustConnection,
+use std::{
+    fmt::Debug,
+    hash::{Hash, Hasher},
 };
 
-use crate::{core::displays::platform::x11, platform::x11::X11Connection};
+use derive_more::Deref;
+use libwmctl::{ErrorWrapper, windows};
 
-async fn get_utf8_prop(
-    connection: &RustConnection,
-    window: Window,
-    prop: u32,
-    utf8_atom: u32,
-) -> Result<Option<String>> {
-    let reply = connection
-        .get_property(false, window, prop, utf8_atom, 0, u32::MAX)
-        .await?
-        .reply()
-        .await?;
-    Ok(if reply.format == 8 && reply.type_ == utf8_atom {
-        Some(String::from_utf8(reply.value)?)
-    } else {
-        None
-    })
+use crate::core::windows::platform::{Error, Registry, Result, WindowId, WindowsHandler};
+
+#[derive(Deref, Clone)]
+struct WindowHandle(libwmctl::Window);
+
+impl Debug for WindowHandle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Window").field(&self.0.id).finish()
+    }
 }
 
-async fn get_any_prop(
-    connection: &RustConnection,
-    window: Window,
-    prop: u32,
-) -> Result<Option<String>> {
-    // Ask for any type; if STRING, treat as Latin-1
-    let reply: GetPropertyReply = connection
-        .get_property(false, window, prop, Atom::default(), 0, u32::MAX)
-        .await?
-        .reply()
-        .await?;
-
-    // STRING is Latin-1 per ICCCM; convert lossy to UTF-8
-    let string_atom: u8 = AtomEnum::STRING.into();
-    Ok(if reply.format == 8 && reply.type_ == string_atom as u32 {
-        Some(reply.value.iter().map(|&b| b as char).collect())
-    } else {
-        // COMPOUND_TEXT decoding is possible but non-trivial; skip here
-        None
-    })
+impl PartialEq for WindowHandle {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.id == other.0.id
+    }
 }
 
-pub async fn window_title(connection: &RustConnection, window: Window) -> Result<Option<String>> {
-    let utf8_atom = connection
-        .intern_atom(false, b"UTF8_STRING")
-        .await?
-        .reply()
-        .await?
-        .atom;
-    let net_wm_name = connection
-        .intern_atom(false, b"_NET_WM_NAME")
-        .await?
-        .reply()
-        .await?
-        .atom;
+impl Eq for WindowHandle {}
 
-    if let Some(title) = get_utf8_prop(connection, window, net_wm_name, utf8_atom).await? {
-        if !title.is_empty() {
-            return Ok(Some(title));
-        }
+impl Hash for WindowHandle {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.id.hash(state);
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct X11WindowHandler {
+    inner: Registry<WindowHandle>,
+}
+
+impl From<ErrorWrapper> for Error {
+    fn from(value: ErrorWrapper) -> Self {
+        Self::Other(value.into())
+    }
+}
+
+impl WindowsHandler for X11WindowHandler {
+    fn all_windows(&mut self) -> Result<Vec<WindowId>> {
+        let windows = windows(false)?;
+        let len = windows.len();
+
+        Ok(self
+            .inner
+            .update(windows.into_iter().map(|window| WindowHandle(window)), len))
     }
 
-    let result = get_any_prop(connection, window, AtomEnum::WM_NAME.into())
-        .await?
-        .map(|result| result.trim_end_matches('\0') .to_string()) // some WMs add NUL
-       ;
+    fn is_window_visible(&self, id: WindowId) -> Result<bool> {
+        let handle = self.inner.get_handle(id)?;
+        let state = handle.mapped()?;
 
-    Ok(result)
+        use libwmctl::MapState::*;
+        Ok(match state {
+            Unmapped | Unviewable => false,
+            Viewable => true,
+        })
+    }
+
+    fn window_title(&self, id: WindowId) -> Result<String> {
+        let handle = self.inner.get_handle(id)?;
+        Ok(handle.name()?)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use x11rb_async::connection::Connection;
-
     use super::*;
 
     #[tokio::test]
     async fn test_subsystem() {
+        let mut handler = X11WindowHandler::default();
+        println!(
+            "{:?}",
+            handler
+                .all_windows()
+                .unwrap()
+                .into_iter()
+                .map(|id| handler.window_title(id))
+                .collect::<Result<Vec<String>>>()
+                .unwrap()
+                .join(", ")
+        );
+
         /*
         let (conn, screen_num, reader) = RustConnection::connect(None).await.unwrap();
         tokio::spawn(reader);

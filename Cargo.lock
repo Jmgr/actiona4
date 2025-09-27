@@ -25,6 +25,7 @@ dependencies = [
  "arboard",
  "async-compat",
  "base64 0.22.1",
+ "bimap",
  "bytes",
  "cfg_aliases",
  "chrono",
@@ -589,6 +590,12 @@ checksum = "7cd228125315b132eed175bf47619ac79b945b26e56b848ba203ae4ea8603609"
 dependencies = [
  "scoped-tls",
 ]
+
+[[package]]
+name = "bimap"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "230c5f1ca6a325a32553f8640d31ac9b49f2411e901e427570154868b46da4f7"
 
 [[package]]
 name = "bincode"
