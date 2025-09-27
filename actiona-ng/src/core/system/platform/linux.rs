@@ -15,10 +15,7 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 
-use crate::{
-    CommonError::Cancelled,
-    core::system::{platform::ProcessSignal, processes::Signal},
-};
+use crate::{CommonError::Cancelled, core::system::processes::Signal};
 
 impl From<Signal> for rustix::process::Signal {
     fn from(signal: Signal) -> Self {
@@ -47,9 +44,9 @@ enum ProcessSignalErrors {
 }
 
 #[derive(Default, Debug)]
-pub struct ProcessSignalImpl {}
+pub struct ProcessSignal {}
 
-impl ProcessSignalImpl {
+impl ProcessSignal {
     async fn send_signal_and_wait_legacy(
         pid: u32,
         signal: Signal,
@@ -152,10 +149,8 @@ impl ProcessSignalImpl {
 
         Ok(status.exit_status())
     }
-}
 
-impl ProcessSignal for ProcessSignalImpl {
-    fn send_signal(pid: u32, signal: Signal) -> Result<()> {
+    pub fn send_signal(pid: u32, signal: Signal) -> Result<()> {
         let Some(pid) = Pid::from_raw(pid as i32) else {
             bail!("pid cannot be zero");
         };
@@ -165,7 +160,7 @@ impl ProcessSignal for ProcessSignalImpl {
         Ok(())
     }
 
-    async fn send_signal_and_wait(
+    pub async fn send_signal_and_wait(
         pid: u32,
         signal: Signal,
         cancellation_token: CancellationToken,

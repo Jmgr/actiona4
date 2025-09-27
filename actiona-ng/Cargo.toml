@@ -81,6 +81,7 @@ x11rb-async.workspace = true
 zbus.workspace = true
 rustix.workspace = true
 procfs.workspace = true
+libwmctl.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true

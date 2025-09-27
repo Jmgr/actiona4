@@ -10,11 +10,11 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::instrument;
 
 #[cfg(unix)]
-use super::platform::linux::ProcessSignalImpl;
+use super::platform::linux::ProcessSignal;
 #[cfg(windows)]
 use super::platform::win::ProcessSignalImpl;
 use crate::{
-    core::system::{platform::ProcessSignal, storage::DiskUsage},
+    core::system::storage::DiskUsage,
     types::{
         ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalSystemString,
         OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit,
@@ -261,7 +261,7 @@ pub struct Processes {
     #[derive_where(skip)]
     task_tracker: TaskTracker,
 
-    process_signal: ProcessSignalImpl,
+    process_signal: ProcessSignal,
 }
 
 impl Display for Processes {
@@ -353,17 +353,40 @@ impl Processes {
             .collect::<HashMap<_, _>>()
     }
 
+    /// Linux only
     pub fn send_signal(&self, pid: u32, signal: Signal) -> Result<()> {
-        ProcessSignalImpl::send_signal(pid, signal)
+        #[cfg(unix)]
+        {
+            ProcessSignal::send_signal(pid, signal)
+        }
+
+        #[cfg(windows)]
+        {
+            let _ = pid;
+            let _ = signal;
+            Err(eyre!("signals are not supported on Windows"))
+        }
     }
 
+    /// Linux only
     pub async fn send_signal_and_wait(
         &self,
         pid: u32,
         signal: Signal,
         cancellation_token: CancellationToken,
     ) -> Result<Option<i32>> {
-        ProcessSignalImpl::send_signal_and_wait(pid, signal, cancellation_token).await
+        #[cfg(unix)]
+        {
+            ProcessSignal::send_signal_and_wait(pid, signal, cancellation_token).await
+        }
+
+        #[cfg(windows)]
+        {
+            let _ = pid;
+            let _ = signal;
+            let _ = cancellation_token;
+            Err(eyre!("signals are not supported on Windows"))
+        }
     }
 
     pub async fn from_pid(&self, pid: u32) -> Result<Option<Process>> {

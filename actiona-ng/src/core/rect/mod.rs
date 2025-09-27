@@ -1,7 +1,10 @@
+use std::fmt::Display;
+
 use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, point};
+use crate::types::DisplayFields;
 
 pub mod js;
 
@@ -25,6 +28,17 @@ pub fn rect<X: ToPrimitive, Y: ToPrimitive, Width: ToPrimitive, Height: ToPrimit
         width.to_u32().unwrap_or(0),
         height.to_u32().unwrap_or(0),
     )
+}
+
+impl Display for Rect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("x", self.x)
+            .display("y", self.y)
+            .display("width", self.width)
+            .display("height", self.height)
+            .finish(f)
+    }
 }
 
 impl Rect {

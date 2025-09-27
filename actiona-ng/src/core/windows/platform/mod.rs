@@ -1,5 +1,5 @@
 #[cfg(unix)]
-pub mod linux;
+pub mod x11;
 
 #[cfg(windows)]
 pub mod win;

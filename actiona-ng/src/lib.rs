@@ -1,12 +1,8 @@
-//#![recursion_limit = "1024"] // TODO: is this still needed?
 //#![warn(clippy::all, clippy::dbg_macro, clippy::float_cmp_const, clippy::get_unwrap, clippy::mem_forget, clippy::nursery, clippy::pedantic)]
 #![warn(clippy::all, clippy::nursery)]
 #![deny(unsafe_code)]
 
 use rquickjs::{Ctx, Exception};
-pub use slotmap::{
-    Key as SlotmapKey, KeyData as SlotmapKeyData, SecondaryMap as SlotmapSecondaryMap,
-};
 use tokio_util::sync::CancellationToken;
 
 use crate::error::{CommonError, Error};

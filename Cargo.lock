@@ -51,6 +51,7 @@ dependencies = [
  "infer",
  "ipnet",
  "itertools 0.14.0",
+ "libwmctl",
  "macros",
  "memfd",
  "mime",
@@ -3143,6 +3144,16 @@ checksum = "3c8469b4a23b962c1396b9b451dda50ef5b283e8dd309d69033475fa9b334324"
 dependencies = [
  "libc",
  "pkg-config",
+]
+
+[[package]]
+name = "libwmctl"
+version = "0.0.51"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d1c8553616315f53ce8299534a441a06f86dcef601bbef040b50cc935914113e"
+dependencies = [
+ "tracing",
+ "x11rb",
 ]
 
 [[package]]

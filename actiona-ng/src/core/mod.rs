@@ -22,6 +22,7 @@ pub mod rect;
 pub mod screenshot;
 pub mod system;
 pub mod web;
+pub mod windows;
 
 #[cfg(feature = "slint")]
 pub mod ui;

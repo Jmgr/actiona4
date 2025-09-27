@@ -5,7 +5,7 @@ use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use tween::TweenValue;
 
-use crate::runtime::shared_rng::SharedRng;
+use crate::{runtime::shared_rng::SharedRng, types::DisplayFields};
 
 pub mod js;
 
@@ -19,6 +19,15 @@ pub fn point<X: ToPrimitive, Y: ToPrimitive>(x: X, y: Y) -> Point {
     Point {
         x: x.to_i32().unwrap_or(0),
         y: y.to_i32().unwrap_or(0),
+    }
+}
+
+impl Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("x", self.x)
+            .display("y", self.y)
+            .finish(f)
     }
 }
 
@@ -78,11 +87,5 @@ impl Point {
             x: (self.x as f32 * factor).round() as i32,
             y: (self.y as f32 * factor).round() as i32,
         }
-    }
-}
-
-impl Display for Point {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.x, self.y)
     }
 }
