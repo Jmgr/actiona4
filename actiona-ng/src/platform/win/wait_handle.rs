@@ -22,7 +22,7 @@ use windows::{
     core::Error,
 };
 
-use crate::{core::system::platform::ProcessSignal, platform::win::safe_handle::SafeHandle};
+use crate::platform::win::safe_handle::SafeHandle;
 
 struct Waiting {
     rx: oneshot::Receiver<()>,

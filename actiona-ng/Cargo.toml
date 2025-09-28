@@ -74,6 +74,7 @@ bimap.workspace = true
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
 pe-parser.workspace = true
+windows-result.workspace = true
 
 [target.'cfg(unix)'.dependencies]
 memfd.workspace = true

@@ -5,14 +5,15 @@ use std::{
 };
 
 use eyre::Result;
+use eyre::eyre;
 use sysinfo::{Pid, ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::instrument;
 
 #[cfg(unix)]
 use super::platform::linux::ProcessSignal;
-#[cfg(windows)]
-use super::platform::win::ProcessSignalImpl;
+//#[cfg(windows)]
+//use super::platform::win::ProcessSignal;
 use crate::{
     core::system::storage::DiskUsage,
     types::{
@@ -261,6 +262,7 @@ pub struct Processes {
     #[derive_where(skip)]
     task_tracker: TaskTracker,
 
+    #[cfg(unix)]
     process_signal: ProcessSignal,
 }
 
@@ -287,6 +289,7 @@ impl Processes {
         Ok(Self {
             system: Arc::new(Mutex::new(system)),
             task_tracker,
+            #[cfg(unix)]
             process_signal: Default::default(),
         })
     }

@@ -55,11 +55,13 @@ impl<H: Clone + Eq + Hash> Default for Registry<H> {
 }
 
 impl<H: Clone + Eq + Hash> Registry<H> {
-    pub fn update(&mut self, handles: impl IntoIterator<Item = H>, len: usize) -> Vec<WindowId> {
-        let mut window_ids = Vec::with_capacity(len);
-        let mut existing_handles = HashSet::with_capacity(len);
+    pub fn update(&mut self, handles: impl IntoIterator<Item = H>) -> Vec<WindowId> {
+        let iter = handles.into_iter();
+        let (lower, _upper) = iter.size_hint();
+        let mut window_ids = Vec::with_capacity(lower);
+        let mut existing_handles = HashSet::with_capacity(lower);
 
-        for window_handle in handles.into_iter() {
+        for window_handle in iter {
             existing_handles.insert(window_handle.clone());
 
             if let Some(existing) = self.map.get_by_right(&window_handle).copied() {

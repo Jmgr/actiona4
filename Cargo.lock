@@ -97,6 +97,7 @@ dependencies = [
  "tween",
  "wildmatch",
  "windows 0.62.0",
+ "windows-result 0.4.0",
  "x11rb-async",
  "zbus",
 ]
