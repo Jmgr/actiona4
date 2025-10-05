@@ -43,7 +43,7 @@ enum ProcessSignalErrors {
     Other(eyre::ErrReport),
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug, Default)]
 pub struct ProcessSignal {}
 
 impl ProcessSignal {

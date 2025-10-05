@@ -8,7 +8,7 @@ use crate::types::DisplayFields;
 
 pub mod js;
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Rect {
     pub x: i32,
     pub y: i32,
@@ -125,6 +125,19 @@ impl Rect {
             self.x + self.width as i32 / 2,
             self.y + self.height as i32 / 2,
         )
+    }
+
+    pub fn top_left(&self) -> Point {
+        point(self.x, self.y)
+    }
+
+    pub fn bottom_right(&self) -> Point {
+        point(self.x + self.width as i32, self.y + self.height as i32)
+    }
+
+    // TODO: create a new type
+    pub fn size(&self) -> Point {
+        point(self.width, self.height)
     }
 
     pub const fn surface(&self) -> u32 {

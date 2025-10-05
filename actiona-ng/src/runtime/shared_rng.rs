@@ -9,7 +9,7 @@ use rand::{
 };
 use rand_chacha::{ChaCha8Rng, rand_core::SeedableRng};
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct SharedRng(Arc<Mutex<ChaCha8Rng>>);
 
 impl Default for SharedRng {

@@ -14,7 +14,7 @@ use crate::core::js::classes::ValueClass;
 /// @prop readonly is_directory: boolean
 /// @prop readonly is_symlink: boolean
 /// @prop readonly size: number
-#[derive(Clone, Debug, Default, PartialEq, Eq, JsLifetime, Trace)]
+#[derive(Clone, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class(rename = "DirectoryEntry")]
 pub struct JsDirectoryEntry {
     pub path: String,

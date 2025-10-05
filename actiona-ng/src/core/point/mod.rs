@@ -9,7 +9,7 @@ use crate::{runtime::shared_rng::SharedRng, types::DisplayFields};
 
 pub mod js;
 
-#[derive(Add, Clone, Copy, Debug, Deserialize, Mul, PartialEq, Eq, Serialize, Sub)]
+#[derive(Add, Clone, Copy, Debug, Default, Deserialize, Eq, Mul, PartialEq, Serialize, Sub)]
 pub struct Point {
     pub x: i32,
     pub y: i32,

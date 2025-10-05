@@ -53,7 +53,7 @@ impl<'js> FromParam<'js> for JsPointParam {
 /// ```js
 /// let p = new Point(1, 2);
 /// ```
-#[derive(Clone, Copy, Debug, JsLifetime, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Point")]
 pub struct JsPoint {
     inner: super::Point,

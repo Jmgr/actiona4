@@ -68,7 +68,7 @@ impl Display for CpuCore {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 struct CpuVariant {
     vendor: String,
     brand: String,

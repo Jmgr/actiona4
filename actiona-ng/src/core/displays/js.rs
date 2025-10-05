@@ -118,7 +118,7 @@ impl JsDisplays {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "DisplayInfo")]
 pub struct JsDisplayInfo {
-    inner: runtime::DisplayInfo,
+    inner: runtime::events::DisplayInfo,
 }
 
 impl ValueClass<'_> for JsDisplayInfo {}
@@ -127,8 +127,8 @@ impl<'js> Trace<'js> for JsDisplayInfo {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl From<runtime::DisplayInfo> for JsDisplayInfo {
-    fn from(value: runtime::DisplayInfo) -> Self {
+impl From<runtime::events::DisplayInfo> for JsDisplayInfo {
+    fn from(value: runtime::events::DisplayInfo) -> Self {
         Self { inner: value }
     }
 }

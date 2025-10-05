@@ -189,6 +189,7 @@ mod tests {
         time::Duration,
     };
 
+    use derive_more::From;
     use indicatif::ProgressBar;
     use rquickjs::{
         Ctx, IntoJs, JsLifetime, Promise, Result, Value,
@@ -213,14 +214,8 @@ mod tests {
 
     // TODO: skip everything in "tests" mod
     /// @skip
-    #[derive(Debug, Default, Clone, Copy)]
+    #[derive(Clone, Copy, Debug, Default, From)]
     pub struct ProgressValue(pub i32);
-
-    impl From<i32> for ProgressValue {
-        fn from(value: i32) -> Self {
-            Self(value)
-        }
-    }
 
     impl IsDone for ProgressValue {
         fn is_done(&self) -> bool {

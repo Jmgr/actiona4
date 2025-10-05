@@ -39,7 +39,7 @@ impl<'js> Trace<'js> for super::Ui {
 
 /// Window options
 /// @options
-#[derive(Clone, Debug, FromJsObject, Default)]
+#[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsWindowOptions {
     display: Option<JsDisplayInfo>, // TODO: add position
     position: Option<JsPoint>,

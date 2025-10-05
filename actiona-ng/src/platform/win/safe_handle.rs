@@ -7,7 +7,7 @@ use windows::Win32::{
 };
 
 #[repr(transparent)]
-#[derive(derive_more::Deref)]
+#[derive(Deref)]
 pub struct SafeHandle {
     inner: HANDLE,
 }
@@ -32,7 +32,7 @@ impl From<HANDLE> for SafeHandle {
 }
 
 #[repr(transparent)]
-#[derive(derive_more::Deref)]
+#[derive(Deref)]
 pub struct SafeDesktopHandle {
     inner: HDESK,
 }

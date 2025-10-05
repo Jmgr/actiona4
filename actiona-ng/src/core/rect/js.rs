@@ -52,7 +52,7 @@ impl<'js> FromParam<'js> for JsRectParam {
     }
 }
 
-#[derive(Clone, Copy, Debug, JsLifetime, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Rect")]
 pub struct JsRect {
     inner: super::Rect,

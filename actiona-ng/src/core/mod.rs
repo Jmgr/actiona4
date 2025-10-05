@@ -103,7 +103,7 @@ pub(crate) mod test_helpers {
         temp_dir().join(format!("text_{}.txt", random_name()))
     }
 
-    #[derive(Debug, Default, Clone, JsLifetime, Trace)]
+    #[derive(Clone, Debug, Default, JsLifetime, Trace)]
     #[rquickjs::class(rename = "Counter")]
     pub struct JsCounter {
         count: u64,

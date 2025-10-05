@@ -10,6 +10,7 @@ use std::{
 
 use bytes::Bytes;
 use convert_case::{Case, Casing};
+use derive_more::Display;
 use encoding_rs::{Encoding, UTF_8};
 use eyre::Result;
 use futures::{Stream, StreamExt, TryStreamExt};
@@ -40,9 +41,7 @@ use crate::{
 
 pub mod js;
 
-#[derive(
-    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace, Default,
-)]
+#[derive(Clone, Copy, Debug, Default, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class]
 pub enum Method {
     #[default]
@@ -332,7 +331,7 @@ impl Body {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum Progress {
     #[default]
     Inactive,

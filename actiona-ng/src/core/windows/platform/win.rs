@@ -1,21 +1,26 @@
 #![allow(unsafe_code)]
 
-use derive_more::Deref;
-use std::fmt::Debug;
-use std::hash::{Hash, Hasher};
-use windows::Win32::Foundation::{HWND, LPARAM};
-use windows::Win32::System::StationsAndDesktops::{
-    DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
+use std::{
+    fmt::Debug,
+    hash::{Hash, Hasher},
 };
-use windows::Win32::UI::WindowsAndMessaging::{
-    GetWindowTextLengthW, GetWindowTextW, IsWindowVisible,
+
+use derive_more::Deref;
+use windows::Win32::{
+    Foundation::{HWND, LPARAM},
+    System::StationsAndDesktops::{
+        DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
+    },
+    UI::WindowsAndMessaging::{GetWindowTextLengthW, GetWindowTextW, IsWindowVisible},
 };
 use windows_result::BOOL;
 
-use crate::core::windows::platform::{Error, Registry, Result, WindowId, WindowsHandler};
-use crate::platform::win::safe_handle::SafeDesktopHandle;
+use crate::{
+    core::windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
+    platform::win::safe_handle::SafeDesktopHandle,
+};
 
-#[derive(Deref, Clone, PartialEq, Eq)]
+#[derive(Clone, Deref, Eq, PartialEq)]
 struct WindowHandle(HWND);
 
 impl Debug for WindowHandle {
@@ -52,7 +57,7 @@ unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
 }
 
 impl WindowsHandler for WindowsWindowHandler {
-    fn all_windows(&mut self) -> Result<Vec<WindowId>> {
+    fn all(&mut self) -> Result<Vec<WindowId>> {
         let mut result = Vec::new();
         let result_ptr = &mut result as *mut Vec<HWND>;
         unsafe {
@@ -68,12 +73,12 @@ impl WindowsHandler for WindowsWindowHandler {
             .update(result.into_iter().map(|window| WindowHandle(window))))
     }
 
-    fn is_window_visible(&self, id: WindowId) -> Result<bool> {
+    fn is_visible(&self, id: WindowId) -> Result<bool> {
         let handle = self.inner.get_handle(id)?;
         Ok(unsafe { IsWindowVisible(**handle).as_bool() })
     }
 
-    fn window_title(&self, id: WindowId) -> Result<String> {
+    fn title(&self, id: WindowId) -> Result<String> {
         let handle = self.inner.get_handle(id)?;
 
         let len = unsafe { GetWindowTextLengthW(**handle) };

@@ -4,8 +4,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::Result;
-use eyre::eyre;
+use derive_more::Display;
+use eyre::{Result, eyre};
 use sysinfo::{Pid, ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::instrument;
@@ -23,7 +23,8 @@ use crate::{
     },
 };
 
-#[derive(Debug, Clone, Copy, derive_more::Display)]
+/// TODO: Linux only
+#[derive(Clone, Copy, Debug, Display)]
 pub enum Signal {
     /// `SIGHUP` — “hang up”. Traditionally sent when a terminal disconnects.
     /// Commonly repurposed by daemons to mean “reload configuration”.
@@ -78,7 +79,7 @@ pub enum Signal {
     Usr2,
 }
 
-#[derive(Debug, derive_more::Display)]
+#[derive(Debug, Display)]
 pub enum Status {
     Idle,
     Run,
@@ -116,7 +117,7 @@ impl From<sysinfo::ProcessStatus> for Status {
     }
 }
 
-#[derive(Debug, Clone, derive_more::Display)]
+#[derive(Clone, Debug, Display)]
 pub enum ThreadKind {
     Kernel,
     Userland,

@@ -1,12 +1,15 @@
 use std::sync::Arc;
 
 use tokio::select;
-use x11rb_async::protocol::xinput::{
-    Device, DeviceType, XIEventMask, xi_query_device, xi_query_pointer,
-};
+use tokio_util::sync::CancellationToken;
+use x11rb_async::protocol::xinput::{Device, DeviceType, xi_query_device, xi_query_pointer};
 
 use super::{Button, MouseImplTrait, Result};
-use crate::{core::mouse::MouseError, runtime::Runtime};
+use crate::{
+    core::mouse::{ButtonConditions, MouseError},
+    error::CommonError,
+    runtime::{Runtime, events::MouseButtonEvent},
+};
 
 #[derive(Debug)]
 pub struct MouseImpl {
@@ -29,7 +32,7 @@ impl Button {
 impl MouseImpl {
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         let x11_connection = runtime.platform().x11_connection();
-        let cookie = xi_query_device(x11_connection.connection(), Device::ALL_MASTER)
+        let cookie = xi_query_device(x11_connection.async_connection(), Device::ALL_MASTER)
             .await
             .unwrap();
         let reply = cookie.reply().await.unwrap();
@@ -42,42 +45,12 @@ impl MouseImpl {
             }
         }
 
-        let master_pointer_device_id = master_pointer_device_id.unwrap(); // TODO        
-
-        let mut event_receiver = runtime.subcribe_events();
-
-        let cancellation_token = runtime.cancellation_token();
-
-        runtime.task_tracker().spawn(async move {
-            loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    event = event_receiver.recv() => {
-                        let Ok(_event) = event else {
-                            break;
-                        };
-
-                        /*
-                        match event {
-                            RecordEvent::MouseButton(_button, _direction) => {
-                                // TODO
-                            }
-                            _ => (),
-                        }
-                        */
-                    }
-                }
-            }
-        });
+        let master_pointer_device_id = master_pointer_device_id.unwrap(); // TODO
 
         Ok(Self {
             runtime,
             master_pointer_device_id,
         })
-    }
-
-    pub fn xinput_event_mask() -> XIEventMask {
-        XIEventMask::RAW_BUTTON_PRESS | XIEventMask::RAW_BUTTON_RELEASE
     }
 }
 
@@ -87,7 +60,7 @@ impl MouseImplTrait for MouseImpl {
         let master_pointer_device_id = self.master_pointer_device_id;
 
         let cookie = xi_query_pointer(
-            x11_connection.connection(),
+            x11_connection.async_connection(),
             x11_connection.screen().root,
             master_pointer_device_id,
         )
@@ -105,5 +78,41 @@ impl MouseImplTrait for MouseImpl {
         })?;
 
         Ok(mask & button.into_button_mask() != 0)
+    }
+
+    async fn wait_for_button(
+        &self,
+        conditions: ButtonConditions,
+        cancellation_token: CancellationToken,
+    ) -> Result<MouseButtonEvent> {
+        let guard = self.runtime.platform().subscribe_mouse_buttons();
+        let mut receiver = guard.subscribe();
+        let runtime_cancellation_token = self.runtime.cancellation_token();
+        loop {
+            let event = select! {
+                _ = runtime_cancellation_token.cancelled() => { break; }
+                _ = cancellation_token.cancelled() => { break; }
+                event = receiver.recv() => { event }
+            };
+
+            let Ok(event) = event else {
+                break;
+            };
+
+            let button_result = match conditions.button {
+                None => true,
+                Some(button) => button == event.button,
+            };
+            let direction_result = match conditions.direction {
+                None => true,
+                Some(direction) => direction == event.direction,
+            };
+
+            if button_result && direction_result {
+                return Ok(event);
+            }
+        }
+
+        Err(CommonError::Cancelled.into())
     }
 }

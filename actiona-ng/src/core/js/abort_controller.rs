@@ -6,7 +6,7 @@ use crate::{
     runtime::WithUserData,
 };
 
-#[derive(Debug, Clone, JsLifetime)]
+#[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "AbortSignal")]
 pub struct JsAbortSignal {
     token: CancellationToken,
@@ -96,7 +96,7 @@ mod tests {
         runtime::Runtime,
     };
 
-    #[derive(Default, Debug, Clone, JsLifetime)]
+    #[derive(Clone, Debug, Default, JsLifetime)]
     #[rquickjs::class]
     pub struct TestStruct {
         has_run: Arc<AtomicBool>,

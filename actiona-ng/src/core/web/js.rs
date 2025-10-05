@@ -131,7 +131,7 @@ impl JsWebOptions {
     }
 }
 
-#[derive(Debug, Clone, Copy, JsLifetime, Trace, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class(rename = "WebProgress")]
 pub struct JsWebProgress {
     total: u64,

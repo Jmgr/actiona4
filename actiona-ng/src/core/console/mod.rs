@@ -2,5 +2,5 @@ use std::fmt::Debug;
 
 pub mod js;
 
-#[derive(Default, Debug)]
+#[derive(Debug, Default)]
 pub struct Console {}

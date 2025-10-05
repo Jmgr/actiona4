@@ -152,7 +152,7 @@ impl TryFrom<char> for PlatformConstraint {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Display)]
+#[derive(Clone, Debug, Display, PartialEq)]
 pub enum PlatformType {
     Linux,
     Windows,

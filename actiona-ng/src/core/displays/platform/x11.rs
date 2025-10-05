@@ -12,8 +12,4 @@ impl DisplaysImpl {
     pub fn new(_runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self {})
     }
-
-    pub const fn randr_event_mask() -> NotifyMask {
-        NotifyMask::SCREEN_CHANGE
-    }
 }

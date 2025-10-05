@@ -401,7 +401,7 @@ mod tests {
     // Helper JS class we sometimes expose to JS for sleeps / debug printing.
     // ──────────────────────────────────────────────────────────────────────────
     #[rquickjs::class]
-    #[derive(Debug, rquickjs::class::Trace, rquickjs::JsLifetime)]
+    #[derive(Debug, rquickjs::JsLifetime, rquickjs::class::Trace)]
     struct Helper {}
 
     #[rquickjs::methods]

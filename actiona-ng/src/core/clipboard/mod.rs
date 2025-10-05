@@ -4,6 +4,7 @@ use std::{borrow::Cow, fmt::Debug};
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
 use convert_case::{Case, Casing};
+use derive_more::Display;
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
 use macros::ExposeEnum;
@@ -14,7 +15,7 @@ use crate::{core::image::Image, error::CommonError};
 
 pub mod js;
 
-#[derive(Error, Debug)]
+#[derive(Debug, Error)]
 pub enum Error {
     #[error(transparent)]
     CommonError(#[from] CommonError),
@@ -42,9 +43,7 @@ impl From<arboard::Error> for Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(
-    Clone, Copy, Debug, Default, derive_more::Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace,
-)]
+#[derive(Clone, Copy, Debug, Default, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class]
 pub enum ClipboardMode {
     #[default]

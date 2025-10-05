@@ -29,7 +29,10 @@ use crate::{
         rect::{Rect, rect},
     },
     platform::x11::X11Connection,
-    runtime::{DisplayInfo, DisplayInfoVec, RecordEvent, Runtime},
+    runtime::{
+        Runtime,
+        events::{DisplayInfo, DisplayInfoVec, LatestOnlySignals, ReceiverGuard},
+    },
 };
 
 #[derive(Debug)]
@@ -50,7 +53,7 @@ impl Drop for ShmData {
 
         let _ = Runtime::block_on(
             self.x11_connection
-                .connection()
+                .async_connection()
                 .shm_detach(self.shm_segment_id),
         );
         unsafe {
@@ -77,7 +80,7 @@ impl Display {
         let image_size = (rect.width as usize) * (rect.height as usize) * BYTES_PER_PIXEL;
 
         let shm_data = if runtime.platform().has_shm() {
-            let shm_segment_id = x11_connection.connection().generate_id().await?;
+            let shm_segment_id = x11_connection.async_connection().generate_id().await?;
 
             let memfd = MemfdOptions::default()
                 .allow_sealing(true)
@@ -110,7 +113,7 @@ impl Display {
 
             let owned_fd: OwnedFd = memfd.into_file().into();
             x11_connection
-                .connection()
+                .async_connection()
                 .shm_attach_fd(shm_segment_id, owned_fd, false)
                 .await?;
 
@@ -132,7 +135,7 @@ impl Display {
         let root = self.x11_connection.screen().root;
 
         self.x11_connection
-            .connection()
+            .async_connection()
             .shm_get_image(
                 root,
                 self.rect.x as i16,
@@ -173,12 +176,11 @@ impl Display {
 pub struct ScreenshotImpl {
     display_map: Arc<Mutex<HashMap<u32, Display>>>,
     x11_connection: Arc<X11Connection>,
+    screen_change_guard: ReceiverGuard<DisplayInfoVec, LatestOnlySignals<DisplayInfoVec>>,
 }
 
 impl ScreenshotImpl {
     pub async fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> Result<Self> {
-        let mut event_receiver = runtime.subcribe_events();
-
         let display_map = Arc::new(Mutex::new(HashMap::new()));
         let local_display_map = display_map.clone();
 
@@ -186,32 +188,6 @@ impl ScreenshotImpl {
 
         let x11_connection = runtime.platform().x11_connection();
         let local_x11_connection = x11_connection.clone();
-
-        let cancellation_token = runtime.cancellation_token();
-
-        runtime.task_tracker().spawn(async move {
-            loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    event = event_receiver.recv() => {
-                        let Ok(event) = event else {
-                            break;
-                        };
-
-                        if let RecordEvent::DisplayChanged(displays_info) = event {
-                            Self::update_displays(
-                                local_runtime.clone(),
-                                local_display_map.clone(),
-                                displays_info,
-                                local_x11_connection.clone(),
-                            )
-                            .await
-                            .unwrap();
-                        }
-                    }
-                }
-            }
-        });
 
         let displays_info = {
             let displays_info = displays.displays_info().lock().unwrap();
@@ -226,9 +202,36 @@ impl ScreenshotImpl {
         )
         .await?;
 
+        let cancellation_token = runtime.cancellation_token();
+        let screen_change_guard = local_runtime.platform().subscribe_screen_change();
+        let mut screen_change_receiver = screen_change_guard.subscribe();
+
+        runtime.task_tracker().spawn(async move {
+            loop {
+                select! {
+                    _ = cancellation_token.cancelled() => { break; }
+                    event = screen_change_receiver.changed() => {
+                        if event.is_err() { break; }
+                    }
+                }
+
+                let displays_info = screen_change_receiver.borrow_and_update().clone();
+
+                Self::update_displays(
+                    local_runtime.clone(),
+                    local_display_map.clone(),
+                    displays_info,
+                    local_x11_connection.clone(),
+                )
+                .await
+                .unwrap();
+            }
+        });
+
         let result = Self {
             display_map,
             x11_connection,
+            screen_change_guard,
         };
 
         Ok(result)
@@ -306,7 +309,7 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
     let root = x11_connection.screen().root;
 
     let reply = x11_connection
-        .connection()
+        .async_connection()
         .get_image(
             ImageFormat::Z_PIXMAP,
             root,

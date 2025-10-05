@@ -80,6 +80,7 @@ windows-result.workspace = true
 memfd.workspace = true
 nix.workspace = true
 x11rb-async.workspace = true
+x11rb.workspace = true
 zbus.workspace = true
 rustix.workspace = true
 procfs.workspace = true

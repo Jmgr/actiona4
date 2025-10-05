@@ -140,7 +140,7 @@ impl Default for JsBlurOptions {
 
 /// Draw image options
 /// @options
-#[derive(Clone, Copy, Debug, FromJsObject, Default)]
+#[derive(Clone, Copy, Debug, Default, FromJsObject)]
 pub struct JsDrawImageOptions {
     /// Source rectangle
     /// @default Whole image
@@ -176,7 +176,7 @@ impl Default for JsRotationOptions {
 
 /// Drawing options
 /// @options
-#[derive(Clone, Copy, Debug, FromJsObject, Default)]
+#[derive(Clone, Copy, Debug, Default, FromJsObject)]
 pub struct JsDrawingOptions {
     /// Draw a hollow shape instead of a filled one
     /// @default false

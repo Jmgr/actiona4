@@ -1,11 +1,12 @@
 use thiserror::Error;
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use x11rb::rust_connection::RustConnection;
 use x11rb_async::{
-    connection::Connection,
+    connection::Connection as AsyncConnection,
     errors::{ConnectError, ConnectionError, ReplyError},
     protocol::xproto::Screen,
-    rust_connection::RustConnection,
+    rust_connection::RustConnection as AsyncRustConnection,
 };
 
 #[allow(clippy::enum_variant_names)]
@@ -43,6 +44,7 @@ pub type Result<T> = std::result::Result<T, X11Error>;
 
 #[derive(Debug)]
 pub struct X11Connection {
+    async_connection: AsyncRustConnection,
     connection: RustConnection,
     screen: Screen,
     screen_index: usize,
@@ -53,8 +55,11 @@ impl X11Connection {
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
     ) -> Result<Self> {
-        let (connection, screen_index, packet_reader) = RustConnection::connect(None).await?;
-        let screen = connection.setup().roots[screen_index].clone();
+        let (async_connection, screen_index, packet_reader) =
+            AsyncRustConnection::connect(None).await?;
+        let screen = async_connection.setup().roots[screen_index].clone();
+
+        let (connection, _) = RustConnection::connect(None)?;
 
         let local_cancellation_token = cancellation_token.clone();
         task_tracker.spawn(async move {
@@ -65,13 +70,18 @@ impl X11Connection {
         });
 
         Ok(Self {
+            async_connection,
             connection,
             screen,
             screen_index,
         })
     }
 
-    pub const fn connection(&self) -> &RustConnection {
+    pub const fn async_connection(&self) -> &AsyncRustConnection {
+        &self.async_connection
+    }
+
+    pub const fn sync_connection(&self) -> &RustConnection {
         &self.connection
     }
 

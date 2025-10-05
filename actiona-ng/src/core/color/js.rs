@@ -1,3 +1,4 @@
+use derive_more::{From, Into};
 use image::Rgba;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Object, Result, Value,
@@ -210,7 +211,7 @@ impl<'js> FromParam<'js> for JsColorParam {
 /// ```js
 /// let c = new Color(128, 255, 255, 255);
 /// ```
-#[derive(Clone, Copy, Debug, JsLifetime, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Color")]
 pub struct JsColor {
     inner: super::Color,

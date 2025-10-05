@@ -1,19 +1,12 @@
-use std::{
-    ops::{Deref, DerefMut},
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use async_compat::Compat;
+use derive_more::{Deref, DerefMut};
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
-use tokio::{
-    runtime::Handle,
-    select, signal,
-    sync::broadcast::{self, Receiver, Sender},
-    task::block_in_place,
-};
+use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 #[cfg(feature = "slint")]
@@ -35,7 +28,7 @@ use crate::{
             global,
         },
         keyboard::js::JsKeyboard,
-        mouse::{Button, js::JsMouse},
+        mouse::js::JsMouse,
         name::js::{JsName, JsWildcard},
         path::js::JsPath,
         point::js::JsPoint,
@@ -48,6 +41,7 @@ use crate::{
     scripting::Engine as ScriptEngine,
 };
 
+pub mod events;
 pub mod platform;
 pub mod shared_rng;
 
@@ -55,83 +49,6 @@ pub mod shared_rng;
 use platform::win;
 #[cfg(unix)]
 use platform::x11;
-
-// This is the same as display_info::DisplayInfo, but without the pointer to the raw monitor handle, since it is not Send.
-#[derive(Clone, Debug)]
-pub struct DisplayInfo {
-    /// Unique identifier associated with the display.
-    pub id: u32,
-    /// The display name
-    pub name: String,
-    /// The display friendly name
-    pub friendly_name: String,
-    /// The display pixel rectangle.
-    pub rect: Rect,
-    /// The width of a display in millimeters. This value may be 0.
-    pub width_mm: i32,
-    /// The height of a display in millimeters. This value may be 0.
-    pub height_mm: i32,
-    /// Can be 0, 90, 180, 270, represents screen rotation in clock-wise degrees.
-    pub rotation: f32,
-    /// Output device's pixel scale factor.
-    pub scale_factor: f32,
-    /// The display refresh rate.
-    pub frequency: f32,
-    /// Whether the screen is the main screen
-    pub is_primary: bool,
-}
-
-impl From<display_info::DisplayInfo> for DisplayInfo {
-    fn from(value: display_info::DisplayInfo) -> Self {
-        Self {
-            id: value.id,
-            name: value.name,
-            friendly_name: value.friendly_name,
-            rect: rect(value.x, value.y, value.width, value.height),
-            width_mm: value.width_mm,
-            height_mm: value.height_mm,
-            rotation: value.rotation,
-            scale_factor: value.scale_factor,
-            frequency: value.frequency,
-            is_primary: value.is_primary,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct DisplayInfoVec(pub Vec<DisplayInfo>);
-
-impl Deref for DisplayInfoVec {
-    type Target = Vec<DisplayInfo>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for DisplayInfoVec {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl From<Vec<display_info::DisplayInfo>> for DisplayInfoVec {
-    fn from(value: Vec<display_info::DisplayInfo>) -> Self {
-        Self(value.iter().cloned().map(|info| info.into()).collect_vec())
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum Direction {
-    Pressed,
-    Released,
-}
-
-#[derive(Clone, Debug)]
-pub enum RecordEvent {
-    MouseButton(Button, Direction),
-    DisplayChanged(DisplayInfoVec),
-}
 
 pub(crate) trait WithUserData {
     fn user_data<'a>(&'a self) -> UserDataGuard<'a, JsUserData>;
@@ -198,7 +115,6 @@ pub struct Runtime {
     enigo: Arc<Mutex<Enigo>>,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
-    events_sender: Sender<RecordEvent>,
 }
 
 impl Runtime {
@@ -207,15 +123,8 @@ impl Runtime {
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
     ) -> Result<(Arc<Self>, ScriptEngine)> {
-        let (events_sender, _) = broadcast::channel(128);
-
         #[cfg(unix)]
-        let runtime = x11::Runtime::new(
-            cancellation_token.clone(),
-            task_tracker.clone(),
-            events_sender.clone(),
-        )
-        .await?;
+        let runtime = x11::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
         #[cfg(windows)]
         let runtime = win::Runtime::new(
@@ -230,7 +139,6 @@ impl Runtime {
             enigo: Arc::new(Mutex::new(Enigo::new(&Settings::default())?)),
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
-            events_sender,
         });
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
@@ -418,10 +326,6 @@ impl Runtime {
         self.task_tracker.clone()
     }
 
-    pub fn subcribe_events(&self) -> Receiver<RecordEvent> {
-        self.events_sender.subscribe()
-    }
-
     pub fn enigo(&self) -> Arc<Mutex<Enigo>> {
         self.enigo.clone()
     }
@@ -488,7 +392,7 @@ mod tests {
         B,
     }
 
-    #[derive(JsLifetime, Trace, Clone)]
+    #[derive(Clone, JsLifetime, Trace)]
     #[rquickjs::class]
     pub struct TestGenerator {
         n: i32,

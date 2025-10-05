@@ -2,13 +2,15 @@ use std::{collections::HashSet, hash::Hash};
 
 use bimap::BiMap;
 
+use crate::core::{point::Point, rect::Rect};
+
 #[cfg(unix)]
 pub mod x11;
 
 #[cfg(windows)]
 pub mod win;
 
-#[derive(Debug, Clone, Default, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct WindowId(u64);
 
 impl WindowId {
@@ -34,9 +36,22 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait WindowsHandler {
-    fn all_windows(&mut self) -> Result<Vec<WindowId>>;
-    fn is_window_visible(&self, id: WindowId) -> Result<bool>;
-    fn window_title(&self, id: WindowId) -> Result<String>;
+    fn all(&mut self) -> Result<Vec<WindowId>>;
+    fn is_visible(&self, id: WindowId) -> Result<bool>;
+    fn title(&self, id: WindowId) -> Result<String>;
+    fn classname(&self, id: WindowId) -> Result<String>;
+    fn close(&self, id: WindowId) -> Result<()>;
+    fn process_id(&self, id: WindowId) -> Result<u32>;
+    fn rect(&self, id: WindowId) -> Result<Rect>;
+    fn set_active(&self, id: WindowId) -> Result<()>;
+    fn minimize(&self, id: WindowId) -> Result<()>;
+    fn maximize(&self, id: WindowId) -> Result<()>;
+    fn set_position(&self, id: WindowId, position: Point) -> Result<()>;
+    fn position(&self, id: WindowId) -> Result<Point>;
+    fn set_size(&self, id: WindowId, size: Point) -> Result<()>;
+    fn size(&self, id: WindowId) -> Result<Point>;
+    fn is_active(&self, id: WindowId) -> Result<bool>;
+    fn active_window(&mut self) -> Result<WindowId>;
 }
 
 #[derive(Debug)]
@@ -89,5 +104,9 @@ impl<H: Clone + Eq + Hash> Registry<H> {
 
     pub fn contains_id(&self, id: WindowId) -> bool {
         self.map.contains_left(&id)
+    }
+
+    pub fn contains_handle(&self, handle: &H) -> bool {
+        self.map.contains_right(&handle)
     }
 }

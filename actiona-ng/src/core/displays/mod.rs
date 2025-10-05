@@ -4,7 +4,11 @@ use display_info::error::DIError;
 use thiserror::Error;
 use tokio::select;
 
-use crate::runtime::{DisplayInfo, DisplayInfoVec, RecordEvent, Runtime, shared_rng::SharedRng};
+use crate::runtime::{
+    Runtime,
+    events::{DisplayInfo, DisplayInfoVec},
+    shared_rng::SharedRng,
+};
 
 pub(crate) mod platform;
 
@@ -42,28 +46,24 @@ pub struct Displays {
 
 impl Displays {
     pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
-        let mut event_receiver = runtime.subcribe_events();
-
         let displays_info = Arc::new(Mutex::new(display_info::DisplayInfo::all()?.into()));
         let local_displays_info = displays_info.clone();
 
         let cancellation_token = runtime.cancellation_token();
+        let screen_change_guard = runtime.platform().subscribe_screen_change();
+        let mut screen_change_receiver = screen_change_guard.subscribe();
 
         runtime.task_tracker().spawn(async move {
             loop {
                 select! {
                     _ = cancellation_token.cancelled() => { break; }
-                    event = event_receiver.recv() => {
-                        let Ok(event) = event else {
-                            break;
-                        };
-
-                        if let RecordEvent::DisplayChanged(infos) = event {
-                            let mut displays_info = local_displays_info.lock().unwrap();
-                            *displays_info = infos;
-                        }
+                    event = screen_change_receiver.changed() => {
+                        if event.is_err() { break; }
                     }
                 }
+
+                let mut displays_info = local_displays_info.lock().unwrap();
+                *displays_info = screen_change_receiver.borrow_and_update().clone();
             }
         });
 

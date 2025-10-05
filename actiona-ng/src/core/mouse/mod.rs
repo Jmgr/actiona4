@@ -5,6 +5,7 @@ use std::{
 };
 
 use convert_case::{Case, Casing};
+use derive_more::Display;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
 use macros::{ExposeEnum, FromJsObject};
@@ -19,7 +20,8 @@ use tween::FixedTweener;
 
 use crate::{
     core::{js::duration::JsDuration, point::js::JsPoint},
-    runtime::shared_rng::SharedRng,
+    error::CommonError,
+    runtime::{events::MouseButtonEvent, shared_rng::SharedRng},
 };
 
 pub(crate) mod platform;
@@ -38,6 +40,9 @@ use crate::{core::point::point, runtime::Runtime};
 
 #[derive(Debug, Error)]
 pub enum MouseError {
+    #[error(transparent)]
+    CommonError(#[from] CommonError),
+
     #[error("Connecting to the X11 server failed: {0}")]
     ConnectError(String),
 
@@ -66,9 +71,7 @@ pub enum MouseError {
 pub type Result<T> = std::result::Result<T, MouseError>;
 
 /// Mouse button.
-#[derive(
-    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace,
-)]
+#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class]
 pub enum Button {
     /// Left button
@@ -101,9 +104,7 @@ impl From<Button> for enigo::Button {
     }
 }
 
-#[derive(
-    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace,
-)]
+#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class]
 pub enum Axis {
     Horizontal,
@@ -122,9 +123,7 @@ impl From<Axis> for enigo::Axis {
 }
 
 /// Tweening functions for smooth movement.
-#[derive(
-    Clone, Copy, Debug, derive_more::Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace,
-)]
+#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class]
 pub enum Tween {
     /// Starts slowly, then accelerates with an overshoot.
@@ -241,6 +240,12 @@ impl Tween {
     }
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct ButtonConditions {
+    button: Option<Button>,
+    direction: Option<Direction>,
+}
+
 #[derive(Debug)]
 pub struct Mouse {
     enigo: Arc<Mutex<Enigo>>,
@@ -264,6 +269,17 @@ impl Mouse {
     #[instrument(skip(self), err, ret)]
     pub async fn is_pressed(&self, button: Button) -> Result<bool> {
         self.implementation.is_button_pressed(button).await
+    }
+
+    #[instrument(skip(self), err, ret)]
+    pub async fn wait_for_button(
+        &self,
+        conditions: ButtonConditions,
+        cancellation_token: CancellationToken,
+    ) -> Result<MouseButtonEvent> {
+        self.implementation
+            .wait_for_button(conditions, cancellation_token)
+            .await
     }
 
     #[instrument(skip(self), err, ret)]
@@ -701,7 +717,10 @@ mod tests {
 
     use super::{Mouse, Tween};
     use crate::{
-        core::{mouse::MoveOptions, point::point},
+        core::{
+            mouse::{ButtonConditions, MoveOptions},
+            point::point,
+        },
         runtime::{Runtime, shared_rng::SharedRng},
     };
 
@@ -735,6 +754,27 @@ mod tests {
 
             // TODO
             // ...
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    fn test_wait_for_button() {
+        Runtime::test(async |runtime| {
+            let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
+
+            println!("Press any mouse button");
+            let button = mouse
+                .wait_for_button(
+                    ButtonConditions {
+                        button: None,
+                        direction: None,
+                    },
+                    CancellationToken::new(),
+                )
+                .await
+                .unwrap();
+            println!("Done: {:?}", button);
         });
     }
 }

@@ -16,7 +16,7 @@ use sysinfo::Uid;
 use crate::core::system::processes::ThreadKind;
 
 #[repr(transparent)]
-#[derive(Debug, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Eq, Hash, PartialEq)]
 pub struct Unit<T, Tag>(T, PhantomData<Tag>);
 
 impl<T: Clone, Tag> Clone for Unit<T, Tag> {
@@ -291,7 +291,7 @@ impl DurationUnit {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct UidTag;
 pub type UidUnit = Unit<Uid, UidTag>;
 

@@ -2,7 +2,7 @@ use thiserror::Error;
 
 use crate::{IntoJSError, core::clipboard};
 
-#[derive(Error, Debug)]
+#[derive(Debug, Error)]
 pub enum Error {
     #[error("Clipboard error: {0}")]
     ClipboardError(clipboard::Error),
@@ -15,7 +15,7 @@ impl IntoJSError for Error {}
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Error, Debug)]
+#[derive(Debug, Error)]
 pub enum CommonError {
     #[error("Unsupported on this platform: {0}")]
     UnsupportedPlatform(String),
