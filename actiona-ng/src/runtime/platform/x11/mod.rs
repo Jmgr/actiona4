@@ -17,14 +17,10 @@ use x11rb_async::{
 };
 
 use crate::{
-    core::{
-        mouse::Button,
-        point::{Point, point},
-        windows::platform::x11::events::WindowEvent,
-    },
+    core::{mouse::Button, point::point, windows::platform::x11::events::WindowEvent},
     platform::x11::X11Connection,
     runtime::{
-        events::{AllSignals, DisplayInfoVec, LatestOnlySignals, MouseButtonEvent, ReceiverGuard},
+        events::{MouseButtonEvent, TopicWrapper},
         platform::x11::events::{
             displays::ScreenChangeTopic,
             input::{InputMask, MouseButtonsTopic, MouseMoveTopic},
@@ -52,9 +48,9 @@ pub struct Runtime {
     x11_connection: Arc<X11Connection>,
     has_shm: bool,
     atoms: AtomCollection,
-    mouse_buttons_topic: Arc<MouseButtonsTopic>,
-    mouse_move_topic: Arc<MouseMoveTopic>,
-    screen_change_topic: Arc<ScreenChangeTopic>,
+    mouse_buttons_topic: Arc<TopicWrapper<MouseButtonsTopic>>,
+    mouse_move_topic: Arc<TopicWrapper<MouseMoveTopic>>,
+    screen_change_topic: Arc<TopicWrapper<ScreenChangeTopic>>,
     window_event_sender: broadcast::Sender<WindowEvent>,
 }
 
@@ -104,22 +100,20 @@ impl Runtime {
         };
 
         let input_mask = Arc::new(InputMask::default());
-        let mouse_buttons_topic = Arc::new(MouseButtonsTopic::new(
-            x11_connection.clone(),
-            input_mask.clone(),
-            task_tracker.clone(),
+        let mouse_buttons_topic = Arc::new(TopicWrapper::new(
+            MouseButtonsTopic::new(x11_connection.clone(), input_mask.clone()),
             cancellation_token.clone(),
+            task_tracker.clone(),
         ));
-        let mouse_move_topic = Arc::new(MouseMoveTopic::new(
-            x11_connection.clone(),
-            input_mask.clone(),
-            task_tracker.clone(),
+        let mouse_move_topic = Arc::new(TopicWrapper::new(
+            MouseMoveTopic::new(x11_connection.clone(), input_mask.clone()),
             cancellation_token.clone(),
+            task_tracker.clone(),
         ));
-        let screen_change_topic = Arc::new(ScreenChangeTopic::new(
-            x11_connection.clone(),
-            task_tracker.clone(),
+        let screen_change_topic = Arc::new(TopicWrapper::new(
+            ScreenChangeTopic::new(x11_connection.clone()),
             cancellation_token.clone(),
+            task_tracker.clone(),
         ));
         let (window_event_sender, _) = broadcast::channel(1024);
 
@@ -176,7 +170,7 @@ impl Runtime {
                         }
                         Event::DestroyNotify(e) => {
                             let handle = libwmctl::window(e.window).into();
-                            local_window_event_sender.send(WindowEvent::Closed(handle));
+                            let _ = local_window_event_sender.send(WindowEvent::Closed(handle));
                         }
 
                         /*
@@ -217,20 +211,16 @@ impl Runtime {
         &self.atoms
     }
 
-    pub fn subscribe_mouse_buttons(
-        &self,
-    ) -> ReceiverGuard<MouseButtonEvent, AllSignals<MouseButtonEvent>> {
-        self.mouse_buttons_topic.subscribe()
+    pub fn mouse_buttons(&self) -> Arc<TopicWrapper<MouseButtonsTopic>> {
+        self.mouse_buttons_topic.clone()
     }
 
-    pub fn subscribe_mouse_move(&self) -> ReceiverGuard<Point, LatestOnlySignals<Point>> {
-        self.mouse_move_topic.subscribe()
+    pub fn mouse_move(&self) -> Arc<TopicWrapper<MouseMoveTopic>> {
+        self.mouse_move_topic.clone()
     }
 
-    pub fn subscribe_screen_change(
-        &self,
-    ) -> ReceiverGuard<DisplayInfoVec, LatestOnlySignals<DisplayInfoVec>> {
-        self.screen_change_topic.receiver()
+    pub fn screen_change(&self) -> Arc<TopicWrapper<ScreenChangeTopic>> {
+        self.screen_change_topic.clone()
     }
 
     pub fn subscribe_window_events(&self) -> broadcast::Receiver<WindowEvent> {

@@ -85,7 +85,7 @@ impl MouseImplTrait for MouseImpl {
         conditions: ButtonConditions,
         cancellation_token: CancellationToken,
     ) -> Result<MouseButtonEvent> {
-        let guard = self.runtime.platform().subscribe_mouse_buttons();
+        let guard = self.runtime.platform().mouse_buttons().subscribe();
         let mut receiver = guard.subscribe();
         let runtime_cancellation_token = self.runtime.cancellation_token();
         loop {

@@ -1,62 +1,56 @@
 use std::sync::Arc;
 
-use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::{error, info};
+use tracing::error;
 use x11rb::protocol::randr::NotifyMask;
 use x11rb_async::{connection::Connection, protocol::randr::ConnectionExt};
 
 use crate::{
     platform::x11::X11Connection,
-    runtime::events::{Control, DisplayInfoVec, LatestOnlySignals, ReceiverGuard, Topic},
+    runtime::events::{DisplayInfoVec, LatestOnlySignals, Topic},
 };
 
 #[derive(Debug)]
-pub struct ScreenChangeTopic(Topic<DisplayInfoVec, LatestOnlySignals<DisplayInfoVec>>);
+pub struct ScreenChangeTopic {
+    x11_connection: Arc<X11Connection>,
+}
+
+impl Topic for ScreenChangeTopic {
+    type T = DisplayInfoVec;
+    type Signal = LatestOnlySignals<Self::T>;
+
+    async fn on_start(&self) {
+        let connection = self.x11_connection.async_connection();
+
+        if let Err(err) = connection
+            .randr_select_input(self.x11_connection.screen().root, NotifyMask::SCREEN_CHANGE)
+            .await
+        {
+            error!("randr_select_input failed: {err}");
+        }
+
+        if let Err(err) = connection.flush().await {
+            error!("flush failed: {err}");
+        }
+    }
+
+    async fn on_stop(&self) {
+        let connection = self.x11_connection.async_connection();
+
+        if let Err(err) = connection
+            .randr_select_input(self.x11_connection.screen().root, NotifyMask::default())
+            .await
+        {
+            error!("randr_select_input failed: {err}");
+        }
+
+        if let Err(err) = connection.flush().await {
+            error!("flush failed: {err}");
+        }
+    }
+}
 
 impl ScreenChangeTopic {
-    pub fn new(
-        x11_connection: Arc<X11Connection>,
-        task_tracker: TaskTracker,
-        cancellation_token: CancellationToken,
-    ) -> Self {
-        let (topic, mut control_receiver) = Topic::new(LatestOnlySignals::new());
-        task_tracker.spawn(async move {
-            let connection = x11_connection.async_connection();
-            loop {
-                tokio::select! {
-                    _ = cancellation_token.cancelled() => break,
-                    changed = control_receiver.changed() => {
-                        if changed.is_err() { break; } // sender dropped
-                        let control = *control_receiver.borrow_and_update();
-
-                        info!("ScreenChangeTopic: {}", control);
-
-                        let mask = match control {
-                            Control::Enable  => NotifyMask::SCREEN_CHANGE,
-                            Control::Disable => NotifyMask::default(),
-                        };
-
-                        if let Err(err) = connection
-                                .randr_select_input(x11_connection.screen().root, mask)
-                                .await {
-                            error!("randr_select_input failed: {err}");
-                        }
-
-                        if let Err(err) = connection.flush().await {
-                            error!("flush failed: {err}");
-                        }
-                    }
-                }
-            }
-        });
-        Self(topic)
-    }
-
-    pub fn publish(&self, value: DisplayInfoVec) {
-        self.0.publish(value);
-    }
-
-    pub fn receiver(&self) -> ReceiverGuard<DisplayInfoVec, LatestOnlySignals<DisplayInfoVec>> {
-        self.0.subscribe()
+    pub fn new(x11_connection: Arc<X11Connection>) -> Self {
+        Self { x11_connection }
     }
 }

@@ -50,7 +50,7 @@ impl Displays {
         let local_displays_info = displays_info.clone();
 
         let cancellation_token = runtime.cancellation_token();
-        let screen_change_guard = runtime.platform().subscribe_screen_change();
+        let screen_change_guard = runtime.platform().screen_change().subscribe();
         let mut screen_change_receiver = screen_change_guard.subscribe();
 
         runtime.task_tracker().spawn(async move {

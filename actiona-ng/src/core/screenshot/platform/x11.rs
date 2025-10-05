@@ -31,7 +31,8 @@ use crate::{
     platform::x11::X11Connection,
     runtime::{
         Runtime,
-        events::{DisplayInfo, DisplayInfoVec, LatestOnlySignals, ReceiverGuard},
+        events::{DisplayInfo, DisplayInfoVec, Guard},
+        platform::x11::events::displays::ScreenChangeTopic,
     },
 };
 
@@ -176,7 +177,7 @@ impl Display {
 pub struct ScreenshotImpl {
     display_map: Arc<Mutex<HashMap<u32, Display>>>,
     x11_connection: Arc<X11Connection>,
-    screen_change_guard: ReceiverGuard<DisplayInfoVec, LatestOnlySignals<DisplayInfoVec>>,
+    screen_change_guard: Guard<ScreenChangeTopic>,
 }
 
 impl ScreenshotImpl {
@@ -203,7 +204,7 @@ impl ScreenshotImpl {
         .await?;
 
         let cancellation_token = runtime.cancellation_token();
-        let screen_change_guard = local_runtime.platform().subscribe_screen_change();
+        let screen_change_guard = local_runtime.platform().screen_change().subscribe();
         let mut screen_change_receiver = screen_change_guard.subscribe();
 
         runtime.task_tracker().spawn(async move {
