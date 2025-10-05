@@ -40,12 +40,12 @@ async fn apply_mask_on_control(
     mask: XIEventMask,
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
-    mut control_receiver: tokio::sync::watch::Receiver<Control>,
+    mut control_receiver: watch::Receiver<Control>,
     cancellation_token: CancellationToken,
 ) {
     let connection = x11_connection.async_connection();
     loop {
-        tokio::select! {
+        select! {
             _ = cancellation_token.cancelled() => break,
             changed = control_receiver.changed() => {
                 if changed.is_err() { break; } // sender dropped

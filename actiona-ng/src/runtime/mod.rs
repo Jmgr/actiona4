@@ -1,10 +1,8 @@
 use std::sync::{Arc, Mutex};
 
 use async_compat::Compat;
-use derive_more::{Deref, DerefMut};
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
-use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -33,7 +31,7 @@ use crate::{
         path::js::JsPath,
         point::js::JsPoint,
         random::js::JsRandom,
-        rect::{Rect, js::JsRect, rect},
+        rect::js::JsRect,
         screenshot::js::JsScreenshot,
         web::js::JsWeb,
     },
@@ -127,12 +125,7 @@ impl Runtime {
         let runtime = x11::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
         #[cfg(windows)]
-        let runtime = win::Runtime::new(
-            cancellation_token.clone(),
-            task_tracker.clone(),
-            events_sender.clone(),
-        )
-        .await?;
+        let runtime = win::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
         let runtime = Arc::new(Self {
             runtime,

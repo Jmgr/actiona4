@@ -1,5 +1,6 @@
 use std::sync::{Arc, OnceLock};
 
+use enigo::Direction;
 use eyre::{Result, bail};
 use tokio::{
     sync::{broadcast::Sender, oneshot},
@@ -22,54 +23,9 @@ use windows::{
     core::{Error, PCWSTR, w},
 };
 
-use super::RecordEvent;
-use crate::{core::mouse::Button, runtime::Direction};
+use crate::core::mouse::Button;
 
-static EVENT_SENDER: OnceLock<Sender<RecordEvent>> = OnceLock::new();
-
-const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
-    ((mouse_data >> 16) & 0xFFFF) as u16
-}
-
-#[allow(unsafe_code)]
-unsafe extern "system" fn low_level_mouse_proc(
-    n_code: i32,
-    w_param: WPARAM,
-    l_param: LPARAM,
-) -> LRESULT {
-    if n_code >= 0 {
-        let mouse_struct = unsafe { *(l_param.0 as *const MSLLHOOKSTRUCT) };
-
-        let button_event = match w_param.0 as u32 {
-            WM_LBUTTONDOWN => Some((Button::Left, Direction::Pressed)),
-            WM_RBUTTONDOWN => Some((Button::Right, Direction::Pressed)),
-            WM_MBUTTONDOWN => Some((Button::Middle, Direction::Pressed)),
-            WM_XBUTTONDOWN => match get_xbutton_wparam(mouse_struct.mouseData) {
-                XBUTTON1 => Some((Button::Back, Direction::Pressed)),
-                XBUTTON2 => Some((Button::Forward, Direction::Pressed)),
-                _ => None,
-            },
-            WM_LBUTTONUP => Some((Button::Left, Direction::Released)),
-            WM_RBUTTONUP => Some((Button::Right, Direction::Released)),
-            WM_MBUTTONUP => Some((Button::Middle, Direction::Released)),
-            WM_XBUTTONUP => match get_xbutton_wparam(mouse_struct.mouseData) {
-                XBUTTON1 => Some((Button::Back, Direction::Released)),
-                XBUTTON2 => Some((Button::Forward, Direction::Released)),
-                _ => None,
-            },
-            _ => None,
-        };
-
-        if let Some(button_event) = button_event {
-            let _ = EVENT_SENDER
-                .get()
-                .unwrap()
-                .send(RecordEvent::MouseButton(button_event.0, button_event.1));
-        }
-    }
-
-    unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
-}
+pub mod events;
 
 #[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
@@ -78,11 +34,14 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
             WM_DISPLAYCHANGE => {
                 let infos = display_info::DisplayInfo::all().unwrap();
 
+                // TODO
+                /*
                 EVENT_SENDER
                     .get()
                     .unwrap()
                     .send(RecordEvent::DisplayChanged(infos.into()))
                     .unwrap();
+                */
             }
             WM_DESTROY => {
                 PostQuitMessage(0);
@@ -94,20 +53,10 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
     LRESULT(0)
 }
 
-struct SafeHook(HHOOK);
-
-#[allow(unsafe_code)]
-impl Drop for SafeHook {
-    fn drop(&mut self) {
-        unsafe { UnhookWindowsHookEx(self.0).unwrap() }
-    }
-}
-
 #[derive(Debug)]
 pub struct Runtime {
     cancellation_token: CancellationToken,
     events_handle: Option<JoinHandle<Result<()>>>,
-    events_sender: Sender<RecordEvent>,
     thread_id: u32,
 }
 
@@ -116,11 +65,8 @@ impl Runtime {
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
-        events_sender: Sender<RecordEvent>,
     ) -> Result<Arc<Self>> {
         let (thread_id_sender, thread_id_receiver) = oneshot::channel();
-
-        EVENT_SENDER.set(events_sender.clone()).unwrap();
 
         let local_cancellation_token = cancellation_token.clone();
 
@@ -129,8 +75,6 @@ impl Runtime {
 
             let thread_id_value = unsafe { GetCurrentThreadId() };
             thread_id_sender.send(thread_id_value).unwrap();
-
-            let _hook = Self::setup_hook()?;
 
             let mut msg = MSG::default();
             while !local_cancellation_token.is_cancelled() {
@@ -214,16 +158,6 @@ impl Runtime {
         }
 
         Ok(())
-    }
-
-    fn setup_hook() -> Result<SafeHook> {
-        let hook = unsafe { SetWindowsHookExW(WH_MOUSE_LL, Some(low_level_mouse_proc), None, 0)? };
-
-        if hook.is_invalid() {
-            bail!("invalid Windows hook");
-        }
-
-        Ok(SafeHook(hook))
     }
 
     fn stop(&self) {

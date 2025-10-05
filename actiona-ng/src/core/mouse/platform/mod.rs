@@ -4,7 +4,6 @@ pub mod x11;
 #[cfg(windows)]
 pub mod win;
 
-use enigo::Direction;
 use tokio_util::sync::CancellationToken;
 
 pub use super::{Button, Result};

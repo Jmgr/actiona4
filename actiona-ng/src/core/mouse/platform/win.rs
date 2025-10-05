@@ -1,11 +1,15 @@
 use std::sync::Arc;
 
+use tokio_util::sync::CancellationToken;
 use windows::Win32::UI::Input::KeyboardAndMouse::{
     GetAsyncKeyState, VK_LBUTTON, VK_MBUTTON, VK_RBUTTON, VK_XBUTTON1, VK_XBUTTON2,
 };
 
 use super::{Button, MouseImplTrait, Result};
-use crate::runtime::Runtime;
+use crate::{
+    core::mouse::ButtonConditions,
+    runtime::{Runtime, events::MouseButtonEvent},
+};
 
 #[derive(Debug, Default)]
 pub struct MouseImpl;
@@ -34,5 +38,13 @@ impl MouseImpl {
 impl MouseImplTrait for MouseImpl {
     async fn is_button_pressed(&self, button: Button) -> Result<bool> {
         Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000u16 != 0 })
+    }
+
+    async fn wait_for_button(
+        &self,
+        conditions: ButtonConditions,
+        cancellation_token: CancellationToken,
+    ) -> Result<MouseButtonEvent> {
+        todo!()
     }
 }

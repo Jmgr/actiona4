@@ -3,17 +3,11 @@
 use std::path::Path;
 
 use eyre::Result;
-use eyre::eyre;
-use pe_parser::{optional::Optional, pe::parse_portable_executable};
+use pe_parser::pe::parse_portable_executable;
 use tokio::fs;
-use windows::Win32::Foundation::ERROR_SUCCESS;
-use windows::Win32::Foundation::GetLastError;
-use windows::Win32::Foundation::SetLastError;
-use windows::Win32::System::StationsAndDesktops::CloseDesktop;
 use windows::Win32::System::StationsAndDesktops::DESKTOP_CONTROL_FLAGS;
 use windows::Win32::System::StationsAndDesktops::EnumDesktopWindows;
 use windows::Win32::UI::WindowsAndMessaging::GetClassNameW;
-use windows::Win32::UI::WindowsAndMessaging::SendMessageW;
 use windows::Win32::UI::WindowsAndMessaging::SendNotifyMessageW;
 use windows::core::Error;
 use windows::{
@@ -21,8 +15,8 @@ use windows::{
         Foundation::{HWND, LPARAM, WPARAM},
         System::StationsAndDesktops::{DESKTOP_READOBJECTS, OpenInputDesktop},
         UI::WindowsAndMessaging::{
-            EnumWindows, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
-            IsWindowVisible, SMTO_ABORTIFHUNG, SendMessageTimeoutW, WM_CLOSE,
+            GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible,
+            WM_CLOSE,
         },
     },
     core::BOOL,
@@ -137,8 +131,6 @@ pub fn send_close_message_to_window(hwnd: HWND) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use windows::Win32::UI::WindowsAndMessaging::{GetWindowTextA, GetWindowTextW};
-
     use super::*;
 
     #[tokio::test]

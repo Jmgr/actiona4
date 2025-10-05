@@ -1,25 +1,18 @@
 #![allow(unsafe_code)]
 
 use std::{
-    fmt, io,
-    os::windows::io::{AsRawHandle, RawHandle},
+    io,
     pin::Pin,
-    process::ExitStatus,
-    ptr::null_mut,
     task::{Context, Poll},
 };
 
-use eyre::Result;
 use tokio::sync::oneshot;
-use windows::{
-    Win32::{
-        Foundation::{HANDLE, INVALID_HANDLE_VALUE, WAIT_EVENT, WAIT_OBJECT_0},
-        System::Threading::{
-            INFINITE, RegisterWaitForSingleObject, UnregisterWaitEx, WT_EXECUTEINWAITTHREAD,
-            WT_EXECUTEONLYONCE, WaitForSingleObject,
-        },
+use windows::Win32::{
+    Foundation::{HANDLE, INVALID_HANDLE_VALUE, WAIT_OBJECT_0},
+    System::Threading::{
+        INFINITE, RegisterWaitForSingleObject, UnregisterWaitEx, WT_EXECUTEINWAITTHREAD,
+        WT_EXECUTEONLYONCE, WaitForSingleObject,
     },
-    core::Error,
 };
 
 use crate::platform::win::safe_handle::SafeHandle;
@@ -123,7 +116,7 @@ mod tests {
     use tokio::time::{sleep, timeout};
     use windows::Win32::Foundation::WAIT_OBJECT_0;
     use windows::Win32::{
-        Foundation::{CloseHandle, HANDLE},
+        Foundation::HANDLE,
         System::Threading::{
             CREATE_EVENT_INITIAL_SET, CREATE_EVENT_MANUAL_RESET, CreateEventExW, EVENT_ALL_ACCESS,
             SetEvent, WaitForSingleObject,

@@ -1,5 +1,6 @@
 #![allow(unsafe_code)]
 
+use derive_more::Deref;
 use tracing::error;
 use windows::Win32::{
     Foundation::{CloseHandle, HANDLE},

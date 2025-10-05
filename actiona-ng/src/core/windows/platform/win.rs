@@ -95,6 +95,58 @@ impl WindowsHandler for WindowsWindowHandler {
 
         Ok(String::from_utf16_lossy(&buffer[..len as usize]))
     }
+
+    fn classname(&self, id: WindowId) -> Result<String> {
+        todo!()
+    }
+
+    fn close(&self, id: WindowId) -> Result<()> {
+        todo!()
+    }
+
+    fn process_id(&self, id: WindowId) -> Result<u32> {
+        todo!()
+    }
+
+    fn rect(&self, id: WindowId) -> Result<crate::core::rect::Rect> {
+        todo!()
+    }
+
+    fn set_active(&self, id: WindowId) -> Result<()> {
+        todo!()
+    }
+
+    fn minimize(&self, id: WindowId) -> Result<()> {
+        todo!()
+    }
+
+    fn maximize(&self, id: WindowId) -> Result<()> {
+        todo!()
+    }
+
+    fn set_position(&self, id: WindowId, position: crate::core::point::Point) -> Result<()> {
+        todo!()
+    }
+
+    fn position(&self, id: WindowId) -> Result<crate::core::point::Point> {
+        todo!()
+    }
+
+    fn set_size(&self, id: WindowId, size: crate::core::point::Point) -> Result<()> {
+        todo!()
+    }
+
+    fn size(&self, id: WindowId) -> Result<crate::core::point::Point> {
+        todo!()
+    }
+
+    fn is_active(&self, id: WindowId) -> Result<bool> {
+        todo!()
+    }
+
+    fn active_window(&mut self) -> Result<WindowId> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
@@ -107,11 +159,11 @@ mod tests {
         println!(
             "{:?}",
             handler
-                .all_windows()
+                .all()
                 .unwrap()
                 .into_iter()
-                .filter(|id| handler.is_window_visible(*id).unwrap())
-                .map(|id| handler.window_title(id).unwrap())
+                .filter(|id| handler.is_visible(*id).unwrap())
+                .map(|id| handler.title(id).unwrap())
                 .filter(|name| !name.is_empty())
                 .collect::<Vec<String>>()
                 .join(", ")
