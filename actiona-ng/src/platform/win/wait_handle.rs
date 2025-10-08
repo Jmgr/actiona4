@@ -29,7 +29,7 @@ unsafe impl Send for Waiting {}
 impl Drop for Waiting {
     fn drop(&mut self) {
         unsafe {
-            if let Err(err) = UnregisterWaitEx(*self.wait_object, None) {
+            if let Err(err) = UnregisterWaitEx(self.wait_object.as_raw(), None) {
                 panic!("failed to unregister: {}", err);
             }
             drop(Box::from_raw(self.tx_ptr));
@@ -94,7 +94,7 @@ impl Future for WaitHandle {
 
             inner.waiting = Some(Waiting {
                 rx,
-                wait_object: wait_object.into(),
+                wait_object: SafeHandle::new(wait_object),
                 tx_ptr,
             });
         }
@@ -135,8 +135,8 @@ mod tests {
 
     #[tokio::test]
     async fn wait_handle_signals_immediately() {
-        let handle: SafeHandle = create_event(true).into();
-        timeout(Duration::from_secs(1), WaitHandle::new(*handle))
+        let handle = SafeHandle::try_new(create_event(true)).unwrap();
+        timeout(Duration::from_secs(1), WaitHandle::new(handle.as_raw()))
             .await
             .expect("WaitHandle should resolve immediately")
             .unwrap();
@@ -144,13 +144,13 @@ mod tests {
 
     #[tokio::test]
     async fn wait_handle_signals_later_without_spawn() {
-        let handle: SafeHandle = create_event(false).into();
+        let handle = SafeHandle::try_new(create_event(false)).unwrap();
 
         // Two futures in the SAME task: one waits, one sleeps then signals.
-        let waiter = WaitHandle::new(*handle);
+        let waiter = WaitHandle::new(handle.as_raw());
         let signaler = async {
             sleep(Duration::from_millis(50)).await;
-            unsafe { SetEvent(*handle).unwrap() };
+            unsafe { SetEvent(handle.as_raw()).unwrap() };
         };
 
         timeout(Duration::from_secs(2), async {
@@ -165,10 +165,10 @@ mod tests {
     #[tokio::test]
     async fn wait_handle_cancel_safe_drop() {
         unsafe {
-            let handle: SafeHandle = create_event(false).into();
+            let handle = SafeHandle::try_new(create_event(false)).unwrap();
 
             // Start waiting but enforce a short timeout so the future gets dropped while pending.
-            let waiter = WaitHandle::new(*handle);
+            let waiter = WaitHandle::new(handle.as_raw());
             let timed = timeout(Duration::from_millis(50), waiter).await;
             assert!(
                 timed.is_err(),
@@ -176,10 +176,10 @@ mod tests {
             );
 
             // Now signal the handle after we've dropped the first future.
-            SetEvent(*handle).unwrap();
+            SetEvent(handle.as_raw()).unwrap();
 
             // A fresh WaitHandle on the same HANDLE should resolve immediately.
-            let res = timeout(Duration::from_secs(1), WaitHandle::new(*handle)).await;
+            let res = timeout(Duration::from_secs(1), WaitHandle::new(handle.as_raw())).await;
             assert!(res.is_ok(), "new WaitHandle should resolve after signaling");
         }
     }
@@ -187,21 +187,21 @@ mod tests {
     #[tokio::test]
     async fn wait_handle_manual_polling_matches_native() {
         unsafe {
-            let handle: SafeHandle = create_event(false).into();
+            let handle = SafeHandle::try_new(create_event(false)).unwrap();
 
             // Before signaling, both APIs should report "not signaled".
-            assert_ne!(WaitForSingleObject(*handle, 0), WAIT_OBJECT_0);
+            assert_ne!(WaitForSingleObject(handle.as_raw(), 0), WAIT_OBJECT_0);
             assert!(
-                timeout(Duration::from_millis(50), WaitHandle::new(*handle))
+                timeout(Duration::from_millis(50), WaitHandle::new(handle.as_raw()))
                     .await
                     .is_err()
             );
 
             // After signaling, both are signaled.
-            SetEvent(*handle).ok().unwrap();
-            assert_eq!(WaitForSingleObject(*handle, 0), WAIT_OBJECT_0);
+            SetEvent(handle.as_raw()).ok().unwrap();
+            assert_eq!(WaitForSingleObject(handle.as_raw(), 0), WAIT_OBJECT_0);
             assert!(
-                timeout(Duration::from_secs(1), WaitHandle::new(*handle))
+                timeout(Duration::from_secs(1), WaitHandle::new(handle.as_raw()))
                     .await
                     .is_ok()
             );

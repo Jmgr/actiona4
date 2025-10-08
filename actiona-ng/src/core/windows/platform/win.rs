@@ -11,12 +11,20 @@ use windows::Win32::{
     System::StationsAndDesktops::{
         DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
     },
-    UI::WindowsAndMessaging::{GetWindowTextLengthW, GetWindowTextW, IsWindowVisible},
+    UI::WindowsAndMessaging::{
+        GetClassNameW, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
+        IsWindowVisible, SET_WINDOW_POS_FLAGS, SWP_NOACTIVATE, SWP_NOSIZE, SWP_NOZORDER,
+        SetWindowPos,
+    },
 };
 use windows_result::BOOL;
 
 use crate::{
-    core::windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
+    core::{
+        point::Point,
+        rect::Rect,
+        windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
+    },
     platform::win::safe_handle::SafeDesktopHandle,
 };
 
@@ -61,11 +69,17 @@ impl WindowsHandler for WindowsWindowHandler {
         let mut result = Vec::new();
         let result_ptr = &mut result as *mut Vec<HWND>;
         unsafe {
-            let hdesk: SafeDesktopHandle =
-                OpenInputDesktop(DESKTOP_CONTROL_FLAGS::default(), false, DESKTOP_READOBJECTS)?
-                    .into();
+            let hdesk = SafeDesktopHandle::try_new(OpenInputDesktop(
+                DESKTOP_CONTROL_FLAGS::default(),
+                false,
+                DESKTOP_READOBJECTS,
+            )?)?;
 
-            EnumDesktopWindows(Some(*hdesk), Some(enum_proc), LPARAM(result_ptr as isize))?;
+            EnumDesktopWindows(
+                Some(hdesk.as_raw()),
+                Some(enum_proc),
+                LPARAM(result_ptr as isize),
+            )?;
         }
 
         Ok(self
@@ -97,7 +111,15 @@ impl WindowsHandler for WindowsWindowHandler {
     }
 
     fn classname(&self, id: WindowId) -> Result<String> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+
+        let mut buffer = [0; 255];
+        let len = unsafe { GetClassNameW(**handle, &mut buffer) };
+        if len == 0 {
+            return Ok(String::new());
+        }
+
+        Ok(String::from_utf16_lossy(&buffer[..len as usize]))
     }
 
     fn close(&self, id: WindowId) -> Result<()> {
@@ -105,10 +127,15 @@ impl WindowsHandler for WindowsWindowHandler {
     }
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+        let mut process_id = 0;
+
+        unsafe { GetWindowThreadProcessId(**handle, Some(&mut process_id)) };
+
+        Ok(process_id as u32)
     }
 
-    fn rect(&self, id: WindowId) -> Result<crate::core::rect::Rect> {
+    fn rect(&self, id: WindowId) -> Result<Rect> {
         todo!()
     }
 
@@ -124,19 +151,33 @@ impl WindowsHandler for WindowsWindowHandler {
         todo!()
     }
 
-    fn set_position(&self, id: WindowId, position: crate::core::point::Point) -> Result<()> {
+    fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
+        let handle = self.inner.get_handle(id)?;
+
+        unsafe {
+            SetWindowPos(
+                **handle,
+                None,
+                position.x,
+                position.y,
+                0,
+                0,
+                SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE,
+            )?
+        };
+
+        Ok(())
+    }
+
+    fn position(&self, id: WindowId) -> Result<Point> {
+        Ok(self.rect(id)?.top_left())
+    }
+
+    fn set_size(&self, id: WindowId, size: Point) -> Result<()> {
         todo!()
     }
 
-    fn position(&self, id: WindowId) -> Result<crate::core::point::Point> {
-        todo!()
-    }
-
-    fn set_size(&self, id: WindowId, size: crate::core::point::Point) -> Result<()> {
-        todo!()
-    }
-
-    fn size(&self, id: WindowId) -> Result<crate::core::point::Point> {
+    fn size(&self, id: WindowId) -> Result<Point> {
         todo!()
     }
 

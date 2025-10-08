@@ -1,49 +1,38 @@
 #![allow(unsafe_code)]
 
-use std::{
-    cell::RefCell,
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
+use std::sync::{
+    Arc, Weak,
+    atomic::{AtomicUsize, Ordering},
 };
 
-use tokio::select;
+use enigo::Direction;
+use eyre::Result;
+use once_cell::sync::OnceCell;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::{error, info};
+use tracing::error;
 use windows::Win32::{
     Foundation::{LPARAM, LRESULT, WPARAM},
     UI::WindowsAndMessaging::{
-        CallNextHookEx, HHOOK, MSLLHOOKSTRUCT, SetWindowsHookExW, UnhookWindowsHookEx, WH_MOUSE_LL,
-        WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MOUSEHWHEEL, WM_MOUSEMOVE,
-        WM_MOUSEWHEEL, WM_RBUTTONDOWN, WM_RBUTTONUP, WM_XBUTTONDOWN, WM_XBUTTONUP, XBUTTON1,
-        XBUTTON2,
+        CallNextHookEx, HC_ACTION, LLMHF_INJECTED, MSG, MSLLHOOKSTRUCT, SetWindowsHookExW,
+        WH_MOUSE_LL, WM_APP, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDOWN, WM_MBUTTONUP,
+        WM_MOUSEHWHEEL, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_RBUTTONDOWN, WM_RBUTTONUP, WM_XBUTTONDOWN,
+        WM_XBUTTONUP, XBUTTON1, XBUTTON2,
     },
 };
 
 use crate::{
-    core::point::Point,
-    runtime::events::{
-        AllSignals, Control, LatestOnlySignals, MouseButtonEvent, ReceiverGuard, Topic,
+    core::{mouse::Button, point::point},
+    platform::win::safe_handle::SafeHookHandle,
+    runtime::{
+        events::{
+            AllSignals, Guard, LatestOnlySignals, MouseButtonEvent, MouseMoveEvent, Topic,
+            TopicWrapper,
+        },
+        platform::win::{MessagePumpRunner, SafeMessagePump},
     },
 };
 
-thread_local! {
-    static HOOK_DISPATCH: RefCell<Option<Arc<>>> = const { RefCell::new(None) };
-}
-
-struct SafeHook(HHOOK);
-
-#[allow(unsafe_code)]
-impl Drop for SafeHook {
-    fn drop(&mut self) {
-        unsafe {
-            if let Err(err) = UnhookWindowsHookEx(self.0) {
-                error!("UnhookWindowsHookEx failed: {err}");
-            }
-        }
-    }
-}
+static INPUT_DISPATCHER: OnceCell<Weak<InputDispatcher>> = OnceCell::new();
 
 const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
     ((mouse_data >> 16) & 0xFFFF) as u16
@@ -54,31 +43,85 @@ unsafe extern "system" fn low_level_mouse_proc(
     w_param: WPARAM,
     l_param: LPARAM,
 ) -> LRESULT {
-    if n_code < 0 {
+    if n_code != HC_ACTION as i32 {
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     }
 
-    let mouse_struct = unsafe { *(l_param.0 as *const MSLLHOOKSTRUCT) };
+    let Some(dispatcher) = INPUT_DISPATCHER
+        .get()
+        .and_then(|dispatcher| dispatcher.upgrade())
+    else {
+        return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
+    };
 
-    let event = match w_param.0 as u32 {
-        WM_LBUTTONDOWN => Some((Button::Left, Direction::Press)),
-        WM_RBUTTONDOWN => Some((Button::Right, Direction::Press)),
-        WM_MBUTTONDOWN => Some((Button::Middle, Direction::Press)),
+    let mouse_buttons = &dispatcher.mouse_buttons;
+    let mouse_move = &dispatcher.mouse_move;
+
+    let mouse_struct = unsafe { *(l_param.0 as *const MSLLHOOKSTRUCT) };
+    let injected = mouse_struct.flags & LLMHF_INJECTED == LLMHF_INJECTED;
+
+    match w_param.0 as u32 {
+        WM_LBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Left,
+            Direction::Press,
+            injected,
+        )),
+        WM_RBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Right,
+            Direction::Press,
+            injected,
+        )),
+        WM_MBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Middle,
+            Direction::Press,
+            injected,
+        )),
         WM_XBUTTONDOWN => match get_xbutton_wparam(mouse_struct.mouseData) {
-            XBUTTON1 => Some((Button::Back, Direction::Press)),
-            XBUTTON2 => Some((Button::Forward, Direction::Press)),
-            _ => None,
+            XBUTTON1 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Back,
+                Direction::Press,
+                injected,
+            )),
+            XBUTTON2 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Forward,
+                Direction::Press,
+                injected,
+            )),
+            _ => {}
         },
-        WM_LBUTTONUP => Some((Button::Left, Direction::Release)),
-        WM_RBUTTONUP => Some((Button::Right, Direction::Release)),
-        WM_MBUTTONUP => Some((Button::Middle, Direction::Release)),
+        WM_LBUTTONUP => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Left,
+            Direction::Release,
+            injected,
+        )),
+        WM_RBUTTONUP => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Right,
+            Direction::Release,
+            injected,
+        )),
+        WM_MBUTTONUP => mouse_buttons.publish(MouseButtonEvent::new(
+            Button::Middle,
+            Direction::Release,
+            injected,
+        )),
         WM_XBUTTONUP => match get_xbutton_wparam(mouse_struct.mouseData) {
-            XBUTTON1 => Some((Button::Back, Direction::Release)),
-            XBUTTON2 => Some((Button::Forward, Direction::Release)),
-            _ => None,
+            XBUTTON1 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Back,
+                Direction::Release,
+                injected,
+            )),
+            XBUTTON2 => mouse_buttons.publish(MouseButtonEvent::new(
+                Button::Forward,
+                Direction::Release,
+                injected,
+            )),
+            _ => {}
         },
         WM_MOUSEMOVE => {
-            // TODO
+            mouse_move.publish(MouseMoveEvent::new(
+                point(mouse_struct.pt.x, mouse_struct.pt.y),
+                injected,
+            ));
         }
         WM_MOUSEWHEEL => {
             // TODO
@@ -86,179 +129,176 @@ unsafe extern "system" fn low_level_mouse_proc(
         WM_MOUSEHWHEEL => {
             // TODO
         }
-        _ => None,
+        _ => {}
     };
-
-    if let Some(button_event) = event {
-        let _ = EVENT_SENDER
-            .get()
-            .unwrap()
-            .send(RecordEvent::MouseButton(button_event.0, button_event.1));
-    }
 
     unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
 }
 
+#[derive(Debug, Default)]
+pub struct MouseButtonsTopic {
+    dispatcher: Weak<InputDispatcher>,
+}
+
+impl Topic for MouseButtonsTopic {
+    type T = MouseButtonEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await;
+        }
+    }
+
+    async fn on_stop(&self) {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await;
+        }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct MouseMoveTopic {
+    dispatcher: Weak<InputDispatcher>,
+}
+
+impl Topic for MouseMoveTopic {
+    type T = MouseMoveEvent;
+    type Signal = LatestOnlySignals<Self::T>;
+
+    async fn on_start(&self) {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await;
+        }
+    }
+
+    async fn on_stop(&self) {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await;
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct InputDispatcher {
-    hook_handle: Option<SafeHook>,
-    subscriptions: Arc<AtomicUsize>,
-    mouse_buttons_topic: Arc<Topic<MouseButtonEvent, AllSignals<MouseButtonEvent>>>,
-    mouse_move_topic: Arc<Topic<Point, LatestOnlySignals<Point>>>,
+    mouse_buttons: Arc<TopicWrapper<MouseButtonsTopic>>,
+    mouse_move: Arc<TopicWrapper<MouseMoveTopic>>,
+    subscribers: Arc<AtomicUsize>,
+    message_pump: SafeMessagePump,
 }
 
 impl InputDispatcher {
-    pub fn new(task_tracker: TaskTracker, cancellation_token: CancellationToken) -> Self {
-        let (mouse_buttons_topic, mut mouse_buttons_control_receiver) =
-            Topic::new(AllSignals::new());
-        let (mouse_move_topic, mut mouse_move_control_receiver) =
-            Topic::new(LatestOnlySignals::new());
-
-        task_tracker.spawn(async move {
-            loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    changed = mouse_buttons_control_receiver.changed() => {
-                        if changed.is_err() { break; } // sender dropped
-                    }
-                                        changed = mouse_move_control_receiver.changed() => {
-                        if changed.is_err() { break; } // sender dropped
-                    }
-                }
-
-                let control = *control_receiver.borrow_and_update();
-
-                info!("{name}: {}", control);
-
-                match control {
-                    Control::Enable => {
-                        if activation_counter.fetch_add(1, Ordering::Relaxed) == 0 {
-                            // Enable
-                            let hook = unsafe {
-                                SetWindowsHookExW(WH_MOUSE_LL, Some(low_level_mouse_proc), None, 0)
-                                    .unwrap();
-                            };
-
-                            if hook.is_invalid() {
-                                error!("invalid Windows hook");
-                                continue;
-                            }
-
-                            // Ok(SafeHook(hook))
-                        }
-                    }
-                    Control::Disable => {
-                        if activation_counter.fetch_sub(1, Ordering::Relaxed) == 1 {
-                            // TODO: what if already 0?
-                            // Disable
-                            unsafe { UnhookWindowsHookEx(self.0).unwrap() }
-                        }
-                    }
-                }
-            }
-        });
-
-        Self {
-            hook_handle: None,
-            subscriptions: Arc::new(AtomicUsize::new(0)),
-            mouse_buttons_topic: Arc::new(mouse_button_topic),
-            mouse_move_topic: Arc::new(mouse_move_topic),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct MouseButtonsTopic {
-    topic: Topic<MouseButtonEvent, AllSignals<MouseButtonEvent>>,
-}
-
-impl MouseButtonsTopic {
-    pub fn new(
-        task_tracker: TaskTracker,
+    pub async fn new(
         cancellation_token: CancellationToken,
-        activation_counter: Arc<AtomicUsize>,
-    ) -> Self {
-        let (topic, mut control_receiver) = Topic::new(AllSignals::new());
-        //
-        task_tracker.spawn(async move {
-            loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    changed = control_receiver.changed() => {
-                        if changed.is_err() { break; } // sender dropped
-                    }
-                }
-
-                let control = *control_receiver.borrow_and_update();
-
-                info!("{name}: {}", control);
-
-                match control {
-                    Control::Enable => {
-                        if activation_counter.fetch_add(1, Ordering::Relaxed) == 0 {
-                            // Enable
-                            let hook = unsafe {
-                                SetWindowsHookExW(WH_MOUSE_LL, Some(low_level_mouse_proc), None, 0)
-                                    .unwrap();
-                            };
-
-                            if hook.is_invalid() {
-                                error!("invalid Windows hook");
-                                continue;
-                            }
-
-                            // Ok(SafeHook(hook))
-                        }
-                    }
-                    Control::Disable => {
-                        if activation_counter.fetch_sub(1, Ordering::Relaxed) == 1 {
-                            // TODO: what if already 0?
-                            // Disable
-                            unsafe { UnhookWindowsHookEx(self.0).unwrap() }
-                        }
-                    }
-                }
-            }
-        });
-        Self {
-            topic,
-            activation_counter,
-        }
-    }
-
-    pub fn publish(&self, value: MouseButtonEvent) {
-        self.topic.publish(value);
-    }
-
-    pub fn subscribe(&self) -> ReceiverGuard<MouseButtonEvent, AllSignals<MouseButtonEvent>> {
-        self.topic.subscribe()
-    }
-}
-
-#[derive(Debug)]
-pub struct MouseMoveTopic {
-    topic: Topic<Point, LatestOnlySignals<Point>>,
-    activation_counter: Arc<AtomicUsize>,
-}
-
-impl MouseMoveTopic {
-    pub fn new(
         task_tracker: TaskTracker,
-        cancellation_token: CancellationToken,
-        activation_counter: Arc<AtomicUsize>,
-    ) -> Self {
-        let (topic, control_receiver) = Topic::new(LatestOnlySignals::new());
-        //
-        Self {
-            topic,
-            activation_counter,
+    ) -> Result<Arc<Self>> {
+        let message_pump = SafeMessagePump::new::<LowLevelHookRunner>(
+            "input_dispatcher",
+            cancellation_token.clone(),
+            task_tracker.clone(),
+        )
+        .await?;
+
+        Ok(Arc::new_cyclic(|me| {
+            if INPUT_DISPATCHER.set(me.clone()).is_err() {
+                panic!("InputDispatcher should only be intantiated once");
+            }
+
+            Self {
+                mouse_buttons: Arc::new(TopicWrapper::new(
+                    MouseButtonsTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                )),
+                mouse_move: Arc::new(TopicWrapper::new(
+                    MouseMoveTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker,
+                )),
+                subscribers: Arc::new(AtomicUsize::new(0)),
+                message_pump,
+            }
+        }))
+    }
+
+    pub fn subscribe_mouse_buttons(&self) -> Guard<MouseButtonsTopic> {
+        self.mouse_buttons.clone().subscribe()
+    }
+
+    pub fn subscribe_mouse_move(&self) -> Guard<MouseMoveTopic> {
+        self.mouse_move.clone().subscribe()
+    }
+
+    pub fn publish_mouse_buttons(&self, value: <MouseButtonsTopic as Topic>::T) {
+        self.mouse_buttons.publish(value);
+    }
+
+    pub fn publish_mouse_move(&self, value: <MouseMoveTopic as Topic>::T) {
+        self.mouse_move.publish(value);
+    }
+
+    async fn on_start(&self) {
+        if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
+            self.message_pump.send_message(MSG_START);
         }
     }
 
-    pub fn publish(&self, value: Point) {
-        self.topic.publish(value);
+    async fn on_stop(&self) {
+        if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
+            self.message_pump.send_message(MSG_STOP);
+        }
+    }
+}
+
+const MSG_START: u32 = WM_APP + 1;
+const MSG_STOP: u32 = WM_APP + 2;
+
+#[derive(Debug, Default)]
+pub struct LowLevelHookRunner {
+    hook: Option<SafeHookHandle>,
+}
+
+impl MessagePumpRunner for LowLevelHookRunner {
+    fn new() -> Result<Self>
+    where
+        Self: Sized,
+    {
+        Ok(Self::default())
+    }
+    fn on_message(&mut self, msg: &MSG) {
+        match msg.message {
+            MSG_START => self.start(),
+            MSG_STOP => self.stop(),
+            _ => {
+                error!("unknown message: {:?}", msg);
+            }
+        }
+    }
+}
+
+impl LowLevelHookRunner {
+    pub fn start(&mut self) {
+        match unsafe { SetWindowsHookExW(WH_MOUSE_LL, Some(low_level_mouse_proc), None, 0) } {
+            Ok(hook) => {
+                if hook.is_invalid() {
+                    error!("SetWindowsHookExW returned an invalid Windows hook");
+                    return;
+                }
+
+                self.hook = Some(SafeHookHandle::new(hook));
+            }
+            Err(err) => {
+                error!("SetWindowsHookExW failed with {err}");
+                return;
+            }
+        }
     }
 
-    pub fn subscribe(&self) -> ReceiverGuard<Point, LatestOnlySignals<Point>> {
-        self.topic.subscribe()
+    pub fn stop(&mut self) {
+        drop(self.hook.take());
     }
 }

@@ -14,6 +14,7 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::core::{
     mouse::Button,
+    point::Point,
     rect::{Rect, rect},
 };
 
@@ -274,6 +275,29 @@ impl MultiTest {
 pub struct MouseButtonEvent {
     pub button: Button,
     pub direction: Direction,
+    pub injected: bool,
+}
+
+impl MouseButtonEvent {
+    pub fn new(button: Button, direction: Direction, injected: bool) -> Self {
+        Self {
+            button,
+            direction,
+            injected,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct MouseMoveEvent {
+    pub position: Point,
+    pub injected: bool,
+}
+
+impl MouseMoveEvent {
+    pub fn new(position: Point, injected: bool) -> Self {
+        Self { position, injected }
+    }
 }
 
 // This is the same as display_info::DisplayInfo, but without the pointer to the raw monitor handle, since it is not Send.

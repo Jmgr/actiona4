@@ -50,6 +50,8 @@ impl Displays {
         let local_displays_info = displays_info.clone();
 
         let cancellation_token = runtime.cancellation_token();
+
+        /*
         let screen_change_guard = runtime.platform().screen_change().subscribe();
         let mut screen_change_receiver = screen_change_guard.subscribe();
 
@@ -66,6 +68,8 @@ impl Displays {
                 *displays_info = screen_change_receiver.borrow_and_update().clone();
             }
         });
+        */
+        // TODO
 
         Ok(Self {
             implementation: DisplaysImpl::new(runtime)?,

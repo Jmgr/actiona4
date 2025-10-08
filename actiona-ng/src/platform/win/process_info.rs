@@ -69,10 +69,17 @@ pub fn all_windows() -> Result<Vec<HWND>> {
     let mut result = Vec::new();
     let result_ptr = &mut result as *mut Vec<HWND>;
     unsafe {
-        let hdesk: SafeDesktopHandle =
-            OpenInputDesktop(DESKTOP_CONTROL_FLAGS::default(), false, DESKTOP_READOBJECTS)?.into();
+        let hdesk = SafeDesktopHandle::try_new(OpenInputDesktop(
+            DESKTOP_CONTROL_FLAGS::default(),
+            false,
+            DESKTOP_READOBJECTS,
+        )?)?;
 
-        EnumDesktopWindows(Some(*hdesk), Some(enum_proc), LPARAM(result_ptr as isize))?;
+        EnumDesktopWindows(
+            Some(hdesk.as_raw()),
+            Some(enum_proc),
+            LPARAM(result_ptr as isize),
+        )?;
     }
 
     Ok(result)

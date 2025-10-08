@@ -220,7 +220,7 @@ impl Runtime {
     }
 
     pub fn screen_change(&self) -> Arc<TopicWrapper<ScreenChangeTopic>> {
-        self.screen_change_topic.clone()
+        self.screen_change_topic.clone() // TODO: return guard?
     }
 
     pub fn subscribe_window_events(&self) -> broadcast::Receiver<WindowEvent> {

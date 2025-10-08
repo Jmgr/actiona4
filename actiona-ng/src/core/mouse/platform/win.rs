@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use tokio::select;
 use tokio_util::sync::CancellationToken;
 use windows::Win32::UI::Input::KeyboardAndMouse::{
     GetAsyncKeyState, VK_LBUTTON, VK_MBUTTON, VK_RBUTTON, VK_XBUTTON1, VK_XBUTTON2,
@@ -8,11 +9,14 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 use super::{Button, MouseImplTrait, Result};
 use crate::{
     core::mouse::ButtonConditions,
+    error::CommonError,
     runtime::{Runtime, events::MouseButtonEvent},
 };
 
-#[derive(Debug, Default)]
-pub struct MouseImpl;
+#[derive(Debug)]
+pub struct MouseImpl {
+    runtime: Arc<Runtime>,
+}
 
 impl Button {
     fn into_vkey(self) -> i32 {
@@ -29,8 +33,8 @@ impl Button {
 }
 
 impl MouseImpl {
-    pub async fn new(_runtime: Arc<Runtime>) -> Result<Self> {
-        Ok(Self)
+    pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
+        Ok(Self { runtime })
     }
 }
 
@@ -40,11 +44,44 @@ impl MouseImplTrait for MouseImpl {
         Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000u16 != 0 })
     }
 
+    // TODO: put the logic in the crossplatform module
     async fn wait_for_button(
         &self,
         conditions: ButtonConditions,
         cancellation_token: CancellationToken,
     ) -> Result<MouseButtonEvent> {
-        todo!()
+        let guard = self
+            .runtime
+            .platform()
+            .input_dispatcher()
+            .subscribe_mouse_buttons();
+        let mut receiver = guard.subscribe();
+        let runtime_cancellation_token = self.runtime.cancellation_token();
+        loop {
+            let event = select! {
+                _ = runtime_cancellation_token.cancelled() => { break; }
+                _ = cancellation_token.cancelled() => { break; }
+                event = receiver.recv() => { event }
+            };
+
+            let Ok(event) = event else {
+                break;
+            };
+
+            let button_result = match conditions.button {
+                None => true,
+                Some(button) => button == event.button,
+            };
+            let direction_result = match conditions.direction {
+                None => true,
+                Some(direction) => direction == event.direction,
+            };
+
+            if button_result && direction_result {
+                return Ok(event);
+            }
+        }
+
+        Err(CommonError::Cancelled.into())
     }
 }

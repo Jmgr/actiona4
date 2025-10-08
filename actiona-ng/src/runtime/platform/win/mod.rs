@@ -1,124 +1,69 @@
-use std::sync::{Arc, OnceLock};
+#![allow(unsafe_code)]
 
-use enigo::Direction;
-use eyre::{Result, bail};
+use std::{
+    sync::{Arc, Weak},
+    thread::{self, JoinHandle},
+};
+
+use eyre::Result;
+use once_cell::sync::OnceCell;
 use tokio::{
-    sync::{broadcast::Sender, oneshot},
-    task::JoinHandle,
+    select,
+    sync::{broadcast, oneshot},
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::error;
 use windows::{
     Win32::{
         Foundation::{HWND, LPARAM, LRESULT, WPARAM},
         System::{LibraryLoader::GetModuleHandleW, Threading::GetCurrentThreadId},
         UI::WindowsAndMessaging::{
-            CS_NOCLOSE, CW_USEDEFAULT, CallNextHookEx, CreateWindowExW, DefWindowProcW,
-            DispatchMessageW, GetMessageW, HHOOK, MSG, MSLLHOOKSTRUCT, PostQuitMessage,
-            PostThreadMessageW, RegisterClassW, SetWindowsHookExW, TranslateMessage,
-            UnhookWindowsHookEx, WH_MOUSE_LL, WINDOW_EX_STYLE, WM_DESTROY, WM_DISPLAYCHANGE,
-            WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDOWN, WM_MBUTTONUP, WM_QUIT, WM_RBUTTONDOWN,
-            WM_RBUTTONUP, WM_XBUTTONDOWN, WM_XBUTTONUP, WNDCLASSW, WS_POPUP, XBUTTON1, XBUTTON2,
+            CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
+            GetMessageW, MSG, PostQuitMessage, PostThreadMessageW, RegisterClassW,
+            TranslateMessage, WINDOW_EX_STYLE, WM_DESTROY, WM_DISPLAYCHANGE, WM_QUIT, WNDCLASSW,
+            WS_POPUP,
         },
     },
     core::{Error, PCWSTR, w},
 };
 
-use crate::core::mouse::Button;
+use crate::{
+    error::CommonError,
+    platform::win::safe_handle::SafeWindowHandle,
+    runtime::{events::DisplayInfoVec, platform::win::events::input::InputDispatcher},
+};
 
 pub mod events;
 
+static RUNTIME: OnceCell<Weak<Runtime>> = OnceCell::new();
+
 #[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
-    unsafe {
-        match msg {
-            WM_DISPLAYCHANGE => {
-                let infos = display_info::DisplayInfo::all().unwrap();
+    let Some(runtime) = RUNTIME.get().and_then(|runtime| runtime.upgrade()) else {
+        return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
+    };
 
-                // TODO
-                /*
-                EVENT_SENDER
-                    .get()
-                    .unwrap()
-                    .send(RecordEvent::DisplayChanged(infos.into()))
-                    .unwrap();
-                */
-            }
-            WM_DESTROY => {
-                PostQuitMessage(0);
-            }
-            _ => return DefWindowProcW(hwnd, msg, wparam, lparam),
+    match msg {
+        WM_DISPLAYCHANGE => {
+            let infos = display_info::DisplayInfo::all().unwrap();
+
+            let _ = runtime.screen_change_sender.send(infos.into());
         }
+        WM_DESTROY => unsafe {
+            PostQuitMessage(0);
+        },
+        _ => return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) },
     }
 
     LRESULT(0)
 }
 
-#[derive(Debug)]
-pub struct Runtime {
-    cancellation_token: CancellationToken,
-    events_handle: Option<JoinHandle<Result<()>>>,
-    thread_id: u32,
+struct DisplayRunner {
+    _window: SafeWindowHandle,
 }
 
-#[allow(unsafe_code)]
-impl Runtime {
-    pub async fn new(
-        cancellation_token: CancellationToken,
-        task_tracker: TaskTracker,
-    ) -> Result<Arc<Self>> {
-        let (thread_id_sender, thread_id_receiver) = oneshot::channel();
-
-        let local_cancellation_token = cancellation_token.clone();
-
-        let events_handle = task_tracker.spawn_blocking(move || {
-            Self::create_message_receiver_window()?;
-
-            let thread_id_value = unsafe { GetCurrentThreadId() };
-            thread_id_sender.send(thread_id_value).unwrap();
-
-            let mut msg = MSG::default();
-            while !local_cancellation_token.is_cancelled() {
-                let ret = unsafe { GetMessageW(&mut msg, None, 0, 0).0 };
-                if ret == 0 {
-                    break; // Exit loop when WM_QUIT is received
-                }
-                if ret == -1 {
-                    eprintln!("Error in message loop!");
-                    break;
-                }
-
-                unsafe {
-                    let _ = TranslateMessage(&msg);
-                }
-                unsafe {
-                    DispatchMessageW(&msg);
-                }
-            }
-
-            Ok(())
-        });
-
-        let thread_id = thread_id_receiver.await?;
-
-        let runtime = Arc::new(Self {
-            cancellation_token: cancellation_token.clone(),
-            events_handle: Some(events_handle),
-            events_sender,
-            thread_id,
-        });
-
-        let local_runtime = runtime.clone();
-
-        task_tracker.spawn(async move {
-            cancellation_token.cancelled().await;
-
-            local_runtime.stop();
-        });
-
-        Ok(runtime)
-    }
-
-    fn create_message_receiver_window() -> Result<()> {
+impl MessagePumpRunner for DisplayRunner {
+    fn new() -> Result<Self> {
         let instance = unsafe { GetModuleHandleW(None)? };
         let class_name = w!("MessageReceiver");
 
@@ -157,20 +102,146 @@ impl Runtime {
             return Err(Error::from_thread().into());
         }
 
-        Ok(())
+        Ok(Self {
+            _window: SafeWindowHandle::try_new(hwnd)?,
+        })
     }
 
-    fn stop(&self) {
-        self.cancellation_token.cancel();
-
+    fn on_message(&mut self, msg: &MSG) {
         unsafe {
-            PostThreadMessageW(
-                self.thread_id,
-                WM_QUIT,
-                WPARAM::default(),
-                LPARAM::default(),
-            )
-            .unwrap();
+            let _ = TranslateMessage(msg);
+        }
+        unsafe {
+            DispatchMessageW(msg);
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Runtime {
+    input_dispatcher: Arc<InputDispatcher>,
+    _message_pump: SafeMessagePump,
+    screen_change_sender: broadcast::Sender<DisplayInfoVec>,
+}
+
+#[allow(unsafe_code)]
+impl Runtime {
+    pub async fn new(
+        cancellation_token: CancellationToken,
+        task_tracker: TaskTracker,
+    ) -> Result<Arc<Self>> {
+        let message_pump = SafeMessagePump::new::<DisplayRunner>(
+            "window",
+            cancellation_token.clone(),
+            task_tracker.clone(),
+        )
+        .await?;
+
+        let input_dispatcher =
+            InputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
+
+        let (screen_change_sender, _) = broadcast::channel(1024); // TODO
+
+        Ok(Arc::new_cyclic(|me| {
+            if RUNTIME.set(me.clone()).is_err() {
+                panic!("Runtime should only be intantiated once");
+            }
+
+            Self {
+                input_dispatcher,
+                _message_pump: message_pump,
+                screen_change_sender,
+            }
+        }))
+    }
+
+    pub fn input_dispatcher(&self) -> Arc<InputDispatcher> {
+        self.input_dispatcher.clone()
+    }
+
+    pub fn subscribe_screen_change(&self) -> broadcast::Receiver<DisplayInfoVec> {
+        self.screen_change_sender.subscribe()
+    }
+}
+
+pub trait MessagePumpRunner {
+    fn new() -> Result<Self>
+    where
+        Self: Sized;
+    fn on_message(&mut self, msg: &MSG);
+}
+
+#[derive(Debug)]
+pub struct SafeMessagePump {
+    thread_id: u32,
+    join_handle: Option<JoinHandle<()>>,
+}
+
+impl Drop for SafeMessagePump {
+    fn drop(&mut self) {
+        let thread_id = self.thread_id;
+        unsafe {
+            let _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
+        }
+        let _ = self.join_handle.take().unwrap().join();
+    }
+}
+
+impl SafeMessagePump {
+    pub async fn new<R>(
+        name: &str,
+        cancellation_token: CancellationToken,
+        task_tracker: TaskTracker,
+    ) -> Result<Self>
+    where
+        R: MessagePumpRunner + Send + 'static,
+    {
+        let (thread_id_sender, thread_id_receiver) = oneshot::channel();
+
+        let join_handle = thread::Builder::new()
+            .name(name.to_string())
+            .spawn(move || {
+                let mut runner = R::new().unwrap(); // TODO
+
+                let thread_id = unsafe { GetCurrentThreadId() };
+                let _ = thread_id_sender.send(thread_id);
+
+                let mut msg = MSG::default();
+                loop {
+                    let message = unsafe { GetMessageW(&mut msg, None, 0, 0).0 };
+                    if message == 0 {
+                        break; // Exit loop when WM_QUIT is received
+                    }
+                    if message == -1 {
+                        error!("Error in message loop");
+                        break;
+                    }
+
+                    runner.on_message(&msg);
+                }
+            })?;
+
+        let thread_id = select! {
+            _ = cancellation_token.cancelled() => { return Err(CommonError::Cancelled.into()); }
+            thread_id = thread_id_receiver => { thread_id }
+        }?;
+
+        task_tracker.spawn(async move {
+            cancellation_token.cancelled().await;
+            unsafe {
+                let _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
+            }
+        });
+
+        Ok(Self {
+            thread_id,
+            join_handle: Some(join_handle),
+        })
+    }
+
+    pub fn send_message(&self, message: u32) {
+        unsafe {
+            let _ = PostThreadMessageW(self.thread_id, message, WPARAM(0), LPARAM(0));
         }
     }
 }
