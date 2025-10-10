@@ -14,8 +14,9 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::core::{
     mouse::Button,
-    point::Point,
+    point::{Point, point},
     rect::{Rect, rect},
+    size::size,
 };
 
 pub trait Signal<T>: Send + Sync + 'static {
@@ -331,7 +332,7 @@ impl From<display_info::DisplayInfo> for DisplayInfo {
             id: value.id,
             name: value.name,
             friendly_name: value.friendly_name,
-            rect: rect(value.x, value.y, value.width, value.height),
+            rect: rect(point(value.x, value.y), size(value.width, value.height)),
             width_mm: value.width_mm,
             height_mm: value.height_mm,
             rotation: value.rotation,

@@ -37,6 +37,7 @@ use crate::{
             js::{JsRect, JsRectParam},
             rect,
         },
+        size::size,
     },
     error::CommonError,
 };
@@ -603,11 +604,11 @@ impl JsImage {
 
     /// Creates a new image from a part of this image.
     pub fn copy_region(&self, ctx: Ctx<'_>, rect: JsRectParam) -> Result<Self> {
-        let (x, y) = self.check_position(&ctx, point(rect.0.x, rect.0.y))?;
+        let (x, y) = self.check_position(&ctx, point(rect.0.origin.x, rect.0.origin.y))?;
 
         Ok(super::Image(DynamicImage::ImageRgba8(
             self.inner
-                .view(x, y, rect.0.width, rect.0.height)
+                .view(x, y, rect.0.size.width, rect.0.size.height)
                 .to_image(),
         ))
         .into())
@@ -615,7 +616,7 @@ impl JsImage {
 
     /// Returns a Rect representing this image.
     pub fn rect(&self) -> JsRect {
-        rect(0, 0, self.width(), self.height()).into()
+        rect(point(0, 0), size(self.width(), self.height())).into()
     }
 
     #[qjs(skip)]
@@ -1059,13 +1060,13 @@ mod tests {
         let mut mat_bgr = Mat::default();
 
         (|| {
-        opencv::opencv_has_inherent_feature_algorithm_hint! {
-            {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
-            } else {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
+            opencv::opencv_has_inherent_feature_algorithm_hint! {
+                {
+                    cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
+                } else {
+                    cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
+                }
             }
-        }
         })()?;
 
         Ok(mat_bgr)

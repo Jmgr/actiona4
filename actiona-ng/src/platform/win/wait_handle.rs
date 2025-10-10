@@ -108,20 +108,22 @@ unsafe extern "system" fn callback(ptr: *mut std::ffi::c_void, _timer_fired: boo
 
 #[cfg(test)]
 mod tests {
-    use crate::platform::win::safe_handle::SafeHandle;
-
-    use super::WaitHandle;
     use std::time::Duration;
-    use tokio::join;
-    use tokio::time::{sleep, timeout};
-    use windows::Win32::Foundation::WAIT_OBJECT_0;
+
+    use tokio::{
+        join,
+        time::{sleep, timeout},
+    };
     use windows::Win32::{
-        Foundation::HANDLE,
+        Foundation::{HANDLE, WAIT_OBJECT_0},
         System::Threading::{
             CREATE_EVENT_INITIAL_SET, CREATE_EVENT_MANUAL_RESET, CreateEventExW, EVENT_ALL_ACCESS,
             SetEvent, WaitForSingleObject,
         },
     };
+
+    use super::WaitHandle;
+    use crate::platform::win::safe_handle::SafeHandle;
 
     fn create_event(initial_set: bool) -> HANDLE {
         let mut flags = CREATE_EVENT_MANUAL_RESET;

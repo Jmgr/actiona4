@@ -6,7 +6,12 @@ use rquickjs::{
 };
 
 use super::rect;
-use crate::core::{ResultExt, js::classes::ValueClass, point::js::JsPoint};
+use crate::core::{
+    ResultExt,
+    js::classes::ValueClass,
+    point::{js::JsPoint, point},
+    size::size,
+};
 
 pub struct JsRectParam(pub super::Rect);
 
@@ -18,10 +23,8 @@ impl<'js> FromParam<'js> for JsRectParam {
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
         Ok(Self(match params.len() {
             n if n >= 4 => super::Rect::new(
-                params.arg().get()?,
-                params.arg().get()?,
-                params.arg().get()?,
-                params.arg().get()?,
+                point(params.arg().get()?, params.arg().get()?),
+                size(params.arg().get()?, params.arg().get()?),
             ),
             n if n >= 1 => {
                 let value = params.arg();
@@ -36,10 +39,8 @@ impl<'js> FromParam<'js> for JsRectParam {
                     .or_throw_message(params.ctx(), "Expected an object")?;
 
                 super::Rect::new(
-                    object.get("x")?,
-                    object.get("y")?,
-                    object.get("width")?,
-                    object.get("height")?,
+                    point(object.get("x")?, object.get("y")?),
+                    size(object.get("width")?, object.get("height")?),
                 )
             }
             n => {
@@ -90,56 +91,56 @@ impl JsRect {
         // TODO: accept an object as arg
 
         Ok(Self {
-            inner: rect(x, y, width, height),
+            inner: rect(point(x, y), size(width, height)),
         })
     }
 
     /// @skip
     #[qjs(get, rename = "x")]
     pub const fn get_x(&self) -> i32 {
-        self.inner.x
+        self.inner.origin.x
     }
 
     /// @skip
     #[qjs(set, rename = "x")]
     pub const fn set_x(&mut self, x: i32) {
-        self.inner.x = x;
+        self.inner.origin.x = x;
     }
 
     /// @skip
     #[qjs(get, rename = "y")]
     pub const fn get_y(&self) -> i32 {
-        self.inner.y
+        self.inner.origin.y
     }
 
     /// @skip
     #[qjs(set, rename = "y")]
     pub const fn set_y(&mut self, y: i32) {
-        self.inner.y = y;
+        self.inner.origin.y = y;
     }
 
     /// @skip
     #[qjs(get, rename = "width")]
     pub const fn get_width(&self) -> u32 {
-        self.inner.width
+        self.inner.size.width
     }
 
     /// @skip
     #[qjs(set, rename = "width")]
     pub const fn set_width(&mut self, width: u32) {
-        self.inner.width = width;
+        self.inner.size.width = width;
     }
 
     /// @skip
     #[qjs(get, rename = "height")]
     pub const fn get_height(&self) -> u32 {
-        self.inner.height
+        self.inner.size.height
     }
 
     /// @skip
     #[qjs(set, rename = "height")]
     pub const fn set_height(&mut self, height: u32) {
-        self.inner.height = height;
+        self.inner.size.height = height;
     }
 
     pub fn equals(&self, other: Self) -> bool {
@@ -154,7 +155,7 @@ impl JsRect {
     pub fn to_string_js(&self) -> String {
         format!(
             "({}, {}, {}, {})",
-            self.inner.x, self.inner.y, self.inner.width, self.inner.height
+            self.inner.origin.x, self.inner.origin.y, self.inner.size.width, self.inner.size.height
         )
     }
 

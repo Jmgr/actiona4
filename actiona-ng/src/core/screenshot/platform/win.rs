@@ -107,7 +107,7 @@ impl ScreenshotImplTrait for ScreenshotImpl {
         let _ = display_id;
         todo!();
     }
-    
+
     async fn _capture_pixel(&mut self, position: Point) -> Result<Color> {
         let _ = position;
         todo!();

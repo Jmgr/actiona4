@@ -19,7 +19,10 @@ use tracing::{info, instrument};
 use tween::FixedTweener;
 
 use crate::{
-    core::{js::duration::JsDuration, point::js::JsPoint},
+    core::{
+        js::duration::JsDuration,
+        point::{js::JsPoint, try_point},
+    },
     error::CommonError,
     runtime::{events::MouseButtonEvent, shared_rng::SharedRng},
 };
@@ -403,8 +406,10 @@ impl Mouse {
         let start_position = self.position()?;
         let distance = start_position.distance_to(target_position);
 
-        let duration = if options.speed == 0. {
-            return Err(MouseError::ParameterError("speed cannot be zero".into()));
+        let duration = if options.speed < 0. {
+            return Err(MouseError::ParameterError(
+                "speed must be greater than zero".into(),
+            ));
         } else {
             Duration::from_secs_f32(distance / options.speed)
         };
@@ -432,8 +437,8 @@ impl Mouse {
             options.interval.0.as_secs_f32(),
         );
 
-        let direction = (target_position - start_position).normalize();
-        let perpendicular = point(-direction.y, direction.x);
+        let (direction_x, direction_y) = (target_position - start_position).normalize();
+        let (perpendicular_x, perpendicular_y) = (-direction_y, direction_x);
 
         while !tween.is_finished() {
             let time = tween.current_time;
@@ -446,9 +451,16 @@ impl Mouse {
                 * options.perlin_amplitude;
 
             let damping_factor = 1.0 - eased_progress.powi(3); // More easing as it approaches the end
-            let noise_offset = perpendicular.scale(noise * damping_factor); // Apply perpendicular noise
 
-            let position = tween.move_next() + noise_offset;
+            // Apply perpendicular noise
+            let (noise_offset_x, noise_offset_y) = (
+                perpendicular_x * noise * damping_factor,
+                perpendicular_y * noise * damping_factor,
+            );
+
+            let position = tween.move_next()
+                + try_point(noise_offset_x, noise_offset_y)
+                    .map_err(|err: eyre::Error| MouseError::ParameterError(err.to_string()))?;
 
             self.set_position(position, Coordinate::Abs)?;
 

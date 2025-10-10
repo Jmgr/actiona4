@@ -1,24 +1,39 @@
 use std::fmt::Display;
 
-use derive_more::{Add, Mul, Sub};
-use num_traits::ToPrimitive;
+use derive_more::{Add, Constructor, Mul, Sub};
+use eyre::{Error, OptionExt, Result, eyre};
+use num_traits::{Float, ToPrimitive};
 use serde::{Deserialize, Serialize};
 
 use crate::types::DisplayFields;
 
 pub mod js;
 
-#[derive(Add, Clone, Copy, Debug, Default, Deserialize, Eq, Mul, PartialEq, Serialize, Sub)]
+#[derive(
+    Add, Clone, Copy, Debug, Default, Deserialize, Eq, Mul, PartialEq, Serialize, Sub, Constructor,
+)]
 pub struct Size {
     pub width: u32,
     pub height: u32,
 }
 
-pub fn size<Width: ToPrimitive, Height: ToPrimitive>(width: Width, height: Height) -> Size {
-    Size {
-        width: width.to_u32().unwrap_or(0),
-        height: height.to_u32().unwrap_or(0),
-    }
+pub const fn size(width: u32, height: u32) -> Size {
+    Size::new(width, height)
+}
+
+pub fn try_size<W, H>(width: W, height: H) -> Result<Size>
+where
+    W: ToPrimitive + Display,
+    H: ToPrimitive + Display,
+{
+    Ok(Size::new(
+        width
+            .to_u32()
+            .ok_or_else(|| eyre!("{width} cannot be converted into an unsigned integer"))?,
+        height
+            .to_u32()
+            .ok_or_else(|| eyre!("{height} cannot be converted into an unsigned integer"))?,
+    ))
 }
 
 impl Display for Size {
@@ -31,10 +46,6 @@ impl Display for Size {
 }
 
 impl Size {
-    pub const fn new(width: u32, height: u32) -> Self {
-        Self { width, height }
-    }
-
     pub fn length(&self) -> f32 {
         (self.width as f32).hypot(self.height as f32)
     }

@@ -83,7 +83,7 @@ impl Displays {
         let mut total_area: u64 = 0;
         for display_info in &displays_info.0 {
             let rect = display_info.rect;
-            total_area += (rect.width as u64) * (rect.height as u64);
+            total_area += (rect.size.width as u64) * (rect.size.height as u64);
         }
         if total_area == 0 {
             return Err(DisplaysError::NoDisplays);
@@ -95,7 +95,7 @@ impl Displays {
         let mut chosen = None;
         for display_info in &displays_info.0 {
             let rect = display_info.rect;
-            let area = (rect.width as u64) * (rect.height as u64);
+            let area = (rect.size.width as u64) * (rect.size.height as u64);
             if area == 0 {
                 continue;
             }
@@ -111,11 +111,11 @@ impl Displays {
 
         // Sample uniformly inside the chosen rect.
         // Use i64 for the range math to avoid overflows on x + width, etc.
-        let x_end = rect.x as i64 + rect.width as i64;
-        let y_end = rect.y as i64 + rect.height as i64;
+        let x_end = rect.origin.x as i64 + rect.size.width as i64;
+        let y_end = rect.origin.y as i64 + rect.size.height as i64;
 
-        let x = rng.random_range(rect.x as i64..x_end) as i32;
-        let y = rng.random_range(rect.y as i64..y_end) as i32;
+        let x = rng.random_range(rect.origin.x as i64..x_end) as i32;
+        let y = rng.random_range(rect.origin.y as i64..y_end) as i32;
 
         Ok(point(x, y))
     }

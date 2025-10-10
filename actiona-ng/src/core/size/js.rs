@@ -7,8 +7,12 @@ use rquickjs::{
 };
 
 use crate::{
-    core::{ResultExt, js::classes::ValueClass},
-    runtime::WithUserData,
+    IntoJsResult,
+    core::{
+        ResultExt,
+        js::classes::ValueClass,
+        size::{Size, try_size},
+    },
 };
 
 pub struct JsSizeParam(pub super::Size);
@@ -33,7 +37,7 @@ impl<'js> FromParam<'js> for JsSizeParam {
                     .as_object()
                     .or_throw_message(params.ctx(), "Expected an object")?;
 
-                super::Size::new(object.get("width")?, object.get("y")?)
+                super::Size::new(object.get("width")?, object.get("height")?)
             }
             n => {
                 return Err(Exception::throw_message(
@@ -48,7 +52,7 @@ impl<'js> FromParam<'js> for JsSizeParam {
 /// A 2D Point.
 ///
 /// @prop x: number // X coordinate
-/// @prop y: number // Y coordinate
+/// @prop height: number // height coordinate
 ///
 /// ```js
 /// let p = new Point(1, 2);
@@ -70,11 +74,11 @@ impl JsSize {
     /// @overload
     /// Constructor with two number.
     /// @param x: number // X coordinate
-    /// @param y: number // Y coordinate
+    /// @param height: number // height coordinate
     ///
     /// @overload
     /// Constructor with an object.
-    /// @param o: {x: number, y: number} // Object containing the x and y coordinates
+    /// @param o: {x: number, height: number} // Object containing the x and height coordinates
     ///
     /// @overload
     /// Constructor with another Point.
@@ -88,7 +92,7 @@ impl JsSize {
     /// Constructs a Point from an argument slice.
     /// Accepted forms:
     /// new Point(other_point)
-    /// new Point({x: 0, y: 1})
+    /// new Point({x: 0, height: 1})
     /// new Point(0, 1)
     ///
     /// @skip
@@ -112,7 +116,9 @@ impl JsSize {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            return Ok((super::size(first_arg, second_arg).into(), rest));
+            let size = try_size(first_arg, second_arg).into_js(&ctx)?;
+
+            return Ok((size.into(), rest));
         }
 
         // If it's a Point then get a copy
@@ -120,12 +126,14 @@ impl JsSize {
             return Ok((other_point, rest));
         }
 
-        // If it's an object, then get its x and y properties
+        // If it's an object, then get its width and height properties
         if let Some(first_arg) = first_arg.as_object() {
             let width: f64 = first_arg.get("width")?;
-            let y: f64 = first_arg.get("y")?;
+            let height: f64 = first_arg.get("height")?;
 
-            return Ok((super::size(width, y).into(), rest));
+            let size = try_size(width, height).into_js(&ctx)?;
+
+            return Ok((size.into(), rest));
         }
 
         Err(Exception::throw_message(ctx, "Invalid Point argument"))
@@ -241,6 +249,7 @@ impl From<super::Size> for JsSize {
     }
 }
 
+// TODO: update, replace Point with Size
 #[cfg(test)]
 mod tests {
     use super::JsSize;
@@ -250,7 +259,7 @@ mod tests {
         script_engine
             .eval::<()>(
                 r#"
-                let p1 = new Point({x: 1, y: 2});
+                let p1 = new Point({x: 1, height: 2});
                 let p2 = new Point(2, 3);
                 let p3 = new Point(p2);
             "#,
@@ -284,7 +293,7 @@ mod tests {
                 .eval::<()>(
                     r#"
                 p1.x = 42;
-                p1.y = 43;
+                p1.height = 43;
             "#,
                 )
                 .await
@@ -293,7 +302,7 @@ mod tests {
             let result = script_engine.eval::<i64>("p1.x").await.unwrap();
             assert_eq!(result, 42);
 
-            let result = script_engine.eval::<i64>("p1.y").await.unwrap();
+            let result = script_engine.eval::<i64>("p1.height").await.unwrap();
             assert_eq!(result, 43);
         });
     }
@@ -313,7 +322,7 @@ mod tests {
                 .eval::<JsSize>("p1.subtract(new Point(1, 3))")
                 .await
                 .unwrap();
-            assert_eq!(result, size(0, -1).into());
+            assert_eq!(result, size(0, 1).into());
 
             let result = script_engine.eval::<JsSize>("p1.scale(2)").await.unwrap();
             assert_eq!(result, size(2, 4).into());
@@ -345,7 +354,7 @@ mod tests {
             setup(&mut script_engine).await;
 
             let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
-            assert_eq!(result, r#"{"x":1,"y":2}"#);
+            assert_eq!(result, r#"{"x":1,"height":2}"#);
         });
     }
 

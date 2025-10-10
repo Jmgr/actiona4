@@ -5,21 +5,18 @@ use std::path::Path;
 use eyre::Result;
 use pe_parser::pe::parse_portable_executable;
 use tokio::fs;
-use windows::Win32::System::StationsAndDesktops::DESKTOP_CONTROL_FLAGS;
-use windows::Win32::System::StationsAndDesktops::EnumDesktopWindows;
-use windows::Win32::UI::WindowsAndMessaging::GetClassNameW;
-use windows::Win32::UI::WindowsAndMessaging::SendNotifyMessageW;
-use windows::core::Error;
 use windows::{
     Win32::{
         Foundation::{HWND, LPARAM, WPARAM},
-        System::StationsAndDesktops::{DESKTOP_READOBJECTS, OpenInputDesktop},
+        System::StationsAndDesktops::{
+            DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
+        },
         UI::WindowsAndMessaging::{
-            GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible,
-            WM_CLOSE,
+            GetClassNameW, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
+            IsWindowVisible, SendNotifyMessageW, WM_CLOSE,
         },
     },
-    core::BOOL,
+    core::{BOOL, Error},
 };
 
 use crate::platform::win::safe_handle::SafeDesktopHandle;

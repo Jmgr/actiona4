@@ -30,7 +30,7 @@ pub enum Error {
     NotFound,
 
     #[error(transparent)]
-    Other(eyre::Error),
+    Other(#[from] eyre::Report),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -18,9 +18,9 @@ use x11rb::{
 
 use crate::{
     core::{
-        point::{Point, point},
+        point::{Point, point, try_point},
         rect::{Rect, rect},
-        size::Size,
+        size::{Size, size, try_size},
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
     },
     runtime::{Runtime, platform::x11},
@@ -133,10 +133,14 @@ impl WindowsHandler for X11WindowHandler {
         let extents = self.frame_extents(connection, handle)?.unwrap_or_default();
 
         Ok(rect(
-            coordinates.dst_x as i64 + extents.left,
-            coordinates.dst_y as i64 + extents.top,
-            geometry.width as i64 - extents.left - extents.right,
-            geometry.height as i64 - extents.top - extents.bottom,
+            try_point(
+                coordinates.dst_x as i64 + extents.left,
+                coordinates.dst_y as i64 + extents.top,
+            )?,
+            try_size(
+                geometry.width as i64 - extents.left - extents.right,
+                geometry.height as i64 - extents.top - extents.bottom,
+            )?,
         ))
     }
 

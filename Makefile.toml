@@ -1,0 +1,54 @@
+[env]
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = "true"
+
+[config]
+skip_core_tasks = true
+default_to_workspace = false
+
+[tasks.fmt]
+command = "cargo"
+toolchain = "nightly"
+args = ["fmt", "--all"]
+
+[tasks.derivefmt]
+command = "cargo"
+args = ["derivefmt"]
+
+[tasks.sort]
+command = "cargo"
+args = ["sort", "-g", "-w"]
+
+[tasks.format]
+dependencies = ["deps", "fmt", "derivefmt", "sort"]
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--all", "--all-targets", "--all-features"]
+
+[tasks.lint]
+dependencies = ["clippy"]
+
+[tasks.install-rustfmt]
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
+command = "rustup"
+args = ["component", "add", "rustfmt", "--toolchain", "nightly"]
+
+# From https://github.com/dcchut/cargo-derivefmt
+# This package is currently implemented using rust-analyzer internals, so cannot be published on crates.io.
+[tasks.install-derivefmt]
+command = "cargo"
+args = [
+    "install",
+    "--locked",
+    "--git",
+    "https://github.com/dcchut/cargo-derivefmt",
+    "--bin",
+    "cargo-derivefmt",
+]
+
+[tasks.install-sort]
+command = "cargo"
+args = ["install", "cargo-sort"]
+
+[tasks.deps]
+dependencies = ["install-rustfmt", "install-derivefmt", "install-sort"]

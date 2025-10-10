@@ -25,8 +25,9 @@ use crate::{
         color::Color,
         displays::Displays,
         image::Image,
-        point::Point,
+        point::{Point, point},
         rect::{Rect, rect},
+        size::size,
     },
     platform::x11::X11Connection,
     runtime::{
@@ -78,7 +79,7 @@ impl Display {
     ) -> Result<Self> {
         const BYTES_PER_PIXEL: usize = 4;
         let rect = display_info.rect;
-        let image_size = (rect.width as usize) * (rect.height as usize) * BYTES_PER_PIXEL;
+        let image_size = (rect.size.width as usize) * (rect.size.height as usize) * BYTES_PER_PIXEL;
 
         let shm_data = if runtime.platform().has_shm() {
             let shm_segment_id = x11_connection.async_connection().generate_id().await?;
@@ -139,10 +140,10 @@ impl Display {
             .async_connection()
             .shm_get_image(
                 root,
-                self.rect.x as i16,
-                self.rect.y as i16,
-                self.rect.width as u16,
-                self.rect.height as u16,
+                self.rect.origin.x as i16,
+                self.rect.origin.y as i16,
+                self.rect.size.width as u16,
+                self.rect.size.height as u16,
                 u32::MAX, // plane mask (capture all planes)
                 ImageFormat::Z_PIXMAP.into(),
                 shm_data.shm_segment_id,
@@ -159,8 +160,8 @@ impl Display {
 
         Ok(image_from_bgr_data(
             pixel_data,
-            self.rect.width,
-            self.rect.height,
+            self.rect.size.width,
+            self.rect.size.height,
         ))
     }
 
@@ -277,7 +278,7 @@ impl ScreenshotImplTrait for ScreenshotImpl {
 
     async fn _capture_pixel(&mut self, position: Point) -> Result<Color> {
         let result = self
-            .capture_rect(rect(position.x, position.y, 1, 1))
+            .capture_rect(rect(point(position.x, position.y), size(1, 1)))
             .await?;
 
         Ok((*result
@@ -314,17 +315,21 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
         .get_image(
             ImageFormat::Z_PIXMAP,
             root,
-            rect.x as i16,
-            rect.y as i16,
-            rect.width as u16,
-            rect.height as u16,
+            rect.origin.x as i16,
+            rect.origin.y as i16,
+            rect.size.width as u16,
+            rect.size.height as u16,
             u32::MAX,
         )
         .await?
         .reply()
         .await?;
 
-    Ok(image_from_bgr_data(&reply.data, rect.width, rect.height))
+    Ok(image_from_bgr_data(
+        &reply.data,
+        rect.size.width,
+        rect.size.height,
+    ))
 }
 
 #[cfg(test)]

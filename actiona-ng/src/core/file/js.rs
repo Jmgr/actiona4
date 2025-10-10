@@ -1,3 +1,7 @@
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+#[cfg(windows)]
+use std::os::windows::fs::FileTimesExt;
 use std::{
     fmt::Debug,
     fs::FileTimes,
@@ -5,12 +9,6 @@ use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
-
-#[cfg(unix)]
-use std::os::unix::fs::PermissionsExt;
-
-#[cfg(windows)]
-use std::os::windows::fs::FileTimesExt;
 
 use macros::FromJsObject;
 use rquickjs::{

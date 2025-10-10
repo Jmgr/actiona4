@@ -1,7 +1,12 @@
-use std::{f32::consts::TAU, fmt::Display};
+use std::{
+    f32::consts::TAU,
+    fmt::Display,
+    ops::{Div, DivAssign, Mul, MulAssign},
+};
 
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
-use eyre::{Error, Result, bail};
+use eyre::{Error, OptionExt, Result, bail, eyre};
+use num_traits::{Float, PrimInt, ToPrimitive};
 use serde::{Deserialize, Serialize};
 use tween::TweenValue;
 
@@ -32,52 +37,44 @@ pub struct Point {
 }
 
 pub const fn point(x: i32, y: i32) -> Point {
-    Point { x, y }
+    Point::new(x, y)
 }
 
-fn to_i32_checked(value: f64) -> Result<i32> {
-    if value.is_nan() {
-        bail!("NaN cannot be converted to i32");
-    }
-    if value.is_infinite() {
-        bail!("Infinity cannot be converted to i32");
-    }
-    if value < i32::MIN as f64 || value > i32::MAX as f64 {
-        bail!("value out of range for i32");
-    }
-    Ok(value as i32)
+pub fn try_point<X, Y>(x: X, y: Y) -> Result<Point>
+where
+    X: ToPrimitive + Display,
+    Y: ToPrimitive + Display,
+{
+    Ok(Point::new(
+        x.to_i32()
+            .ok_or_else(|| eyre!("{x} cannot be converted into an integer"))?,
+        y.to_i32()
+            .ok_or_else(|| eyre!("{y} cannot be converted into an integer"))?,
+    ))
 }
 
-impl TryFrom<(f64, f64)> for Point {
-    type Error = Error;
-
-    fn try_from(value: (f64, f64)) -> Result<Self, Self::Error> {
-        Ok(point(to_i32_checked(value.0)?, to_i32_checked(value.1)?))
-    }
-}
-
-impl std::ops::Mul<i32> for Point {
+impl Mul<i32> for Point {
     type Output = Self;
     #[inline]
     fn mul(self, k: i32) -> Self {
         Self::new(self.x * k, self.y * k)
     }
 }
-impl std::ops::MulAssign<i32> for Point {
+impl MulAssign<i32> for Point {
     #[inline]
     fn mul_assign(&mut self, k: i32) {
         self.x *= k;
         self.y *= k;
     }
 }
-impl std::ops::Div<i32> for Point {
+impl Div<i32> for Point {
     type Output = Self;
     #[inline]
     fn div(self, k: i32) -> Self {
         Self::new(self.x / k, self.y / k)
     }
 }
-impl std::ops::DivAssign<i32> for Point {
+impl DivAssign<i32> for Point {
     #[inline]
     fn div_assign(&mut self, k: i32) {
         self.x /= k;
@@ -114,6 +111,15 @@ impl Point {
         self.x * other.y - self.y * other.x
     }
 
+    pub fn normalize(self) -> (f32, f32) {
+        let len = self.length();
+        if len > 0. {
+            ((self.x as f32 / len), (self.y as f32 / len))
+        } else {
+            (0., 0.)
+        }
+    }
+
     pub fn length(&self) -> f32 {
         (self.x as f32).hypot(self.y as f32)
     }
@@ -143,10 +149,17 @@ impl Point {
         a.distance_to(b)
     }
 
-    pub fn scale(&self, factor: f32) -> Self {
+    pub fn scaled(&self, factor: f32) -> Self {
         Self {
             x: (self.x as f32 * factor).round() as i32,
             y: (self.y as f32 * factor).round() as i32,
+        }
+    }
+
+    pub fn clamped(&self, min: Self, max: Self) -> Self {
+        Self {
+            x: self.x.clamp(min.x, max.x),
+            y: self.y.clamp(min.y, max.y),
         }
     }
 }

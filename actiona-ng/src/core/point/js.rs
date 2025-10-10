@@ -8,7 +8,11 @@ use rquickjs::{
 
 use crate::{
     IntoJsResult,
-    core::{ResultExt, js::classes::ValueClass, point::Point},
+    core::{
+        ResultExt,
+        js::classes::ValueClass,
+        point::{Point, try_point},
+    },
     runtime::WithUserData,
 };
 
@@ -113,7 +117,7 @@ impl JsPoint {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            let point = Point::try_from((first_arg, second_arg)).into_js(&ctx)?;
+            let point = try_point(first_arg, second_arg).into_js(&ctx)?;
 
             return Ok((point.into(), rest));
         }
@@ -128,7 +132,7 @@ impl JsPoint {
             let x: f64 = first_arg.get("x")?;
             let y: f64 = first_arg.get("y")?;
 
-            let point = Point::try_from((x, y)).into_js(&ctx)?;
+            let point = try_point(x, y).into_js(&ctx)?;
 
             return Ok((point.into(), rest));
         }
@@ -211,7 +215,7 @@ impl JsPoint {
 
     /// Scales this point by a factor and returns a new Point.
     pub fn scale(&self, factor: f32) -> Self {
-        self.inner.scale(factor).into()
+        self.inner.scaled(factor).into()
     }
 
     /// Returns a string representation of this Point.

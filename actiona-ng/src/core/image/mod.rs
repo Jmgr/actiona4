@@ -18,6 +18,7 @@ use crate::core::{
     color::Color,
     point::{Point, point},
     rect::Rect,
+    size::size,
 };
 
 pub mod js;
@@ -100,13 +101,13 @@ impl Image {
         let mut mat_bgr = Mat::default();
 
         (|| {
-        opencv::opencv_has_inherent_feature_algorithm_hint! {
-            {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
-            } else {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
+            opencv::opencv_has_inherent_feature_algorithm_hint! {
+                {
+                    cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
+                } else {
+                    cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
+                }
             }
-        }
         })()?;
 
         Ok(mat_bgr)
@@ -120,13 +121,13 @@ impl Image {
         let mut mat_bgr = Mat::default();
 
         (|| {
-        opencv::opencv_has_inherent_feature_algorithm_hint! {
-            {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
-            } else {
-                cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0)
+            opencv::opencv_has_inherent_feature_algorithm_hint! {
+                {
+                    cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
+                } else {
+                    cvt_color(&mat, &mut mat_bgr, COLOR_RGBA2BGRA, 0)
+                }
             }
-        }
         })()?;
 
         Ok(mat_bgr)
@@ -260,7 +261,10 @@ impl Image {
         // Draw rectangles around the filtered matches
         let mut result = self.clone();
         for (pt, score) in &filtered_matches {
-            let rect = Rect::new(pt.x, pt.y, template.cols() as u32, template.rows() as u32);
+            let rect = Rect::new(
+                point(pt.x, pt.y),
+                size(template.cols() as u32, template.rows() as u32),
+            );
             draw_hollow_rect_mut(
                 &mut result.0,
                 rect.into(),

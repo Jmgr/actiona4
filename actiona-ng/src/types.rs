@@ -108,7 +108,7 @@ impl Display for ByteCount {
 
 impl From<u32> for ByteCount {
     fn from(value: u32) -> Self {
-        ByteCount::from(value as u64)
+        Self::from(value as u64)
     }
 }
 
@@ -220,7 +220,7 @@ pub type OptionalU32 = OptionalUnit<u32>;
 
 impl From<Option<u32>> for OptionalU32 {
     fn from(value: Option<u32>) -> Self {
-        Self(value.map(|value| value.into()))
+        Self(value)
     }
 }
 
@@ -228,7 +228,7 @@ pub type OptionalUSize = OptionalUnit<usize>;
 
 impl From<Option<usize>> for OptionalUSize {
     fn from(value: Option<usize>) -> Self {
-        Self(value.map(|value| value.into()))
+        Self(value)
     }
 }
 
@@ -359,7 +359,7 @@ impl<'a, T: Display> Display for DisplayList<'a, T> {
     }
 }
 
-pub fn display_list<T: Display>(v: &[T]) -> DisplayList<'_, T> {
+pub const fn display_list<T: Display>(v: &[T]) -> DisplayList<'_, T> {
     DisplayList(v)
 }
 
@@ -384,6 +384,6 @@ where
     }
 }
 
-pub fn display_map<I>(iter: I) -> DisplayMap<I> {
+pub const fn display_map<I>(iter: I) -> DisplayMap<I> {
     DisplayMap(iter)
 }
