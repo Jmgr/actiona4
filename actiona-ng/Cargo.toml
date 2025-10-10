@@ -7,34 +7,73 @@ description.workspace = true
 documentation.workspace = true
 license.workspace = true
 
+[target.'cfg(windows)'.dependencies]
+pe-parser.workspace = true
+windows.workspace = true
+windows-result.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libwmctl.workspace = true
+memfd.workspace = true
+nix.workspace = true
+procfs.workspace = true
+rustix.workspace = true
+x11rb.workspace = true
+x11rb-async.workspace = true
+zbus.workspace = true
+
+[features]
+default = []
+slint = ["dep:slint", "dep:slint-interpreter"]
+
 [dependencies]
 macros = { path = "../macros" }
 
-slint-interpreter = { workspace = true, optional = true }
 slint = { workspace = true, optional = true }
+slint-interpreter = { workspace = true, optional = true }
+arboard.workspace = true
 
 async-compat.workspace = true
+bimap.workspace = true
+bytes.workspace = true
+chrono.workspace = true
 console.workspace = true
 convert_case.workspace = true
+derive-where.workspace = true
 derive_more.workspace = true
 display-info.workspace = true
+encoding_rs.workspace = true
 enigo.workspace = true
 eyre.workspace = true
+futures.workspace = true
+futures-util.workspace = true
+http-body.workspace = true
+http-body-util.workspace = true
+humansize.workspace = true
 humantime.workspace = true
 image.workspace = true
 imageproc.workspace = true
 indexmap.workspace = true
+indicatif.workspace = true
+infer.workspace = true
+ipnet.workspace = true
 itertools.workspace = true
+mime.workspace = true
+mime_guess.workspace = true
 noiselib.workspace = true
 num-traits.workspace = true
+once_cell.workspace = true
 opencv.workspace = true
-rand_chacha.workspace = true
 rand.workspace = true
+rand_chacha.workspace = true
 rayon.workspace = true
+regex.workspace = true
+reqwest.workspace = true
 rquickjs.workspace = true
-serde_json.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 slotmap.workspace = true
+spin_on.workspace = true
 strum.workspace = true
 swc_common.workspace = true
 swc_ecma_ast.workspace = true
@@ -43,61 +82,22 @@ swc_ecma_parser.workspace = true
 swc_ecma_transforms_base.workspace = true
 swc_ecma_transforms_typescript.workspace = true
 swc_sourcemap.workspace = true
+sysinfo.workspace = true
 thiserror.workspace = true
-tokio-util.workspace = true
 tokio.workspace = true
+tokio-util.workspace = true
 tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
-once_cell.workspace = true
-regex.workspace = true
-spin_on.workspace = true
-chrono.workspace = true
-arboard.workspace = true
-reqwest.workspace = true
-futures.workspace = true
-futures-util.workspace = true
-mime.workspace = true
-encoding_rs.workspace = true
-indicatif.workspace = true
-bytes.workspace = true
-http-body.workspace = true
-http-body-util.workspace = true
-infer.workspace = true
-mime_guess.workspace = true
-sysinfo.workspace = true
-derive-where.workspace = true
-humansize.workspace = true
-ipnet.workspace = true
-bimap.workspace = true
-
-[target.'cfg(windows)'.dependencies]
-windows.workspace = true
-pe-parser.workspace = true
-windows-result.workspace = true
-
-[target.'cfg(unix)'.dependencies]
-memfd.workspace = true
-nix.workspace = true
-x11rb-async.workspace = true
-x11rb.workspace = true
-zbus.workspace = true
-rustix.workspace = true
-procfs.workspace = true
-libwmctl.workspace = true
-
-[dev-dependencies]
-pretty_assertions.workspace = true
-tempfile.workspace = true
-tracing-test.workspace = true
-httptest.workspace = true
-base64.workspace = true
-console-subscriber.workspace = true
-tracing-subscriber.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true
 
-[features]
-default = []
-slint = ["dep:slint", "dep:slint-interpreter"]
+[dev-dependencies]
+base64.workspace = true
+console-subscriber.workspace = true
+httptest.workspace = true
+pretty_assertions.workspace = true
+tempfile.workspace = true
+tracing-subscriber.workspace = true
+tracing-test.workspace = true

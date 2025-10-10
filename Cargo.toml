@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["actiona-ng", "actiona-ng-cli", "macros", "doc-generator"]
+members = ["actiona-ng", "actiona-ng-cli", "doc-generator", "macros"]
 
 [workspace.package]
 version = "0.1.0"
@@ -11,10 +11,15 @@ documentation = "https://actiona.tools"
 license = "MIT"
 
 [workspace.dependencies]
+arboard = "3.6.1"
 async-compat = "0.2.5"
+bimap = "0.6.3"
+bytes = "1.10.1"
+chrono = "0.4.42"
 clap = { version = "4.5.47", features = ["cargo", "derive"] }
 console = "0.16.1"
 convert_case = "0.8.0"
+derive-where = "1.6.0"
 derive_more = { version = "2.0.1", default-features = false, features = [
     "add",
     "mul",
@@ -26,9 +31,15 @@ derive_more = { version = "2.0.1", default-features = false, features = [
     "constructor",
 ] }
 display-info = "0.5.6"
+encoding_rs = "0.8.35"
 enigo = "0.6.1"
 env_logger = "0.11.8"
 eyre = "0.6.12"
+futures = "0.3.31"
+futures-util = "0.3.31"
+http-body = "1.0.1"
+http-body-util = "0.1.3"
+humansize = "2.1.3"
 humantime = "2.3.0"
 image = { version = "0.25.8", default-features = false, features = [
     "png",
@@ -43,8 +54,13 @@ imageproc = { version = "0.25.0", default-features = false, features = [
     "rayon",
 ] }
 indexmap = { version = "2.11.3", features = ["serde"] }
+indicatif = "0.18.0"
+infer = "0.19.0"
+ipnet = "2.11.0"
 itertools = "0.14.0"
 log = "0.4.28"
+mime = "0.3.17"
+mime_guess = "2.0.5"
 noiselib = "0.2.4"
 num-traits = "0.2.19"
 once_cell = "1.21.3"
@@ -52,10 +68,11 @@ opencv = { version = "0.96.0", default-features = false, features = [
     "imgproc",
 ] }
 quote = "1.0.40"
-rand_chacha = "0.9.0"
 rand = "0.9.2"
+rand_chacha = "0.9.0"
 rayon = "1.11.0"
 regex = "1.11.2"
+reqwest = { version = "0.12.23", features = ["stream", "multipart"] }
 rquickjs = { git = "https://github.com/Jmgr/rquickjs.git", branch = "add-filename-to-eval-options", default-features = false, features = [
     "macro",
     "futures",
@@ -65,7 +82,6 @@ rquickjs = { git = "https://github.com/Jmgr/rquickjs.git", branch = "add-filenam
 rustdoc-types = "0.56.0"
 serde = "1.0.225"
 serde_json = "1.0.145"
-slotmap = { version = "1.0.7", features = ["serde"] }
 slint = { version = "1.13.1", default-features = false, features = [
     "compat-1-2",
     "renderer-software",
@@ -78,6 +94,8 @@ slint-interpreter = { version = "1.13.1", default-features = false, features = [
     "std",
     "backend-winit-x11",
 ] }
+slotmap = { version = "1.0.7", features = ["serde"] }
+spin_on = "0.1.1"
 strum = { version = "0.27.2", features = ["derive"] }
 swc_common = { version = "14.0.4", features = ["tty-emitter", "sourcemap"] }
 swc_ecma_ast = "15.0.0"
@@ -87,6 +105,7 @@ swc_ecma_transforms_base = "27.0.0"
 swc_ecma_transforms_typescript = "30.0.1"
 swc_sourcemap = "9.3.4"
 syn = { version = "2.0", features = ["parsing"] }
+sysinfo = "0.37.0"
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = [
     "rt-multi-thread",
@@ -102,27 +121,9 @@ tokio-util = { version = "0.7.16", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.5.0"
-spin_on = "0.1.1"
-chrono = "0.4.42"
-arboard = "3.6.1"
-reqwest = { version = "0.12.23", features = ["stream", "multipart"] }
-futures = "0.3.31"
-futures-util = "0.3.31"
-mime = "0.3.17"
-encoding_rs = "0.8.35"
-indicatif = "0.18.0"
-bytes = "1.10.1"
-http-body = "1.0.1"
-http-body-util = "0.1.3"
-infer = "0.19.0"
-mime_guess = "2.0.5"
-sysinfo = "0.37.0"
-derive-where = "1.6.0"
-humansize = "2.1.3"
-ipnet = "2.11.0"
-bimap = "0.6.3"
 
 # Windows
+pe-parser = "0.7.0"
 windows = { version = "0.62.0", features = [
     "Win32_UI_Input_KeyboardAndMouse",
     "Win32_UI_WindowsAndMessaging",
@@ -134,35 +135,34 @@ windows = { version = "0.62.0", features = [
     "Win32_Security",
 ] }
 windows-result = "0.4.0"
-pe-parser = "0.7.0"
 
 # Unix
+libwmctl = "0.0.51"
 memfd = "0.6.5"
 nix = { version = "0.30.1", features = ["poll", "mman"] }
+procfs = { version = "0.18.0", default-features = false, features = ["flate2"] }
+rustix = { version = "1.1.2", default-features = false, features = ["process"] }
+x11rb = "0.13.2"
 x11rb-async = { version = "0.13.2", features = [
     "xinput",
     "randr",
     "shm",
     "extra-traits",
 ] }
-x11rb = "0.13.2"
 zbus = { version = "5.11.0", default-features = false, features = ["tokio"] }
-rustix = { version = "1.1.2", default-features = false, features = ["process"] }
-procfs = { version = "0.18.0", default-features = false, features = ["flate2"] }
-libwmctl = "0.0.51"
 
 # Dev dependencies
-pretty_assertions = "1.4.1"
-tempfile = "3.22.0"
-tracing-test = "0.2.5"
-httptest = "0.16.3"
 base64 = "0.22.1"
 console-subscriber = "0.4.1"
+httptest = "0.16.3"
+pretty_assertions = "1.4.1"
+tempfile = "3.22.0"
 tracing-subscriber = { version = "0.3.20", features = [
     "fmt",
     "env-filter",
     "registry",
 ] }
+tracing-test = "0.2.5"
 
 # Build dependencies
 built = "0.8.0"

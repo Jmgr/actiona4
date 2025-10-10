@@ -8,11 +8,11 @@ documentation.workspace = true
 license.workspace = true
 default-run = "actiona-ng"
 
+[[bin]]
+name = "actiona-ng"
+
 [dependencies]
 actiona-ng = { path = "../actiona-ng", features = ["slint"] }
 
 clap.workspace = true
 eyre.workspace = true
-
-[[bin]]
-name = "actiona-ng"
