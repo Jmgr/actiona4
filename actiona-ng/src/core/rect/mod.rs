@@ -1,14 +1,18 @@
 use std::fmt::Display;
 
+use derive_more::Constructor;
 use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, point};
-use crate::types::DisplayFields;
+use crate::{
+    core::size::{Size, size},
+    types::DisplayFields,
+};
 
 pub mod js;
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Constructor, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Rect {
     pub x: i32,
     pub y: i32,
@@ -42,15 +46,6 @@ impl Display for Rect {
 }
 
 impl Rect {
-    pub const fn new(x: i32, y: i32, width: u32, height: u32) -> Self {
-        Self {
-            x,
-            y,
-            width,
-            height,
-        }
-    }
-
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
@@ -135,9 +130,8 @@ impl Rect {
         point(self.x + self.width as i32, self.y + self.height as i32)
     }
 
-    // TODO: create a new type
-    pub fn size(&self) -> Point {
-        point(self.width, self.height)
+    pub fn size(&self) -> Size {
+        size(self.width, self.height)
     }
 
     pub const fn surface(&self) -> u32 {

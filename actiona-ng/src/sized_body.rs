@@ -4,19 +4,15 @@ use std::{
 };
 
 use bytes::Bytes;
+use derive_more::Constructor;
 use http_body::{Body, Frame, SizeHint};
 
 pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
 
+#[derive(Constructor)]
 pub struct SizedBody<B> {
     inner: B,
     size: u64,
-}
-
-impl<B> SizedBody<B> {
-    pub fn new(inner: B, size: u64) -> Self {
-        Self { inner, size }
-    }
 }
 
 impl<B> Body for SizedBody<B>

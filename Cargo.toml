@@ -23,6 +23,7 @@ derive_more = { version = "2.0.1", default-features = false, features = [
     "deref_mut",
     "from",
     "into",
+    "constructor",
 ] }
 display-info = "0.5.6"
 enigo = "0.6.1"

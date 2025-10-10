@@ -20,6 +20,7 @@ use crate::{
     core::{
         point::{Point, point},
         rect::{Rect, rect},
+        size::Size,
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
     },
     runtime::{Runtime, platform::x11},
@@ -185,16 +186,16 @@ impl WindowsHandler for X11WindowHandler {
     }
 
     // TODO: create a Size type...
-    fn set_size(&self, id: WindowId, size: Point) -> Result<()> {
+    fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.get_handle(id)?.clone();
         <libwmctl::Window as Clone>::clone(&handle)
-            .shape(Shape::Static(size.x as u32, size.y as u32))
+            .shape(Shape::Static(size.width as u32, size.height as u32))
             .place()?;
         Ok(())
     }
 
     // tested
-    fn size(&self, id: WindowId) -> Result<Point> {
+    fn size(&self, id: WindowId) -> Result<Size> {
         Ok(self.rect(id)?.size())
     }
 

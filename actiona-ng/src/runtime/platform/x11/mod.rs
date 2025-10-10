@@ -6,6 +6,7 @@ use libwmctl::AtomCollection;
 use tokio::{select, sync::broadcast};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, info};
+use x11rb::protocol::xinput::PointerEventFlags;
 use x11rb_async::{
     connection::Connection,
     protocol::{
@@ -146,6 +147,7 @@ impl Runtime {
                             local_mouse_buttons_topic.publish(MouseButtonEvent {
                                 button,
                                 direction: Direction::Press,
+                                injected: event.flags == PointerEventFlags::POINTER_EMULATED,
                             });
                         }
                         Event::XinputRawButtonRelease(event) => {
@@ -153,6 +155,7 @@ impl Runtime {
                             local_mouse_buttons_topic.publish(MouseButtonEvent {
                                 button,
                                 direction: Direction::Release,
+                                injected: event.flags == PointerEventFlags::POINTER_EMULATED,
                             });
                         }
                         Event::XinputMotion(event) => {

@@ -2,7 +2,7 @@ use std::{collections::HashSet, hash::Hash};
 
 use bimap::BiMap;
 
-use crate::core::{point::Point, rect::Rect};
+use crate::core::{point::Point, rect::Rect, size::Size};
 
 #[cfg(unix)]
 pub mod x11;
@@ -48,8 +48,8 @@ pub trait WindowsHandler {
     fn maximize(&self, id: WindowId) -> Result<()>;
     fn set_position(&self, id: WindowId, position: Point) -> Result<()>;
     fn position(&self, id: WindowId) -> Result<Point>;
-    fn set_size(&self, id: WindowId, size: Point) -> Result<()>;
-    fn size(&self, id: WindowId) -> Result<Point>;
+    fn set_size(&self, id: WindowId, size: Size) -> Result<()>;
+    fn size(&self, id: WindowId) -> Result<Size>;
     fn is_active(&self, id: WindowId) -> Result<bool>;
     fn active_window(&mut self) -> Result<WindowId>;
 }

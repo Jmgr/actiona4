@@ -10,7 +10,7 @@ use crate::{
     runtime::events::{AllSignals, LatestOnlySignals, MouseButtonEvent, Topic},
 };
 
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct InputMask {
     inner: Arc<Mutex<XIEventMask>>,
 }

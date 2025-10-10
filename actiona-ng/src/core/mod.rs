@@ -20,6 +20,7 @@ pub mod point;
 pub mod random;
 pub mod rect;
 pub mod screenshot;
+pub mod size;
 pub mod system;
 pub mod web;
 pub mod windows;

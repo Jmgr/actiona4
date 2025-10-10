@@ -33,6 +33,7 @@ use crate::{
         random::js::JsRandom,
         rect::js::JsRect,
         screenshot::js::JsScreenshot,
+        size::js::JsSize,
         web::js::JsWeb,
     },
     runtime::shared_rng::SharedRng,
@@ -166,6 +167,7 @@ impl Runtime {
 
                     // Value classes
                     JsPoint::register(&ctx)?;
+                    JsSize::register(&ctx)?;
                     JsRect::register(&ctx)?;
                     JsColor::register(&ctx)?;
                     JsImage::register(&ctx)?;

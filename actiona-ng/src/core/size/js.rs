@@ -7,26 +7,25 @@ use rquickjs::{
 };
 
 use crate::{
-    IntoJsResult,
-    core::{ResultExt, js::classes::ValueClass, point::Point},
+    core::{ResultExt, js::classes::ValueClass},
     runtime::WithUserData,
 };
 
-pub struct JsPointParam(pub super::Point);
+pub struct JsSizeParam(pub super::Size);
 
-impl<'js> FromParam<'js> for JsPointParam {
+impl<'js> FromParam<'js> for JsSizeParam {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::exhaustive()
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
         Ok(Self(match params.len() {
-            n if n >= 2 => super::Point::new(params.arg().get()?, params.arg().get()?),
+            n if n >= 2 => super::Size::new(params.arg().get()?, params.arg().get()?),
             n if n >= 1 => {
                 let value = params.arg();
 
                 // Also accept a js::Point as a parameter
-                if let Ok(js_point) = value.get::<JsPoint>() {
+                if let Ok(js_point) = value.get::<JsSize>() {
                     return Ok(Self(js_point.into()));
                 }
 
@@ -34,7 +33,7 @@ impl<'js> FromParam<'js> for JsPointParam {
                     .as_object()
                     .or_throw_message(params.ctx(), "Expected an object")?;
 
-                super::Point::new(object.get("x")?, object.get("y")?)
+                super::Size::new(object.get("width")?, object.get("y")?)
             }
             n => {
                 return Err(Exception::throw_message(
@@ -55,15 +54,15 @@ impl<'js> FromParam<'js> for JsPointParam {
 /// let p = new Point(1, 2);
 /// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Point")]
-pub struct JsPoint {
-    inner: super::Point,
+#[rquickjs::class(rename = "Size")]
+pub struct JsSize {
+    inner: super::Size,
 }
 
-impl ValueClass<'_> for JsPoint {}
+impl ValueClass<'_> for JsSize {}
 
 #[rquickjs::methods(rename_all = "camelCase")]
-impl JsPoint {
+impl JsSize {
     /// Constructor.
     ///
     /// @constructor
@@ -113,51 +112,47 @@ impl JsPoint {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            let point = Point::try_from((first_arg, second_arg)).into_js(&ctx)?;
-
-            return Ok((point.into(), rest));
+            return Ok((super::size(first_arg, second_arg).into(), rest));
         }
 
         // If it's a Point then get a copy
-        if let Ok(other_point) = first_arg.get::<JsPoint>() {
+        if let Ok(other_point) = first_arg.get::<JsSize>() {
             return Ok((other_point, rest));
         }
 
         // If it's an object, then get its x and y properties
         if let Some(first_arg) = first_arg.as_object() {
-            let x: f64 = first_arg.get("x")?;
+            let width: f64 = first_arg.get("width")?;
             let y: f64 = first_arg.get("y")?;
 
-            let point = Point::try_from((x, y)).into_js(&ctx)?;
-
-            return Ok((point.into(), rest));
+            return Ok((super::size(width, y).into(), rest));
         }
 
         Err(Exception::throw_message(ctx, "Invalid Point argument"))
     }
 
     /// @skip
-    #[qjs(get, rename = "x")]
-    pub const fn get_x(&self) -> i32 {
-        self.inner.x
+    #[qjs(get, rename = "width")]
+    pub const fn get_width(&self) -> u32 {
+        self.inner.width
     }
 
     /// @skip
-    #[qjs(set, rename = "x")]
-    pub const fn set_x(&mut self, x: i32) {
-        self.inner.x = x;
+    #[qjs(set, rename = "width")]
+    pub const fn set_width(&mut self, width: u32) {
+        self.inner.width = width;
     }
 
     /// @skip
-    #[qjs(get, rename = "y")]
-    pub const fn get_y(&self) -> i32 {
-        self.inner.y
+    #[qjs(get, rename = "height")]
+    pub const fn get_height(&self) -> u32 {
+        self.inner.height
     }
 
     /// @skip
-    #[qjs(set, rename = "y")]
-    pub const fn set_y(&mut self, y: i32) {
-        self.inner.y = y;
+    #[qjs(set, rename = "height")]
+    pub const fn set_height(&mut self, height: u32) {
+        self.inner.height = height;
     }
 
     /// Length of this point.
@@ -165,12 +160,9 @@ impl JsPoint {
         self.inner.length()
     }
 
-    /// Returns a random point around this point.
-    #[qjs(static)]
-    pub fn random_in_circle(ctx: Ctx<'_>, center: Self, radius: f32) -> Self {
-        let user_data = ctx.user_data();
-
-        super::Point::random_in_circle(center.into(), radius, user_data.rng()).into()
+    /// Normalize the point.
+    pub fn normalize(self) -> Self {
+        self.inner.normalize().into()
     }
 
     /// Calculates the distance between this point and another.
@@ -217,7 +209,7 @@ impl JsPoint {
     /// Returns a string representation of this Point.
     #[qjs(rename = PredefinedAtom::ToString)]
     pub fn to_string_js(&self) -> String {
-        format!("({}, {})", self.inner.x, self.inner.y)
+        format!("({}, {})", self.inner.width, self.inner.height)
     }
 
     /// Clones this Point.
@@ -228,31 +220,31 @@ impl JsPoint {
 
     /// @skip
     #[qjs(skip)]
-    pub const fn inner(&self) -> super::Point {
+    pub const fn inner(&self) -> super::Size {
         self.inner
     }
 }
 
-impl<'js> Trace<'js> for JsPoint {
+impl<'js> Trace<'js> for JsSize {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl From<JsPoint> for super::Point {
-    fn from(value: JsPoint) -> Self {
+impl From<JsSize> for super::Size {
+    fn from(value: JsSize) -> Self {
         value.inner
     }
 }
 
-impl From<super::Point> for JsPoint {
-    fn from(value: super::Point) -> Self {
+impl From<super::Size> for JsSize {
+    fn from(value: super::Size) -> Self {
         Self { inner: value }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::JsPoint;
-    use crate::{core::point::point, runtime::Runtime, scripting::Engine as ScriptEngine};
+    use super::JsSize;
+    use crate::{core::size::size, runtime::Runtime, scripting::Engine as ScriptEngine};
 
     async fn setup(script_engine: &mut ScriptEngine) {
         script_engine
@@ -312,19 +304,19 @@ mod tests {
             setup(&mut script_engine).await;
 
             let result = script_engine
-                .eval::<JsPoint>("p1.add(new Point(1, 3))")
+                .eval::<JsSize>("p1.add(new Point(1, 3))")
                 .await
                 .unwrap();
-            assert_eq!(result, point(2, 5).into());
+            assert_eq!(result, size(2, 5).into());
 
             let result = script_engine
-                .eval::<JsPoint>("p1.subtract(new Point(1, 3))")
+                .eval::<JsSize>("p1.subtract(new Point(1, 3))")
                 .await
                 .unwrap();
-            assert_eq!(result, point(0, -1).into());
+            assert_eq!(result, size(0, -1).into());
 
-            let result = script_engine.eval::<JsPoint>("p1.scale(2)").await.unwrap();
-            assert_eq!(result, point(2, 4).into());
+            let result = script_engine.eval::<JsSize>("p1.scale(2)").await.unwrap();
+            assert_eq!(result, size(2, 4).into());
         });
     }
 
@@ -397,7 +389,7 @@ mod tests {
             setup(&mut script_engine).await;
 
             script_engine
-                .eval::<JsPoint>("Point.random()")
+                .eval::<JsSize>("Point.random()")
                 .await
                 .unwrap();
         });
