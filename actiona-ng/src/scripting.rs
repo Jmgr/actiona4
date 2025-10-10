@@ -195,16 +195,8 @@ fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
         .captures(line)
         .and_then(|caps| {
             // Use and_then to chain Option results, returning None if any part fails
-            let function = if let Some(cap) = caps.name("func") {
-                cap.as_str()
-            } else {
-                ""
-            };
-            let file = if let Some(cap) = caps.name("file") {
-                cap.as_str()
-            } else {
-                ""
-            };
+            let function = caps.name("func").map_or("", |cap| cap.as_str());
+            let file = caps.name("file").map_or("", |cap| cap.as_str());
             // Parse line and col, converting parse errors into None
             let line = caps.name("line")?.as_str().parse::<usize>().ok()?;
             let col = caps.name("col")?.as_str().parse::<usize>().ok()?;
