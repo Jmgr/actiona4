@@ -6,7 +6,6 @@ use rquickjs::{
     class::{Trace, Tracer},
     prelude::Opt,
 };
-use slint::*;
 
 use crate::{
     IntoJsResult,
@@ -45,6 +44,7 @@ pub struct JsWindowOptions {
     position: Option<JsPoint>,
 }
 
+/*
 #[allow(unsafe_code)]
 mod ui {
     #[cfg(not(doc))]
@@ -79,6 +79,7 @@ mod ui {
         }
     }
 }
+*/
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsUi {
@@ -99,6 +100,7 @@ impl JsUi {
     ) -> Result<()> {
         let _options = options.clone().unwrap_or_default();
 
+        /*
         let h = Rc::new(ui::ImageWindow::new().unwrap());
 
         let image = image.to_inner().to_rgba8();
@@ -147,6 +149,8 @@ impl JsUi {
         });
         */
         h.run().unwrap();
+
+        */
 
         Ok(())
     }

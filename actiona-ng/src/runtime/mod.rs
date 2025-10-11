@@ -1,14 +1,11 @@
 use std::sync::{Arc, Mutex};
 
-use async_compat::Compat;
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
-#[cfg(feature = "slint")]
-use crate::core::ui::js::JsUi;
 use crate::{
     core::{
         clipboard::js::JsClipboard,
@@ -34,6 +31,7 @@ use crate::{
         rect::js::JsRect,
         screenshot::js::JsScreenshot,
         size::js::JsSize,
+        ui::js::JsUi,
         web::js::JsWeb,
     },
     runtime::shared_rng::SharedRng,
@@ -141,7 +139,6 @@ impl Runtime {
 
         let mouse = JsMouse::new(runtime.clone()).await?;
         let keyboard = JsKeyboard::new(runtime.clone())?;
-        #[cfg(feature = "slint")]
         let ui = JsUi::new(runtime.clone(), displays.clone())?;
         let console = JsConsole::new(runtime.clone())?;
         let js_displays = JsDisplays::new(displays.clone())?;
@@ -183,7 +180,6 @@ impl Runtime {
                     // Singletons
                     JsMouse::register(&ctx, mouse)?;
                     JsKeyboard::register(&ctx, keyboard)?;
-                    #[cfg(feature = "slint")]
                     JsUi::register(&ctx, ui)?;
                     JsConsole::register(&ctx, console)?;
                     JsDisplays::register(&ctx, js_displays)?;
@@ -206,7 +202,6 @@ impl Runtime {
         Ok((runtime, script_engine))
     }
 
-    #[cfg(feature = "slint")]
     pub fn run_with_ui<F>(f: F) -> Result<()>
     where
         F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
@@ -226,7 +221,7 @@ impl Runtime {
         task_tracker.spawn(async move {
             select! {
                 _ = signal::ctrl_c() => {
-                    slint::quit_event_loop().unwrap();
+                    // slint::quit_event_loop().unwrap();
                     local_cancellation_token.cancel();
                 },
                 _ = local_cancellation_token.cancelled() => {},
@@ -235,6 +230,7 @@ impl Runtime {
 
         let local_cancellation_token = cancellation_token.clone();
 
+        /*
         let handle = slint::spawn_local(Compat::new(async move {
             let (runtime, mut script_engine) =
                 Self::new(local_cancellation_token, local_task_tracker).await?;
@@ -254,11 +250,12 @@ impl Runtime {
         }))?;
 
         slint::run_event_loop_until_quit()?;
+        */
 
         task_tracker.close();
         cancellation_token.cancel();
 
-        tokio_runtime.block_on(handle).unwrap();
+        //tokio_runtime.block_on(handle).unwrap();
         tokio_runtime.block_on(task_tracker.wait());
 
         Ok(())

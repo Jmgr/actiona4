@@ -5,19 +5,18 @@ use std::{
 
 use eyre::{Result, bail, eyre};
 use itertools::Itertools;
-use slint::ComponentHandle;
-use slint_interpreter::Compiler;
 use spin_on::spin_on;
 
 pub mod js;
 
 #[derive(Default)]
 pub struct Ui {
-    compiler: Arc<Mutex<Compiler>>,
+    //compiler: Arc<Mutex<Compiler>>,
 }
 
 impl Ui {
     pub fn load(&self, source: &str, component_name: &str) -> Result<()> {
+        /*
         let result = spin_on(
             self.compiler
                 .lock()
@@ -38,6 +37,7 @@ impl Ui {
         //instance.set_property("my_name", Value::from(SharedString::from("Foo")))?;
 
         instance.run()?;
+        */
 
         Ok(())
     }

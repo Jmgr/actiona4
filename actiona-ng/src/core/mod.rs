@@ -22,11 +22,9 @@ pub mod rect;
 pub mod screenshot;
 pub mod size;
 pub mod system;
+pub mod ui;
 pub mod web;
 pub mod windows;
-
-#[cfg(feature = "slint")]
-pub mod ui;
 
 pub trait ResultExt<T> {
     fn or_throw_message(self, ctx: &Ctx, msg: &str) -> Result<T>;

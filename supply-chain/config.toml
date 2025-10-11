@@ -880,42 +880,6 @@ criteria = "safe-to-deploy"
 version = "0.1.16"
 criteria = "safe-to-deploy"
 
-[[exemptions.i-slint-backend-linuxkms]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-backend-qt]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-backend-selector]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-backend-winit]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-common]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-compiler]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-core]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-core-macros]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.i-slint-renderer-skia]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
 [[exemptions.iana-time-zone]]
 version = "0.1.63"
 criteria = "safe-to-deploy"
@@ -1914,18 +1878,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.slab]]
 version = "0.4.9"
-criteria = "safe-to-deploy"
-
-[[exemptions.slint]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.slint-interpreter]]
-version = "1.12.1"
-criteria = "safe-to-deploy"
-
-[[exemptions.slint-macros]]
-version = "1.12.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.slotmap]]

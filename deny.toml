@@ -97,7 +97,6 @@ allow = [
     "BSD-2-Clause",
     "MPL-2.0",
     "Zlib",
-    "LicenseRef-Slint-Royalty-free-2.0",
     "ISC",
     "BSL-1.0",
 ]

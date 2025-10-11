@@ -12,7 +12,7 @@ default-run = "actiona-ng"
 name = "actiona-ng"
 
 [dependencies]
-actiona-ng = { path = "../actiona-ng", features = ["slint"] }
+actiona-ng = { path = "../actiona-ng" }
 
 clap.workspace = true
 eyre.workspace = true

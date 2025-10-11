@@ -24,13 +24,10 @@ zbus.workspace = true
 
 [features]
 default = []
-slint = ["dep:slint", "dep:slint-interpreter"]
 
 [dependencies]
 arboard.workspace = true
 macros = { path = "../macros" }
-slint = { workspace = true, optional = true }
-slint-interpreter = { workspace = true, optional = true }
 
 async-compat.workspace = true
 bimap.workspace = true
