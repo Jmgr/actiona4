@@ -11,9 +11,7 @@ pub struct Items {
 impl Items {
     pub fn new(crate_: Crate) -> Self {
         // Store the index into a BTree so we get all entries sorted by ID.
-        let items = Rc::new(BTreeMap::from_iter(
-            crate_.index.into_iter().map(|(key, value)| (key, value)),
-        ));
+        let items = Rc::new(BTreeMap::from_iter(crate_.index));
 
         let js_items = items
             .values()
@@ -39,7 +37,7 @@ impl Items {
     pub fn get(&self, id: Id) -> &Item {
         self.items
             .get(&id)
-            .expect(&format!("failed to find item with id {id:?}"))
+            .unwrap_or_else(|| panic!("failed to find item with id {id:?}"))
     }
 
     pub fn iter(&'_ self) -> Iter<'_, Item> {

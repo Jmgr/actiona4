@@ -1,4 +1,3 @@
-use derive_more::{From, Into};
 use image::Rgba;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Object, Result, Value,
@@ -371,6 +370,7 @@ impl<'js> ValueClass<'js> for JsColor {
 
 impl JsColor {
     /// @skip
+    #[must_use]
     pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self {
             inner: super::Color::new(r, g, b, a),
@@ -424,6 +424,7 @@ impl JsColor {
 
     /// @skip
     #[qjs(get, rename = "r")]
+    #[must_use]
     pub fn get_r(&self) -> u8 {
         self.inner.0[0]
     }
@@ -436,6 +437,7 @@ impl JsColor {
 
     /// @skip
     #[qjs(get, rename = "g")]
+    #[must_use]
     pub fn get_g(&self) -> u8 {
         self.inner.0[1]
     }
@@ -448,6 +450,7 @@ impl JsColor {
 
     /// @skip
     #[qjs(get, rename = "b")]
+    #[must_use]
     pub fn get_b(&self) -> u8 {
         self.inner.0[2]
     }
@@ -460,6 +463,7 @@ impl JsColor {
 
     /// @skip
     #[qjs(get, rename = "a")]
+    #[must_use]
     pub fn get_a(&self) -> u8 {
         self.inner.0[3]
     }
@@ -470,11 +474,13 @@ impl JsColor {
         self.inner.0[3] = a;
     }
 
+    #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
     pub fn to_string_js(&self) -> String {
         format!(
             "({}, {}, {}, {})",
@@ -486,6 +492,7 @@ impl JsColor {
     }
 
     #[qjs(rename = "clone")]
+    #[must_use]
     pub const fn clone_js(&self) -> Self {
         *self
     }

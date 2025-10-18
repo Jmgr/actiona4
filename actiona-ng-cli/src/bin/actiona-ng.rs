@@ -17,10 +17,10 @@ fn main() -> Result<()> {
     // Read the input file
     let script = fs::read_to_string(args.filepath)?;
 
-    Runtime::run(async move |_runtime, script_engine| {
-        script_engine.eval_async::<()>(&script).await?;
-        Ok(())
-    })?;
+    Runtime::run_with_ui(
+        |_runtime, script_engine| async move { script_engine.eval_async::<()>(&script).await },
+        tauri::generate_context!(),
+    )?;
 
     Ok(())
 }

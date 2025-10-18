@@ -61,7 +61,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                 let type_ = if let Some(type_) = instructions.type_() {
                     type_
                 } else {
-                    convert_type(field, Some(&struct_name))?
+                    convert_type(field, Some(struct_name))?
                 };
 
                 result.push(Variable {
@@ -133,8 +133,8 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let mut methods = Vec::new();
 
         for impl_ in impls {
-            let mut impl_methods = extract_functions(&items, &impl_.items, Some(&struct_name))
-                .wrap_err_with(|| format!("{struct_name}"))?;
+            let mut impl_methods = extract_functions(items, &impl_.items, Some(struct_name))
+                .wrap_err_with(|| struct_name.to_string())?;
             methods.append(&mut impl_methods);
         }
 

@@ -85,7 +85,7 @@ impl JsMouse {
         Ok(self.inner.position().into_js(&ctx)?.into())
     }
 
-    pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f32> {
+    pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f64> {
         let duration = ms_to_duration(duration.unwrap_or(2000.));
         self.inner.measure_speed(duration).await.into_js(&ctx)
     }

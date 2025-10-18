@@ -1,4 +1,3 @@
-use core::time;
 use std::{
     fmt::Debug,
     hash::{Hash, Hasher},
@@ -8,22 +7,21 @@ use std::{
 use derive_more::{Deref, From};
 use libwmctl::{ErrorWrapper, Position, Shape, active, windows};
 use x11rb::{
-    connection::{self, Connection},
+    connection::Connection,
     protocol::xproto::{
-        AtomEnum, ChangeWindowAttributesAux, ClientMessageData, ClientMessageEvent, ConnectionExt,
-        EventMask, change_window_attributes,
+        AtomEnum, ChangeWindowAttributesAux, ClientMessageEvent, ConnectionExt, EventMask,
     },
     rust_connection::RustConnection,
 };
 
 use crate::{
     core::{
-        point::{Point, point, try_point},
+        point::{Point, try_point},
         rect::{Rect, rect},
-        size::{Size, size, try_size},
+        size::{Size, try_size},
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
     },
-    runtime::{Runtime, platform::x11},
+    runtime::Runtime,
 };
 
 pub mod events;
@@ -80,9 +78,7 @@ impl WindowsHandler for X11WindowHandler {
     fn all(&mut self) -> Result<Vec<WindowId>> {
         let windows = windows(false)?;
 
-        Ok(self
-            .inner
-            .update(windows.into_iter().map(|window| WindowHandle(window))))
+        Ok(self.inner.update(windows.into_iter().map(WindowHandle)))
     }
 
     fn is_visible(&self, id: WindowId) -> Result<bool> {
@@ -189,11 +185,10 @@ impl WindowsHandler for X11WindowHandler {
         Ok(self.rect(id)?.top_left())
     }
 
-    // TODO: create a Size type...
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.get_handle(id)?.clone();
         <libwmctl::Window as Clone>::clone(&handle)
-            .shape(Shape::Static(size.width as u32, size.height as u32))
+            .shape(Shape::Static(size.width, size.height))
             .place()?;
         Ok(())
     }
@@ -233,6 +228,7 @@ struct FrameExtents {
 }
 
 impl X11WindowHandler {
+    #[must_use]
     pub fn new(runtime: Arc<Runtime>) -> Self {
         Self {
             inner: Registry::default(),

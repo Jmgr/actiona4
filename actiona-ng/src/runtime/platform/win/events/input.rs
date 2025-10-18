@@ -225,12 +225,14 @@ impl InputDispatcher {
         }))
     }
 
+    #[must_use]
     pub fn subscribe_mouse_buttons(&self) -> Guard<MouseButtonsTopic> {
-        self.mouse_buttons.clone().subscribe()
+        self.mouse_buttons.subscribe()
     }
 
+    #[must_use]
     pub fn subscribe_mouse_move(&self) -> Guard<MouseMoveTopic> {
-        self.mouse_move.clone().subscribe()
+        self.mouse_move.subscribe()
     }
 
     pub fn publish_mouse_buttons(&self, value: <MouseButtonsTopic as Topic>::T) {

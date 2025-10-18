@@ -1,11 +1,11 @@
 use std::{os::fd::AsFd, time::Duration};
 
-use eyre::{Result, bail, eyre};
+use eyre::{Result, eyre};
 use procfs::process::Process;
 use rustix::{
     io::Errno,
     process::{
-        Pid, PidfdFlags, WaitId, WaitIdOptions, kill_process, pidfd_open, pidfd_send_signal, waitid,
+        PidfdFlags, WaitId, WaitIdOptions, kill_process, pidfd_open, pidfd_send_signal, waitid,
     },
 };
 use tokio::{
@@ -15,7 +15,7 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 
-use crate::{CommonError::Cancelled, core::system::processes::Signal};
+use crate::{CommonError::Cancelled, core::system::processes::Signal, types::pid::Pid};
 
 impl From<Signal> for rustix::process::Signal {
     fn from(signal: Signal) -> Self {
@@ -48,18 +48,15 @@ pub struct ProcessSignal {}
 
 impl ProcessSignal {
     async fn send_signal_and_wait_legacy(
-        pid: u32,
+        pid: Pid,
         signal: Signal,
         cancellation_token: CancellationToken,
     ) -> Result<Option<i32>> {
-        let Some(pid) = Pid::from_raw(pid as i32) else {
-            bail!("pid cannot be zero");
-        };
-
-        let process = Process::new(pid.as_raw_pid())?;
+        let process = Process::new(pid.try_into()?)?;
         let stat = process.stat()?;
         let start_time = stat.starttime;
 
+        let pid = pid.try_into()?;
         kill_process(pid, signal.into())?;
 
         loop {
@@ -112,13 +109,13 @@ impl ProcessSignal {
     }
 
     async fn send_signal_and_wait_pidfd(
-        pid: u32,
+        pid: Pid,
         signal: Signal,
         cancellation_token: CancellationToken,
     ) -> std::result::Result<Option<i32>, ProcessSignalErrors> {
-        let Some(pid) = Pid::from_raw(pid as i32) else {
-            return Err(ProcessSignalErrors::Other(eyre!("pid cannot be zero")));
-        };
+        let pid = pid
+            .try_into()
+            .map_err(|error: eyre::Error| ProcessSignalErrors::Other(error.into()))?;
 
         let pidfd = pidfd_open(pid, PidfdFlags::empty()).map_err(|errno| match errno {
             Errno::NOSYS => ProcessSignalErrors::Unsupported,
@@ -150,18 +147,14 @@ impl ProcessSignal {
         Ok(status.exit_status())
     }
 
-    pub fn send_signal(pid: u32, signal: Signal) -> Result<()> {
-        let Some(pid) = Pid::from_raw(pid as i32) else {
-            bail!("pid cannot be zero");
-        };
-
-        kill_process(pid, signal.into())?;
+    pub fn send_signal(pid: Pid, signal: Signal) -> Result<()> {
+        kill_process(pid.try_into()?, signal.into())?;
 
         Ok(())
     }
 
     pub async fn send_signal_and_wait(
-        pid: u32,
+        pid: Pid,
         signal: Signal,
         cancellation_token: CancellationToken,
     ) -> Result<Option<i32>> {

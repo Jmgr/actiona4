@@ -4,7 +4,7 @@ use console::{Style, Term};
 use humantime::format_duration;
 use itertools::Itertools;
 use rquickjs::{
-    Class, Exception, JsLifetime, Result, Value,
+    Exception, JsLifetime, Result, Value,
     class::{Trace, Tracer},
     function::Args,
     prelude::*,
@@ -104,103 +104,48 @@ const DEFAULT_NAME: &str = "default";
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsConsole {
     /// @rest
-    pub fn print<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        this: This<Class<'js, Self>>,
-        args: Rest<Value<'js>>,
-    ) -> Class<'js, Self> {
+    pub fn print<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
         print!("{}", Self::args_to_string(&ctx, args));
-
-        this.0
     }
 
     /// @rest
-    pub fn print_ln<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        this: This<Class<'js, Self>>,
-        args: Rest<Value<'js>>,
-    ) -> Class<'js, Self> {
+    pub fn print_ln<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
         println!("{}", Self::args_to_string(&ctx, args));
-
-        this.0
     }
 
     /// @rest
-    pub fn log<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        this: This<Class<'js, Self>>,
-        args: Rest<Value<'js>>,
-    ) -> Class<'js, Self> {
+    pub fn log<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
         println!("{}", Self::args_to_string(&ctx, args));
-
-        this.0
     }
 
     /// @rest
-    pub fn info<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        this: This<Class<'js, Self>>,
-        args: Rest<Value<'js>>,
-    ) -> Class<'js, Self> {
+    pub fn info<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
         println!("{}", Self::args_to_string(&ctx, args));
-
-        this.0
     }
 
     /// @rest
-    pub fn warn<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        this: This<Class<'js, Self>>,
-        args: Rest<Value<'js>>,
-    ) -> Class<'js, Self> {
+    pub fn warn<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
         let yellow = Style::new().yellow();
         println!("{}", yellow.apply_to(Self::args_to_string(&ctx, args)));
-
-        this.0
     }
 
     /// @rest
-    pub fn error<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        this: This<Class<'js, Self>>,
-        args: Rest<Value<'js>>,
-    ) -> Class<'js, Self> {
+    pub fn error<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
         let red = Style::new().red().bold();
         println!("{}", red.apply_to(Self::args_to_string(&ctx, args)));
-
-        this.0
     }
 
-    pub fn clear<'js>(&self, this: This<Class<'js, Self>>) -> Class<'js, Self> {
+    pub fn clear(&self) {
         let term = Term::stdout();
         term.clear_screen().unwrap();
-
-        this.0
     }
 
-    pub fn time<'js>(
-        &mut self,
-        this: This<Class<'js, Self>>,
-        name: Opt<String>,
-    ) -> Class<'js, Self> {
+    pub fn time(&mut self, name: Opt<String>) {
         let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         self.timers.insert(name, Instant::now());
-
-        this.0
     }
 
-    pub fn time_end<'js>(
-        &mut self,
-        this: This<Class<'js, Self>>,
-        ctx: Ctx<'_>,
-        name: Opt<String>,
-    ) -> Result<Class<'js, Self>> {
+    pub fn time_end(&mut self, ctx: Ctx<'_>, name: Opt<String>) -> Result<()> {
         let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         if let Some(timer_start) = self.timers.remove(&name) {
             println!(
@@ -214,19 +159,13 @@ impl JsConsole {
             ));
         };
 
-        Ok(this.0)
+        Ok(())
     }
 
-    pub fn count<'js>(
-        &mut self,
-        this: This<Class<'js, Self>>,
-        name: Opt<String>,
-    ) -> Class<'js, Self> {
+    pub fn count(&mut self, name: Opt<String>) {
         let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
         let value = self.counters.entry(name.clone()).or_default();
         *value += 1;
         println!("{name}: {value}");
-
-        this.0
     }
 }

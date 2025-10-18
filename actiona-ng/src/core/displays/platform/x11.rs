@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use x11rb_async::protocol::randr::NotifyMask;
-
 use super::Result;
 use crate::runtime::Runtime;
 

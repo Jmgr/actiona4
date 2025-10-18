@@ -1,8 +1,12 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{
+    Arc, Mutex,
+    atomic::{AtomicBool, Ordering},
+};
 
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
+use tauri::AppHandle;
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
@@ -66,7 +70,7 @@ pub(crate) struct JsUserData {
 }
 
 impl JsUserData {
-    fn new(
+    const fn new(
         displays: Arc<Displays>,
         cancellation_token: CancellationToken,
         rng: SharedRng,
@@ -112,6 +116,7 @@ pub struct Runtime {
     enigo: Arc<Mutex<Enigo>>,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
+    app_handle: Option<AppHandle>,
 }
 
 impl Runtime {
@@ -119,7 +124,8 @@ impl Runtime {
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
-    ) -> Result<(Arc<Self>, ScriptEngine)> {
+        app_handle: Option<AppHandle>,
+    ) -> Result<(Arc<Self>, Arc<ScriptEngine>)> {
         #[cfg(unix)]
         let runtime = x11::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
@@ -131,6 +137,7 @@ impl Runtime {
             enigo: Arc::new(Mutex::new(Enigo::new(&Settings::default())?)),
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
+            app_handle,
         });
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
@@ -199,127 +206,159 @@ impl Runtime {
             })
             .await?;
 
-        Ok((runtime, script_engine))
+        Ok((runtime, Arc::new(script_engine)))
     }
 
-    pub fn run_with_ui<F>(f: F) -> Result<()>
+    pub fn run_with_ui<F, Fut>(
+        f: F,
+        tauri_context: tauri::Context<tauri_runtime_wry::Wry<tauri::EventLoopMessage>>,
+    ) -> Result<()>
     where
-        F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
+        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        Fut: Future<Output = Result<()>> + Send + 'static,
     {
+        let cancellation_token = CancellationToken::new();
+        let task_tracker = TaskTracker::new();
+
+        let local_cancellation_token = cancellation_token.clone();
+        let local_task_tracker = task_tracker.clone();
+        let app = tauri::Builder::default()
+            .plugin(tauri_plugin_dialog::init())
+            .setup(move |app| {
+                let app_handle = app.handle().clone();
+
+                tauri::async_runtime::spawn(async move {
+                    Self::run_impl(
+                        f,
+                        local_cancellation_token,
+                        local_task_tracker,
+                        Some(app_handle.clone()),
+                    )
+                    .await
+                    .unwrap();
+
+                    app_handle.exit(0);
+                });
+
+                Ok(())
+            })
+            .build(tauri_context)?;
+
+        let is_shutting_down = AtomicBool::new(false);
+
+        app.run_return(move |app_handle, event| {
+            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+                if is_shutting_down.swap(true, Ordering::AcqRel) {
+                    // We are already shutting down, don't prevent it.
+                    return;
+                }
+
+                api.prevent_exit();
+                cancellation_token.cancel();
+                task_tracker.close();
+
+                let app_handle = app_handle.clone();
+                let tracker = task_tracker.clone();
+                tauri::async_runtime::spawn(async move {
+                    tracker.wait().await;
+                    app_handle.exit(0);
+                });
+            }
+        });
+
+        Ok(())
+    }
+
+    pub fn run<F, Fut>(f: F) -> Result<()>
+    where
+        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        Fut: Future<Output = Result<()>> + Send + 'static,
+    {
+        let cancellation_token = CancellationToken::new();
+        let task_tracker = TaskTracker::new();
+
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
             .unwrap();
-        let _guard = tokio_runtime.enter();
 
-        let cancellation_token = CancellationToken::new();
+        tokio_runtime.block_on(async move {
+            Self::run_impl(f, cancellation_token, task_tracker, None).await
+        })?;
+
+        Ok(())
+    }
+
+    async fn run_impl<F, Fut>(
+        f: F,
+        cancellation_token: CancellationToken,
+        task_tracker: TaskTracker,
+        app_handle: Option<AppHandle>,
+    ) -> Result<()>
+    where
+        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        Fut: Future<Output = Result<()>> + Send + 'static,
+    {
         let local_cancellation_token = cancellation_token.clone();
-
-        let task_tracker = TaskTracker::new();
-        let local_task_tracker = task_tracker.clone();
-
         task_tracker.spawn(async move {
             select! {
                 _ = signal::ctrl_c() => {
-                    // slint::quit_event_loop().unwrap();
                     local_cancellation_token.cancel();
                 },
                 _ = local_cancellation_token.cancelled() => {},
             }
         });
 
-        let local_cancellation_token = cancellation_token.clone();
+        let (runtime, script_engine) =
+            Self::new(cancellation_token.clone(), task_tracker.clone(), app_handle).await?;
 
-        /*
-        let handle = slint::spawn_local(Compat::new(async move {
-            let (runtime, mut script_engine) =
-                Self::new(local_cancellation_token, local_task_tracker).await?;
+        f(runtime, script_engine.clone()).await?;
 
-            f(runtime, &mut script_engine).await?;
-
-            // TODO: proper error
-            let unhandled_exceptions = script_engine.idle().await;
-            assert!(
-                unhandled_exceptions.is_empty(),
-                "unhandled exceptions found: {unhandled_exceptions:?}"
-            );
-
-            slint::quit_event_loop().unwrap();
-
-            Result::<()>::Ok(())
-        }))?;
-
-        slint::run_event_loop_until_quit()?;
-        */
+        // TODO: proper error
+        let unhandled_exceptions = script_engine.idle().await;
+        assert!(
+            unhandled_exceptions.is_empty(),
+            "unhandled exceptions found: {unhandled_exceptions:?}"
+        );
 
         task_tracker.close();
         cancellation_token.cancel();
 
-        //tokio_runtime.block_on(handle).unwrap();
-        tokio_runtime.block_on(task_tracker.wait());
+        task_tracker.wait().await;
 
-        Ok(())
-    }
-
-    pub fn run<F>(f: F) -> Result<()>
-    where
-        F: AsyncFnOnce(Arc<Self>, &mut ScriptEngine) -> Result<()> + 'static,
-    {
-        let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        tokio_runtime.block_on(async {
-            let cancellation_token = CancellationToken::new();
-            let task_tracker = TaskTracker::new();
-
-            let local_cancellation_token = cancellation_token.clone();
-            task_tracker.spawn(async move {
-                select! {
-                    _ = signal::ctrl_c() => {
-                        local_cancellation_token.cancel();
-                    },
-                    _ = local_cancellation_token.cancelled() => {},
-                }
-            });
-
-            let (runtime, mut script_engine) =
-                Self::new(cancellation_token.clone(), task_tracker.clone()).await?;
-
-            f(runtime, &mut script_engine).await?;
-
-            task_tracker.close();
-            cancellation_token.cancel();
-
-            task_tracker.wait().await;
-
-            Result::<()>::Ok(())
-        })?;
-
-        Ok(())
+        Result::<()>::Ok(())
     }
 
     #[cfg(unix)]
+    #[must_use]
     pub const fn platform(&self) -> &x11::Runtime {
         &self.runtime
     }
 
     #[cfg(windows)]
+    #[must_use]
     pub fn platform(&self) -> &win::Runtime {
         &self.runtime
     }
 
+    #[must_use]
     pub fn cancellation_token(&self) -> CancellationToken {
         self.cancellation_token.clone()
     }
 
+    #[must_use]
     pub fn task_tracker(&self) -> TaskTracker {
         self.task_tracker.clone()
     }
 
+    #[must_use]
     pub fn enigo(&self) -> Arc<Mutex<Enigo>> {
         self.enigo.clone()
+    }
+
+    #[must_use]
+    pub const fn tauri_app(&self) -> &AppHandle {
+        self.app_handle.as_ref().unwrap()
     }
 
     #[inline]
@@ -327,9 +366,10 @@ impl Runtime {
         block_in_place(|| -> R { Handle::current().block_on(f) })
     }
 
-    pub fn test<F>(f: F)
+    pub fn test<F, Fut>(f: F)
     where
-        F: AsyncFnOnce(Arc<Self>) -> () + 'static,
+        F: FnOnce(Arc<Self>) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         Self::run(async |runtime, script_engine| {
             f(runtime).await;
@@ -345,12 +385,35 @@ impl Runtime {
         .unwrap();
     }
 
-    pub fn test_with_script_engine<F>(f: F)
+    pub fn test_with_ui<F, Fut>(f: F)
     where
-        F: AsyncFnOnce(&mut ScriptEngine) -> () + 'static,
+        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
-        Self::run(async move |_runtime, mut script_engine| {
-            f(&mut script_engine).await;
+        Self::run_with_ui(
+            async |runtime, script_engine| {
+                f(runtime, script_engine.clone()).await;
+
+                let unhandled_exceptions = script_engine.idle().await;
+                assert!(
+                    unhandled_exceptions.is_empty(),
+                    "unhandled exceptions found: {unhandled_exceptions:?}"
+                );
+
+                Ok(())
+            },
+            tauri::generate_context!(),
+        )
+        .unwrap();
+    }
+
+    pub fn test_with_script_engine<F, Fut>(f: F)
+    where
+        F: FnOnce(Arc<ScriptEngine>) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
+    {
+        Self::run(async move |_runtime, script_engine| {
+            f(script_engine.clone()).await;
 
             let unhandled_exceptions = script_engine.idle().await;
             assert!(
@@ -393,6 +456,7 @@ mod tests {
     #[rquickjs::methods(rename_all = "camelCase")]
     impl TestGenerator {
         #[qjs(constructor)]
+        #[allow(clippy::new_without_default)]
         pub fn new() -> Self {
             Self { n: 0 }
         }
@@ -414,7 +478,7 @@ mod tests {
 
     impl ValueClass<'_> for TestGenerator {}
 
-    #[derive(JsLifetime, Trace)]
+    #[derive(JsLifetime, Trace, Default)]
     #[rquickjs::class]
     pub struct TestSingletonStruct {
         string: String,
@@ -425,19 +489,9 @@ mod tests {
     #[rquickjs::methods(rename_all = "camelCase")]
     impl TestSingletonStruct {}
 
-    impl Default for TestSingletonStruct {
-        fn default() -> Self {
-            Self {
-                string: Default::default(),
-                integer: Default::default(),
-                float: Default::default(),
-            }
-        }
-    }
-
     impl SingletonClass<'_> for TestSingletonStruct {}
 
-    async fn setup(script_engine: &mut ScriptEngine) {
+    async fn setup(script_engine: Arc<ScriptEngine>) {
         script_engine
             .with(|ctx| {
                 ctx.globals()
@@ -452,18 +506,18 @@ mod tests {
 
     #[test]
     fn test_enum() {
-        Runtime::test_with_script_engine(async move |script_engine| {
-            setup(script_engine).await;
+        Runtime::test_with_script_engine(|script_engine| async move {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<TestEnum>("TestEnum.B").await.unwrap();
-            assert_eq!(result, TestEnum::B)
+            assert_eq!(result, TestEnum::B);
         });
     }
 
     #[test]
     fn test_singleton() {
-        Runtime::test_with_script_engine(async move |script_engine| {
-            setup(script_engine).await;
+        Runtime::test_with_script_engine(|script_engine| async move {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval_async::<()>(

@@ -1,4 +1,4 @@
-use std::{rc::Rc, sync::Arc};
+use std::sync::Arc;
 
 use macros::FromJsObject;
 use rquickjs::{
@@ -8,7 +8,6 @@ use rquickjs::{
 };
 
 use crate::{
-    IntoJsResult,
     core::{
         displays::{Displays, js::JsDisplayInfo},
         image::js,

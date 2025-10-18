@@ -32,7 +32,7 @@ impl Display for Subnet {
 impl From<&sysinfo::IpNetwork> for Subnet {
     fn from(value: &sysinfo::IpNetwork) -> Self {
         Self {
-            address: value.addr.clone(),
+            address: value.addr,
             prefix: value.prefix,
         }
     }
@@ -48,9 +48,9 @@ pub struct Counters {
 impl Display for Counters {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("data", &self.data)
-            .display("packets", &self.packets)
-            .display("errors", &self.errors)
+            .display("data", self.data)
+            .display("packets", self.packets)
+            .display("errors", self.errors)
             .finish(f)
     }
 }
@@ -84,7 +84,7 @@ impl Display for NetworkInterface {
         DisplayFields::default()
             .display("inbound", &self.inbound)
             .display("outbound", &self.outbound)
-            .display("mtu", &self.mtu)
+            .display("mtu", self.mtu)
             .display_if_some("mac_address", &self.mac_address)
             .display("subnets", display_list(&self.subnets))
             .finish(f)
@@ -148,7 +148,7 @@ impl Network {
     #[instrument(name = "network", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let networks = task_tracker
-            .spawn_blocking(|| sysinfo::Networks::new_with_refreshed_list())
+            .spawn_blocking(sysinfo::Networks::new_with_refreshed_list)
             .await?;
 
         Ok(Self {
@@ -157,6 +157,7 @@ impl Network {
         })
     }
 
+    #[must_use]
     pub fn hostname(&self) -> Option<String> {
         sysinfo::System::host_name()
     }
@@ -181,6 +182,7 @@ impl Network {
         Ok(result)
     }
 
+    #[must_use]
     pub fn interfaces(&self) -> HashMap<String, NetworkInterface> {
         let networks = self.networks.lock().unwrap();
         networks

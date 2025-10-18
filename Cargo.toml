@@ -96,6 +96,13 @@ swc_ecma_transforms_typescript = "30.0.1"
 swc_sourcemap = "9.3.4"
 syn = { version = "2.0", features = ["parsing"] }
 sysinfo = "0.37.0"
+tauri = { version = "2.8.5", default-features = false, features = [
+    "wry",
+    "common-controls-v6",
+    "x11",
+] }
+tauri-plugin-dialog = "2.4.0"
+tauri-runtime-wry = "2.8.1"
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = [
     "rt-multi-thread",
@@ -153,10 +160,12 @@ tracing-subscriber = { version = "0.3.20", features = [
     "registry",
 ] }
 tracing-test = "0.2.5"
+libtest-mimic-collect = { path = "../libtest-mimic-collect" }
 
 # Build dependencies
 built = "0.8.0"
 cfg_aliases = "0.2.1"
+tauri-build = "2.4.1"
 
 [profile.release]
 strip = true

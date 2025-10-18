@@ -130,14 +130,15 @@ where
                 }
                 .into_js(&ctx)?;
 
-                let value = rx.borrow_and_update();
+                let value = rx.borrow_and_update().clone();
+                drop(rx);
 
                 if value.is_done() {
                     finished.store(true, Ordering::Relaxed);
                 }
 
                 let result = Object::new(ctx.clone())?;
-                result.set("value", value.clone().into_js(&ctx)?)?;
+                result.set("value", value.into_js(&ctx)?)?;
                 result.set("done", false)?;
 
                 Ok::<Value<'js>, rquickjs::Error>(result.into_value())
@@ -298,7 +299,7 @@ mod tests {
         }
     }
 
-    async fn setup(script_engine: &mut scripting::Engine, test: TestStruct) {
+    async fn setup(script_engine: Arc<scripting::Engine>, test: TestStruct) {
         script_engine
             .with(|ctx| {
                 TestStruct::register(&ctx, test).unwrap();
@@ -311,12 +312,12 @@ mod tests {
 
     #[test]
     fn test_task() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let test = TestStruct::default();
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
 
-            setup(script_engine, test).await;
+            setup(script_engine.clone(), test).await;
 
             let result = script_engine
                 .eval_async::<()>(
@@ -336,13 +337,13 @@ mod tests {
 
     #[test]
     fn test_task_with_token() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let test = TestStruct::default();
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
             let token = test.token.clone();
 
-            setup(script_engine, test).await;
+            setup(script_engine.clone(), test).await;
 
             token.cancel();
 
@@ -362,12 +363,12 @@ mod tests {
 
     #[test]
     fn test_task_with_progress() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let test = TestStruct::default();
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
 
-            setup(script_engine, test).await;
+            setup(script_engine.clone(), test).await;
 
             let counter = script_engine
                 .eval_async::<u64>(

@@ -82,23 +82,26 @@ impl Runtime {
             version.major_version, version.minor_version
         );
 
-        let has_shm = if let Ok(version) = async {
+        let has_shm = async {
             let version = shm::query_version(connection).await?.reply().await?;
             Result::<shm::QueryVersionReply>::Ok(version)
         }
         .await
-        {
-            info!(
-                "Shm available, version: {}.{}",
-                version.major_version, version.minor_version
-            );
+        .map_or_else(
+            |_| {
+                info!("Shm not available");
 
-            true
-        } else {
-            info!("Shm not available");
+                false
+            },
+            |version| {
+                info!(
+                    "Shm available, version: {}.{}",
+                    version.major_version, version.minor_version
+                );
 
-            false
-        };
+                true
+            },
+        );
 
         let input_mask = Arc::new(InputMask::default());
         let mouse_buttons_topic = Arc::new(TopicWrapper::new(
@@ -107,7 +110,7 @@ impl Runtime {
             task_tracker.clone(),
         ));
         let mouse_move_topic = Arc::new(TopicWrapper::new(
-            MouseMoveTopic::new(x11_connection.clone(), input_mask.clone()),
+            MouseMoveTopic::new(x11_connection.clone(), input_mask),
             cancellation_token.clone(),
             task_tracker.clone(),
         ));
@@ -141,7 +144,7 @@ impl Runtime {
                 };
 
                 if let Err(err) = (|| {
-                    Result::<()>::Ok(match event {
+                    match event {
                         Event::XinputRawButtonPress(event) => {
                             let button = Button::from_event(event.detail)?;
                             local_mouse_buttons_topic.publish(MouseButtonEvent {
@@ -184,7 +187,8 @@ impl Runtime {
 
                         */
                         _ => {}
-                    })
+                    };
+                    Result::<()>::Ok(())
                 })() {
                     error!("x11 event: {err}");
                 };
@@ -202,30 +206,37 @@ impl Runtime {
         })
     }
 
+    #[must_use]
     pub fn x11_connection(&self) -> Arc<X11Connection> {
         self.x11_connection.clone()
     }
 
+    #[must_use]
     pub const fn has_shm(&self) -> bool {
         self.has_shm
     }
 
-    pub fn atoms(&self) -> &AtomCollection {
+    #[must_use]
+    pub const fn atoms(&self) -> &AtomCollection {
         &self.atoms
     }
 
+    #[must_use]
     pub fn mouse_buttons(&self) -> Arc<TopicWrapper<MouseButtonsTopic>> {
         self.mouse_buttons_topic.clone()
     }
 
+    #[must_use]
     pub fn mouse_move(&self) -> Arc<TopicWrapper<MouseMoveTopic>> {
         self.mouse_move_topic.clone()
     }
 
+    #[must_use]
     pub fn screen_change(&self) -> Arc<TopicWrapper<ScreenChangeTopic>> {
         self.screen_change_topic.clone() // TODO: return guard?
     }
 
+    #[must_use]
     pub fn subscribe_window_events(&self) -> broadcast::Receiver<WindowEvent> {
         self.window_event_sender.subscribe()
     }

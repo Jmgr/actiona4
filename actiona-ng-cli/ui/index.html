@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<h1>Tauri + Tokio</h1>
+<button id="sum">Sum 21 + 21</button>
+<pre id="out"></pre>
+<script>
+    const { core, event } = window.__TAURI__ || {};
+    event.listen("tick", e => document.getElementById("out").textContent = "tick: " + e.payload);
+    document.getElementById("sum").onclick = async () => {
+        const v = await core.invoke("slow_sum", { a: 21, b: 21 });
+        document.getElementById("out").textContent = "sum: " + v;
+    };
+</script>

@@ -131,7 +131,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_set_text() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(
                     r#"
@@ -149,7 +149,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_set_image() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let mut image = RgbaImage::new(128, 128);
 
             image.draw_pixel(32, 32, Rgba([16, 32, 64, 128]));
@@ -183,7 +183,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_set_html() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(
                     r#"

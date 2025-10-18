@@ -104,7 +104,7 @@ mod tests {
 
     #[test]
     fn test_join() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(r#"Path.join("foo", "bar")"#)
                 .await
@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     fn test_filename() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(r#"Path.filename("/foo/bar/test.txt")"#)
                 .await
@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn test_parent() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(r#"Path.parent("/foo/bar/test.txt")"#)
                 .await
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn test_absolute() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<bool>(r#"Path.isAbsolute("/foo/bar/test.txt")"#)
                 .await
@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn test_relative() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<bool>(r#"Path.isRelative("/foo/bar/test.txt")"#)
                 .await
@@ -183,7 +183,7 @@ mod tests {
 
     #[test]
     fn test_extension() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(r#"Path.extension("/foo/bar/test.txt")"#)
                 .await
@@ -200,7 +200,7 @@ mod tests {
 
     #[test]
     fn test_set_extension() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(r#"Path.setExtension("/foo/bar/test.txt", "foo")"#)
                 .await

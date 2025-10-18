@@ -1,8 +1,8 @@
 use std::fmt::Display;
 
 use derive_more::{Add, Constructor, Mul, Sub};
-use eyre::{Error, OptionExt, Result, eyre};
-use num_traits::{Float, ToPrimitive};
+use eyre::{Result, eyre};
+use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 
 use crate::types::DisplayFields;
@@ -17,6 +17,7 @@ pub struct Size {
     pub height: u32,
 }
 
+#[must_use]
 pub const fn size(width: u32, height: u32) -> Size {
     Size::new(width, height)
 }
@@ -46,16 +47,24 @@ impl Display for Size {
 }
 
 impl Size {
-    pub fn length(&self) -> f32 {
-        (self.width as f32).hypot(self.height as f32)
+    #[must_use]
+    pub fn length(&self) -> f64 {
+        f64::from(self.width).hypot(f64::from(self.height))
     }
 
-    pub fn normalize(self) -> Self {
+    #[must_use]
+    pub fn normalized(self) -> Self {
         let len = self.length();
         if len > 0. {
             Self {
-                width: (self.width as f32 / len).round() as u32,
-                height: (self.height as f32 / len).round() as u32,
+                width: (f64::from(self.width) / len)
+                    .round()
+                    .to_u32()
+                    .unwrap_or_default(),
+                height: (f64::from(self.height) / len)
+                    .round()
+                    .to_u32()
+                    .unwrap_or_default(),
             }
         } else {
             Self {
@@ -65,22 +74,40 @@ impl Size {
         }
     }
 
-    pub fn distance_to(&self, other: Self) -> f32 {
-        ((self.width - other.width) as f32).hypot((self.height - other.height) as f32)
+    #[must_use]
+    pub fn distance_to(&self, other: Self) -> f64 {
+        f64::from(self.width - other.width).hypot(f64::from(self.height - other.height))
     }
 
+    #[must_use]
     pub const fn is_origin(&self) -> bool {
         self.width == 0 && self.height == 0
     }
 
-    pub fn distance(a: Self, b: Self) -> f32 {
+    #[must_use]
+    pub fn distance(a: Self, b: Self) -> f64 {
         a.distance_to(b)
     }
 
-    pub fn scale(&self, factor: f32) -> Self {
+    #[must_use]
+    pub fn scaled(&self, factor: f64) -> Self {
         Self {
-            width: (self.width as f32 * factor).round() as u32,
-            height: (self.height as f32 * factor).round() as u32,
+            width: (f64::from(self.width) * factor)
+                .round()
+                .to_u32()
+                .unwrap_or_default(),
+            height: (f64::from(self.height) * factor)
+                .round()
+                .to_u32()
+                .unwrap_or_default(),
         }
+    }
+
+    pub(crate) fn as_i64(&self) -> (i64, i64) {
+        (self.width.into(), self.height.into())
+    }
+
+    pub(crate) fn as_f64(&self) -> (f64, f64) {
+        (self.width.into(), self.height.into())
     }
 }

@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_exists() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let temp_dir = env::temp_dir();
             let path = temp_dir.to_string_lossy();
 
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_is_file() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let file_path = env::temp_dir().join("test.txt");
             fs::write(&file_path, b"test").await.unwrap();
             let directory_path = env::temp_dir();
@@ -104,7 +104,7 @@ mod tests {
 
     #[test]
     fn test_is_directory() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let file_path = env::temp_dir().join("test.txt");
             fs::write(&file_path, b"test").await.unwrap();
             let directory_path = env::temp_dir();

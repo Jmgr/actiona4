@@ -8,11 +8,7 @@ use rquickjs::{
 
 use crate::{
     IntoJsResult,
-    core::{
-        ResultExt,
-        js::classes::ValueClass,
-        size::{Size, try_size},
-    },
+    core::{ResultExt, js::classes::ValueClass, size::try_size},
 };
 
 pub struct JsSizeParam(pub super::Size);
@@ -28,9 +24,9 @@ impl<'js> FromParam<'js> for JsSizeParam {
             n if n >= 1 => {
                 let value = params.arg();
 
-                // Also accept a js::Point as a parameter
-                if let Ok(js_point) = value.get::<JsSize>() {
-                    return Ok(Self(js_point.into()));
+                // Also accept a JsSize as a parameter
+                if let Ok(js_size) = value.get::<JsSize>() {
+                    return Ok(Self(js_size.into()));
                 }
 
                 let object = value
@@ -116,7 +112,7 @@ impl JsSize {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            let size = try_size(first_arg, second_arg).into_js(&ctx)?;
+            let size = try_size(first_arg, second_arg).into_js(ctx)?;
 
             return Ok((size.into(), rest));
         }
@@ -131,7 +127,7 @@ impl JsSize {
             let width: f64 = first_arg.get("width")?;
             let height: f64 = first_arg.get("height")?;
 
-            let size = try_size(width, height).into_js(&ctx)?;
+            let size = try_size(width, height).into_js(ctx)?;
 
             return Ok((size.into(), rest));
         }
@@ -141,6 +137,7 @@ impl JsSize {
 
     /// @skip
     #[qjs(get, rename = "width")]
+    #[must_use]
     pub const fn get_width(&self) -> u32 {
         self.inner.width
     }
@@ -153,6 +150,7 @@ impl JsSize {
 
     /// @skip
     #[qjs(get, rename = "height")]
+    #[must_use]
     pub const fn get_height(&self) -> u32 {
         self.inner.height
     }
@@ -164,69 +162,82 @@ impl JsSize {
     }
 
     /// Length of this point.
-    pub fn length(&self) -> f32 {
+    #[must_use]
+    pub fn length(&self) -> f64 {
         self.inner.length()
     }
 
     /// Normalize the point.
-    pub fn normalize(self) -> Self {
-        self.inner.normalize().into()
+    #[must_use]
+    pub fn normalized(self) -> Self {
+        self.inner.normalized().into()
     }
 
     /// Calculates the distance between this point and another.
-    pub fn distance_to(&self, other: Self) -> f32 {
+    #[must_use]
+    pub fn distance_to(&self, other: Self) -> f64 {
         self.inner.distance_to(other.into())
     }
 
     /// Returns a JSON representation of this Point.
+    #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(&self.inner).unwrap()
     }
 
     /// Returns true if this Point is at the origin, (0, 0).
+    #[must_use]
     pub const fn is_origin(&self) -> bool {
         self.inner.is_origin()
     }
 
     /// Computes the distance between two points.
     #[qjs(static)]
-    pub fn distance(a: Self, b: Self) -> f32 {
+    #[must_use]
+    pub fn distance(a: Self, b: Self) -> f64 {
         a.distance_to(b)
     }
 
     /// Returns true if a Point equals another.
+    #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
     /// Adds two points and returns a new Point.
+    #[must_use]
     pub fn add(&self, other: Self) -> Self {
         (self.inner + other.inner).into()
     }
 
     /// Subtracts two points and returns a new Point.
+    #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
         (self.inner - other.inner).into()
     }
 
     /// Scales this point by a factor and returns a new Point.
-    pub fn scale(&self, factor: f32) -> Self {
-        self.inner.scale(factor).into()
+    #[must_use]
+    pub fn scale(&self, factor: f64) -> Self {
+        self.inner.scaled(factor).into()
     }
 
     /// Returns a string representation of this Point.
     #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
     pub fn to_string_js(&self) -> String {
         format!("({}, {})", self.inner.width, self.inner.height)
     }
 
     /// Clones this Point.
     #[qjs(rename = "clone")]
+    #[must_use]
     pub const fn clone_js(&self) -> Self {
         *self
     }
 
     /// @skip
+    #[must_use]
     #[qjs(skip)]
     pub const fn inner(&self) -> super::Size {
         self.inner
@@ -252,10 +263,12 @@ impl From<super::Size> for JsSize {
 // TODO: update, replace Point with Size
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use super::JsSize;
     use crate::{core::size::size, runtime::Runtime, scripting::Engine as ScriptEngine};
 
-    async fn setup(script_engine: &mut ScriptEngine) {
+    async fn setup(script_engine: Arc<ScriptEngine>) {
         script_engine
             .eval::<()>(
                 r#"
@@ -270,8 +283,8 @@ mod tests {
 
     #[test]
     fn test_point_equals() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<bool>("p1 == p2").await.unwrap();
             assert!(!result);
@@ -286,8 +299,8 @@ mod tests {
 
     #[test]
     fn test_point_attributes() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<()>(
@@ -309,8 +322,8 @@ mod tests {
 
     #[test]
     fn test_add_subtract_scale() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine
                 .eval::<JsSize>("p1.add(new Point(1, 3))")
@@ -331,8 +344,8 @@ mod tests {
 
     #[test]
     fn test_distance() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine
                 .eval::<f32>("p1.distanceTo(new Point(4, 6))")
@@ -350,8 +363,8 @@ mod tests {
 
     #[test]
     fn test_json() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
             assert_eq!(result, r#"{"x":1,"height":2}"#);
@@ -360,8 +373,8 @@ mod tests {
 
     #[test]
     fn test_origin() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<bool>("p1.isOrigin()").await.unwrap();
             assert!(!result);
@@ -376,8 +389,8 @@ mod tests {
 
     #[test]
     fn test_clone() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<()>("let pc = p1.clone()")
@@ -394,8 +407,8 @@ mod tests {
 
     #[test]
     fn test_random() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<JsSize>("Point.random()")

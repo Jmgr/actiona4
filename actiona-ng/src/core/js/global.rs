@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_sleep() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let start = Instant::now();
 
             script_engine
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn test_exit() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             script_engine.eval::<()>("exit()").await.unwrap();
         });
     }

@@ -27,6 +27,7 @@ pub mod js;
 pub struct Image(DynamicImage);
 
 impl Image {
+    #[must_use]
     pub fn new(width: u32, height: u32) -> Self {
         Self(DynamicImage::new(width, height, ColorType::Rgba8))
     }
@@ -38,6 +39,7 @@ impl Image {
         Ok(Self(image))
     }
 
+    #[must_use]
     pub fn into_inner(self) -> DynamicImage {
         self.0
     }
@@ -61,6 +63,7 @@ impl Default for JsFindImageOptions {
 }
 
 impl Image {
+    #[must_use]
     pub fn to_rgb8(&'_ self) -> Cow<'_, RgbImage> {
         if let DynamicImage::ImageRgb8(image) = &self.0 {
             Cow::Borrowed(image)
@@ -69,6 +72,7 @@ impl Image {
         }
     }
 
+    #[must_use]
     pub fn to_rgba8(&'_ self) -> Cow<'_, RgbaImage> {
         if let DynamicImage::ImageRgba8(image) = &self.0 {
             Cow::Borrowed(image)
@@ -77,6 +81,7 @@ impl Image {
         }
     }
 
+    #[must_use]
     pub fn to_luma8(&'_ self) -> Cow<'_, GrayImage> {
         if let DynamicImage::ImageLuma8(image) = &self.0 {
             Cow::Borrowed(image)

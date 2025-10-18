@@ -15,7 +15,9 @@ pub struct JsConcurrency {}
 #[rquickjs::methods]
 impl JsConcurrency {
     /// @skip
-    pub fn new() -> Self {
+    #[must_use]
+    #[allow(clippy::new_without_default)]
+    pub const fn new() -> Self {
         Self {}
     }
 
@@ -39,10 +41,11 @@ impl JsConcurrency {
             let mut futures: Vec<Pin<Box<dyn Future<Output = Result<Value<'js>>> + 'js>>> =
                 promises
                     .iter()
-                    .map(|p| {
-                        let fut = p.clone().into_future::<Value<'js>>(); // Output = Result<Value<'js>>
-                        Box::pin(fut) as Pin<Box<dyn Future<Output = Result<Value<'js>>> + 'js>>
-                    })
+                    .map(
+                        |p| -> Pin<Box<dyn Future<Output = Result<Value<'js>>> + 'js>> {
+                            Box::pin(p.clone().into_future::<Value<'js>>())
+                        },
+                    )
                     .collect();
 
             // Add a *pure Rust* future for cancellation (no nested wrap_future!)
@@ -60,10 +63,10 @@ impl JsConcurrency {
                 if i == idx {
                     continue;
                 }
-                if let Some(obj) = p.as_object() {
-                    if let Ok(cancel) = obj.get::<_, Function<'js>>("cancel") {
-                        let _ = cancel.call_arg::<()>(Args::new(ctx.clone(), 0));
-                    }
+                if let Some(obj) = p.as_object()
+                    && let Ok(cancel) = obj.get::<_, Function<'js>>("cancel")
+                {
+                    let _ = cancel.call_arg::<()>(Args::new(ctx.clone(), 0));
                 }
             }
 
@@ -75,7 +78,7 @@ impl JsConcurrency {
 impl JsConcurrency {
     /// @skip
     pub fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
-        ctx.globals().prop("Concurrency", JsConcurrency::new())
+        ctx.globals().prop("Concurrency", Self::new())
     }
 }
 
@@ -87,7 +90,7 @@ mod tests {
 
     #[test]
     fn test_race() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let start = Instant::now();
 
             script_engine
@@ -102,7 +105,7 @@ mod tests {
 
     #[test]
     fn test_race_of_race() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let start = Instant::now();
 
             script_engine

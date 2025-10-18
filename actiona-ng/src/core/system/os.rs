@@ -52,7 +52,7 @@ impl Display for User {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
             .display("name", &self.name)
-            .display("group_id", &self.group_id)
+            .display("group_id", self.group_id)
             .display("groups", display_list(&self.groups))
             .finish(f)
     }
@@ -97,8 +97,8 @@ impl Display for Os {
         if f.alternate() {
             DisplayFields::default()
                 .display_if_some("name", &self.name)
-                .display("uptime", &self.uptime())
-                .display("boot_time", &self.boot_time())
+                .display("uptime", self.uptime())
+                .display("boot_time", self.boot_time())
                 .display_if_some("open_files_limit", &self.open_files_limit())
                 .display_if_some("kernel_version", &self.kernel_version)
                 .display("kernel_long_version", &self.kernel_long_version)
@@ -115,8 +115,8 @@ impl Display for Os {
         } else {
             DisplayFields::default()
                 .display_if_some("name", &self.name)
-                .display("uptime", &self.uptime())
-                .display("boot_time", &self.boot_time())
+                .display("uptime", self.uptime())
+                .display("boot_time", self.boot_time())
                 .display_if_some("kernel_version", &self.kernel_version)
                 .display("kernel_long_version", &self.kernel_long_version)
                 .display_if_some("version", &self.version)
@@ -157,42 +157,52 @@ impl Os {
         })
     }
 
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
+    #[must_use]
     pub fn kernel_version(&self) -> Option<&str> {
         self.kernel_version.as_deref()
     }
 
+    #[must_use]
     pub fn version(&self) -> Option<&str> {
         self.version.as_deref()
     }
 
+    #[must_use]
     pub fn long_version(&self) -> Option<&str> {
         self.long_version.as_deref()
     }
 
+    #[must_use]
     pub fn distribution_id(&self) -> &str {
         &self.distribution_id
     }
 
-    pub fn distribution_id_like(&self) -> &Vec<String> {
+    #[must_use]
+    pub const fn distribution_id_like(&self) -> &Vec<String> {
         &self.distribution_id_like
     }
 
+    #[must_use]
     pub fn kernel_long_version(&self) -> &str {
         &self.kernel_long_version
     }
 
+    #[must_use]
     pub fn uptime(&self) -> DurationUnit {
         DurationUnit::from_secs(sysinfo::System::uptime())
     }
 
+    #[must_use]
     pub fn boot_time(&self) -> SystemTimeUnit {
         SystemTimeUnit::from_unix_epoch(sysinfo::System::boot_time())
     }
 
+    #[must_use]
     pub fn open_files_limit(&self) -> Option<usize> {
         sysinfo::System::open_files_limit()
     }
@@ -216,6 +226,7 @@ impl Os {
         Ok(result)
     }
 
+    #[must_use]
     pub fn users(&self) -> HashMap<UidUnit, User> {
         let users = self.users.lock().unwrap();
         users
@@ -244,6 +255,7 @@ impl Os {
         Ok(result)
     }
 
+    #[must_use]
     pub fn groups(&self) -> HashMap<u32, Group> {
         let groups = self.groups.lock().unwrap();
         groups

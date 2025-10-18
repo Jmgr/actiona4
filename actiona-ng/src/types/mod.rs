@@ -13,7 +13,10 @@ use humansize::BINARY;
 use itertools::Itertools;
 use sysinfo::Uid;
 
-use crate::core::system::processes::ThreadKind;
+use crate::{core::system::processes::ThreadKind, types::pid::Pid};
+
+pub mod integers;
+pub mod pid;
 
 #[repr(transparent)]
 #[derive(Debug, Default, Eq, Hash, PartialEq)]
@@ -67,7 +70,7 @@ impl<T> Deref for OptionalUnit<T> {
 }
 
 impl<T> OptionalUnit<T> {
-    pub fn none() -> Self {
+    pub const fn none() -> Self {
         Self(None)
     }
 }
@@ -84,7 +87,7 @@ impl Display for DegreesCelsius {
 
 impl From<f32> for DegreesCelsius {
     fn from(value: f32) -> Self {
-        DegreesCelsius::from(value as f64)
+        Self::from(f64::from(value))
     }
 }
 
@@ -108,7 +111,7 @@ impl Display for ByteCount {
 
 impl From<u32> for ByteCount {
     fn from(value: u32) -> Self {
-        Self::from(value as u64)
+        Self::from(u64::from(value))
     }
 }
 
@@ -129,9 +132,8 @@ impl From<Option<&str>> for OptionalSystemString {
             | Some("To be filled by O.E.M.")
             | Some("System Product Name")
             | Some("Not Specified") => None,
-            Some(s) if s.is_empty() => None,
+            None | Some("") => None,
             Some(s) => Some(s.to_string()),
-            None => None,
         })
     }
 }
@@ -224,6 +226,14 @@ impl From<Option<u32>> for OptionalU32 {
     }
 }
 
+pub type OptionalPid = OptionalUnit<Pid>;
+
+impl From<Option<Pid>> for OptionalPid {
+    fn from(value: Option<Pid>) -> Self {
+        Self(value)
+    }
+}
+
 pub type OptionalUSize = OptionalUnit<usize>;
 
 impl From<Option<usize>> for OptionalUSize {
@@ -264,6 +274,7 @@ pub struct SystemTimeUnitTag;
 pub type SystemTimeUnit = Unit<SystemTime, SystemTimeUnitTag>;
 
 impl SystemTimeUnit {
+    #[must_use]
     pub fn from_unix_epoch(secs: u64) -> Self {
         (UNIX_EPOCH + Duration::from_secs(secs)).into()
     }
@@ -286,6 +297,7 @@ impl Display for DurationUnit {
 }
 
 impl DurationUnit {
+    #[must_use]
     pub fn from_secs(secs: u64) -> Self {
         Duration::from_secs(secs).into()
     }

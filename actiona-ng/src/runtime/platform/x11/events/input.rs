@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 
+use derive_more::Constructor;
 use tracing::error;
 use x11rb::protocol::xinput::{Device, EventMask, XIEventMask};
 use x11rb_async::{connection::Connection, protocol::xinput::xi_select_events};
@@ -26,6 +27,7 @@ impl InputMask {
         *inner = inner.remove(mask);
     }
 
+    #[must_use]
     pub fn to_vec(&self) -> Vec<XIEventMask> {
         let inner = self.inner.lock().unwrap();
         vec![*inner]
@@ -57,7 +59,7 @@ async fn apply_mask(
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Constructor)]
 pub struct MouseButtonsTopic {
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
@@ -92,16 +94,7 @@ impl Topic for MouseButtonsTopic {
     }
 }
 
-impl MouseButtonsTopic {
-    pub fn new(x11_connection: Arc<X11Connection>, input_mask: Arc<InputMask>) -> Self {
-        Self {
-            x11_connection,
-            input_mask,
-        }
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Constructor)]
 pub struct MouseMoveTopic {
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
@@ -131,14 +124,5 @@ impl Topic for MouseMoveTopic {
             self.input_mask.clone(),
         )
         .await;
-    }
-}
-
-impl MouseMoveTopic {
-    pub fn new(x11_connection: Arc<X11Connection>, input_mask: Arc<InputMask>) -> Self {
-        Self {
-            x11_connection,
-            input_mask,
-        }
     }
 }

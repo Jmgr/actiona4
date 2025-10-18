@@ -7,6 +7,11 @@ description.workspace = true
 documentation.workspace = true
 license.workspace = true
 
+[[test]]
+name = "ui"
+harness = false
+path = "tests/ui.rs"
+
 [target.'cfg(windows)'.dependencies]
 pe-parser.workspace = true
 windows.workspace = true
@@ -21,9 +26,6 @@ rustix.workspace = true
 x11rb.workspace = true
 x11rb-async.workspace = true
 zbus.workspace = true
-
-[features]
-default = []
 
 [dependencies]
 arboard.workspace = true
@@ -85,6 +87,9 @@ tokio-util.workspace = true
 tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
+tauri.workspace = true
+tauri-plugin-dialog.workspace = true
+tauri-runtime-wry.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true
@@ -97,3 +102,4 @@ pretty_assertions.workspace = true
 tempfile.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
+libtest-mimic-collect.workspace = true

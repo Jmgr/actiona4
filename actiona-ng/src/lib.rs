@@ -1,7 +1,10 @@
 //#![warn(clippy::all, clippy::dbg_macro, clippy::float_cmp_const, clippy::get_unwrap, clippy::mem_forget, clippy::nursery, clippy::pedantic)]
 #![warn(clippy::all, clippy::nursery)]
 #![warn(clippy::as_conversions)]
+#![warn(clippy::must_use_candidate)]
 #![deny(unsafe_code)]
+#![allow(clippy::too_long_first_doc_paragraph)]
+#![allow(clippy::significant_drop_tightening)]
 
 use rquickjs::{Ctx, Exception};
 use tokio_util::sync::CancellationToken;

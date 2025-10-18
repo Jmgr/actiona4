@@ -186,8 +186,8 @@ static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
 pub struct CallStackFrame {
     _function: String,
     file: String,
-    line: usize,
-    col: usize,
+    line: u32,
+    col: u32,
 }
 
 fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
@@ -198,8 +198,8 @@ fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
             let function = caps.name("func").map_or("", |cap| cap.as_str());
             let file = caps.name("file").map_or("", |cap| cap.as_str());
             // Parse line and col, converting parse errors into None
-            let line = caps.name("line")?.as_str().parse::<usize>().ok()?;
-            let col = caps.name("col")?.as_str().parse::<usize>().ok()?;
+            let line = caps.name("line")?.as_str().parse::<u32>().ok()?;
+            let col = caps.name("col")?.as_str().parse::<u32>().ok()?;
 
             Some(CallStackFrame {
                 _function: function.to_string(),
@@ -273,7 +273,7 @@ impl Engine {
         ))
     }
 
-    pub async fn eval<T>(&mut self, script: &str) -> Result<T>
+    pub async fn eval<T>(&self, script: &str) -> Result<T>
     where
         for<'any_js> T: FromJs<'any_js> + Send,
     {
@@ -293,7 +293,7 @@ impl Engine {
 
     // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
     #[allow(unsafe_op_in_unsafe_fn)]
-    pub async fn eval_async<T>(&mut self, script: &str) -> Result<T>
+    pub async fn eval_async<T>(&self, script: &str) -> Result<T>
     where
         for<'any_js> T: FromJs<'any_js> + Send + 'static + std::fmt::Debug,
     {
@@ -340,10 +340,10 @@ impl Engine {
                 eyre!("failed to find sourcemap for code with hash {source_hash}")
             })?;
             let ts_line_col = ts_to_js
-                .lookup_source_location(frame.line as u32, frame.col as u32)
+                .lookup_source_location(frame.line, frame.col)
                 .ok_or_else(|| eyre!("failed finding line and col, frame: {frame:?}"))?;
-            frame.line = ts_line_col.1 as usize;
-            frame.col = ts_line_col.2 as usize;
+            frame.line = ts_line_col.1;
+            frame.col = ts_line_col.2;
             Ok(frame)
         });
         let stack = stack.collect::<Result<Vec<_>>>()?;
@@ -413,7 +413,7 @@ mod tests {
     // ──────────────────────────────────────────────────────────────────────────
     #[tokio::test]
     async fn js_basic_add() {
-        let mut engine = Engine::new().await.unwrap();
+        let engine = Engine::new().await.unwrap();
 
         let result: i32 = engine
             .eval(
@@ -434,7 +434,7 @@ mod tests {
     // ──────────────────────────────────────────────────────────────────────────
     #[tokio::test]
     async fn js_async_error() {
-        let mut engine = Engine::new().await.unwrap();
+        let engine = Engine::new().await.unwrap();
 
         let err = engine
             .eval_async::<()>(
@@ -462,7 +462,7 @@ mod tests {
     // ──────────────────────────────────────────────────────────────────────────
     #[tokio::test]
     async fn ts_error_line_col() {
-        let mut engine = Engine::new().await.unwrap();
+        let engine = Engine::new().await.unwrap();
 
         let ts_script = r#"
 function outer() {
@@ -496,7 +496,7 @@ outer();
     // ──────────────────────────────────────────────────────────────────────────
     #[tokio::test]
     async fn script_caching() {
-        let mut engine = Engine::new().await.unwrap();
+        let engine = Engine::new().await.unwrap();
         let script = "(() => 6 * 7)();";
 
         // first compile + run
@@ -521,7 +521,7 @@ outer();
     // ──────────────────────────────────────────────────────────────────────────
     #[tokio::test]
     async fn js_async_after_eval_completes() {
-        let mut engine = Engine::new().await.unwrap();
+        let engine = Engine::new().await.unwrap();
 
         // expose our Helper so JS can await a real delay
         engine
@@ -560,7 +560,7 @@ outer();
     // ──────────────────────────────────────────────────────────────────────────
     #[tokio::test]
     async fn js_error_during_idle() {
-        let mut engine = Engine::new().await.unwrap();
+        let engine = Engine::new().await.unwrap();
 
         // Enqueue a promise that rejects *after* the top‑level script returns.
         engine

@@ -21,8 +21,8 @@ pub struct IoStats {
 impl Display for IoStats {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("total", &self.total)
-            .display("delta", &self.delta)
+            .display("total", self.total)
+            .display("delta", self.delta)
             .finish(f)
     }
 }
@@ -74,13 +74,13 @@ impl Display for Disk {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
             .display_if_some("name", &self.name)
-            .display("kind", &self.kind)
+            .display("kind", self.kind)
             .display_if_some("file_system", &self.file_system)
-            .display("mount_point", &self.mount_point.display())
-            .display("available_space", &self.available_space)
-            .display("total_space", &self.total_space)
-            .display("is_removable", &self.is_removable)
-            .display("is_read_only", &self.is_read_only)
+            .display("mount_point", self.mount_point.display())
+            .display("available_space", self.available_space)
+            .display("total_space", self.total_space)
+            .display("is_removable", self.is_removable)
+            .display("is_read_only", self.is_read_only)
             .display("usage", &self.usage)
             .finish(f)
     }
@@ -123,7 +123,7 @@ impl Storage {
     #[instrument(name = "storage", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let sysinfo_disks = task_tracker
-            .spawn_blocking(|| sysinfo::Disks::new_with_refreshed_list())
+            .spawn_blocking(sysinfo::Disks::new_with_refreshed_list)
             .await?;
 
         Ok(Self {

@@ -1,3 +1,4 @@
+use eyre::eyre;
 use rquickjs::{Ctx, Exception, Result, Value};
 use tokio::{select, sync::watch};
 
@@ -124,5 +125,57 @@ pub(crate) mod test_helpers {
         pub fn value(&self) -> u64 {
             self.count
         }
+    }
+}
+
+pub trait ToIntClamped {
+    fn to_i32_clamped(self) -> eyre::Result<i32>;
+    fn to_u32_clamped(self) -> eyre::Result<u32>;
+}
+
+impl ToIntClamped for f64 {
+    #[inline]
+    fn to_i32_clamped(self) -> eyre::Result<i32> {
+        if self.is_nan() {
+            return Err(eyre!("value is not a number"));
+        }
+
+        let value = self
+            .round()
+            .clamp(Self::from(i32::MIN), Self::from(i32::MAX));
+
+        #[allow(clippy::as_conversions, reason = "range checked via clamp")]
+        {
+            Ok(value as i32)
+        }
+    }
+
+    #[inline]
+    fn to_u32_clamped(self) -> eyre::Result<u32> {
+        if self.is_nan() {
+            return Err(eyre!("value is not a number"));
+        }
+
+        let value = self
+            .round()
+            .clamp(Self::from(u32::MIN), Self::from(u32::MAX));
+
+        #[allow(clippy::as_conversions, reason = "range checked via clamp")]
+        {
+            Ok(value as u32)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_clamped() {
+        assert_eq!(10.0.to_i32_clamped().unwrap(), 10);
+        assert!(f64::NAN.to_i32_clamped().is_err());
+        assert_eq!(f64::INFINITY.to_i32_clamped().unwrap(), i32::MAX);
+        assert_eq!(f64::NEG_INFINITY.to_i32_clamped().unwrap(), i32::MIN);
     }
 }

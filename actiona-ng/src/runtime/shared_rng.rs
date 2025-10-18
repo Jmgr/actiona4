@@ -29,6 +29,7 @@ impl SharedRng {
         *guard = ChaCha8Rng::from_os_rng();
     }
 
+    #[must_use]
     pub fn random<T>(&self) -> T
     where
         StandardUniform: Distribution<T>,
@@ -46,11 +47,13 @@ impl SharedRng {
         guard.random_range(range)
     }
 
+    #[must_use]
     pub fn next_u32(&self) -> u32 {
         let mut guard = self.0.lock().unwrap();
         guard.next_u32()
     }
 
+    #[must_use]
     pub fn next_u64(&self) -> u64 {
         let mut guard = self.0.lock().unwrap();
         guard.next_u64()

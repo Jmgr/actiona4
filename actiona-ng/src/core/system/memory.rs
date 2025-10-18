@@ -21,10 +21,10 @@ pub struct MemoryUsage {
 impl Display for MemoryUsage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("used", &self.used)
-            .display("free", &self.free)
-            .display("available", &self.available)
-            .display("total", &self.total)
+            .display("used", self.used)
+            .display("free", self.free)
+            .display("available", self.available)
+            .display("total", self.total)
             .finish(f)
     }
 }
@@ -49,19 +49,23 @@ impl MemoryUsage {
         }
     }
 
-    pub fn used(&self) -> ByteCount {
+    #[must_use]
+    pub const fn used(&self) -> ByteCount {
         self.used
     }
 
-    pub fn free(&self) -> ByteCount {
+    #[must_use]
+    pub const fn free(&self) -> ByteCount {
         self.free
     }
 
-    pub fn available(&self) -> ByteCount {
+    #[must_use]
+    pub const fn available(&self) -> ByteCount {
         self.available
     }
 
-    pub fn total(&self) -> ByteCount {
+    #[must_use]
+    pub const fn total(&self) -> ByteCount {
         self.total
     }
 }
@@ -88,28 +92,32 @@ impl From<sysinfo::CGroupLimits> for CGroupLimits {
 impl Display for CGroupLimits {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("free_memory", &self.free_memory)
-            .display("free_swap", &self.free_swap)
-            .display("rss", &self.rss)
-            .display("total", &self.total_memory)
+            .display("free_memory", self.free_memory)
+            .display("free_swap", self.free_swap)
+            .display("rss", self.rss)
+            .display("total", self.total_memory)
             .finish(f)
     }
 }
 
 impl CGroupLimits {
-    pub fn total_memory(&self) -> ByteCount {
+    #[must_use]
+    pub const fn total_memory(&self) -> ByteCount {
         self.total_memory
     }
 
-    pub fn free_memory(&self) -> ByteCount {
+    #[must_use]
+    pub const fn free_memory(&self) -> ByteCount {
         self.free_memory
     }
 
-    pub fn free_swap(&self) -> ByteCount {
+    #[must_use]
+    pub const fn free_swap(&self) -> ByteCount {
         self.free_swap
     }
 
-    pub fn rss(&self) -> ByteCount {
+    #[must_use]
+    pub const fn rss(&self) -> ByteCount {
         self.rss
     }
 }
@@ -126,8 +134,8 @@ pub struct Memory {
 impl Display for Memory {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("memory", &self.memory_usage())
-            .display("swap", &self.swap_usage())
+            .display("memory", self.memory_usage())
+            .display("swap", self.swap_usage())
             .finish(f)
     }
 }
@@ -162,6 +170,7 @@ impl Memory {
         Ok(result)
     }
 
+    #[must_use]
     pub fn memory_usage(&self) -> MemoryUsage {
         let system_guard = self.system.lock().unwrap();
 
@@ -181,6 +190,7 @@ impl Memory {
         Ok(result)
     }
 
+    #[must_use]
     pub fn swap_usage(&self) -> MemoryUsage {
         let system_guard = self.system.lock().unwrap();
 

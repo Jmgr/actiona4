@@ -25,6 +25,7 @@ impl Display for Color {
 }
 
 impl Color {
+    #[must_use]
     pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self(Rgba([r, g, b, a]))
     }

@@ -23,6 +23,7 @@ impl JsAbortSignal {
     /// @constructor
     /// @private
     #[qjs(constructor)]
+    #[must_use]
     pub fn new(ctx: Ctx<'_>) -> Self {
         Self {
             token: ctx.user_data().cancellation_token().child_token(),
@@ -32,6 +33,7 @@ impl JsAbortSignal {
 
 impl JsAbortSignal {
     /// @skip
+    #[must_use]
     pub fn into_token(self) -> CancellationToken {
         self.token
     }
@@ -60,6 +62,7 @@ impl<'js> Trace<'js> for JsAbortController {
 impl JsAbortController {
     /// @constructor
     #[qjs(constructor)]
+    #[must_use]
     pub fn new(ctx: Ctx<'_>) -> Self {
         Self {
             token: ctx.user_data().cancellation_token().child_token(),
@@ -72,6 +75,7 @@ impl JsAbortController {
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub fn signal(&self) -> JsAbortSignal {
         JsAbortSignal {
             token: self.token.child_token(),
@@ -123,7 +127,7 @@ mod tests {
 
     #[test]
     fn test_abort_controller() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let test = TestStruct::default();
 
             script_engine

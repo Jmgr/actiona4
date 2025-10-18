@@ -1,16 +1,16 @@
 use std::{
-    f32::consts::TAU,
+    f64::consts::TAU,
     fmt::Display,
     ops::{Div, DivAssign, Mul, MulAssign},
 };
 
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
-use eyre::{Error, OptionExt, Result, bail, eyre};
-use num_traits::{Float, PrimInt, ToPrimitive};
+use eyre::{Result, eyre};
+use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use tween::TweenValue;
 
-use crate::{runtime::shared_rng::SharedRng, types::DisplayFields};
+use crate::{core::ToIntClamped, runtime::shared_rng::SharedRng, types::DisplayFields};
 
 pub mod js;
 
@@ -36,6 +36,7 @@ pub struct Point {
     pub y: i32,
 }
 
+#[must_use]
 pub const fn point(x: i32, y: i32) -> Point {
     Point::new(x, y)
 }
@@ -92,10 +93,14 @@ impl Display for Point {
 }
 
 impl TweenValue for Point {
+    // We can't return an error here so this just returns 0 on NaN
     fn scale(self, scale: f32) -> Self {
+        let (x, y) = self.as_f64();
+        let scale: f64 = scale.into();
+
         point(
-            (self.x as f32 * scale).round() as i32,
-            (self.y as f32 * scale).round() as i32,
+            (x * scale).to_i32_clamped().unwrap_or_default(),
+            (y * scale).to_i32_clamped().unwrap_or_default(),
         )
     }
 }
@@ -103,63 +108,98 @@ impl TweenValue for Point {
 impl Point {
     pub const ZERO: Self = Self::new(0, 0);
 
+    #[must_use]
     pub const fn dot_product(self, other: Self) -> i32 {
-        self.x * other.x + self.y * other.y
+        self.x
+            .saturating_mul(other.x)
+            .saturating_add(self.y.saturating_mul(other.y))
     }
 
+    #[must_use]
     pub const fn cross_product(self, other: Self) -> i32 {
-        self.x * other.y - self.y * other.x
+        self.x
+            .saturating_mul(other.y)
+            .saturating_sub(self.y.saturating_mul(other.x))
     }
 
-    pub fn normalize(self) -> (f32, f32) {
+    #[must_use]
+    pub fn normalize(self) -> (f64, f64) {
+        let (x, y) = self.as_f64();
+
         let len = self.length();
         if len > 0. {
-            ((self.x as f32 / len), (self.y as f32 / len))
+            ((x / len), (y / len))
         } else {
             (0., 0.)
         }
     }
 
-    pub fn length(&self) -> f32 {
-        (self.x as f32).hypot(self.y as f32)
+    #[must_use]
+    pub fn length(&self) -> f64 {
+        let (x, y) = self.as_f64();
+
+        x.hypot(y)
     }
 
-    pub fn length_squared(&self) -> i32 {
-        self.x * self.x + self.y * self.y
+    #[must_use]
+    pub const fn length_squared(&self) -> i32 {
+        self.x
+            .saturating_mul(self.x)
+            .saturating_add(self.y.saturating_mul(self.y))
     }
 
-    pub fn random_in_circle(center: Self, radius: f32, rng: SharedRng) -> Self {
+    #[must_use]
+    pub fn random_in_circle(center: Self, radius: f64, rng: SharedRng) -> Result<Self> {
+        let (center_x, center_y) = center.as_f64();
         let theta = rng.random_range(0.0..TAU);
-        let r = radius * rng.random::<f32>().sqrt();
-        let x = r.mul_add(theta.cos(), center.x as f32).round() as i32;
-        let y = r.mul_add(theta.sin(), center.y as f32).round() as i32;
+        let r = radius * rng.random::<f64>().sqrt();
+        let x = r.mul_add(theta.cos(), center_x).to_i32_clamped()?;
+        let y = r.mul_add(theta.sin(), center_y).to_i32_clamped()?;
 
-        Self { x, y }
+        Ok(Self { x, y })
     }
 
-    pub fn distance_to(&self, other: Self) -> f32 {
-        ((self.x - other.x) as f32).hypot((self.y - other.y) as f32)
+    #[must_use]
+    pub fn distance_to(&self, other: Self) -> f64 {
+        let (x, y) = self.as_f64();
+        let (other_x, other_y) = other.as_f64();
+
+        (x - other_x).hypot(y - other_y)
     }
 
+    #[must_use]
     pub const fn is_origin(&self) -> bool {
         self.x == 0 && self.y == 0
     }
 
-    pub fn distance(a: Self, b: Self) -> f32 {
+    #[must_use]
+    pub fn distance(a: Self, b: Self) -> f64 {
         a.distance_to(b)
     }
 
-    pub fn scaled(&self, factor: f32) -> Self {
-        Self {
-            x: (self.x as f32 * factor).round() as i32,
-            y: (self.y as f32 * factor).round() as i32,
-        }
+    #[must_use]
+    pub fn scaled(&self, factor: f64) -> Result<Self> {
+        let (x, y) = self.as_f64();
+
+        Ok(Self {
+            x: (x * factor).to_i32_clamped()?,
+            y: (y * factor).to_i32_clamped()?,
+        })
     }
 
+    #[must_use]
     pub fn clamped(&self, min: Self, max: Self) -> Self {
         Self {
             x: self.x.clamp(min.x, max.x),
             y: self.y.clamp(min.y, max.y),
         }
+    }
+
+    pub(crate) fn as_i64(&self) -> (i64, i64) {
+        (self.x.into(), self.y.into())
+    }
+
+    pub(crate) fn as_f64(&self) -> (f64, f64) {
+        (self.x.into(), self.y.into())
     }
 }

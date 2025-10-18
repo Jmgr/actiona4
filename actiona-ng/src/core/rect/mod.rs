@@ -17,7 +17,8 @@ pub struct Rect {
     pub size: Size,
 }
 
-pub fn rect(origin: Point, size: Size) -> Rect {
+#[must_use]
+pub const fn rect(origin: Point, size: Size) -> Rect {
     Rect::new(origin, size)
 }
 
@@ -33,10 +34,12 @@ impl Display for Rect {
 }
 
 impl Rect {
+    #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
+    #[must_use]
     pub const fn contains(&self, point: Point) -> bool {
         point.x >= self.origin.x
             && point.x < self.origin.x + self.size.width as i32
@@ -44,6 +47,7 @@ impl Rect {
             && point.y < self.origin.y + self.size.height as i32
     }
 
+    #[must_use]
     pub const fn intersects(&self, other: Self) -> bool {
         !(self.origin.x + self.size.width as i32 <= other.origin.x
             || other.origin.x + other.size.width as i32 <= self.origin.x
@@ -51,6 +55,7 @@ impl Rect {
             || other.origin.y + other.size.height as i32 <= self.origin.y)
     }
 
+    #[must_use]
     pub fn intersection(&self, other: Self) -> Option<Self> {
         if !self.intersects(other) {
             return None;
@@ -69,6 +74,7 @@ impl Rect {
         })
     }
 
+    #[must_use]
     pub fn union(&self, other: Self) -> Self {
         let x1 = self.origin.x.min(other.origin.x);
         let y1 = self.origin.y.min(other.origin.y);
@@ -83,6 +89,7 @@ impl Rect {
         }
     }
 
+    #[must_use]
     pub fn clamped(&self) -> (u32, u32, u32, u32) {
         let clamped_x = self.origin.x.max(0) as u32;
         let clamped_y = self.origin.y.max(0) as u32;
@@ -104,30 +111,43 @@ impl Rect {
         (clamped_x, clamped_y, adjusted_width, adjusted_height)
     }
 
-    pub fn center(&self) -> Point {
+    #[must_use]
+    pub const fn center(&self) -> Point {
         point(
             self.origin.x + self.size.width as i32 / 2,
             self.origin.y + self.size.height as i32 / 2,
         )
     }
 
-    pub fn top_left(&self) -> Point {
+    #[must_use]
+    pub const fn top_left(&self) -> Point {
         point(self.origin.x, self.origin.y)
     }
 
-    pub fn bottom_right(&self) -> Point {
+    #[must_use]
+    pub const fn bottom_right(&self) -> Point {
         point(
             self.origin.x + self.size.width as i32,
             self.origin.y + self.size.height as i32,
         )
     }
 
-    pub fn size(&self) -> Size {
+    #[must_use]
+    pub const fn size(&self) -> Size {
         size(self.size.width, self.size.height)
     }
 
+    #[must_use]
     pub const fn surface(&self) -> u32 {
         self.size.width * self.size.height
+    }
+
+    pub(crate) fn as_i64(&self) -> ((i64, i64), (i64, i64)) {
+        (self.origin.as_i64(), self.size.as_i64())
+    }
+
+    pub(crate) fn as_f64(&self) -> ((f64, f64), (f64, f64)) {
+        (self.origin.as_f64(), self.size.as_f64())
     }
 }
 

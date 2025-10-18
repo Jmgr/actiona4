@@ -1,8 +1,10 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    num::TryFromIntError,
+    sync::{Arc, Mutex},
+};
 
 use display_info::error::DIError;
 use thiserror::Error;
-use tokio::select;
 
 use crate::runtime::{
     Runtime,
@@ -34,6 +36,9 @@ pub enum DisplaysError {
 
     #[error("No primary display found")]
     NoPrimaryDisplay,
+
+    #[error(transparent)]
+    TryFromIntError(#[from] TryFromIntError),
 }
 
 pub type Result<T> = std::result::Result<T, DisplaysError>;
@@ -83,7 +88,7 @@ impl Displays {
         let mut total_area: u64 = 0;
         for display_info in &displays_info.0 {
             let rect = display_info.rect;
-            total_area += (rect.size.width as u64) * (rect.size.height as u64);
+            total_area += u64::from(rect.size.width) * u64::from(rect.size.height);
         }
         if total_area == 0 {
             return Err(DisplaysError::NoDisplays);
@@ -95,7 +100,7 @@ impl Displays {
         let mut chosen = None;
         for display_info in &displays_info.0 {
             let rect = display_info.rect;
-            let area = (rect.size.width as u64) * (rect.size.height as u64);
+            let area = u64::from(rect.size.width) * u64::from(rect.size.height);
             if area == 0 {
                 continue;
             }
@@ -111,11 +116,15 @@ impl Displays {
 
         // Sample uniformly inside the chosen rect.
         // Use i64 for the range math to avoid overflows on x + width, etc.
-        let x_end = rect.origin.x as i64 + rect.size.width as i64;
-        let y_end = rect.origin.y as i64 + rect.size.height as i64;
+        let x_end = i64::from(rect.origin.x) + i64::from(rect.size.width);
+        let y_end = i64::from(rect.origin.y) + i64::from(rect.size.height);
 
-        let x = rng.random_range(rect.origin.x as i64..x_end) as i32;
-        let y = rng.random_range(rect.origin.y as i64..y_end) as i32;
+        let x = rng
+            .random_range(i64::from(rect.origin.x)..x_end)
+            .try_into()?;
+        let y = rng
+            .random_range(i64::from(rect.origin.y)..y_end)
+            .try_into()?;
 
         Ok(point(x, y))
     }
@@ -129,10 +138,12 @@ impl Displays {
             .ok_or(DisplaysError::NoPrimaryDisplay)
     }
 
+    #[must_use]
     pub const fn displays_info(&self) -> &Arc<Mutex<DisplayInfoVec>> {
         &self.displays_info
     }
 
+    #[must_use]
     pub fn from_point(&self, point: Point) -> Option<DisplayInfo> {
         let displays_info = self.displays_info.lock().unwrap();
 
@@ -142,6 +153,7 @@ impl Displays {
             .cloned()
     }
 
+    #[must_use]
     pub fn smallest(&self) -> Option<DisplayInfo> {
         let displays_infos = self.displays_info.lock().unwrap();
         displays_infos
@@ -155,6 +167,7 @@ impl Displays {
             .cloned()
     }
 
+    #[must_use]
     pub fn largest(&self) -> Option<DisplayInfo> {
         let displays_infos = self.displays_info.lock().unwrap();
         displays_infos

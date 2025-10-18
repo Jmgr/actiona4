@@ -5,10 +5,10 @@ use std::{
 };
 
 use derive_more::Display;
-use eyre::{Result, eyre};
-use sysinfo::{Pid, ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
+use eyre::{Report, Result};
+use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::instrument;
+use tracing::{error, instrument};
 
 #[cfg(unix)]
 use super::platform::linux::ProcessSignal;
@@ -17,9 +17,9 @@ use super::platform::linux::ProcessSignal;
 use crate::{
     core::system::storage::DiskUsage,
     types::{
-        ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalSystemString,
+        ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalPid, OptionalSystemString,
         OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit,
-        OsStringList, Percent, SystemTimeUnit, display_map,
+        OsStringList, Percent, SystemTimeUnit, display_map, pid::Pid,
     },
 };
 
@@ -138,13 +138,13 @@ pub struct Process {
     name: OptionalSystemString,
     cmd: OsStringList,
     exe: OptionalPath,
-    pid: u32,
+    pid: Pid,
     env: OsStringList,
     cwd: OptionalPath,
     root: OptionalPath,
     memory: ByteCount,
     virtual_memory: ByteCount,
-    parent: OptionalU32,
+    parent: OptionalPid,
     status: Status,
     start_time: SystemTimeUnit,
     run_time: DurationUnit,             // dyn
@@ -163,19 +163,21 @@ pub struct Process {
     open_files_limit: OptionalUSize,
 }
 
-impl From<&sysinfo::Process> for Process {
-    fn from(value: &sysinfo::Process) -> Self {
-        Self {
+impl TryFrom<&sysinfo::Process> for Process {
+    type Error = Report;
+
+    fn try_from(value: &sysinfo::Process) -> Result<Self> {
+        Ok(Self {
             name: value.name().into(),
             cmd: value.cmd().into(),
             exe: value.exe().into(),
-            pid: value.pid().as_u32(),
+            pid: value.pid().try_into()?,
             env: value.environ().into(),
             cwd: value.cwd().into(),
             root: value.root().into(),
             memory: value.memory().into(),
             virtual_memory: value.virtual_memory().into(),
-            parent: value.parent().map(|pid| pid.as_u32()).into(),
+            parent: value.parent().map(|pid| pid.try_into()).transpose()?.into(),
             status: value.status().into(),
             start_time: SystemTimeUnit::from_unix_epoch(value.start_time()),
             run_time: DurationUnit::from_secs(value.run_time()),
@@ -195,13 +197,15 @@ impl From<&sysinfo::Process> for Process {
             exists: value.exists(),
             open_files: value.open_files().into(),
             open_files_limit: value.open_files_limit().into(),
-        }
+        })
     }
 }
 
-impl From<sysinfo::Process> for Process {
-    fn from(value: sysinfo::Process) -> Self {
-        (&value).into()
+impl TryFrom<sysinfo::Process> for Process {
+    type Error = Report;
+
+    fn try_from(value: sysinfo::Process) -> Result<Self> {
+        (&value).try_into()
     }
 }
 
@@ -212,18 +216,18 @@ impl Display for Process {
                 .display_if_some("name", &self.name)
                 .display("cmd", &self.cmd)
                 .display_if_some("exe", &self.exe)
-                .display("pid", &self.pid)
+                .display("pid", self.pid)
                 .display("env", &self.env)
                 .display_if_some("cwd", &self.cwd)
                 .display_if_some("root", &self.root)
-                .display("memory", &self.memory)
-                .display("virtual_memory", &self.virtual_memory)
+                .display("memory", self.memory)
+                .display("virtual_memory", self.virtual_memory)
                 .display_if_some("parent", &self.parent)
                 .display("status", &self.status)
-                .display("start_time", &self.start_time)
-                .display("run_time", &self.run_time)
-                .display("cpu_usage", &self.cpu_usage)
-                .display("accumulated_cpu_time", &self.accumulated_cpu_time)
+                .display("start_time", self.start_time)
+                .display("run_time", self.run_time)
+                .display("cpu_usage", self.cpu_usage)
+                .display("accumulated_cpu_time", self.accumulated_cpu_time)
                 .display("disk_usage", &self.disk_usage)
                 .display_if_some("user_id", &self.user_id)
                 .display_if_some("effective_user_id", &self.effective_user_id)
@@ -232,7 +236,7 @@ impl Display for Process {
                 .display_if_some("session_id", &self.session_id)
                 .display_if_some("tasks", &self.tasks)
                 .display_if_some("thread_kind", &self.thread_kind)
-                .display("exists", &self.exists)
+                .display("exists", self.exists)
                 .display_if_some("open_files", &self.open_files)
                 .display_if_some("open_files_limit", &self.open_files_limit)
                 .finish(f)
@@ -240,16 +244,16 @@ impl Display for Process {
             DisplayFields::default()
                 .display_if_some("name", &self.name)
                 .display_if_some("exe", &self.exe)
-                .display("pid", &self.pid)
+                .display("pid", self.pid)
                 .display_if_some("cwd", &self.cwd)
-                .display("memory", &self.memory)
+                .display("memory", self.memory)
                 .display_if_some("parent", &self.parent)
                 .display("status", &self.status)
-                .display("start_time", &self.start_time)
-                .display("run_time", &self.run_time)
-                .display("cpu_usage", &self.cpu_usage)
+                .display("start_time", self.start_time)
+                .display("run_time", self.run_time)
+                .display("cpu_usage", self.cpu_usage)
                 .display_if_some("user_id", &self.user_id)
-                .display("exists", &self.exists)
+                .display("exists", self.exists)
                 .finish(f)
         }
     }
@@ -269,8 +273,13 @@ pub struct Processes {
 
 impl Display for Processes {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let processes = self.processes().map_err(|err| {
+            error!("fetching processes failed: {err}");
+
+            std::fmt::Error
+        })?;
         DisplayFields::default()
-            .display("processes", display_map(&self.processes()))
+            .display("processes", display_map(&processes))
             .finish(f)
     }
 }
@@ -299,7 +308,7 @@ impl Processes {
         &self,
         rescan: bool,
         tasks: bool,
-    ) -> Result<HashMap<u32, Process>> {
+    ) -> Result<HashMap<Pid, Process>> {
         let system = self.system.clone();
         let result = self
             .task_tracker
@@ -317,15 +326,20 @@ impl Processes {
                 system
                     .processes()
                     .iter()
-                    .map(|(pid, process)| (pid.as_u32(), process.into()))
-                    .collect::<HashMap<_, _>>()
+                    .map(|(pid, process)| {
+                        let pid = Pid::try_from(*pid)?;
+                        let process = process.try_into()?;
+
+                        Ok((pid, process))
+                    })
+                    .collect::<Result<HashMap<_, _>>>()
             })
-            .await?;
+            .await??;
         Ok(result)
     }
 
     pub async fn refresh_process(&self, process: &Process, tasks: bool) -> Result<Option<Process>> {
-        let process_id = Pid::from_u32(process.pid);
+        let process_id = process.pid.into();
         let system = self.system.clone();
         let result = self
             .task_tracker
@@ -342,23 +356,29 @@ impl Processes {
                 );
                 system
                     .process(process_id)
-                    .map(|process| Process::from(&*process))
+                    .map(Process::try_from)
+                    .transpose()
             })
-            .await?;
+            .await??;
         Ok(result)
     }
 
-    pub fn processes(&self) -> HashMap<u32, Process> {
+    pub fn processes(&self) -> Result<HashMap<Pid, Process>> {
         let system = self.system.lock().unwrap();
         system
             .processes()
             .iter()
-            .map(|(pid, process)| (pid.as_u32(), process.into()))
-            .collect::<HashMap<_, _>>()
+            .map(|(pid, process)| {
+                let pid = Pid::try_from(*pid)?;
+                let process = process.try_into()?;
+
+                Ok((pid, process))
+            })
+            .collect::<Result<HashMap<_, _>>>()
     }
 
     /// Linux only
-    pub fn send_signal(&self, pid: u32, signal: Signal) -> Result<()> {
+    pub fn send_signal(&self, pid: Pid, signal: Signal) -> Result<()> {
         #[cfg(unix)]
         {
             ProcessSignal::send_signal(pid, signal)
@@ -375,7 +395,7 @@ impl Processes {
     /// Linux only
     pub async fn send_signal_and_wait(
         &self,
-        pid: u32,
+        pid: Pid,
         signal: Signal,
         cancellation_token: CancellationToken,
     ) -> Result<Option<i32>> {
@@ -393,8 +413,8 @@ impl Processes {
         }
     }
 
-    pub async fn from_pid(&self, pid: u32) -> Result<Option<Process>> {
-        let process_id = Pid::from_u32(pid);
+    pub async fn from_pid(&self, pid: Pid) -> Result<Option<Process>> {
+        let process_id = pid.into();
         let system = self.system.clone();
         let result = self
             .task_tracker
@@ -407,9 +427,10 @@ impl Processes {
                 );
                 system
                     .process(process_id)
-                    .map(|process| Process::from(&*process))
+                    .map(Process::try_from)
+                    .transpose()
             })
-            .await?;
+            .await??;
         Ok(result)
     }
 

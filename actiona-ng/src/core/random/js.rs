@@ -66,7 +66,7 @@ impl JsRandom {
     /// @param min: number
     /// @param max: number
     pub fn integer(&self, ctx: Ctx<'_>, args: Rest<i64>) -> Result<i64> {
-        if args.len() < 1 {
+        if args.is_empty() {
             return Err(Exception::throw_message(
                 &ctx,
                 "expected at least 1 argument",
@@ -159,7 +159,7 @@ mod tests {
     // TODO: add tests
     #[test]
     fn test_random() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval::<i64>("random.integer(10)")
                 .await

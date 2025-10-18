@@ -31,6 +31,7 @@ impl ValueClass<'_> for JsDirectoryEntry {}
 impl JsDirectoryEntry {
     /// @skip
     #[qjs(constructor)]
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -192,7 +193,7 @@ mod tests {
 
     #[test]
     fn test_create_directory() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let file_path = env::temp_dir().join("test").join(random_name());
 
             // Try to remove a non existing directory
@@ -261,7 +262,7 @@ mod tests {
 
     #[test]
     fn test_list() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             env::set_current_dir(env::temp_dir()).unwrap();
             let parent_path = Path::new(".").join(random_name());
             let directory_path = parent_path.join("a");

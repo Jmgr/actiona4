@@ -1,10 +1,11 @@
-use std::{borrow::Cow, fmt::Debug};
+use std::{borrow::Cow, fmt::Debug, num::TryFromIntError};
 
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
 use convert_case::{Case, Casing};
 use derive_more::Display;
+use eyre::Report;
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
 use macros::ExposeEnum;
@@ -17,6 +18,12 @@ pub mod js;
 
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error(transparent)]
+    EyreReport(#[from] Report),
+
+    #[error(transparent)]
+    TryFromIntError(#[from] TryFromIntError),
+
     #[error(transparent)]
     CommonError(#[from] CommonError),
 
@@ -64,7 +71,6 @@ impl Clipboard {
         })
     }
 
-    #[must_use]
     fn set(&'_ mut self, mode: Option<ClipboardMode>) -> Set<'_> {
         let mode = mode.unwrap_or_default();
         let inner = &mut self.inner;
@@ -83,7 +89,6 @@ impl Clipboard {
         }
     }
 
-    #[must_use]
     fn get(&'_ mut self, mode: Option<ClipboardMode>) -> Get<'_> {
         let mode = mode.unwrap_or_default();
         let inner = &mut self.inner;
@@ -130,7 +135,6 @@ impl Clipboard {
         Ok(())
     }
 
-    #[must_use]
     pub async fn get_text(&mut self, mode: Option<ClipboardMode>) -> Result<String> {
         let text = self.get(mode).text()?;
 
@@ -143,21 +147,20 @@ impl Clipboard {
         let bytes = Cow::Owned(image.into_raw());
 
         self.set(mode).image(ImageData {
-            width: width as usize,
-            height: height as usize,
+            width: width.try_into()?,
+            height: height.try_into()?,
             bytes,
         })?;
 
         Ok(())
     }
 
-    #[must_use]
     pub async fn get_image(&mut self, mode: Option<ClipboardMode>) -> Result<Image> {
         let image = self.get(mode).image()?;
 
         let img = RgbaImage::from_vec(
-            image.width as u32,
-            image.height as u32,
+            image.width.try_into()?,
+            image.height.try_into()?,
             image.bytes.to_vec(),
         )
         .unwrap();
@@ -165,7 +168,6 @@ impl Clipboard {
         Ok(DynamicImage::ImageRgba8(img).into())
     }
 
-    #[must_use]
     pub async fn get_file_list(&mut self, mode: Option<ClipboardMode>) -> Result<Vec<String>> {
         let result = self.get(mode).file_list()?;
 
@@ -188,7 +190,6 @@ impl Clipboard {
         Ok(())
     }
 
-    #[must_use]
     pub async fn get_html(&mut self, mode: Option<ClipboardMode>) -> Result<String> {
         let html = self.get(mode).html()?;
 

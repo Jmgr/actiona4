@@ -8,11 +8,7 @@ use rquickjs::{
 
 use crate::{
     IntoJsResult,
-    core::{
-        ResultExt,
-        js::classes::ValueClass,
-        point::{Point, try_point},
-    },
+    core::{ResultExt, js::classes::ValueClass, point::try_point},
     runtime::WithUserData,
 };
 
@@ -29,7 +25,7 @@ impl<'js> FromParam<'js> for JsPointParam {
             n if n >= 1 => {
                 let value = params.arg();
 
-                // Also accept a js::Point as a parameter
+                // Also accept a JsPoint as a parameter
                 if let Ok(js_point) = value.get::<JsPoint>() {
                     return Ok(Self(js_point.into()));
                 }
@@ -117,7 +113,7 @@ impl JsPoint {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            let point = try_point(first_arg, second_arg).into_js(&ctx)?;
+            let point = try_point(first_arg, second_arg).into_js(ctx)?;
 
             return Ok((point.into(), rest));
         }
@@ -132,7 +128,7 @@ impl JsPoint {
             let x: f64 = first_arg.get("x")?;
             let y: f64 = first_arg.get("y")?;
 
-            let point = try_point(x, y).into_js(&ctx)?;
+            let point = try_point(x, y).into_js(ctx)?;
 
             return Ok((point.into(), rest));
         }
@@ -142,6 +138,7 @@ impl JsPoint {
 
     /// @skip
     #[qjs(get, rename = "x")]
+    #[must_use]
     pub const fn get_x(&self) -> i32 {
         self.inner.x
     }
@@ -154,6 +151,7 @@ impl JsPoint {
 
     /// @skip
     #[qjs(get, rename = "y")]
+    #[must_use]
     pub const fn get_y(&self) -> i32 {
         self.inner.y
     }
@@ -165,73 +163,89 @@ impl JsPoint {
     }
 
     /// Length of this point.
-    pub fn length(&self) -> f32 {
+    #[must_use]
+    pub fn length(&self) -> f64 {
         self.inner.length()
     }
 
     /// Returns a random point around this point.
     #[qjs(static)]
-    pub fn random_in_circle(ctx: Ctx<'_>, center: Self, radius: f32) -> Self {
+    #[must_use]
+    pub fn random_in_circle(ctx: Ctx<'_>, center: Self, radius: f64) -> Self {
         let user_data = ctx.user_data();
 
-        super::Point::random_in_circle(center.into(), radius, user_data.rng()).into()
+        super::Point::random_in_circle(center.into(), radius, user_data.rng())
+            .unwrap()
+            .into() // TODO
     }
 
     /// Calculates the distance between this point and another.
-    pub fn distance_to(&self, other: Self) -> f32 {
+    #[must_use]
+    pub fn distance_to(&self, other: Self) -> f64 {
         self.inner.distance_to(other.into())
     }
 
     /// Returns a JSON representation of this Point.
+    #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(&self.inner).unwrap()
     }
 
     /// Returns true if this Point is at the origin, (0, 0).
+    #[must_use]
     pub const fn is_origin(&self) -> bool {
         self.inner.is_origin()
     }
 
     /// Computes the distance between two points.
     #[qjs(static)]
-    pub fn distance(a: Self, b: Self) -> f32 {
+    #[must_use]
+    pub fn distance(a: Self, b: Self) -> f64 {
         a.distance_to(b)
     }
 
     /// Returns true if a Point equals another.
+    #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
     /// Adds two points and returns a new Point.
+    #[must_use]
     pub fn add(&self, other: Self) -> Self {
         (self.inner + other.inner).into()
     }
 
     /// Subtracts two points and returns a new Point.
+    #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
         (self.inner - other.inner).into()
     }
 
     /// Scales this point by a factor and returns a new Point.
-    pub fn scale(&self, factor: f32) -> Self {
-        self.inner.scaled(factor).into()
+    #[must_use]
+    pub fn scaled(&self, factor: f64) -> Result<Self> {
+        let result = self.inner.scaled(factor).unwrap(); // TODO
+        Ok(result.into())
     }
 
     /// Returns a string representation of this Point.
     #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
     pub fn to_string_js(&self) -> String {
         format!("({}, {})", self.inner.x, self.inner.y)
     }
 
     /// Clones this Point.
     #[qjs(rename = "clone")]
+    #[must_use]
     pub const fn clone_js(&self) -> Self {
         *self
     }
 
     /// @skip
     #[qjs(skip)]
+    #[must_use]
     pub const fn inner(&self) -> super::Point {
         self.inner
     }
@@ -255,10 +269,12 @@ impl From<super::Point> for JsPoint {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use super::JsPoint;
     use crate::{core::point::point, runtime::Runtime, scripting::Engine as ScriptEngine};
 
-    async fn setup(script_engine: &mut ScriptEngine) {
+    async fn setup(script_engine: Arc<ScriptEngine>) {
         script_engine
             .eval::<()>(
                 r#"
@@ -273,8 +289,8 @@ mod tests {
 
     #[test]
     fn test_point_equals() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<bool>("p1 == p2").await.unwrap();
             assert!(!result);
@@ -289,8 +305,8 @@ mod tests {
 
     #[test]
     fn test_point_attributes() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<()>(
@@ -312,8 +328,8 @@ mod tests {
 
     #[test]
     fn test_add_subtract_scale() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine
                 .eval::<JsPoint>("p1.add(new Point(1, 3))")
@@ -334,8 +350,8 @@ mod tests {
 
     #[test]
     fn test_distance() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine
                 .eval::<f32>("p1.distanceTo(new Point(4, 6))")
@@ -353,8 +369,8 @@ mod tests {
 
     #[test]
     fn test_json() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
             assert_eq!(result, r#"{"x":1,"y":2}"#);
@@ -363,8 +379,8 @@ mod tests {
 
     #[test]
     fn test_origin() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             let result = script_engine.eval::<bool>("p1.isOrigin()").await.unwrap();
             assert!(!result);
@@ -379,8 +395,8 @@ mod tests {
 
     #[test]
     fn test_clone() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<()>("let pc = p1.clone()")
@@ -397,8 +413,8 @@ mod tests {
 
     #[test]
     fn test_random() {
-        Runtime::test_with_script_engine(async |mut script_engine| {
-            setup(&mut script_engine).await;
+        Runtime::test_with_script_engine(async |script_engine| {
+            setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<JsPoint>("Point.random()")

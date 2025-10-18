@@ -24,7 +24,7 @@ pub fn process_functions(items: &Items) -> Result<Vec<Method>> {
         .flat_map(|module| module.items.clone())
         .collect_vec();
 
-    extract_functions(&items, &functions, None)
+    extract_functions(items, &functions, None)
 }
 
 pub fn extract_functions(
@@ -131,7 +131,7 @@ pub fn extract_functions(
                     .output
                     .as_ref()
                     .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
-                    .wrap_err_with(|| format!("{function_name}"));
+                    .wrap_err_with(|| function_name.to_string());
 
                 match return_ {
                     Ok(return_) => return_,
@@ -166,7 +166,7 @@ pub fn extract_functions(
                     .output
                     .as_ref()
                     .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
-                    .wrap_err_with(|| format!("{function_name}"))?
+                    .wrap_err_with(|| function_name.to_string())?
             };
 
             for (instructions, comments) in overload_instructions.iter() {

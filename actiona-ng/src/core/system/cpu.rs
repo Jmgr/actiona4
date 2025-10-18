@@ -24,6 +24,7 @@ pub struct CpuCore {
 }
 
 impl CpuCore {
+    #[must_use]
     pub fn new(cpu: &sysinfo::Cpu, index: usize) -> Self {
         Self {
             index,
@@ -35,23 +36,28 @@ impl CpuCore {
         }
     }
 
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
+    #[must_use]
     pub fn vendor_id(&self) -> &str {
         &self.vendor
     }
 
+    #[must_use]
     pub fn brand(&self) -> &str {
         &self.brand
     }
 
-    pub fn usage(&self) -> &Percent {
+    #[must_use]
+    pub const fn usage(&self) -> &Percent {
         &self.usage
     }
 
-    pub fn frequency(&self) -> &Frequency {
+    #[must_use]
+    pub const fn frequency(&self) -> &Frequency {
         &self.frequency
     }
 }
@@ -62,8 +68,8 @@ impl Display for CpuCore {
             .display("name", &self.name)
             .display("vendor", &self.vendor)
             .display("brand", &self.brand)
-            .display("usage", &self.usage)
-            .display("frequency", &self.frequency)
+            .display("usage", self.usage)
+            .display("frequency", self.frequency)
             .finish(f)
     }
 }
@@ -107,7 +113,7 @@ impl Display for Cpu {
         } else {
             let mut fields = DisplayFields::default()
                 .display("architecture", &self.architecture)
-                .display("core_count", &self.cores().len())
+                .display("core_count", self.cores().len())
                 .display_if_some("physical_core_count", &self.physical_core_count);
 
             if let Some(variant) = self.cpu_variants.first()
@@ -172,6 +178,7 @@ impl Cpu {
         Ok(result)
     }
 
+    #[must_use]
     pub fn global_usage(&self) -> Percent {
         let system = self.system.lock().unwrap();
         system.global_cpu_usage().into()
@@ -213,6 +220,7 @@ impl Cpu {
         Ok(result)
     }
 
+    #[must_use]
     pub fn cores(&self) -> Vec<CpuCore> {
         let system = self.system.lock().unwrap();
         system
@@ -223,10 +231,12 @@ impl Cpu {
             .collect_vec()
     }
 
-    pub fn physical_core_count(&self) -> Option<usize> {
+    #[must_use]
+    pub const fn physical_core_count(&self) -> Option<usize> {
         self.physical_core_count
     }
 
+    #[must_use]
     pub fn architecture(&self) -> &str {
         &self.architecture
     }

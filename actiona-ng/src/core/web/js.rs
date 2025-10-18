@@ -105,7 +105,7 @@ impl JsWebOptions {
                         ))
                     })
                     .collect::<std::result::Result<HeaderMap<_>, CommonError>>()
-                    .into_js(&ctx)?,
+                    .into_js(ctx)?,
             )
         } else {
             None
@@ -149,6 +149,7 @@ impl IsDone for JsWebProgress {
 
 impl From<Progress> for JsWebProgress {
     fn from(value: Progress) -> Self {
+        // TODO
         Self {
             total: 0,       //value.total().unwrap_or_default(),
             current: 0,     //value.current(),
@@ -167,17 +168,20 @@ impl JsWebProgress {
     }
 
     #[qjs(get)]
-    pub fn total(&self) -> u64 {
+    #[must_use]
+    pub const fn total(&self) -> u64 {
         self.total
     }
 
     #[qjs(get)]
-    pub fn current(&self) -> u64 {
+    #[must_use]
+    pub const fn current(&self) -> u64 {
         self.current
     }
 
     #[qjs(get)]
-    pub fn finished(&self) -> bool {
+    #[must_use]
+    pub const fn finished(&self) -> bool {
         self.finished
     }
 }
@@ -192,7 +196,7 @@ pub struct JsWeb {
 impl SingletonClass<'_> for JsWeb {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         //JsMultipartForm::register(&ctx)?;
-        JsMethod::register(&ctx)?;
+        JsMethod::register(ctx)?;
 
         Ok(())
     }
@@ -203,6 +207,8 @@ impl<'js> Trace<'js> for JsWeb {
 }
 
 impl JsWeb {
+    /// @skip
+    #[must_use]
     pub fn new(task_tracker: TaskTracker) -> Self {
         Self {
             inner: super::Web::new(task_tracker),
@@ -216,7 +222,7 @@ impl JsWeb {
         let (progress_sender, progress_receiver) = watch::channel(Progress::Inactive);
         options.progress = Some(progress_sender);
 
-        Ok(convert_watch_receiver(&ctx, progress_receiver))
+        Ok(convert_watch_receiver(ctx, progress_receiver))
     }
 }
 
@@ -299,7 +305,7 @@ impl JsWeb {
                 local_inner
                     .download_image(&url, token, Some(local_options))
                     .await
-                    .map(|image| JsImage::from(image))
+                    .map(JsImage::from)
                     .into_js(&ctx)
             },
         )
@@ -351,7 +357,7 @@ mod tests {
 
     #[test]
     fn test_download_text() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let server = Server::run();
 
             server.expect(
@@ -373,7 +379,7 @@ mod tests {
 
     #[test]
     fn test_download_image() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let server = Server::run();
 
             let test_image = TestImage::default();
@@ -400,7 +406,7 @@ mod tests {
 
     #[test]
     fn test_download_binary() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let server = Server::run();
 
             let test_image = TestImage::default();
@@ -427,7 +433,7 @@ mod tests {
 
     #[test]
     fn test_download_basic_auth() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let server = Server::run();
 
             let auth_header = format!("Basic {}", BASE64.encode("user:password"));
@@ -458,11 +464,11 @@ mod tests {
 
     #[test]
     fn test_download_progress() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let server = Server::run();
 
             let test_image = TestImage::default();
-            let total_size = test_image.bytes.len() as u64;
+            let total_size = u64::try_from(test_image.bytes.len()).unwrap();
 
             server.expect(
                 Expectation::matching(request::method_path("GET", "/binary")).respond_with(
@@ -503,7 +509,7 @@ mod tests {
 
     #[test]
     fn test_download_file() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let server = Server::run();
 
             let test_image = TestImage::default();

@@ -1,3 +1,5 @@
+#![allow(clippy::future_not_send)]
+
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 #[cfg(windows)]
@@ -10,6 +12,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
+use eyre::eyre;
 use macros::FromJsObject;
 use rquickjs::{
     Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray,
@@ -127,16 +130,18 @@ impl JsFile {
         Ok(opened_file)
     }
 
-    fn date_from_system_time<'js>(ctx: &Ctx<'js>, system_time: &SystemTime) -> Object<'js> {
+    fn date_from_system_time<'js>(ctx: &Ctx<'js>, system_time: &SystemTime) -> Result<Object<'js>> {
         let global = ctx.globals();
         let date_constructor: Constructor = global.get("Date").unwrap();
 
         let duration = system_time.duration_since(UNIX_EPOCH).unwrap();
-        let millis = duration.as_millis() as f64;
+        let millis = u64::try_from(duration.as_millis())
+            .map_err(|err| eyre!("{err}"))
+            .into_js(ctx)?;
 
-        date_constructor
+        Ok(date_constructor
             .construct::<_, Object<'js>>((millis,))
-            .unwrap()
+            .unwrap())
     }
 
     fn system_time_from_date<'js>(ctx: Ctx<'js>, date: Object<'js>) -> Result<SystemTime> {
@@ -207,6 +212,7 @@ impl JsFile {
     }
 
     /// Returns true if the file is open.
+    #[must_use]
     pub const fn is_open(&self) -> bool {
         self.inner.is_some()
     }
@@ -306,7 +312,12 @@ impl JsFile {
         let mut result = Vec::new();
 
         if let Some(amount) = amount.0 {
-            result.resize(amount as usize, 0);
+            result.resize(
+                usize::try_from(amount)
+                    .map_err(|err| eyre!("{err}"))
+                    .into_js(&ctx)?,
+                0,
+            );
             opened_file
                 .file
                 .lock()
@@ -316,7 +327,11 @@ impl JsFile {
         } else {
             // Note that we can't just call file.metadata here as that would cause a stack overflow
             let len = fs::metadata(&opened_file.path).await?.len();
-            result.reserve(len as usize);
+            result.reserve(
+                usize::try_from(len)
+                    .map_err(|err| eyre!("{err}"))
+                    .into_js(&ctx)?,
+            );
             opened_file
                 .file
                 .lock()
@@ -335,7 +350,12 @@ impl JsFile {
         amount: Opt<u64>,
     ) -> Result<TypedArray<'_, u8>> {
         let result = if let Some(amount) = amount.0 {
-            let mut result = vec![0; amount as usize];
+            let mut result = vec![
+                0;
+                usize::try_from(amount)
+                    .map_err(|err| eyre!("{err}"))
+                    .into_js(&ctx)?
+            ];
             let mut file = fs::File::open(path).await?;
             file.read_exact(&mut result).await?;
             result
@@ -468,7 +488,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.modified()?;
-        Ok(Self::date_from_system_time(&ctx, &modified))
+        Self::date_from_system_time(&ctx, &modified)
     }
 
     #[qjs(skip)]
@@ -509,7 +529,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.accessed()?;
-        Ok(Self::date_from_system_time(&ctx, &modified))
+        Self::date_from_system_time(&ctx, &modified)
     }
 
     /// @param date: Date
@@ -532,7 +552,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.created()?;
-        Ok(Self::date_from_system_time(&ctx, &modified))
+        Self::date_from_system_time(&ctx, &modified)
     }
 
     /// @param date: Date
@@ -653,21 +673,22 @@ impl JsFile {
     }
 
     #[qjs(rename = "clone")]
+    #[must_use]
     pub fn clone_js(&self) -> Self {
         self.clone()
     }
 
+    #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         self.inner == other.inner
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
     pub fn to_string_js(&self) -> String {
-        if let Some(file) = &self.inner {
-            format!("(path: {})", file.path)
-        } else {
-            "()".to_string()
-        }
+        self.inner
+            .as_ref()
+            .map_or_else(|| "()".to_string(), |file| format!("(path: {})", file.path))
     }
 }
 
@@ -677,7 +698,10 @@ impl<'js> Trace<'js> for JsFile {
 
 #[cfg(test)]
 mod tests {
-    use std::env::{self};
+    use std::{
+        env::{self},
+        sync::Arc,
+    };
 
     use chrono::{DateTime, Datelike, Timelike, Utc};
     use rquickjs::{Object, TypedArray};
@@ -690,11 +714,12 @@ mod tests {
         scripting::Engine,
     };
 
-    fn test_with_file<F>(f: F)
+    fn test_with_file<F, Fut>(f: F)
     where
-        F: AsyncFn(&mut Engine) + Clone + 'static,
+        F: FnOnce(Arc<Engine>) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let file_path = random_temp_filename();
 
             script_engine
@@ -714,7 +739,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_is_open() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let is_open = script_engine
                 .eval_async::<bool>("await file.isOpen()")
                 .await
@@ -726,7 +751,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_close() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let is_open = script_engine
                 .eval_async::<bool>(
                     "
@@ -750,7 +775,7 @@ mod tests {
     fn test_write_read_text_instance() {
         const TEXT: &str = "test";
 
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let result = script_engine
                 .eval_async::<String>(&format!(
                     r#"
@@ -771,7 +796,7 @@ mod tests {
     fn test_write_read_text_static() {
         const TEXT: &str = "test";
 
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let file_path = env::temp_dir().join("test_write_read_text_static.txt");
             let result = script_engine
                 .eval_async::<String>(&format!(
@@ -794,7 +819,7 @@ mod tests {
     fn test_write_read_bytes_instance() {
         const BYTES: &[u8] = b"test";
 
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
@@ -804,13 +829,13 @@ mod tests {
                 .await;
 
             script_engine
-                .eval_async::<()>(&format!(
+                .eval_async::<()>(
                     r#"
                 await file.writeBytes(bytes);
                 await file.rewind();
                 var result = await file.readBytes();
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
@@ -824,12 +849,12 @@ mod tests {
             assert_eq!(result, BYTES);
 
             script_engine
-                .eval_async::<()>(&format!(
+                .eval_async::<()>(
                     r#"
                 await file.rewind();
                 result = await file.readBytes(2);
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
@@ -849,7 +874,7 @@ mod tests {
     fn test_write_read_bytes_static() {
         const BYTES: &[u8] = b"test";
 
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
@@ -906,7 +931,7 @@ mod tests {
     fn test_size() {
         const TEXT: &str = "test";
 
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let result = script_engine
                 .eval_async::<usize>(&format!(
                     r#"
@@ -920,12 +945,12 @@ mod tests {
             assert_eq!(result, TEXT.len());
 
             let result = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.setSize(42);
                 await file.size()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
@@ -936,25 +961,25 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_readonly() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let readonly = script_engine
-                .eval_async::<bool>(&format!(
+                .eval_async::<bool>(
                     r#"
                 await file.readonly()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             assert!(!readonly);
 
             let readonly = script_engine
-                .eval_async::<bool>(&format!(
+                .eval_async::<bool>(
                     r#"
                 await file.setReadonly(true);
                 await file.readonly()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
@@ -965,14 +990,14 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_mode() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let mode = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.setMode(0o445);
                 await file.mode()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
@@ -995,7 +1020,7 @@ mod tests {
         const SECOND: u32 = 16;
         const MILLISECOND: u32 = 468;
 
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
@@ -1082,93 +1107,93 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_position() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let result = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.position()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             assert_eq!(result, 0);
 
             script_engine
-                .eval_async::<()>(&format!(
+                .eval_async::<()>(
                     r#"
                 await file.setPosition(2)
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             let result = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.position()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             assert_eq!(result, 2);
 
             script_engine
-                .eval_async::<()>(&format!(
+                .eval_async::<()>(
                     r#"
                 await file.setRelativePosition(1)
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             let result = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.position()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             assert_eq!(result, 3);
 
             script_engine
-                .eval_async::<()>(&format!(
+                .eval_async::<()>(
                     r#"
                 await file.setRelativePosition(-1)
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             let result = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.position()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             assert_eq!(result, 2);
 
             script_engine
-                .eval_async::<()>(&format!(
+                .eval_async::<()>(
                     r#"
                 await file.rewind()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
             let result = script_engine
-                .eval_async::<usize>(&format!(
+                .eval_async::<usize>(
                     r#"
                 await file.position()
-                "#
-                ))
+                "#,
+                )
                 .await
                 .unwrap();
 
@@ -1179,7 +1204,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_path() {
-        Runtime::test_with_script_engine(async move |script_engine| {
+        Runtime::test_with_script_engine(|script_engine| async move {
             let file_path = env::temp_dir().join("test_with_script_engine.txt");
 
             script_engine
@@ -1204,7 +1229,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_exists() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let file_path = env::temp_dir().join("test_exists.txt");
 
             let result = script_engine
@@ -1233,7 +1258,7 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_remove() {
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let result = script_engine
                 .eval_async::<bool>(
                     r#"
@@ -1270,7 +1295,7 @@ mod tests {
     fn test_copy() {
         const TEXT: &str = "test";
 
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let file_path = env::temp_dir().join("test_copy.txt");
 
             let result = script_engine
@@ -1294,7 +1319,7 @@ mod tests {
     fn test_rename() {
         const TEXT: &str = "test";
 
-        test_with_file(async move |script_engine| {
+        test_with_file(|script_engine| async move {
             let file_path = env::temp_dir().join("test_rename.txt");
 
             let result = script_engine

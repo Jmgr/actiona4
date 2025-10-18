@@ -14,7 +14,7 @@ pub mod win;
 pub struct WindowId(u64);
 
 impl WindowId {
-    pub(crate) fn next(&mut self) -> Self {
+    pub(crate) const fn next(&mut self) -> Self {
         self.0 = self.0.wrapping_add(1);
 
         *self
@@ -89,7 +89,7 @@ impl<H: Clone + Eq + Hash> Registry<H> {
         }
 
         self.map
-            .retain(|_, window_handle| existing_handles.contains(&window_handle));
+            .retain(|_, window_handle| existing_handles.contains(window_handle));
 
         window_ids
     }
@@ -102,11 +102,13 @@ impl<H: Clone + Eq + Hash> Registry<H> {
         self.map.get_by_right(handle).copied()
     }
 
+    #[must_use]
     pub fn contains_id(&self, id: WindowId) -> bool {
         self.map.contains_left(&id)
     }
 
+    #[must_use]
     pub fn contains_handle(&self, handle: &H) -> bool {
-        self.map.contains_right(&handle)
+        self.map.contains_right(handle)
     }
 }

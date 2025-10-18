@@ -10,6 +10,7 @@ use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
 use macros::{ExposeEnum, FromJsObject};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
+use num_traits::ToPrimitive;
 use platform::MouseImplTrait;
 use rquickjs::{JsLifetime, class::Trace};
 use thiserror::Error;
@@ -45,6 +46,9 @@ use crate::{core::point::point, runtime::Runtime};
 pub enum MouseError {
     #[error(transparent)]
     CommonError(#[from] CommonError),
+
+    #[error(transparent)]
+    EyreReport(#[from] eyre::Report),
 
     #[error("Connecting to the X11 server failed: {0}")]
     ConnectError(String),
@@ -204,7 +208,7 @@ pub enum Tween {
 }
 
 impl Tween {
-    fn into_tween<Value: tween::TweenValue>(self) -> Box<dyn tween::Tween<Value>> {
+    fn into_tween<Value: tween::TweenValue>(self) -> Box<dyn tween::Tween<Value> + Send> {
         use Tween::*;
 
         match self {
@@ -313,7 +317,7 @@ impl Mouse {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub async fn measure_speed(&self, duration: Duration) -> Result<f32> {
+    pub async fn measure_speed(&self, duration: Duration) -> Result<f64> {
         let mut last_position = self.position()?;
         let mut last_time = Instant::now();
 
@@ -341,7 +345,7 @@ impl Mouse {
         }
 
         Ok(if sample_count > 0 {
-            total_distance / duration.as_secs_f32()
+            total_distance / duration.as_secs_f64()
         } else {
             0.0
         })
@@ -353,19 +357,19 @@ impl Mouse {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct MoveOptions {
     /// @default 2000
-    pub speed: f32,
+    pub speed: f64,
 
     /// @default Tween.SINE_OUT
     pub tween: Tween,
 
     /// @default 50
-    pub perlin_scale: f32,
+    pub perlin_scale: f64,
 
     /// @default 5
-    pub perlin_amplitude: f32,
+    pub perlin_amplitude: f64,
 
     /// @default 0
-    pub target_randomness: f32,
+    pub target_randomness: f64,
 
     /// Interval in milliseconds
     /// @default 10
@@ -385,7 +389,7 @@ impl Default for MoveOptions {
     }
 }
 
-fn sigmoid(x: f32) -> f32 {
+fn sigmoid(x: f64) -> f64 {
     1. / (1. + (-x).exp())
 }
 
@@ -400,7 +404,7 @@ impl Mouse {
     ) -> Result<()> {
         if options.target_randomness > 0. {
             target_position =
-                Point::random_in_circle(target_position, options.target_randomness, rng.clone());
+                Point::random_in_circle(target_position, options.target_randomness, rng.clone())?;
         }
 
         let start_position = self.position()?;
@@ -411,7 +415,7 @@ impl Mouse {
                 "speed must be greater than zero".into(),
             ));
         } else {
-            Duration::from_secs_f32(distance / options.speed)
+            Duration::from_secs_f64(distance / options.speed)
         };
 
         if options.interval.0.is_zero() {
@@ -421,7 +425,7 @@ impl Mouse {
         let mut perlin_rng = UniformRandomGen::new(rng.next_u32());
         let perlin_seed = rng.next_u32();
 
-        let duration = duration.as_secs_f32();
+        let duration = duration.as_secs_f64();
 
         if duration < 0. {
             self.set_position(target_position, Coordinate::Abs)?;
@@ -434,7 +438,7 @@ impl Mouse {
             target_position,
             duration,
             options.tween.into_tween(),
-            options.interval.0.as_secs_f32(),
+            options.interval.0.as_secs_f64(),
         );
 
         let (direction_x, direction_y) = (target_position - start_position).normalize();
@@ -447,7 +451,13 @@ impl Mouse {
             let eased_progress = sigmoid(progress.mul_add(12., -6.));
 
             let noise_factor = eased_progress * options.perlin_scale;
-            let noise = perlin_noise_1d(&mut perlin_rng, noise_factor, perlin_seed)
+            let noise = perlin_noise_1d(
+                &mut perlin_rng,
+                noise_factor.to_f32().unwrap_or_default(),
+                perlin_seed,
+            )
+            .to_f64()
+            .unwrap_or_default()
                 * options.perlin_amplitude;
 
             let damping_factor = 1.0 - eased_progress.powi(3); // More easing as it approaches the end
@@ -739,14 +749,13 @@ mod tests {
     #[test]
     #[traced_test]
     fn test_position() {
-        Runtime::test(async |runtime| {
+        Runtime::test(|runtime| async {
             let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
             let cancellation_token = CancellationToken::new();
             let rng = SharedRng::default();
 
             for target in [point(5000, 1000), point(7000, 800), point(4000, 1200)] {
                 mouse
-                    .clone()
                     .move_(
                         target,
                         cancellation_token.clone(),

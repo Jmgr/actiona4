@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use derive_more::Constructor;
 use tracing::error;
 use x11rb::protocol::randr::NotifyMask;
 use x11rb_async::{connection::Connection, protocol::randr::ConnectionExt};
@@ -9,7 +10,7 @@ use crate::{
     runtime::events::{DisplayInfoVec, LatestOnlySignals, Topic},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Constructor)]
 pub struct ScreenChangeTopic {
     x11_connection: Arc<X11Connection>,
 }
@@ -46,11 +47,5 @@ impl Topic for ScreenChangeTopic {
         if let Err(err) = connection.flush().await {
             error!("flush failed: {err}");
         }
-    }
-}
-
-impl ScreenChangeTopic {
-    pub fn new(x11_connection: Arc<X11Connection>) -> Self {
-        Self { x11_connection }
     }
 }

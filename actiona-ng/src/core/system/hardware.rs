@@ -22,23 +22,22 @@ pub struct Motherboard {
 
 impl Default for Motherboard {
     fn default() -> Self {
-        if let Some(motherboard) = sysinfo::Motherboard::new() {
-            Self {
-                name: motherboard.name().into(),
-                vendor: motherboard.vendor_name().into(),
-                version: motherboard.version().into(),
-                serial_number: motherboard.serial_number().into(),
-                asset_tag: motherboard.asset_tag().into(),
-            }
-        } else {
-            Self {
+        sysinfo::Motherboard::new().map_or_else(
+            || Self {
                 name: OptionalSystemString::none(),
                 vendor: OptionalSystemString::none(),
                 version: OptionalSystemString::none(),
                 serial_number: OptionalSystemString::none(),
                 asset_tag: OptionalSystemString::none(),
-            }
-        }
+            },
+            |motherboard| Self {
+                name: motherboard.name().into(),
+                vendor: motherboard.vendor_name().into(),
+                version: motherboard.version().into(),
+                serial_number: motherboard.serial_number().into(),
+                asset_tag: motherboard.asset_tag().into(),
+            },
+        )
     }
 }
 
@@ -55,22 +54,27 @@ impl Display for Motherboard {
 }
 
 impl Motherboard {
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
+    #[must_use]
     pub fn vendor_name(&self) -> Option<&str> {
         self.vendor.as_deref()
     }
 
+    #[must_use]
     pub fn version(&self) -> Option<&str> {
         self.version.as_deref()
     }
 
+    #[must_use]
     pub fn serial_number(&self) -> Option<&str> {
         self.serial_number.as_deref()
     }
 
+    #[must_use]
     pub fn asset_tag(&self) -> Option<&str> {
         self.asset_tag.as_deref()
     }
@@ -156,7 +160,7 @@ impl Hardware {
     #[instrument(name = "hardware", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let components = task_tracker
-            .spawn_blocking(move || sysinfo::Components::new_with_refreshed_list())
+            .spawn_blocking(sysinfo::Components::new_with_refreshed_list)
             .await?;
 
         Ok(Self {
@@ -173,35 +177,43 @@ impl Hardware {
         })
     }
 
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
+    #[must_use]
     pub fn family(&self) -> Option<&str> {
         self.family.as_deref()
     }
 
+    #[must_use]
     pub fn serial_number(&self) -> Option<&str> {
         self.serial_number.as_deref()
     }
 
+    #[must_use]
     pub fn stock_keeping_unit(&self) -> Option<&str> {
         self.stock_keeping_unit.as_deref()
     }
 
+    #[must_use]
     pub fn version(&self) -> Option<&str> {
         self.version.as_deref()
     }
 
+    #[must_use]
     pub fn uuid(&self) -> Option<&str> {
         self.uuid.as_deref()
     }
 
+    #[must_use]
     pub fn vendor_name(&self) -> Option<&str> {
         self.vendor_name.as_deref()
     }
 
-    pub fn motherboard(&self) -> &Motherboard {
+    #[must_use]
+    pub const fn motherboard(&self) -> &Motherboard {
         &self.motherboard
     }
 

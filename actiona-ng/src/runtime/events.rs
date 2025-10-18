@@ -3,7 +3,7 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
-use derive_more::{Deref, DerefMut};
+use derive_more::{Constructor, Deref, DerefMut};
 use enigo::Direction;
 use itertools::Itertools;
 use tokio::{
@@ -42,13 +42,6 @@ impl<T: Send + Sync + 'static> Signal<T> for AllSignals<T> {
     }
 }
 
-impl<T: Clone + Send + Sync + 'static> AllSignals<T> {
-    pub fn new() -> Self {
-        let (sender, _) = broadcast::channel(1024); // TODO
-        Self(sender)
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct LatestOnlySignals<T>(watch::Sender<T>);
 
@@ -65,13 +58,6 @@ impl<T: Send + Sync + Default + 'static> Signal<T> for LatestOnlySignals<T> {
     }
 }
 
-impl<T: Clone + Send + Sync + Default + 'static> LatestOnlySignals<T> {
-    pub fn new() -> Self {
-        let (sender, _) = watch::channel(T::default());
-        Self(sender)
-    }
-}
-
 pub trait Topic: Send + Sync + 'static {
     type T;
     type Signal: Signal<Self::T> + Clone;
@@ -83,7 +69,7 @@ pub trait Topic: Send + Sync + 'static {
 #[derive(Debug)]
 pub struct Guard<T: Topic> {
     topic_wrapper: Arc<TopicWrapper<T>>,
-    signal_sender: T::Signal,
+    signal_sender: T::Signal, // TODO: use a receiver instead
 }
 
 impl<T: Topic> Drop for Guard<T> {
@@ -151,7 +137,8 @@ impl<T: Topic + 'static> TopicWrapper<T> {
         }
     }
 
-    pub fn subscribe(self: Arc<Self>) -> Guard<T> {
+    #[must_use]
+    pub fn subscribe(self: &Arc<Self>) -> Guard<T> {
         self.increment();
 
         Guard {
@@ -161,7 +148,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
     }
 
     pub fn publish(&self, value: T::T) {
-        let _ = self.signal_sender.send(value);
+        self.signal_sender.send(value);
     }
 
     fn increment(&self) {
@@ -227,6 +214,7 @@ pub struct MultiTest {
 }
 
 impl MultiTest {
+    #[must_use]
     pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Arc<Self> {
         Arc::new_cyclic(|me| Self {
             test: Arc::new(TopicWrapper::new(
@@ -243,12 +231,14 @@ impl MultiTest {
         })
     }
 
+    #[must_use]
     pub fn subscribe_test(&self) -> Guard<Test> {
-        self.test.clone().subscribe()
+        self.test.subscribe()
     }
 
+    #[must_use]
     pub fn subscribe_test2(&self) -> Guard<Test2> {
-        self.test2.clone().subscribe()
+        self.test2.subscribe()
     }
 
     pub fn publish_test(&self, value: <Test as Topic>::T) {
@@ -272,33 +262,17 @@ impl MultiTest {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Constructor)]
 pub struct MouseButtonEvent {
     pub button: Button,
     pub direction: Direction,
     pub injected: bool,
 }
 
-impl MouseButtonEvent {
-    pub fn new(button: Button, direction: Direction, injected: bool) -> Self {
-        Self {
-            button,
-            direction,
-            injected,
-        }
-    }
-}
-
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Constructor)]
 pub struct MouseMoveEvent {
     pub position: Point,
     pub injected: bool,
-}
-
-impl MouseMoveEvent {
-    pub fn new(position: Point, injected: bool) -> Self {
-        Self { position, injected }
-    }
 }
 
 // This is the same as display_info::DisplayInfo, but without the pointer to the raw monitor handle, since it is not Send.

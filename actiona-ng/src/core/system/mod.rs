@@ -36,13 +36,13 @@ pub struct System {
 impl Display for System {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("cpu", &self.cpu())
-            .display("memory", &self.memory())
-            .display("os", &self.os())
-            .display("network", &self.network())
-            .display("hardware", &self.hardware())
-            .display("storage", &self.storage())
-            .display("processes", &self.processes())
+            .display("cpu", self.cpu())
+            .display("memory", self.memory())
+            .display("os", self.os())
+            .display("network", self.network())
+            .display("hardware", self.hardware())
+            .display("storage", self.storage())
+            .display("processes", self.processes())
             .finish(f)
     }
 }
@@ -71,30 +71,37 @@ impl System {
         })
     }
 
+    #[must_use]
     pub fn cpu(&self) -> Arc<Cpu> {
         self.cpu.clone()
     }
 
+    #[must_use]
     pub fn memory(&self) -> Arc<Memory> {
         self.memory.clone()
     }
 
+    #[must_use]
     pub fn os(&self) -> Arc<Os> {
         self.os.clone()
     }
 
+    #[must_use]
     pub fn network(&self) -> Arc<Network> {
         self.network.clone()
     }
 
+    #[must_use]
     pub fn hardware(&self) -> Arc<Hardware> {
         self.hardware.clone()
     }
 
+    #[must_use]
     pub fn storage(&self) -> Arc<Storage> {
         self.storage.clone()
     }
 
+    #[must_use]
     pub fn processes(&self) -> Arc<Processes> {
         self.processes.clone()
     }
@@ -128,7 +135,7 @@ mod tests {
                 .spawn()
                 .expect("failed to spawn xeyes");
 
-            let pid = child.id().unwrap(); // u32
+            let pid = child.id().unwrap().try_into().unwrap();
 
             println!("pid: {pid}");
 

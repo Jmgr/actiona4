@@ -401,11 +401,17 @@ declare enum Method {
 
     PUT,
 
-    PATCH,
-
     DELETE,
 
     HEAD,
+
+    OPTIONS,
+
+    CONNECT,
+
+    PATCH,
+
+    TRACE,
 }
 declare interface Clipboard {
     setText(text: string, mode?: ClipboardMode): Promise<void>;
@@ -1526,8 +1532,8 @@ declare class Image {
      * TODO
      */
     findImage(_image: Image, options?: FindImageOptions): void;
-    width(): number;
     height(): number;
+    width(): number;
 }
 /**
  * A Color.
@@ -1727,16 +1733,16 @@ declare class Color {
     clone(): Color;
 }
 declare interface Console {
-    print(...args: any[]): this;
-    printLn(...args: any[]): this;
-    log(...args: any[]): this;
-    info(...args: any[]): this;
-    warn(...args: any[]): this;
-    error(...args: any[]): this;
-    clear(): this;
-    time(name?: string): this;
-    timeEnd(name?: string): this;
-    count(name?: string): this;
+    print(...args: any[]): void;
+    printLn(...args: any[]): void;
+    log(...args: any[]): void;
+    info(...args: any[]): void;
+    warn(...args: any[]): void;
+    error(...args: any[]): void;
+    clear(): void;
+    time(name?: string): void;
+    timeEnd(name?: string): void;
+    count(name?: string): void;
 }
 declare const console: Console;
 /**
@@ -1837,18 +1843,6 @@ declare class Point {
      * Length of this point.
      */
     length(): number;
-    /**
-     * Normalize the point.
-     */
-    static normalize(self: Point): Point;
-    /**
-     * Normalize the point.
-     */
-    static normalize(x: number, y: number): Point;
-    /**
-     * Normalize the point.
-     */
-    static normalize(o: {x: number, y: number}): Point;
     /**
      * Returns a random point around this point.
      */
@@ -1956,7 +1950,7 @@ declare class Point {
     /**
      * Scales this point by a factor and returns a new Point.
      */
-    scale(factor: number): Point;
+    scaled(factor: number): Point;
     /**
      * Returns a string representation of this Point.
      */
@@ -2403,14 +2397,212 @@ declare class Path {
     static setExtension(path: string, extension: string): string;
 }
 /**
+ * A 2D Point.
+ * 
+ * 
+ * ```js
+ * let p = new Point(1, 2);
+ * ```
+ */
+declare class Size {
+    /**
+     * X coordinate
+     */
+    x: number;
+    /**
+     * height coordinate
+     */
+    height: number;
+    /**
+     * Constructor with two number.
+     */
+    constructor(x: number, height: number);
+    /**
+     * Constructor with an object.
+     */
+    constructor(o: {x: number, height: number});
+    /**
+     * Constructor with another Point.
+     */
+    constructor(p: Point);
+    /**
+     * Length of this point.
+     */
+    length(): number;
+    /**
+     * Normalize the point.
+     */
+    static normalized(self: Size): Size;
+    /**
+     * Normalize the point.
+     */
+    static normalized(x: number, height: number): Size;
+    /**
+     * Normalize the point.
+     */
+    static normalized(o: {x: number, height: number}): Size;
+    /**
+     * Normalize the point.
+     */
+    static normalized(p: Point): Size;
+    /**
+     * Calculates the distance between this point and another.
+     */
+    distanceTo(other: Size): number;
+    /**
+     * Calculates the distance between this point and another.
+     */
+    distanceTo(x: number, height: number): number;
+    /**
+     * Calculates the distance between this point and another.
+     */
+    distanceTo(o: {x: number, height: number}): number;
+    /**
+     * Calculates the distance between this point and another.
+     */
+    distanceTo(p: Point): number;
+    /**
+     * Returns a JSON representation of this Point.
+     */
+    toJson(): string;
+    /**
+     * Returns true if this Point is at the origin, (0, 0).
+     */
+    isOrigin(): boolean;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(a: Size, b: Size): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(a: Size, x: number, height: number): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(a: Size, o: {x: number, height: number}): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(a: Size, p: Point): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(x: number, height: number, b: Size): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(x1: number, height1: number, x2: number, height2: number): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(x: number, height: number, o: {x: number, height: number}): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(x: number, height: number, p: Point): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(o: {x: number, height: number}, b: Size): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(o: {x: number, height: number}, x: number, height: number): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(o1: {x: number, height: number}, o2: {x: number, height: number}): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(o: {x: number, height: number}, p: Point): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(p: Point, b: Size): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(p: Point, x: number, height: number): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(p: Point, o: {x: number, height: number}): number;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(p1: Point, p2: Point): number;
+    /**
+     * Returns true if a Point equals another.
+     */
+    equals(other: Size): boolean;
+    /**
+     * Returns true if a Point equals another.
+     */
+    equals(x: number, height: number): boolean;
+    /**
+     * Returns true if a Point equals another.
+     */
+    equals(o: {x: number, height: number}): boolean;
+    /**
+     * Returns true if a Point equals another.
+     */
+    equals(p: Point): boolean;
+    /**
+     * Adds two points and returns a new Point.
+     */
+    add(other: Size): Size;
+    /**
+     * Adds two points and returns a new Point.
+     */
+    add(x: number, height: number): Size;
+    /**
+     * Adds two points and returns a new Point.
+     */
+    add(o: {x: number, height: number}): Size;
+    /**
+     * Adds two points and returns a new Point.
+     */
+    add(p: Point): Size;
+    /**
+     * Subtracts two points and returns a new Point.
+     */
+    subtract(other: Size): Size;
+    /**
+     * Subtracts two points and returns a new Point.
+     */
+    subtract(x: number, height: number): Size;
+    /**
+     * Subtracts two points and returns a new Point.
+     */
+    subtract(o: {x: number, height: number}): Size;
+    /**
+     * Subtracts two points and returns a new Point.
+     */
+    subtract(p: Point): Size;
+    /**
+     * Scales this point by a factor and returns a new Point.
+     */
+    scale(factor: number): Size;
+    /**
+     * Returns a string representation of this Point.
+     */
+    toString(): string;
+    /**
+     * Clones this Point.
+     */
+    clone(): Size;
+}
+/**
  * Multipart form
  */
 declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
-    current(): number;
     total(): number;
+    current(): number;
     finished(): boolean;
 }
 declare interface Concurrency {
@@ -2467,7 +2659,7 @@ declare interface WebOptions {
      */
     query?: Record<string, string>;
     /**
-     * Form data as strings.
+     * Form multipart data.
      * Sets content-type and content-length appropriately.
      * @defaultValue undefined
      */
