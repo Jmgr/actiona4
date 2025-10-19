@@ -5,6 +5,7 @@
 #![deny(unsafe_code)]
 #![allow(clippy::too_long_first_doc_paragraph)]
 #![allow(clippy::significant_drop_tightening)]
+#![allow(clippy::future_not_send)]
 
 use rquickjs::{Ctx, Exception};
 use tokio_util::sync::CancellationToken;

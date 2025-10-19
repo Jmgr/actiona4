@@ -52,12 +52,14 @@ impl JsDisplays {
             .into())
     }
 
+    #[must_use]
     pub fn from_point(&self, point: JsPointParam) -> Option<JsDisplayInfo> {
         self.inner
             .from_point(point.0)
             .map(|display_info| display_info.into())
     }
 
+    #[must_use]
     pub fn from_name<'js>(&self, ctx: Ctx<'js>, name: JsNameParam<'js>) -> Option<JsDisplayInfo> {
         let displays_infos = self.inner.displays_info.lock().unwrap();
         displays_infos
@@ -67,6 +69,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into())
     }
 
+    #[must_use]
     pub fn from_device_name<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -80,6 +83,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into())
     }
 
+    #[must_use]
     pub fn from_id(&self, id: u32) -> Option<JsDisplayInfo> {
         let displays_infos = self.inner.displays_info.lock().unwrap();
         displays_infos
@@ -89,12 +93,14 @@ impl JsDisplays {
             .map(|display_info| display_info.into())
     }
 
+    #[must_use]
     pub fn smallest(&self) -> Option<JsDisplayInfo> {
         self.inner
             .smallest()
             .map(|display_info| display_info.into())
     }
 
+    #[must_use]
     pub fn largest(&self) -> Option<JsDisplayInfo> {
         self.inner.largest().map(|display_info| display_info.into())
     }
@@ -137,6 +143,7 @@ impl From<runtime::events::DisplayInfo> for JsDisplayInfo {
 impl JsDisplayInfo {
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn id(&self) -> u32 {
         self.inner.id
     }
@@ -144,6 +151,7 @@ impl JsDisplayInfo {
     /// @skip
     #[qjs(get)]
     #[allow(clippy::missing_const_for_fn)]
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.inner.name
     }
@@ -151,48 +159,56 @@ impl JsDisplayInfo {
     /// @skip
     #[qjs(get)]
     #[allow(clippy::missing_const_for_fn)]
+    #[must_use]
     pub fn friendly_name(&self) -> &str {
         &self.inner.friendly_name
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub fn rect(&self) -> JsRect {
         self.inner.rect.into()
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn width_mm(&self) -> i32 {
         self.inner.width_mm
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn height_mm(&self) -> i32 {
         self.inner.height_mm
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn rotation(&self) -> f32 {
         self.inner.rotation
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn scale_factor(&self) -> f32 {
         self.inner.scale_factor
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn frequency(&self) -> f32 {
         self.inner.frequency
     }
 
     /// @skip
     #[qjs(get)]
+    #[must_use]
     pub const fn is_primary(&self) -> bool {
         self.inner.is_primary
     }

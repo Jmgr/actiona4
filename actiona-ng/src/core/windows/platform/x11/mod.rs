@@ -22,6 +22,10 @@ use crate::{
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
     },
     runtime::Runtime,
+    types::{
+        si32::si32,
+        su32::{Su32, su32},
+    },
 };
 
 pub mod events;
@@ -130,12 +134,12 @@ impl WindowsHandler for X11WindowHandler {
 
         Ok(rect(
             try_point(
-                coordinates.dst_x as i64 + extents.left,
-                coordinates.dst_y as i64 + extents.top,
+                si32(coordinates.dst_x) + extents.left,
+                si32(coordinates.dst_y) + extents.top,
             )?,
             try_size(
-                geometry.width as i64 - extents.left - extents.right,
-                geometry.height as i64 - extents.top - extents.bottom,
+                su32(geometry.width) - extents.left - extents.right,
+                su32(geometry.height) - extents.top - extents.bottom,
             )?,
         ))
     }
@@ -175,7 +179,7 @@ impl WindowsHandler for X11WindowHandler {
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
         let handle = self.inner.get_handle(id)?.clone();
         <libwmctl::Window as Clone>::clone(&handle)
-            .pos(Position::Static(position.x, position.y))
+            .pos(Position::Static(position.x.into(), position.y.into()))
             .place()?;
         Ok(())
     }
@@ -188,7 +192,7 @@ impl WindowsHandler for X11WindowHandler {
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.get_handle(id)?.clone();
         <libwmctl::Window as Clone>::clone(&handle)
-            .shape(Shape::Static(size.width, size.height))
+            .shape(Shape::Static(size.width.into(), size.height.into()))
             .place()?;
         Ok(())
     }
@@ -221,10 +225,10 @@ impl WindowsHandler for X11WindowHandler {
 
 #[derive(Default)]
 struct FrameExtents {
-    left: i64,
-    right: i64,
-    top: i64,
-    bottom: i64,
+    left: Su32,
+    right: Su32,
+    top: Su32,
+    bottom: Su32,
 }
 
 impl X11WindowHandler {
@@ -273,10 +277,10 @@ impl X11WindowHandler {
         let extents = extents.value32();
         if let Some(mut extents) = extents {
             return Ok(Some(FrameExtents {
-                left: extents.next().unwrap_or_default() as i64,
-                right: extents.next().unwrap_or_default() as i64,
-                top: extents.next().unwrap_or_default() as i64,
-                bottom: extents.next().unwrap_or_default() as i64,
+                left: extents.next().unwrap_or_default().into(),
+                right: extents.next().unwrap_or_default().into(),
+                top: extents.next().unwrap_or_default().into(),
+                bottom: extents.next().unwrap_or_default().into(),
             }));
         }
 
@@ -291,16 +295,12 @@ impl X11WindowHandler {
             )?
             .reply()?;
         let extents = extents.value32();
-        Ok(if let Some(mut extents) = extents {
-            Some(FrameExtents {
-                left: extents.next().unwrap_or_default() as i64,
-                right: extents.next().unwrap_or_default() as i64,
-                top: extents.next().unwrap_or_default() as i64,
-                bottom: extents.next().unwrap_or_default() as i64,
-            })
-        } else {
-            None
-        })
+        Ok(extents.map(|mut extents| FrameExtents {
+            left: extents.next().unwrap_or_default().into(),
+            right: extents.next().unwrap_or_default().into(),
+            top: extents.next().unwrap_or_default().into(),
+            bottom: extents.next().unwrap_or_default().into(),
+        }))
     }
 }
 

@@ -60,15 +60,15 @@ impl From<Method> for reqwest::Method {
     fn from(value: Method) -> Self {
         use Method::*;
         match value {
-            Get => reqwest::Method::GET,
-            Post => reqwest::Method::POST,
-            Put => reqwest::Method::PUT,
-            Delete => reqwest::Method::DELETE,
-            Head => reqwest::Method::HEAD,
-            Options => reqwest::Method::OPTIONS,
-            Connect => reqwest::Method::CONNECT,
-            Patch => reqwest::Method::PATCH,
-            Trace => reqwest::Method::TRACE,
+            Get => Self::GET,
+            Post => Self::POST,
+            Put => Self::PUT,
+            Delete => Self::DELETE,
+            Head => Self::HEAD,
+            Options => Self::OPTIONS,
+            Connect => Self::CONNECT,
+            Patch => Self::PATCH,
+            Trace => Self::TRACE,
         }
     }
 }
@@ -158,7 +158,7 @@ impl Body {
     }
 
     fn guess_mime_from_bytes(bytes: &Bytes) -> Option<&str> {
-        infer::get(&bytes).map(|guess| guess.mime_type())
+        infer::get(bytes).map(|guess| guess.mime_type())
     }
 
     async fn guess_mime_from_path(path: &Path, is_multipart: bool) -> Option<String> {
@@ -173,7 +173,7 @@ impl Body {
         let head = &buffer[..n];
 
         // Try to guess using the magic number first
-        if let Some(mime) = infer::get(&head) {
+        if let Some(mime) = infer::get(head) {
             return Some(mime.mime_type().to_string());
         }
 
@@ -191,6 +191,7 @@ impl Body {
         )
     }
 
+    #[allow(clippy::as_conversions)]
     fn stream_to_body<S, E>(
         stream: S,
         size: u64,
@@ -231,12 +232,12 @@ impl Body {
         bytes: Bytes,
         progress_reporter: Arc<ProgressReporter>,
     ) -> Result<(reqwest::Body, u64)> {
-        let len = bytes.len() as u64;
+        let len = bytes.len().try_into()?;
 
         Ok(Self::stream_to_body(
             ReaderStream::new(Cursor::new(bytes)),
             len,
-            progress_reporter.clone(),
+            progress_reporter,
         ))
     }
 
@@ -247,12 +248,12 @@ impl Body {
         let mut total_size = 0;
         let progress_reporter = Arc::new(ProgressReporter::default());
         match self {
-            Body::None => {}
-            Body::Text { text, content_type } => {
+            Self::None => {}
+            Self::Text { text, content_type } => {
                 request = request.body(text);
                 request = Self::maybe_set_content_type(request, content_type);
             }
-            Body::File { path, content_type } => {
+            Self::File { path, content_type } => {
                 if let Some(mime) = Self::guess_mime_from_path(&path, false).await {
                     request = request.header(CONTENT_TYPE, mime);
                 }
@@ -264,7 +265,7 @@ impl Body {
 
                 request = Self::maybe_set_content_type(request, content_type);
             }
-            Body::Bytes {
+            Self::Bytes {
                 bytes,
                 content_type,
             } => {
@@ -279,7 +280,7 @@ impl Body {
 
                 request = Self::maybe_set_content_type(request, content_type);
             }
-            Body::Form(form_fields) => {
+            Self::Form(form_fields) => {
                 request = request.form(
                     &form_fields
                         .into_iter()
@@ -287,7 +288,7 @@ impl Body {
                         .collect::<Vec<_>>(),
                 );
             }
-            Body::Multipart(multipart_fields) => {
+            Self::Multipart(multipart_fields) => {
                 let mut form = Form::new();
                 for field in multipart_fields {
                     let mut part = match field.value {
@@ -318,7 +319,7 @@ impl Body {
                         part = part.file_name(filename);
                     }
                     if let Some(mimetype) = field.mimetype {
-                        part = part.mime_str(&mimetype.to_string())?;
+                        part = part.mime_str(mimetype.as_ref())?;
                     }
 
                     form = form.part(field.name, part);
@@ -371,7 +372,8 @@ impl Progress {
     }
     */// TODO
 
-    pub fn is_finished(&self) -> bool {
+    #[must_use]
+    pub const fn is_finished(&self) -> bool {
         matches!(self, Self::Finished { .. })
     }
 }
@@ -383,6 +385,7 @@ pub struct Web {
 }
 
 impl Web {
+    #[must_use]
     pub fn new(task_tracker: TaskTracker) -> Self {
         Self {
             inner: reqwest::Client::new(),
@@ -507,11 +510,11 @@ impl Web {
 
         let directory = directory
             .map(|directory| directory.to_path_buf())
-            .unwrap_or(std::env::temp_dir());
+            .unwrap_or_else(std::env::temp_dir);
 
         let filename = Self::guess_filename(&response, url);
         let filepath = directory.join(&filename);
-        let tmp_filepath = directory.join(&format!("{}.part", filename));
+        let tmp_filepath = directory.join(format!("{}.part", filename));
 
         let file = cancel_on(&token, File::create(&tmp_filepath)).await??;
 
@@ -600,7 +603,7 @@ impl Web {
 
             cancel_on(&token, writer.write_all(&chunk)).await??;
 
-            current += chunk.len() as u64;
+            current += u64::try_from(chunk.len())?;
 
             if let Some(progress) = &progress {
                 progress.send_replace(Progress::Downloading {
@@ -624,7 +627,7 @@ impl Web {
         progress: &Option<watch::Sender<Progress>>,
     ) -> Result<Vec<u8>> {
         let mut buffer = if let Some(length) = response.content_length() {
-            Vec::with_capacity(length as usize)
+            Vec::with_capacity(length.try_into()?)
         } else {
             Vec::new()
         };
@@ -640,17 +643,15 @@ impl Web {
             .headers()
             .get(header::CONTENT_DISPOSITION)
             .and_then(|v| v.to_str().ok())
-        {
-            if let Some(name) = cd
+            && let Some(name) = cd
                 .split(';')
                 .find_map(|p| p.trim().strip_prefix("filename="))
                 .map(|s| s.trim_matches('"'))
-            {
-                return name.to_string();
-            }
+        {
+            return name.to_string();
         }
         url.split('/')
-            .last()
+            .next_back()
             .filter(|s| !s.is_empty())
             .unwrap_or("download.bin")
             .to_string()
@@ -689,6 +690,7 @@ mod helper {
 }
 
 #[cfg(test)]
+#[allow(clippy::as_conversions)]
 mod tests {
     use std::{
         fs,

@@ -7,11 +7,6 @@ description.workspace = true
 documentation.workspace = true
 license.workspace = true
 
-[[test]]
-name = "ui"
-harness = false
-path = "tests/ui.rs"
-
 [target.'cfg(windows)'.dependencies]
 pe-parser.workspace = true
 windows.workspace = true
@@ -71,7 +66,6 @@ rquickjs.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 slotmap.workspace = true
-spin_on.workspace = true
 strum.workspace = true
 swc_common.workspace = true
 swc_ecma_ast.workspace = true
@@ -81,15 +75,15 @@ swc_ecma_transforms_base.workspace = true
 swc_ecma_transforms_typescript.workspace = true
 swc_sourcemap.workspace = true
 sysinfo.workspace = true
+tauri.workspace = true
+tauri-plugin-dialog.workspace = true
+tauri-runtime-wry.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
-tauri.workspace = true
-tauri-plugin-dialog.workspace = true
-tauri-runtime-wry.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true
@@ -98,8 +92,14 @@ cfg_aliases.workspace = true
 base64.workspace = true
 console-subscriber.workspace = true
 httptest.workspace = true
+libtest-mimic-collect.workspace = true
 pretty_assertions.workspace = true
 tempfile.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
-libtest-mimic-collect.workspace = true
+rstest.workspace = true
+
+[[test]]
+name = "ui"
+harness = false
+path = "tests/ui.rs"

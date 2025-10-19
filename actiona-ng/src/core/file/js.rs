@@ -1,5 +1,3 @@
-#![allow(clippy::future_not_send)]
-
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 #[cfg(windows)]

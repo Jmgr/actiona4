@@ -11,6 +11,7 @@ pub enum Name<'js> {
 }
 
 impl<'js> Name<'js> {
+    #[must_use]
     pub fn matches(&self, ctx: &Ctx<'js>, text: &str) -> bool {
         match self {
             Name::String(name) => name == text,

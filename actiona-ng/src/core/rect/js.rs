@@ -1,16 +1,19 @@
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Result,
+    Ctx, Exception, FromJs, JsLifetime, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
 
 use super::rect;
-use crate::core::{
-    ResultExt,
-    js::classes::ValueClass,
-    point::{js::JsPoint, point},
-    size::size,
+use crate::{
+    core::{
+        ResultExt,
+        js::classes::ValueClass,
+        point::{js::JsPoint, point},
+        size::size,
+    },
+    types::{si32::Si32, su32::Su32},
 };
 
 pub struct JsRectParam(pub super::Rect);
@@ -22,10 +25,21 @@ impl<'js> FromParam<'js> for JsRectParam {
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
         Ok(Self(match params.len() {
-            n if n >= 4 => super::Rect::new(
-                point(params.arg().get()?, params.arg().get()?),
-                size(params.arg().get()?, params.arg().get()?),
-            ),
+            n if n >= 4 => {
+                let param = params.arg();
+                let x = Si32::from_js(params.ctx(), param)?;
+
+                let param = params.arg();
+                let y = Si32::from_js(params.ctx(), param)?;
+
+                let param = params.arg();
+                let w = Su32::from_js(params.ctx(), param)?;
+
+                let param = params.arg();
+                let h = Su32::from_js(params.ctx(), param)?;
+
+                super::Rect::new(point(x, y), size(w, h))
+            }
             n if n >= 1 => {
                 let value = params.arg();
 
@@ -39,8 +53,14 @@ impl<'js> FromParam<'js> for JsRectParam {
                     .or_throw_message(params.ctx(), "Expected an object")?;
 
                 super::Rect::new(
-                    point(object.get("x")?, object.get("y")?),
-                    size(object.get("width")?, object.get("height")?),
+                    point(
+                        Si32::from_js(params.ctx(), object.get("x")?)?,
+                        Si32::from_js(params.ctx(), object.get("y")?)?,
+                    ),
+                    size(
+                        Su32::from_js(params.ctx(), object.get("width")?)?,
+                        Su32::from_js(params.ctx(), object.get("height")?)?,
+                    ),
                 )
             }
             n => {
@@ -97,61 +117,68 @@ impl JsRect {
 
     /// @skip
     #[qjs(get, rename = "x")]
-    pub const fn get_x(&self) -> i32 {
-        self.inner.origin.x
+    #[must_use]
+    pub fn get_x(&self) -> i32 {
+        self.inner.origin.x.into()
     }
 
     /// @skip
     #[qjs(set, rename = "x")]
-    pub const fn set_x(&mut self, x: i32) {
-        self.inner.origin.x = x;
+    pub fn set_x(&mut self, x: i32) {
+        self.inner.origin.x = x.into();
     }
 
     /// @skip
     #[qjs(get, rename = "y")]
-    pub const fn get_y(&self) -> i32 {
-        self.inner.origin.y
+    #[must_use]
+    pub fn get_y(&self) -> i32 {
+        self.inner.origin.y.into()
     }
 
     /// @skip
     #[qjs(set, rename = "y")]
-    pub const fn set_y(&mut self, y: i32) {
-        self.inner.origin.y = y;
+    pub fn set_y(&mut self, y: i32) {
+        self.inner.origin.y = y.into();
     }
 
     /// @skip
     #[qjs(get, rename = "width")]
-    pub const fn get_width(&self) -> u32 {
-        self.inner.size.width
+    #[must_use]
+    pub fn get_width(&self) -> u32 {
+        self.inner.size.width.into()
     }
 
     /// @skip
     #[qjs(set, rename = "width")]
-    pub const fn set_width(&mut self, width: u32) {
-        self.inner.size.width = width;
+    pub fn set_width(&mut self, width: u32) {
+        self.inner.size.width = width.into();
     }
 
     /// @skip
     #[qjs(get, rename = "height")]
-    pub const fn get_height(&self) -> u32 {
-        self.inner.size.height
+    #[must_use]
+    pub fn get_height(&self) -> u32 {
+        self.inner.size.height.into()
     }
 
     /// @skip
     #[qjs(set, rename = "height")]
-    pub const fn set_height(&mut self, height: u32) {
-        self.inner.size.height = height;
+    pub fn set_height(&mut self, height: u32) {
+        self.inner.size.height = height.into();
     }
 
+    #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
+    #[must_use]
     pub fn contains(&self, point: JsPoint) -> bool {
         self.inner.contains(point.into())
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
     pub fn to_string_js(&self) -> String {
         format!(
             "({}, {}, {}, {})",
@@ -160,26 +187,31 @@ impl JsRect {
     }
 
     #[qjs(rename = "clone")]
+    #[must_use]
     pub const fn clone_js(&self) -> Self {
         *self
     }
 
+    #[must_use]
     pub fn intersects(&self, other: Self) -> bool {
         self.inner.intersects(other.into())
     }
 
+    #[must_use]
     pub fn intersection(&self, other: Self) -> Option<Self> {
         self.inner
             .intersection(other.into())
             .map(|result| result.into())
     }
 
+    #[must_use]
     pub fn union(&self, other: Self) -> Self {
         self.inner.union(other.into()).into()
     }
 
     /// @skip
     #[qjs(skip)]
+    #[must_use]
     pub const fn inner(&self) -> super::Rect {
         self.inner
     }

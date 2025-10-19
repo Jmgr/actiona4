@@ -19,21 +19,20 @@ use crate::{CommonError::Cancelled, core::system::processes::Signal, types::pid:
 
 impl From<Signal> for rustix::process::Signal {
     fn from(signal: Signal) -> Self {
-        use rustix::process::Signal as RustixSignal;
         match signal {
-            Signal::Hup => RustixSignal::HUP,
-            Signal::Int => RustixSignal::INT,
-            Signal::Quit => RustixSignal::QUIT,
-            Signal::Term => RustixSignal::TERM,
-            Signal::Kill => RustixSignal::KILL,
-            Signal::Stop => RustixSignal::STOP,
-            Signal::Tstp => RustixSignal::TSTP,
-            Signal::Cont => RustixSignal::CONT,
-            Signal::Ttin => RustixSignal::TTIN,
-            Signal::Ttou => RustixSignal::TTOU,
-            Signal::Winch => RustixSignal::WINCH,
-            Signal::Usr1 => RustixSignal::USR1,
-            Signal::Usr2 => RustixSignal::USR2,
+            Signal::Hup => Self::HUP,
+            Signal::Int => Self::INT,
+            Signal::Quit => Self::QUIT,
+            Signal::Term => Self::TERM,
+            Signal::Kill => Self::KILL,
+            Signal::Stop => Self::STOP,
+            Signal::Tstp => Self::TSTP,
+            Signal::Cont => Self::CONT,
+            Signal::Ttin => Self::TTIN,
+            Signal::Ttou => Self::TTOU,
+            Signal::Winch => Self::WINCH,
+            Signal::Usr1 => Self::USR1,
+            Signal::Usr2 => Self::USR2,
         }
     }
 }
@@ -115,7 +114,7 @@ impl ProcessSignal {
     ) -> std::result::Result<Option<i32>, ProcessSignalErrors> {
         let pid = pid
             .try_into()
-            .map_err(|error: eyre::Error| ProcessSignalErrors::Other(error.into()))?;
+            .map_err(|error: eyre::Error| ProcessSignalErrors::Other(error))?;
 
         let pidfd = pidfd_open(pid, PidfdFlags::empty()).map_err(|errno| match errno {
             Errno::NOSYS => ProcessSignalErrors::Unsupported,

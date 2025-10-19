@@ -5,7 +5,7 @@ use std::fmt::Display;
 use derive_more::{Deref, DerefMut, From, Into};
 use image::Rgba;
 
-use crate::types::DisplayFields;
+use crate::types::display::DisplayFields;
 
 pub mod js;
 

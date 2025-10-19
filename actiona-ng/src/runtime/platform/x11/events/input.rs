@@ -59,7 +59,7 @@ async fn apply_mask(
     }
 }
 
-#[derive(Debug, Constructor)]
+#[derive(Constructor, Debug)]
 pub struct MouseButtonsTopic {
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
@@ -94,7 +94,7 @@ impl Topic for MouseButtonsTopic {
     }
 }
 
-#[derive(Debug, Constructor)]
+#[derive(Constructor, Debug)]
 pub struct MouseMoveTopic {
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,

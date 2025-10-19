@@ -18,8 +18,8 @@ clap.workspace = true
 eyre.workspace = true
 tauri.workspace = true
 tauri-plugin-dialog.workspace = true
-tokio-util.workspace = true
 tokio.workspace = true
+tokio-util.workspace = true
 
 [build-dependencies]
 tauri-build.workspace = true

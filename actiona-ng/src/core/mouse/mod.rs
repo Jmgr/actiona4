@@ -102,11 +102,11 @@ impl From<Button> for enigo::Button {
         use Button::*;
 
         match value {
-            Left => enigo::Button::Left,
-            Middle => enigo::Button::Middle,
-            Right => enigo::Button::Right,
-            Back => enigo::Button::Back,
-            Forward => enigo::Button::Forward,
+            Left => Self::Left,
+            Middle => Self::Middle,
+            Right => Self::Right,
+            Back => Self::Back,
+            Forward => Self::Forward,
         }
     }
 }
@@ -123,8 +123,8 @@ impl From<Axis> for enigo::Axis {
         use Axis::*;
 
         match value {
-            Horizontal => enigo::Axis::Horizontal,
-            Vertical => enigo::Axis::Vertical,
+            Horizontal => Self::Horizontal,
+            Vertical => Self::Vertical,
         }
     }
 }
@@ -300,11 +300,11 @@ impl Mouse {
     pub fn set_position(&self, position: Point, coordinate: Coordinate) -> Result<()> {
         use enigo::Mouse;
 
-        Ok(self
-            .enigo
-            .lock()
-            .unwrap()
-            .move_mouse(position.x, position.y, coordinate)?)
+        Ok(self.enigo.lock().unwrap().move_mouse(
+            position.x.into(),
+            position.y.into(),
+            coordinate,
+        )?)
     }
 
     #[instrument(skip(self), err, ret)]
@@ -531,8 +531,8 @@ impl Mouse {
         let mut action = {
             if let Some(position) = &options.press.position {
                 self.enigo.lock().unwrap().move_mouse(
-                    position.inner().x,
-                    position.inner().y,
+                    position.inner().x.into(),
+                    position.inner().y.into(),
                     coordinate,
                 )?;
             }
@@ -659,8 +659,8 @@ impl Mouse {
 
         if let Some(position) = &options.position {
             self.enigo.lock().unwrap().move_mouse(
-                position.inner().x,
-                position.inner().y,
+                position.inner().x.into(),
+                position.inner().y.into(),
                 coordinate,
             )?;
         }

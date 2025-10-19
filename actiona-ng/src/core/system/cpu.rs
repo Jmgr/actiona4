@@ -11,7 +11,10 @@ use sysinfo::{CpuRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
-use crate::types::{DisplayFields, Frequency, Percent, display_list};
+use crate::types::{
+    Frequency, Percent,
+    display::{DisplayFields, display_list},
+};
 
 #[derive(Debug)]
 pub struct CpuCore {

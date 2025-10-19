@@ -24,6 +24,7 @@ impl JsPath {
 
     /// @rest string
     #[qjs(static)]
+    #[must_use]
     pub fn join(args: Rest<String>) -> String {
         let mut path = PathBuf::new();
         for part in args.iter() {
@@ -33,6 +34,7 @@ impl JsPath {
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn filename(path: String) -> String {
         Path::new(&path)
             .file_name()
@@ -41,11 +43,13 @@ impl JsPath {
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn basename(path: String) -> String {
         Self::filename(path)
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn parent(path: String) -> String {
         Path::new(&path)
             .parent()
@@ -54,21 +58,25 @@ impl JsPath {
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn dirname(path: String) -> String {
         Self::parent(path)
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn is_absolute(path: String) -> bool {
         Path::new(&path).is_absolute()
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn is_relative(path: String) -> bool {
         Path::new(&path).is_relative()
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn extension(path: String) -> String {
         Path::new(&path)
             .extension()
@@ -77,6 +85,7 @@ impl JsPath {
     }
 
     #[qjs(static)]
+    #[must_use]
     pub fn extname(path: String) -> String {
         Self::extension(path)
     }

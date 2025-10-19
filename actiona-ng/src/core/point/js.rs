@@ -69,7 +69,7 @@ impl JsPoint {
     /// @constructor
     ///
     /// @overload
-    /// Constructor with two number.
+    /// Constructor with two numbers.
     /// @param x: number // X coordinate
     /// @param y: number // Y coordinate
     ///
@@ -139,27 +139,27 @@ impl JsPoint {
     /// @skip
     #[qjs(get, rename = "x")]
     #[must_use]
-    pub const fn get_x(&self) -> i32 {
-        self.inner.x
+    pub fn get_x(&self) -> i32 {
+        self.inner.x.into()
     }
 
     /// @skip
     #[qjs(set, rename = "x")]
-    pub const fn set_x(&mut self, x: i32) {
-        self.inner.x = x;
+    pub fn set_x(&mut self, x: i32) {
+        self.inner.x = x.into();
     }
 
     /// @skip
     #[qjs(get, rename = "y")]
     #[must_use]
-    pub const fn get_y(&self) -> i32 {
-        self.inner.y
+    pub fn get_y(&self) -> i32 {
+        self.inner.y.into()
     }
 
     /// @skip
     #[qjs(set, rename = "y")]
-    pub const fn set_y(&mut self, y: i32) {
-        self.inner.y = y;
+    pub fn set_y(&mut self, y: i32) {
+        self.inner.y = y.into();
     }
 
     /// Length of this point.
@@ -193,7 +193,7 @@ impl JsPoint {
 
     /// Returns true if this Point is at the origin, (0, 0).
     #[must_use]
-    pub const fn is_origin(&self) -> bool {
+    pub fn is_origin(&self) -> bool {
         self.inner.is_origin()
     }
 
@@ -223,7 +223,6 @@ impl JsPoint {
     }
 
     /// Scales this point by a factor and returns a new Point.
-    #[must_use]
     pub fn scaled(&self, factor: f64) -> Result<Self> {
         let result = self.inner.scaled(factor).unwrap(); // TODO
         Ok(result.into())

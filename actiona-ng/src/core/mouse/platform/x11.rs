@@ -99,14 +99,12 @@ impl MouseImplTrait for MouseImpl {
                 break;
             };
 
-            let button_result = match conditions.button {
-                None => true,
-                Some(button) => button == event.button,
-            };
-            let direction_result = match conditions.direction {
-                None => true,
-                Some(direction) => direction == event.direction,
-            };
+            let button_result = conditions
+                .button
+                .is_none_or(|button| button == event.button);
+            let direction_result = conditions
+                .direction
+                .is_none_or(|direction| direction == event.direction);
 
             if button_result && direction_result {
                 return Ok(event);

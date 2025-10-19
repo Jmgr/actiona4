@@ -4,7 +4,7 @@ use derive_more::{Constructor, Display, From, Into};
 use eyre::{OptionExt, Report, Result, bail, eyre};
 
 /// Process ID
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Into, From, Display, Constructor, Hash)]
+#[derive(Clone, Constructor, Copy, Debug, Display, Eq, From, Hash, Into, PartialEq)]
 #[repr(transparent)]
 pub struct Pid(NonZeroU32);
 
@@ -30,8 +30,6 @@ impl TryFrom<i32> for Pid {
         value.try_into()
     }
 }
-
-// #[allow(clippy::as_conversions, reason = "range checked via clamp")]
 
 impl TryFrom<NonZeroI32> for Pid {
     type Error = Report;

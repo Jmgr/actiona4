@@ -262,14 +262,14 @@ impl MultiTest {
     }
 }
 
-#[derive(Clone, Debug, Constructor)]
+#[derive(Clone, Constructor, Debug)]
 pub struct MouseButtonEvent {
     pub button: Button,
     pub direction: Direction,
     pub injected: bool,
 }
 
-#[derive(Clone, Debug, Default, Constructor)]
+#[derive(Clone, Constructor, Debug, Default)]
 pub struct MouseMoveEvent {
     pub position: Point,
     pub injected: bool,

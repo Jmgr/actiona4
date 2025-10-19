@@ -11,7 +11,10 @@ use itertools::Itertools;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
-use crate::types::{ByteCount, DisplayFields, display_list, display_map};
+use crate::types::{
+    ByteCount,
+    display::{DisplayFields, display_list, display_map},
+};
 
 #[derive(Debug)]
 pub struct Subnet {

@@ -10,7 +10,7 @@ use crate::{
         cpu::Cpu, hardware::Hardware, memory::Memory, network::Network, os::Os,
         processes::Processes, storage::Storage,
     },
-    types::DisplayFields,
+    types::display::DisplayFields,
 };
 
 pub mod cpu;

@@ -266,13 +266,10 @@ impl Image {
         // Draw rectangles around the filtered matches
         let mut result = self.clone();
         for (pt, score) in &filtered_matches {
-            let rect = Rect::new(
-                point(pt.x, pt.y),
-                size(template.cols() as u32, template.rows() as u32),
-            );
+            let rect = Rect::new(point(pt.x, pt.y), size(template.cols(), template.rows()));
             draw_hollow_rect_mut(
                 &mut result.0,
-                rect.into(),
+                rect.try_into()?,
                 Color::new(255, 0, 0, 255).into(),
             );
             println!(

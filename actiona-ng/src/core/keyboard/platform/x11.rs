@@ -12,7 +12,7 @@ pub struct KeyboardImpl {
 }
 
 impl KeyboardImpl {
-    pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
+    pub const fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self { _runtime: runtime })
     }
 }

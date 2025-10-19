@@ -1,12 +1,7 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::{fmt::Debug, sync::Arc};
 
 use derive_more::Constructor;
-use eyre::{Result, bail, eyre};
-use itertools::Itertools;
-use spin_on::spin_on;
+use eyre::Result;
 use tauri_plugin_dialog::{
     DialogExt, MessageDialogButtons, MessageDialogKind, MessageDialogResult,
 };
@@ -16,7 +11,7 @@ use crate::runtime::Runtime;
 
 pub mod js;
 
-#[derive(Debug, Constructor)]
+#[derive(Constructor, Debug)]
 pub struct Ui {
     //compiler: Arc<Mutex<Compiler>>,
     runtime: Arc<Runtime>,

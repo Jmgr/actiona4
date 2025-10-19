@@ -45,13 +45,13 @@ impl<'js> FromParam<'js> for JsSizeParam {
     }
 }
 
-/// A 2D Point.
+/// A size.
 ///
-/// @prop x: number // X coordinate
-/// @prop height: number // height coordinate
+/// @prop width: number // width
+/// @prop height: number // height
 ///
 /// ```js
-/// let p = new Point(1, 2);
+/// let p = new Size(1, 2);
 /// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Size")]
@@ -68,28 +68,28 @@ impl JsSize {
     /// @constructor
     ///
     /// @overload
-    /// Constructor with two number.
-    /// @param x: number // X coordinate
-    /// @param height: number // height coordinate
+    /// Constructor with two numbers.
+    /// @param width: number // width
+    /// @param height: number // height
     ///
     /// @overload
     /// Constructor with an object.
-    /// @param o: {x: number, height: number} // Object containing the x and height coordinates
+    /// @param o: {width: number, height: number} // Object containing the width and height
     ///
     /// @overload
-    /// Constructor with another Point.
-    /// @param p: Point // Other point
+    /// Constructor with another Size.
+    /// @param p: Size // Other size
     #[qjs(constructor)]
     pub fn new<'js>(ctx: Ctx<'js>, args: Rest<Value<'js>>) -> Result<Self> {
-        let (point, _) = Self::from_args(&ctx, &args.0)?;
-        Ok(point)
+        let (size, _) = Self::from_args(&ctx, &args.0)?;
+        Ok(size)
     }
 
-    /// Constructs a Point from an argument slice.
+    /// Constructs a Size from an argument slice.
     /// Accepted forms:
-    /// new Point(other_point)
-    /// new Point({x: 0, height: 1})
-    /// new Point(0, 1)
+    /// new Size(other_size)
+    /// new Size({width: 0, height: 1})
+    /// new Size(0, 1)
     ///
     /// @skip
     #[qjs(skip)]
@@ -117,9 +117,9 @@ impl JsSize {
             return Ok((size.into(), rest));
         }
 
-        // If it's a Point then get a copy
-        if let Ok(other_point) = first_arg.get::<JsSize>() {
-            return Ok((other_point, rest));
+        // If it's a Size then get a copy
+        if let Ok(other_size) = first_arg.get::<JsSize>() {
+            return Ok((other_size, rest));
         }
 
         // If it's an object, then get its width and height properties
@@ -132,104 +132,75 @@ impl JsSize {
             return Ok((size.into(), rest));
         }
 
-        Err(Exception::throw_message(ctx, "Invalid Point argument"))
+        Err(Exception::throw_message(ctx, "Invalid Size argument"))
     }
 
     /// @skip
     #[qjs(get, rename = "width")]
     #[must_use]
-    pub const fn get_width(&self) -> u32 {
-        self.inner.width
+    pub fn get_width(&self) -> u32 {
+        self.inner.width.into()
     }
 
     /// @skip
     #[qjs(set, rename = "width")]
-    pub const fn set_width(&mut self, width: u32) {
-        self.inner.width = width;
+    pub fn set_width(&mut self, width: u32) {
+        self.inner.width = width.into();
     }
 
     /// @skip
     #[qjs(get, rename = "height")]
     #[must_use]
-    pub const fn get_height(&self) -> u32 {
-        self.inner.height
+    pub fn get_height(&self) -> u32 {
+        self.inner.height.into()
     }
 
     /// @skip
     #[qjs(set, rename = "height")]
-    pub const fn set_height(&mut self, height: u32) {
-        self.inner.height = height;
+    pub fn set_height(&mut self, height: u32) {
+        self.inner.height = height.into();
     }
 
-    /// Length of this point.
-    #[must_use]
-    pub fn length(&self) -> f64 {
-        self.inner.length()
-    }
-
-    /// Normalize the point.
-    #[must_use]
-    pub fn normalized(self) -> Self {
-        self.inner.normalized().into()
-    }
-
-    /// Calculates the distance between this point and another.
-    #[must_use]
-    pub fn distance_to(&self, other: Self) -> f64 {
-        self.inner.distance_to(other.into())
-    }
-
-    /// Returns a JSON representation of this Point.
+    /// Returns a JSON representation of this Size.
     #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(&self.inner).unwrap()
     }
 
-    /// Returns true if this Point is at the origin, (0, 0).
-    #[must_use]
-    pub const fn is_origin(&self) -> bool {
-        self.inner.is_origin()
-    }
-
-    /// Computes the distance between two points.
-    #[qjs(static)]
-    #[must_use]
-    pub fn distance(a: Self, b: Self) -> f64 {
-        a.distance_to(b)
-    }
-
-    /// Returns true if a Point equals another.
+    /// Returns true if a Size equals another.
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
-    /// Adds two points and returns a new Point.
+    /// Adds two sizes and returns a new Size.
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
         (self.inner + other.inner).into()
     }
 
-    /// Subtracts two points and returns a new Point.
+    /// Subtracts two sizes and returns a new Size.
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
         (self.inner - other.inner).into()
     }
 
-    /// Scales this point by a factor and returns a new Point.
-    #[must_use]
-    pub fn scale(&self, factor: f64) -> Self {
-        self.inner.scaled(factor).into()
+    /// Scales this size by a factor and returns a new Size.
+    pub fn scale<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
+        self.inner
+            .scaled(factor)
+            .map(|value| value.into())
+            .into_js(&ctx)
     }
 
-    /// Returns a string representation of this Point.
+    /// Returns a string representation of this Size.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
         format!("({}, {})", self.inner.width, self.inner.height)
     }
 
-    /// Clones this Point.
+    /// Clones this Size.
     #[qjs(rename = "clone")]
     #[must_use]
     pub const fn clone_js(&self) -> Self {
@@ -260,7 +231,6 @@ impl From<super::Size> for JsSize {
     }
 }
 
-// TODO: update, replace Point with Size
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
@@ -272,9 +242,9 @@ mod tests {
         script_engine
             .eval::<()>(
                 r#"
-                let p1 = new Point({x: 1, height: 2});
-                let p2 = new Point(2, 3);
-                let p3 = new Point(p2);
+                let s1 = new Size({width: 1, height: 2});
+                let s2 = new Size(2, 3);
+                let s3 = new Size(s2);
             "#,
             )
             .await
@@ -282,40 +252,40 @@ mod tests {
     }
 
     #[test]
-    fn test_point_equals() {
+    fn test_size_equals() {
         Runtime::test_with_script_engine(async |script_engine| {
             setup(script_engine.clone()).await;
 
-            let result = script_engine.eval::<bool>("p1 == p2").await.unwrap();
+            let result = script_engine.eval::<bool>("s1 == s2").await.unwrap();
             assert!(!result);
 
-            let result = script_engine.eval::<bool>("p1 != p2").await.unwrap();
+            let result = script_engine.eval::<bool>("s1 != s2").await.unwrap();
             assert!(result);
 
-            let result = script_engine.eval::<bool>("p2.equals(p3)").await.unwrap();
+            let result = script_engine.eval::<bool>("s2.equals(s3)").await.unwrap();
             assert!(result);
         });
     }
 
     #[test]
-    fn test_point_attributes() {
+    fn test_size_attributes() {
         Runtime::test_with_script_engine(async |script_engine| {
             setup(script_engine.clone()).await;
 
             script_engine
                 .eval::<()>(
                     r#"
-                p1.x = 42;
-                p1.height = 43;
+                s1.width = 42;
+                s1.height = 43;
             "#,
                 )
                 .await
                 .unwrap();
 
-            let result = script_engine.eval::<i64>("p1.x").await.unwrap();
+            let result = script_engine.eval::<i64>("s1.width").await.unwrap();
             assert_eq!(result, 42);
 
-            let result = script_engine.eval::<i64>("p1.height").await.unwrap();
+            let result = script_engine.eval::<i64>("s1.height").await.unwrap();
             assert_eq!(result, 43);
         });
     }
@@ -326,38 +296,19 @@ mod tests {
             setup(script_engine.clone()).await;
 
             let result = script_engine
-                .eval::<JsSize>("p1.add(new Point(1, 3))")
+                .eval::<JsSize>("s1.add(new Size(1, 3))")
                 .await
                 .unwrap();
             assert_eq!(result, size(2, 5).into());
 
             let result = script_engine
-                .eval::<JsSize>("p1.subtract(new Point(1, 3))")
+                .eval::<JsSize>("s1.subtract(new Size(1, 3))")
                 .await
                 .unwrap();
-            assert_eq!(result, size(0, 1).into());
+            assert_eq!(result, size(0, 0).into());
 
-            let result = script_engine.eval::<JsSize>("p1.scale(2)").await.unwrap();
+            let result = script_engine.eval::<JsSize>("s1.scale(2)").await.unwrap();
             assert_eq!(result, size(2, 4).into());
-        });
-    }
-
-    #[test]
-    fn test_distance() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            setup(script_engine.clone()).await;
-
-            let result = script_engine
-                .eval::<f32>("p1.distanceTo(new Point(4, 6))")
-                .await
-                .unwrap();
-            assert_eq!(result, 5.);
-
-            let result = script_engine
-                .eval::<f32>("Point.distance(p1, new Point(4, 6))")
-                .await
-                .unwrap();
-            assert_eq!(result, 5.);
         });
     }
 
@@ -366,24 +317,8 @@ mod tests {
         Runtime::test_with_script_engine(async |script_engine| {
             setup(script_engine.clone()).await;
 
-            let result = script_engine.eval::<String>("p1.toJson()").await.unwrap();
-            assert_eq!(result, r#"{"x":1,"height":2}"#);
-        });
-    }
-
-    #[test]
-    fn test_origin() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            setup(script_engine.clone()).await;
-
-            let result = script_engine.eval::<bool>("p1.isOrigin()").await.unwrap();
-            assert!(!result);
-
-            let result = script_engine
-                .eval::<bool>("new Point(0, 0).isOrigin()")
-                .await
-                .unwrap();
-            assert!(result);
+            let result = script_engine.eval::<String>("s1.toJson()").await.unwrap();
+            assert_eq!(result, r#"{"width":1,"height":2}"#);
         });
     }
 
@@ -393,27 +328,15 @@ mod tests {
             setup(script_engine.clone()).await;
 
             script_engine
-                .eval::<()>("let pc = p1.clone()")
+                .eval::<()>("let sc = s1.clone()")
                 .await
                 .unwrap();
 
-            let result = script_engine.eval::<bool>("pc.equals(p1)").await.unwrap();
+            let result = script_engine.eval::<bool>("sc.equals(s1)").await.unwrap();
             assert!(result);
 
-            let result = script_engine.eval::<bool>("pc == p1").await.unwrap();
+            let result = script_engine.eval::<bool>("sc == s1").await.unwrap();
             assert!(!result);
-        });
-    }
-
-    #[test]
-    fn test_random() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            setup(script_engine.clone()).await;
-
-            script_engine
-                .eval::<JsSize>("Point.random()")
-                .await
-                .unwrap();
         });
     }
 }

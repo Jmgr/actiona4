@@ -5,7 +5,6 @@
 use std::{
     collections::HashMap,
     ffi::c_void,
-    num::NonZero,
     os::fd::{AsFd, OwnedFd},
     ptr::NonNull,
     sync::Arc,
@@ -35,6 +34,7 @@ use crate::{
         events::{DisplayInfo, DisplayInfoVec, Guard},
         platform::x11::events::displays::ScreenChangeTopic,
     },
+    types::su32::su32,
 };
 
 #[derive(Debug)]
@@ -79,7 +79,7 @@ impl Display {
     ) -> Result<Self> {
         const BYTES_PER_PIXEL: usize = 4;
         let rect = display_info.rect;
-        let image_size = (rect.size.width as usize) * (rect.size.height as usize) * BYTES_PER_PIXEL;
+        let image_size = rect.size.width * rect.size.height * su32(BYTES_PER_PIXEL);
 
         let shm_data = if runtime.platform().has_shm() {
             let shm_segment_id = x11_connection.async_connection().generate_id().await?;
@@ -89,14 +89,14 @@ impl Display {
                 .create("x11_screenshot")?;
 
             let memfd_file = memfd.as_file();
-            memfd_file.set_len(image_size as u64)?;
+            memfd_file.set_len(image_size.into())?;
 
             memfd.add_seals(&[FileSeal::SealGrow, FileSeal::SealShrink, FileSeal::SealSeal])?;
 
             let mapped_ptr = unsafe {
                 mmap(
                     None,
-                    NonZero::new(image_size).unwrap(),
+                    image_size.try_into()?,
                     ProtFlags::PROT_READ | ProtFlags::PROT_WRITE,
                     MapFlags::MAP_SHARED,
                     memfd_file.as_fd(),
@@ -107,7 +107,7 @@ impl Display {
             let result = ShmData {
                 shm_segment_id,
                 mapped_ptr,
-                size: image_size,
+                size: image_size.try_into()?,
                 x11_connection: x11_connection.clone(),
             };
 
@@ -140,10 +140,10 @@ impl Display {
             .async_connection()
             .shm_get_image(
                 root,
-                self.rect.origin.x as i16,
-                self.rect.origin.y as i16,
-                self.rect.size.width as u16,
-                self.rect.size.height as u16,
+                self.rect.origin.x.into(),
+                self.rect.origin.y.into(),
+                self.rect.size.width.into(), // TODO: document that the max image size is u16::MAX
+                self.rect.size.height.into(),
                 u32::MAX, // plane mask (capture all planes)
                 ImageFormat::Z_PIXMAP.into(),
                 shm_data.shm_segment_id,
@@ -160,8 +160,8 @@ impl Display {
 
         Ok(image_from_bgr_data(
             pixel_data,
-            self.rect.size.width,
-            self.rect.size.height,
+            self.rect.size.width.into(),
+            self.rect.size.height.into(),
         ))
     }
 
@@ -315,10 +315,10 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
         .get_image(
             ImageFormat::Z_PIXMAP,
             root,
-            rect.origin.x as i16,
-            rect.origin.y as i16,
-            rect.size.width as u16,
-            rect.size.height as u16,
+            rect.origin.x.into(),
+            rect.origin.y.into(),
+            rect.size.width.into(),
+            rect.size.height.into(),
             u32::MAX,
         )
         .await?
@@ -327,8 +327,8 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
 
     Ok(image_from_bgr_data(
         &reply.data,
-        rect.size.width,
-        rect.size.height,
+        rect.size.width.into(),
+        rect.size.height.into(),
     ))
 }
 

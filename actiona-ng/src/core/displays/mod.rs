@@ -4,12 +4,17 @@ use std::{
 };
 
 use display_info::error::DIError;
+use eyre::Report;
 use thiserror::Error;
 
-use crate::runtime::{
-    Runtime,
-    events::{DisplayInfo, DisplayInfoVec},
-    shared_rng::SharedRng,
+use crate::{
+    core::point::try_point,
+    runtime::{
+        Runtime,
+        events::{DisplayInfo, DisplayInfoVec},
+        shared_rng::SharedRng,
+    },
+    types::su32::Su32,
 };
 
 pub(crate) mod platform;
@@ -19,7 +24,7 @@ use platform::win::DisplaysImpl;
 #[cfg(unix)]
 use platform::x11::DisplaysImpl;
 
-use super::point::{Point, point};
+use super::point::Point;
 
 pub mod js;
 
@@ -39,6 +44,9 @@ pub enum DisplaysError {
 
     #[error(transparent)]
     TryFromIntError(#[from] TryFromIntError),
+
+    #[error(transparent)]
+    EyreError(#[from] Report),
 }
 
 pub type Result<T> = std::result::Result<T, DisplaysError>;
@@ -85,22 +93,22 @@ impl Displays {
     pub fn random_point(&self, rng: SharedRng) -> Result<Point> {
         let displays_info = self.displays_info.lock().unwrap();
         // Total area across all displays (skip zero-area just in case)
-        let mut total_area: u64 = 0;
+        let mut total_area = Su32::ZERO;
         for display_info in &displays_info.0 {
             let rect = display_info.rect;
-            total_area += u64::from(rect.size.width) * u64::from(rect.size.height);
+            total_area += rect.size.width * rect.size.height;
         }
         if total_area == 0 {
             return Err(DisplaysError::NoDisplays);
         }
 
         // Pick a display with probability proportional to its area
-        let pick = rng.random_range(0..total_area); // [0, total_area)
-        let mut acc = 0;
+        let pick = Su32::from(rng.random_range(0..total_area.into_inner())); // [0, total_area)
+        let mut acc = Su32::ZERO;
         let mut chosen = None;
         for display_info in &displays_info.0 {
             let rect = display_info.rect;
-            let area = u64::from(rect.size.width) * u64::from(rect.size.height);
+            let area = rect.size.width * rect.size.height;
             if area == 0 {
                 continue;
             }
@@ -119,14 +127,10 @@ impl Displays {
         let x_end = i64::from(rect.origin.x) + i64::from(rect.size.width);
         let y_end = i64::from(rect.origin.y) + i64::from(rect.size.height);
 
-        let x = rng
-            .random_range(i64::from(rect.origin.x)..x_end)
-            .try_into()?;
-        let y = rng
-            .random_range(i64::from(rect.origin.y)..y_end)
-            .try_into()?;
+        let x = rng.random_range(i64::from(rect.origin.x)..x_end);
+        let y = rng.random_range(i64::from(rect.origin.y)..y_end);
 
-        Ok(point(x, y))
+        Ok(try_point(x, y)?)
     }
 
     pub fn primary_display(&self) -> Result<DisplayInfo> {

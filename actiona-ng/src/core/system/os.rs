@@ -10,8 +10,8 @@ use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
 use crate::types::{
-    DisplayFields, DurationUnit, OptionalSystemString, SystemTimeUnit, UidUnit, display_list,
-    display_map,
+    DurationUnit, OptionalSystemString, SystemTimeUnit, UidUnit,
+    display::{DisplayFields, display_list, display_map},
 };
 
 #[derive(Debug)]

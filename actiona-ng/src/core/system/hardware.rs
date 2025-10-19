@@ -9,7 +9,10 @@ use sysinfo::Product;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
-use crate::types::{DisplayFields, OptionalDegreesCelsius, OptionalSystemString, display_list};
+use crate::types::{
+    OptionalDegreesCelsius, OptionalSystemString,
+    display::{DisplayFields, display_list},
+};
 
 #[derive(Debug)]
 pub struct Motherboard {

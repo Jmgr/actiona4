@@ -478,7 +478,7 @@ mod tests {
 
     impl ValueClass<'_> for TestGenerator {}
 
-    #[derive(JsLifetime, Trace, Default)]
+    #[derive(Default, JsLifetime, Trace)]
     #[rquickjs::class]
     pub struct TestSingletonStruct {
         string: String,

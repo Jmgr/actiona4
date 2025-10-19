@@ -8,7 +8,7 @@ use sysinfo::{MemoryRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
-use crate::types::{ByteCount, DisplayFields};
+use crate::types::{ByteCount, display::DisplayFields};
 
 #[derive(Debug)]
 pub struct MemoryUsage {

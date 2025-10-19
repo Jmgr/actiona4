@@ -17,9 +17,11 @@ use super::platform::linux::ProcessSignal;
 use crate::{
     core::system::storage::DiskUsage,
     types::{
-        ByteCount, DisplayFields, DurationUnit, OptionalPath, OptionalPid, OptionalSystemString,
-        OptionalTaskList, OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit,
-        OsStringList, Percent, SystemTimeUnit, display_map, pid::Pid,
+        ByteCount, DurationUnit, OptionalPath, OptionalPid, OptionalSystemString, OptionalTaskList,
+        OptionalThreadKind, OptionalU32, OptionalUSize, OptionalUidUnit, OsStringList, Percent,
+        SystemTimeUnit,
+        display::{DisplayFields, display_map},
+        pid::Pid,
     },
 };
 

@@ -10,7 +10,7 @@ use crate::{
     runtime::events::{DisplayInfoVec, LatestOnlySignals, Topic},
 };
 
-#[derive(Debug, Constructor)]
+#[derive(Constructor, Debug)]
 pub struct ScreenChangeTopic {
     x11_connection: Arc<X11Connection>,
 }

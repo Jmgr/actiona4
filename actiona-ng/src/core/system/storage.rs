@@ -10,7 +10,10 @@ use sysinfo::DiskKind;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
-use crate::types::{ByteCount, DisplayFields, OptionalSystemString, display_list};
+use crate::types::{
+    ByteCount, OptionalSystemString,
+    display::{DisplayFields, display_list},
+};
 
 #[derive(Debug)]
 pub struct IoStats {
