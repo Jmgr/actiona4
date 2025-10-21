@@ -141,7 +141,10 @@ mod tests {
     use rquickjs::{Ctx, JsLifetime, class::Trace};
 
     use super::{JsNameParam, JsWildcard};
-    use crate::{core::js::classes::SingletonClass, runtime::Runtime};
+    use crate::{
+        core::js::classes::{SingletonClass, register_singleton_class},
+        runtime::Runtime,
+    };
 
     #[derive(Clone, Default, JsLifetime, Trace)]
     #[rquickjs::class(rename = "Test")]
@@ -177,7 +180,7 @@ mod tests {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .with(|ctx| {
-                    JsTest::register(&ctx, JsTest::default()).unwrap();
+                    register_singleton_class::<JsTest>(&ctx, JsTest::default()).unwrap();
                 })
                 .await;
 

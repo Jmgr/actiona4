@@ -105,7 +105,7 @@ impl JsWebOptions {
                         ))
                     })
                     .collect::<std::result::Result<HeaderMap<_>, CommonError>>()
-                    .into_js(ctx)?,
+                    .into_js_result(ctx)?,
             )
         } else {
             None
@@ -250,7 +250,7 @@ impl JsWeb {
                 let result = local_inner
                     .download(&url, token, Some(local_options))
                     .await
-                    .into_js(&ctx)?;
+                    .into_js_result(&ctx)?;
                 Ok(result)
             },
         )
@@ -278,7 +278,7 @@ impl JsWeb {
                 local_inner
                     .download_text(&url, token, Some(local_options))
                     .await
-                    .into_js(&ctx)
+                    .into_js_result(&ctx)
             },
         )
     }
@@ -306,7 +306,7 @@ impl JsWeb {
                     .download_image(&url, token, Some(local_options))
                     .await
                     .map(JsImage::from)
-                    .into_js(&ctx)
+                    .into_js_result(&ctx)
             },
         )
     }
@@ -335,7 +335,7 @@ impl JsWeb {
                 local_inner
                     .download_file(&url, token, directory.as_deref(), Some(local_options))
                     .await
-                    .into_js(&ctx)
+                    .into_js_result(&ctx)
             },
         )
     }

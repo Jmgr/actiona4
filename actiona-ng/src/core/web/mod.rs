@@ -9,7 +9,6 @@ use std::{
 };
 
 use bytes::Bytes;
-use convert_case::{Case, Casing};
 use derive_more::Display;
 use encoding_rs::{Encoding, UTF_8};
 use eyre::Result;

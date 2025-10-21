@@ -31,14 +31,14 @@ pub trait IntoJSError: ToString {
 }
 
 pub trait IntoJsResult<T> {
-    fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T>;
+    fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T>;
 }
 
 impl<T, E> IntoJsResult<T> for std::result::Result<T, E>
 where
     E: IntoJSError,
 {
-    fn into_js(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
+    fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
         self.map_err(|err| err.into_js(ctx))
     }
 }
@@ -106,3 +106,9 @@ where
 // TODO: check all token cancellation return a Cancelled error
 // TODO: check all unwraps
 // TODO: check if we can use cancel_on in a few places where select! is used
+/*
+Note that the top-left hand corner of the desktop is not necessarily the same as the screen.
+If the user uses a desktop with multiple monitors, the top-left hand corner of the desktop is
+the top-left hand corner of the main monitor on Windows and macOS or the top-left of the
+leftmost monitor on X11.
+*/

@@ -18,13 +18,33 @@ pub fn expose_enum(input: TokenStream) -> TokenStream {
         }
     };
 
-    // Generate code to set each variant on a JS object
+    // Enforce unit variants only:
+    for variant in variants {
+        if !matches!(variant.fields, syn::Fields::Unit) {
+            return syn::Error::new_spanned(
+                &variant.ident,
+                "ExposeEnum only supports unit variants",
+            )
+            .to_compile_error()
+            .into();
+        }
+    }
+
+    // Precompute the JS names at macro time
     let set_variants = variants.iter().map(|v| {
-        let variant_name = &v.ident;
+        let variant_ident = &v.ident;
+        let js_key = v.ident.to_string().to_case(Case::Constant); // e.g. "MY_VARIANT"
         quote! {
-            object.set(stringify!(#variant_name).to_case(Case::Constant), #name::#variant_name)?;
+            object.set(#js_key, #name::#variant_ident)?;
         }
     });
+
+    // Also precompute the exported object name without the "Js" prefix
+    let type_name = name.to_string();
+    let export_name = type_name
+        .strip_prefix("Js")
+        .unwrap_or(&type_name)
+        .to_string();
 
     // Generate the full impl
     let expanded = quote! {
@@ -34,10 +54,7 @@ pub fn expose_enum(input: TokenStream) -> TokenStream {
                 let object = rquickjs::Object::new(ctx.clone())?;
                 #(#set_variants)*
 
-                // Remove "Js" prefix if present
-                let name = stringify!(#name).strip_prefix("Js").unwrap_or(&stringify!(#name));
-
-                ctx.globals().set(name, object)?;
+                ctx.globals().set(#export_name, object)?;
                 Ok(())
             }
         }
@@ -77,7 +94,10 @@ pub fn derive_from_js_object(input: TokenStream) -> TokenStream {
 
     let build_fields = fields.iter().map(|f| {
         let name = &f.ident; // e.g. "create_new"
-        let name_str = name.as_ref().unwrap().to_string().to_case(Case::Camel); // "createNew"
+        let name_str = convert_case::Casing::to_case(
+            &name.as_ref().unwrap().to_string(),
+            convert_case::Case::Camel,
+        ); // "createNew"
         quote! {
             if let Ok(#name) = object.get(#name_str) {
                 result.#name = #name;

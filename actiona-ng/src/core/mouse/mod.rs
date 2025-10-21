@@ -4,7 +4,6 @@ use std::{
     time::{Duration, Instant},
 };
 
-use convert_case::{Case, Casing};
 use derive_more::Display;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;

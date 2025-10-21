@@ -23,30 +23,31 @@ pub trait SingletonClass<'js>: JsClass<'js> + IntoJs<'js> {
         let _ = object; // Silence unused variable warning
         Ok(())
     }
+}
 
-    /// Register this singleton instance in the JavaScript context.
-    ///
-    /// This creates a global variable with the snake_case version of the class name
-    /// and assigns the instance to it.
-    fn register(ctx: &Ctx<'js>, instance: Self) -> rquickjs::Result<()>
-    where
-        Self: Sized,
-    {
-        Self::register_dependencies(ctx)?;
+/// Register this singleton instance in the JavaScript context.
+///
+/// This creates a global variable with the snake_case version of the class name
+/// and assigns the instance to it.
+/// @skip
+pub fn register_singleton_class<'js, T: SingletonClass<'js> + JsClass<'js> + Sized>(
+    ctx: &Ctx<'js>,
+    instance: T,
+) -> rquickjs::Result<()> {
+    T::register_dependencies(ctx)?;
 
-        // Remove "Js" prefix if present
-        let name = Self::NAME.strip_prefix("Js").unwrap_or(Self::NAME);
+    // Remove "Js" prefix if present
+    let name = T::NAME.strip_prefix("Js").unwrap_or(T::NAME);
 
-        let name = name.to_case(Case::Camel);
+    let name = name.to_case(Case::Camel);
 
-        ctx.globals().prop(&name, instance)?;
+    ctx.globals().prop(&name, instance)?;
 
-        let object = ctx.globals().get::<_, Object>(name)?;
+    let object = ctx.globals().get::<_, Object>(name)?;
 
-        Self::extra_registration(&object)?;
+    T::extra_registration(&object)?;
 
-        Ok(())
-    }
+    Ok(())
 }
 
 /// Represents a JavaScript class that can be instantiated multiple times.
@@ -68,32 +69,35 @@ pub trait ValueClass<'js>: JsClass<'js> {
         let _ = object; // Silence unused variable warning
         Ok(())
     }
+}
 
-    /// Register this class in the JavaScript context.
-    ///
-    /// This defines the class in the global scope, making it available for instantiation.
-    fn register(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        // Remove "Js" prefix if present
-        let name = Self::NAME.strip_prefix("Js").unwrap_or(Self::NAME);
+/// Register this class in the JavaScript context.
+///
+/// This defines the class in the global scope, making it available for instantiation.
+/// @skip
+pub fn register_value_class<'js, T: ValueClass<'js> + JsClass<'js>>(
+    ctx: &Ctx<'js>,
+) -> rquickjs::Result<()> {
+    // Remove "Js" prefix if present
+    let name = T::NAME.strip_prefix("Js").unwrap_or(T::NAME);
 
-        move || -> rquickjs::Result<()> {
-            Self::register_dependencies(ctx)
-                .wrap_err("register dependencies")
-                .into_js(ctx)?;
+    move || -> rquickjs::Result<()> {
+        T::register_dependencies(ctx)
+            .wrap_err("register dependencies")
+            .into_js_result(ctx)?;
 
-            Class::<Self>::define(&ctx.globals())
-                .wrap_err("define constructor")
-                .into_js(ctx)?;
+        Class::<T>::define(&ctx.globals())
+            .wrap_err("define constructor")
+            .into_js_result(ctx)?;
 
-            let object = ctx.globals().get::<_, Object>(name)?;
+        let object = ctx.globals().get::<_, Object>(name)?;
 
-            Self::extra_registration(&object)
-                .wrap_err("extra registration")
-                .into_js(ctx)?;
+        T::extra_registration(&object)
+            .wrap_err("extra registration")
+            .into_js_result(ctx)?;
 
-            Ok(())
-        }()
-        .wrap_err_with(|| format!("registering {name} (missing constructor?)"))
-        .into_js(ctx)
-    }
+        Ok(())
+    }()
+    .wrap_err_with(|| format!("registering {name} (missing constructor?)"))
+    .into_js_result(ctx)
 }

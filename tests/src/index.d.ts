@@ -394,6 +394,22 @@ declare enum Tween {
      */
     SINE_OUT,
 }
+declare enum MessageBoxIcon {
+    INFO,
+
+    WARNING,
+
+    ERROR,
+}
+declare enum MessageBoxResult {
+    YES,
+
+    NO,
+
+    OK,
+
+    CANCEL,
+}
 declare enum Method {
     GET,
 
@@ -1532,8 +1548,8 @@ declare class Image {
      * TODO
      */
     findImage(_image: Image, options?: FindImageOptions): void;
-    height(): number;
     width(): number;
+    height(): number;
 }
 /**
  * A Color.
@@ -1828,7 +1844,7 @@ declare class Point {
      */
     y: number;
     /**
-     * Constructor with two number.
+     * Constructor with two numbers.
      */
     constructor(x: number, y: number);
     /**
@@ -2397,202 +2413,100 @@ declare class Path {
     static setExtension(path: string, extension: string): string;
 }
 /**
- * A 2D Point.
+ * A size.
  * 
  * 
  * ```js
- * let p = new Point(1, 2);
+ * let p = new Size(1, 2);
  * ```
  */
 declare class Size {
     /**
-     * X coordinate
+     * width
      */
-    x: number;
+    width: number;
     /**
-     * height coordinate
+     * height
      */
     height: number;
     /**
-     * Constructor with two number.
+     * Constructor with two numbers.
      */
-    constructor(x: number, height: number);
+    constructor(width: number, height: number);
     /**
      * Constructor with an object.
      */
-    constructor(o: {x: number, height: number});
+    constructor(o: {width: number, height: number});
     /**
-     * Constructor with another Point.
+     * Constructor with another Size.
      */
-    constructor(p: Point);
+    constructor(p: Size);
     /**
-     * Length of this point.
-     */
-    length(): number;
-    /**
-     * Normalize the point.
-     */
-    static normalized(self: Size): Size;
-    /**
-     * Normalize the point.
-     */
-    static normalized(x: number, height: number): Size;
-    /**
-     * Normalize the point.
-     */
-    static normalized(o: {x: number, height: number}): Size;
-    /**
-     * Normalize the point.
-     */
-    static normalized(p: Point): Size;
-    /**
-     * Calculates the distance between this point and another.
-     */
-    distanceTo(other: Size): number;
-    /**
-     * Calculates the distance between this point and another.
-     */
-    distanceTo(x: number, height: number): number;
-    /**
-     * Calculates the distance between this point and another.
-     */
-    distanceTo(o: {x: number, height: number}): number;
-    /**
-     * Calculates the distance between this point and another.
-     */
-    distanceTo(p: Point): number;
-    /**
-     * Returns a JSON representation of this Point.
+     * Returns a JSON representation of this Size.
      */
     toJson(): string;
     /**
-     * Returns true if this Point is at the origin, (0, 0).
-     */
-    isOrigin(): boolean;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(a: Size, b: Size): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(a: Size, x: number, height: number): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(a: Size, o: {x: number, height: number}): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(a: Size, p: Point): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(x: number, height: number, b: Size): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(x1: number, height1: number, x2: number, height2: number): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(x: number, height: number, o: {x: number, height: number}): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(x: number, height: number, p: Point): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(o: {x: number, height: number}, b: Size): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(o: {x: number, height: number}, x: number, height: number): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(o1: {x: number, height: number}, o2: {x: number, height: number}): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(o: {x: number, height: number}, p: Point): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(p: Point, b: Size): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(p: Point, x: number, height: number): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(p: Point, o: {x: number, height: number}): number;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(p1: Point, p2: Point): number;
-    /**
-     * Returns true if a Point equals another.
+     * Returns true if a Size equals another.
      */
     equals(other: Size): boolean;
     /**
-     * Returns true if a Point equals another.
+     * Returns true if a Size equals another.
      */
-    equals(x: number, height: number): boolean;
+    equals(width: number, height: number): boolean;
     /**
-     * Returns true if a Point equals another.
+     * Returns true if a Size equals another.
      */
-    equals(o: {x: number, height: number}): boolean;
+    equals(o: {width: number, height: number}): boolean;
     /**
-     * Returns true if a Point equals another.
-     */
-    equals(p: Point): boolean;
-    /**
-     * Adds two points and returns a new Point.
+     * Adds two sizes and returns a new Size.
      */
     add(other: Size): Size;
     /**
-     * Adds two points and returns a new Point.
+     * Adds two sizes and returns a new Size.
      */
-    add(x: number, height: number): Size;
+    add(width: number, height: number): Size;
     /**
-     * Adds two points and returns a new Point.
+     * Adds two sizes and returns a new Size.
      */
-    add(o: {x: number, height: number}): Size;
+    add(o: {width: number, height: number}): Size;
     /**
-     * Adds two points and returns a new Point.
-     */
-    add(p: Point): Size;
-    /**
-     * Subtracts two points and returns a new Point.
+     * Subtracts two sizes and returns a new Size.
      */
     subtract(other: Size): Size;
     /**
-     * Subtracts two points and returns a new Point.
+     * Subtracts two sizes and returns a new Size.
      */
-    subtract(x: number, height: number): Size;
+    subtract(width: number, height: number): Size;
     /**
-     * Subtracts two points and returns a new Point.
+     * Subtracts two sizes and returns a new Size.
      */
-    subtract(o: {x: number, height: number}): Size;
+    subtract(o: {width: number, height: number}): Size;
     /**
-     * Subtracts two points and returns a new Point.
-     */
-    subtract(p: Point): Size;
-    /**
-     * Scales this point by a factor and returns a new Point.
+     * Scales this size by a factor and returns a new Size.
      */
     scale(factor: number): Size;
     /**
-     * Returns a string representation of this Point.
+     * Returns a string representation of this Size.
      */
     toString(): string;
     /**
-     * Clones this Point.
+     * Clones this Size.
      */
     clone(): Size;
+}
+declare class MessageBoxButtons {
+    private constructor();
+    static ok(): MessageBoxButtons;
+    static okCustom(ok_label: string): MessageBoxButtons;
+    static okCancel(): MessageBoxButtons;
+    static okCancelCustom(ok_label: string, cancel_label: string): MessageBoxButtons;
+    static yesNo(): MessageBoxButtons;
+    static yesNoCancel(): MessageBoxButtons;
+    static yesNoCancelCustom(yes_label: string, no_label: string, cancel_label: string): MessageBoxButtons;
+}
+declare class MessageBox {
+    private constructor();
+    static show(text: string, title: string, buttons?: MessageBoxButtons, icon?: MessageBoxIcon): Promise<MessageBoxResult>;
 }
 /**
  * Multipart form
@@ -2601,9 +2515,9 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
-    total(): number;
     current(): number;
     finished(): boolean;
+    total(): number;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;

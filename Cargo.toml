@@ -162,6 +162,8 @@ tracing-subscriber = { version = "0.3.20", features = [
 ] }
 tracing-test = "0.2.5"
 rstest = "0.26.1"
+askama = "0.14.0"
+bon = "3.8.1"
 
 # Build dependencies
 built = "0.8.0"
@@ -174,3 +176,6 @@ opt-level = "z"
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[profile.dev]
+lto = false

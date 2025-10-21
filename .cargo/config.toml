@@ -14,3 +14,6 @@ rustflags = ["-C", "target-cpu=x86-64-v2"]
 format = ["make", "format"]
 lint = ["make", "lint"]
 deps = ["make", "deps"]
+
+[build]
+rustc-wrapper = "sccache"

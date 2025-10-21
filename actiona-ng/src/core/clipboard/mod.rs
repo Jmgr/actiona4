@@ -3,7 +3,6 @@ use std::{borrow::Cow, fmt::Debug, num::TryFromIntError};
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
-use convert_case::{Case, Casing};
 use derive_more::Display;
 use eyre::Report;
 use image::{DynamicImage, RgbaImage};

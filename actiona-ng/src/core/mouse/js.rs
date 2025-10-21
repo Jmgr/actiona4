@@ -17,7 +17,7 @@ use crate::{
 };
 
 impl<T> IntoJsResult<T> for super::Result<T> {
-    fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
+    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
 }
@@ -71,23 +71,23 @@ pub type JsDoubleClickOptions = super::DoubleClickOptions;
 impl JsMouse {
     /// @platforms -wayland
     pub async fn is_pressed(&self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
-        self.inner.is_pressed(button).await.into_js(&ctx)
+        self.inner.is_pressed(button).await.into_js_result(&ctx)
     }
 
     pub async fn scroll(&self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 
     /// @platforms -wayland
     pub async fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
-        Ok(self.inner.position().into_js(&ctx)?.into())
+        Ok(self.inner.position().into_js_result(&ctx)?.into())
     }
 
     pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f64> {
         let duration = ms_to_duration(duration.unwrap_or(2000.));
-        self.inner.measure_speed(duration).await.into_js(&ctx)
+        self.inner.measure_speed(duration).await.into_js_result(&ctx)
     }
 
     /// @returns Task<void>
@@ -109,27 +109,27 @@ impl JsMouse {
                     ctx.user_data().rng(),
                 )
                 .await
-                .into_js(&ctx)
+                .into_js_result(&ctx)
         })
     }
 
     pub async fn set_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 
     pub async fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 
     pub async fn click(&self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
         self.inner
             .click(options.unwrap_or_default())
             .await
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 
     pub async fn double_click(
@@ -140,17 +140,17 @@ impl JsMouse {
         self.inner
             .double_click(options.unwrap_or_default())
             .await
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 
     pub async fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
-        self.inner.press(options.unwrap_or_default()).into_js(&ctx)
+        self.inner.press(options.unwrap_or_default()).into_js_result(&ctx)
     }
 
     pub async fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 }
 

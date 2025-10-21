@@ -116,7 +116,7 @@ impl<'js> FromJs<'js> for Si32 {
     fn from_js(ctx: &rquickjs::Ctx<'js>, value: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
         let value: f64 = value.get()?;
 
-        IntoJsResult::into_js(Self::try_from(value), ctx)
+        IntoJsResult::into_js_result(Self::try_from(value), ctx)
     }
 }
 

@@ -84,6 +84,9 @@ tokio-util.workspace = true
 tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
+askama.workspace = true
+base64.workspace = true
+bon.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true

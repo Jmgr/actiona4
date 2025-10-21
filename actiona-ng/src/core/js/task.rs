@@ -128,7 +128,7 @@ where
                     _ = cancellation_token.cancelled() => { Err(CommonError::Cancelled) },
                     _ = rx.changed() => { Ok(()) },
                 }
-                .into_js(&ctx)?;
+                .into_js_result(&ctx)?;
 
                 let value = rx.borrow_and_update().clone();
                 drop(rx);
@@ -203,7 +203,9 @@ mod tests {
         IntoJSError,
         core::{
             js::{
-                classes::{SingletonClass, ValueClass},
+                classes::{
+                    SingletonClass, ValueClass, register_singleton_class, register_value_class,
+                },
                 task::{IsDone, progress_task_with_token, task, task_with_token},
             },
             test_helpers::JsCounter,
@@ -302,8 +304,8 @@ mod tests {
     async fn setup(script_engine: Arc<scripting::Engine>, test: TestStruct) {
         script_engine
             .with(|ctx| {
-                TestStruct::register(&ctx, test).unwrap();
-                JsCounter::register(&ctx).unwrap();
+                register_singleton_class::<TestStruct>(&ctx, test).unwrap();
+                register_value_class::<JsCounter>(&ctx).unwrap();
                 Result::<()>::Ok(())
             })
             .await

@@ -22,7 +22,7 @@ use crate::{
         image::js::JsImage,
         js::{
             abort_controller::{JsAbortController, JsAbortSignal},
-            classes::{SingletonClass, ValueClass},
+            classes::{register_singleton_class, register_value_class},
             concurrency::JsConcurrency,
             global,
         },
@@ -67,6 +67,7 @@ pub(crate) struct JsUserData {
     cancellation_token: CancellationToken,
     rng: SharedRng,
     task_tracker: TaskTracker,
+    app_handle: Option<AppHandle>,
 }
 
 impl JsUserData {
@@ -75,12 +76,14 @@ impl JsUserData {
         cancellation_token: CancellationToken,
         rng: SharedRng,
         task_tracker: TaskTracker,
+        app_handle: Option<AppHandle>,
     ) -> Self {
         Self {
             displays,
             cancellation_token,
             rng,
             task_tracker,
+            app_handle,
         }
     }
 
@@ -102,6 +105,13 @@ impl JsUserData {
 
     pub(crate) fn task_tracker(&self) -> TaskTracker {
         self.task_tracker.clone()
+    }
+
+    pub(crate) fn app_handle(&self) -> AppHandle {
+        self.app_handle
+            .as_ref()
+            .expect("Tauri app handle should be available")
+            .clone()
     }
 }
 
@@ -137,7 +147,7 @@ impl Runtime {
             enigo: Arc::new(Mutex::new(Enigo::new(&Settings::default())?)),
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
-            app_handle,
+            app_handle: app_handle.clone(),
         });
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
@@ -161,6 +171,7 @@ impl Runtime {
                     cancellation_token.clone(),
                     local_rng,
                     task_tracker.clone(),
+                    app_handle,
                 ))
                 .unwrap();
 
@@ -170,30 +181,30 @@ impl Runtime {
                     global::register(&ctx)?;
 
                     // Value classes
-                    JsPoint::register(&ctx)?;
-                    JsSize::register(&ctx)?;
-                    JsRect::register(&ctx)?;
-                    JsColor::register(&ctx)?;
-                    JsImage::register(&ctx)?;
-                    JsFile::register(&ctx)?;
-                    JsWildcard::register(&ctx)?;
-                    JsName::register(&ctx)?;
-                    JsDirectory::register(&ctx)?;
-                    JsPath::register(&ctx)?;
-                    JsFilesystem::register(&ctx)?;
-                    JsAbortSignal::register(&ctx)?;
-                    JsAbortController::register(&ctx)?;
+                    register_value_class::<JsPoint>(&ctx)?;
+                    register_value_class::<JsSize>(&ctx)?;
+                    register_value_class::<JsRect>(&ctx)?;
+                    register_value_class::<JsColor>(&ctx)?;
+                    register_value_class::<JsImage>(&ctx)?;
+                    register_value_class::<JsFile>(&ctx)?;
+                    register_value_class::<JsWildcard>(&ctx)?;
+                    register_value_class::<JsName>(&ctx)?;
+                    register_value_class::<JsDirectory>(&ctx)?;
+                    register_value_class::<JsPath>(&ctx)?;
+                    register_value_class::<JsFilesystem>(&ctx)?;
+                    register_value_class::<JsAbortSignal>(&ctx)?;
+                    register_value_class::<JsAbortController>(&ctx)?;
 
                     // Singletons
-                    JsMouse::register(&ctx, mouse)?;
-                    JsKeyboard::register(&ctx, keyboard)?;
-                    JsUi::register(&ctx, ui)?;
-                    JsConsole::register(&ctx, console)?;
-                    JsDisplays::register(&ctx, js_displays)?;
-                    JsScreenshot::register(&ctx, screenshot)?;
-                    JsClipboard::register(&ctx, JsClipboard::new(&ctx)?)?;
-                    JsRandom::register(&ctx, JsRandom::default())?;
-                    JsWeb::register(&ctx, JsWeb::new(task_tracker))?;
+                    register_singleton_class::<JsMouse>(&ctx, mouse)?;
+                    register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
+                    register_singleton_class::<JsUi>(&ctx, ui)?;
+                    register_singleton_class::<JsConsole>(&ctx, console)?;
+                    register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
+                    register_singleton_class::<JsScreenshot>(&ctx, screenshot)?;
+                    register_singleton_class::<JsClipboard>(&ctx, JsClipboard::new(&ctx)?)?;
+                    register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
+                    register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
 
                     Ok(())
                 })()
@@ -429,12 +440,12 @@ impl Runtime {
 
 #[cfg(test)]
 mod tests {
-    use convert_case::{Case, Casing};
     use derive_more::Display;
     use macros::ExposeEnum;
     use rquickjs::{Function, Object, Value, atom::PredefinedAtom, class::Trace};
 
     use super::*;
+    use crate::core::js::classes::{SingletonClass, ValueClass, register_singleton_class};
 
     fn print<'js>(value: Value<'js>) {
         println!("{value:?}");
@@ -498,8 +509,12 @@ mod tests {
                     .prop("print", Function::new(ctx.clone(), print))
                     .unwrap();
                 TestEnum::register(&ctx).unwrap();
-                TestSingletonStruct::register(&ctx, TestSingletonStruct::default()).unwrap();
-                TestGenerator::register(&ctx).unwrap();
+                register_singleton_class::<TestSingletonStruct>(
+                    &ctx,
+                    TestSingletonStruct::default(),
+                )
+                .unwrap();
+                register_value_class::<TestGenerator>(&ctx).unwrap();
             })
             .await;
     }

@@ -17,7 +17,7 @@ use crate::{
 };
 
 impl<T> IntoJsResult<T> for super::Result<T> {
-    fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
+    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
 }
@@ -48,7 +48,7 @@ impl JsDisplays {
         Ok(self
             .inner
             .random_point(ctx.user_data().rng())
-            .into_js(&ctx)?
+            .into_js_result(&ctx)?
             .into())
     }
 

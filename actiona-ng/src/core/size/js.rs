@@ -112,7 +112,7 @@ impl JsSize {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            let size = try_size(first_arg, second_arg).into_js(ctx)?;
+            let size = try_size(first_arg, second_arg).into_js_result(ctx)?;
 
             return Ok((size.into(), rest));
         }
@@ -127,7 +127,7 @@ impl JsSize {
             let width: f64 = first_arg.get("width")?;
             let height: f64 = first_arg.get("height")?;
 
-            let size = try_size(width, height).into_js(ctx)?;
+            let size = try_size(width, height).into_js_result(ctx)?;
 
             return Ok((size.into(), rest));
         }
@@ -190,7 +190,7 @@ impl JsSize {
         self.inner
             .scaled(factor)
             .map(|value| value.into())
-            .into_js(&ctx)
+            .into_js_result(&ctx)
     }
 
     /// Returns a string representation of this Size.

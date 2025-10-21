@@ -113,7 +113,7 @@ impl JsPoint {
                 .as_number()
                 .or_throw_message(ctx, "Expected second argument to be a number")?;
 
-            let point = try_point(first_arg, second_arg).into_js(ctx)?;
+            let point = try_point(first_arg, second_arg).into_js_result(ctx)?;
 
             return Ok((point.into(), rest));
         }
@@ -128,7 +128,7 @@ impl JsPoint {
             let x: f64 = first_arg.get("x")?;
             let y: f64 = first_arg.get("y")?;
 
-            let point = try_point(x, y).into_js(ctx)?;
+            let point = try_point(x, y).into_js_result(ctx)?;
 
             return Ok((point.into(), rest));
         }

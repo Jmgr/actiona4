@@ -4,7 +4,7 @@ use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, class::Trace, prelude::Opt};
 use tokio::fs::{self};
 
-use crate::core::js::classes::ValueClass;
+use crate::core::js::classes::{ValueClass, register_value_class};
 
 /// Directory entry
 ///
@@ -85,7 +85,7 @@ pub struct JsDirectory {}
 
 impl ValueClass<'_> for JsDirectory {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
-        JsDirectoryEntry::register(ctx)?;
+        register_value_class::<JsDirectoryEntry>(ctx)?;
 
         Ok(())
     }

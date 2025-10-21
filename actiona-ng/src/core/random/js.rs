@@ -118,7 +118,7 @@ impl JsRandom {
             .random_point(user_data.rng())
             .map(|point| point.into());
 
-        point.into_js(&ctx)
+        point.into_js_result(&ctx)
     }
 
     /// Chooses one random entry in an array.

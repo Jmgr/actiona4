@@ -6,16 +6,22 @@ use rquickjs::{
     class::{Trace, Tracer},
     prelude::Opt,
 };
+use tauri::AppHandle;
 
 use crate::{
+    IntoJsResult,
     core::{
         displays::{Displays, js::JsDisplayInfo},
         image::js,
-        js::classes::SingletonClass,
+        js::classes::{SingletonClass, ValueClass, register_value_class},
         point::js::JsPoint,
+        ui::{MessageBox, MessageBoxButtons},
     },
-    runtime::Runtime,
+    runtime::{Runtime, WithUserData},
 };
+
+pub type JsMessageBoxIcon = super::MessageBoxIcon;
+pub type JsMessageBoxResult = super::MessageBoxResult;
 
 /// @singleton
 #[derive(Debug, JsLifetime)]
@@ -25,7 +31,12 @@ pub struct JsUi {
     displays: Arc<Displays>,
 }
 
-impl SingletonClass<'_> for JsUi {}
+impl SingletonClass<'_> for JsUi {
+    fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
+        register_value_class::<JsMessageBox>(ctx)?;
+        Ok(())
+    }
+}
 
 impl<'js> Trace<'js> for JsUi {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -35,6 +46,141 @@ impl<'js> Trace<'js> for super::Ui {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
+#[derive(Clone, Debug, Default, JsLifetime, Trace)]
+#[rquickjs::class(rename = "MessageBoxButtons")]
+pub struct JsMessageBoxButtons {
+    inner: MessageBoxButtons,
+}
+
+impl ValueClass<'_> for JsMessageBoxButtons {}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsMessageBoxButtons {
+    /// @constructor
+    /// @private
+    #[qjs(constructor)]
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn ok() -> Self {
+        Self {
+            inner: MessageBoxButtons::Ok,
+        }
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn ok_custom(ok_label: String) -> Self {
+        Self {
+            inner: MessageBoxButtons::OkCustom(ok_label),
+        }
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn ok_cancel() -> Self {
+        Self {
+            inner: MessageBoxButtons::OkCancel,
+        }
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn ok_cancel_custom(ok_label: String, cancel_label: String) -> Self {
+        Self {
+            inner: MessageBoxButtons::OkCancelCustom(ok_label, cancel_label),
+        }
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn yes_no() -> Self {
+        Self {
+            inner: MessageBoxButtons::YesNo,
+        }
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn yes_no_cancel() -> Self {
+        Self {
+            inner: MessageBoxButtons::YesNoCancel,
+        }
+    }
+
+    #[qjs(static)]
+    #[must_use]
+    pub const fn yes_no_cancel_custom(
+        yes_label: String,
+        no_label: String,
+        cancel_label: String,
+    ) -> Self {
+        Self {
+            inner: MessageBoxButtons::YesNoCancelCustom(yes_label, no_label, cancel_label),
+        }
+    }
+}
+
+#[derive(Clone, Debug, JsLifetime)]
+#[rquickjs::class(rename = "MessageBox")]
+pub struct JsMessageBox {
+    app_handle: AppHandle,
+}
+
+impl ValueClass<'_> for JsMessageBox {
+    fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
+        register_value_class::<JsMessageBoxButtons>(ctx)?;
+        JsMessageBoxIcon::register(ctx)?;
+        JsMessageBoxResult::register(ctx)?;
+        Ok(())
+    }
+}
+
+impl<'js> Trace<'js> for JsMessageBox {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsMessageBox {
+    /// @constructor
+    /// @private
+    #[qjs(constructor)]
+    #[must_use]
+    pub fn new<'js>(ctx: Ctx<'js>) -> Self {
+        Self {
+            app_handle: ctx.user_data().app_handle(),
+        }
+    }
+
+    #[qjs(static)]
+    pub async fn show<'js>(
+        ctx: Ctx<'js>,
+        text: String,
+        title: String,
+        buttons: Opt<JsMessageBoxButtons>,
+        icon: Opt<JsMessageBoxIcon>,
+    ) -> Result<JsMessageBoxResult> {
+        let buttons = buttons.0.unwrap_or_default();
+        let icon = icon.0.unwrap_or_default();
+        let app_handle = ctx.user_data().app_handle();
+
+        MessageBox::builder()
+            .app_handle(app_handle)
+            .text(text)
+            .title(title)
+            .buttons(buttons.inner)
+            .icon(icon)
+            .build()
+            .show()
+            .await
+            .into_js_result(&ctx)
+    }
+}
+
 /// Window options
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
@@ -42,43 +188,6 @@ pub struct JsWindowOptions {
     display: Option<JsDisplayInfo>, // TODO: add position
     position: Option<JsPoint>,
 }
-
-/*
-#[allow(unsafe_code)]
-mod ui {
-    #[cfg(not(doc))]
-    slint::slint! {
-        import { Button, StandardButton } from "std-widgets.slint";
-
-        export component ImageWindow inherits Window {
-            callback closed;
-
-            in property <image> image;
-            in property <length> window_width;
-            in property <length> window_height;
-
-            width: self.window_width;
-            height: self.window_height;
-
-            Image {
-                source: image;
-                image-fit: contain;
-                image-rendering: pixelated;
-            }
-
-            forward-focus: my-key-handler;
-            my-key-handler := FocusScope {
-                key-pressed(event) => {
-                    if (event.text == Key.Escape || event.text == Key.Return) {
-                        root.closed();
-                    }
-                    accept
-                }
-            }
-        }
-    }
-}
-*/
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsUi {

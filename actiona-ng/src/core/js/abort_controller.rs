@@ -96,7 +96,10 @@ mod tests {
     };
 
     use crate::{
-        core::js::{abort_controller::JsAbortSignal, classes::SingletonClass},
+        core::js::{
+            abort_controller::JsAbortSignal,
+            classes::{SingletonClass, register_singleton_class},
+        },
         runtime::Runtime,
     };
 
@@ -132,7 +135,7 @@ mod tests {
 
             script_engine
                 .with(|ctx| {
-                    TestStruct::register(&ctx, test).unwrap();
+                    register_singleton_class::<TestStruct>(&ctx, test).unwrap();
                     Result::<()>::Ok(())
                 })
                 .await

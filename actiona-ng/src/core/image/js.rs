@@ -1,6 +1,5 @@
 use std::io;
 
-use convert_case::{Case, Casing};
 use image::{
     ColorType, DynamicImage, GenericImage, GenericImageView, ImageReader, ImageResult, RgbaImage,
     imageops::FilterType, metadata::Orientation,
@@ -248,25 +247,25 @@ impl JsImage {
         let bytes = bytes
             .as_bytes()
             .ok_or(CommonError::DetachedArrayBuffer)
-            .into_js(&ctx)?;
+            .into_js_result(&ctx)?;
 
         Ok(Self {
-            inner: super::Image::from_bytes(bytes).into_js(&ctx)?,
+            inner: super::Image::from_bytes(bytes).into_js_result(&ctx)?,
         })
     }
 
     pub fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
-        self.inner.save(path).into_js(&ctx)
+        self.inner.save(path).into_js_result(&ctx)
     }
 
     #[qjs(static)]
     pub fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
         let image = ImageReader::open(path)
-            .into_js(&ctx)?
+            .into_js_result(&ctx)?
             .with_guessed_format()
-            .into_js(&ctx)?
+            .into_js_result(&ctx)?
             .decode()
-            .into_js(&ctx)?;
+            .into_js_result(&ctx)?;
 
         Ok(super::Image(image).into())
     }
@@ -852,13 +851,13 @@ impl JsImage {
         if options.hollow {
             draw_hollow_rect_mut(
                 &mut self.inner.0,
-                Rect::try_from(rect.0).into_js(&ctx)?,
+                Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             );
         } else {
             draw_filled_rect_mut(
                 &mut self.inner.0,
-                Rect::try_from(rect.0).into_js(&ctx)?,
+                Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             );
         }
@@ -879,13 +878,13 @@ impl JsImage {
         let image = if options.hollow {
             draw_hollow_rect(
                 &self.inner.0,
-                Rect::try_from(rect.0).into_js(&ctx)?,
+                Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             )
         } else {
             draw_filled_rect(
                 &self.inner.0,
-                Rect::try_from(rect.0).into_js(&ctx)?,
+                Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             )
         };
@@ -911,9 +910,13 @@ impl JsImage {
         if let Some(rect) = options.source_rect {
             let (x, y) = self.check_position(&ctx, point(rect.get_x(), rect.get_y()))?;
             let view = image.inner.view(x, y, rect.get_width(), rect.get_height());
-            self.inner.copy_from(&view.to_image(), x, y).into_js(&ctx)?;
+            self.inner
+                .copy_from(&view.to_image(), x, y)
+                .into_js_result(&ctx)?;
         } else {
-            self.inner.copy_from(&image.inner.0, x, y).into_js(&ctx)?;
+            self.inner
+                .copy_from(&image.inner.0, x, y)
+                .into_js_result(&ctx)?;
         }
 
         Ok(this.0)
@@ -938,9 +941,11 @@ impl JsImage {
             let view = image.inner.view(x, y, rect.get_width(), rect.get_height());
             target_image
                 .copy_from(&view.to_image(), x, y)
-                .into_js(&ctx)?;
+                .into_js_result(&ctx)?;
         } else {
-            target_image.copy_from(&image.inner.0, x, y).into_js(&ctx)?;
+            target_image
+                .copy_from(&image.inner.0, x, y)
+                .into_js_result(&ctx)?;
         }
 
         Ok(target_image.into())
@@ -1081,13 +1086,13 @@ impl From<super::Image> for JsImage {
 }
 
 impl<T> IntoJsResult<T> for io::Result<T> {
-    fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
+    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
 }
 
 impl<T> IntoJsResult<T> for ImageResult<T> {
-    fn into_js(self, ctx: &Ctx<'_>) -> Result<T> {
+    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
 }

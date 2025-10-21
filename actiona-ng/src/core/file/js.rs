@@ -135,7 +135,7 @@ impl JsFile {
         let duration = system_time.duration_since(UNIX_EPOCH).unwrap();
         let millis = u64::try_from(duration.as_millis())
             .map_err(|err| eyre!("{err}"))
-            .into_js(ctx)?;
+            .into_js_result(ctx)?;
 
         Ok(date_constructor
             .construct::<_, Object<'js>>((millis,))
@@ -254,7 +254,7 @@ impl JsFile {
         let bytes = bytes
             .as_bytes()
             .ok_or(CommonError::DetachedArrayBuffer)
-            .into_js(&ctx)?;
+            .into_js_result(&ctx)?;
 
         fs::write(path, bytes)
             .await
@@ -313,7 +313,7 @@ impl JsFile {
             result.resize(
                 usize::try_from(amount)
                     .map_err(|err| eyre!("{err}"))
-                    .into_js(&ctx)?,
+                    .into_js_result(&ctx)?,
                 0,
             );
             opened_file
@@ -328,7 +328,7 @@ impl JsFile {
             result.reserve(
                 usize::try_from(len)
                     .map_err(|err| eyre!("{err}"))
-                    .into_js(&ctx)?,
+                    .into_js_result(&ctx)?,
             );
             opened_file
                 .file
@@ -352,7 +352,7 @@ impl JsFile {
                 0;
                 usize::try_from(amount)
                     .map_err(|err| eyre!("{err}"))
-                    .into_js(&ctx)?
+                    .into_js_result(&ctx)?
             ];
             let mut file = fs::File::open(path).await?;
             file.read_exact(&mut result).await?;

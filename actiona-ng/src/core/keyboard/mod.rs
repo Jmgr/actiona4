@@ -1,6 +1,5 @@
 use std::sync::{Arc, Mutex};
 
-use convert_case::{Case, Casing};
 use enigo::{Direction, Enigo, InputError, NewConError};
 use macros::ExposeEnum;
 use platform::KeyboardImplTrait;

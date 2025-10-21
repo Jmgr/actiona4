@@ -10,7 +10,7 @@ use crate::{IntoJsResult, core::js::task::task, error::CommonError, runtime::Wit
 pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<Promise<'js>> {
     task(ctx, async move |ctx, token| {
         select! {
-            _ = token.cancelled() => { Err(CommonError::Cancelled).into_js(&ctx) },
+            _ = token.cancelled() => { Err(CommonError::Cancelled).into_js_result(&ctx) },
             _ = tokio::time::sleep(Duration::from_secs_f64(ms / 1000.)) => { Ok(()) },
         }
     })
