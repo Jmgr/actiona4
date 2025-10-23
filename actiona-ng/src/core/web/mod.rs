@@ -16,14 +16,15 @@ use futures::{Stream, StreamExt, TryStreamExt};
 use http_body::Frame;
 use http_body_util::{BodyExt, StreamBody};
 use indexmap::IndexMap;
-use macros::ExposeEnum;
+use macros::{FromSerde, IntoSerde};
 use mime::Mime;
 use reqwest::{
     RequestBuilder, Response,
     header::{self, CONTENT_TYPE, HeaderMap},
     multipart::{Form, Part},
 };
-use rquickjs::{JsLifetime, class::Trace};
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 use tokio::{
     fs::{self, File},
     io::{AsyncReadExt, AsyncWrite, AsyncWriteExt},
@@ -40,8 +41,20 @@ use crate::{
 
 pub mod js;
 
-#[derive(Clone, Copy, Debug, Default, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Display,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    IntoSerde,
+    FromSerde,
+)]
 pub enum Method {
     #[default]
     Get,

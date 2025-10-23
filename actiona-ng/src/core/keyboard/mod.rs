@@ -1,10 +1,11 @@
 use std::sync::{Arc, Mutex};
 
 use enigo::{Direction, Enigo, InputError, NewConError};
-use macros::ExposeEnum;
+use macros::{FromSerde, IntoSerde};
 use platform::KeyboardImplTrait;
 use rquickjs::{JsLifetime, class::Trace};
-use strum::Display;
+use serde::{Deserialize, Serialize};
+use strum::{Display, EnumIter};
 use thiserror::Error;
 use tracing::instrument;
 
@@ -46,8 +47,20 @@ pub enum KeyboardError {
 
 pub type Result<T> = std::result::Result<T, KeyboardError>;
 
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    Hash,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    IntoSerde,
+    FromSerde,
+)]
 pub enum Key {
     Alt,
     Backspace,

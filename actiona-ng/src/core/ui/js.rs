@@ -1,39 +1,31 @@
-use std::sync::Arc;
-
-use macros::FromJsObject;
 use rquickjs::{
     Ctx, JsLifetime, Result,
     class::{Trace, Tracer},
     prelude::Opt,
 };
-use tauri::AppHandle;
 
 use crate::{
     IntoJsResult,
     core::{
-        displays::{Displays, js::JsDisplayInfo},
-        image::js,
-        js::classes::{SingletonClass, ValueClass, register_value_class},
-        point::js::JsPoint,
-        ui::{MessageBox, MessageBoxButtons},
+        js::classes::{SingletonClass, ValueClass, register_enum, register_value_class},
+        ui::{MessageBoxButtons, MessageBoxOptions, Ui},
     },
-    runtime::{Runtime, WithUserData},
+    runtime::WithUserData,
 };
 
 pub type JsMessageBoxIcon = super::MessageBoxIcon;
 pub type JsMessageBoxResult = super::MessageBoxResult;
 
 /// @singleton
-#[derive(Debug, JsLifetime)]
+#[derive(Debug, JsLifetime, Default)]
 #[rquickjs::class(rename = "Ui")]
-pub struct JsUi {
-    _runtime: Arc<Runtime>,
-    displays: Arc<Displays>,
-}
+pub struct JsUi {}
 
 impl SingletonClass<'_> for JsUi {
     fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
-        register_value_class::<JsMessageBox>(ctx)?;
+        register_value_class::<JsMessageBoxButtons>(ctx)?;
+        register_enum::<JsMessageBoxIcon>(ctx)?;
+        register_enum::<JsMessageBoxResult>(ctx)?;
         Ok(())
     }
 }
@@ -42,17 +34,46 @@ impl<'js> Trace<'js> for JsUi {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl<'js> Trace<'js> for super::Ui {
-    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsUi {
+    /// @skip
+    #[qjs(skip)]
+    pub const fn new() -> eyre::Result<Self> {
+        Ok(Self {})
+    }
+
+    #[qjs(static)]
+    pub async fn message_box<'js>(
+        ctx: Ctx<'js>,
+        text: String,
+        options: Opt<MessageBoxOptions>,
+    ) -> Result<JsMessageBoxResult> {
+        let app_handle = ctx.user_data().app_handle();
+
+        Ui::message_box(app_handle, text, options.0)
+            .await
+            .into_js_result(&ctx)
+    }
 }
 
-#[derive(Clone, Debug, Default, JsLifetime, Trace)]
+#[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "MessageBoxButtons")]
 pub struct JsMessageBoxButtons {
     inner: MessageBoxButtons,
 }
 
+impl<'js> Trace<'js> for JsMessageBoxButtons {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
 impl ValueClass<'_> for JsMessageBoxButtons {}
+
+impl JsMessageBoxButtons {
+    #[must_use]
+    pub fn into_inner(self) -> MessageBoxButtons {
+        self.inner
+    }
+}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsMessageBoxButtons {
@@ -122,144 +143,5 @@ impl JsMessageBoxButtons {
         Self {
             inner: MessageBoxButtons::YesNoCancelCustom(yes_label, no_label, cancel_label),
         }
-    }
-}
-
-#[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "MessageBox")]
-pub struct JsMessageBox {
-    app_handle: AppHandle,
-}
-
-impl ValueClass<'_> for JsMessageBox {
-    fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
-        register_value_class::<JsMessageBoxButtons>(ctx)?;
-        JsMessageBoxIcon::register(ctx)?;
-        JsMessageBoxResult::register(ctx)?;
-        Ok(())
-    }
-}
-
-impl<'js> Trace<'js> for JsMessageBox {
-    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
-}
-
-#[rquickjs::methods(rename_all = "camelCase")]
-impl JsMessageBox {
-    /// @constructor
-    /// @private
-    #[qjs(constructor)]
-    #[must_use]
-    pub fn new<'js>(ctx: Ctx<'js>) -> Self {
-        Self {
-            app_handle: ctx.user_data().app_handle(),
-        }
-    }
-
-    #[qjs(static)]
-    pub async fn show<'js>(
-        ctx: Ctx<'js>,
-        text: String,
-        title: String,
-        buttons: Opt<JsMessageBoxButtons>,
-        icon: Opt<JsMessageBoxIcon>,
-    ) -> Result<JsMessageBoxResult> {
-        let buttons = buttons.0.unwrap_or_default();
-        let icon = icon.0.unwrap_or_default();
-        let app_handle = ctx.user_data().app_handle();
-
-        MessageBox::builder()
-            .app_handle(app_handle)
-            .text(text)
-            .title(title)
-            .buttons(buttons.inner)
-            .icon(icon)
-            .build()
-            .show()
-            .await
-            .into_js_result(&ctx)
-    }
-}
-
-/// Window options
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
-pub struct JsWindowOptions {
-    display: Option<JsDisplayInfo>, // TODO: add position
-    position: Option<JsPoint>,
-}
-
-#[rquickjs::methods(rename_all = "camelCase")]
-impl JsUi {
-    /// @skip
-    #[qjs(skip)]
-    pub const fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> eyre::Result<Self> {
-        Ok(Self {
-            _runtime: runtime,
-            displays,
-        })
-    }
-
-    pub fn display_image(
-        &self,
-        ctx: Ctx<'_>,
-        image: &js::JsImage,
-        options: Opt<JsWindowOptions>,
-    ) -> Result<()> {
-        let _options = options.clone().unwrap_or_default();
-
-        /*
-        let h = Rc::new(ui::ImageWindow::new().unwrap());
-
-        let image = image.to_inner().to_rgba8();
-
-        let primary_display = self.displays.primary_display().into_js(&ctx)?;
-        let center = primary_display.rect.center();
-
-        h.show().unwrap();
-
-        h.window()
-            .set_position(LogicalPosition::new(center.x as f32, center.y as f32));
-        //h.window().set_size(LogicalSize::new(
-        //   image.width() as f32,
-        //   image.height() as f32,
-        //));
-        h.set_window_width(image.width() as f32);
-        h.set_window_height(image.height() as f32);
-
-        let buffer = SharedPixelBuffer::<Rgba8Pixel>::clone_from_slice(
-            image.as_raw(),
-            image.width(),
-            image.height(),
-        );
-
-        h.on_closed({
-            let h = h.clone();
-            move || {
-                h.hide().unwrap(); // Hides the dialog
-            }
-        });
-
-        //h.on_ok_clicked(|| h.hide().unwrap());
-
-        h.set_image(Image::from_rgba8(buffer));
-        /*
-        let (tx, mut rx) = watch::channel(());
-        h.on_closed(move || tx.send(()).unwrap());
-        let local_cancellation_token = self.runtime.cancellation_token().clone();
-        h.show().unwrap();
-
-        Runtime::block_on(async {
-            select! {
-                _ = rx.changed() => {},
-                _ = local_cancellation_token.cancelled() => {},
-            }
-        });
-        */
-        h.run().unwrap();
-
-        */
-
-        Ok(())
     }
 }

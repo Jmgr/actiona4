@@ -1,27 +1,31 @@
-use std::{fmt::Debug, sync::Arc};
+use std::fmt::Debug;
 
-use bon::Builder;
 use derive_more::Constructor;
 use eyre::Result;
-use macros::ExposeEnum;
-use rquickjs::{JsLifetime, class::Trace};
-use strum::Display;
+use macros::{FromJsObject, FromSerde, IntoSerde};
+use serde::{Deserialize, Serialize};
+use strum::{Display, EnumIter};
 use tauri::AppHandle;
 use tauri_plugin_dialog::{DialogExt, MessageDialogResult};
 use tokio::sync::oneshot;
 
-use crate::runtime::Runtime;
+use crate::core::ui::js::JsMessageBoxButtons;
 
 pub mod js;
 
-#[derive(Constructor, Debug)]
-pub struct Ui {
-    //compiler: Arc<Mutex<Compiler>>,
-    runtime: Arc<Runtime>,
-}
-
-#[derive(Clone, Debug, Default, Display, Eq, PartialEq, Trace, ExposeEnum, JsLifetime)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Debug,
+    Default,
+    Display,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    IntoSerde,
+    FromSerde,
+)]
 pub enum MessageBoxIcon {
     #[default]
     Info,
@@ -39,7 +43,7 @@ impl From<MessageBoxIcon> for tauri_plugin_dialog::MessageDialogKind {
     }
 }
 
-#[derive(Clone, Debug, Default, Display, Eq, PartialEq, Trace)]
+#[derive(Clone, Debug, Default, Display, Eq, PartialEq)]
 pub enum MessageBoxButtons {
     #[default]
     Ok,
@@ -67,8 +71,9 @@ impl From<MessageBoxButtons> for tauri_plugin_dialog::MessageDialogButtons {
     }
 }
 
-#[derive(Clone, Debug, Display, Eq, PartialEq, Trace, ExposeEnum, JsLifetime)]
-#[rquickjs::class]
+#[derive(
+    Clone, Debug, Display, Eq, PartialEq, Serialize, Deserialize, EnumIter, IntoSerde, FromSerde,
+)]
 pub enum MessageBoxResult {
     Yes,
     No,
@@ -88,31 +93,40 @@ impl From<tauri_plugin_dialog::MessageDialogResult> for MessageBoxResult {
     }
 }
 
-impl Ui {
-    // TODO
-}
-
-#[derive(Constructor, Debug, Builder)]
-pub struct MessageBox {
-    app_handle: AppHandle,
-    text: String,
+/// Message box options
+/// @options
+#[derive(Clone, Debug, FromJsObject, Default)]
+pub struct MessageBoxOptions {
+    /// @default null
     title: Option<String>,
-    buttons: Option<MessageBoxButtons>,
+
+    /// @default MessageBoxButtons.ok()
+    buttons: Option<JsMessageBoxButtons>,
+
+    /// @default MessageBoxIcon.INFO
     icon: Option<MessageBoxIcon>,
 }
 
-impl MessageBox {
-    pub async fn show(self) -> Result<MessageBoxResult> {
-        let mut dialog = self.app_handle.dialog().message(self.text);
-        let local_buttons = self.buttons.clone();
+#[derive(Constructor, Debug)]
+pub struct Ui {}
 
-        if let Some(title) = self.title {
+impl Ui {
+    pub async fn message_box(
+        app_handle: AppHandle,
+        text: impl Into<String>,
+        options: Option<MessageBoxOptions>,
+    ) -> Result<MessageBoxResult> {
+        let options = options.unwrap_or_default();
+        let mut dialog = app_handle.dialog().message(text);
+        let local_buttons = options.buttons.clone().map(|buttons| buttons.into_inner());
+
+        if let Some(title) = options.title {
             dialog = dialog.title(title);
         }
-        if let Some(buttons) = self.buttons {
-            dialog = dialog.buttons(buttons.into());
+        if let Some(buttons) = options.buttons {
+            dialog = dialog.buttons(buttons.into_inner().into());
         }
-        if let Some(icon) = self.icon {
+        if let Some(icon) = options.icon {
             dialog = dialog.kind(icon.into());
         }
 

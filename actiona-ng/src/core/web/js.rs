@@ -18,7 +18,7 @@ use crate::{
         image::js::JsImage,
         js::{
             abort_controller::JsAbortSignal,
-            classes::{SingletonClass, ValueClass},
+            classes::{SingletonClass, ValueClass, register_enum},
             duration::JsDuration,
             task::{IsDone, progress_task_with_token},
         },
@@ -196,7 +196,7 @@ pub struct JsWeb {
 impl SingletonClass<'_> for JsWeb {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         //JsMultipartForm::register(&ctx)?;
-        JsMethod::register(ctx)?;
+        register_enum::<JsMethod>(ctx)?;
 
         Ok(())
     }

@@ -82,6 +82,7 @@ rquickjs = { git = "https://github.com/Jmgr/rquickjs.git", branch = "add-filenam
     "parallel",
     "indexmap",
 ] }
+rquickjs-serde = { git = "https://github.com/Jmgr/rquickjs-serde.git", branch = "tmp-update-deps" }
 rustdoc-types = "0.56.0"
 serde = "1.0.225"
 serde_json = "1.0.145"
@@ -118,6 +119,8 @@ tokio-util = { version = "0.7.16", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.5.0"
+serde_plain = "1.0.2"
+serde-name = "0.2.1"
 
 # Windows
 pe-parser = "0.7.0"

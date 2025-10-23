@@ -34,7 +34,7 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
                 _ => None,
             })
             // Convert the variant names into constant case
-            .map(|(name, docs, function)| (name.to_case(Case::Constant), docs, function));
+            .map(|(name, docs, function)| (name.to_case(Case::Pascal), docs, function));
 
         let mut result_variants = Vec::new();
 

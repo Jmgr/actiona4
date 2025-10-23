@@ -10,7 +10,11 @@ use super::Coordinate;
 use crate::{
     IntoJsResult,
     core::{
-        js::{classes::SingletonClass, duration::ms_to_duration, task::task},
+        js::{
+            classes::{SingletonClass, register_enum},
+            duration::ms_to_duration,
+            task::task,
+        },
         point::js::{JsPoint, JsPointParam},
     },
     runtime::{Runtime, WithUserData},
@@ -23,10 +27,7 @@ impl<T> IntoJsResult<T> for super::Result<T> {
 }
 
 impl<'js> Trace<'js> for super::Mouse {
-    fn trace<'a>(&self, tracer: Tracer<'a, 'js>) {
-        let lock = self.pressed_buttons.lock().unwrap();
-        lock.iter().for_each(|button| button.trace(tracer));
-    }
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 pub type JsButton = super::Button;
@@ -42,8 +43,8 @@ pub struct JsMouse {
 
 impl<'js> SingletonClass<'js> for JsMouse {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        JsButton::register(ctx)?;
-        JsAxis::register(ctx)?;
+        register_enum::<JsButton>(ctx)?;
+        register_enum::<JsAxis>(ctx)?;
 
         Ok(())
     }
@@ -87,7 +88,10 @@ impl JsMouse {
 
     pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f64> {
         let duration = ms_to_duration(duration.unwrap_or(2000.));
-        self.inner.measure_speed(duration).await.into_js_result(&ctx)
+        self.inner
+            .measure_speed(duration)
+            .await
+            .into_js_result(&ctx)
     }
 
     /// @returns Task<void>
@@ -144,7 +148,9 @@ impl JsMouse {
     }
 
     pub async fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
-        self.inner.press(options.unwrap_or_default()).into_js_result(&ctx)
+        self.inner
+            .press(options.unwrap_or_default())
+            .into_js_result(&ctx)
     }
 
     pub async fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {

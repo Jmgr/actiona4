@@ -14,20 +14,21 @@ use imageproc::{
     geometric_transformations::{self, rotate, rotate_about_center},
     rect::Rect,
 };
-use macros::{ExposeEnum, FromJsObject};
+use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Result, TypedArray,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::{Opt, This},
 };
-use strum::Display;
+use serde::{Deserialize, Serialize};
+use strum::{Display, EnumIter};
 
 use crate::{
     IntoJsResult,
     core::{
         color::js::{JsColor, JsColorParam},
-        js::classes::ValueClass,
+        js::classes::{ValueClass, register_enum},
         point::{
             self,
             js::{JsPoint, JsPointParam},
@@ -43,16 +44,40 @@ use crate::{
     types::su32::su32,
 };
 
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "FlipDirection")]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    IntoSerde,
+    FromSerde,
+    EnumIter,
+)]
+#[serde(rename = "FlipDirection")]
 pub enum JsFlipDirection {
     Horizontal,
     Vertical,
 }
 
 /// Resize filters
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "ResizeFilter")]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    IntoSerde,
+    FromSerde,
+    EnumIter,
+)]
+#[serde(rename = "ResizeFilter")]
 pub enum JsResizeFilter {
     Nearest,
     Linear,
@@ -76,8 +101,20 @@ impl From<JsResizeFilter> for FilterType {
 }
 
 /// Interpolation algorithms used for rotations
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "Interpolation")]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    IntoSerde,
+    FromSerde,
+    EnumIter,
+)]
+#[serde(rename = "Interpolation")]
 pub enum JsInterpolation {
     Nearest,
     Bilinear,
@@ -209,9 +246,9 @@ impl JsImage {
 
 impl<'js> ValueClass<'js> for JsImage {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        JsFlipDirection::register(ctx)?;
-        JsResizeFilter::register(ctx)?;
-        JsInterpolation::register(ctx)?;
+        register_enum::<JsFlipDirection>(ctx)?;
+        register_enum::<JsResizeFilter>(ctx)?;
+        register_enum::<JsInterpolation>(ctx)?;
 
         Ok(())
     }

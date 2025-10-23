@@ -7,8 +7,9 @@ use derive_more::Display;
 use eyre::Report;
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
-use macros::ExposeEnum;
-use rquickjs::{JsLifetime, class::Trace};
+use macros::{FromSerde, IntoSerde};
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 use thiserror::Error;
 
 use crate::{core::image::Image, error::CommonError};
@@ -49,8 +50,20 @@ impl From<arboard::Error> for Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Clone, Copy, Debug, Default, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Display,
+    Eq,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    IntoSerde,
+    FromSerde,
+    EnumIter,
+)]
 pub enum ClipboardMode {
     #[default]
     Clipboard,

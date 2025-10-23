@@ -1,6 +1,9 @@
 use convert_case::{Case, Casing};
 use eyre::Context;
 use rquickjs::{Class, Ctx, IntoJs, Object, class::JsClass};
+use serde::{Deserialize, Serialize};
+use serde_name::trace_name;
+use strum::IntoEnumIterator;
 
 use crate::IntoJsResult;
 
@@ -100,4 +103,20 @@ pub fn register_value_class<'js, T: ValueClass<'js> + JsClass<'js>>(
     }()
     .wrap_err_with(|| format!("registering {name} (missing constructor?)"))
     .into_js_result(ctx)
+}
+
+/// @skip
+pub fn register_enum<'js, E>(ctx: &Ctx<'js>) -> rquickjs::Result<()>
+where
+    E: Serialize + for<'de> Deserialize<'de> + IntoEnumIterator,
+{
+    let obj = Object::new(ctx.clone())?;
+    for v in E::iter() {
+        // Serialize variant to serde's canonical string (honors rename/rename_all)
+        let key = serde_plain::to_string(&v).unwrap();
+
+        // Set both the property name and the value to that canonical string
+        obj.set(&key, key.clone())?;
+    }
+    ctx.globals().set(trace_name::<E>().unwrap(), obj)
 }

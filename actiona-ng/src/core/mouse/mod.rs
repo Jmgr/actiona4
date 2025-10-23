@@ -7,11 +7,12 @@ use std::{
 use derive_more::Display;
 use enigo::{Direction, Enigo, InputError, NewConError};
 use indexmap::IndexSet;
-use macros::{ExposeEnum, FromJsObject};
+use macros::{FromJsObject, FromSerde, IntoSerde};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use num_traits::ToPrimitive;
 use platform::MouseImplTrait;
-use rquickjs::{JsLifetime, class::Trace};
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 use thiserror::Error;
 use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
@@ -77,9 +78,22 @@ pub enum MouseError {
 pub type Result<T> = std::result::Result<T, MouseError>;
 
 /// Mouse button.
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    Hash,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    IntoSerde,
+    FromSerde,
+)]
 pub enum Button {
+    // TODO: should that ^ be Trace?
     /// Left button
     Left,
 
@@ -110,8 +124,19 @@ impl From<Button> for enigo::Button {
     }
 }
 
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    IntoSerde,
+    FromSerde,
+)]
 pub enum Axis {
     Horizontal,
     Vertical,
@@ -129,8 +154,20 @@ impl From<Axis> for enigo::Axis {
 }
 
 /// Tweening functions for smooth movement.
-#[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, Hash, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    Eq,
+    Hash,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    IntoSerde,
+    FromSerde,
+)]
 pub enum Tween {
     /// Starts slowly, then accelerates with an overshoot.
     BackIn,

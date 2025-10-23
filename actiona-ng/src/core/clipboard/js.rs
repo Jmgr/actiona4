@@ -8,7 +8,10 @@ use rquickjs::{
 
 use crate::{
     IntoJSError, IntoJsResult,
-    core::{image::js::JsImage, js::classes::SingletonClass},
+    core::{
+        image::js::JsImage,
+        js::classes::{SingletonClass, register_enum},
+    },
     newtype,
 };
 
@@ -41,7 +44,7 @@ impl<'js> Trace<'js> for JsClipboard {
 
 impl<'js> SingletonClass<'js> for JsClipboard {
     fn register_dependencies(ctx: &Ctx<'js>) -> Result<()> {
-        JsClipboardMode::register(ctx)?;
+        register_enum::<JsClipboardMode>(ctx)?;
 
         Ok(())
     }

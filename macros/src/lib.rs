@@ -1,67 +1,8 @@
-use convert_case::{Case, Casing};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, Fields, parse_macro_input};
 
-#[proc_macro_derive(ExposeEnum)]
-pub fn expose_enum(input: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(input as DeriveInput);
-    let name = &input.ident;
-
-    // We only handle `enum` here:
-    let variants = match &input.data {
-        Data::Enum(data_enum) => &data_enum.variants,
-        _ => {
-            return syn::Error::new_spanned(&input.ident, "ExposeEnum can only be used on enums")
-                .to_compile_error()
-                .into();
-        }
-    };
-
-    // Enforce unit variants only:
-    for variant in variants {
-        if !matches!(variant.fields, syn::Fields::Unit) {
-            return syn::Error::new_spanned(
-                &variant.ident,
-                "ExposeEnum only supports unit variants",
-            )
-            .to_compile_error()
-            .into();
-        }
-    }
-
-    // Precompute the JS names at macro time
-    let set_variants = variants.iter().map(|v| {
-        let variant_ident = &v.ident;
-        let js_key = v.ident.to_string().to_case(Case::Constant); // e.g. "MY_VARIANT"
-        quote! {
-            object.set(#js_key, #name::#variant_ident)?;
-        }
-    });
-
-    // Also precompute the exported object name without the "Js" prefix
-    let type_name = name.to_string();
-    let export_name = type_name
-        .strip_prefix("Js")
-        .unwrap_or(&type_name)
-        .to_string();
-
-    // Generate the full impl
-    let expanded = quote! {
-        impl #name {
-            /// Registers this enum in the JS global scope with each variant as a property
-            pub fn register(ctx: &rquickjs::Ctx) -> rquickjs::Result<()> {
-                let object = rquickjs::Object::new(ctx.clone())?;
-                #(#set_variants)*
-
-                ctx.globals().set(#export_name, object)?;
-                Ok(())
-            }
-        }
-    };
-
-    expanded.into()
-}
+// TODO: use https://github.com/rquickjs/rquickjs-serde
 
 #[proc_macro_derive(FromJsObject)]
 pub fn derive_from_js_object(input: TokenStream) -> TokenStream {
@@ -119,6 +60,40 @@ pub fn derive_from_js_object(input: TokenStream) -> TokenStream {
                 #(#build_fields)*
 
                 Ok(result)
+            }
+        }
+    };
+
+    expanded.into()
+}
+
+#[proc_macro_derive(IntoSerde)]
+pub fn into_serde(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = &input.ident;
+
+    // Generate the full impl
+    let expanded = quote! {
+        impl<'js> rquickjs::IntoJs<'js> for #name {
+            fn into_js(self, ctx: &rquickjs::Ctx<'js>) -> rquickjs::Result<rquickjs::Value<'js>> {
+                Ok(rquickjs_serde::to_value(ctx.clone(), &self).unwrap()) // TODO: remove unwrap
+            }
+        }
+    };
+
+    expanded.into()
+}
+
+#[proc_macro_derive(FromSerde)]
+pub fn from_serde(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = &input.ident;
+
+    // Generate the full impl
+    let expanded = quote! {
+        impl<'js> rquickjs::FromJs<'js> for #name {
+            fn from_js(_: &rquickjs::Ctx<'js>, v: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
+                Ok(rquickjs_serde::from_value(v).unwrap()) // TODO: remove unwrap
             }
         }
     };

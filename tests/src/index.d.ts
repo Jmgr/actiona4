@@ -24,182 +24,182 @@ declare function sleep(ms: number): Task<void>;
  */
 declare function exit(): void;
 declare enum FlipDirection {
-    HORIZONTAL,
+    Horizontal,
 
-    VERTICAL,
+    Vertical,
 }
 /**
  * Resize filters
  */
 declare enum ResizeFilter {
-    NEAREST,
+    Nearest,
 
-    LINEAR,
+    Linear,
 
-    CUBIC,
+    Cubic,
 
-    GAUSSIAN,
+    Gaussian,
 
-    LANCZOS_3,
+    Lanczos3,
 }
 /**
  * Interpolation algorithms used for rotations
  */
 declare enum Interpolation {
-    NEAREST,
+    Nearest,
 
-    BILINEAR,
+    Bilinear,
 
-    BICUBIC,
+    Bicubic,
 }
 declare enum ClipboardMode {
-    CLIPBOARD,
+    Clipboard,
 
     /**
      * @platform only works on Linux
      */
-    SELECTION,
+    Selection,
 }
 declare enum Key {
-    ALT,
+    Alt,
 
-    BACKSPACE,
+    Backspace,
 
-    CANCEL,
+    Cancel,
 
-    CAPS_LOCK,
+    CapsLock,
 
-    CLEAR,
+    Clear,
 
-    CONTROL,
+    Control,
 
-    DELETE,
+    Delete,
 
-    DOWN_ARROW,
+    DownArrow,
 
-    END,
+    End,
 
-    ESCAPE,
+    Escape,
 
-    EXECUTE,
+    Execute,
 
-    F_1,
+    F1,
 
-    F_2,
+    F2,
 
-    F_3,
+    F3,
 
-    F_4,
+    F4,
 
-    F_5,
+    F5,
 
-    F_6,
+    F6,
 
-    F_7,
+    F7,
 
-    F_8,
+    F8,
 
-    F_9,
+    F9,
 
-    F_10,
+    F10,
 
-    F_11,
+    F11,
 
-    F_12,
+    F12,
 
-    F_13,
+    F13,
 
-    F_14,
+    F14,
 
-    F_15,
+    F15,
 
-    F_16,
+    F16,
 
-    F_17,
+    F17,
 
-    F_18,
+    F18,
 
-    F_19,
+    F19,
 
-    F_20,
+    F20,
 
-    F_21,
+    F21,
 
-    F_22,
+    F22,
 
-    F_23,
+    F23,
 
-    F_24,
+    F24,
 
-    HANGUL,
+    Hangul,
 
-    HANJA,
+    Hanja,
 
-    HELP,
+    Help,
 
-    HOME,
+    Home,
 
-    INSERT,
+    Insert,
 
-    KANJI,
+    Kanji,
 
-    L_CONTROL,
+    LControl,
 
-    LEFT_ARROW,
+    LeftArrow,
 
-    L_MENU,
+    LMenu,
 
-    L_SHIFT,
+    LShift,
 
-    MEDIA_NEXT_TRACK,
+    MediaNextTrack,
 
-    MEDIA_PLAY_PAUSE,
+    MediaPlayPause,
 
-    MEDIA_PREV_TRACK,
+    MediaPrevTrack,
 
-    MEDIA_STOP,
+    MediaStop,
 
-    META,
+    Meta,
 
-    MODE_CHANGE,
+    ModeChange,
 
-    NUMLOCK,
+    Numlock,
 
-    OPTION,
+    Option,
 
-    PAGE_DOWN,
+    PageDown,
 
-    PAGE_UP,
+    PageUp,
 
-    PAUSE,
+    Pause,
 
-    PRINT_SCR,
+    PrintScr,
 
-    R_CONTROL,
+    RControl,
 
-    RETURN,
+    Return,
 
-    RIGHT_ARROW,
+    RightArrow,
 
-    R_SHIFT,
+    RShift,
 
-    SELECT,
+    Select,
 
-    SHIFT,
+    Shift,
 
-    SPACE,
+    Space,
 
-    TAB,
+    Tab,
 
-    UP_ARROW,
+    UpArrow,
 
-    VOLUME_DOWN,
+    VolumeDown,
 
-    VOLUME_MUTE,
+    VolumeMute,
 
-    VOLUME_UP,
+    VolumeUp,
 
-    WINDOWS,
+    Windows,
 }
 /**
  * Mouse button.
@@ -208,32 +208,32 @@ declare enum Button {
     /**
      * Left button
      */
-    LEFT,
+    Left,
 
     /**
      * Middle button
      */
-    MIDDLE,
+    Middle,
 
     /**
      * Right button
      */
-    RIGHT,
+    Right,
 
     /**
      * Back button
      */
-    BACK,
+    Back,
 
     /**
      * Forward button
      */
-    FORWARD,
+    Forward,
 }
 declare enum Axis {
-    HORIZONTAL,
+    Horizontal,
 
-    VERTICAL,
+    Vertical,
 }
 /**
  * Tweening functions for smooth movement.
@@ -242,192 +242,192 @@ declare enum Tween {
     /**
      * Starts slowly, then accelerates with an overshoot.
      */
-    BACK_IN,
+    BackIn,
 
     /**
      * Starts and ends with an overshoot, accelerating in between.
      */
-    BACK_IN_OUT,
+    BackInOut,
 
     /**
      * Starts quickly, then decelerates with an overshoot.
      */
-    BACK_OUT,
+    BackOut,
 
     /**
      * Starts by bouncing off the start point.
      */
-    BOUNCE_IN,
+    BounceIn,
 
     /**
      * Bounces at both the start and end points.
      */
-    BOUNCE_IN_OUT,
+    BounceInOut,
 
     /**
      * Ends with a bounce effect.
      */
-    BOUNCE_OUT,
+    BounceOut,
 
     /**
      * Starts slowly and accelerates in a circular motion.
      */
-    CIRC_IN,
+    CircIn,
 
     /**
      * Starts and ends slowly with a circular motion.
      */
-    CIRC_IN_OUT,
+    CircInOut,
 
     /**
      * Ends slowly with a circular motion.
      */
-    CIRC_OUT,
+    CircOut,
 
     /**
      * Starts slowly and accelerates cubically.
      */
-    CUBIC_IN,
+    CubicIn,
 
     /**
      * Starts and ends slowly with a cubic acceleration.
      */
-    CUBIC_IN_OUT,
+    CubicInOut,
 
     /**
      * Ends slowly with a cubic deceleration.
      */
-    CUBIC_OUT,
+    CubicOut,
 
     /**
      * Starts with an elastic effect, overshooting the target.
      */
-    ELASTIC_IN,
+    ElasticIn,
 
     /**
      * Starts and ends with an elastic effect.
      */
-    ELASTIC_IN_OUT,
+    ElasticInOut,
 
     /**
      * Ends with an elastic effect, overshooting the target.
      */
-    ELASTIC_OUT,
+    ElasticOut,
 
     /**
      * Starts slowly and accelerates exponentially.
      */
-    EXPO_IN,
+    ExpoIn,
 
     /**
      * Starts and ends slowly with an exponential acceleration.
      */
-    EXPO_IN_OUT,
+    ExpoInOut,
 
     /**
      * Ends slowly with an exponential deceleration.
      */
-    EXPO_OUT,
+    ExpoOut,
 
     /**
      * A linear tween with no acceleration or deceleration.
      */
-    LINEAR,
+    Linear,
 
     /**
      * Starts slowly and accelerates quadratically.
      */
-    QUAD_IN,
+    QuadIn,
 
     /**
      * Starts and ends slowly with a quadratic acceleration.
      */
-    QUAD_IN_OUT,
+    QuadInOut,
 
     /**
      * Ends slowly with a quadratic deceleration.
      */
-    QUAD_OUT,
+    QuadOut,
 
     /**
      * Starts slowly and accelerates quartically.
      */
-    QUART_IN,
+    QuartIn,
 
     /**
      * Starts and ends slowly with a quartic acceleration.
      */
-    QUART_IN_OUT,
+    QuartInOut,
 
     /**
      * Ends slowly with a quartic deceleration.
      */
-    QUART_OUT,
+    QuartOut,
 
     /**
      * Starts slowly and accelerates quintically.
      */
-    QUINT_IN,
+    QuintIn,
 
     /**
      * Starts and ends slowly with a quintic acceleration.
      */
-    QUINT_IN_OUT,
+    QuintInOut,
 
     /**
      * Ends slowly with a quintic deceleration.
      */
-    QUINT_OUT,
+    QuintOut,
 
     /**
      * Starts slowly and accelerates sinusoidally.
      */
-    SINE_IN,
+    SineIn,
 
     /**
      * Starts and ends slowly with a sinusoidal acceleration.
      */
-    SINE_IN_OUT,
+    SineInOut,
 
     /**
      * Ends slowly with a sinusoidal deceleration.
      */
-    SINE_OUT,
+    SineOut,
 }
 declare enum MessageBoxIcon {
-    INFO,
+    Info,
 
-    WARNING,
+    Warning,
 
-    ERROR,
+    Error,
 }
 declare enum MessageBoxResult {
-    YES,
+    Yes,
 
-    NO,
+    No,
 
-    OK,
+    Ok,
 
-    CANCEL,
+    Cancel,
 }
 declare enum Method {
-    GET,
+    Get,
 
-    POST,
+    Post,
 
-    PUT,
+    Put,
 
-    DELETE,
+    Delete,
 
-    HEAD,
+    Head,
 
-    OPTIONS,
+    Options,
 
-    CONNECT,
+    Connect,
 
-    PATCH,
+    Patch,
 
-    TRACE,
+    Trace,
 }
 declare interface Clipboard {
     setText(text: string, mode?: ClipboardMode): Promise<void>;
@@ -1548,8 +1548,8 @@ declare class Image {
      * TODO
      */
     findImage(_image: Image, options?: FindImageOptions): void;
-    width(): number;
     height(): number;
+    width(): number;
 }
 /**
  * A Color.
@@ -2204,6 +2204,21 @@ declare class Filesystem {
     static isSymlink(path: string): Promise<boolean>;
 }
 /**
+ * An iterator over the variants of [JsFlipDirection]
+ */
+declare interface FlipDirectionIter {
+}
+/**
+ * An iterator over the variants of [JsResizeFilter]
+ */
+declare interface ResizeFilterIter {
+}
+/**
+ * An iterator over the variants of [JsInterpolation]
+ */
+declare interface InterpolationIter {
+}
+/**
  * Resize options
  */
 declare interface ResizeOptions {
@@ -2357,7 +2372,7 @@ declare interface Screenshot {
 }
 declare const screenshot: Screenshot;
 declare interface Ui {
-    displayImage(image: Image, options?: WindowOptions): void;
+    static messageBox(text: string, options?: MessageBoxOptions): Promise<MessageBoxResult>;
 }
 declare const ui: Ui;
 declare interface Web {
@@ -2496,6 +2511,7 @@ declare class Size {
 }
 declare class MessageBoxButtons {
     private constructor();
+    static intoInner(self: MessageBoxButtons): MessageBoxButtons;
     static ok(): MessageBoxButtons;
     static okCustom(ok_label: string): MessageBoxButtons;
     static okCancel(): MessageBoxButtons;
@@ -2504,10 +2520,6 @@ declare class MessageBoxButtons {
     static yesNoCancel(): MessageBoxButtons;
     static yesNoCancelCustom(yes_label: string, no_label: string, cancel_label: string): MessageBoxButtons;
 }
-declare class MessageBox {
-    private constructor();
-    static show(text: string, title: string, buttons?: MessageBoxButtons, icon?: MessageBoxIcon): Promise<MessageBoxResult>;
-}
 /**
  * Multipart form
  */
@@ -2515,17 +2527,12 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
-    current(): number;
     finished(): boolean;
     total(): number;
+    current(): number;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
-}
-/**
- * Window options
- */
-declare interface WindowOptions {
 }
 /**
  * Web options

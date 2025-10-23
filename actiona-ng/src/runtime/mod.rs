@@ -156,7 +156,6 @@ impl Runtime {
 
         let mouse = JsMouse::new(runtime.clone()).await?;
         let keyboard = JsKeyboard::new(runtime.clone())?;
-        let ui = JsUi::new(runtime.clone(), displays.clone())?;
         let console = JsConsole::new(runtime.clone())?;
         let js_displays = JsDisplays::new(displays.clone())?;
         let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
@@ -198,7 +197,7 @@ impl Runtime {
                     // Singletons
                     register_singleton_class::<JsMouse>(&ctx, mouse)?;
                     register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
-                    register_singleton_class::<JsUi>(&ctx, ui)?;
+                    register_singleton_class::<JsUi>(&ctx, JsUi::default())?;
                     register_singleton_class::<JsConsole>(&ctx, console)?;
                     register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
                     register_singleton_class::<JsScreenshot>(&ctx, screenshot)?;
@@ -441,18 +440,33 @@ impl Runtime {
 #[cfg(test)]
 mod tests {
     use derive_more::Display;
-    use macros::ExposeEnum;
+    use macros::{FromSerde, IntoSerde};
     use rquickjs::{Function, Object, Value, atom::PredefinedAtom, class::Trace};
+    use serde::{Deserialize, Serialize};
+    use strum::EnumIter;
 
     use super::*;
-    use crate::core::js::classes::{SingletonClass, ValueClass, register_singleton_class};
+    use crate::core::js::classes::{
+        SingletonClass, ValueClass, register_enum, register_singleton_class,
+    };
 
     fn print<'js>(value: Value<'js>) {
         println!("{value:?}");
     }
 
-    #[derive(Clone, Copy, Debug, Display, Eq, ExposeEnum, JsLifetime, PartialEq, Trace)]
-    #[rquickjs::class]
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        Display,
+        Eq,
+        PartialEq,
+        Serialize,
+        Deserialize,
+        EnumIter,
+        IntoSerde,
+        FromSerde,
+    )]
     enum TestEnum {
         A,
         B,
@@ -508,7 +522,7 @@ mod tests {
                 ctx.globals()
                     .prop("print", Function::new(ctx.clone(), print))
                     .unwrap();
-                TestEnum::register(&ctx).unwrap();
+                register_enum::<TestEnum>(&ctx).unwrap();
                 register_singleton_class::<TestSingletonStruct>(
                     &ctx,
                     TestSingletonStruct::default(),
