@@ -17,14 +17,14 @@ pub mod js;
     Clone,
     Debug,
     Default,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    EnumIter,
-    IntoSerde,
-    FromSerde,
 )]
 pub enum MessageBoxIcon {
     #[default]
@@ -72,7 +72,7 @@ impl From<MessageBoxButtons> for tauri_plugin_dialog::MessageDialogButtons {
 }
 
 #[derive(
-    Clone, Debug, Display, Eq, PartialEq, Serialize, Deserialize, EnumIter, IntoSerde, FromSerde,
+    Clone, Debug, Deserialize, Display, EnumIter, Eq, FromSerde, IntoSerde, PartialEq, Serialize,
 )]
 pub enum MessageBoxResult {
     Yes,
@@ -95,7 +95,7 @@ impl From<tauri_plugin_dialog::MessageDialogResult> for MessageBoxResult {
 
 /// Message box options
 /// @options
-#[derive(Clone, Debug, FromJsObject, Default)]
+#[derive(Clone, Debug, Default, FromJsObject)]
 pub struct MessageBoxOptions {
     /// @default null
     title: Option<String>,

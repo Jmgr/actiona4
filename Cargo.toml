@@ -85,7 +85,9 @@ rquickjs = { git = "https://github.com/Jmgr/rquickjs.git", branch = "add-filenam
 rquickjs-serde = { git = "https://github.com/Jmgr/rquickjs-serde.git", branch = "tmp-update-deps" }
 rustdoc-types = "0.56.0"
 serde = "1.0.225"
+serde-name = "0.2.1"
 serde_json = "1.0.145"
+serde_plain = "1.0.2"
 slotmap = { version = "1.0.7", features = ["serde"] }
 strum = { version = "0.27.2", features = ["derive"] }
 swc_common = { version = "14.0.4", features = ["tty-emitter", "sourcemap"] }
@@ -119,8 +121,6 @@ tokio-util = { version = "0.7.16", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.5.0"
-serde_plain = "1.0.2"
-serde-name = "0.2.1"
 
 # Windows
 pe-parser = "0.7.0"
@@ -152,11 +152,14 @@ x11rb-async = { version = "0.13.2", features = [
 zbus = { version = "5.11.0", default-features = false, features = ["tokio"] }
 
 # Dev dependencies
+askama = "0.14.0"
 base64 = "0.22.1"
+bon = "3.8.1"
 console-subscriber = "0.4.1"
 httptest = "0.16.3"
 libtest-mimic-collect = { path = "../libtest-mimic-collect" }
 pretty_assertions = "1.4.1"
+rstest = "0.26.1"
 tempfile = "3.22.0"
 tracing-subscriber = { version = "0.3.20", features = [
     "fmt",
@@ -164,9 +167,6 @@ tracing-subscriber = { version = "0.3.20", features = [
     "registry",
 ] }
 tracing-test = "0.2.5"
-rstest = "0.26.1"
-askama = "0.14.0"
-bon = "3.8.1"
 
 # Build dependencies
 built = "0.8.0"

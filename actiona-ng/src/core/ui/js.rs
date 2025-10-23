@@ -17,7 +17,7 @@ pub type JsMessageBoxIcon = super::MessageBoxIcon;
 pub type JsMessageBoxResult = super::MessageBoxResult;
 
 /// @singleton
-#[derive(Debug, JsLifetime, Default)]
+#[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Ui")]
 pub struct JsUi {}
 

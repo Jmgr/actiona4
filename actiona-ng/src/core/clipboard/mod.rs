@@ -55,14 +55,14 @@ pub type Result<T> = std::result::Result<T, Error>;
     Copy,
     Debug,
     Default,
-    Display,
-    Eq,
-    Serialize,
     Deserialize,
-    PartialEq,
-    IntoSerde,
-    FromSerde,
+    Display,
     EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
 )]
 pub enum ClipboardMode {
     #[default]

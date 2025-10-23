@@ -46,14 +46,14 @@ pub mod js;
     Copy,
     Debug,
     Default,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    EnumIter,
-    IntoSerde,
-    FromSerde,
 )]
 pub enum Method {
     #[default]

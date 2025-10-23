@@ -82,15 +82,15 @@ pub type Result<T> = std::result::Result<T, MouseError>;
     Clone,
     Copy,
     Debug,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
     Hash,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    EnumIter,
-    IntoSerde,
-    FromSerde,
 )]
 pub enum Button {
     // TODO: should that ^ be Trace?
@@ -128,14 +128,14 @@ impl From<Button> for enigo::Button {
     Clone,
     Copy,
     Debug,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    EnumIter,
-    IntoSerde,
-    FromSerde,
 )]
 pub enum Axis {
     Horizontal,
@@ -158,15 +158,15 @@ impl From<Axis> for enigo::Axis {
     Clone,
     Copy,
     Debug,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
     Hash,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    EnumIter,
-    IntoSerde,
-    FromSerde,
 )]
 pub enum Tween {
     /// Starts slowly, then accelerates with an overshoot.

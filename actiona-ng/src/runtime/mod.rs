@@ -458,14 +458,14 @@ mod tests {
         Clone,
         Copy,
         Debug,
+        Deserialize,
         Display,
+        EnumIter,
         Eq,
+        FromSerde,
+        IntoSerde,
         PartialEq,
         Serialize,
-        Deserialize,
-        EnumIter,
-        IntoSerde,
-        FromSerde,
     )]
     enum TestEnum {
         A,

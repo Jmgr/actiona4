@@ -48,14 +48,14 @@ use crate::{
     Clone,
     Copy,
     Debug,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    IntoSerde,
-    FromSerde,
-    EnumIter,
 )]
 #[serde(rename = "FlipDirection")]
 pub enum JsFlipDirection {
@@ -68,14 +68,14 @@ pub enum JsFlipDirection {
     Clone,
     Copy,
     Debug,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    IntoSerde,
-    FromSerde,
-    EnumIter,
 )]
 #[serde(rename = "ResizeFilter")]
 pub enum JsResizeFilter {
@@ -105,14 +105,14 @@ impl From<JsResizeFilter> for FilterType {
     Clone,
     Copy,
     Debug,
+    Deserialize,
     Display,
+    EnumIter,
     Eq,
+    FromSerde,
+    IntoSerde,
     PartialEq,
     Serialize,
-    Deserialize,
-    IntoSerde,
-    FromSerde,
-    EnumIter,
 )]
 #[serde(rename = "Interpolation")]
 pub enum JsInterpolation {
