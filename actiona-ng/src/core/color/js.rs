@@ -63,149 +63,149 @@ impl<'js> FromParam<'js> for JsColorParam {
 /// @prop b: number // Blue (should be between 0-255)
 /// @prop a: number // Alpha (should be between 0-255)
 ///
-/// @const RED
-/// @const GREEN
-/// @const BLUE
-/// @const WHITE
-/// @const BLACK
-/// @const TRANSPARENT
+/// @const Red
+/// @const Green
+/// @const Blue
+/// @const White
+/// @const Black
+/// @const Transparent
 ///
-/// @const ALICE_BLUE
-/// @const ANTIQUE_WHITE
-/// @const AQUA
-/// @const AQUAMARINE
-/// @const AZURE
-/// @const BEIGE
-/// @const BISQUE
-/// @const BLANCHED_ALMOND
-/// @const BLUE_VIOLET
-/// @const BROWN
-/// @const BURLY_WOOD
-/// @const CADET_BLUE
-/// @const CHARTREUSE
-/// @const CHOCOLATE
-/// @const CORAL
-/// @const CORNFLOWER_BLUE
-/// @const CORNSILK
-/// @const CRIMSON
-/// @const CYAN
-/// @const DARK_BLUE
-/// @const DARK_CYAN
-/// @const DARK_GOLDEN_ROD
-/// @const DARK_GRAY
-/// @const DARK_GREEN
-/// @const DARK_KHAKI
-/// @const DARK_MAGENTA
-/// @const DARK_OLIVE_GREEN
-/// @const DARK_ORANGE
-/// @const DARK_ORCHID
-/// @const DARK_RED
-/// @const DARK_SALMON
-/// @const DARK_SEA_GREEN
-/// @const DARK_SLATE_BLUE
-/// @const DARK_SLATE_GRAY
-/// @const DARK_TURQUOISE
-/// @const DARK_VIOLET
-/// @const DEEP_PINK
-/// @const DEEP_SKY_BLUE
-/// @const DIM_GRAY
-/// @const DODGER_BLUE
-/// @const FIREBRICK
-/// @const FLORAL_WHITE
-/// @const FOREST_GREEN
-/// @const FUCHSIA
-/// @const GAINSBORO
-/// @const GHOST_WHITE
-/// @const GOLD
-/// @const GOLDEN_ROD
-/// @const GRAY
-/// @const GREEN_YELLOW
-/// @const HONEY_DEW
-/// @const HOT_PINK
-/// @const INDIAN_RED
-/// @const INDIGO
-/// @const IVORY
-/// @const KHAKI
-/// @const LAVENDER
-/// @const LAVENDER_BLUSH
-/// @const LAWN_GREEN
-/// @const LEMON_CHIFFON
-/// @const LIGHT_BLUE
-/// @const LIGHT_CORAL
-/// @const LIGHT_CYAN
-/// @const LIGHT_GOLDEN_ROD_YELLOW
-/// @const LIGHT_GRAY
-/// @const LIGHT_GREEN
-/// @const LIGHT_PINK
-/// @const LIGHT_SALMON
-/// @const LIGHT_SEA_GREEN
-/// @const LIGHT_SKY_BLUE
-/// @const LIGHT_SLATE_GRAY
-/// @const LIGHT_STEEL_BLUE
-/// @const LIGHT_YELLOW
-/// @const LIME
-/// @const LIME_GREEN
-/// @const LINEN
-/// @const MAGENTA
-/// @const MAROON
-/// @const MEDIUM_AQUA_MARINE
-/// @const MEDIUM_BLUE
-/// @const MEDIUM_ORCHID
-/// @const MEDIUM_PURPLE
-/// @const MEDIUM_SEA_GREEN
-/// @const MEDIUM_SLATE_BLUE
-/// @const MEDIUM_SPRING_GREEN
-/// @const MEDIUM_TURQUOISE
-/// @const MEDIUM_VIOLET_RED
-/// @const MIDNIGHT_BLUE
-/// @const MINT_CREAM
-/// @const MISTY_ROSE
-/// @const MOCCASIN
-/// @const NAVAJO_WHITE
-/// @const NAVY
-/// @const OLD_LACE
-/// @const OLIVE
-/// @const OLIVE_DRAB
-/// @const ORANGE
-/// @const ORANGE_RED
-/// @const ORCHID
-/// @const PALE_GOLDEN_ROD
-/// @const PALE_GREEN
-/// @const PALE_TURQUOISE
-/// @const PALE_VIOLET_RED
-/// @const PAPAYA_WHIP
-/// @const PEACH_PUFF
-/// @const PERU
-/// @const PINK
-/// @const PLUM
-/// @const POWDER_BLUE
-/// @const PURPLE
-/// @const REBECCA_PURPLE
-/// @const ROSY_BROWN
-/// @const ROYAL_BLUE
-/// @const SADDLE_BROWN
-/// @const SALMON
-/// @const SANDY_BROWN
-/// @const SEA_GREEN
-/// @const SEA_SHELL
-/// @const SIENNA
-/// @const SILVER
-/// @const SKY_BLUE
-/// @const SLATE_BLUE
-/// @const SLATE_GRAY
-/// @const SNOW
-/// @const SPRING_GREEN
-/// @const STEEL_BLUE
-/// @const TAN
-/// @const TEAL
-/// @const THISTLE
-/// @const TOMATO
-/// @const TURQUOISE
-/// @const VIOLET
-/// @const WHEAT
-/// @const WHITE_SMOKE
-/// @const YELLOW
-/// @const YELLOW_GREEN
+/// @const AliceBlue
+/// @const AntiqueWhite
+/// @const Aqua
+/// @const Aquamarine
+/// @const Azure
+/// @const Beige
+/// @const Bisque
+/// @const BlanchedAlmond
+/// @const BlueViolet
+/// @const Brown
+/// @const BurlyWood
+/// @const CadetBlue
+/// @const Chartreuse
+/// @const Chocolate
+/// @const Coral
+/// @const CornflowerBlue
+/// @const Cornsilk
+/// @const Crimson
+/// @const Cyan
+/// @const DarkBlue
+/// @const DarkCyan
+/// @const DarkGoldenRod
+/// @const DarkGray
+/// @const DarkGreen
+/// @const DarkKhaki
+/// @const DarkMagenta
+/// @const DarkOliveGreen
+/// @const DarkOrange
+/// @const DarkOrchid
+/// @const DarkRed
+/// @const DarkSalmon
+/// @const DarkSeaGreen
+/// @const DarkSlateBlue
+/// @const DarkSlateGray
+/// @const DarkTurquoise
+/// @const DarkViolet
+/// @const DeepPink
+/// @const DeepSkyBlue
+/// @const DimGray
+/// @const DodgerBlue
+/// @const Firebrick
+/// @const FloralWhite
+/// @const ForestGreen
+/// @const Fuchsia
+/// @const Gainsboro
+/// @const GhostWhite
+/// @const Gold
+/// @const GoldenRod
+/// @const Gray
+/// @const GreenYellow
+/// @const HoneyDew
+/// @const HotPink
+/// @const IndianRed
+/// @const Indigo
+/// @const Ivory
+/// @const Khaki
+/// @const Lavender
+/// @const LavenderBlush
+/// @const LawnGreen
+/// @const LemonChiffon
+/// @const LightBlue
+/// @const LightCoral
+/// @const LightCyan
+/// @const LightGoldenRodYellow
+/// @const LightGray
+/// @const LightGreen
+/// @const LightPink
+/// @const LightSalmon
+/// @const LightSeaGreen
+/// @const LightSkyBlue
+/// @const LightSlateGray
+/// @const LightSteelBlue
+/// @const LightYellow
+/// @const Lime
+/// @const LimeGreen
+/// @const Linen
+/// @const Magenta
+/// @const Maroon
+/// @const MediumAquaMarine
+/// @const MediumBlue
+/// @const MediumOrchid
+/// @const MediumPurple
+/// @const MediumSeaGreen
+/// @const MediumSlateBlue
+/// @const MediumSpringGreen
+/// @const MediumTurquoise
+/// @const MediumVioletRed
+/// @const MidnightBlue
+/// @const MintCream
+/// @const MistyRose
+/// @const Moccasin
+/// @const NavajoWhite
+/// @const Navy
+/// @const OldLace
+/// @const Olive
+/// @const OliveDrab
+/// @const Orange
+/// @const OrangeRed
+/// @const Orchid
+/// @const PaleGoldenRod
+/// @const PaleGreen
+/// @const PaleTurquoise
+/// @const PaleVioletRed
+/// @const PapayaWhip
+/// @const PeachPuff
+/// @const Peru
+/// @const Pink
+/// @const Plum
+/// @const PowderBlue
+/// @const Purple
+/// @const RebeccaPurple
+/// @const RosyBrown
+/// @const RoyalBlue
+/// @const SaddleBrown
+/// @const Salmon
+/// @const SandyBrown
+/// @const SeaGreen
+/// @const SeaShell
+/// @const Sienna
+/// @const Silver
+/// @const SkyBlue
+/// @const SlateBlue
+/// @const SlateGray
+/// @const Snow
+/// @const SpringGreen
+/// @const SteelBlue
+/// @const Tan
+/// @const Teal
+/// @const Thistle
+/// @const Tomato
+/// @const Turquoise
+/// @const Violet
+/// @const Wheat
+/// @const WhiteSmoke
+/// @const Yellow
+/// @const YellowGreen
 ///
 /// ```js
 /// let c = new Color(128, 255, 255, 255);
@@ -219,150 +219,150 @@ pub struct JsColor {
 impl<'js> ValueClass<'js> for JsColor {
     fn extra_registration(object: &Object<'js>) -> rquickjs::Result<()> {
         // Basic colors
-        object.prop("RED", Self::new(255, 0, 0, 255))?;
-        object.prop("GREEN", Self::new(0, 128, 0, 255))?; // CSS green is #008000
-        object.prop("BLUE", Self::new(0, 0, 255, 255))?;
-        object.prop("WHITE", Self::new(255, 255, 255, 255))?;
-        object.prop("BLACK", Self::new(0, 0, 0, 255))?;
-        object.prop("TRANSPARENT", Self::new(0, 0, 0, 0))?;
+        object.prop("Red", Self::new(255, 0, 0, 255))?;
+        object.prop("Green", Self::new(0, 128, 0, 255))?; // CSS green is #008000
+        object.prop("Blue", Self::new(0, 0, 255, 255))?;
+        object.prop("White", Self::new(255, 255, 255, 255))?;
+        object.prop("Black", Self::new(0, 0, 0, 255))?;
+        object.prop("Transparent", Self::new(0, 0, 0, 0))?;
 
         // CSS colors
-        object.prop("ALICE_BLUE", Self::new(240, 248, 255, 255))?;
-        object.prop("ANTIQUE_WHITE", Self::new(250, 235, 215, 255))?;
-        object.prop("AQUA", Self::new(0, 255, 255, 255))?;
-        object.prop("AQUAMARINE", Self::new(127, 255, 212, 255))?;
-        object.prop("AZURE", Self::new(240, 255, 255, 255))?;
-        object.prop("BEIGE", Self::new(245, 245, 220, 255))?;
-        object.prop("BISQUE", Self::new(255, 228, 196, 255))?;
-        object.prop("BLANCHED_ALMOND", Self::new(255, 235, 205, 255))?;
-        object.prop("BLUE_VIOLET", Self::new(138, 43, 226, 255))?;
-        object.prop("BROWN", Self::new(165, 42, 42, 255))?;
-        object.prop("BURLY_WOOD", Self::new(222, 184, 135, 255))?;
-        object.prop("CADET_BLUE", Self::new(95, 158, 160, 255))?;
-        object.prop("CHARTREUSE", Self::new(127, 255, 0, 255))?;
-        object.prop("CHOCOLATE", Self::new(210, 105, 30, 255))?;
-        object.prop("CORAL", Self::new(255, 127, 80, 255))?;
-        object.prop("CORNFLOWER_BLUE", Self::new(100, 149, 237, 255))?;
-        object.prop("CORNSILK", Self::new(255, 248, 220, 255))?;
-        object.prop("CRIMSON", Self::new(220, 20, 60, 255))?;
-        object.prop("CYAN", Self::new(0, 255, 255, 255))?;
-        object.prop("DARK_BLUE", Self::new(0, 0, 139, 255))?;
-        object.prop("DARK_CYAN", Self::new(0, 139, 139, 255))?;
-        object.prop("DARK_GOLDEN_ROD", Self::new(184, 134, 11, 255))?;
-        object.prop("DARK_GRAY", Self::new(169, 169, 169, 255))?;
-        object.prop("DARK_GREEN", Self::new(0, 100, 0, 255))?;
-        object.prop("DARK_KHAKI", Self::new(189, 183, 107, 255))?;
-        object.prop("DARK_MAGENTA", Self::new(139, 0, 139, 255))?;
-        object.prop("DARK_OLIVE_GREEN", Self::new(85, 107, 47, 255))?;
-        object.prop("DARK_ORANGE", Self::new(255, 140, 0, 255))?;
-        object.prop("DARK_ORCHID", Self::new(153, 50, 204, 255))?;
-        object.prop("DARK_RED", Self::new(139, 0, 0, 255))?;
-        object.prop("DARK_SALMON", Self::new(233, 150, 122, 255))?;
-        object.prop("DARK_SEA_GREEN", Self::new(143, 188, 143, 255))?;
-        object.prop("DARK_SLATE_BLUE", Self::new(72, 61, 139, 255))?;
-        object.prop("DARK_SLATE_GRAY", Self::new(47, 79, 79, 255))?;
-        object.prop("DARK_TURQUOISE", Self::new(0, 206, 209, 255))?;
-        object.prop("DARK_VIOLET", Self::new(148, 0, 211, 255))?;
-        object.prop("DEEP_PINK", Self::new(255, 20, 147, 255))?;
-        object.prop("DEEP_SKY_BLUE", Self::new(0, 191, 255, 255))?;
-        object.prop("DIM_GRAY", Self::new(105, 105, 105, 255))?;
-        object.prop("DODGER_BLUE", Self::new(30, 144, 255, 255))?;
-        object.prop("FIREBRICK", Self::new(178, 34, 34, 255))?;
-        object.prop("FLORAL_WHITE", Self::new(255, 250, 240, 255))?;
-        object.prop("FOREST_GREEN", Self::new(34, 139, 34, 255))?;
-        object.prop("FUCHSIA", Self::new(255, 0, 255, 255))?;
-        object.prop("GAINSBORO", Self::new(220, 220, 220, 255))?;
-        object.prop("GHOST_WHITE", Self::new(248, 248, 255, 255))?;
-        object.prop("GOLD", Self::new(255, 215, 0, 255))?;
-        object.prop("GOLDEN_ROD", Self::new(218, 165, 32, 255))?;
-        object.prop("GRAY", Self::new(128, 128, 128, 255))?;
-        object.prop("GREEN_YELLOW", Self::new(173, 255, 47, 255))?;
-        object.prop("HONEY_DEW", Self::new(240, 255, 240, 255))?;
-        object.prop("HOT_PINK", Self::new(255, 105, 180, 255))?;
-        object.prop("INDIAN_RED", Self::new(205, 92, 92, 255))?;
-        object.prop("INDIGO", Self::new(75, 0, 130, 255))?;
-        object.prop("IVORY", Self::new(255, 255, 240, 255))?;
-        object.prop("KHAKI", Self::new(240, 230, 140, 255))?;
-        object.prop("LAVENDER", Self::new(230, 230, 250, 255))?;
-        object.prop("LAVENDER_BLUSH", Self::new(255, 240, 245, 255))?;
-        object.prop("LAWN_GREEN", Self::new(124, 252, 0, 255))?;
-        object.prop("LEMON_CHIFFON", Self::new(255, 250, 205, 255))?;
-        object.prop("LIGHT_BLUE", Self::new(173, 216, 230, 255))?;
-        object.prop("LIGHT_CORAL", Self::new(240, 128, 128, 255))?;
-        object.prop("LIGHT_CYAN", Self::new(224, 255, 255, 255))?;
-        object.prop("LIGHT_GOLDEN_ROD_YELLOW", Self::new(250, 250, 210, 255))?;
-        object.prop("LIGHT_GRAY", Self::new(211, 211, 211, 255))?;
-        object.prop("LIGHT_GREEN", Self::new(144, 238, 144, 255))?;
-        object.prop("LIGHT_PINK", Self::new(255, 182, 193, 255))?;
-        object.prop("LIGHT_SALMON", Self::new(255, 160, 122, 255))?;
-        object.prop("LIGHT_SEA_GREEN", Self::new(32, 178, 170, 255))?;
-        object.prop("LIGHT_SKY_BLUE", Self::new(135, 206, 250, 255))?;
-        object.prop("LIGHT_SLATE_GRAY", Self::new(119, 136, 153, 255))?;
-        object.prop("LIGHT_STEEL_BLUE", Self::new(176, 196, 222, 255))?;
-        object.prop("LIGHT_YELLOW", Self::new(255, 255, 224, 255))?;
-        object.prop("LIME", Self::new(0, 255, 0, 255))?;
-        object.prop("LIME_GREEN", Self::new(50, 205, 50, 255))?;
-        object.prop("LINEN", Self::new(250, 240, 230, 255))?;
-        object.prop("MAGENTA", Self::new(255, 0, 255, 255))?;
-        object.prop("MAROON", Self::new(128, 0, 0, 255))?;
-        object.prop("MEDIUM_AQUA_MARINE", Self::new(102, 205, 170, 255))?;
-        object.prop("MEDIUM_BLUE", Self::new(0, 0, 205, 255))?;
-        object.prop("MEDIUM_ORCHID", Self::new(186, 85, 211, 255))?;
-        object.prop("MEDIUM_PURPLE", Self::new(147, 112, 219, 255))?;
-        object.prop("MEDIUM_SEA_GREEN", Self::new(60, 179, 113, 255))?;
-        object.prop("MEDIUM_SLATE_BLUE", Self::new(123, 104, 238, 255))?;
-        object.prop("MEDIUM_SPRING_GREEN", Self::new(0, 250, 154, 255))?;
-        object.prop("MEDIUM_TURQUOISE", Self::new(72, 209, 204, 255))?;
-        object.prop("MEDIUM_VIOLET_RED", Self::new(199, 21, 133, 255))?;
-        object.prop("MIDNIGHT_BLUE", Self::new(25, 25, 112, 255))?;
-        object.prop("MINT_CREAM", Self::new(245, 255, 250, 255))?;
-        object.prop("MISTY_ROSE", Self::new(255, 228, 225, 255))?;
-        object.prop("MOCCASIN", Self::new(255, 228, 181, 255))?;
-        object.prop("NAVAJO_WHITE", Self::new(255, 222, 173, 255))?;
-        object.prop("NAVY", Self::new(0, 0, 128, 255))?;
-        object.prop("OLD_LACE", Self::new(253, 245, 230, 255))?;
-        object.prop("OLIVE", Self::new(128, 128, 0, 255))?;
-        object.prop("OLIVE_DRAB", Self::new(107, 142, 35, 255))?;
-        object.prop("ORANGE", Self::new(255, 165, 0, 255))?;
-        object.prop("ORANGE_RED", Self::new(255, 69, 0, 255))?;
-        object.prop("ORCHID", Self::new(218, 112, 214, 255))?;
-        object.prop("PALE_GOLDEN_ROD", Self::new(238, 232, 170, 255))?;
-        object.prop("PALE_GREEN", Self::new(152, 251, 152, 255))?;
-        object.prop("PALE_TURQUOISE", Self::new(175, 238, 238, 255))?;
-        object.prop("PALE_VIOLET_RED", Self::new(219, 112, 147, 255))?;
-        object.prop("PAPAYA_WHIP", Self::new(255, 239, 213, 255))?;
-        object.prop("PEACH_PUFF", Self::new(255, 218, 185, 255))?;
-        object.prop("PERU", Self::new(205, 133, 63, 255))?;
-        object.prop("PINK", Self::new(255, 192, 203, 255))?;
-        object.prop("PLUM", Self::new(221, 160, 221, 255))?;
-        object.prop("POWDER_BLUE", Self::new(176, 224, 230, 255))?;
-        object.prop("PURPLE", Self::new(128, 0, 128, 255))?;
-        object.prop("REBECCA_PURPLE", Self::new(102, 51, 153, 255))?;
-        object.prop("ROSY_BROWN", Self::new(188, 143, 143, 255))?;
-        object.prop("ROYAL_BLUE", Self::new(65, 105, 225, 255))?;
-        object.prop("SADDLE_BROWN", Self::new(139, 69, 19, 255))?;
-        object.prop("SALMON", Self::new(250, 128, 114, 255))?;
-        object.prop("SANDY_BROWN", Self::new(244, 164, 96, 255))?;
-        object.prop("SEA_GREEN", Self::new(46, 139, 87, 255))?;
-        object.prop("SEA_SHELL", Self::new(255, 245, 238, 255))?;
-        object.prop("SIENNA", Self::new(160, 82, 45, 255))?;
-        object.prop("SILVER", Self::new(192, 192, 192, 255))?;
-        object.prop("SKY_BLUE", Self::new(135, 206, 235, 255))?;
-        object.prop("SLATE_BLUE", Self::new(106, 90, 205, 255))?;
-        object.prop("SLATE_GRAY", Self::new(112, 128, 144, 255))?;
-        object.prop("SNOW", Self::new(255, 250, 250, 255))?;
-        object.prop("SPRING_GREEN", Self::new(0, 255, 127, 255))?;
-        object.prop("STEEL_BLUE", Self::new(70, 130, 180, 255))?;
-        object.prop("TAN", Self::new(210, 180, 140, 255))?;
-        object.prop("TEAL", Self::new(0, 128, 128, 255))?;
-        object.prop("THISTLE", Self::new(216, 191, 216, 255))?;
-        object.prop("TOMATO", Self::new(255, 99, 71, 255))?;
-        object.prop("TURQUOISE", Self::new(64, 224, 208, 255))?;
-        object.prop("VIOLET", Self::new(238, 130, 238, 255))?;
-        object.prop("WHEAT", Self::new(245, 222, 179, 255))?;
-        object.prop("WHITE_SMOKE", Self::new(245, 245, 245, 255))?;
-        object.prop("YELLOW", Self::new(255, 255, 0, 255))?;
-        object.prop("YELLOW_GREEN", Self::new(154, 205, 50, 255))?;
+        object.prop("AliceBlue", Self::new(240, 248, 255, 255))?;
+        object.prop("AntiqueWhite", Self::new(250, 235, 215, 255))?;
+        object.prop("Aqua", Self::new(0, 255, 255, 255))?;
+        object.prop("Aquamarine", Self::new(127, 255, 212, 255))?;
+        object.prop("Azure", Self::new(240, 255, 255, 255))?;
+        object.prop("Beige", Self::new(245, 245, 220, 255))?;
+        object.prop("Bisque", Self::new(255, 228, 196, 255))?;
+        object.prop("BlanchedAlmond", Self::new(255, 235, 205, 255))?;
+        object.prop("BlueViolet", Self::new(138, 43, 226, 255))?;
+        object.prop("Brown", Self::new(165, 42, 42, 255))?;
+        object.prop("BurlyWood", Self::new(222, 184, 135, 255))?;
+        object.prop("CadetBlue", Self::new(95, 158, 160, 255))?;
+        object.prop("Chartreuse", Self::new(127, 255, 0, 255))?;
+        object.prop("Chocolate", Self::new(210, 105, 30, 255))?;
+        object.prop("Coral", Self::new(255, 127, 80, 255))?;
+        object.prop("CornflowerBlue", Self::new(100, 149, 237, 255))?;
+        object.prop("Cornsilk", Self::new(255, 248, 220, 255))?;
+        object.prop("Crimson", Self::new(220, 20, 60, 255))?;
+        object.prop("Cyan", Self::new(0, 255, 255, 255))?;
+        object.prop("DarkBlue", Self::new(0, 0, 139, 255))?;
+        object.prop("DarkCyan", Self::new(0, 139, 139, 255))?;
+        object.prop("DarkGoldenRod", Self::new(184, 134, 11, 255))?;
+        object.prop("DarkGray", Self::new(169, 169, 169, 255))?;
+        object.prop("DarkGreen", Self::new(0, 100, 0, 255))?;
+        object.prop("DarkKhaki", Self::new(189, 183, 107, 255))?;
+        object.prop("DarkMagenta", Self::new(139, 0, 139, 255))?;
+        object.prop("DarkOliveGreen", Self::new(85, 107, 47, 255))?;
+        object.prop("DarkOrange", Self::new(255, 140, 0, 255))?;
+        object.prop("DarkOrchid", Self::new(153, 50, 204, 255))?;
+        object.prop("DarkRed", Self::new(139, 0, 0, 255))?;
+        object.prop("DarkSalmon", Self::new(233, 150, 122, 255))?;
+        object.prop("DarkSeaGreen", Self::new(143, 188, 143, 255))?;
+        object.prop("DarkSlateBlue", Self::new(72, 61, 139, 255))?;
+        object.prop("DarkSlateGray", Self::new(47, 79, 79, 255))?;
+        object.prop("DarkTurquoise", Self::new(0, 206, 209, 255))?;
+        object.prop("DarkViolet", Self::new(148, 0, 211, 255))?;
+        object.prop("DeepPink", Self::new(255, 20, 147, 255))?;
+        object.prop("DeepSkyBlue", Self::new(0, 191, 255, 255))?;
+        object.prop("DimGray", Self::new(105, 105, 105, 255))?;
+        object.prop("DodgerBlue", Self::new(30, 144, 255, 255))?;
+        object.prop("Firebrick", Self::new(178, 34, 34, 255))?;
+        object.prop("FloralWhite", Self::new(255, 250, 240, 255))?;
+        object.prop("ForestGreen", Self::new(34, 139, 34, 255))?;
+        object.prop("Fuchsia", Self::new(255, 0, 255, 255))?;
+        object.prop("Gainsboro", Self::new(220, 220, 220, 255))?;
+        object.prop("GhostWhite", Self::new(248, 248, 255, 255))?;
+        object.prop("Gold", Self::new(255, 215, 0, 255))?;
+        object.prop("GoldenRod", Self::new(218, 165, 32, 255))?;
+        object.prop("Gray", Self::new(128, 128, 128, 255))?;
+        object.prop("GreenYellow", Self::new(173, 255, 47, 255))?;
+        object.prop("HoneyDew", Self::new(240, 255, 240, 255))?;
+        object.prop("HotPink", Self::new(255, 105, 180, 255))?;
+        object.prop("IndianRed", Self::new(205, 92, 92, 255))?;
+        object.prop("Indigo", Self::new(75, 0, 130, 255))?;
+        object.prop("Ivory", Self::new(255, 255, 240, 255))?;
+        object.prop("Khaki", Self::new(240, 230, 140, 255))?;
+        object.prop("Lavender", Self::new(230, 230, 250, 255))?;
+        object.prop("LavenderBlush", Self::new(255, 240, 245, 255))?;
+        object.prop("LawnGreen", Self::new(124, 252, 0, 255))?;
+        object.prop("LemonChiffon", Self::new(255, 250, 205, 255))?;
+        object.prop("LightBlue", Self::new(173, 216, 230, 255))?;
+        object.prop("LightCoral", Self::new(240, 128, 128, 255))?;
+        object.prop("LightCyan", Self::new(224, 255, 255, 255))?;
+        object.prop("LightGoldenRodYellow", Self::new(250, 250, 210, 255))?;
+        object.prop("LightGray", Self::new(211, 211, 211, 255))?;
+        object.prop("LightGreen", Self::new(144, 238, 144, 255))?;
+        object.prop("LightPink", Self::new(255, 182, 193, 255))?;
+        object.prop("LightSalmon", Self::new(255, 160, 122, 255))?;
+        object.prop("LightSeaGreen", Self::new(32, 178, 170, 255))?;
+        object.prop("LightSkyBlue", Self::new(135, 206, 250, 255))?;
+        object.prop("LightSlateGray", Self::new(119, 136, 153, 255))?;
+        object.prop("LightSteelBlue", Self::new(176, 196, 222, 255))?;
+        object.prop("LightYellow", Self::new(255, 255, 224, 255))?;
+        object.prop("Lime", Self::new(0, 255, 0, 255))?;
+        object.prop("LimeGreen", Self::new(50, 205, 50, 255))?;
+        object.prop("Linen", Self::new(250, 240, 230, 255))?;
+        object.prop("Magenta", Self::new(255, 0, 255, 255))?;
+        object.prop("Maroon", Self::new(128, 0, 0, 255))?;
+        object.prop("MediumAquaMarine", Self::new(102, 205, 170, 255))?;
+        object.prop("MediumBlue", Self::new(0, 0, 205, 255))?;
+        object.prop("MediumOrchid", Self::new(186, 85, 211, 255))?;
+        object.prop("MediumPurple", Self::new(147, 112, 219, 255))?;
+        object.prop("MediumSeaGreen", Self::new(60, 179, 113, 255))?;
+        object.prop("MediumSlateBlue", Self::new(123, 104, 238, 255))?;
+        object.prop("MediumSpringGreen", Self::new(0, 250, 154, 255))?;
+        object.prop("MediumTurquoise", Self::new(72, 209, 204, 255))?;
+        object.prop("MediumVioletRed", Self::new(199, 21, 133, 255))?;
+        object.prop("MidnightBlue", Self::new(25, 25, 112, 255))?;
+        object.prop("MintCream", Self::new(245, 255, 250, 255))?;
+        object.prop("MistyRose", Self::new(255, 228, 225, 255))?;
+        object.prop("Moccasin", Self::new(255, 228, 181, 255))?;
+        object.prop("NavajoWhite", Self::new(255, 222, 173, 255))?;
+        object.prop("Navy", Self::new(0, 0, 128, 255))?;
+        object.prop("OldLace", Self::new(253, 245, 230, 255))?;
+        object.prop("Olive", Self::new(128, 128, 0, 255))?;
+        object.prop("OliveDrab", Self::new(107, 142, 35, 255))?;
+        object.prop("Orange", Self::new(255, 165, 0, 255))?;
+        object.prop("OrangeRed", Self::new(255, 69, 0, 255))?;
+        object.prop("Orchid", Self::new(218, 112, 214, 255))?;
+        object.prop("PaleGoldenRod", Self::new(238, 232, 170, 255))?;
+        object.prop("PaleGreen", Self::new(152, 251, 152, 255))?;
+        object.prop("PaleTurquoise", Self::new(175, 238, 238, 255))?;
+        object.prop("PaleVioletRed", Self::new(219, 112, 147, 255))?;
+        object.prop("PapayaWhip", Self::new(255, 239, 213, 255))?;
+        object.prop("PeachPuff", Self::new(255, 218, 185, 255))?;
+        object.prop("Peru", Self::new(205, 133, 63, 255))?;
+        object.prop("Pink", Self::new(255, 192, 203, 255))?;
+        object.prop("Plum", Self::new(221, 160, 221, 255))?;
+        object.prop("PowderBlue", Self::new(176, 224, 230, 255))?;
+        object.prop("Purple", Self::new(128, 0, 128, 255))?;
+        object.prop("RebeccaPurple", Self::new(102, 51, 153, 255))?;
+        object.prop("RosyBrown", Self::new(188, 143, 143, 255))?;
+        object.prop("RoyalBlue", Self::new(65, 105, 225, 255))?;
+        object.prop("SaddleBrown", Self::new(139, 69, 19, 255))?;
+        object.prop("Salmon", Self::new(250, 128, 114, 255))?;
+        object.prop("SandyBrown", Self::new(244, 164, 96, 255))?;
+        object.prop("SeaGreen", Self::new(46, 139, 87, 255))?;
+        object.prop("SeaShell", Self::new(255, 245, 238, 255))?;
+        object.prop("Sienna", Self::new(160, 82, 45, 255))?;
+        object.prop("Silver", Self::new(192, 192, 192, 255))?;
+        object.prop("SkyBlue", Self::new(135, 206, 235, 255))?;
+        object.prop("SlateBlue", Self::new(106, 90, 205, 255))?;
+        object.prop("SlateGray", Self::new(112, 128, 144, 255))?;
+        object.prop("Snow", Self::new(255, 250, 250, 255))?;
+        object.prop("SpringGreen", Self::new(0, 255, 127, 255))?;
+        object.prop("SteelBlue", Self::new(70, 130, 180, 255))?;
+        object.prop("Tan", Self::new(210, 180, 140, 255))?;
+        object.prop("Teal", Self::new(0, 128, 128, 255))?;
+        object.prop("Thistle", Self::new(216, 191, 216, 255))?;
+        object.prop("Tomato", Self::new(255, 99, 71, 255))?;
+        object.prop("Turquoise", Self::new(64, 224, 208, 255))?;
+        object.prop("Violet", Self::new(238, 130, 238, 255))?;
+        object.prop("Wheat", Self::new(245, 222, 179, 255))?;
+        object.prop("WhiteSmoke", Self::new(245, 245, 245, 255))?;
+        object.prop("Yellow", Self::new(255, 255, 0, 255))?;
+        object.prop("YellowGreen", Self::new(154, 205, 50, 255))?;
 
         Ok(())
     }
@@ -546,12 +546,12 @@ mod tests {
                     let val = JsColor {
                         inner: Rgba([255, 0, 0, 255]).into(),
                     };
-                    color.prop("RED", val).unwrap();
+                    color.prop("Red", val).unwrap();
                 })
                 .await;
 
-            let color = script_engine.eval::<JsColor>("Color.RED2").await.unwrap();
-            println!("RED2: {color:?}");
+            let color = script_engine.eval::<JsColor>("Color.Red2").await.unwrap();
+            println!("Red2: {color:?}");
         });
     }
 }

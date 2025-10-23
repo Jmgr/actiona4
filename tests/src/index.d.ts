@@ -1548,8 +1548,8 @@ declare class Image {
      * TODO
      */
     findImage(_image: Image, options?: FindImageOptions): void;
-    height(): number;
     width(): number;
+    height(): number;
 }
 /**
  * A Color.
@@ -1562,148 +1562,148 @@ declare class Image {
  * ```
  */
 declare class Color {
-    static readonly RED: Color;
-    static readonly GREEN: Color;
-    static readonly BLUE: Color;
-    static readonly WHITE: Color;
-    static readonly BLACK: Color;
-    static readonly TRANSPARENT: Color;
-    static readonly ALICE_BLUE: Color;
-    static readonly ANTIQUE_WHITE: Color;
-    static readonly AQUA: Color;
-    static readonly AQUAMARINE: Color;
-    static readonly AZURE: Color;
-    static readonly BEIGE: Color;
-    static readonly BISQUE: Color;
-    static readonly BLANCHED_ALMOND: Color;
-    static readonly BLUE_VIOLET: Color;
-    static readonly BROWN: Color;
-    static readonly BURLY_WOOD: Color;
-    static readonly CADET_BLUE: Color;
-    static readonly CHARTREUSE: Color;
-    static readonly CHOCOLATE: Color;
-    static readonly CORAL: Color;
-    static readonly CORNFLOWER_BLUE: Color;
-    static readonly CORNSILK: Color;
-    static readonly CRIMSON: Color;
-    static readonly CYAN: Color;
-    static readonly DARK_BLUE: Color;
-    static readonly DARK_CYAN: Color;
-    static readonly DARK_GOLDEN_ROD: Color;
-    static readonly DARK_GRAY: Color;
-    static readonly DARK_GREEN: Color;
-    static readonly DARK_KHAKI: Color;
-    static readonly DARK_MAGENTA: Color;
-    static readonly DARK_OLIVE_GREEN: Color;
-    static readonly DARK_ORANGE: Color;
-    static readonly DARK_ORCHID: Color;
-    static readonly DARK_RED: Color;
-    static readonly DARK_SALMON: Color;
-    static readonly DARK_SEA_GREEN: Color;
-    static readonly DARK_SLATE_BLUE: Color;
-    static readonly DARK_SLATE_GRAY: Color;
-    static readonly DARK_TURQUOISE: Color;
-    static readonly DARK_VIOLET: Color;
-    static readonly DEEP_PINK: Color;
-    static readonly DEEP_SKY_BLUE: Color;
-    static readonly DIM_GRAY: Color;
-    static readonly DODGER_BLUE: Color;
-    static readonly FIREBRICK: Color;
-    static readonly FLORAL_WHITE: Color;
-    static readonly FOREST_GREEN: Color;
-    static readonly FUCHSIA: Color;
-    static readonly GAINSBORO: Color;
-    static readonly GHOST_WHITE: Color;
-    static readonly GOLD: Color;
-    static readonly GOLDEN_ROD: Color;
-    static readonly GRAY: Color;
-    static readonly GREEN_YELLOW: Color;
-    static readonly HONEY_DEW: Color;
-    static readonly HOT_PINK: Color;
-    static readonly INDIAN_RED: Color;
-    static readonly INDIGO: Color;
-    static readonly IVORY: Color;
-    static readonly KHAKI: Color;
-    static readonly LAVENDER: Color;
-    static readonly LAVENDER_BLUSH: Color;
-    static readonly LAWN_GREEN: Color;
-    static readonly LEMON_CHIFFON: Color;
-    static readonly LIGHT_BLUE: Color;
-    static readonly LIGHT_CORAL: Color;
-    static readonly LIGHT_CYAN: Color;
-    static readonly LIGHT_GOLDEN_ROD_YELLOW: Color;
-    static readonly LIGHT_GRAY: Color;
-    static readonly LIGHT_GREEN: Color;
-    static readonly LIGHT_PINK: Color;
-    static readonly LIGHT_SALMON: Color;
-    static readonly LIGHT_SEA_GREEN: Color;
-    static readonly LIGHT_SKY_BLUE: Color;
-    static readonly LIGHT_SLATE_GRAY: Color;
-    static readonly LIGHT_STEEL_BLUE: Color;
-    static readonly LIGHT_YELLOW: Color;
-    static readonly LIME: Color;
-    static readonly LIME_GREEN: Color;
-    static readonly LINEN: Color;
-    static readonly MAGENTA: Color;
-    static readonly MAROON: Color;
-    static readonly MEDIUM_AQUA_MARINE: Color;
-    static readonly MEDIUM_BLUE: Color;
-    static readonly MEDIUM_ORCHID: Color;
-    static readonly MEDIUM_PURPLE: Color;
-    static readonly MEDIUM_SEA_GREEN: Color;
-    static readonly MEDIUM_SLATE_BLUE: Color;
-    static readonly MEDIUM_SPRING_GREEN: Color;
-    static readonly MEDIUM_TURQUOISE: Color;
-    static readonly MEDIUM_VIOLET_RED: Color;
-    static readonly MIDNIGHT_BLUE: Color;
-    static readonly MINT_CREAM: Color;
-    static readonly MISTY_ROSE: Color;
-    static readonly MOCCASIN: Color;
-    static readonly NAVAJO_WHITE: Color;
-    static readonly NAVY: Color;
-    static readonly OLD_LACE: Color;
-    static readonly OLIVE: Color;
-    static readonly OLIVE_DRAB: Color;
-    static readonly ORANGE: Color;
-    static readonly ORANGE_RED: Color;
-    static readonly ORCHID: Color;
-    static readonly PALE_GOLDEN_ROD: Color;
-    static readonly PALE_GREEN: Color;
-    static readonly PALE_TURQUOISE: Color;
-    static readonly PALE_VIOLET_RED: Color;
-    static readonly PAPAYA_WHIP: Color;
-    static readonly PEACH_PUFF: Color;
-    static readonly PERU: Color;
-    static readonly PINK: Color;
-    static readonly PLUM: Color;
-    static readonly POWDER_BLUE: Color;
-    static readonly PURPLE: Color;
-    static readonly REBECCA_PURPLE: Color;
-    static readonly ROSY_BROWN: Color;
-    static readonly ROYAL_BLUE: Color;
-    static readonly SADDLE_BROWN: Color;
-    static readonly SALMON: Color;
-    static readonly SANDY_BROWN: Color;
-    static readonly SEA_GREEN: Color;
-    static readonly SEA_SHELL: Color;
-    static readonly SIENNA: Color;
-    static readonly SILVER: Color;
-    static readonly SKY_BLUE: Color;
-    static readonly SLATE_BLUE: Color;
-    static readonly SLATE_GRAY: Color;
-    static readonly SNOW: Color;
-    static readonly SPRING_GREEN: Color;
-    static readonly STEEL_BLUE: Color;
-    static readonly TAN: Color;
-    static readonly TEAL: Color;
-    static readonly THISTLE: Color;
-    static readonly TOMATO: Color;
-    static readonly TURQUOISE: Color;
-    static readonly VIOLET: Color;
-    static readonly WHEAT: Color;
-    static readonly WHITE_SMOKE: Color;
-    static readonly YELLOW: Color;
-    static readonly YELLOW_GREEN: Color;
+    static readonly Red: Color;
+    static readonly Green: Color;
+    static readonly Blue: Color;
+    static readonly White: Color;
+    static readonly Black: Color;
+    static readonly Transparent: Color;
+    static readonly AliceBlue: Color;
+    static readonly AntiqueWhite: Color;
+    static readonly Aqua: Color;
+    static readonly Aquamarine: Color;
+    static readonly Azure: Color;
+    static readonly Beige: Color;
+    static readonly Bisque: Color;
+    static readonly BlanchedAlmond: Color;
+    static readonly BlueViolet: Color;
+    static readonly Brown: Color;
+    static readonly BurlyWood: Color;
+    static readonly CadetBlue: Color;
+    static readonly Chartreuse: Color;
+    static readonly Chocolate: Color;
+    static readonly Coral: Color;
+    static readonly CornflowerBlue: Color;
+    static readonly Cornsilk: Color;
+    static readonly Crimson: Color;
+    static readonly Cyan: Color;
+    static readonly DarkBlue: Color;
+    static readonly DarkCyan: Color;
+    static readonly DarkGoldenRod: Color;
+    static readonly DarkGray: Color;
+    static readonly DarkGreen: Color;
+    static readonly DarkKhaki: Color;
+    static readonly DarkMagenta: Color;
+    static readonly DarkOliveGreen: Color;
+    static readonly DarkOrange: Color;
+    static readonly DarkOrchid: Color;
+    static readonly DarkRed: Color;
+    static readonly DarkSalmon: Color;
+    static readonly DarkSeaGreen: Color;
+    static readonly DarkSlateBlue: Color;
+    static readonly DarkSlateGray: Color;
+    static readonly DarkTurquoise: Color;
+    static readonly DarkViolet: Color;
+    static readonly DeepPink: Color;
+    static readonly DeepSkyBlue: Color;
+    static readonly DimGray: Color;
+    static readonly DodgerBlue: Color;
+    static readonly Firebrick: Color;
+    static readonly FloralWhite: Color;
+    static readonly ForestGreen: Color;
+    static readonly Fuchsia: Color;
+    static readonly Gainsboro: Color;
+    static readonly GhostWhite: Color;
+    static readonly Gold: Color;
+    static readonly GoldenRod: Color;
+    static readonly Gray: Color;
+    static readonly GreenYellow: Color;
+    static readonly HoneyDew: Color;
+    static readonly HotPink: Color;
+    static readonly IndianRed: Color;
+    static readonly Indigo: Color;
+    static readonly Ivory: Color;
+    static readonly Khaki: Color;
+    static readonly Lavender: Color;
+    static readonly LavenderBlush: Color;
+    static readonly LawnGreen: Color;
+    static readonly LemonChiffon: Color;
+    static readonly LightBlue: Color;
+    static readonly LightCoral: Color;
+    static readonly LightCyan: Color;
+    static readonly LightGoldenRodYellow: Color;
+    static readonly LightGray: Color;
+    static readonly LightGreen: Color;
+    static readonly LightPink: Color;
+    static readonly LightSalmon: Color;
+    static readonly LightSeaGreen: Color;
+    static readonly LightSkyBlue: Color;
+    static readonly LightSlateGray: Color;
+    static readonly LightSteelBlue: Color;
+    static readonly LightYellow: Color;
+    static readonly Lime: Color;
+    static readonly LimeGreen: Color;
+    static readonly Linen: Color;
+    static readonly Magenta: Color;
+    static readonly Maroon: Color;
+    static readonly MediumAquaMarine: Color;
+    static readonly MediumBlue: Color;
+    static readonly MediumOrchid: Color;
+    static readonly MediumPurple: Color;
+    static readonly MediumSeaGreen: Color;
+    static readonly MediumSlateBlue: Color;
+    static readonly MediumSpringGreen: Color;
+    static readonly MediumTurquoise: Color;
+    static readonly MediumVioletRed: Color;
+    static readonly MidnightBlue: Color;
+    static readonly MintCream: Color;
+    static readonly MistyRose: Color;
+    static readonly Moccasin: Color;
+    static readonly NavajoWhite: Color;
+    static readonly Navy: Color;
+    static readonly OldLace: Color;
+    static readonly Olive: Color;
+    static readonly OliveDrab: Color;
+    static readonly Orange: Color;
+    static readonly OrangeRed: Color;
+    static readonly Orchid: Color;
+    static readonly PaleGoldenRod: Color;
+    static readonly PaleGreen: Color;
+    static readonly PaleTurquoise: Color;
+    static readonly PaleVioletRed: Color;
+    static readonly PapayaWhip: Color;
+    static readonly PeachPuff: Color;
+    static readonly Peru: Color;
+    static readonly Pink: Color;
+    static readonly Plum: Color;
+    static readonly PowderBlue: Color;
+    static readonly Purple: Color;
+    static readonly RebeccaPurple: Color;
+    static readonly RosyBrown: Color;
+    static readonly RoyalBlue: Color;
+    static readonly SaddleBrown: Color;
+    static readonly Salmon: Color;
+    static readonly SandyBrown: Color;
+    static readonly SeaGreen: Color;
+    static readonly SeaShell: Color;
+    static readonly Sienna: Color;
+    static readonly Silver: Color;
+    static readonly SkyBlue: Color;
+    static readonly SlateBlue: Color;
+    static readonly SlateGray: Color;
+    static readonly Snow: Color;
+    static readonly SpringGreen: Color;
+    static readonly SteelBlue: Color;
+    static readonly Tan: Color;
+    static readonly Teal: Color;
+    static readonly Thistle: Color;
+    static readonly Tomato: Color;
+    static readonly Turquoise: Color;
+    static readonly Violet: Color;
+    static readonly Wheat: Color;
+    static readonly WhiteSmoke: Color;
+    static readonly Yellow: Color;
+    static readonly YellowGreen: Color;
     /**
      * Red (should be between 0-255)
      */
@@ -2264,7 +2264,7 @@ declare interface DrawImageOptions {
 declare interface RotationOptions {
     /**
      * Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-     * @defaultValue Interpolation.BILINEAR
+     * @defaultValue Interpolation.Bilinear
      */
     interpolation?: Interpolation;
     /**
@@ -2274,7 +2274,7 @@ declare interface RotationOptions {
     center?: Point;
     /**
      * Default color, used if the rotation triggers more pixels to be displayed
-     * @defaultValue Color.BLACK
+     * @defaultValue Color.Black
      */
     defaultColor?: Color;
 }
@@ -2527,9 +2527,9 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
+    current(): number;
     finished(): boolean;
     total(): number;
-    current(): number;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;

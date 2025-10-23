@@ -103,7 +103,7 @@ pub struct MessageBoxOptions {
     /// @default MessageBoxButtons.ok()
     buttons: Option<JsMessageBoxButtons>,
 
-    /// @default MessageBoxIcon.INFO
+    /// @default MessageBoxIcon.Info
     icon: Option<MessageBoxIcon>,
 }
 

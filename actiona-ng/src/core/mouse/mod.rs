@@ -395,7 +395,7 @@ pub struct MoveOptions {
     /// @default 2000
     pub speed: f64,
 
-    /// @default Tween.SINE_OUT
+    /// @default Tween.SineOut
     pub tween: Tween,
 
     /// @default 50
@@ -651,7 +651,7 @@ impl Mouse {
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PressOptions {
-    /// @default Button.LEFT
+    /// @default Button.Left
     pub button: Button,
 
     /// @default undefined

@@ -3,7 +3,6 @@ use std::sync::{Arc, Mutex};
 use enigo::{Direction, Enigo, InputError, NewConError};
 use macros::{FromSerde, IntoSerde};
 use platform::KeyboardImplTrait;
-use rquickjs::{JsLifetime, class::Trace};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 use thiserror::Error;

@@ -84,7 +84,7 @@ fn test_success() {
                 "Hello",
                 "Some title",
                 MessageBoxButtons.yesNoCancelCustom("yeah", "nope", "arg"),
-                MessageBoxIcon.ERROR
+                MessageBoxIcon.Error
                 );
             button
         "#,

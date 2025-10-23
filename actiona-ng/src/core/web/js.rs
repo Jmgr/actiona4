@@ -60,7 +60,7 @@ pub struct JsWebOptions {
     /// @default undefined
     pub headers: Option<IndexMap<String, String>>,
 
-    /// @default Method.GET
+    /// @default Method.Get
     pub method: JsMethod,
 
     /// @default undefined
@@ -451,7 +451,7 @@ mod tests {
                     r#"await web.downloadText("{}", {{
                         userName: "user",
                         password: "password",
-                        method: Method.POST,
+                        method: Method.Post,
                     }})"#,
                     server.url("/foo")
                 ))

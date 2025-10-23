@@ -218,10 +218,10 @@ mod tests {
     #[traced_test]
     fn test_button() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let button: JsButton = script_engine.eval("Button.LEFT").await.unwrap();
+            let button: JsButton = script_engine.eval("Button.Left").await.unwrap();
             assert_eq!(button, JsButton::Left);
 
-            let button: JsButton = script_engine.eval("Button.RIGHT").await.unwrap();
+            let button: JsButton = script_engine.eval("Button.Right").await.unwrap();
             assert_eq!(button, JsButton::Right);
         });
     }
@@ -233,7 +233,7 @@ mod tests {
             script_engine.eval::<()>("mouse.press()").await.unwrap();
 
             let pressed: bool = script_engine
-                .eval_async("await mouse.isPressed(Button.LEFT)")
+                .eval_async("await mouse.isPressed(Button.Left)")
                 .await
                 .unwrap();
             assert!(pressed);
@@ -241,7 +241,7 @@ mod tests {
             script_engine.eval::<()>("mouse.release()").await.unwrap();
 
             let pressed: bool = script_engine
-                .eval_async("await mouse.isPressed(Button.LEFT)")
+                .eval_async("await mouse.isPressed(Button.Left)")
                 .await
                 .unwrap();
             assert!(!pressed);
@@ -262,11 +262,11 @@ mod tests {
                 .unwrap();
 
             script_engine
-                .eval_async::<()>("await mouse.scroll(1, Axis.HORIZONTAL)")
+                .eval_async::<()>("await mouse.scroll(1, Axis.Horizontal)")
                 .await
                 .unwrap();
             script_engine
-                .eval_async::<()>("await mouse.scroll(-1, Axis.HORIZONTAL)")
+                .eval_async::<()>("await mouse.scroll(-1, Axis.Horizontal)")
                 .await
                 .unwrap();
         });

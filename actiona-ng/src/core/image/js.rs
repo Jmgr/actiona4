@@ -142,7 +142,7 @@ pub struct JsResizeOptions {
     pub keep_aspect_ratio: bool,
 
     /// What filter to use
-    /// @default ResizeFilter.CUBIC
+    /// @default ResizeFilter.Cubic
     pub filter: JsResizeFilter,
 }
 
@@ -191,7 +191,7 @@ pub struct JsDrawImageOptions {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsRotationOptions {
     /// Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-    /// @default Interpolation.BILINEAR
+    /// @default Interpolation.Bilinear
     pub interpolation: JsInterpolation,
 
     /// Rotation center
@@ -199,7 +199,7 @@ pub struct JsRotationOptions {
     pub center: Option<JsPoint>,
 
     /// Default color, used if the rotation triggers more pixels to be displayed
-    /// @default Color.BLACK
+    /// @default Color.Black
     pub default_color: JsColor,
 }
 
@@ -1249,7 +1249,7 @@ mod tests {
             script_engine
                 .eval::<()>(
                     "let image = new Image(100, 100); image.test({
-                    default_color: Color.WHITE,
+                    default_color: Color.White,
                     center: new Point(42, 42),
                 })",
                 )
