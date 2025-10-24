@@ -76,7 +76,7 @@ pub fn into_serde(input: TokenStream) -> TokenStream {
     let expanded = quote! {
         impl<'js> rquickjs::IntoJs<'js> for #name {
             fn into_js(self, ctx: &rquickjs::Ctx<'js>) -> rquickjs::Result<rquickjs::Value<'js>> {
-                Ok(rquickjs_serde::to_value(ctx.clone(), &self).unwrap()) // TODO: remove unwrap
+                rquickjs_serde::to_value(ctx.clone(), &self).map_err(|err| rquickjs::Exception::throw_message(ctx, &format!("{err}")))
             }
         }
     };
@@ -92,8 +92,8 @@ pub fn from_serde(input: TokenStream) -> TokenStream {
     // Generate the full impl
     let expanded = quote! {
         impl<'js> rquickjs::FromJs<'js> for #name {
-            fn from_js(_: &rquickjs::Ctx<'js>, v: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
-                Ok(rquickjs_serde::from_value(v).unwrap()) // TODO: remove unwrap
+            fn from_js(ctx: &rquickjs::Ctx<'js>, v: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
+                rquickjs_serde::from_value(v).map_err(|err| rquickjs::Exception::throw_message(ctx, &format!("{err}")))
             }
         }
     };

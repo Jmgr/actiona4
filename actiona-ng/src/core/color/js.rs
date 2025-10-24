@@ -13,7 +13,11 @@ pub struct JsColorParam(pub super::Color);
 
 impl<'js> FromParam<'js> for JsColorParam {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::exhaustive()
+        ParamRequirement::single()
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::exhaustive())
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
@@ -530,8 +534,6 @@ impl<'js> Trace<'js> for JsColor {
 
 #[cfg(test)]
 mod tests {
-    use image::Rgba;
-    use rquickjs::Object;
     use tracing_test::traced_test;
 
     use crate::{core::color::js::JsColor, runtime::Runtime};
@@ -540,18 +542,8 @@ mod tests {
     #[traced_test]
     fn test_button() {
         Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .with(|ctx| {
-                    let color = ctx.globals().get::<_, Object>("Color").unwrap(); // TODO: add a macro? Or a helper function
-                    let val = JsColor {
-                        inner: Rgba([255, 0, 0, 255]).into(),
-                    };
-                    color.prop("Red", val).unwrap();
-                })
-                .await;
-
-            let color = script_engine.eval::<JsColor>("Color.Red2").await.unwrap();
-            println!("Red2: {color:?}");
+            let color = script_engine.eval::<JsColor>("Color.Red").await.unwrap();
+            println!("Red: {color:?}");
         });
     }
 }

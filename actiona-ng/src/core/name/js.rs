@@ -96,7 +96,7 @@ pub struct JsNameParam<'js>(pub super::Name<'js>);
 
 impl<'js> FromParam<'js> for JsNameParam<'js> {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::exhaustive()
+        ParamRequirement::single().combine(ParamRequirement::exhaustive())
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {

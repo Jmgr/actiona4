@@ -16,7 +16,9 @@ pub struct JsPointParam(pub super::Point);
 
 impl<'js> FromParam<'js> for JsPointParam {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::exhaustive()
+        ParamRequirement::single()
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::exhaustive())
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
@@ -171,10 +173,10 @@ impl JsPoint {
     /// Returns a random point around this point.
     #[qjs(static)]
     #[must_use]
-    pub fn random_in_circle(ctx: Ctx<'_>, center: Self, radius: f64) -> Self {
+    pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointParam, radius: f64) -> Self {
         let user_data = ctx.user_data();
 
-        super::Point::random_in_circle(center.into(), radius, user_data.rng())
+        super::Point::random_in_circle(center.0, radius, user_data.rng())
             .unwrap()
             .into() // TODO
     }
@@ -342,7 +344,7 @@ mod tests {
                 .unwrap();
             assert_eq!(result, point(0, -1).into());
 
-            let result = script_engine.eval::<JsPoint>("p1.scale(2)").await.unwrap();
+            let result = script_engine.eval::<JsPoint>("p1.scaled(2)").await.unwrap();
             assert_eq!(result, point(2, 4).into());
         });
     }
@@ -416,7 +418,7 @@ mod tests {
             setup(script_engine.clone()).await;
 
             script_engine
-                .eval::<JsPoint>("Point.random()")
+                .eval::<JsPoint>("Point.randomInCircle(0, 0, 10)")
                 .await
                 .unwrap();
         });

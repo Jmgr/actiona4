@@ -15,7 +15,9 @@ pub struct JsSizeParam(pub super::Size);
 
 impl<'js> FromParam<'js> for JsSizeParam {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::exhaustive()
+        ParamRequirement::single()
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::exhaustive())
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {

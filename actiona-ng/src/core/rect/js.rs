@@ -20,7 +20,11 @@ pub struct JsRectParam(pub super::Rect);
 
 impl<'js> FromParam<'js> for JsRectParam {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::exhaustive()
+        ParamRequirement::single()
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::exhaustive())
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {

@@ -2229,7 +2229,7 @@ declare interface ResizeOptions {
     keepAspectRatio?: boolean;
     /**
      * What filter to use
-     * @defaultValue ResizeFilter.CUBIC
+     * @defaultValue ResizeFilter.Cubic
      */
     filter?: ResizeFilter;
 }
@@ -2528,8 +2528,8 @@ declare interface MultipartForm {
 declare class WebProgress {
     private constructor();
     current(): number;
-    finished(): boolean;
     total(): number;
+    finished(): boolean;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
@@ -2555,7 +2555,7 @@ declare interface WebOptions {
      */
     headers?: Record<string, string>;
     /**
-     * @defaultValue Method.GET
+     * @defaultValue Method.Get
      */
     method?: Method;
     /**
@@ -2600,7 +2600,7 @@ declare interface MoveOptions {
      */
     speed?: number;
     /**
-     * @defaultValue Tween.SINE_OUT
+     * @defaultValue Tween.SineOut
      */
     tween?: Tween;
     /**
@@ -2652,7 +2652,7 @@ declare interface DoubleClickOptions extends ClickOptions {
  */
 declare interface PressOptions {
     /**
-     * @defaultValue Button.LEFT
+     * @defaultValue Button.Left
      */
     button?: Button;
     /**
