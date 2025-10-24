@@ -94,7 +94,7 @@ impl Image {
         let (_width, height) = image.dimensions();
         let data = image.as_raw();
         let mat_boxed = Mat::from_slice(data)?;
-        let mat = mat_boxed.reshape(1, height as i32)?;
+        let mat = mat_boxed.reshape(1, height.try_into()?)?;
         Ok(mat.try_clone()?)
     }
 
@@ -102,9 +102,10 @@ impl Image {
         let (_width, height) = image.dimensions();
         let data = image.as_raw();
         let mat_boxed = Mat::from_slice(data)?;
-        let mat = mat_boxed.reshape(3, height as i32)?;
+        let mat = mat_boxed.reshape(3, height.try_into()?)?;
         let mut mat_bgr = Mat::default();
 
+        #[allow(clippy::redundant_closure_call)]
         (|| {
             opencv::opencv_has_inherent_feature_algorithm_hint! {
                 {
@@ -122,9 +123,10 @@ impl Image {
         let (_width, height) = image.dimensions();
         let data = image.as_raw();
         let mat_boxed = Mat::from_slice(data)?;
-        let mat = mat_boxed.reshape(4, height as i32)?;
+        let mat = mat_boxed.reshape(4, height.try_into()?)?;
         let mut mat_bgr = Mat::default();
 
+        #[allow(clippy::redundant_closure_call)]
         (|| {
             opencv::opencv_has_inherent_feature_algorithm_hint! {
                 {

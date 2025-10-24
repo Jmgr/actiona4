@@ -203,9 +203,7 @@ mod tests {
         IntoJSError,
         core::{
             js::{
-                classes::{
-                    SingletonClass, ValueClass, register_singleton_class, register_value_class,
-                },
+                classes::{SingletonClass, register_singleton_class, register_value_class},
                 task::{IsDone, progress_task_with_token, task, task_with_token},
             },
             test_helpers::JsCounter,

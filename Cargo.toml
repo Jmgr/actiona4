@@ -90,12 +90,12 @@ serde_json = "1.0.145"
 serde_plain = "1.0.2"
 slotmap = { version = "1.0.7", features = ["serde"] }
 strum = { version = "0.27.2", features = ["derive"] }
-swc_common = { version = "14.0.4", features = ["tty-emitter", "sourcemap"] }
-swc_ecma_ast = "15.0.0"
-swc_ecma_codegen = "17.0.2"
-swc_ecma_parser = "24.0.1"
-swc_ecma_transforms_base = "27.0.0"
-swc_ecma_transforms_typescript = "30.0.1"
+swc_common = { version = "15.0.0", features = ["tty-emitter", "sourcemap"] }
+swc_ecma_ast = "16.0.0"
+swc_ecma_codegen = "18.0.0"
+swc_ecma_parser = "25.0.0"
+swc_ecma_transforms_base = "28.0.1"
+swc_ecma_transforms_typescript = "31.0.0"
 swc_sourcemap = "9.3.4"
 syn = { version = "2.0", features = ["parsing"] }
 sysinfo = "0.37.0"

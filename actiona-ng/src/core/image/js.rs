@@ -1159,10 +1159,11 @@ mod tests {
         let (_width, height) = rgb.dimensions();
 
         let mat = Mat::from_slice(&rgb)?;
-        let mat = mat.reshape(3, height as i32)?; // 3 channels (RGB)
+        let mat = mat.reshape(3, height.try_into()?)?; // 3 channels (RGB)
 
         let mut mat_bgr = Mat::default();
 
+        #[allow(clippy::redundant_closure_call)]
         (|| {
             opencv::opencv_has_inherent_feature_algorithm_hint! {
                 {

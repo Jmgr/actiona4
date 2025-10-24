@@ -1,8 +1,5 @@
 use std::sync::Arc;
 
-use tokio::select;
-use x11rb_async::protocol::xinput::XIEventMask;
-
 use super::{Key, KeyboardImplTrait, Result};
 use crate::runtime::Runtime;
 

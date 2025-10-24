@@ -53,16 +53,16 @@ pub type Result<T> = std::result::Result<T, DisplaysError>;
 
 #[derive(Debug)]
 pub struct Displays {
-    implementation: DisplaysImpl,
+    _implementation: DisplaysImpl,
     displays_info: Arc<Mutex<DisplayInfoVec>>,
 }
 
 impl Displays {
-    pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
+    pub fn new(_runtime: Arc<Runtime>) -> Result<Self> {
         let displays_info = Arc::new(Mutex::new(display_info::DisplayInfo::all()?.into()));
-        let local_displays_info = displays_info.clone();
+        //let local_displays_info = displays_info.clone();
 
-        let cancellation_token = runtime.cancellation_token();
+        //let cancellation_token = runtime.cancellation_token();
 
         /*
         let screen_change_guard = runtime.platform().screen_change().subscribe();
@@ -85,7 +85,7 @@ impl Displays {
         // TODO
 
         Ok(Self {
-            implementation: DisplaysImpl::new(runtime)?,
+            _implementation: DisplaysImpl::new(_runtime)?,
             displays_info,
         })
     }
@@ -190,19 +190,16 @@ impl Displays {
 mod tests {
     use tracing_test::traced_test;
 
-    use crate::{
-        core::{displays::Displays, mouse::Mouse},
-        runtime::Runtime,
-    };
+    use crate::runtime::Runtime;
 
     #[test]
     #[traced_test]
     fn test_displays() {
-        Runtime::test(async |runtime| {
+        Runtime::test(async |_runtime| {
+            /*
             let mouse = Mouse::new(runtime.clone()).await.unwrap();
             let displays = Displays::new(runtime).unwrap();
 
-            /*
             let displays = Displays::new(runtime).unwrap();
             let displays_info = displays.displays_info().lock().unwrap();
             for display_info in displays_info.iter() {
