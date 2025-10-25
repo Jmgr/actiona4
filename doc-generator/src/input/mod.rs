@@ -45,33 +45,27 @@ newtype!(pub Instructions, Vec<Instruction>);
 
 impl Instructions {
     pub fn has_skip(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Skip))
+        self.iter().any(|instruction| instruction.is_skip())
     }
 
     pub fn has_constructor(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Constructor))
+        self.iter().any(|instruction| instruction.is_constructor())
     }
 
     pub fn has_private(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Private))
+        self.iter().any(|instruction| instruction.is_private())
     }
 
     pub fn has_static(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Static))
+        self.iter().any(|instruction| instruction.is_static())
     }
 
     pub fn is_singleton(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Singleton))
+        self.iter().any(|instruction| instruction.is_singleton())
     }
 
     pub fn is_generic(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Generic))
+        self.iter().any(|instruction| instruction.is_generic())
     }
 
     pub fn rest_params(&self) -> Option<RestParams> {
@@ -119,8 +113,7 @@ impl Instructions {
     }
 
     pub fn is_options(&self) -> bool {
-        self.iter()
-            .any(|instruction| matches!(instruction, Instruction::Options))
+        self.iter().any(|instruction| instruction.is_options())
     }
 
     pub fn extends(&self) -> Option<String> {
@@ -171,6 +164,10 @@ impl Instructions {
             })
             .cloned()
             .collect_vec()
+    }
+
+    pub fn has_getter(&self) -> bool {
+        self.iter().any(|instruction| instruction.is_getter())
     }
 }
 
@@ -330,6 +327,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Generic
         }
 
+        // @get
+        "get" => {
+            if !parameters.is_empty() {
+                bail!("unexpected parameters");
+            }
+
+            Instruction::Getter
+        }
+
         // @rest
         "rest" => Instruction::Rest(if parameters.is_empty() {
             None
@@ -428,6 +434,7 @@ const fn allowed_context_for_instruction(
         Method => &[RustdocContext::Struct],
         Type => &[RustdocContext::Property],
         Verbatim => &[RustdocContext::Struct, RustdocContext::Module],
+        Getter => &[RustdocContext::Method],
     }
 }
 

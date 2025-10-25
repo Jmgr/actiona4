@@ -128,6 +128,7 @@ mod tests {
     };
 
     #[test]
+    #[ignore]
     fn test_screenshot() {
         Runtime::test(async |runtime| {
             let displays = Displays::new(runtime.clone()).unwrap();

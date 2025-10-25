@@ -45,6 +45,7 @@ dependencies = [
  "http-body",
  "http-body-util",
  "httptest",
+ "human-units",
  "humansize",
  "humantime",
  "image",
@@ -2525,6 +2526,26 @@ dependencies = [
  "serde_json",
  "serde_urlencoded",
  "tokio",
+]
+
+[[package]]
+name = "human-units"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47cf34dbcbbb7f1f6589c18e26f15a5a72592750dd5472037eb78fc0f92020d4"
+dependencies = [
+ "human-units-derive",
+ "paste",
+]
+
+[[package]]
+name = "human-units-derive"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d038795b69839775557f262a2a514913a34d08bc54b9965fef1db5041fbf502e"
+dependencies = [
+ "quote",
+ "syn 2.0.106",
 ]
 
 [[package]]

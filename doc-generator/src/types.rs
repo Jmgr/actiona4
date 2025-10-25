@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use eyre::{Result, eyre};
 use itertools::Itertools;
-use strum::{Display, EnumDiscriminants};
+use strum::{Display, EnumDiscriminants, EnumIs};
 
 use crate::input::Comments;
 
@@ -21,7 +21,7 @@ pub struct Enum {
     pub platforms: Platforms,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, EnumIs)]
 pub enum Type {
     /// Void, "none" type
     Void,
@@ -250,7 +250,7 @@ impl Platforms {
     }
 }
 
-#[derive(Clone, Debug, EnumDiscriminants, PartialEq)]
+#[derive(Clone, Debug, EnumDiscriminants, PartialEq, EnumIs)]
 #[strum_discriminants(derive(Display))]
 pub enum Instruction {
     Constructor,
@@ -273,6 +273,7 @@ pub enum Instruction {
     Method(String),
     Type(Type),
     Verbatim(String),
+    Getter,
 }
 
 pub fn strip_modules(name: &str) -> &str {

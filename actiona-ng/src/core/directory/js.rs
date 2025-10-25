@@ -7,22 +7,15 @@ use tokio::fs::{self};
 use crate::core::js::classes::{ValueClass, register_value_class};
 
 /// Directory entry
-///
-/// @prop readonly path: string
-/// @prop readonly file_name: string
-/// @prop readonly is_file: boolean
-/// @prop readonly is_directory: boolean
-/// @prop readonly is_symlink: boolean
-/// @prop readonly size: number
 #[derive(Clone, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class(rename = "DirectoryEntry")]
 pub struct JsDirectoryEntry {
-    pub path: String,
-    pub file_name: String,
-    pub is_file: bool,
-    pub is_directory: bool,
-    pub is_symlink: bool,
-    pub size: u64,
+    path: String,
+    file_name: String,
+    is_file: bool,
+    is_directory: bool,
+    is_symlink: bool,
+    size: u64,
 }
 
 impl ValueClass<'_> for JsDirectoryEntry {}
@@ -34,6 +27,48 @@ impl JsDirectoryEntry {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn file_name(&self) -> &str {
+        &self.file_name
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn is_file(&self) -> bool {
+        self.is_file
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn is_directory(&self) -> bool {
+        self.is_directory
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn is_symlink(&self) -> bool {
+        self.is_symlink
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn size(&self) -> u64 {
+        self.size
     }
 }
 

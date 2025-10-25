@@ -90,6 +90,7 @@ tokio-util.workspace = true
 tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
+human-units.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true

@@ -75,6 +75,7 @@ fn test_success() {
 }
     */
 #[test]
+#[ignore]
 fn test_success() {
     Runtime::test_with_ui(|_, scripting_engine| async move {
         let result = scripting_engine

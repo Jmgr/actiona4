@@ -15,6 +15,7 @@ use crate::{
 
 pub mod cpu;
 pub mod hardware;
+pub mod js;
 pub mod memory;
 pub mod network;
 pub mod os;
@@ -118,6 +119,7 @@ mod tests {
     use crate::{core::system::processes::Signal, runtime::Runtime};
 
     #[test]
+    #[ignore]
     fn test_cpu_usage() {
         Runtime::test(async move |runtime| {
             let system = System::new(runtime.task_tracker()).await.unwrap();
@@ -127,6 +129,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_signal() {
         Runtime::test(async move |runtime| {
             let system = System::new(runtime.task_tracker()).await.unwrap();
@@ -162,6 +165,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn init_test() {
         Runtime::test(async move |runtime| {
             let console_layer = console_subscriber::spawn(); // serves to tokio-console

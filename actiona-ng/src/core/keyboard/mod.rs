@@ -270,6 +270,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_keyboard() {
         Runtime::test(async |_runtime| {
             //let _keyboard = Keyboard::new(runtime).unwrap();

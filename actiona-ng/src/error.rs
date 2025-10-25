@@ -1,3 +1,5 @@
+use std::num::TryFromIntError;
+
 use thiserror::Error;
 
 use crate::{IntoJSError, core::clipboard};
@@ -37,3 +39,5 @@ pub enum CommonError {
 }
 
 impl IntoJSError for CommonError {}
+
+impl IntoJSError for TryFromIntError {}

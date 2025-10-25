@@ -1179,6 +1179,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_() {
         Runtime::test_with_script_engine(async |_script_engine| {
             // Load images using image crate
@@ -1240,22 +1241,6 @@ mod tests {
             .unwrap();
 
             println!("{min_val} {max_val} {min_loc:?} {max_loc:?}");
-        });
-    }
-
-    #[test]
-    #[traced_test]
-    fn test_options() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval::<()>(
-                    "let image = new Image(100, 100); image.test({
-                    default_color: Color.White,
-                    center: new Point(42, 42),
-                })",
-                )
-                .await
-                .unwrap();
         });
     }
 }

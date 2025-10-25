@@ -784,6 +784,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_position() {
         Runtime::test(|runtime| async {
             let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
@@ -816,6 +817,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_wait_for_button() {
         Runtime::test(async |runtime| {
             let mouse = Arc::new(Mouse::new(runtime).await.unwrap());

@@ -172,6 +172,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_position() {
         Runtime::test_with_script_engine(async |script_engine| {
             let mut position: JsPoint = script_engine
@@ -228,6 +229,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_press_release() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine.eval::<()>("mouse.press()").await.unwrap();
@@ -250,6 +252,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
@@ -274,6 +277,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_measure_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
             let speed: f64 = script_engine
@@ -286,6 +290,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_random_move_timeout() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine

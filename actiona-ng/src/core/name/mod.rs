@@ -17,7 +17,7 @@ impl<'js> Name<'js> {
             Name::String(name) => name == text,
             Name::Wildcard(wildcard) => wildcard.inner().matches(text),
             Name::Regex(object) => {
-                let test_function: Function = object.get("test").unwrap();
+                let test_function: Function = object.get("test").unwrap(); // TODO: ???
                 let mut args = Args::new(ctx.clone(), 1);
                 args.this(object.clone()).unwrap();
                 args.push_arg(text).unwrap();

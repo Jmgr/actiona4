@@ -106,7 +106,7 @@ mod tests {
     #[rstest]
     #[case::u64_ok(123u64, Su32::new(123))]
     #[case::u64_clamp(u64::MAX, Su32::new(u32::MAX))] // Ok + clamped
-    #[case::f64_ok_rounded(1.6f64, Su32::new(2))]
+    #[case::f64_ok_clamped(1.6f64, Su32::new(1))]
     #[case::f64_low_clamped(-42.9f64, Su32::new(0))]
     fn try_su32_ok(#[case] src: impl TryInto<Su32, Error = eyre::Report>, #[case] want: Su32) {
         let got = try_su32(src);

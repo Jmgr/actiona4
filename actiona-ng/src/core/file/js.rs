@@ -103,8 +103,6 @@ impl From<JsOpenOptions> for fs::OpenOptions {
 }
 
 /// File represents a file handle.
-///
-/// @prop readonly path: string // The file path
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "File")]
 pub struct JsFile {
@@ -620,7 +618,8 @@ impl JsFile {
         Ok(())
     }
 
-    /// @skip
+    /// The file path
+    /// @get
     #[qjs(get)]
     pub fn path(&self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file(&ctx)?;

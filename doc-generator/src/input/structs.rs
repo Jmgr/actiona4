@@ -28,7 +28,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let (_, instructions, _) = process_rustdoc(struct_docs.as_ref(), RustdocContext::Struct)?;
         let has_properties = instructions
             .iter()
-            .any(|instruction| matches!(instruction, Instruction::Property(_)));
+            .any(|instruction| instruction.is_property());
 
         if !has_properties {
             let fields = fields
@@ -115,7 +115,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let extra_methods = struct_instructions.extra_methods();
         let verbatim = struct_instructions.verbatim();
 
-        let properties = list_properties(items, struct_name, fields, struct_docs)?;
+        let mut properties = list_properties(items, struct_name, fields, struct_docs)?;
 
         let impls = struct_
             .impls
@@ -133,9 +133,11 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let mut methods = Vec::new();
 
         for impl_ in impls {
-            let mut impl_methods = extract_functions(items, &impl_.items, Some(struct_name))
-                .wrap_err_with(|| struct_name.to_string())?;
+            let (mut impl_methods, mut extra_properties) =
+                extract_functions(items, &impl_.items, Some(struct_name))
+                    .wrap_err_with(|| struct_name.to_string())?;
             methods.append(&mut impl_methods);
+            properties.append(&mut extra_properties);
         }
 
         // Remove "Js" prefix if present

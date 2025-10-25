@@ -5,7 +5,7 @@ use std::{
     thread::sleep,
 };
 
-use eyre::Result;
+use eyre::{Result, eyre};
 use itertools::Itertools;
 use sysinfo::{CpuRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
@@ -37,6 +37,11 @@ impl CpuCore {
             usage: cpu.cpu_usage().into(),
             frequency: cpu.frequency().into(),
         }
+    }
+
+    #[must_use]
+    pub const fn index(&self) -> usize {
+        self.index
     }
 
     #[must_use]
@@ -188,20 +193,27 @@ impl Cpu {
     }
 
     pub async fn refresh_core_usage(&self, core: &CpuCore) -> Result<Percent> {
-        let index = core.index;
+        self.refresh_core_usage_by_index(core.index).await
+    }
+
+    pub async fn refresh_core_usage_by_index(&self, index: usize) -> Result<Percent> {
         let local_system = self.system.clone();
         let result = self
             .task_tracker
             .spawn_blocking(move || {
                 let mut system = local_system.lock().unwrap();
+                if index >= system.cpus().len() {
+                    return Err(eyre!("invalid index"));
+                }
+
                 system.refresh_cpu_usage();
 
                 sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
 
                 system.refresh_cpu_usage();
-                system.cpus()[index].cpu_usage().into()
+                Ok(system.cpus()[index].cpu_usage().into())
             })
-            .await?;
+            .await??;
         Ok(result)
     }
 

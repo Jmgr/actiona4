@@ -121,6 +121,7 @@ tokio-util = { version = "0.7.16", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.5.0"
+human-units = { version = "0.5.3", features = ["si-units"] }
 
 # Windows
 pe-parser = "0.7.0"

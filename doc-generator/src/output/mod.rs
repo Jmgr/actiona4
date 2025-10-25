@@ -40,7 +40,7 @@ impl Type {
             Type::String => "string".into(),
             Type::Option(option) => match context {
                 // When a parameter or property is optional we use ? after the name
-                Context::Variable | Context::Property => (option.to_string(context)?).to_string(),
+                Context::Variable | Context::Property => option.to_string(context)?,
 
                 // If it's a return value then we have to use the "| undefined" syntax instead
                 Context::ReturnValue => format!("{} | undefined", option.to_string(context)?),
@@ -306,7 +306,11 @@ impl File {
 
                     write_comments(&comments, "    ", &mut output_file)?;
 
-                    let optional = if struct_.is_options { "?" } else { "" };
+                    let optional = if struct_.is_options || property.type_.is_option() {
+                        "?"
+                    } else {
+                        ""
+                    };
 
                     writeln!(
                         output_file,
@@ -374,7 +378,7 @@ fn output_methods(
                 );
             } else {
                 for parameter in &overload.parameters {
-                    if matches!(parameter.type_, Type::Ignore) {
+                    if parameter.type_.is_ignore() {
                         continue;
                     }
 
@@ -385,14 +389,12 @@ fn output_methods(
 
                     is_first = false;
 
-                    let is_optional = matches!(parameter.type_, Type::Option(_));
-
                     use std::fmt::Write;
                     write!(
                         parameters,
                         "{}{}: {}",
-                        parameter.name,
-                        if is_optional { "?" } else { "" },
+                        parameter.name.to_case(Case::Camel),
+                        if parameter.type_.is_option() { "?" } else { "" },
                         parameter.type_.to_string(Context::Variable)?
                     )?;
                 }

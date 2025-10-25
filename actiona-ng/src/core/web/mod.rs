@@ -24,7 +24,7 @@ use reqwest::{
     multipart::{Form, Part},
 };
 use serde::{Deserialize, Serialize};
-use strum::EnumIter;
+use strum::{EnumIs, EnumIter};
 use tokio::{
     fs::{self, File},
     io::{AsyncReadExt, AsyncWrite, AsyncWriteExt},
@@ -344,7 +344,7 @@ impl Body {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, EnumIs)]
 pub enum Progress {
     #[default]
     Inactive,
@@ -383,11 +383,6 @@ impl Progress {
         }
     }
     */// TODO
-
-    #[must_use]
-    pub const fn is_finished(&self) -> bool {
-        matches!(self, Self::Finished { .. })
-    }
 }
 
 #[derive(Clone)]

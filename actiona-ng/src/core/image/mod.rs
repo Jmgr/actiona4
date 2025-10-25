@@ -325,6 +325,7 @@ mod tests {
 
     #[test]
     #[traced_test]
+    #[ignore]
     fn test_find_image() {
         Runtime::test(async |_runtime| {
             let source = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/input.png")

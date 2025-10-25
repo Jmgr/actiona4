@@ -107,20 +107,6 @@ impl JsDisplays {
 }
 
 /// Display info
-///
-/// @prop readonly id: number // Unique identifier associated with the display
-/// @prop readonly name: string // The display name
-/// @prop readonly friendlyName: string // The display friendly name
-/// @prop readonly x: number // The display x coordinate
-/// @prop readonly y: number // The display x coordinate
-/// @prop readonly width: number // The display pixel width
-/// @prop readonly height: number // The display pixel height
-/// @prop readonly widthMm: number // The width of a display in millimeters. This value may be 0
-/// @prop readonly heightMm: number // The height of a display in millimeters. This value may be 0
-/// @prop readonly rotation: number // Can be 0, 90, 180, 270, represents screen rotation in clock-wise degrees
-/// @prop readonly scaleFactor: number // Output device's pixel scale factor
-/// @prop readonly frequency: number // The display refresh rate
-/// @prop readonly isPrimary: boolean // Whether the screen is the main screen
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "DisplayInfo")]
 pub struct JsDisplayInfo {
@@ -141,14 +127,16 @@ impl From<runtime::events::DisplayInfo> for JsDisplayInfo {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDisplayInfo {
-    /// @skip
+    /// Unique identifier associated with the display
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn id(&self) -> u32 {
         self.inner.id
     }
 
-    /// @skip
+    /// The display name
+    /// @get
     #[qjs(get)]
     #[allow(clippy::missing_const_for_fn)]
     #[must_use]
@@ -156,7 +144,8 @@ impl JsDisplayInfo {
         &self.inner.name
     }
 
-    /// @skip
+    /// The display friendly name
+    /// @get
     #[qjs(get)]
     #[allow(clippy::missing_const_for_fn)]
     #[must_use]
@@ -164,49 +153,56 @@ impl JsDisplayInfo {
         &self.inner.friendly_name
     }
 
-    /// @skip
+    /// The display rectangle
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub fn rect(&self) -> JsRect {
         self.inner.rect.into()
     }
 
-    /// @skip
+    /// The display pixel width
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn width_mm(&self) -> i32 {
         self.inner.width_mm
     }
 
-    /// @skip
+    /// The display pixel height
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn height_mm(&self) -> i32 {
         self.inner.height_mm
     }
 
-    /// @skip
+    /// The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn rotation(&self) -> f32 {
         self.inner.rotation
     }
 
-    /// @skip
+    /// Output device's pixel scale factor
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn scale_factor(&self) -> f32 {
         self.inner.scale_factor
     }
 
-    /// @skip
+    /// The display refresh rate
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn frequency(&self) -> f32 {
         self.inner.frequency
     }
 
-    /// @skip
+    /// Whether the screen is the main screen
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn is_primary(&self) -> bool {

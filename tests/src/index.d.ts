@@ -23,6 +23,9 @@ declare function sleep(ms: number): Task<void>;
  * Stops the execution.
  */
 declare function exit(): void;
+declare function formatFrequency(frequency: number): string;
+declare function formatPercent(percent: number, precision?: number): string;
+declare function formatBytes(bytes: number): string;
 declare enum FlipDirection {
     Horizontal,
 
@@ -435,7 +438,7 @@ declare interface Clipboard {
     setImage(image: Image, mode?: ClipboardMode): Promise<void>;
     getImage(mode?: ClipboardMode): Promise<Image>;
     getFileList(mode?: ClipboardMode): Promise<string[]>;
-    setHtml(html: string, alt_text?: string, mode?: ClipboardMode): Promise<void>;
+    setHtml(html: string, altText?: string, mode?: ClipboardMode): Promise<void>;
     getHtml(mode?: ClipboardMode): Promise<string>;
     clear(mode?: ClipboardMode): Promise<void>;
 }
@@ -483,11 +486,11 @@ declare class Image {
     /**
      * Flip the image.
      */
-    flip(flip_direction: FlipDirection): this;
+    flip(flipDirection: FlipDirection): this;
     /**
      * Flip the image and returns a new image.
      */
-    flipped(flip_direction: FlipDirection): Image;
+    flipped(flipDirection: FlipDirection): Image;
     /**
      * Hue rotate the image.
      */
@@ -1283,123 +1286,123 @@ declare class Image {
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, width_radius: number, height_radius: number, color: Color, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, width_radius: number, height_radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, width_radius: number, height_radius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, width_radius: number, height_radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, width_radius: number, height_radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, width_radius: number, height_radius: number, color: Color, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, width_radius: number, height_radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, width_radius: number, height_radius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, width_radius: number, height_radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, width_radius: number, height_radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o: {x: number, y: number}, width_radius: number, height_radius: number, color: Color, options?: DrawingOptions): this;
+    drawEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o: {x: number, y: number}, width_radius: number, height_radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
+    drawEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o: {x: number, y: number}, width_radius: number, height_radius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
+    drawEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o1: {x: number, y: number}, width_radius: number, height_radius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): this;
+    drawEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o1: {x: number, y: number}, width_radius: number, height_radius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
+    drawEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, width_radius: number, height_radius: number, color: Color, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, width_radius: number, height_radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, width_radius: number, height_radius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, width_radius: number, height_radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, width_radius: number, height_radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, width_radius: number, height_radius: number, color: Color, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, width_radius: number, height_radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, width_radius: number, height_radius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, width_radius: number, height_radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, width_radius: number, height_radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o: {x: number, y: number}, width_radius: number, height_radius: number, color: Color, options?: DrawingOptions): Image;
+    withEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o: {x: number, y: number}, width_radius: number, height_radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
+    withEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o: {x: number, y: number}, width_radius: number, height_radius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
+    withEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o1: {x: number, y: number}, width_radius: number, height_radius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
+    withEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o1: {x: number, y: number}, width_radius: number, height_radius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
+    withEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on this image.
      */
@@ -1547,7 +1550,7 @@ declare class Image {
     /**
      * TODO
      */
-    findImage(_image: Image, options?: FindImageOptions): void;
+    findImage(image: Image, options?: FindImageOptions): void;
     width(): number;
     height(): number;
 }
@@ -1765,12 +1768,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
-    readonly path: string;
-    readonly fileName: string;
-    readonly isFile: boolean;
-    readonly isDirectory: boolean;
-    readonly isSymlink: boolean;
     readonly size: number;
+    readonly isDirectory: boolean;
+    readonly fileName: string;
+    readonly isSymlink: boolean;
+    readonly path: string;
+    readonly isFile: boolean;
 }
 /**
  * Directory options
@@ -1985,41 +1988,13 @@ declare interface DisplayInfo {
      */
     readonly id: number;
     /**
-     * The display name
+     * The display rectangle
      */
-    readonly name: string;
-    /**
-     * The display friendly name
-     */
-    readonly friendlyName: string;
-    /**
-     * The display x coordinate
-     */
-    readonly x: number;
-    /**
-     * The display x coordinate
-     */
-    readonly y: number;
-    /**
-     * The display pixel width
-     */
-    readonly width: number;
+    readonly rect: Rect;
     /**
      * The display pixel height
      */
-    readonly height: number;
-    /**
-     * The width of a display in millimeters. This value may be 0
-     */
-    readonly widthMm: number;
-    /**
-     * The height of a display in millimeters. This value may be 0
-     */
     readonly heightMm: number;
-    /**
-     * Can be 0, 90, 180, 270, represents screen rotation in clock-wise degrees
-     */
-    readonly rotation: number;
     /**
      * Output device's pixel scale factor
      */
@@ -2032,6 +2007,22 @@ declare interface DisplayInfo {
      * Whether the screen is the main screen
      */
     readonly isPrimary: boolean;
+    /**
+     * The display pixel width
+     */
+    readonly widthMm: number;
+    /**
+     * The display name
+     */
+    readonly name: string;
+    /**
+     * The display friendly name
+     */
+    readonly friendlyName: string;
+    /**
+     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+     */
+    readonly rotation: number;
 }
 declare class Rect {
     /**
@@ -2371,6 +2362,28 @@ declare const random: Random;
 declare interface Screenshot {
 }
 declare const screenshot: Screenshot;
+/**
+ * System
+ */
+declare interface System {
+    /**
+     * Memory information
+     */
+    readonly memory: Memory;
+    /**
+     * Cpu information
+     */
+    readonly cpu: Cpu;
+    /**
+     * Hardware information
+     */
+    readonly hardware: Hardware;
+    /**
+     * Network information
+     */
+    readonly network: Network;
+}
+declare const system: System;
 declare interface Ui {
     static messageBox(text: string, options?: MessageBoxOptions): Promise<MessageBoxResult>;
 }
@@ -2513,12 +2526,12 @@ declare class MessageBoxButtons {
     private constructor();
     static intoInner(self: MessageBoxButtons): MessageBoxButtons;
     static ok(): MessageBoxButtons;
-    static okCustom(ok_label: string): MessageBoxButtons;
+    static okCustom(okLabel: string): MessageBoxButtons;
     static okCancel(): MessageBoxButtons;
-    static okCancelCustom(ok_label: string, cancel_label: string): MessageBoxButtons;
+    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
     static yesNo(): MessageBoxButtons;
     static yesNoCancel(): MessageBoxButtons;
-    static yesNoCancelCustom(yes_label: string, no_label: string, cancel_label: string): MessageBoxButtons;
+    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
 }
 /**
  * Multipart form
@@ -2527,9 +2540,242 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
-    current(): number;
     total(): number;
     finished(): boolean;
+    current(): number;
+}
+/**
+ * Cpu
+ */
+declare interface Cpu {
+    /**
+     * Physical core count
+     */
+    readonly physicalCoreCount?: number;
+    /**
+     * Architecture
+     */
+    readonly architecture: string;
+    /**
+     * Logical core count
+     */
+    readonly logicalCoreCount: number;
+    usage(): Promise<number>;
+    coreUsage(logicalCoreIndex: number): Promise<number>;
+    frequencies(): Promise<number[]>;
+    toString(): string;
+}
+/**
+ * Hardware
+ */
+declare interface Hardware {
+    /**
+     * Uuid
+     */
+    readonly uuid?: string;
+    /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * Stock keeping unit
+     */
+    readonly stockKeepingUnit?: string;
+    /**
+     * Family
+     */
+    readonly family?: string;
+    /**
+     * Motherboard
+     */
+    readonly motherboard: Motherboard;
+    /**
+     * Version
+     */
+    readonly version?: string;
+    /**
+     * Vendor name
+     */
+    readonly vendorName?: string;
+    /**
+     * Hardware components
+     */
+    components(rescan?: boolean): Promise<Component[]>;
+    toString(): string;
+}
+declare interface Motherboard {
+    /**
+     * Version
+     */
+    readonly version?: string;
+    /**
+     * Vendor name
+     */
+    readonly vendorName?: string;
+    /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
+    /**
+     * Asset tag
+     */
+    readonly assetTag?: string;
+    /**
+     * Name
+     */
+    readonly name?: string;
+    toString(): string;
+}
+declare interface Component {
+    /**
+     * Label
+     */
+    readonly label: string;
+    /**
+     * ID
+     */
+    readonly id?: string;
+    /**
+     * Temperature
+     */
+    readonly temperature?: number;
+    /**
+     * Maximum temperature
+     */
+    readonly maxTemperature?: number;
+    /**
+     * Critical temperature
+     */
+    readonly criticalTemperature?: number;
+    toString(): string;
+}
+/**
+ * Memory
+ */
+declare interface Memory {
+    /**
+     * Memory usage
+     */
+    usage(): Promise<MemoryUsage>;
+    /**
+     * Swap usage
+     */
+    swapUsage(): Promise<MemoryUsage>;
+    /**
+     * CGroup limits
+     * @platform only works on Linux
+     */
+    cgroupLimits(): CGroupLimits | undefined;
+    toString(): string;
+}
+declare interface MemoryUsage {
+    /**
+     * Used
+     */
+    readonly used: number;
+    /**
+     * Free
+     */
+    readonly free: number;
+    /**
+     * Available
+     */
+    readonly available: number;
+    /**
+     * Total
+     */
+    readonly total: number;
+    toString(): string;
+}
+/**
+ * CGroup limits
+ * @platform only works on Linux
+ */
+declare interface CGroupLimits {
+    /**
+     * RSS
+     */
+    readonly rss: number;
+    /**
+     * Free swap
+     */
+    readonly freeSwap: number;
+    /**
+     * Free memory
+     */
+    readonly freeMemory: number;
+    /**
+     * Total memory
+     */
+    readonly totalMemory: number;
+    toString(): string;
+}
+/**
+ * Network
+ */
+declare interface Network {
+    /**
+     * Host name
+     */
+    hostname(): string | undefined;
+    /**
+     * Interfaces
+     */
+    interfaces(rescan?: boolean): Promise<Record<string, NetworkInterface>>;
+    toString(): string;
+}
+declare interface NetworkInterface {
+    /**
+     * Inbound
+     */
+    readonly inbound: Traffic;
+    /**
+     * Outbound
+     */
+    readonly outbound: Traffic;
+    /**
+     * MTU
+     */
+    readonly mtu: number;
+    /**
+     * Subnets
+     */
+    readonly subnets: string[];
+    /**
+     * MAC address
+     */
+    readonly macAddress?: string;
+    toString(): string;
+}
+declare interface Counters {
+    /**
+     * Errors
+     */
+    readonly errors: number;
+    /**
+     * Data
+     */
+    readonly data: number;
+    /**
+     * Packets
+     */
+    readonly packets: number;
+    toString(): string;
+}
+declare interface Traffic {
+    /**
+     * Total
+     */
+    readonly total: Counters;
+    /**
+     * Delta
+     */
+    readonly delta: Counters;
+    toString(): string;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;

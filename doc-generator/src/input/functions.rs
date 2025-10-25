@@ -24,15 +24,17 @@ pub fn process_functions(items: &Items) -> Result<Vec<Method>> {
         .flat_map(|module| module.items.clone())
         .collect_vec();
 
-    extract_functions(items, &functions, None)
+    let (functions, _) = extract_functions(items, &functions, None)?;
+    Ok(functions)
 }
 
 pub fn extract_functions(
     items: &Items,
     function_ids: &[Id],
     struct_name: Option<&str>,
-) -> Result<Vec<Method>> {
-    let mut result = Vec::new();
+) -> Result<(Vec<Method>, Vec<Variable>)> {
+    let mut methods = Vec::new();
+    let mut properties = Vec::new();
 
     let functions = function_ids
         .iter()
@@ -59,13 +61,14 @@ pub fn extract_functions(
     'func: for (mut function_name, function_docs, function) in functions {
         let (comments, instructions, overload_instructions) =
             process_rustdoc(function_docs.as_ref(), RustdocContext::Method)?;
+
         if instructions.has_skip() {
             continue;
         }
 
         let has_parameters = instructions
             .iter()
-            .any(|instruction| matches!(instruction, Instruction::Parameter(_)))
+            .any(|instruction| instruction.is_parameter())
             || !overload_instructions.is_empty();
 
         let is_constructor = instructions.has_constructor();
@@ -145,7 +148,7 @@ pub fn extract_functions(
             overloads.push(MethodOverload {
                 parameters,
                 return_,
-                comments,
+                comments: comments.clone(),
                 rest_params,
                 platforms: instructions.platforms(),
             });
@@ -216,7 +219,20 @@ pub fn extract_functions(
             }
         };
 
-        result.push(Method {
+        // If the function is @get then it appears as a property, so we skip it
+        if instructions.has_getter() {
+            properties.push(Variable {
+                name: function_name,
+                type_: overloads[0].return_.clone(),
+                comments,
+                is_readonly: true,
+                default_value: None,
+                platforms: Default::default(),
+            });
+            continue;
+        }
+
+        methods.push(Method {
             name: function_name.clone(),
             overloads,
             is_constructor,
@@ -227,5 +243,5 @@ pub fn extract_functions(
         });
     }
 
-    Ok(result)
+    Ok((methods, properties))
 }

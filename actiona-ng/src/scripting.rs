@@ -324,7 +324,10 @@ impl Engine {
         let message = exception.message().unwrap();
         let stack = exception.stack().unwrap();
         let lines = stack.lines().map(|line| parse_callstack_line(line.trim()));
-        let stack = lines.collect::<Result<Vec<_>>>()?;
+        let stack = match lines.collect::<Result<Vec<_>>>() {
+            Ok(res) => res,
+            Err(_) => return Ok((message, Default::default())), // Silently return the raw message
+        };
 
         let stack = stack.into_iter().map(|mut frame| {
             let Ok(source_hash) = frame.file.parse() else {

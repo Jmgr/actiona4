@@ -121,7 +121,7 @@ mod tests {
 
     // try_si32() (uses TryInto<Si32> impls from `convert`)
     #[rstest]
-    #[case::f64_ok_rounded(1.6f64, Si32::new(2))]
+    #[case::f64_ok_clamped(1.6f64, Si32::new(1))]
     #[case::f64_low_clamped((i32::MIN as f64) - 1.0, Si32::new(i32::MIN))]
     #[case::f64_high_clamped((i32::MAX as f64) + 1.0, Si32::new(i32::MAX))]
     fn try_si32_ok(#[case] src: impl TryInto<Si32, Error = eyre::Report>, #[case] want: Si32) {

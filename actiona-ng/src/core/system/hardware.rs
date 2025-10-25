@@ -14,7 +14,7 @@ use crate::types::{
     display::{DisplayFields, display_list},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Motherboard {
     name: OptionalSystemString,
     vendor: OptionalSystemString,
@@ -122,6 +122,33 @@ impl Display for Component {
                 .display_if_some("critical_temperature", &self.critical_temperature)
                 .finish(f)
         }
+    }
+}
+
+impl Component {
+    #[must_use]
+    pub fn label(&self) -> &str {
+        &self.label
+    }
+
+    #[must_use]
+    pub const fn id(&self) -> &OptionalSystemString {
+        &self.id
+    }
+
+    #[must_use]
+    pub const fn temperature(&self) -> &OptionalDegreesCelsius {
+        &self.temperature
+    }
+
+    #[must_use]
+    pub const fn max_temperature(&self) -> &OptionalDegreesCelsius {
+        &self.max_temperature
+    }
+
+    #[must_use]
+    pub const fn critical_temperature(&self) -> &OptionalDegreesCelsius {
+        &self.critical_temperature
     }
 }
 

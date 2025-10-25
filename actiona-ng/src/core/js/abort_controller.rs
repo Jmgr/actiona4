@@ -45,7 +45,6 @@ impl IntoToken for Option<JsAbortSignal> {
     }
 }
 
-/// @prop readonly signal: AbortSignal
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "AbortController")]
 pub struct JsAbortController {
@@ -73,7 +72,7 @@ impl JsAbortController {
         self.token.cancel();
     }
 
-    /// @skip
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub fn signal(&self) -> JsAbortSignal {

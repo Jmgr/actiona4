@@ -105,6 +105,44 @@ pub fn register_value_class<'js, T: ValueClass<'js> + JsClass<'js>>(
     .into_js_result(ctx)
 }
 
+/// Represents a JavaScript class that cannot be created by the user.
+///
+/// The `'js` lifetime represents the lifetime of the JavaScript context.
+pub trait HostClass<'js>: JsClass<'js> + IntoJs<'js> {
+    /// Register any dependencies required by this class.
+    ///
+    /// This is called before the class is defined in the JavaScript context.
+    fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        let _ = ctx; // Silence unused variable warning
+        Ok(())
+    }
+}
+
+/// Register this class in the JavaScript context.
+///
+/// This defines the class in the global scope, making it available for instantiation.
+/// @skip
+pub fn register_host_class<'js, T: HostClass<'js> + JsClass<'js>>(
+    ctx: &Ctx<'js>,
+) -> rquickjs::Result<()> {
+    // Remove "Js" prefix if present
+    let name = T::NAME.strip_prefix("Js").unwrap_or(T::NAME);
+
+    move || -> rquickjs::Result<()> {
+        T::register_dependencies(ctx)
+            .wrap_err("register dependencies")
+            .into_js_result(ctx)?;
+
+        Class::<T>::define(&ctx.globals())
+            .wrap_err("define constructor")
+            .into_js_result(ctx)?;
+
+        Ok(())
+    }()
+    .wrap_err_with(|| format!("registering {name}"))
+    .into_js_result(ctx)
+}
+
 /// @skip
 pub fn register_enum<'js, E>(ctx: &Ctx<'js>) -> rquickjs::Result<()>
 where

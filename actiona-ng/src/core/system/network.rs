@@ -41,7 +41,16 @@ impl From<&sysinfo::IpNetwork> for Subnet {
     }
 }
 
-#[derive(Debug)]
+impl Subnet {
+    #[must_use]
+    pub fn to_string(&self) -> Option<String> {
+        IpNet::new(self.address, self.prefix)
+            .ok()
+            .map(|ip| ip.to_string())
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct Counters {
     data: ByteCount,
     packets: u64,
@@ -58,7 +67,24 @@ impl Display for Counters {
     }
 }
 
-#[derive(Debug)]
+impl Counters {
+    #[must_use]
+    pub const fn data(&self) -> ByteCount {
+        self.data
+    }
+
+    #[must_use]
+    pub const fn packets(&self) -> u64 {
+        self.packets
+    }
+
+    #[must_use]
+    pub const fn errors(&self) -> u64 {
+        self.errors
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct Traffic {
     total: Counters,
     delta: Counters,
@@ -67,9 +93,21 @@ pub struct Traffic {
 impl Display for Traffic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("total", &self.total)
-            .display("delta", &self.delta)
+            .display("total", self.total)
+            .display("delta", self.delta)
             .finish(f)
+    }
+}
+
+impl Traffic {
+    #[must_use]
+    pub const fn total(&self) -> Counters {
+        self.total
+    }
+
+    #[must_use]
+    pub const fn delta(&self) -> Counters {
+        self.delta
     }
 }
 
@@ -85,8 +123,8 @@ pub struct NetworkInterface {
 impl Display for NetworkInterface {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("inbound", &self.inbound)
-            .display("outbound", &self.outbound)
+            .display("inbound", self.inbound)
+            .display("outbound", self.outbound)
             .display("mtu", self.mtu)
             .display_if_some("mac_address", &self.mac_address)
             .display("subnets", display_list(&self.subnets))
@@ -126,6 +164,33 @@ impl From<&sysinfo::NetworkData> for NetworkInterface {
                 .then(|| value.mac_address().to_string()),
             subnets: value.ip_networks().iter().map(Subnet::from).collect_vec(),
         }
+    }
+}
+
+impl NetworkInterface {
+    #[must_use]
+    pub const fn inbound(&self) -> Traffic {
+        self.inbound
+    }
+
+    #[must_use]
+    pub const fn outbound(&self) -> Traffic {
+        self.outbound
+    }
+
+    #[must_use]
+    pub const fn mtu(&self) -> u64 {
+        self.mtu
+    }
+
+    #[must_use]
+    pub fn mac_address(&self) -> Option<&str> {
+        self.mac_address.as_deref()
+    }
+
+    #[must_use]
+    pub fn subnets(&self) -> &[Subnet] {
+        &self.subnets
     }
 }
 

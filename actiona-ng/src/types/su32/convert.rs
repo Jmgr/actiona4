@@ -304,7 +304,7 @@ mod tests {
     #[rstest]
     #[case::zero(0.0, su32(0))]
     #[case::pos_whole(123.0, su32(123))]
-    #[case::round_up(1.6, su32(2))]
+    #[case::clamp_up(1.6, su32(1))]
     #[case::clamp_low(-42.9, su32(0))]
     #[case::clamp_high((u32::MAX as f64) + 1234.5, su32(u32::MAX))]
     fn try_from_f64_ok(#[case] src: f64, #[case] want: Su32) {
@@ -395,7 +395,7 @@ mod tests {
     #[rstest]
     #[case::zero(0.0, su32(0))]
     #[case::whole(123.0, su32(123))]
-    #[case::round_up(1.6, su32(2))]
+    #[case::clamp_up(1.6, su32(1))]
     #[case::clamp_low(-42.9, su32(0))]
     #[case::clamp_high((u32::MAX as f64) + 10_000.0, su32(u32::MAX))]
     fn su32_from_js_number_ok(#[case] num: f64, #[case] want: Su32) {

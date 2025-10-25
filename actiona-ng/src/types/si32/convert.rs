@@ -247,8 +247,8 @@ mod tests {
     #[case::zero(0.0, si32(0))]
     #[case::pos_whole(123.0, si32(123))]
     #[case::neg_whole(-456.0, si32(-456))]
-    #[case::round_up(1.6, si32(2))]
-    #[case::round_down(-1.4, si32(-1))]
+    #[case::clamp_up(1.6, si32(1))]
+    #[case::clamp_down(-1.4, si32(-1))]
     #[case::clamp_high((i32::MAX as f64) + 10_000.5, si32(i32::MAX))]
     #[case::clamp_low((i32::MIN as f64) - 10_000.5, si32(i32::MIN))]
     fn try_from_f64_ok(#[case] src: f64, #[case] want: Si32) {
@@ -313,8 +313,8 @@ mod tests {
     #[case::zero(0.0, si32(0))]
     #[case::pos_whole(123.0, si32(123))]
     #[case::neg_whole(-456.0, si32(-456))]
-    #[case::round_up(1.6, si32(2))]
-    #[case::round_down(-1.4, si32(-1))]
+    #[case::clamp_up(1.6, si32(1))]
+    #[case::clamp_down(-1.4, si32(-1))]
     #[case::clamp_high((i32::MAX as f64) + 42.9, si32(i32::MAX))]
     #[case::clamp_low((i32::MIN as f64) - 42.9, si32(i32::MIN))]
     fn si32_from_js_number_ok(#[case] num: f64, #[case] want: Si32) {

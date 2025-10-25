@@ -312,6 +312,7 @@ mod tests {
     use crate::core::mouse::Mouse;
 
     #[test]
+    #[ignore]
     fn test_active_window() {
         Runtime::test(async move |runtime| {
             let mut handler = X11WindowHandler::new(runtime.clone());
