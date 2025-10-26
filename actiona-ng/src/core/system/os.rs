@@ -41,10 +41,17 @@ impl From<sysinfo::Group> for Group {
     }
 }
 
+impl Group {
+    #[must_use]
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+
 #[derive(Debug)]
 pub struct User {
     name: String,
-    group_id: u32,
+    group_id: Option<u32>,
     groups: Vec<u32>,
 }
 
@@ -52,7 +59,7 @@ impl Display for User {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
             .display("name", &self.name)
-            .display("group_id", self.group_id)
+            .display_if_some("group_id", &self.group_id)
             .display("groups", display_list(&self.groups))
             .finish(f)
     }
@@ -62,13 +69,33 @@ impl From<&sysinfo::User> for User {
     fn from(value: &sysinfo::User) -> Self {
         Self {
             name: value.name().to_string(),
-            group_id: *value.group_id(),
+            #[cfg(windows)]
+            group_id: None,
+            #[cfg(not(windows))]
+            group_id: Some(*value.group_id()),
             groups: value
                 .groups()
                 .into_iter()
                 .map(|group| **group.id())
                 .collect_vec(),
         }
+    }
+}
+
+impl User {
+    #[must_use]
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    #[must_use]
+    pub const fn group_id(&self) -> Option<u32> {
+        self.group_id
+    }
+
+    #[must_use]
+    pub fn groups(&self) -> &[u32] {
+        &self.groups
     }
 }
 

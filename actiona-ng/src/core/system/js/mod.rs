@@ -10,7 +10,10 @@ use crate::core::{
     js::classes::{SingletonClass, register_host_class},
     system::{
         System,
-        js::{cpu::JsCpu, hardware::JsHardware, memory::JsMemory, network::JsNetwork},
+        js::{
+            cpu::JsCpu, hardware::JsHardware, memory::JsMemory, network::JsNetwork, os::JsOs,
+            storage::JsStorage,
+        },
     },
 };
 
@@ -18,6 +21,9 @@ pub mod cpu;
 pub mod hardware;
 pub mod memory;
 pub mod network;
+pub mod os;
+pub mod processes;
+pub mod storage;
 
 /// System
 /// @singleton
@@ -33,6 +39,8 @@ impl SingletonClass<'_> for JsSystem {
         register_host_class::<JsHardware>(ctx)?;
         register_host_class::<JsMemory>(ctx)?;
         register_host_class::<JsNetwork>(ctx)?;
+        register_host_class::<JsOs>(ctx)?;
+        register_host_class::<JsStorage>(ctx)?;
 
         ctx.globals()
             .set("formatFrequency", Func::from(format_frequency))?;
@@ -88,6 +96,22 @@ impl JsSystem {
     #[must_use]
     pub fn network(&self) -> JsNetwork {
         JsNetwork::new(self.inner.network())
+    }
+
+    /// Os information
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn os(&self) -> JsOs {
+        JsOs::new(self.inner.os())
+    }
+
+    /// Storage information
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn storage(&self) -> JsStorage {
+        JsStorage::new(self.inner.storage())
     }
 }
 

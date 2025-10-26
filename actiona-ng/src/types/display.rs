@@ -32,6 +32,10 @@ impl DisplayFields {
     pub fn finish<'a, 'f>(self, f: &'a mut Formatter<'f>) -> fmt::Result {
         write!(f, "({})", self.buffer)
     }
+
+    pub fn finish_as_string(self) -> String {
+        format!("({})", self.buffer)
+    }
 }
 
 pub struct DisplayList<'a, T>(&'a [T]);

@@ -2,21 +2,14 @@
 use std::os::unix::fs::PermissionsExt;
 #[cfg(windows)]
 use std::os::windows::fs::FileTimesExt;
-use std::{
-    fmt::Debug,
-    fs::FileTimes,
-    io::SeekFrom,
-    sync::Arc,
-    time::{Duration, SystemTime, UNIX_EPOCH},
-};
+use std::{fmt::Debug, fs::FileTimes, io::SeekFrom, sync::Arc};
 
 use eyre::eyre;
 use macros::FromJsObject;
 use rquickjs::{
-    Ctx, Exception, Function, JsLifetime, Object, Result, TypedArray,
+    Ctx, Exception, JsLifetime, Object, Result, TypedArray,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
-    function::{Args, Constructor},
     prelude::Opt,
 };
 use tokio::{
@@ -27,7 +20,13 @@ use tokio::{
 use tokio_util::task::TaskTracker;
 
 use crate::{
-    IntoJsResult, core::js::classes::ValueClass, error::CommonError, runtime::WithUserData,
+    IntoJsResult,
+    core::js::{
+        classes::ValueClass,
+        date::{date_from_system_time, system_time_from_date},
+    },
+    error::CommonError,
+    runtime::WithUserData,
 };
 
 #[derive(Clone, Debug, JsLifetime)]
@@ -124,37 +123,6 @@ impl JsFile {
             return Err(Exception::throw_message(ctx, "File is not open"));
         };
         Ok(opened_file)
-    }
-
-    fn date_from_system_time<'js>(ctx: &Ctx<'js>, system_time: &SystemTime) -> Result<Object<'js>> {
-        let global = ctx.globals();
-        let date_constructor: Constructor = global.get("Date").unwrap();
-
-        let duration = system_time.duration_since(UNIX_EPOCH).unwrap();
-        let millis = u64::try_from(duration.as_millis())
-            .map_err(|err| eyre!("{err}"))
-            .into_js_result(ctx)?;
-
-        Ok(date_constructor
-            .construct::<_, Object<'js>>((millis,))
-            .unwrap())
-    }
-
-    fn system_time_from_date<'js>(ctx: Ctx<'js>, date: Object<'js>) -> Result<SystemTime> {
-        let date_object: Object = ctx.globals().get(PredefinedAtom::Date)?;
-        if !date.is_instance_of(&date_object) {
-            return Err(Exception::throw_message(
-                &ctx,
-                &format!("Expected a Date parameter, got {}", date.type_name()),
-            ));
-        }
-
-        let get_time: Function = date.get("getTime")?;
-        let mut args = Args::new(ctx, 0);
-        args.this(date)?;
-        let time: u64 = get_time.call_arg(args)?;
-
-        Ok(UNIX_EPOCH + Duration::from_millis(time))
     }
 }
 
@@ -484,7 +452,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.modified()?;
-        Self::date_from_system_time(&ctx, &modified)
+        date_from_system_time(&ctx, &modified)
     }
 
     #[qjs(skip)]
@@ -508,7 +476,7 @@ impl JsFile {
     /// @param date: Date
     pub async fn set_modified_time<'js>(&self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
-        let system_time = Self::system_time_from_date(ctx.clone(), date)?;
+        let system_time = system_time_from_date(ctx.clone(), date)?;
 
         Self::set_times(
             opened_file,
@@ -525,13 +493,13 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.accessed()?;
-        Self::date_from_system_time(&ctx, &modified)
+        date_from_system_time(&ctx, &modified)
     }
 
     /// @param date: Date
     pub async fn set_accessed_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
-        let system_time = Self::system_time_from_date(ctx.clone(), date)?;
+        let system_time = system_time_from_date(ctx.clone(), date)?;
 
         Self::set_times(
             opened_file,
@@ -548,7 +516,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let metadata = opened_file.file.lock().await.metadata().await?;
         let modified = metadata.created()?;
-        Self::date_from_system_time(&ctx, &modified)
+        date_from_system_time(&ctx, &modified)
     }
 
     /// @param date: Date
@@ -706,7 +674,7 @@ mod tests {
     use tracing_test::traced_test;
 
     use crate::{
-        core::{file::js::JsFile, test_helpers::random_temp_filename},
+        core::{js::date::system_time_from_date, test_helpers::random_temp_filename},
         runtime::Runtime,
         scripting::Engine,
     };
@@ -1031,7 +999,7 @@ mod tests {
             let time = script_engine
                 .with::<_, DateTime<Utc>>(|ctx| {
                     let result = ctx.globals().get::<_, Object>("result").unwrap();
-                    JsFile::system_time_from_date(ctx, result).unwrap().into()
+                    system_time_from_date(ctx, result).unwrap().into()
                 })
                 .await;
 
@@ -1056,7 +1024,7 @@ mod tests {
             let time = script_engine
                 .with::<_, DateTime<Utc>>(|ctx| {
                     let result = ctx.globals().get::<_, Object>("result").unwrap();
-                    JsFile::system_time_from_date(ctx, result).unwrap().into()
+                    system_time_from_date(ctx, result).unwrap().into()
                 })
                 .await;
 
@@ -1081,7 +1049,7 @@ mod tests {
             let time = script_engine
                 .with::<_, DateTime<Utc>>(|ctx| {
                     let result = ctx.globals().get::<_, Object>("result").unwrap();
-                    JsFile::system_time_from_date(ctx, result).unwrap().into()
+                    system_time_from_date(ctx, result).unwrap().into()
                 })
                 .await;
 

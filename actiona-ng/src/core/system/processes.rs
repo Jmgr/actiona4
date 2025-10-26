@@ -81,7 +81,7 @@ pub enum Signal {
     Usr2,
 }
 
-#[derive(Debug, Display)]
+#[derive(Debug, Display, Copy, Clone)]
 pub enum Status {
     Idle,
     Run,
@@ -225,12 +225,12 @@ impl Display for Process {
                 .display("memory", self.memory)
                 .display("virtual_memory", self.virtual_memory)
                 .display_if_some("parent", &self.parent)
-                .display("status", &self.status)
+                .display("status", self.status)
                 .display("start_time", self.start_time)
                 .display("run_time", self.run_time)
                 .display("cpu_usage", self.cpu_usage)
                 .display("accumulated_cpu_time", self.accumulated_cpu_time)
-                .display("disk_usage", &self.disk_usage)
+                .display("disk_usage", self.disk_usage)
                 .display_if_some("user_id", &self.user_id)
                 .display_if_some("effective_user_id", &self.effective_user_id)
                 .display_if_some("group_id", &self.group_id)
@@ -250,7 +250,7 @@ impl Display for Process {
                 .display_if_some("cwd", &self.cwd)
                 .display("memory", self.memory)
                 .display_if_some("parent", &self.parent)
-                .display("status", &self.status)
+                .display("status", self.status)
                 .display("start_time", self.start_time)
                 .display("run_time", self.run_time)
                 .display("cpu_usage", self.cpu_usage)
@@ -261,6 +261,147 @@ impl Display for Process {
     }
 }
 
+impl Process {
+    #[must_use]
+    pub const fn name(&self) -> &OptionalSystemString {
+        &self.name
+    }
+
+    #[must_use]
+    pub const fn cmd(&self) -> &OsStringList {
+        &self.cmd
+    }
+
+    #[must_use]
+    pub const fn exe(&self) -> &OptionalPath {
+        &self.exe
+    }
+
+    #[must_use]
+    pub const fn pid(&self) -> Pid {
+        self.pid
+    }
+
+    #[must_use]
+    pub const fn env(&self) -> &OsStringList {
+        &self.env
+    }
+
+    #[must_use]
+    pub const fn cwd(&self) -> &OptionalPath {
+        &self.cwd
+    }
+
+    #[must_use]
+    pub const fn root(&self) -> &OptionalPath {
+        &self.root
+    }
+
+    #[must_use]
+    pub const fn memory(&self) -> ByteCount {
+        self.memory
+    }
+
+    #[must_use]
+    pub const fn virtual_memory(&self) -> ByteCount {
+        self.virtual_memory
+    }
+
+    #[must_use]
+    pub const fn parent(&self) -> OptionalPid {
+        self.parent
+    }
+
+    #[must_use]
+    pub const fn status(&self) -> &Status {
+        &self.status
+    }
+
+    #[must_use]
+    pub const fn start_time(&self) -> SystemTimeUnit {
+        self.start_time
+    }
+
+    /// dyn
+    #[must_use]
+    pub const fn run_time(&self) -> DurationUnit {
+        self.run_time
+    }
+
+    /// dyn
+    #[must_use]
+    pub const fn cpu_usage(&self) -> Percent {
+        self.cpu_usage
+    }
+
+    /// dyn
+    #[must_use]
+    pub const fn accumulated_cpu_time(&self) -> DurationUnit {
+        self.accumulated_cpu_time
+    }
+
+    /// dyn
+    #[must_use]
+    pub const fn disk_usage(&self) -> DiskUsage {
+        self.disk_usage
+    }
+
+    #[must_use]
+    pub const fn user_id(&self) -> &OptionalUidUnit {
+        &self.user_id
+    }
+
+    /// Linux only
+    #[must_use]
+    pub const fn effective_user_id(&self) -> &OptionalUidUnit {
+        &self.effective_user_id
+    }
+
+    /// Linux only
+    #[must_use]
+    pub const fn group_id(&self) -> OptionalU32 {
+        self.group_id
+    }
+
+    /// Linux only
+    #[must_use]
+    pub const fn effective_group_id(&self) -> OptionalU32 {
+        self.effective_group_id
+    }
+
+    #[must_use]
+    pub const fn session_id(&self) -> OptionalU32 {
+        self.session_id
+    }
+
+    /// Linux only
+    #[must_use]
+    pub const fn tasks(&self) -> &OptionalTaskList {
+        &self.tasks
+    }
+
+    /// Linux only
+    #[must_use]
+    pub const fn thread_kind(&self) -> &OptionalThreadKind {
+        &self.thread_kind
+    }
+
+    #[must_use]
+    pub const fn exists(&self) -> bool {
+        self.exists
+    }
+
+    #[must_use]
+    pub const fn open_files(&self) -> OptionalUSize {
+        self.open_files
+    }
+
+    #[must_use]
+    pub const fn open_files_limit(&self) -> OptionalUSize {
+        self.open_files_limit
+    }
+}
+
 #[derive_where::derive_where(Debug)]
 pub struct Processes {
     #[derive_where(skip)]
@@ -268,9 +409,6 @@ pub struct Processes {
 
     #[derive_where(skip)]
     task_tracker: TaskTracker,
-
-    #[cfg(unix)]
-    process_signal: ProcessSignal,
 }
 
 impl Display for Processes {
@@ -301,8 +439,6 @@ impl Processes {
         Ok(Self {
             system: Arc::new(Mutex::new(system)),
             task_tracker,
-            #[cfg(unix)]
-            process_signal: Default::default(),
         })
     }
 

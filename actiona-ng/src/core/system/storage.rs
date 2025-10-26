@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    path::PathBuf,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
 
@@ -15,7 +15,7 @@ use crate::types::{
     display::{DisplayFields, display_list},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct IoStats {
     total: ByteCount,
     delta: ByteCount,
@@ -30,7 +30,19 @@ impl Display for IoStats {
     }
 }
 
-#[derive(Debug)]
+impl IoStats {
+    #[must_use]
+    pub const fn total(&self) -> ByteCount {
+        self.total
+    }
+
+    #[must_use]
+    pub const fn delta(&self) -> ByteCount {
+        self.delta
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct DiskUsage {
     written: IoStats,
     read: IoStats,
@@ -39,8 +51,8 @@ pub struct DiskUsage {
 impl Display for DiskUsage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("written", &self.written)
-            .display("read", &self.read)
+            .display("written", self.written)
+            .display("read", self.read)
             .finish(f)
     }
 }
@@ -57,6 +69,18 @@ impl From<sysinfo::DiskUsage> for DiskUsage {
                 delta: value.read_bytes.into(),
             },
         }
+    }
+}
+
+impl DiskUsage {
+    #[must_use]
+    pub const fn written(&self) -> IoStats {
+        self.written
+    }
+
+    #[must_use]
+    pub const fn read(&self) -> IoStats {
+        self.read
     }
 }
 
@@ -84,7 +108,7 @@ impl Display for Disk {
             .display("total_space", self.total_space)
             .display("is_removable", self.is_removable)
             .display("is_read_only", self.is_read_only)
-            .display("usage", &self.usage)
+            .display("usage", self.usage)
             .finish(f)
     }
 }
@@ -102,6 +126,53 @@ impl From<&sysinfo::Disk> for Disk {
             is_read_only: value.is_read_only(),
             usage: value.usage().into(),
         }
+    }
+}
+
+impl Disk {
+    #[must_use]
+    pub const fn kind(&self) -> DiskKind {
+        self.kind
+    }
+
+    #[must_use]
+    pub const fn name(&self) -> &OptionalSystemString {
+        &self.name
+    }
+
+    #[must_use]
+    pub const fn file_system(&self) -> &OptionalSystemString {
+        &self.file_system
+    }
+
+    #[must_use]
+    pub fn mount_point(&self) -> &Path {
+        &self.mount_point
+    }
+
+    #[must_use]
+    pub const fn total_space(&self) -> ByteCount {
+        self.total_space
+    }
+
+    #[must_use]
+    pub const fn available_space(&self) -> ByteCount {
+        self.available_space
+    }
+
+    #[must_use]
+    pub const fn is_removable(&self) -> bool {
+        self.is_removable
+    }
+
+    #[must_use]
+    pub const fn is_read_only(&self) -> bool {
+        self.is_read_only
+    }
+
+    #[must_use]
+    pub const fn usage(&self) -> DiskUsage {
+        self.usage
     }
 }
 

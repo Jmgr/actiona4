@@ -1,4 +1,4 @@
-use std::num::TryFromIntError;
+use std::{num::TryFromIntError, time::SystemTimeError};
 
 use thiserror::Error;
 
@@ -41,3 +41,5 @@ pub enum CommonError {
 impl IntoJSError for CommonError {}
 
 impl IntoJSError for TryFromIntError {}
+
+impl IntoJSError for SystemTimeError {}

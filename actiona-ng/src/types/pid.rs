@@ -8,6 +8,12 @@ use eyre::{OptionExt, Report, Result, bail, eyre};
 #[repr(transparent)]
 pub struct Pid(NonZeroU32);
 
+impl From<Pid> for u32 {
+    fn from(value: Pid) -> Self {
+        value.0.get()
+    }
+}
+
 impl TryFrom<u32> for Pid {
     type Error = Report;
 
