@@ -29,9 +29,6 @@ pub struct JsStorage {
 impl<'js> HostClass<'js> for JsStorage {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
         register_host_class::<JsDisk>(ctx)?;
-        register_host_class::<JsIoStats>(ctx)?;
-        register_host_class::<JsDiskUsage>(ctx)?;
-        register_enum::<JsDiskKind>(ctx)?;
         Ok(())
     }
 }
@@ -51,7 +48,6 @@ impl JsStorage {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsStorage {
     /// Disks
-    /// @returns Disk[]
     pub async fn disks<'js>(&self, ctx: Ctx<'js>, rescan: Opt<bool>) -> Result<Vec<JsDisk>> {
         let rescan = rescan.0.unwrap_or(true);
         Ok(self
@@ -78,7 +74,13 @@ pub struct JsDisk {
     inner: Disk,
 }
 
-impl<'js> HostClass<'js> for JsDisk {}
+impl<'js> HostClass<'js> for JsDisk {
+    fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        register_host_class::<JsDiskUsage>(ctx)?;
+        register_enum::<JsDiskKind>(ctx)?;
+        Ok(())
+    }
+}
 
 impl<'js> Trace<'js> for JsDisk {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
@@ -258,7 +260,12 @@ pub struct JsDiskUsage {
     inner: DiskUsage,
 }
 
-impl<'js> HostClass<'js> for JsDiskUsage {}
+impl<'js> HostClass<'js> for JsDiskUsage {
+    fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        register_host_class::<JsIoStats>(ctx)?;
+        Ok(())
+    }
+}
 
 impl<'js> Trace<'js> for JsDiskUsage {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}

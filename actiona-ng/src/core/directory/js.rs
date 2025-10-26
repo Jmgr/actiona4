@@ -161,7 +161,6 @@ impl JsDirectory {
         Ok(())
     }
 
-    /// @returns DirectoryEntry[]
     #[qjs(static)]
     pub async fn list_entries(
         path: String,

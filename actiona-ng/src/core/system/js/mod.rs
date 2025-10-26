@@ -12,7 +12,7 @@ use crate::core::{
         System,
         js::{
             cpu::JsCpu, hardware::JsHardware, memory::JsMemory, network::JsNetwork, os::JsOs,
-            storage::JsStorage,
+            processes::JsProcesses, storage::JsStorage,
         },
     },
 };
@@ -40,6 +40,7 @@ impl SingletonClass<'_> for JsSystem {
         register_host_class::<JsMemory>(ctx)?;
         register_host_class::<JsNetwork>(ctx)?;
         register_host_class::<JsOs>(ctx)?;
+        register_host_class::<JsProcesses>(ctx)?;
         register_host_class::<JsStorage>(ctx)?;
 
         ctx.globals()
@@ -104,6 +105,14 @@ impl JsSystem {
     #[must_use]
     pub fn os(&self) -> JsOs {
         JsOs::new(self.inner.os())
+    }
+
+    /// Processes information
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn processes(&self) -> JsProcesses {
+        JsProcesses::new(self.inner.processes())
     }
 
     /// Storage information

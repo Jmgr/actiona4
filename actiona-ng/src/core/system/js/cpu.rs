@@ -54,7 +54,6 @@ impl JsCpu {
             .into_js_result(&ctx)?)
     }
 
-    /// @returns number[]
     pub async fn frequencies<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<u64>> {
         let cores = self
             .inner

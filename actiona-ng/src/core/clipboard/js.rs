@@ -92,7 +92,6 @@ impl JsClipboard {
         Ok(image.into())
     }
 
-    /// @returns string[]
     pub async fn get_file_list(
         &mut self,
         ctx: Ctx<'_>,

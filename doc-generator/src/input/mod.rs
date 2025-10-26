@@ -558,6 +558,32 @@ fn unwrap_generic(path: &rustdoc_types::Path) -> Result<&rustdoc_types::Type> {
     Ok(type_)
 }
 
+fn unwrap_generic_pair(
+    path: &rustdoc_types::Path,
+) -> Result<(&rustdoc_types::Type, &rustdoc_types::Type)> {
+    let Some(args) = &path.args else {
+        bail!("No args for ResolvedPath: {path:?}");
+    };
+    let rustdoc_types::GenericArgs::AngleBracketed { args, .. } = args.as_ref() else {
+        bail!("Unsupported ResolvedPath: {path:?}");
+    };
+    let mut args = args.iter();
+    let Some(first_arg) = args.next() else {
+        bail!("No first arg for ResolvedPath: {path:?}");
+    };
+    let rustdoc_types::GenericArg::Type(first_type_) = first_arg else {
+        bail!("Unsupported ResolvedPath: {path:?}");
+    };
+    let Some(second_arg) = args.next() else {
+        bail!("No second arg for ResolvedPath: {path:?}");
+    };
+    let rustdoc_types::GenericArg::Type(second_type_) = second_arg else {
+        bail!("Unsupported ResolvedPath: {path:?}");
+    };
+
+    Ok((first_type_, second_type_))
+}
+
 fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Result<Type> {
     Ok(match output {
         rustdoc_types::Type::Primitive(primitive) => primitive_to_type(primitive)?,
@@ -571,57 +597,14 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
                 bail!("Unsupported generic type: {generic}, struct: {struct_name:?}");
             }
         },
-        rustdoc_types::Type::ResolvedPath(path) => match strip_modules(path.path.as_str()) {
-            "String" => Type::String,
-            "Result" => {
-                let type_ = unwrap_generic(path)?;
-                convert_type(type_, struct_name)?
-            }
-            "Option" | "Opt" => {
-                let type_ = unwrap_generic(path)?;
-                Type::Option(Box::new(convert_type(type_, struct_name)?))
-            }
-            "Class" | "This" => Type::This,
-            "Ctx" => Type::Ignore,
-            "Rest" => Type::Unknown,
-            "TypedArray" => {
-                let Some(args) = &path.args else {
-                    bail!("No args for TypedArray: {path:?}");
-                };
-                let rustdoc_types::GenericArgs::AngleBracketed { args, .. } = args.as_ref() else {
-                    bail!("Unsupported TypedArray: {path:?}");
-                };
-                let type_ = args
-                    .iter()
-                    .filter_map(|arg| {
-                        if let rustdoc_types::GenericArg::Type(type_) = arg {
-                            Some(type_)
-                        } else {
-                            None
-                        }
-                    })
-                    .next()
-                    .ok_or(eyre!("Unsupported TypedArray: {path:?}"))?;
-                let rustdoc_types::Type::Primitive(type_) = type_ else {
-                    bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
-                };
-                Type::Verbatim(
-                    match type_.as_str() {
-                        "u8" => "Uint8Array",
-                        _ => {
-                            bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
-                        }
-                    }
-                    .to_string(),
-                )
-            }
-            "JsDuration" => Type::Number,
-            object => Type::Verbatim(object.to_string()),
-        },
+        rustdoc_types::Type::ResolvedPath(path) => path_to_type(path, struct_name)?,
         rustdoc_types::Type::BorrowedRef { type_, .. } => match type_.as_ref() {
             rustdoc_types::Type::Primitive(primitive) => primitive_to_type(primitive)?,
             rustdoc_types::Type::Generic(generic) if generic == "Self" => Type::This,
-            rustdoc_types::Type::ResolvedPath(path) => Type::Verbatim(path.path.clone()),
+            rustdoc_types::Type::ResolvedPath(path) => path_to_type(path, struct_name)?,
+            rustdoc_types::Type::Slice(type_) => {
+                Type::Array(Box::new(convert_type(type_, struct_name)?))
+            }
             _ => {
                 bail!("Unsupported BorrowedRef type: {type_:?}");
             }
@@ -636,6 +619,67 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
         type_ => {
             bail!("Unsupported type: {type_:?}");
         }
+    })
+}
+
+fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result<Type> {
+    Ok(match strip_modules(path.path.as_str()) {
+        "String" => Type::String,
+        "Result" => {
+            let type_ = unwrap_generic(path)?;
+            convert_type(type_, struct_name)?
+        }
+        "Option" | "Opt" => {
+            let type_ = unwrap_generic(path)?;
+            Type::Option(Box::new(convert_type(type_, struct_name)?))
+        }
+        "Vec" => {
+            let type_ = unwrap_generic(path)?;
+            Type::Array(Box::new(convert_type(type_, struct_name)?))
+        }
+        "HashMap" => {
+            let (key_type, value_type) = unwrap_generic_pair(path)?;
+            Type::Record(
+                Box::new(convert_type(key_type, struct_name)?),
+                Box::new(convert_type(value_type, struct_name)?),
+            )
+        }
+        "Class" | "This" => Type::This,
+        "Ctx" => Type::Ignore,
+        "Rest" => Type::Unknown,
+        "TypedArray" => {
+            let Some(args) = &path.args else {
+                bail!("No args for TypedArray: {path:?}");
+            };
+            let rustdoc_types::GenericArgs::AngleBracketed { args, .. } = args.as_ref() else {
+                bail!("Unsupported TypedArray: {path:?}");
+            };
+            let type_ = args
+                .iter()
+                .filter_map(|arg| {
+                    if let rustdoc_types::GenericArg::Type(type_) = arg {
+                        Some(type_)
+                    } else {
+                        None
+                    }
+                })
+                .next()
+                .ok_or(eyre!("Unsupported TypedArray: {path:?}"))?;
+            let rustdoc_types::Type::Primitive(type_) = type_ else {
+                bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
+            };
+            Type::Verbatim(
+                match type_.as_str() {
+                    "u8" => "Uint8Array",
+                    _ => {
+                        bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
+                    }
+                }
+                .to_string(),
+            )
+        }
+        "JsDuration" => Type::Number,
+        object => Type::Verbatim(object.to_string()),
     })
 }
 

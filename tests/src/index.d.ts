@@ -567,7 +567,7 @@ declare class Image {
     /**
      * Crops this image.
      */
-    crop(o: { x: number, y: number, width: number, height: number }): this;
+    crop(o: {x: number, y: number, width: number, height: number}): this;
     /**
      * Returns a cropped version of this image.
      */
@@ -579,7 +579,7 @@ declare class Image {
     /**
      * Returns a cropped version of this image.
      */
-    cropped(o: { x: number, y: number, width: number, height: number }): Image;
+    cropped(o: {x: number, y: number, width: number, height: number}): Image;
     /**
      * Resizes this image.
      */
@@ -619,11 +619,11 @@ declare class Image {
     /**
      * Fill this image with a color.
      */
-    fill(o: { r: number, g: number, b: number }): this;
+    fill(o: {r: number, g: number, b: number}): this;
     /**
      * Fill this image with a color.
      */
-    fill(o: { r: number, g: number, b: number, a: number }): this;
+    fill(o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Fill this image with a color.
      */
@@ -639,11 +639,11 @@ declare class Image {
     /**
      * Fill this image with a color.
      */
-    filled(o: { r: number, g: number, b: number }): Image;
+    filled(o: {r: number, g: number, b: number}): Image;
     /**
      * Fill this image with a color.
      */
-    filled(o: { r: number, g: number, b: number, a: number }): Image;
+    filled(o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Returns the value of a pixel.
      */
@@ -655,7 +655,7 @@ declare class Image {
     /**
      * Returns the value of a pixel.
      */
-    getPixel(o: { x: number, y: number }): Color;
+    getPixel(o: {x: number, y: number}): Color;
     /**
      * Returns the value of a pixel.
      */
@@ -671,11 +671,11 @@ declare class Image {
     /**
      * Returns the value of a pixel.
      */
-    setPixel(position: Point, o: { r: number, g: number, b: number }): this;
+    setPixel(position: Point, o: {r: number, g: number, b: number}): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(position: Point, o: { r: number, g: number, b: number, a: number }): this;
+    setPixel(position: Point, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Returns the value of a pixel.
      */
@@ -691,31 +691,31 @@ declare class Image {
     /**
      * Returns the value of a pixel.
      */
-    setPixel(x: number, y: number, o: { r: number, g: number, b: number }): this;
+    setPixel(x: number, y: number, o: {r: number, g: number, b: number}): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(x: number, y: number, o: { r: number, g: number, b: number, a: number }): this;
+    setPixel(x: number, y: number, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(o: { x: number, y: number }, color: Color): this;
+    setPixel(o: {x: number, y: number}, color: Color): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(o: { x: number, y: number }, r: number, g: number, b: number, a: number): this;
+    setPixel(o: {x: number, y: number}, r: number, g: number, b: number, a: number): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(o: { x: number, y: number }, r: number, g: number, b: number): this;
+    setPixel(o: {x: number, y: number}, r: number, g: number, b: number): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): this;
+    setPixel(o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): this;
     /**
      * Returns the value of a pixel.
      */
-    setPixel(o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): this;
+    setPixel(o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): this;
     /**
      * Creates a new image from a part of this image.
      */
@@ -727,7 +727,7 @@ declare class Image {
     /**
      * Creates a new image from a part of this image.
      */
-    copyRegion(o: { x: number, y: number, width: number, height: number }): Image;
+    copyRegion(o: {x: number, y: number, width: number, height: number}): Image;
     /**
      * Returns a Rect representing this image.
      */
@@ -747,11 +747,11 @@ declare class Image {
     /**
      * Draw a cross on this image.
      */
-    drawCross(position: Point, o: { r: number, g: number, b: number }): this;
+    drawCross(position: Point, o: {r: number, g: number, b: number}): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(position: Point, o: { r: number, g: number, b: number, a: number }): this;
+    drawCross(position: Point, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a cross on this image.
      */
@@ -767,31 +767,31 @@ declare class Image {
     /**
      * Draw a cross on this image.
      */
-    drawCross(x: number, y: number, o: { r: number, g: number, b: number }): this;
+    drawCross(x: number, y: number, o: {r: number, g: number, b: number}): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(x: number, y: number, o: { r: number, g: number, b: number, a: number }): this;
+    drawCross(x: number, y: number, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(o: { x: number, y: number }, color: Color): this;
+    drawCross(o: {x: number, y: number}, color: Color): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(o: { x: number, y: number }, r: number, g: number, b: number, a: number): this;
+    drawCross(o: {x: number, y: number}, r: number, g: number, b: number, a: number): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(o: { x: number, y: number }, r: number, g: number, b: number): this;
+    drawCross(o: {x: number, y: number}, r: number, g: number, b: number): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): this;
+    drawCross(o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): this;
     /**
      * Draw a cross on this image.
      */
-    drawCross(o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): this;
+    drawCross(o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a cross on a copy of this image.
      */
@@ -807,11 +807,11 @@ declare class Image {
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(position: Point, o: { r: number, g: number, b: number }): Image;
+    withCross(position: Point, o: {r: number, g: number, b: number}): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(position: Point, o: { r: number, g: number, b: number, a: number }): Image;
+    withCross(position: Point, o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a cross on a copy of this image.
      */
@@ -827,31 +827,31 @@ declare class Image {
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(x: number, y: number, o: { r: number, g: number, b: number }): Image;
+    withCross(x: number, y: number, o: {r: number, g: number, b: number}): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(x: number, y: number, o: { r: number, g: number, b: number, a: number }): Image;
+    withCross(x: number, y: number, o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(o: { x: number, y: number }, color: Color): Image;
+    withCross(o: {x: number, y: number}, color: Color): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(o: { x: number, y: number }, r: number, g: number, b: number, a: number): Image;
+    withCross(o: {x: number, y: number}, r: number, g: number, b: number, a: number): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(o: { x: number, y: number }, r: number, g: number, b: number): Image;
+    withCross(o: {x: number, y: number}, r: number, g: number, b: number): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): Image;
+    withCross(o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): Image;
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): Image;
+    withCross(o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on this image.
      */
@@ -867,11 +867,11 @@ declare class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, end: Point, o: { r: number, g: number, b: number }): this;
+    drawLine(start: Point, end: Point, o: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, end: Point, o: { r: number, g: number, b: number, a: number }): this;
+    drawLine(start: Point, end: Point, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
@@ -887,31 +887,31 @@ declare class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, x: number, y: number, o: { r: number, g: number, b: number }): this;
+    drawLine(start: Point, x: number, y: number, o: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, x: number, y: number, o: { r: number, g: number, b: number, a: number }): this;
+    drawLine(start: Point, x: number, y: number, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, o: { x: number, y: number }, color: Color): this;
+    drawLine(start: Point, o: {x: number, y: number}, color: Color): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, o: { x: number, y: number }, r: number, g: number, b: number, a: number): this;
+    drawLine(start: Point, o: {x: number, y: number}, r: number, g: number, b: number, a: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, o: { x: number, y: number }, r: number, g: number, b: number): this;
+    drawLine(start: Point, o: {x: number, y: number}, r: number, g: number, b: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): this;
+    drawLine(start: Point, o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(start: Point, o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): this;
+    drawLine(start: Point, o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
@@ -927,11 +927,11 @@ declare class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, end: Point, o: { r: number, g: number, b: number }): this;
+    drawLine(x: number, y: number, end: Point, o: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, end: Point, o: { r: number, g: number, b: number, a: number }): this;
+    drawLine(x: number, y: number, end: Point, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
@@ -947,91 +947,91 @@ declare class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(x1: number, y1: number, x2: number, y2: number, o: { r: number, g: number, b: number }): this;
+    drawLine(x1: number, y1: number, x2: number, y2: number, o: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x1: number, y1: number, x2: number, y2: number, o: { r: number, g: number, b: number, a: number }): this;
+    drawLine(x1: number, y1: number, x2: number, y2: number, o: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, o: { x: number, y: number }, color: Color): this;
+    drawLine(x: number, y: number, o: {x: number, y: number}, color: Color): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, o: { x: number, y: number }, r: number, g: number, b: number, a: number): this;
+    drawLine(x: number, y: number, o: {x: number, y: number}, r: number, g: number, b: number, a: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, o: { x: number, y: number }, r: number, g: number, b: number): this;
+    drawLine(x: number, y: number, o: {x: number, y: number}, r: number, g: number, b: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): this;
+    drawLine(x: number, y: number, o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): this;
+    drawLine(x: number, y: number, o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o: { x: number, y: number }, end: Point, color: Color): this;
+    drawLine(o: {x: number, y: number}, end: Point, color: Color): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o: { x: number, y: number }, end: Point, r: number, g: number, b: number, a: number): this;
+    drawLine(o: {x: number, y: number}, end: Point, r: number, g: number, b: number, a: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o: { x: number, y: number }, end: Point, r: number, g: number, b: number): this;
+    drawLine(o: {x: number, y: number}, end: Point, r: number, g: number, b: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, end: Point, o2: { r: number, g: number, b: number }): this;
+    drawLine(o1: {x: number, y: number}, end: Point, o2: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, end: Point, o2: { r: number, g: number, b: number, a: number }): this;
+    drawLine(o1: {x: number, y: number}, end: Point, o2: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o: { x: number, y: number }, x: number, y: number, color: Color): this;
+    drawLine(o: {x: number, y: number}, x: number, y: number, color: Color): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o: { x: number, y: number }, x: number, y: number, r: number, g: number, b: number, a: number): this;
+    drawLine(o: {x: number, y: number}, x: number, y: number, r: number, g: number, b: number, a: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o: { x: number, y: number }, x: number, y: number, r: number, g: number, b: number): this;
+    drawLine(o: {x: number, y: number}, x: number, y: number, r: number, g: number, b: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, x: number, y: number, o2: { r: number, g: number, b: number }): this;
+    drawLine(o1: {x: number, y: number}, x: number, y: number, o2: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, x: number, y: number, o2: { r: number, g: number, b: number, a: number }): this;
+    drawLine(o1: {x: number, y: number}, x: number, y: number, o2: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, o2: { x: number, y: number }, color: Color): this;
+    drawLine(o1: {x: number, y: number}, o2: {x: number, y: number}, color: Color): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, o2: { x: number, y: number }, r: number, g: number, b: number, a: number): this;
+    drawLine(o1: {x: number, y: number}, o2: {x: number, y: number}, r: number, g: number, b: number, a: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, o2: { x: number, y: number }, r: number, g: number, b: number): this;
+    drawLine(o1: {x: number, y: number}, o2: {x: number, y: number}, r: number, g: number, b: number): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, o2: { x: number, y: number }, o3: { r: number, g: number, b: number }): this;
+    drawLine(o1: {x: number, y: number}, o2: {x: number, y: number}, o3: {r: number, g: number, b: number}): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(o1: { x: number, y: number }, o2: { x: number, y: number }, o3: { r: number, g: number, b: number, a: number }): this;
+    drawLine(o1: {x: number, y: number}, o2: {x: number, y: number}, o3: {r: number, g: number, b: number, a: number}): this;
     /**
      * Draw a line on a copy of this image.
      */
@@ -1047,11 +1047,11 @@ declare class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, end: Point, o: { r: number, g: number, b: number }): Image;
+    withLine(start: Point, end: Point, o: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, end: Point, o: { r: number, g: number, b: number, a: number }): Image;
+    withLine(start: Point, end: Point, o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
@@ -1067,31 +1067,31 @@ declare class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, x: number, y: number, o: { r: number, g: number, b: number }): Image;
+    withLine(start: Point, x: number, y: number, o: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, x: number, y: number, o: { r: number, g: number, b: number, a: number }): Image;
+    withLine(start: Point, x: number, y: number, o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, o: { x: number, y: number }, color: Color): Image;
+    withLine(start: Point, o: {x: number, y: number}, color: Color): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, o: { x: number, y: number }, r: number, g: number, b: number, a: number): Image;
+    withLine(start: Point, o: {x: number, y: number}, r: number, g: number, b: number, a: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, o: { x: number, y: number }, r: number, g: number, b: number): Image;
+    withLine(start: Point, o: {x: number, y: number}, r: number, g: number, b: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): Image;
+    withLine(start: Point, o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: Point, o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): Image;
+    withLine(start: Point, o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
@@ -1107,11 +1107,11 @@ declare class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, end: Point, o: { r: number, g: number, b: number }): Image;
+    withLine(x: number, y: number, end: Point, o: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, end: Point, o: { r: number, g: number, b: number, a: number }): Image;
+    withLine(x: number, y: number, end: Point, o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
@@ -1127,91 +1127,91 @@ declare class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x1: number, y1: number, x2: number, y2: number, o: { r: number, g: number, b: number }): Image;
+    withLine(x1: number, y1: number, x2: number, y2: number, o: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x1: number, y1: number, x2: number, y2: number, o: { r: number, g: number, b: number, a: number }): Image;
+    withLine(x1: number, y1: number, x2: number, y2: number, o: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, o: { x: number, y: number }, color: Color): Image;
+    withLine(x: number, y: number, o: {x: number, y: number}, color: Color): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, o: { x: number, y: number }, r: number, g: number, b: number, a: number): Image;
+    withLine(x: number, y: number, o: {x: number, y: number}, r: number, g: number, b: number, a: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, o: { x: number, y: number }, r: number, g: number, b: number): Image;
+    withLine(x: number, y: number, o: {x: number, y: number}, r: number, g: number, b: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, o1: { x: number, y: number }, o2: { r: number, g: number, b: number }): Image;
+    withLine(x: number, y: number, o1: {x: number, y: number}, o2: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, o1: { x: number, y: number }, o2: { r: number, g: number, b: number, a: number }): Image;
+    withLine(x: number, y: number, o1: {x: number, y: number}, o2: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o: { x: number, y: number }, end: Point, color: Color): Image;
+    withLine(o: {x: number, y: number}, end: Point, color: Color): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o: { x: number, y: number }, end: Point, r: number, g: number, b: number, a: number): Image;
+    withLine(o: {x: number, y: number}, end: Point, r: number, g: number, b: number, a: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o: { x: number, y: number }, end: Point, r: number, g: number, b: number): Image;
+    withLine(o: {x: number, y: number}, end: Point, r: number, g: number, b: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, end: Point, o2: { r: number, g: number, b: number }): Image;
+    withLine(o1: {x: number, y: number}, end: Point, o2: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, end: Point, o2: { r: number, g: number, b: number, a: number }): Image;
+    withLine(o1: {x: number, y: number}, end: Point, o2: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o: { x: number, y: number }, x: number, y: number, color: Color): Image;
+    withLine(o: {x: number, y: number}, x: number, y: number, color: Color): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o: { x: number, y: number }, x: number, y: number, r: number, g: number, b: number, a: number): Image;
+    withLine(o: {x: number, y: number}, x: number, y: number, r: number, g: number, b: number, a: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o: { x: number, y: number }, x: number, y: number, r: number, g: number, b: number): Image;
+    withLine(o: {x: number, y: number}, x: number, y: number, r: number, g: number, b: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, x: number, y: number, o2: { r: number, g: number, b: number }): Image;
+    withLine(o1: {x: number, y: number}, x: number, y: number, o2: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, x: number, y: number, o2: { r: number, g: number, b: number, a: number }): Image;
+    withLine(o1: {x: number, y: number}, x: number, y: number, o2: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, o2: { x: number, y: number }, color: Color): Image;
+    withLine(o1: {x: number, y: number}, o2: {x: number, y: number}, color: Color): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, o2: { x: number, y: number }, r: number, g: number, b: number, a: number): Image;
+    withLine(o1: {x: number, y: number}, o2: {x: number, y: number}, r: number, g: number, b: number, a: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, o2: { x: number, y: number }, r: number, g: number, b: number): Image;
+    withLine(o1: {x: number, y: number}, o2: {x: number, y: number}, r: number, g: number, b: number): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, o2: { x: number, y: number }, o3: { r: number, g: number, b: number }): Image;
+    withLine(o1: {x: number, y: number}, o2: {x: number, y: number}, o3: {r: number, g: number, b: number}): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(o1: { x: number, y: number }, o2: { x: number, y: number }, o3: { r: number, g: number, b: number, a: number }): Image;
+    withLine(o1: {x: number, y: number}, o2: {x: number, y: number}, o3: {r: number, g: number, b: number, a: number}): Image;
     /**
      * Draw a circle on this image.
      */
@@ -1227,11 +1227,11 @@ declare class Image {
     /**
      * Draw a circle on this image.
      */
-    drawCircle(center: Point, radius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawCircle(center: Point, radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(center: Point, radius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawCircle(center: Point, radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
@@ -1247,31 +1247,31 @@ declare class Image {
     /**
      * Draw a circle on this image.
      */
-    drawCircle(x: number, y: number, radius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawCircle(x: number, y: number, radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(x: number, y: number, radius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawCircle(x: number, y: number, radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(o: { x: number, y: number }, radius: number, color: Color, options?: DrawingOptions): this;
+    drawCircle(o: {x: number, y: number}, radius: number, color: Color, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(o: { x: number, y: number }, radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
+    drawCircle(o: {x: number, y: number}, radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(o: { x: number, y: number }, radius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
+    drawCircle(o: {x: number, y: number}, radius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(o1: { x: number, y: number }, radius: number, o2: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawCircle(o1: {x: number, y: number}, radius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(o1: { x: number, y: number }, radius: number, o2: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawCircle(o1: {x: number, y: number}, radius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw a circle on a copy of this image.
      */
@@ -1287,11 +1287,11 @@ declare class Image {
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(center: Point, radius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withCircle(center: Point, radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(center: Point, radius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withCircle(center: Point, radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
@@ -1307,31 +1307,31 @@ declare class Image {
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(x: number, y: number, radius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withCircle(x: number, y: number, radius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(x: number, y: number, radius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withCircle(x: number, y: number, radius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(o: { x: number, y: number }, radius: number, color: Color, options?: DrawingOptions): Image;
+    withCircle(o: {x: number, y: number}, radius: number, color: Color, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(o: { x: number, y: number }, radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
+    withCircle(o: {x: number, y: number}, radius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(o: { x: number, y: number }, radius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
+    withCircle(o: {x: number, y: number}, radius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(o1: { x: number, y: number }, radius: number, o2: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withCircle(o1: {x: number, y: number}, radius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(o1: { x: number, y: number }, radius: number, o2: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withCircle(o1: {x: number, y: number}, radius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on this image.
      */
@@ -1347,11 +1347,11 @@ declare class Image {
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: Point, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
@@ -1367,31 +1367,31 @@ declare class Image {
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o: { x: number, y: number }, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): this;
+    drawEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o: { x: number, y: number }, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
+    drawEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o: { x: number, y: number }, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
+    drawEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o1: { x: number, y: number }, widthRadius: number, heightRadius: number, o2: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(o1: { x: number, y: number }, widthRadius: number, heightRadius: number, o2: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw an ellipse on a copy of this image.
      */
@@ -1407,11 +1407,11 @@ declare class Image {
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: Point, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withEllipse(center: Point, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
@@ -1427,31 +1427,31 @@ declare class Image {
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o: { x: number, y: number }, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): Image;
+    withEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, color: Color, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o: { x: number, y: number }, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
+    withEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o: { x: number, y: number }, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
+    withEllipse(o: {x: number, y: number}, widthRadius: number, heightRadius: number, r: number, g: number, b: number, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o1: { x: number, y: number }, widthRadius: number, heightRadius: number, o2: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(o1: { x: number, y: number }, widthRadius: number, heightRadius: number, o2: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withEllipse(o1: {x: number, y: number}, widthRadius: number, heightRadius: number, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on this image.
      */
@@ -1467,11 +1467,11 @@ declare class Image {
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(rect: Rect, o: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawRectangle(rect: Rect, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(rect: Rect, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawRectangle(rect: Rect, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
@@ -1487,31 +1487,31 @@ declare class Image {
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(x: number, y: number, width: number, height: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawRectangle(x: number, y: number, width: number, height: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(x: number, y: number, width: number, height: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawRectangle(x: number, y: number, width: number, height: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(o: { x: number, y: number, width: number, height: number }, color: Color, options?: DrawingOptions): this;
+    drawRectangle(o: {x: number, y: number, width: number, height: number}, color: Color, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(o: { x: number, y: number, width: number, height: number }, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
+    drawRectangle(o: {x: number, y: number, width: number, height: number}, r: number, g: number, b: number, a: number, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(o: { x: number, y: number, width: number, height: number }, r: number, g: number, b: number, options?: DrawingOptions): this;
+    drawRectangle(o: {x: number, y: number, width: number, height: number}, r: number, g: number, b: number, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(o1: { x: number, y: number, width: number, height: number }, o2: { r: number, g: number, b: number }, options?: DrawingOptions): this;
+    drawRectangle(o1: {x: number, y: number, width: number, height: number}, o2: {r: number, g: number, b: number}, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(o1: { x: number, y: number, width: number, height: number }, o2: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): this;
+    drawRectangle(o1: {x: number, y: number, width: number, height: number}, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): this;
     /**
      * Draw a rectangle on a copy of this image.
      */
@@ -1527,11 +1527,11 @@ declare class Image {
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(rect: Rect, o: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withRectangle(rect: Rect, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(rect: Rect, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withRectangle(rect: Rect, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
@@ -1547,31 +1547,31 @@ declare class Image {
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(x: number, y: number, width: number, height: number, o: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withRectangle(x: number, y: number, width: number, height: number, o: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(x: number, y: number, width: number, height: number, o: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withRectangle(x: number, y: number, width: number, height: number, o: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(o: { x: number, y: number, width: number, height: number }, color: Color, options?: DrawingOptions): Image;
+    withRectangle(o: {x: number, y: number, width: number, height: number}, color: Color, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(o: { x: number, y: number, width: number, height: number }, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
+    withRectangle(o: {x: number, y: number, width: number, height: number}, r: number, g: number, b: number, a: number, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(o: { x: number, y: number, width: number, height: number }, r: number, g: number, b: number, options?: DrawingOptions): Image;
+    withRectangle(o: {x: number, y: number, width: number, height: number}, r: number, g: number, b: number, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(o1: { x: number, y: number, width: number, height: number }, o2: { r: number, g: number, b: number }, options?: DrawingOptions): Image;
+    withRectangle(o1: {x: number, y: number, width: number, height: number}, o2: {r: number, g: number, b: number}, options?: DrawingOptions): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(o1: { x: number, y: number, width: number, height: number }, o2: { r: number, g: number, b: number, a: number }, options?: DrawingOptions): Image;
+    withRectangle(o1: {x: number, y: number, width: number, height: number}, o2: {r: number, g: number, b: number, a: number}, options?: DrawingOptions): Image;
     /**
      * Draw another image on this image.
      */
@@ -1583,7 +1583,7 @@ declare class Image {
     /**
      * Draw another image on this image.
      */
-    drawImage(o: { x: number, y: number }, image: Image, options?: DrawImageOptions): this;
+    drawImage(o: {x: number, y: number}, image: Image, options?: DrawImageOptions): this;
     /**
      * Draw another image on a copy of this image.
      */
@@ -1595,13 +1595,13 @@ declare class Image {
     /**
      * Draw another image on a copy of this image.
      */
-    withImage(o: { x: number, y: number }, image: Image, options?: DrawImageOptions): Image;
+    withImage(o: {x: number, y: number}, image: Image, options?: DrawImageOptions): Image;
     /**
      * TODO
      */
     findImage(image: Image, options?: FindImageOptions): void;
-    width(): number;
     height(): number;
+    width(): number;
 }
 /**
  * A Color.
@@ -1783,11 +1783,11 @@ declare class Color {
     /**
      * Constructor with an object.
      */
-    constructor(o: { r: number, g: number, b: number });
+    constructor(o: {r: number, g: number, b: number});
     /**
      * Constructor with an object.
      */
-    constructor(o: { r: number, g: number, b: number, a: number });
+    constructor(o: {r: number, g: number, b: number, a: number});
     /**
      * Constructor with another Color.
      */
@@ -1795,8 +1795,8 @@ declare class Color {
     equals(other: Color): boolean;
     equals(r: number, g: number, b: number, a: number): boolean;
     equals(r: number, g: number, b: number): boolean;
-    equals(o: { r: number, g: number, b: number }): boolean;
-    equals(o: { r: number, g: number, b: number, a: number }): boolean;
+    equals(o: {r: number, g: number, b: number}): boolean;
+    equals(o: {r: number, g: number, b: number, a: number}): boolean;
     toString(): string;
     clone(): Color;
 }
@@ -1817,12 +1817,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
+    readonly isDirectory: boolean;
+    readonly path: string;
+    readonly isFile: boolean;
     readonly isSymlink: boolean;
     readonly fileName: string;
-    readonly isDirectory: boolean;
     readonly size: number;
-    readonly isFile: boolean;
-    readonly path: string;
 }
 /**
  * Directory options
@@ -1864,7 +1864,7 @@ declare interface Displays {
     randomPoint(): Point;
     fromPoint(point: Point): DisplayInfo | undefined;
     fromPoint(x: number, y: number): DisplayInfo | undefined;
-    fromPoint(o: { x: number, y: number }): DisplayInfo | undefined;
+    fromPoint(o: {x: number, y: number}): DisplayInfo | undefined;
     fromName(name: Name): DisplayInfo | undefined;
     fromName(name: string): DisplayInfo | undefined;
     fromName(wildcard: Wildcard): DisplayInfo | undefined;
@@ -1902,7 +1902,7 @@ declare class Point {
     /**
      * Constructor with an object.
      */
-    constructor(o: { x: number, y: number });
+    constructor(o: {x: number, y: number});
     /**
      * Constructor with another Point.
      */
@@ -1922,7 +1922,7 @@ declare class Point {
     /**
      * Returns a random point around this point.
      */
-    static randomInCircle(o: { x: number, y: number }, radius: number): Point;
+    static randomInCircle(o: {x: number, y: number}, radius: number): Point;
     /**
      * Calculates the distance between this point and another.
      */
@@ -1934,7 +1934,7 @@ declare class Point {
     /**
      * Calculates the distance between this point and another.
      */
-    distanceTo(o: { x: number, y: number }): number;
+    distanceTo(o: {x: number, y: number}): number;
     /**
      * Returns a JSON representation of this Point.
      */
@@ -1954,7 +1954,7 @@ declare class Point {
     /**
      * Computes the distance between two points.
      */
-    static distance(a: Point, o: { x: number, y: number }): number;
+    static distance(a: Point, o: {x: number, y: number}): number;
     /**
      * Computes the distance between two points.
      */
@@ -1966,19 +1966,19 @@ declare class Point {
     /**
      * Computes the distance between two points.
      */
-    static distance(x: number, y: number, o: { x: number, y: number }): number;
+    static distance(x: number, y: number, o: {x: number, y: number}): number;
     /**
      * Computes the distance between two points.
      */
-    static distance(o: { x: number, y: number }, b: Point): number;
+    static distance(o: {x: number, y: number}, b: Point): number;
     /**
      * Computes the distance between two points.
      */
-    static distance(o: { x: number, y: number }, x: number, y: number): number;
+    static distance(o: {x: number, y: number}, x: number, y: number): number;
     /**
      * Computes the distance between two points.
      */
-    static distance(o1: { x: number, y: number }, o2: { x: number, y: number }): number;
+    static distance(o1: {x: number, y: number}, o2: {x: number, y: number}): number;
     /**
      * Returns true if a Point equals another.
      */
@@ -1990,7 +1990,7 @@ declare class Point {
     /**
      * Returns true if a Point equals another.
      */
-    equals(o: { x: number, y: number }): boolean;
+    equals(o: {x: number, y: number}): boolean;
     /**
      * Adds two points and returns a new Point.
      */
@@ -2002,7 +2002,7 @@ declare class Point {
     /**
      * Adds two points and returns a new Point.
      */
-    add(o: { x: number, y: number }): Point;
+    add(o: {x: number, y: number}): Point;
     /**
      * Subtracts two points and returns a new Point.
      */
@@ -2014,7 +2014,7 @@ declare class Point {
     /**
      * Subtracts two points and returns a new Point.
      */
-    subtract(o: { x: number, y: number }): Point;
+    subtract(o: {x: number, y: number}): Point;
     /**
      * Scales this point by a factor and returns a new Point.
      */
@@ -2037,41 +2037,41 @@ declare interface DisplayInfo {
      */
     readonly widthMm: number;
     /**
-     * Unique identifier associated with the display
+     * The display friendly name
      */
-    readonly id: number;
-    /**
-     * The display name
-     */
-    readonly name: string;
+    readonly friendlyName: string;
     /**
      * The display pixel height
      */
     readonly heightMm: number;
     /**
-     * Output device's pixel scale factor
+     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
      */
-    readonly scaleFactor: number;
+    readonly rotation: number;
     /**
      * Whether the screen is the main screen
      */
     readonly isPrimary: boolean;
     /**
-     * The display refresh rate
+     * The display name
      */
-    readonly frequency: number;
+    readonly name: string;
     /**
      * The display rectangle
      */
     readonly rect: Rect;
     /**
-     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+     * Unique identifier associated with the display
      */
-    readonly rotation: number;
+    readonly id: number;
     /**
-     * The display friendly name
+     * Output device's pixel scale factor
      */
-    readonly friendlyName: string;
+    readonly scaleFactor: number;
+    /**
+     * The display refresh rate
+     */
+    readonly frequency: number;
 }
 declare class Rect {
     /**
@@ -2081,28 +2081,28 @@ declare class Rect {
     /**
      * Constructor with an object.
      */
-    constructor(o: { x: number, y: number, width: number, height: number });
+    constructor(o: {x: number, y: number, width: number, height: number});
     /**
      * Constructor with another Rect.
      */
     constructor(r: Rect);
     equals(other: Rect): boolean;
     equals(x: number, y: number, width: number, height: number): boolean;
-    equals(o: { x: number, y: number, width: number, height: number }): boolean;
+    equals(o: {x: number, y: number, width: number, height: number}): boolean;
     contains(point: Point): boolean;
     contains(x: number, y: number): boolean;
-    contains(o: { x: number, y: number }): boolean;
+    contains(o: {x: number, y: number}): boolean;
     toString(): string;
     clone(): Rect;
     intersects(other: Rect): boolean;
     intersects(x: number, y: number, width: number, height: number): boolean;
-    intersects(o: { x: number, y: number, width: number, height: number }): boolean;
+    intersects(o: {x: number, y: number, width: number, height: number}): boolean;
     intersection(other: Rect): Rect | undefined;
     intersection(x: number, y: number, width: number, height: number): Rect | undefined;
-    intersection(o: { x: number, y: number, width: number, height: number }): Rect | undefined;
+    intersection(o: {x: number, y: number, width: number, height: number}): Rect | undefined;
     union(other: Rect): Rect;
     union(x: number, y: number, width: number, height: number): Rect;
-    union(o: { x: number, y: number, width: number, height: number }): Rect;
+    union(o: {x: number, y: number, width: number, height: number}): Rect;
 }
 /**
  * File open options
@@ -2352,13 +2352,13 @@ declare interface Mouse {
     measureSpeed(duration?: number): Promise<number>;
     move(point: Point, options?: MoveOptions): Task<void>;
     move(x: number, y: number, options?: MoveOptions): Task<void>;
-    move(o: { x: number, y: number }, options?: MoveOptions): Task<void>;
+    move(o: {x: number, y: number}, options?: MoveOptions): Task<void>;
     setPosition(point: Point): Promise<void>;
     setPosition(x: number, y: number): Promise<void>;
-    setPosition(o: { x: number, y: number }): Promise<void>;
+    setPosition(o: {x: number, y: number}): Promise<void>;
     setRelativePosition(point: Point): Promise<void>;
     setRelativePosition(x: number, y: number): Promise<void>;
-    setRelativePosition(o: { x: number, y: number }): Promise<void>;
+    setRelativePosition(o: {x: number, y: number}): Promise<void>;
     click(options?: ClickOptions): Promise<void>;
     doubleClick(options?: DoubleClickOptions): Promise<void>;
     press(options?: PressOptions): Promise<void>;
@@ -2416,17 +2416,9 @@ declare const screenshot: Screenshot;
  */
 declare interface System {
     /**
-     * Network information
+     * Memory information
      */
-    readonly network: Network;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
-     * Storage information
-     */
-    readonly storage: Storage;
+    readonly memory: Memory;
     /**
      * Cpu information
      */
@@ -2436,12 +2428,21 @@ declare interface System {
      */
     readonly hardware: Hardware;
     /**
-     * Memory information
+     * Network information
      */
-    readonly memory: Memory;
+    readonly network: Network;
+    /**
+     * Storage information
+     */
+    readonly storage: Storage;
+    /**
+     * Os information
+     */
+    readonly os: Os;
 }
 declare const system: System;
-declare interface Ui {
+declare class Ui {
+    private constructor();
     static messageBox(text: string, options?: MessageBoxOptions): Promise<MessageBoxResult>;
 }
 declare const ui: Ui;
@@ -2521,7 +2522,7 @@ declare class Size {
     /**
      * Constructor with an object.
      */
-    constructor(o: { width: number, height: number });
+    constructor(o: {width: number, height: number});
     /**
      * Constructor with another Size.
      */
@@ -2541,7 +2542,7 @@ declare class Size {
     /**
      * Returns true if a Size equals another.
      */
-    equals(o: { width: number, height: number }): boolean;
+    equals(o: {width: number, height: number}): boolean;
     /**
      * Adds two sizes and returns a new Size.
      */
@@ -2553,7 +2554,7 @@ declare class Size {
     /**
      * Adds two sizes and returns a new Size.
      */
-    add(o: { width: number, height: number }): Size;
+    add(o: {width: number, height: number}): Size;
     /**
      * Subtracts two sizes and returns a new Size.
      */
@@ -2565,7 +2566,7 @@ declare class Size {
     /**
      * Subtracts two sizes and returns a new Size.
      */
-    subtract(o: { width: number, height: number }): Size;
+    subtract(o: {width: number, height: number}): Size;
     /**
      * Scales this size by a factor and returns a new Size.
      */
@@ -2606,10 +2607,6 @@ declare class WebProgress {
  */
 declare interface Cpu {
     /**
-     * Physical core count
-     */
-    readonly physicalCoreCount?: number;
-    /**
      * Architecture
      */
     readonly architecture: string;
@@ -2617,6 +2614,10 @@ declare interface Cpu {
      * Logical core count
      */
     readonly logicalCoreCount: number;
+    /**
+     * Physical core count
+     */
+    readonly physicalCoreCount?: number;
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
     frequencies(): Promise<number[]>;
@@ -2635,29 +2636,29 @@ declare interface Hardware {
      */
     readonly name?: string;
     /**
-     * Stock keeping unit
+     * Vendor name
      */
-    readonly stockKeepingUnit?: string;
+    readonly vendorName?: string;
     /**
      * Uuid
      */
     readonly uuid?: string;
     /**
-     * Family
+     * Stock keeping unit
      */
-    readonly family?: string;
+    readonly stockKeepingUnit?: string;
+    /**
+     * Motherboard
+     */
+    readonly motherboard: Motherboard;
     /**
      * Version
      */
     readonly version?: string;
     /**
-     * Vendor name
+     * Family
      */
-    readonly vendorName?: string;
-    /**
-     * Motherboard
-     */
-    readonly motherboard: Motherboard;
+    readonly family?: string;
     /**
      * Hardware components
      */
@@ -2666,17 +2667,13 @@ declare interface Hardware {
 }
 declare interface Motherboard {
     /**
-     * Asset tag
+     * Vendor name
      */
-    readonly assetTag?: string;
+    readonly vendorName?: string;
     /**
      * Name
      */
     readonly name?: string;
-    /**
-     * Vendor name
-     */
-    readonly vendorName?: string;
     /**
      * Version
      */
@@ -2685,9 +2682,17 @@ declare interface Motherboard {
      * Serial number
      */
     readonly serialNumber?: string;
+    /**
+     * Asset tag
+     */
+    readonly assetTag?: string;
     toString(): string;
 }
 declare interface Component {
+    /**
+     * Critical temperature
+     */
+    readonly criticalTemperature?: number;
     /**
      * ID
      */
@@ -2697,17 +2702,13 @@ declare interface Component {
      */
     readonly maxTemperature?: number;
     /**
-     * Temperature
-     */
-    readonly temperature?: number;
-    /**
      * Label
      */
     readonly label: string;
     /**
-     * Critical temperature
+     * Temperature
      */
-    readonly criticalTemperature?: number;
+    readonly temperature?: number;
     toString(): string;
 }
 /**
@@ -2735,17 +2736,17 @@ declare interface MemoryUsage {
      */
     readonly free: number;
     /**
-     * Used
+     * Total
      */
-    readonly used: number;
+    readonly total: number;
     /**
      * Available
      */
     readonly available: number;
     /**
-     * Total
+     * Used
      */
-    readonly total: number;
+    readonly used: number;
     toString(): string;
 }
 /**
@@ -2754,21 +2755,21 @@ declare interface MemoryUsage {
  */
 declare interface CGroupLimits {
     /**
-     * Free memory
-     */
-    readonly freeMemory: number;
-    /**
      * Free swap
      */
     readonly freeSwap: number;
     /**
-     * RSS
-     */
-    readonly rss: number;
-    /**
      * Total memory
      */
     readonly totalMemory: number;
+    /**
+     * Free memory
+     */
+    readonly freeMemory: number;
+    /**
+     * RSS
+     */
+    readonly rss: number;
     toString(): string;
 }
 /**
@@ -2787,6 +2788,14 @@ declare interface Network {
 }
 declare interface NetworkInterface {
     /**
+     * MTU
+     */
+    readonly mtu: number;
+    /**
+     * Subnets
+     */
+    readonly subnets: string[];
+    /**
      * Outbound
      */
     readonly outbound: Traffic;
@@ -2798,29 +2807,21 @@ declare interface NetworkInterface {
      * MAC address
      */
     readonly macAddress?: string;
-    /**
-     * Subnets
-     */
-    readonly subnets: string[];
-    /**
-     * MTU
-     */
-    readonly mtu: number;
     toString(): string;
 }
 declare interface Counters {
     /**
-     * Errors
+     * Packets
      */
-    readonly errors: number;
+    readonly packets: number;
     /**
      * Data
      */
     readonly data: number;
     /**
-     * Packets
+     * Errors
      */
-    readonly packets: number;
+    readonly errors: number;
     toString(): string;
 }
 declare interface Traffic {
@@ -2890,25 +2891,25 @@ declare interface Os {
 }
 declare interface User {
     /**
-     * Group name
-     */
-    readonly groupName?: string;
-    /**
      * Group ID
      */
     readonly groupId?: number;
-    /**
-     * Group names
-     */
-    readonly groupNames: string[];
     /**
      * Groups
      */
     readonly groups: number[];
     /**
+     * Group names
+     */
+    readonly groupNames: string[];
+    /**
      * Name
      */
     readonly name: string;
+    /**
+     * Group name
+     */
+    readonly groupName?: string;
     toString(): string;
 }
 declare interface Group {
@@ -2930,97 +2931,97 @@ declare interface Processes {
 }
 declare interface Process {
     /**
-     * Env
+     * Open files limit
      */
-    readonly env: string[];
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Exe
-     */
-    readonly exe?: string;
-    /**
-     * Memory
-     */
-    readonly memory: number;
+    readonly openFilesLimit?: number;
     /**
      * Root
      */
     readonly root?: string;
     /**
-     * Cwd
+     * Memory
      */
-    readonly cwd?: string;
+    readonly memory: number;
+    /**
+     * Exe
+     */
+    readonly exe?: string;
     /**
      * Virtual memory
      */
     readonly virtualMemory: number;
     /**
-     * Status
+     * Disk usage
      */
-    readonly status: ProcessStatus;
+    readonly diskUsage: DiskUsage;
+    /**
+     * Cwd
+     */
+    readonly cwd?: string;
+    /**
+     * Name
+     */
+    readonly name?: string;
     /**
      * Run time
      */
     readonly runTime: number;
     /**
-     * CPU usage
+     * Start time
      */
-    readonly cpuUsage: number;
-    /**
-     * Effective group ID
-     */
-    readonly effectiveGroupId?: number;
-    /**
-     * Exists
-     */
-    readonly exists: boolean;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Cmd
-     */
-    readonly cmd: string[];
+    readonly startTime: Object;
     /**
      * Group ID
      */
     readonly groupId?: number;
     /**
-     * Effective user ID
+     * Parent
      */
-    readonly effectiveUserId?: string;
-    /**
-     * User ID
-     */
-    readonly userId?: string;
-    /**
-     * Session ID
-     */
-    readonly sessionId?: number;
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: DiskUsage;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
+    readonly parent?: number;
     /**
      * Pid
      */
     readonly pid: number;
     /**
-     * Start time
+     * CPU usage
      */
-    readonly startTime: Object;
+    readonly cpuUsage: number;
+    /**
+     * User ID
+     */
+    readonly userId?: string;
+    /**
+     * Cmd
+     */
+    readonly cmd: string[];
     /**
      * Accumulated CPU time
      */
     readonly accumulatedCpuTime: number;
+    /**
+     * Status
+     */
+    readonly status: ProcessStatus;
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Effective group ID
+     */
+    readonly effectiveGroupId?: number;
+    /**
+     * Session ID
+     */
+    readonly sessionId?: number;
+    /**
+     * Env
+     */
+    readonly env: string[];
+    /**
+     * Exists
+     */
+    readonly exists: boolean;
     /**
      * Open files
      */
@@ -3039,6 +3040,26 @@ declare interface Storage {
 }
 declare interface Disk {
     /**
+     * Available space
+     */
+    readonly availableSpace: number;
+    /**
+     * Kind
+     */
+    readonly kind: DiskKind;
+    /**
+     * Total space
+     */
+    readonly totalSpace: number;
+    /**
+     * Usage
+     */
+    readonly usage: DiskUsage;
+    /**
+     * Is removable
+     */
+    readonly isRemovable: boolean;
+    /**
      * Name
      */
     readonly name?: string;
@@ -3047,44 +3068,24 @@ declare interface Disk {
      */
     readonly fileSystem?: string;
     /**
-     * Available space
-     */
-    readonly availableSpace: number;
-    /**
      * Mount point
      */
     readonly mountPoint: string;
     /**
-     * Usage
-     */
-    readonly usage: DiskUsage;
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
-    /**
-     * Is removable
-     */
-    readonly isRemovable: boolean;
-    /**
      * Is read-only
      */
     readonly isReadOnly: boolean;
-    /**
-     * Total space
-     */
-    readonly totalSpace: number;
     toString(): string;
 }
 declare interface IoStats {
     /**
-     * Total
-     */
-    readonly total: number;
-    /**
      * Delta
      */
     readonly delta: number;
+    /**
+     * Total
+     */
+    readonly total: number;
     toString(): string;
 }
 declare interface DiskUsage {
@@ -3099,7 +3100,7 @@ declare interface DiskUsage {
     toString(): string;
 }
 declare interface Concurrency {
-    race<T>(promises: Iterable<T | PromiseLike<T>>): Task<Awaited<T>>;
+    race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
 }
 /**
  * An iterator over the variants of [JsProcessStatus]
@@ -3240,4 +3241,9 @@ declare interface PressOptions {
      * @defaultValue false
      */
     relativePosition?: boolean;
+}
+/**
+ * Message box options
+ */
+declare interface MessageBoxOptions {
 }

@@ -49,6 +49,12 @@ pub enum Type {
 
     /// Direct TS type, without any conversion
     Verbatim(String),
+
+    /// Array
+    Array(Box<Self>),
+
+    /// Record
+    Record(Box<Self>, Box<Self>),
 }
 
 #[derive(Clone, Copy, Debug)]

@@ -8,13 +8,14 @@ use crate::{
     IntoJsResult,
     core::{
         js::classes::{SingletonClass, ValueClass, register_enum, register_value_class},
-        ui::{MessageBoxButtons, MessageBoxOptions, Ui},
+        ui::{MessageBoxButtons, Ui},
     },
     runtime::WithUserData,
 };
 
 pub type JsMessageBoxIcon = super::MessageBoxIcon;
 pub type JsMessageBoxResult = super::MessageBoxResult;
+pub type JsMessageBoxOptions = super::MessageBoxOptions;
 
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
@@ -36,17 +37,18 @@ impl<'js> Trace<'js> for JsUi {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsUi {
-    /// @skip
-    #[qjs(skip)]
-    pub const fn new() -> eyre::Result<Self> {
-        Ok(Self {})
+    /// @constructor
+    /// @private
+    #[qjs(constructor)]
+    pub fn new() -> Result<Self> {
+        Ok(Self::default())
     }
 
     #[qjs(static)]
     pub async fn message_box<'js>(
         ctx: Ctx<'js>,
         text: String,
-        options: Opt<MessageBoxOptions>,
+        options: Opt<JsMessageBoxOptions>,
     ) -> Result<JsMessageBoxResult> {
         let app_handle = ctx.user_data().app_handle();
 

@@ -33,6 +33,7 @@ impl DisplayFields {
         write!(f, "({})", self.buffer)
     }
 
+    #[must_use]
     pub fn finish_as_string(self) -> String {
         format!("({})", self.buffer)
     }

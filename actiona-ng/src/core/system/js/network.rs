@@ -21,7 +21,6 @@ pub struct JsNetwork {
 impl<'js> HostClass<'js> for JsNetwork {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
         register_host_class::<JsNetworkInterface>(ctx)?;
-        register_host_class::<JsCounters>(ctx)?;
         register_host_class::<JsTraffic>(ctx)?;
         Ok(())
     }
@@ -48,7 +47,6 @@ impl JsNetwork {
     }
 
     /// Interfaces
-    /// @returns Record<string, NetworkInterface>
     pub async fn interfaces<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -72,7 +70,7 @@ impl JsNetwork {
     }
 }
 
-// Network inteface
+// Network interface
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "NetworkInterface")]
 pub struct JsNetworkInterface {
@@ -127,7 +125,6 @@ impl JsNetworkInterface {
 
     /// Subnets
     /// @get
-    /// @returns string[]
     #[qjs(get)]
     #[must_use]
     pub fn subnets(&self) -> Vec<String> {
@@ -204,7 +201,12 @@ pub struct JsTraffic {
     inner: Traffic,
 }
 
-impl<'js> HostClass<'js> for JsTraffic {}
+impl<'js> HostClass<'js> for JsTraffic {
+    fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        register_host_class::<JsCounters>(ctx)?;
+        Ok(())
+    }
+}
 
 impl<'js> Trace<'js> for JsTraffic {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}

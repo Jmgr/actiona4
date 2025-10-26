@@ -30,7 +30,6 @@ pub struct JsProcesses {
 impl<'js> HostClass<'js> for JsProcesses {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
         register_host_class::<JsProcess>(ctx)?;
-        register_enum::<JsProcessStatus>(ctx)?;
         Ok(())
     }
 }
@@ -50,7 +49,6 @@ impl JsProcesses {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsProcesses {
     /// Processes
-    /// @returns Record<number, Process>
     pub async fn processes<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -81,7 +79,12 @@ pub struct JsProcess {
     inner: Process,
 }
 
-impl<'js> HostClass<'js> for JsProcess {}
+impl<'js> HostClass<'js> for JsProcess {
+    fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        register_enum::<JsProcessStatus>(ctx)?;
+        Ok(())
+    }
+}
 
 impl<'js> Trace<'js> for JsProcess {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
@@ -105,7 +108,6 @@ impl JsProcess {
 
     /// Cmd
     /// @get
-    /// @returns string[]
     #[qjs(get)]
     #[must_use]
     pub fn cmd(&self) -> &[String] {
@@ -133,7 +135,6 @@ impl JsProcess {
 
     /// Env
     /// @get
-    /// @returns string[]
     #[qjs(get)]
     #[must_use]
     pub fn env(&self) -> &[String] {

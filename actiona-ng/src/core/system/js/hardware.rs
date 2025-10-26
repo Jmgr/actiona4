@@ -108,7 +108,6 @@ impl JsHardware {
     }
 
     /// Hardware components
-    /// @returns Component[]
     pub async fn components<'js>(
         &self,
         ctx: Ctx<'js>,

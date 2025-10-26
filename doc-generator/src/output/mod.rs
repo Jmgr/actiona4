@@ -54,6 +54,12 @@ impl Type {
 
                 type_.to_string()
             }
+            Type::Array(type_) => format!("{}[]", type_.to_string(context)?),
+            Type::Record(key_type, value_type) => format!(
+                "Record<{}, {}>",
+                key_type.to_string(context)?,
+                value_type.to_string(context)?
+            ),
         })
     }
 }

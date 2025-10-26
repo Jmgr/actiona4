@@ -75,10 +75,9 @@ impl JsOs {
     }
 
     /// Distribution ID like
-    /// @returns string[]
     #[must_use]
-    pub fn distribution_id_like(&self) -> &Vec<String> {
-        self.inner.distribution_id_like()
+    pub fn distribution_id_like(&self) -> &[String] {
+        self.inner.distribution_id_like().as_ref()
     }
 
     /// Kernel long version
@@ -108,7 +107,6 @@ impl JsOs {
     }
 
     /// Users
-    /// @returns Record<string, User>
     pub async fn users<'js>(&self, ctx: Ctx<'js>) -> Result<HashMap<String, JsUser>> {
         let groups = self.inner.refresh_groups().await.into_js_result(&ctx)?;
 
@@ -136,7 +134,6 @@ impl JsOs {
     }
 
     /// Groups
-    /// @returns Record<number, Group>
     pub async fn groups<'js>(&self, ctx: Ctx<'js>) -> Result<HashMap<u32, JsGroup>> {
         Ok(self
             .inner
@@ -212,7 +209,6 @@ impl JsUser {
 
     /// Groups
     /// @get
-    /// @returns number[]
     #[qjs(get)]
     #[must_use]
     pub fn groups(&self) -> &[u32] {
@@ -221,7 +217,6 @@ impl JsUser {
 
     /// Group names
     /// @get
-    /// @returns string[]
     #[qjs(get)]
     #[must_use]
     pub fn group_names(&self) -> &[String] {
