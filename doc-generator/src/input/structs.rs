@@ -12,10 +12,19 @@ use crate::{
 pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
     let mut result = Vec::new();
 
-    let structs = items.iter().filter_map(|item| match &item.inner {
-        ItemEnum::Struct(struct_) => item.name.as_ref().map(|name| (name, &item.docs, struct_)),
-        _ => None,
-    });
+    for item in items.iter() {
+        if matches!(item.inner, ItemEnum::Impl(_)) {
+            println!("# {:?}: {:?}", item.name, item.links);
+        }
+    }
+
+    let structs = items
+        .iter()
+        .filter(|item| item.links.is_empty()) // We use this to filter out generated structs
+        .filter_map(|item| match &item.inner {
+            ItemEnum::Struct(struct_) => item.name.as_ref().map(|name| (name, &item.docs, struct_)),
+            _ => None,
+        });
 
     fn list_properties(
         items: &Items,

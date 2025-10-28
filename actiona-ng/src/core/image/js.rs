@@ -181,8 +181,9 @@ impl Default for JsBlurOptions {
 /// @options
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
 pub struct JsDrawImageOptions {
-    /// Source rectangle
-    /// @default Whole image
+    /// Source rectangle.
+    /// `undefined` means the whole image.
+    /// @default undefined
     pub source_rect: Option<JsRect>,
 }
 

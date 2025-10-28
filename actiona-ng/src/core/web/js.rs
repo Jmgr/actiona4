@@ -56,7 +56,6 @@ pub struct JsWebOptions {
     /// @default undefined
     pub password: Option<String>,
 
-    /// @type Record<string, string>
     /// @default undefined
     pub headers: Option<IndexMap<String, String>>,
 
@@ -75,13 +74,11 @@ pub struct JsWebOptions {
     /// Form data as strings.
     /// Sets content-type to "application/x-www-form-urlencoded".
     ///
-    /// @type Record<string, string>
     /// @default undefined
     pub form: Option<IndexMap<String, String>>,
 
     /// Additional query parameters.
     ///
-    /// @type Record<string, string>
     /// @default undefined
     pub query: Option<IndexMap<String, String>>,
 

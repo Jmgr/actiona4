@@ -1,4 +1,4 @@
-use human_units::si::Prefix;
+use human_units::{FormatSize, si::Prefix};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     class::Trace,
@@ -139,13 +139,67 @@ pub fn format_percent(ctx: Ctx<'_>, percent: f64, precision: Opt<u32>) -> Result
         .try_into()
         .map_err(|_| Exception::throw_range(&ctx, "out of range"))?;
 
-    Ok(format!("{percent:.precision$}%")
-        .trim_end_matches('0')
-        .trim_end_matches('.')
-        .to_string())
+    let mut s = format!("{percent:.precision$}");
+    if s.contains('.') {
+        s = s.trim_end_matches('0').trim_end_matches('.').to_string();
+    }
+
+    Ok(format!("{s}%"))
 }
 
 #[must_use]
 pub fn format_bytes(bytes: u64) -> String {
-    human_units::Size(bytes).to_string()
+    bytes.format_size().to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::runtime::Runtime;
+
+    #[test]
+    fn test_format_frequency() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            assert_eq!(
+                script_engine
+                    .eval::<String>("formatFrequency(40000)")
+                    .await
+                    .unwrap(),
+                "40 kHz"
+            );
+        });
+    }
+
+    #[test]
+    fn test_format_percent() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            assert_eq!(
+                script_engine
+                    .eval::<String>("formatPercent(50)")
+                    .await
+                    .unwrap(),
+                "50%"
+            );
+
+            assert_eq!(
+                script_engine
+                    .eval::<String>("formatPercent(50.005)")
+                    .await
+                    .unwrap(),
+                "50.01%"
+            );
+        });
+    }
+
+    #[test]
+    fn test_format_bytes() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            assert_eq!(
+                script_engine
+                    .eval::<String>("formatBytes(42000)")
+                    .await
+                    .unwrap(),
+                "41 KiB"
+            );
+        });
+    }
 }

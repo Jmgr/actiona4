@@ -1,6 +1,7 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use itertools::Itertools;
+use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 
 use crate::{
@@ -38,6 +39,21 @@ impl JsNetwork {
     }
 }
 
+/// List network interfaces options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct ListInterfacesOptions {
+    /// Rescan
+    /// @default true
+    pub rescan: bool,
+}
+
+impl Default for ListInterfacesOptions {
+    fn default() -> Self {
+        Self { rescan: true }
+    }
+}
+
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsNetwork {
     /// Host name
@@ -47,20 +63,20 @@ impl JsNetwork {
     }
 
     /// Interfaces
-    pub async fn interfaces<'js>(
+    pub async fn list_interfaces<'js>(
         &self,
         ctx: Ctx<'js>,
-        rescan: Opt<bool>,
-    ) -> Result<HashMap<String, JsNetworkInterface>> {
-        let rescan = rescan.0.unwrap_or(true);
+        options: Opt<ListInterfacesOptions>,
+    ) -> Result<Vec<JsNetworkInterface>> {
+        let options = options.0.unwrap_or_default();
         Ok(self
             .inner
-            .refresh_interfaces(rescan)
+            .refresh_interfaces(options.rescan)
             .await
             .into_js_result(&ctx)?
             .into_iter()
-            .map(|(name, interface)| (name, interface.into()))
-            .collect::<HashMap<_, _>>())
+            .map(|(name, interface)| JsNetworkInterface::new(name, interface))
+            .collect_vec())
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
@@ -75,6 +91,7 @@ impl JsNetwork {
 #[rquickjs::class(rename = "NetworkInterface")]
 pub struct JsNetworkInterface {
     inner: NetworkInterface,
+    name: String,
 }
 
 impl<'js> HostClass<'js> for JsNetworkInterface {}
@@ -83,14 +100,24 @@ impl<'js> Trace<'js> for JsNetworkInterface {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
 }
 
-impl From<NetworkInterface> for JsNetworkInterface {
-    fn from(value: NetworkInterface) -> Self {
-        Self { inner: value }
+impl JsNetworkInterface {
+    /// @skip
+    #[must_use]
+    pub const fn new(name: String, inner: NetworkInterface) -> Self {
+        Self { inner, name }
     }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsNetworkInterface {
+    /// Name
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     /// Inbound
     /// @get
     #[qjs(get)]

@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use itertools::Itertools;
+use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 
 use crate::{
@@ -38,6 +39,21 @@ impl JsHardware {
         let motherboard = Arc::new(inner.motherboard().clone());
 
         Self { inner, motherboard }
+    }
+}
+
+/// List components options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct ListComponentsOptions {
+    /// Rescan
+    /// @default true
+    pub rescan: bool,
+}
+
+impl Default for ListComponentsOptions {
+    fn default() -> Self {
+        Self { rescan: true }
     }
 }
 
@@ -108,15 +124,15 @@ impl JsHardware {
     }
 
     /// Hardware components
-    pub async fn components<'js>(
+    pub async fn list_components<'js>(
         &self,
         ctx: Ctx<'js>,
-        rescan: Opt<bool>,
+        options: Opt<ListComponentsOptions>,
     ) -> Result<Vec<JsComponent>> {
-        let rescan = rescan.0.unwrap_or(true);
+        let options = options.0.unwrap_or_default();
         let components = self
             .inner
-            .refresh_components(rescan)
+            .refresh_components(options.rescan)
             .await
             .into_js_result(&ctx)?;
 

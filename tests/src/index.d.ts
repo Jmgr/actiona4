@@ -1817,10 +1817,10 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
+    readonly isSymlink: boolean;
+    readonly isFile: boolean;
     readonly isDirectory: boolean;
     readonly path: string;
-    readonly isFile: boolean;
-    readonly isSymlink: boolean;
     readonly fileName: string;
     readonly size: number;
 }
@@ -2033,25 +2033,13 @@ declare class Point {
  */
 declare interface DisplayInfo {
     /**
-     * The display pixel width
-     */
-    readonly widthMm: number;
-    /**
-     * The display friendly name
-     */
-    readonly friendlyName: string;
-    /**
-     * The display pixel height
-     */
-    readonly heightMm: number;
-    /**
      * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
      */
     readonly rotation: number;
     /**
-     * Whether the screen is the main screen
+     * The display friendly name
      */
-    readonly isPrimary: boolean;
+    readonly friendlyName: string;
     /**
      * The display name
      */
@@ -2061,17 +2049,29 @@ declare interface DisplayInfo {
      */
     readonly rect: Rect;
     /**
-     * Unique identifier associated with the display
+     * The display refresh rate
      */
-    readonly id: number;
+    readonly frequency: number;
+    /**
+     * The display pixel height
+     */
+    readonly heightMm: number;
     /**
      * Output device's pixel scale factor
      */
     readonly scaleFactor: number;
     /**
-     * The display refresh rate
+     * The display pixel width
      */
-    readonly frequency: number;
+    readonly widthMm: number;
+    /**
+     * Unique identifier associated with the display
+     */
+    readonly id: number;
+    /**
+     * Whether the screen is the main screen
+     */
+    readonly isPrimary: boolean;
 }
 declare class Rect {
     /**
@@ -2244,21 +2244,6 @@ declare class Filesystem {
     static isSymlink(path: string): Promise<boolean>;
 }
 /**
- * An iterator over the variants of [JsFlipDirection]
- */
-declare interface FlipDirectionIter {
-}
-/**
- * An iterator over the variants of [JsResizeFilter]
- */
-declare interface ResizeFilterIter {
-}
-/**
- * An iterator over the variants of [JsInterpolation]
- */
-declare interface InterpolationIter {
-}
-/**
  * Resize options
  */
 declare interface ResizeOptions {
@@ -2293,8 +2278,9 @@ declare interface BlurOptions {
  */
 declare interface DrawImageOptions {
     /**
-     * Source rectangle
-     * @defaultValue Whole image
+     * Source rectangle.
+     * `undefined` means the whole image.
+     * @defaultValue undefined
      */
     sourceRect?: Rect;
 }
@@ -2416,6 +2402,26 @@ declare const screenshot: Screenshot;
  */
 declare interface System {
     /**
+     * Network information
+     */
+    readonly network: Network;
+    /**
+     * Os information
+     */
+    readonly os: Os;
+    /**
+     * Processes information
+     */
+    readonly processes: Processes;
+    /**
+     * Hardware information
+     */
+    readonly hardware: Hardware;
+    /**
+     * Storage information
+     */
+    readonly storage: Storage;
+    /**
      * Memory information
      */
     readonly memory: Memory;
@@ -2423,22 +2429,6 @@ declare interface System {
      * Cpu information
      */
     readonly cpu: Cpu;
-    /**
-     * Hardware information
-     */
-    readonly hardware: Hardware;
-    /**
-     * Network information
-     */
-    readonly network: Network;
-    /**
-     * Storage information
-     */
-    readonly storage: Storage;
-    /**
-     * Os information
-     */
-    readonly os: Os;
 }
 declare const system: System;
 declare class Ui {
@@ -2582,7 +2572,6 @@ declare class Size {
 }
 declare class MessageBoxButtons {
     private constructor();
-    static intoInner(self: MessageBoxButtons): MessageBoxButtons;
     static ok(): MessageBoxButtons;
     static okCustom(okLabel: string): MessageBoxButtons;
     static okCancel(): MessageBoxButtons;
@@ -2607,6 +2596,10 @@ declare class WebProgress {
  */
 declare interface Cpu {
     /**
+     * Physical core count
+     */
+    readonly physicalCoreCount?: number;
+    /**
      * Architecture
      */
     readonly architecture: string;
@@ -2614,10 +2607,6 @@ declare interface Cpu {
      * Logical core count
      */
     readonly logicalCoreCount: number;
-    /**
-     * Physical core count
-     */
-    readonly physicalCoreCount?: number;
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
     frequencies(): Promise<number[]>;
@@ -2628,14 +2617,6 @@ declare interface Cpu {
  */
 declare interface Hardware {
     /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
      * Vendor name
      */
     readonly vendorName?: string;
@@ -2644,25 +2625,33 @@ declare interface Hardware {
      */
     readonly uuid?: string;
     /**
-     * Stock keeping unit
-     */
-    readonly stockKeepingUnit?: string;
-    /**
      * Motherboard
      */
     readonly motherboard: Motherboard;
     /**
-     * Version
+     * Stock keeping unit
      */
-    readonly version?: string;
+    readonly stockKeepingUnit?: string;
     /**
      * Family
      */
     readonly family?: string;
     /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
+    /**
+     * Version
+     */
+    readonly version?: string;
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
      * Hardware components
      */
-    components(rescan?: boolean): Promise<Component[]>;
+    listComponents(options?: ListComponentsOptions): Promise<Component[]>;
     toString(): string;
 }
 declare interface Motherboard {
@@ -2671,36 +2660,28 @@ declare interface Motherboard {
      */
     readonly vendorName?: string;
     /**
+     * Asset tag
+     */
+    readonly assetTag?: string;
+    /**
      * Name
      */
     readonly name?: string;
-    /**
-     * Version
-     */
-    readonly version?: string;
     /**
      * Serial number
      */
     readonly serialNumber?: string;
     /**
-     * Asset tag
+     * Version
      */
-    readonly assetTag?: string;
+    readonly version?: string;
     toString(): string;
 }
 declare interface Component {
     /**
-     * Critical temperature
-     */
-    readonly criticalTemperature?: number;
-    /**
      * ID
      */
     readonly id?: string;
-    /**
-     * Maximum temperature
-     */
-    readonly maxTemperature?: number;
     /**
      * Label
      */
@@ -2709,6 +2690,14 @@ declare interface Component {
      * Temperature
      */
     readonly temperature?: number;
+    /**
+     * Critical temperature
+     */
+    readonly criticalTemperature?: number;
+    /**
+     * Maximum temperature
+     */
+    readonly maxTemperature?: number;
     toString(): string;
 }
 /**
@@ -2732,21 +2721,21 @@ declare interface Memory {
 }
 declare interface MemoryUsage {
     /**
-     * Free
+     * Used
      */
-    readonly free: number;
-    /**
-     * Total
-     */
-    readonly total: number;
+    readonly used: number;
     /**
      * Available
      */
     readonly available: number;
     /**
-     * Used
+     * Total
      */
-    readonly used: number;
+    readonly total: number;
+    /**
+     * Free
+     */
+    readonly free: number;
     toString(): string;
 }
 /**
@@ -2755,21 +2744,21 @@ declare interface MemoryUsage {
  */
 declare interface CGroupLimits {
     /**
-     * Free swap
-     */
-    readonly freeSwap: number;
-    /**
      * Total memory
      */
     readonly totalMemory: number;
     /**
-     * Free memory
-     */
-    readonly freeMemory: number;
-    /**
      * RSS
      */
     readonly rss: number;
+    /**
+     * Free swap
+     */
+    readonly freeSwap: number;
+    /**
+     * Free memory
+     */
+    readonly freeMemory: number;
     toString(): string;
 }
 /**
@@ -2783,10 +2772,26 @@ declare interface Network {
     /**
      * Interfaces
      */
-    interfaces(rescan?: boolean): Promise<Record<string, NetworkInterface>>;
+    listInterfaces(options?: ListInterfacesOptions): Promise<NetworkInterface[]>;
     toString(): string;
 }
 declare interface NetworkInterface {
+    /**
+     * Name
+     */
+    readonly name: string;
+    /**
+     * Inbound
+     */
+    readonly inbound: Traffic;
+    /**
+     * Outbound
+     */
+    readonly outbound: Traffic;
+    /**
+     * MAC address
+     */
+    readonly macAddress?: string;
     /**
      * MTU
      */
@@ -2795,18 +2800,6 @@ declare interface NetworkInterface {
      * Subnets
      */
     readonly subnets: string[];
-    /**
-     * Outbound
-     */
-    readonly outbound: Traffic;
-    /**
-     * Inbound
-     */
-    readonly inbound: Traffic;
-    /**
-     * MAC address
-     */
-    readonly macAddress?: string;
     toString(): string;
 }
 declare interface Counters {
@@ -2882,14 +2875,18 @@ declare interface Os {
     /**
      * Users
      */
-    users(): Promise<Record<string, User>>;
+    listUsers(): Promise<User[]>;
     /**
      * Groups
      */
-    groups(): Promise<Record<number, Group>>;
+    listGroups(): Promise<Group[]>;
     toString(): string;
 }
 declare interface User {
+    /**
+     * Name
+     */
+    readonly name: string;
     /**
      * Group ID
      */
@@ -2899,17 +2896,17 @@ declare interface User {
      */
     readonly groups: number[];
     /**
-     * Group names
+     * ID
      */
-    readonly groupNames: string[];
-    /**
-     * Name
-     */
-    readonly name: string;
+    readonly id: string;
     /**
      * Group name
      */
     readonly groupName?: string;
+    /**
+     * Group names
+     */
+    readonly groupNames: string[];
     toString(): string;
 }
 declare interface Group {
@@ -2917,6 +2914,10 @@ declare interface Group {
      * Name
      */
     readonly name: string;
+    /**
+     * ID
+     */
+    readonly id: number;
     toString(): string;
 }
 /**
@@ -2924,108 +2925,108 @@ declare interface Group {
  */
 declare interface Processes {
     /**
-     * Processes
+     * Lists all processes
      */
-    processes(rescan?: boolean): Promise<Record<number, Process>>;
+    list(options?: ListProcessesOptions): Promise<Process[]>;
     toString(): string;
 }
 declare interface Process {
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
-    /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Memory
-     */
-    readonly memory: number;
-    /**
-     * Exe
-     */
-    readonly exe?: string;
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: DiskUsage;
     /**
      * Cwd
      */
     readonly cwd?: string;
     /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Run time
-     */
-    readonly runTime: number;
-    /**
-     * Start time
-     */
-    readonly startTime: Object;
-    /**
-     * Group ID
-     */
-    readonly groupId?: number;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Pid
-     */
-    readonly pid: number;
-    /**
      * CPU usage
      */
     readonly cpuUsage: number;
-    /**
-     * User ID
-     */
-    readonly userId?: string;
-    /**
-     * Cmd
-     */
-    readonly cmd: string[];
-    /**
-     * Accumulated CPU time
-     */
-    readonly accumulatedCpuTime: number;
-    /**
-     * Status
-     */
-    readonly status: ProcessStatus;
-    /**
-     * Effective user ID
-     */
-    readonly effectiveUserId?: string;
-    /**
-     * Effective group ID
-     */
-    readonly effectiveGroupId?: number;
     /**
      * Session ID
      */
     readonly sessionId?: number;
     /**
+     * Open files limit
+     */
+    readonly openFilesLimit?: number;
+    /**
+     * Virtual memory
+     */
+    readonly virtualMemory: number;
+    /**
+     * Pid
+     */
+    readonly pid: number;
+    /**
      * Env
      */
     readonly env: string[];
+    /**
+     * User ID
+     */
+    readonly userId?: string;
+    /**
+     * Root
+     */
+    readonly root?: string;
+    /**
+     * Group ID
+     */
+    readonly groupId?: number;
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Cmd
+     */
+    readonly cmd: string[];
+    /**
+     * Parent
+     */
+    readonly parent?: number;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
+     * Open files
+     */
+    readonly openFiles?: number;
+    /**
+     * Memory
+     */
+    readonly memory: number;
+    /**
+     * Run time
+     */
+    readonly runTime: number;
     /**
      * Exists
      */
     readonly exists: boolean;
     /**
-     * Open files
+     * Effective group ID
      */
-    readonly openFiles?: number;
+    readonly effectiveGroupId?: number;
+    /**
+     * Status
+     */
+    readonly status: ProcessStatus;
+    /**
+     * Exe
+     */
+    readonly exe?: string;
+    /**
+     * Accumulated CPU time
+     */
+    readonly accumulatedCpuTime: number;
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * Disk usage
+     */
+    readonly diskUsage: DiskUsage;
     toString(): string;
 }
 /**
@@ -3035,82 +3036,112 @@ declare interface Storage {
     /**
      * Disks
      */
-    disks(rescan?: boolean): Promise<Disk[]>;
+    listDisks(options?: ListDisksOptions): Promise<Disk[]>;
     toString(): string;
 }
 declare interface Disk {
-    /**
-     * Available space
-     */
-    readonly availableSpace: number;
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
-    /**
-     * Total space
-     */
-    readonly totalSpace: number;
-    /**
-     * Usage
-     */
-    readonly usage: DiskUsage;
-    /**
-     * Is removable
-     */
-    readonly isRemovable: boolean;
     /**
      * Name
      */
     readonly name?: string;
     /**
+     * Is removable
+     */
+    readonly isRemovable: boolean;
+    /**
      * File system
      */
     readonly fileSystem?: string;
+    /**
+     * Kind
+     */
+    readonly kind: DiskKind;
+    /**
+     * Available space
+     */
+    readonly availableSpace: number;
     /**
      * Mount point
      */
     readonly mountPoint: string;
     /**
+     * Total space
+     */
+    readonly totalSpace: number;
+    /**
      * Is read-only
      */
     readonly isReadOnly: boolean;
+    /**
+     * Usage
+     */
+    readonly usage: DiskUsage;
     toString(): string;
 }
 declare interface IoStats {
     /**
-     * Delta
-     */
-    readonly delta: number;
-    /**
      * Total
      */
     readonly total: number;
+    /**
+     * Delta
+     */
+    readonly delta: number;
     toString(): string;
 }
 declare interface DiskUsage {
     /**
-     * Read
-     */
-    readonly read: IoStats;
-    /**
      * Written
      */
     readonly written: IoStats;
+    /**
+     * Read
+     */
+    readonly read: IoStats;
     toString(): string;
 }
 declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
 }
 /**
- * An iterator over the variants of [JsProcessStatus]
+ * List components options
  */
-declare interface ProcessStatusIter {
+declare interface ListComponentsOptions {
+    /**
+     * Rescan
+     * @defaultValue true
+     */
+    rescan?: boolean;
 }
 /**
- * An iterator over the variants of [JsDiskKind]
+ * List network interfaces options
  */
-declare interface DiskKindIter {
+declare interface ListInterfacesOptions {
+    /**
+     * Rescan
+     * @defaultValue true
+     */
+    rescan?: boolean;
+}
+/**
+ * List processes options
+ */
+declare interface ListProcessesOptions {
+    /**
+     * Rescan
+     * @defaultValue true
+     */
+    rescan?: boolean;
+}
+/**
+ * List disks options
+ */
+declare interface ListDisksOptions {
+    /**
+     * Rescan
+     * @defaultValue true
+     */
+    rescan?: boolean;
 }
 /**
  * Web options
@@ -3246,4 +3277,16 @@ declare interface PressOptions {
  * Message box options
  */
 declare interface MessageBoxOptions {
+    /**
+     * @defaultValue undefined
+     */
+    title?: string;
+    /**
+     * @defaultValue MessageBoxButtons.ok()
+     */
+    buttons?: MessageBoxButtons;
+    /**
+     * @defaultValue MessageBoxIcon.Info
+     */
+    icon?: MessageBoxIcon;
 }

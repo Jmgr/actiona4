@@ -1,7 +1,8 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use derive_more::Display;
-use macros::{FromSerde, IntoSerde};
+use itertools::Itertools;
+use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{Ctx, JsLifetime, Object, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -46,23 +47,38 @@ impl JsProcesses {
     }
 }
 
+/// List processes options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct ListProcessesOptions {
+    /// Rescan
+    /// @default true
+    pub rescan: bool,
+}
+
+impl Default for ListProcessesOptions {
+    fn default() -> Self {
+        Self { rescan: true }
+    }
+}
+
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsProcesses {
-    /// Processes
-    pub async fn processes<'js>(
+    /// Lists all processes
+    pub async fn list<'js>(
         &self,
         ctx: Ctx<'js>,
-        rescan: Opt<bool>,
-    ) -> Result<HashMap<u32, JsProcess>> {
-        let rescan = rescan.0.unwrap_or(true);
+        options: Opt<ListProcessesOptions>,
+    ) -> Result<Vec<JsProcess>> {
+        let options = options.0.unwrap_or_default();
         Ok(self
             .inner
-            .refresh_processes(rescan, false) // We don't return threads (tasks) for now
+            .refresh_processes(options.rescan, false) // We don't return threads (tasks) for now
             .await
             .into_js_result(&ctx)?
-            .into_iter()
-            .map(|(pid, process)| (pid.into(), process.into()))
-            .collect::<HashMap<_, _>>())
+            .into_values()
+            .map(|process| process.into())
+            .collect_vec())
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
@@ -363,5 +379,27 @@ impl From<Status> for JsProcessStatus {
             Status::UninterruptibleDiskSleep => Self::UninterruptibleDiskSleep,
             Status::Unknown(_) => Self::Unknown,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::runtime::Runtime;
+
+    #[test]
+    fn test_core_count() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                let p = await system.processes.processes();
+                for (const key in p) {
+                console.log(`${key}: ${p[key as keyof Process]}`);
+                }
+                "#,
+                )
+                .await
+                .unwrap();
+        });
     }
 }

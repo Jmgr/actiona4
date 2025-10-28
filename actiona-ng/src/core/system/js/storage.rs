@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use derive_more::Display;
 use itertools::Itertools;
-use macros::{FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -45,14 +45,33 @@ impl JsStorage {
     }
 }
 
+/// List disks options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct ListDisksOptions {
+    /// Rescan
+    /// @default true
+    pub rescan: bool,
+}
+
+impl Default for ListDisksOptions {
+    fn default() -> Self {
+        Self { rescan: true }
+    }
+}
+
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsStorage {
     /// Disks
-    pub async fn disks<'js>(&self, ctx: Ctx<'js>, rescan: Opt<bool>) -> Result<Vec<JsDisk>> {
-        let rescan = rescan.0.unwrap_or(true);
+    pub async fn list_disks<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<ListDisksOptions>,
+    ) -> Result<Vec<JsDisk>> {
+        let options = options.0.unwrap_or_default();
         Ok(self
             .inner
-            .refresh_disks(rescan)
+            .refresh_disks(options.rescan)
             .await
             .into_js_result(&ctx)?
             .into_iter()

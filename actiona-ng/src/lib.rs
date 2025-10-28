@@ -106,7 +106,6 @@ where
 // TODO: check all token cancellation return a Cancelled error
 // TODO: check all unwraps
 // TODO: check if we can use cancel_on in a few places where select! is used
-// TODO: replace humantime humansize with human_units
 /*
 Note that the top-left hand corner of the desktop is not necessarily the same as the screen.
 If the user uses a desktop with multiple monitors, the top-left hand corner of the desktop is

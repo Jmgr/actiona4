@@ -39,3 +39,30 @@ pub fn system_time_from_date<'js>(ctx: Ctx<'js>, date: Object<'js>) -> Result<Sy
 
     Ok(UNIX_EPOCH + Duration::from_millis(time))
 }
+
+#[cfg(test)]
+mod tests {
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    use crate::{
+        core::js::date::{date_from_system_time, system_time_from_date},
+        runtime::Runtime,
+    };
+
+    #[test]
+    fn test_date_system_time() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .with::<_, _>(|ctx| {
+                    let time = SystemTime::now();
+                    let date = date_from_system_time(&ctx, &time).unwrap();
+                    let time2 = system_time_from_date(ctx, date).unwrap();
+
+                    let to_ms = |t: SystemTime| t.duration_since(UNIX_EPOCH).unwrap().as_millis();
+
+                    assert_eq!(to_ms(time), to_ms(time2));
+                })
+                .await;
+        })
+    }
+}

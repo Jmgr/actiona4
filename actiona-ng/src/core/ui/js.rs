@@ -71,6 +71,7 @@ impl<'js> Trace<'js> for JsMessageBoxButtons {
 impl ValueClass<'_> for JsMessageBoxButtons {}
 
 impl JsMessageBoxButtons {
+    /// @skip
     #[must_use]
     pub fn into_inner(self) -> MessageBoxButtons {
         self.inner

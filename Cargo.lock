@@ -108,6 +108,7 @@ dependencies = [
  "windows-result 0.4.1",
  "x11rb",
  "x11rb-async",
+ "xkeysym",
  "zbus",
 ]
 
@@ -1615,8 +1616,7 @@ checksum = "a3d8a32ae18130a3c84dd492d4215c3d913c3b07c6b63c2eb3eb7ff1101ab7bf"
 [[package]]
 name = "enigo"
 version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71c6c56e50f7acae2906a0dcbb34529ca647e40421119ad5d12e7f8ba6e50010"
+source = "git+https://github.com/enigo-rs/enigo.git?rev=17fc1d5d3d2319fb23b5dffee1bf347b42b40ce4#17fc1d5d3d2319fb23b5dffee1bf347b42b40ce4"
 dependencies = [
  "core-foundation 0.10.1",
  "core-graphics 0.25.0",
@@ -1627,7 +1627,7 @@ dependencies = [
  "objc2 0.6.3",
  "objc2-app-kit",
  "objc2-foundation 0.3.2",
- "windows 0.61.3",
+ "windows 0.62.2",
  "x11rb",
  "xkbcommon",
  "xkeysym",

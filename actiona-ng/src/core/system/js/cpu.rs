@@ -100,37 +100,27 @@ impl JsCpu {
     }
 }
 
-// TODO: remove?
 #[cfg(test)]
 mod tests {
     use crate::runtime::Runtime;
 
     #[test]
-    fn test_global_usage() {
+    fn test_core_count() {
         Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval_async::<()>(
-                    r#"
-                    let freq = await system.cpu.frequencies();
-                    freq.forEach((value) => {
-                        console.printLn(formatFrequency(value));
-                })
-                    "#,
-                )
-                .await
-                .unwrap();
-        });
-    }
-
-    #[test]
-    fn test_cpu() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            println!(
-                "{}",
+            assert!(
                 script_engine
-                    .eval::<String>("system.cpu.physicalCoreCount.toString()")
+                    .eval::<u64>("system.cpu.physicalCoreCount")
                     .await
                     .unwrap()
+                    > 0
+            );
+
+            assert!(
+                script_engine
+                    .eval::<u64>("system.cpu.logicalCoreCount")
+                    .await
+                    .unwrap()
+                    > 0
             );
         });
     }

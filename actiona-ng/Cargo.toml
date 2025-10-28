@@ -21,6 +21,7 @@ rustix.workspace = true
 x11rb.workspace = true
 x11rb-async.workspace = true
 zbus.workspace = true
+xkeysym.workspace = true
 
 [dependencies]
 arboard.workspace = true

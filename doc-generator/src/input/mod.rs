@@ -637,7 +637,7 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
             let type_ = unwrap_generic(path)?;
             Type::Array(Box::new(convert_type(type_, struct_name)?))
         }
-        "HashMap" => {
+        "HashMap" | "IndexMap" => {
             let (key_type, value_type) = unwrap_generic_pair(path)?;
             Type::Record(
                 Box::new(convert_type(key_type, struct_name)?),

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, Object, Result, atom::PredefinedAtom, class::Trace};
@@ -107,7 +107,7 @@ impl JsOs {
     }
 
     /// Users
-    pub async fn users<'js>(&self, ctx: Ctx<'js>) -> Result<HashMap<String, JsUser>> {
+    pub async fn list_users<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsUser>> {
         let groups = self.inner.refresh_groups().await.into_js_result(&ctx)?;
 
         Ok(self
@@ -128,21 +128,21 @@ impl JsOs {
                     .map(|group| group.name().to_string())
                     .collect_vec();
 
-                (id.to_string(), JsUser::new(user, group_name, group_names))
+                JsUser::new(user, id.to_string(), group_name, group_names)
             })
-            .collect::<HashMap<_, _>>())
+            .collect_vec())
     }
 
     /// Groups
-    pub async fn groups<'js>(&self, ctx: Ctx<'js>) -> Result<HashMap<u32, JsGroup>> {
+    pub async fn list_groups<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsGroup>> {
         Ok(self
             .inner
             .refresh_groups()
             .await
             .into_js_result(&ctx)?
             .into_iter()
-            .map(|(id, group)| (id, group.into()))
-            .collect::<HashMap<_, _>>())
+            .map(|(id, group)| JsGroup::new(id, group))
+            .collect_vec())
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
@@ -157,6 +157,7 @@ impl JsOs {
 #[rquickjs::class(rename = "User")]
 pub struct JsUser {
     inner: User,
+    id: String,
     group_name: Option<String>,
     group_names: Vec<String>,
 }
@@ -170,9 +171,15 @@ impl<'js> Trace<'js> for JsUser {
 impl JsUser {
     /// @skip
     #[must_use]
-    pub const fn new(inner: User, group_name: Option<String>, group_names: Vec<String>) -> Self {
+    pub const fn new(
+        inner: User,
+        id: String,
+        group_name: Option<String>,
+        group_names: Vec<String>,
+    ) -> Self {
         Self {
             inner,
+            id,
             group_name,
             group_names,
         }
@@ -187,6 +194,14 @@ impl JsUser {
     #[must_use]
     pub fn name(&self) -> &str {
         self.inner.name()
+    }
+
+    /// ID
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn id(&self) -> &str {
+        &self.id
     }
 
     /// Group ID
@@ -241,6 +256,7 @@ impl JsUser {
 #[rquickjs::class(rename = "Group")]
 pub struct JsGroup {
     inner: Group,
+    id: u32,
 }
 
 impl<'js> HostClass<'js> for JsGroup {}
@@ -249,9 +265,11 @@ impl<'js> Trace<'js> for JsGroup {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
 }
 
-impl From<Group> for JsGroup {
-    fn from(value: Group) -> Self {
-        Self { inner: value }
+impl JsGroup {
+    /// @skip
+    #[must_use]
+    pub const fn new(id: u32, inner: Group) -> Self {
+        Self { inner, id }
     }
 }
 
@@ -263,6 +281,14 @@ impl JsGroup {
     #[must_use]
     pub fn name(&self) -> &str {
         self.inner.name()
+    }
+
+    /// ID
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn id(&self) -> u32 {
+        self.id
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
