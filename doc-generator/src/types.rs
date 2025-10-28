@@ -21,7 +21,7 @@ pub struct Enum {
     pub platforms: Platforms,
 }
 
-#[derive(Clone, Debug, PartialEq, EnumIs)]
+#[derive(Clone, Debug, EnumIs, PartialEq)]
 pub enum Type {
     /// Void, "none" type
     Void,
@@ -256,7 +256,7 @@ impl Platforms {
     }
 }
 
-#[derive(Clone, Debug, EnumDiscriminants, PartialEq, EnumIs)]
+#[derive(Clone, Debug, EnumDiscriminants, EnumIs, PartialEq)]
 #[strum_discriminants(derive(Display))]
 pub enum Instruction {
     Constructor,

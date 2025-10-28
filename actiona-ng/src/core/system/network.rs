@@ -50,7 +50,7 @@ impl Subnet {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Counters {
     data: ByteCount,
     packets: u64,
@@ -84,7 +84,7 @@ impl Counters {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Traffic {
     total: Counters,
     delta: Counters,

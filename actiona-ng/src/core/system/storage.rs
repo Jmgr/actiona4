@@ -15,7 +15,7 @@ use crate::types::{
     display::{DisplayFields, display_list},
 };
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct IoStats {
     total: ByteCount,
     delta: ByteCount,
@@ -42,7 +42,7 @@ impl IoStats {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct DiskUsage {
     written: IoStats,
     read: IoStats,

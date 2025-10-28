@@ -55,6 +55,1011 @@ declare enum Interpolation {
 
     Bicubic,
 }
+declare enum Key {
+    Num0,
+
+    Num1,
+
+    Num2,
+
+    Num3,
+
+    Num4,
+
+    Num5,
+
+    Num6,
+
+    Num7,
+
+    Num8,
+
+    Num9,
+
+    A,
+
+    B,
+
+    C,
+
+    D,
+
+    E,
+
+    F,
+
+    G,
+
+    H,
+
+    I,
+
+    J,
+
+    K,
+
+    L,
+
+    M,
+
+    N,
+
+    O,
+
+    P,
+
+    Q,
+
+    R,
+
+    S,
+
+    T,
+
+    U,
+
+    V,
+
+    W,
+
+    X,
+
+    Y,
+
+    Z,
+
+    /**
+     * @platform only works on Windows
+     */
+    AbntC1,
+
+    /**
+     * @platform only works on Windows
+     */
+    AbntC2,
+
+    /**
+     * @platform only works on Windows
+     */
+    Accept,
+
+    Add,
+
+    Alt,
+
+    /**
+     * @platform only works on Windows
+     */
+    Apps,
+
+    /**
+     * @platform only works on Windows
+     */
+    Attn,
+
+    Backspace,
+
+    /**
+     * @platform only works on Linux
+     */
+    Break,
+
+    /**
+     * @platform only works on Linux
+     */
+    Begin,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserBack,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserFavorites,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserForward,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserHome,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserRefresh,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserSearch,
+
+    /**
+     * @platform only works on Windows
+     */
+    BrowserStop,
+
+    Cancel,
+
+    CapsLock,
+
+    Clear,
+
+    Control,
+
+    /**
+     * @platform only works on Windows
+     */
+    Convert,
+
+    /**
+     * @platform only works on Windows
+     */
+    Crsel,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeAlphanumeric,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeCodeinput,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeDetermineString,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeEnterDlgConversionMode,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeEnterImeConfigMode,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeEnterWordRegisterMode,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeFlushString,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeHiragana,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeKatakana,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeNoCodepoint,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeNoRoman,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbeRoman,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbesbcsChar,
+
+    /**
+     * @platform only works on Windows
+     */
+    DbesChar,
+
+    Decimal,
+
+    Delete,
+
+    Divide,
+
+    DownArrow,
+
+    End,
+
+    /**
+     * @platform only works on Windows
+     */
+    Ereof,
+
+    Escape,
+
+    Execute,
+
+    /**
+     * @platform only works on Windows
+     */
+    Exsel,
+
+    F1,
+
+    F2,
+
+    F3,
+
+    F4,
+
+    F5,
+
+    F6,
+
+    F7,
+
+    F8,
+
+    F9,
+
+    F10,
+
+    F11,
+
+    F12,
+
+    F13,
+
+    F14,
+
+    F15,
+
+    F16,
+
+    F17,
+
+    F18,
+
+    F19,
+
+    F20,
+
+    F21,
+
+    F22,
+
+    F23,
+
+    F24,
+
+    /**
+     * @platform only works on Linux
+     */
+    F25,
+
+    /**
+     * @platform only works on Linux
+     */
+    F26,
+
+    /**
+     * @platform only works on Linux
+     */
+    F27,
+
+    /**
+     * @platform only works on Linux
+     */
+    F28,
+
+    /**
+     * @platform only works on Linux
+     */
+    F29,
+
+    /**
+     * @platform only works on Linux
+     */
+    F30,
+
+    /**
+     * @platform only works on Linux
+     */
+    F31,
+
+    /**
+     * @platform only works on Linux
+     */
+    F32,
+
+    /**
+     * @platform only works on Linux
+     */
+    F33,
+
+    /**
+     * @platform only works on Linux
+     */
+    F34,
+
+    /**
+     * @platform only works on Linux
+     */
+    F35,
+
+    /**
+     * @platform only works on Windows
+     */
+    Final,
+
+    /**
+     * @platform only works on Linux
+     */
+    Find,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadA,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadB,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadDPadDown,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadDPadLeft,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadDPadRight,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadDPadUp,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftShoulder,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftThumbstickButton,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftThumbstickDown,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftThumbstickLeft,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftThumbstickRight,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftThumbstickUp,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadLeftTrigger,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadMenu,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightShoulder,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightThumbstickButton,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightThumbstickDown,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightThumbstickLeft,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightThumbstickRight,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightThumbstickUp,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadRightTrigger,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadView,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadX,
+
+    /**
+     * @platform only works on Windows
+     */
+    GamepadY,
+
+    /**
+     * @platform only works on Windows
+     */
+    Hangeul,
+
+    Hangul,
+
+    Hanja,
+
+    Help,
+
+    Home,
+
+    /**
+     * @platform only works on Windows
+     */
+    Ico00,
+
+    /**
+     * @platform only works on Windows
+     */
+    IcoClear,
+
+    /**
+     * @platform only works on Windows
+     */
+    IcoHelp,
+
+    /**
+     * @platform only works on Windows
+     */
+    ImeOff,
+
+    /**
+     * @platform only works on Windows
+     */
+    ImeOn,
+
+    Insert,
+
+    /**
+     * @platform only works on Windows
+     */
+    Junja,
+
+    /**
+     * @platform only works on Windows
+     */
+    Kana,
+
+    Kanji,
+
+    /**
+     * @platform only works on Windows
+     */
+    LaunchApp1,
+
+    /**
+     * @platform only works on Windows
+     */
+    LaunchApp2,
+
+    /**
+     * @platform only works on Windows
+     */
+    LaunchMail,
+
+    /**
+     * @platform only works on Windows
+     */
+    LaunchMediaSelect,
+
+    /**
+     * @platform only works on Windows
+     */
+    LButton,
+
+    LControl,
+
+    LeftArrow,
+
+    /**
+     * @platform only works on Linux
+     */
+    Linefeed,
+
+    LMenu,
+
+    LShift,
+
+    /**
+     * @platform only works on Windows
+     */
+    LWin,
+
+    /**
+     * @platform only works on Windows
+     */
+    MButton,
+
+    MediaNextTrack,
+
+    MediaPlayPause,
+
+    MediaPrevTrack,
+
+    MediaStop,
+
+    /**
+     * meta key (also known as "windows", "super", and "command")
+     */
+    Meta,
+
+    ModeChange,
+
+    Multiply,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationAccept,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationCancel,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationDown,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationLeft,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationMenu,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationRight,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationUp,
+
+    /**
+     * @platform only works on Windows
+     */
+    NavigationView,
+
+    /**
+     * @platform only works on Windows
+     */
+    NoName,
+
+    /**
+     * @platform only works on Windows
+     */
+    NonConvert,
+
+    /**
+     * @platform only works on Windows
+     */
+    None,
+
+    Numlock,
+
+    Numpad0,
+
+    Numpad1,
+
+    Numpad2,
+
+    Numpad3,
+
+    Numpad4,
+
+    Numpad5,
+
+    Numpad6,
+
+    Numpad7,
+
+    Numpad8,
+
+    Numpad9,
+
+    NumpadEnter,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem1,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem102,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem2,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem3,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem4,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem5,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem6,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem7,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oem8,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemAttn,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemAuto,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemAx,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemBacktab,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemClear,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemComma,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemCopy,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemCusel,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemEnlw,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemFinish,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemfjJisho,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemfjLoya,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemfjMasshou,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemfjRoya,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemfjTouroku,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemJump,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemMinus,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemnecEqual,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oempa1,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oempa2,
+
+    /**
+     * @platform only works on Windows
+     */
+    Oempa3,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemPeriod,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemPlus,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemReset,
+
+    /**
+     * @platform only works on Windows
+     */
+    OemWsctrl,
+
+    /**
+     * Same as Alt
+     */
+    Option,
+
+    /**
+     * @platform only works on Windows
+     */
+    Pa1,
+
+    /**
+     * @platform only works on Windows
+     */
+    Packet,
+
+    PageDown,
+
+    PageUp,
+
+    Pause,
+
+    /**
+     * @platform only works on Windows
+     */
+    Play,
+
+    /**
+     * Screenshot
+     */
+    PrintScr,
+
+    /**
+     * @platform only works on Windows
+     */
+    Processkey,
+
+    /**
+     * @platform only works on Windows
+     */
+    RButton,
+
+    RControl,
+
+    /**
+     * @platform only works on Linux
+     */
+    Redo,
+
+    Return,
+
+    RightArrow,
+
+    /**
+     * @platform only works on Windows
+     */
+    RMenu,
+
+    RShift,
+
+    /**
+     * @platform only works on Windows
+     */
+    RWin,
+
+    /**
+     * @platform only works on Windows
+     */
+    Scroll,
+
+    /**
+     * @platform only works on Linux
+     */
+    ScrollLock,
+
+    Select,
+
+    /**
+     * @platform only works on Linux
+     */
+    ScriptSwitch,
+
+    /**
+     * @platform only works on Windows
+     */
+    Separator,
+
+    Shift,
+
+    /**
+     * @platform only works on Linux
+     */
+    ShiftLock,
+
+    /**
+     * @platform only works on Windows
+     */
+    Sleep,
+
+    Space,
+
+    Subtract,
+
+    /**
+     * @platform only works on Linux
+     */
+    SysReq,
+
+    Tab,
+
+    /**
+     * @platform only works on Linux
+     */
+    Undo,
+
+    UpArrow,
+
+    VolumeDown,
+
+    VolumeMute,
+
+    VolumeUp,
+
+    /**
+     * @platform only works on Linux
+     */
+    MicMute,
+
+    /**
+     * @platform only works on Windows
+     */
+    XButton1,
+
+    /**
+     * @platform only works on Windows
+     */
+    XButton2,
+
+    /**
+     * @platform only works on Windows
+     */
+    Zoom,
+}
+declare enum KeyError {
+    Unsupported,
+}
 /**
  * Process status
  */
@@ -111,147 +1116,6 @@ declare enum ClipboardMode {
      * @platform only works on Linux
      */
     Selection,
-}
-declare enum Key {
-    Alt,
-
-    Backspace,
-
-    Cancel,
-
-    CapsLock,
-
-    Clear,
-
-    Control,
-
-    Delete,
-
-    DownArrow,
-
-    End,
-
-    Escape,
-
-    Execute,
-
-    F1,
-
-    F2,
-
-    F3,
-
-    F4,
-
-    F5,
-
-    F6,
-
-    F7,
-
-    F8,
-
-    F9,
-
-    F10,
-
-    F11,
-
-    F12,
-
-    F13,
-
-    F14,
-
-    F15,
-
-    F16,
-
-    F17,
-
-    F18,
-
-    F19,
-
-    F20,
-
-    F21,
-
-    F22,
-
-    F23,
-
-    F24,
-
-    Hangul,
-
-    Hanja,
-
-    Help,
-
-    Home,
-
-    Insert,
-
-    Kanji,
-
-    LControl,
-
-    LeftArrow,
-
-    LMenu,
-
-    LShift,
-
-    MediaNextTrack,
-
-    MediaPlayPause,
-
-    MediaPrevTrack,
-
-    MediaStop,
-
-    Meta,
-
-    ModeChange,
-
-    Numlock,
-
-    Option,
-
-    PageDown,
-
-    PageUp,
-
-    Pause,
-
-    PrintScr,
-
-    RControl,
-
-    Return,
-
-    RightArrow,
-
-    RShift,
-
-    Select,
-
-    Shift,
-
-    Space,
-
-    Tab,
-
-    UpArrow,
-
-    VolumeDown,
-
-    VolumeMute,
-
-    VolumeUp,
-
-    Windows,
 }
 /**
  * Mouse button.
@@ -1600,8 +2464,8 @@ declare class Image {
      * TODO
      */
     findImage(image: Image, options?: FindImageOptions): void;
-    height(): number;
     width(): number;
+    height(): number;
 }
 /**
  * A Color.
@@ -1817,12 +2681,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
-    readonly isSymlink: boolean;
-    readonly isFile: boolean;
-    readonly isDirectory: boolean;
     readonly path: string;
-    readonly fileName: string;
     readonly size: number;
+    readonly isFile: boolean;
+    readonly isSymlink: boolean;
+    readonly isDirectory: boolean;
+    readonly fileName: string;
 }
 /**
  * Directory options
@@ -2033,25 +2897,17 @@ declare class Point {
  */
 declare interface DisplayInfo {
     /**
-     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+     * Unique identifier associated with the display
      */
-    readonly rotation: number;
-    /**
-     * The display friendly name
-     */
-    readonly friendlyName: string;
-    /**
-     * The display name
-     */
-    readonly name: string;
+    readonly id: number;
     /**
      * The display rectangle
      */
     readonly rect: Rect;
     /**
-     * The display refresh rate
+     * The display pixel width
      */
-    readonly frequency: number;
+    readonly widthMm: number;
     /**
      * The display pixel height
      */
@@ -2061,17 +2917,25 @@ declare interface DisplayInfo {
      */
     readonly scaleFactor: number;
     /**
-     * The display pixel width
-     */
-    readonly widthMm: number;
-    /**
-     * Unique identifier associated with the display
-     */
-    readonly id: number;
-    /**
      * Whether the screen is the main screen
      */
     readonly isPrimary: boolean;
+    /**
+     * The display name
+     */
+    readonly name: string;
+    /**
+     * The display friendly name
+     */
+    readonly friendlyName: string;
+    /**
+     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+     */
+    readonly rotation: number;
+    /**
+     * The display refresh rate
+     */
+    readonly frequency: number;
 }
 declare class Rect {
     /**
@@ -2402,18 +3266,6 @@ declare const screenshot: Screenshot;
  */
 declare interface System {
     /**
-     * Network information
-     */
-    readonly network: Network;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
-     * Processes information
-     */
-    readonly processes: Processes;
-    /**
      * Hardware information
      */
     readonly hardware: Hardware;
@@ -2421,6 +3273,18 @@ declare interface System {
      * Storage information
      */
     readonly storage: Storage;
+    /**
+     * Processes information
+     */
+    readonly processes: Processes;
+    /**
+     * Os information
+     */
+    readonly os: Os;
+    /**
+     * Network information
+     */
+    readonly network: Network;
     /**
      * Memory information
      */
@@ -2587,14 +3451,18 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
-    total(): number;
-    finished(): boolean;
     current(): number;
+    finished(): boolean;
+    total(): number;
 }
 /**
  * Cpu
  */
 declare interface Cpu {
+    /**
+     * Logical core count
+     */
+    readonly logicalCoreCount: number;
     /**
      * Physical core count
      */
@@ -2603,10 +3471,6 @@ declare interface Cpu {
      * Architecture
      */
     readonly architecture: string;
-    /**
-     * Logical core count
-     */
-    readonly logicalCoreCount: number;
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
     frequencies(): Promise<number[]>;
@@ -2621,13 +3485,13 @@ declare interface Hardware {
      */
     readonly vendorName?: string;
     /**
-     * Uuid
-     */
-    readonly uuid?: string;
-    /**
      * Motherboard
      */
     readonly motherboard: Motherboard;
+    /**
+     * Name
+     */
+    readonly name?: string;
     /**
      * Stock keeping unit
      */
@@ -2645,9 +3509,9 @@ declare interface Hardware {
      */
     readonly version?: string;
     /**
-     * Name
+     * Uuid
      */
-    readonly name?: string;
+    readonly uuid?: string;
     /**
      * Hardware components
      */
@@ -2656,36 +3520,40 @@ declare interface Hardware {
 }
 declare interface Motherboard {
     /**
-     * Vendor name
+     * Name
      */
-    readonly vendorName?: string;
+    readonly name?: string;
     /**
      * Asset tag
      */
     readonly assetTag?: string;
     /**
-     * Name
+     * Version
      */
-    readonly name?: string;
+    readonly version?: string;
     /**
      * Serial number
      */
     readonly serialNumber?: string;
     /**
-     * Version
+     * Vendor name
      */
-    readonly version?: string;
+    readonly vendorName?: string;
     toString(): string;
 }
 declare interface Component {
     /**
-     * ID
+     * Maximum temperature
      */
-    readonly id?: string;
+    readonly maxTemperature?: number;
     /**
      * Label
      */
     readonly label: string;
+    /**
+     * ID
+     */
+    readonly id?: string;
     /**
      * Temperature
      */
@@ -2694,10 +3562,6 @@ declare interface Component {
      * Critical temperature
      */
     readonly criticalTemperature?: number;
-    /**
-     * Maximum temperature
-     */
-    readonly maxTemperature?: number;
     toString(): string;
 }
 /**
@@ -2729,13 +3593,13 @@ declare interface MemoryUsage {
      */
     readonly available: number;
     /**
-     * Total
-     */
-    readonly total: number;
-    /**
      * Free
      */
     readonly free: number;
+    /**
+     * Total
+     */
+    readonly total: number;
     toString(): string;
 }
 /**
@@ -2744,13 +3608,13 @@ declare interface MemoryUsage {
  */
 declare interface CGroupLimits {
     /**
-     * Total memory
-     */
-    readonly totalMemory: number;
-    /**
      * RSS
      */
     readonly rss: number;
+    /**
+     * Total memory
+     */
+    readonly totalMemory: number;
     /**
      * Free swap
      */
@@ -2777,6 +3641,10 @@ declare interface Network {
 }
 declare interface NetworkInterface {
     /**
+     * MAC address
+     */
+    readonly macAddress?: string;
+    /**
      * Name
      */
     readonly name: string;
@@ -2785,14 +3653,6 @@ declare interface NetworkInterface {
      */
     readonly inbound: Traffic;
     /**
-     * Outbound
-     */
-    readonly outbound: Traffic;
-    /**
-     * MAC address
-     */
-    readonly macAddress?: string;
-    /**
      * MTU
      */
     readonly mtu: number;
@@ -2800,13 +3660,13 @@ declare interface NetworkInterface {
      * Subnets
      */
     readonly subnets: string[];
+    /**
+     * Outbound
+     */
+    readonly outbound: Traffic;
     toString(): string;
 }
 declare interface Counters {
-    /**
-     * Packets
-     */
-    readonly packets: number;
     /**
      * Data
      */
@@ -2815,17 +3675,21 @@ declare interface Counters {
      * Errors
      */
     readonly errors: number;
+    /**
+     * Packets
+     */
+    readonly packets: number;
     toString(): string;
 }
 declare interface Traffic {
     /**
-     * Total
-     */
-    readonly total: Counters;
-    /**
      * Delta
      */
     readonly delta: Counters;
+    /**
+     * Total
+     */
+    readonly total: Counters;
     toString(): string;
 }
 /**
@@ -2888,17 +3752,17 @@ declare interface User {
      */
     readonly name: string;
     /**
-     * Group ID
+     * ID
      */
-    readonly groupId?: number;
+    readonly id: string;
     /**
      * Groups
      */
     readonly groups: number[];
     /**
-     * ID
+     * Group ID
      */
-    readonly id: string;
+    readonly groupId?: number;
     /**
      * Group name
      */
@@ -2911,13 +3775,13 @@ declare interface User {
 }
 declare interface Group {
     /**
-     * Name
-     */
-    readonly name: string;
-    /**
      * ID
      */
     readonly id: number;
+    /**
+     * Name
+     */
+    readonly name: string;
     toString(): string;
 }
 /**
@@ -2932,77 +3796,37 @@ declare interface Processes {
 }
 declare interface Process {
     /**
-     * Cwd
+     * Root
      */
-    readonly cwd?: string;
-    /**
-     * CPU usage
-     */
-    readonly cpuUsage: number;
-    /**
-     * Session ID
-     */
-    readonly sessionId?: number;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * Pid
-     */
-    readonly pid: number;
+    readonly root?: string;
     /**
      * Env
      */
     readonly env: string[];
     /**
-     * User ID
+     * Name
      */
-    readonly userId?: string;
-    /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Group ID
-     */
-    readonly groupId?: number;
-    /**
-     * Effective user ID
-     */
-    readonly effectiveUserId?: string;
-    /**
-     * Cmd
-     */
-    readonly cmd: string[];
+    readonly name?: string;
     /**
      * Parent
      */
     readonly parent?: number;
     /**
-     * Start time
+     * Cmd
      */
-    readonly startTime: Object;
+    readonly cmd: string[];
     /**
-     * Open files
+     * Exe
      */
-    readonly openFiles?: number;
+    readonly exe?: string;
     /**
-     * Memory
+     * Virtual memory
      */
-    readonly memory: number;
+    readonly virtualMemory: number;
     /**
      * Run time
      */
     readonly runTime: number;
-    /**
-     * Exists
-     */
-    readonly exists: boolean;
     /**
      * Effective group ID
      */
@@ -3012,21 +3836,61 @@ declare interface Process {
      */
     readonly status: ProcessStatus;
     /**
-     * Exe
+     * Cwd
      */
-    readonly exe?: string;
+    readonly cwd?: string;
+    /**
+     * Pid
+     */
+    readonly pid: number;
     /**
      * Accumulated CPU time
      */
     readonly accumulatedCpuTime: number;
     /**
-     * Name
-     */
-    readonly name?: string;
-    /**
      * Disk usage
      */
     readonly diskUsage: DiskUsage;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
+     * Memory
+     */
+    readonly memory: number;
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Open files
+     */
+    readonly openFiles?: number;
+    /**
+     * Exists
+     */
+    readonly exists: boolean;
+    /**
+     * Open files limit
+     */
+    readonly openFilesLimit?: number;
+    /**
+     * Group ID
+     */
+    readonly groupId?: number;
+    /**
+     * CPU usage
+     */
+    readonly cpuUsage: number;
+    /**
+     * Session ID
+     */
+    readonly sessionId?: number;
+    /**
+     * User ID
+     */
+    readonly userId?: string;
     toString(): string;
 }
 /**
@@ -3041,10 +3905,6 @@ declare interface Storage {
 }
 declare interface Disk {
     /**
-     * Name
-     */
-    readonly name?: string;
-    /**
      * Is removable
      */
     readonly isRemovable: boolean;
@@ -3052,6 +3912,14 @@ declare interface Disk {
      * File system
      */
     readonly fileSystem?: string;
+    /**
+     * Is read-only
+     */
+    readonly isReadOnly: boolean;
+    /**
+     * Mount point
+     */
+    readonly mountPoint: string;
     /**
      * Kind
      */
@@ -3061,17 +3929,13 @@ declare interface Disk {
      */
     readonly availableSpace: number;
     /**
-     * Mount point
+     * Name
      */
-    readonly mountPoint: string;
+    readonly name?: string;
     /**
      * Total space
      */
     readonly totalSpace: number;
-    /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
     /**
      * Usage
      */

@@ -81,7 +81,7 @@ pub enum Signal {
     Usr2,
 }
 
-#[derive(Debug, Display, Copy, Clone)]
+#[derive(Clone, Copy, Debug, Display)]
 pub enum Status {
     Idle,
     Run,

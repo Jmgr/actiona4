@@ -40,7 +40,7 @@ impl JsKeyboard {
     // TODO
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum JsKey {
     Num0,
     Num1,
@@ -477,8 +477,94 @@ impl TryFrom<JsKey> for enigo::Key {
 
     fn try_from(value: JsKey) -> std::result::Result<Self, KeyError> {
         use JsKey::*;
-
         Ok(match value {
+            Add => Self::Add,
+            Alt => Self::Alt,
+            Backspace => Self::Backspace,
+            Cancel => Self::Cancel,
+            CapsLock => Self::CapsLock,
+            Clear => Self::Clear,
+            Control => Self::Control,
+            Decimal => Self::Decimal,
+            Delete => Self::Delete,
+            Divide => Self::Divide,
+            DownArrow => Self::DownArrow,
+            End => Self::End,
+            Escape => Self::Escape,
+            Execute => Self::Execute,
+            Hangul => Self::Hangul,
+            Hanja => Self::Hanja,
+            Help => Self::Help,
+            Home => Self::Home,
+            Insert => Self::Insert,
+            Kanji => Self::Kanji,
+            LControl => Self::LControl,
+            LeftArrow => Self::LeftArrow,
+            LMenu => Self::LMenu,
+            LShift => Self::LShift,
+            MediaNextTrack => Self::MediaNextTrack,
+            MediaPlayPause => Self::MediaPlayPause,
+            MediaPrevTrack => Self::MediaPrevTrack,
+            MediaStop => Self::MediaStop,
+            Meta => Self::Meta,
+            ModeChange => Self::ModeChange,
+            Multiply => Self::Multiply,
+            Numlock => Self::Numlock,
+            Numpad0 => Self::Numpad0,
+            Numpad1 => Self::Numpad1,
+            Numpad2 => Self::Numpad2,
+            Numpad3 => Self::Numpad3,
+            Numpad4 => Self::Numpad4,
+            Numpad5 => Self::Numpad5,
+            Numpad6 => Self::Numpad6,
+            Numpad7 => Self::Numpad7,
+            Numpad8 => Self::Numpad8,
+            Numpad9 => Self::Numpad9,
+            NumpadEnter => Self::NumpadEnter,
+            Option => Self::Option,
+            PageDown => Self::PageDown,
+            PageUp => Self::PageUp,
+            Pause => Self::Pause,
+            PrintScr => Self::PrintScr,
+            RControl => Self::RControl,
+            Return => Self::Return,
+            RightArrow => Self::RightArrow,
+            RShift => Self::RShift,
+            Select => Self::Select,
+            Shift => Self::Shift,
+            Space => Self::Space,
+            Subtract => Self::Subtract,
+            Tab => Self::Tab,
+            UpArrow => Self::UpArrow,
+            VolumeDown => Self::VolumeDown,
+            VolumeMute => Self::VolumeMute,
+            VolumeUp => Self::VolumeUp,
+
+            F1 => Self::F1,
+            F2 => Self::F2,
+            F3 => Self::F3,
+            F4 => Self::F4,
+            F5 => Self::F5,
+            F6 => Self::F6,
+            F7 => Self::F7,
+            F8 => Self::F8,
+            F9 => Self::F9,
+            F10 => Self::F10,
+            F11 => Self::F11,
+            F12 => Self::F12,
+            F13 => Self::F13,
+            F14 => Self::F14,
+            F15 => Self::F15,
+            F16 => Self::F16,
+            F17 => Self::F17,
+            F18 => Self::F18,
+            F19 => Self::F19,
+            F20 => Self::F20,
+            F21 => Self::F21,
+            F22 => Self::F22,
+            F23 => Self::F23,
+            F24 => Self::F24,
+
             #[cfg(target_os = "windows")]
             Num0 => Self::Num0,
             #[cfg(target_os = "windows")]
@@ -499,27 +585,6 @@ impl TryFrom<JsKey> for enigo::Key {
             Num8 => Self::Num8,
             #[cfg(target_os = "windows")]
             Num9 => Self::Num9,
-
-            #[cfg(target_os = "linux")]
-            Num0 => Self::Unicode('0'),
-            #[cfg(target_os = "linux")]
-            Num1 => Self::Unicode('1'),
-            #[cfg(target_os = "linux")]
-            Num2 => Self::Unicode('2'),
-            #[cfg(target_os = "linux")]
-            Num3 => Self::Unicode('3'),
-            #[cfg(target_os = "linux")]
-            Num4 => Self::Unicode('4'),
-            #[cfg(target_os = "linux")]
-            Num5 => Self::Unicode('5'),
-            #[cfg(target_os = "linux")]
-            Num6 => Self::Unicode('6'),
-            #[cfg(target_os = "linux")]
-            Num7 => Self::Unicode('7'),
-            #[cfg(target_os = "linux")]
-            Num8 => Self::Unicode('8'),
-            #[cfg(target_os = "linux")]
-            Num9 => Self::Unicode('9'),
 
             #[cfg(target_os = "windows")]
             A => Self::A,
@@ -574,319 +639,8 @@ impl TryFrom<JsKey> for enigo::Key {
             #[cfg(target_os = "windows")]
             Z => Self::Z,
 
-            #[cfg(target_os = "linux")]
-            A => Self::Unicode('A'),
-            #[cfg(target_os = "linux")]
-            B => Self::Unicode('B'),
-            #[cfg(target_os = "linux")]
-            C => Self::Unicode('C'),
-            #[cfg(target_os = "linux")]
-            D => Self::Unicode('D'),
-            #[cfg(target_os = "linux")]
-            E => Self::Unicode('E'),
-            #[cfg(target_os = "linux")]
-            F => Self::Unicode('F'),
-            #[cfg(target_os = "linux")]
-            G => Self::Unicode('G'),
-            #[cfg(target_os = "linux")]
-            H => Self::Unicode('H'),
-            #[cfg(target_os = "linux")]
-            I => Self::Unicode('I'),
-            #[cfg(target_os = "linux")]
-            J => Self::Unicode('J'),
-            #[cfg(target_os = "linux")]
-            K => Self::Unicode('K'),
-            #[cfg(target_os = "linux")]
-            L => Self::Unicode('L'),
-            #[cfg(target_os = "linux")]
-            M => Self::Unicode('M'),
-            #[cfg(target_os = "linux")]
-            N => Self::Unicode('N'),
-            #[cfg(target_os = "linux")]
-            O => Self::Unicode('O'),
-            #[cfg(target_os = "linux")]
-            P => Self::Unicode('P'),
-            #[cfg(target_os = "linux")]
-            Q => Self::Unicode('Q'),
-            #[cfg(target_os = "linux")]
-            R => Self::Unicode('R'),
-            #[cfg(target_os = "linux")]
-            S => Self::Unicode('S'),
-            #[cfg(target_os = "linux")]
-            T => Self::Unicode('T'),
-            #[cfg(target_os = "linux")]
-            U => Self::Unicode('U'),
-            #[cfg(target_os = "linux")]
-            V => Self::Unicode('V'),
-            #[cfg(target_os = "linux")]
-            W => Self::Unicode('W'),
-            #[cfg(target_os = "linux")]
-            X => Self::Unicode('X'),
-            #[cfg(target_os = "linux")]
-            Y => Self::Unicode('Y'),
-            #[cfg(target_os = "linux")]
-            Z => Self::Unicode('Z'),
-
-            #[cfg(target_os = "linux")]
-            AbntC1 => return Err(KeyError::Unsupported),
             #[cfg(target_os = "windows")]
             AbntC1 => Self::AbntC1,
-
-            #[cfg(target_os = "linux")]
-            AbntC2 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Accept => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Apps => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Attn => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserBack => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserFavorites => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserForward => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserHome => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserRefresh => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserSearch => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            BrowserStop => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Convert => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Crsel => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEAlphanumeric => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBECodeinput => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEDetermineString => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEEnterDLGConversionMode => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEEnterIMEConfigMode => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEEnterWordRegisterMode => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEFlushString => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEHiragana => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBEKatakana => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBENoCodepoint => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBENoRoman => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBERoman => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBESBCSChar => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            DBESChar => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Ereof => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Exsel => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Final => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadA => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadB => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadDPadDown => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadDPadLeft => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadDPadRight => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadDPadUp => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftShoulder => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftThumbstickButton => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftThumbstickDown => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftThumbstickLeft => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftThumbstickRight => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftThumbstickUp => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadLeftTrigger => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadMenu => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightShoulder => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightThumbstickButton => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightThumbstickDown => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightThumbstickLeft => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightThumbstickRight => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightThumbstickUp => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadRightTrigger => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadView => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadX => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            GamepadY => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Ico00 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            IcoClear => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            IcoHelp => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Hangeul => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            IMEOff => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            IMEOn => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Junja => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Kana => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            LaunchApp1 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            LaunchApp2 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            LaunchMail => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            LaunchMediaSelect => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            LButton => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            LWin => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            MButton => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationAccept => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationCancel => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationDown => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationLeft => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationMenu => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationRight => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationUp => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NavigationView => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NoName => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            NonConvert => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            None => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM1 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM102 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM2 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM3 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM4 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM5 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM6 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM7 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEM8 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMAttn => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMAuto => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMAx => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMBacktab => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMClear => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMComma => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMCopy => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMCusel => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMEnlw => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMFinish => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMFJJisho => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMFJLoya => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMFJMasshou => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMFJRoya => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMFJTouroku => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMJump => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMMinus => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMNECEqual => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMPA1 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMPA2 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMPA3 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMPeriod => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMPlus => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMReset => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            OEMWsctrl => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            PA1 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Packet => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            RMenu => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            RWin => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Scroll => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Play => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Processkey => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            RButton => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Separator => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Sleep => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            XButton1 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            XButton2 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "linux")]
-            Zoom => return Err(KeyError::Unsupported),
-
             #[cfg(target_os = "windows")]
             AbntC2 => Self::AbntC2,
             #[cfg(target_os = "windows")]
@@ -1143,112 +897,101 @@ impl TryFrom<JsKey> for enigo::Key {
             Zoom => Self::Zoom,
 
             #[cfg(target_os = "linux")]
+            Num0 => Self::Unicode('0'),
+            #[cfg(target_os = "linux")]
+            Num1 => Self::Unicode('1'),
+            #[cfg(target_os = "linux")]
+            Num2 => Self::Unicode('2'),
+            #[cfg(target_os = "linux")]
+            Num3 => Self::Unicode('3'),
+            #[cfg(target_os = "linux")]
+            Num4 => Self::Unicode('4'),
+            #[cfg(target_os = "linux")]
+            Num5 => Self::Unicode('5'),
+            #[cfg(target_os = "linux")]
+            Num6 => Self::Unicode('6'),
+            #[cfg(target_os = "linux")]
+            Num7 => Self::Unicode('7'),
+            #[cfg(target_os = "linux")]
+            Num8 => Self::Unicode('8'),
+            #[cfg(target_os = "linux")]
+            Num9 => Self::Unicode('9'),
+
+            #[cfg(target_os = "linux")]
+            A => Self::Unicode('A'),
+            #[cfg(target_os = "linux")]
+            B => Self::Unicode('B'),
+            #[cfg(target_os = "linux")]
+            C => Self::Unicode('C'),
+            #[cfg(target_os = "linux")]
+            D => Self::Unicode('D'),
+            #[cfg(target_os = "linux")]
+            E => Self::Unicode('E'),
+            #[cfg(target_os = "linux")]
+            F => Self::Unicode('F'),
+            #[cfg(target_os = "linux")]
+            G => Self::Unicode('G'),
+            #[cfg(target_os = "linux")]
+            H => Self::Unicode('H'),
+            #[cfg(target_os = "linux")]
+            I => Self::Unicode('I'),
+            #[cfg(target_os = "linux")]
+            J => Self::Unicode('J'),
+            #[cfg(target_os = "linux")]
+            K => Self::Unicode('K'),
+            #[cfg(target_os = "linux")]
+            L => Self::Unicode('L'),
+            #[cfg(target_os = "linux")]
+            M => Self::Unicode('M'),
+            #[cfg(target_os = "linux")]
+            N => Self::Unicode('N'),
+            #[cfg(target_os = "linux")]
+            O => Self::Unicode('O'),
+            #[cfg(target_os = "linux")]
+            P => Self::Unicode('P'),
+            #[cfg(target_os = "linux")]
+            Q => Self::Unicode('Q'),
+            #[cfg(target_os = "linux")]
+            R => Self::Unicode('R'),
+            #[cfg(target_os = "linux")]
+            S => Self::Unicode('S'),
+            #[cfg(target_os = "linux")]
+            T => Self::Unicode('T'),
+            #[cfg(target_os = "linux")]
+            U => Self::Unicode('U'),
+            #[cfg(target_os = "linux")]
+            V => Self::Unicode('V'),
+            #[cfg(target_os = "linux")]
+            W => Self::Unicode('W'),
+            #[cfg(target_os = "linux")]
+            X => Self::Unicode('X'),
+            #[cfg(target_os = "linux")]
+            Y => Self::Unicode('Y'),
+            #[cfg(target_os = "linux")]
+            Z => Self::Unicode('Z'),
+
+            #[cfg(target_os = "linux")]
             Break => Self::Break,
-            #[cfg(target_os = "windows")]
-            Break => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             Begin => Self::Begin,
-            #[cfg(target_os = "windows")]
-            Begin => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             Find => Self::Find,
-            #[cfg(target_os = "windows")]
-            Find => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             Linefeed => Self::Linefeed,
-            #[cfg(target_os = "windows")]
-            Linefeed => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             Redo => Self::Redo,
-            #[cfg(target_os = "windows")]
-            Redo => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             ScrollLock => Self::ScrollLock,
-            #[cfg(target_os = "windows")]
-            ScrollLock => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             ScriptSwitch => Self::ScriptSwitch,
-            #[cfg(target_os = "windows")]
-            ScriptSwitch => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             ShiftLock => Self::ShiftLock,
-            #[cfg(target_os = "windows")]
-            ShiftLock => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             SysReq => Self::SysReq,
-            #[cfg(target_os = "windows")]
-            SysReq => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             Undo => Self::Undo,
-            #[cfg(target_os = "windows")]
-            Undo => return Err(KeyError::Unsupported),
             #[cfg(target_os = "linux")]
             MicMute => Self::MicMute,
-            #[cfg(target_os = "windows")]
-            MicMute => return Err(KeyError::Unsupported),
-
-            Add => Self::Add,
-            Alt => Self::Alt,
-            Backspace => Self::Backspace,
-            Cancel => Self::Cancel,
-            CapsLock => Self::CapsLock,
-            Clear => Self::Clear,
-            Control => Self::Control,
-            Decimal => Self::Decimal,
-            Delete => Self::Delete,
-            Divide => Self::Divide,
-            DownArrow => Self::DownArrow,
-            End => Self::End,
-            Escape => Self::Escape,
-            Execute => Self::Execute,
-
-            F1 => Self::F1,
-            F2 => Self::F2,
-            F3 => Self::F3,
-            F4 => Self::F4,
-            F5 => Self::F5,
-            F6 => Self::F6,
-            F7 => Self::F7,
-            F8 => Self::F8,
-            F9 => Self::F9,
-            F10 => Self::F10,
-            F11 => Self::F11,
-            F12 => Self::F12,
-            F13 => Self::F13,
-            F14 => Self::F14,
-            F15 => Self::F15,
-            F16 => Self::F16,
-            F17 => Self::F17,
-            F18 => Self::F18,
-            F19 => Self::F19,
-            F20 => Self::F20,
-            F21 => Self::F21,
-            F22 => Self::F22,
-            F23 => Self::F23,
-            F24 => Self::F24,
-
-            #[cfg(target_os = "windows")]
-            F25 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F26 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F27 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F28 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F29 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F30 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F31 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F32 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F33 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F34 => return Err(KeyError::Unsupported),
-            #[cfg(target_os = "windows")]
-            F35 => return Err(KeyError::Unsupported),
 
             #[cfg(target_os = "linux")]
             F25 => Self::F25,
@@ -1273,184 +1016,140 @@ impl TryFrom<JsKey> for enigo::Key {
             #[cfg(target_os = "linux")]
             F35 => Self::F35,
 
-            Hangul => Self::Hangul,
-            Hanja => Self::Hanja,
-            Help => Self::Help,
-            Home => Self::Home,
-            Insert => Self::Insert,
-            Kanji => Self::Kanji,
-            LControl => Self::LControl,
-            LeftArrow => Self::LeftArrow,
-            LMenu => Self::LMenu,
-            LShift => Self::LShift,
-            MediaNextTrack => Self::MediaNextTrack,
-            MediaPlayPause => Self::MediaPlayPause,
-            MediaPrevTrack => Self::MediaPrevTrack,
-            MediaStop => Self::MediaStop,
-            Meta => Self::Meta,
-            ModeChange => Self::ModeChange,
-            Multiply => Self::Multiply,
-            Numlock => Self::Numlock,
-            Numpad0 => Self::Numpad0,
-            Numpad1 => Self::Numpad1,
-            Numpad2 => Self::Numpad2,
-            Numpad3 => Self::Numpad3,
-            Numpad4 => Self::Numpad4,
-            Numpad5 => Self::Numpad5,
-            Numpad6 => Self::Numpad6,
-            Numpad7 => Self::Numpad7,
-            Numpad8 => Self::Numpad8,
-            Numpad9 => Self::Numpad9,
-            NumpadEnter => Self::NumpadEnter,
-            Option => Self::Option,
-            PageDown => Self::PageDown,
-            PageUp => Self::PageUp,
-            Pause => Self::Pause,
-            PrintScr => Self::PrintScr,
-            RControl => Self::RControl,
-            Return => Self::Return,
-            RightArrow => Self::RightArrow,
-            RShift => Self::RShift,
-            Select => Self::Select,
-            Shift => Self::Shift,
-            Space => Self::Space,
-            Subtract => Self::Subtract,
-            Tab => Self::Tab,
-            UpArrow => Self::UpArrow,
-            VolumeDown => Self::VolumeDown,
-            VolumeMute => Self::VolumeMute,
-            VolumeUp => Self::VolumeUp,
+            #[cfg(target_os = "linux")]
+            AbntC1
+            | AbntC2
+            | Accept
+            | Apps
+            | Attn
+            | BrowserBack
+            | BrowserFavorites
+            | BrowserForward
+            | BrowserHome
+            | BrowserRefresh
+            | BrowserSearch
+            | BrowserStop
+            | Convert
+            | Crsel
+            | DBEAlphanumeric
+            | DBECodeinput
+            | DBEDetermineString
+            | DBEEnterDLGConversionMode
+            | DBEEnterIMEConfigMode
+            | DBEEnterWordRegisterMode
+            | DBEFlushString
+            | DBEHiragana
+            | DBEKatakana
+            | DBENoCodepoint
+            | DBENoRoman
+            | DBERoman
+            | DBESBCSChar
+            | DBESChar
+            | Ereof
+            | Exsel
+            | Final
+            | GamepadA
+            | GamepadB
+            | GamepadDPadDown
+            | GamepadDPadLeft
+            | GamepadDPadRight
+            | GamepadDPadUp
+            | GamepadLeftShoulder
+            | GamepadLeftThumbstickButton
+            | GamepadLeftThumbstickDown
+            | GamepadLeftThumbstickLeft
+            | GamepadLeftThumbstickRight
+            | GamepadLeftThumbstickUp
+            | GamepadLeftTrigger
+            | GamepadMenu
+            | GamepadRightShoulder
+            | GamepadRightThumbstickButton
+            | GamepadRightThumbstickDown
+            | GamepadRightThumbstickLeft
+            | GamepadRightThumbstickRight
+            | GamepadRightThumbstickUp
+            | GamepadRightTrigger
+            | GamepadView
+            | GamepadX
+            | GamepadY
+            | Ico00
+            | IcoClear
+            | IcoHelp
+            | Hangeul
+            | IMEOff
+            | IMEOn
+            | Junja
+            | Kana
+            | LaunchApp1
+            | LaunchApp2
+            | LaunchMail
+            | LaunchMediaSelect
+            | LButton
+            | LWin
+            | MButton
+            | NavigationAccept
+            | NavigationCancel
+            | NavigationDown
+            | NavigationLeft
+            | NavigationMenu
+            | NavigationRight
+            | NavigationUp
+            | NavigationView
+            | NoName
+            | NonConvert
+            | None
+            | OEM1
+            | OEM102
+            | OEM2
+            | OEM3
+            | OEM4
+            | OEM5
+            | OEM6
+            | OEM7
+            | OEM8
+            | OEMAttn
+            | OEMAuto
+            | OEMAx
+            | OEMBacktab
+            | OEMClear
+            | OEMComma
+            | OEMCopy
+            | OEMCusel
+            | OEMEnlw
+            | OEMFinish
+            | OEMFJJisho
+            | OEMFJLoya
+            | OEMFJMasshou
+            | OEMFJRoya
+            | OEMFJTouroku
+            | OEMJump
+            | OEMMinus
+            | OEMNECEqual
+            | OEMPA1
+            | OEMPA2
+            | OEMPA3
+            | OEMPeriod
+            | OEMPlus
+            | OEMReset
+            | OEMWsctrl
+            | PA1
+            | Packet
+            | RMenu
+            | RWin
+            | Scroll
+            | Play
+            | Processkey
+            | RButton
+            | Separator
+            | Sleep
+            | XButton1
+            | XButton2
+            | Zoom => return Err(KeyError::Unsupported),
+
+            #[cfg(target_os = "windows")]
+            Break | Begin | Find | Linefeed | Redo | ScrollLock | ScriptSwitch | ShiftLock
+            | SysReq | Undo | MicMute | F25 | F26 | F27 | F28 | F29 | F30 | F31 | F32 | F33
+            | F34 | F35 => return Err(KeyError::Unsupported),
         })
     }
 }
-
-/*
-    /// Unicode character
-    #[doc(alias = "Layout")]
-    #[cfg_attr(feature = "serde", serde(alias = "uni"))]
-    #[cfg_attr(feature = "serde", serde(alias = "Uni"))]
-    #[cfg_attr(feature = "serde", serde(alias = "Char"))]
-    #[cfg_attr(feature = "serde", serde(alias = "char"))]
-    Unicode(char),
-    /// Use this for keys that are not listed here that you know the
-    /// value of. Let us know if you think the key should be listed so
-    /// we can add it
-    /// On Linux, this will result in a keysym,
-    /// On Windows, this will result in a `Virtual_Key` and
-    /// On macOS, this will yield a `KeyCode`
-    Other(u32),
-*/
-
-/*
-impl JsKey {
-    #[inline]
-    pub const fn is_windows_only(self) -> bool {
-        use JsKey::*;
-        matches!(
-            self,
-            // letters & digits
-            Num0 | Num1 | Num2 | Num3 | Num4 | Num5 | Num6 | Num7 | Num8 | Num9
-            | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
-            // assorted VKs
-            | AbntC1 | AbntC2 | Accept | Apps | Attn
-            | BrowserBack | BrowserFavorites | BrowserForward | BrowserHome
-            | BrowserRefresh | BrowserSearch | BrowserStop
-            | Convert | Crsel
-            // DBE* (IME) block
-            | DBEAlphanumeric | DBECodeinput | DBEDetermineString
-            | DBEEnterDLGConversionMode | DBEEnterIMEConfigMode | DBEEnterWordRegisterMode
-            | DBEFlushString | DBEHiragana | DBEKatakana | DBENoCodepoint | DBENoRoman
-            | DBERoman | DBESBCSChar | DBESChar
-            | Ereof | Exsel | Final
-            // Gamepad block
-            | GamepadA | GamepadB
-            | GamepadDPadDown | GamepadDPadLeft | GamepadDPadRight | GamepadDPadUp
-            | GamepadLeftShoulder | GamepadLeftThumbstickButton
-            | GamepadLeftThumbstickDown | GamepadLeftThumbstickLeft | GamepadLeftThumbstickRight | GamepadLeftThumbstickUp
-            | GamepadLeftTrigger | GamepadMenu
-            | GamepadRightShoulder | GamepadRightThumbstickButton
-            | GamepadRightThumbstickDown | GamepadRightThumbstickLeft | GamepadRightThumbstickRight | GamepadRightThumbstickUp
-            | GamepadRightTrigger | GamepadView | GamepadX | GamepadY
-            // misc Windows-only
-            | Hangeul
-            | Ico00 | IcoClear | IcoHelp
-            | IMEOff | IMEOn
-            | Junja | Kana
-            | LaunchApp1 | LaunchApp2 | LaunchMail | LaunchMediaSelect
-            | LButton | LWin | MButton
-            | NavigationAccept | NavigationCancel | NavigationDown | NavigationLeft
-            | NavigationMenu | NavigationRight | NavigationUp | NavigationView
-            | NoName | NonConvert | None
-            // OEM* block
-            | OEM1 | OEM102 | OEM2 | OEM3 | OEM4 | OEM5 | OEM6 | OEM7 | OEM8
-            | OEMAttn | OEMAuto | OEMAx | OEMBacktab | OEMClear | OEMComma | OEMCopy | OEMCusel
-            | OEMEnlw | OEMFinish | OEMFJJisho | OEMFJLoya | OEMFJMasshou | OEMFJRoya | OEMFJTouroku
-            | OEMJump | OEMMinus | OEMNECEqual | OEMPA1 | OEMPA2 | OEMPA3 | OEMPeriod | OEMPlus | OEMReset | OEMWsctrl
-            | PA1 | Packet | Play | Processkey
-            | RButton | RMenu | RWin
-            | Scroll | Separator | Sleep
-            | XButton1 | XButton2 | Zoom
-        )
-    }
-
-    #[inline]
-    pub const fn is_linux_only(self) -> bool {
-        use JsKey::*;
-        matches!(
-            self,
-            Break
-                | Begin
-                | F25
-                | F26
-                | F27
-                | F28
-                | F29
-                | F30
-                | F31
-                | F32
-                | F33
-                | F34
-                | F35
-                | Find
-                | Linefeed
-                | Redo
-                | ScrollLock
-                | ScriptSwitch
-                | ShiftLock
-                | SysReq
-                | Undo
-                | MicMute
-        )
-    }
-}
-
-#[cfg(target_os = "windows")]
-impl TryFrom<JsKey> for enigo::Key {
-    type Error = eyre::Report;
-    fn try_from(value: JsKey) -> std::result::Result<Self, Self::Error> {
-        if value.is_linux_only() {
-            Err(eyre::eyre!(
-                "key {:?} is not available on this platform",
-                value
-            ))
-        } else {
-            Ok(value.into()) // or your explicit mapping
-        }
-    }
-}
-
-#[cfg(target_os = "linux")]
-impl TryFrom<JsKey> for enigo::Key {
-    type Error = eyre::Report;
-    fn try_from(value: JsKey) -> std::result::Result<Self, Self::Error> {
-        if value.is_windows_only() {
-            Err(eyre::eyre!(
-                "key {:?} is not available on this platform",
-                value
-            ))
-        } else {
-            Ok(value.into()) // or your explicit mapping
-        }
-    }
-}
-*/

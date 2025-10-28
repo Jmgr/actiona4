@@ -42,6 +42,7 @@ futures = "0.3.31"
 futures-util = "0.3.31"
 http-body = "1.0.1"
 http-body-util = "0.1.3"
+human-units = { version = "0.5.3", features = ["si-units"] }
 humansize = "2.1.3"
 humantime = "2.3.0"
 image = { version = "0.25.8", default-features = false, features = [
@@ -121,7 +122,6 @@ tokio-util = { version = "0.7.16", features = ["rt"] }
 tracing = "0.1.41"
 tween = "2.1.0"
 wildmatch = "2.5.0"
-human-units = { version = "0.5.3", features = ["si-units"] }
 
 # Windows
 pe-parser = "0.7.0"
@@ -150,8 +150,8 @@ x11rb-async = { version = "0.13.2", features = [
     "shm",
     "extra-traits",
 ] }
-zbus = { version = "5.11.0", default-features = false, features = ["tokio"] }
 xkeysym = "0.2.1"
+zbus = { version = "5.11.0", default-features = false, features = ["tokio"] }
 
 # Dev dependencies
 askama = "0.14.0"

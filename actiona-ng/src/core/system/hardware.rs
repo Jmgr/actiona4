@@ -14,7 +14,7 @@ use crate::types::{
     display::{DisplayFields, display_list},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct Motherboard {
     name: OptionalSystemString,
     vendor: OptionalSystemString,

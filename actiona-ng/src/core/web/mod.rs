@@ -344,7 +344,7 @@ impl Body {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, EnumIs)]
+#[derive(Clone, Copy, Debug, Default, EnumIs, Eq, PartialEq)]
 pub enum Progress {
     #[default]
     Inactive,
