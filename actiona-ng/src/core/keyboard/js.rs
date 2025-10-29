@@ -1,20 +1,56 @@
 use std::sync::Arc;
 
+use derive_more::Display;
+use macros::{FromSerde, IntoSerde};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     class::{Trace, Tracer},
 };
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 
-use crate::{IntoJsResult, core::js::classes::SingletonClass, runtime::Runtime};
-
-impl<T> IntoJsResult<T> for super::Result<T> {
-    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
-        self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
-    }
-}
+use crate::{
+    IntoJsResult,
+    core::js::classes::{SingletonClass, register_enum},
+    runtime::{Runtime, WithUserData},
+};
 
 impl<'js> Trace<'js> for super::Keyboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+/// Direction
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    Hash,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+pub enum JsDirection {
+    // TODO: same as mouse?
+    Press,
+    Release,
+    Click,
+}
+
+impl From<JsDirection> for enigo::Direction {
+    fn from(value: JsDirection) -> Self {
+        use JsDirection::*;
+
+        match value {
+            Press => Self::Press,
+            Release => Self::Release,
+            Click => Self::Click,
+        }
+    }
 }
 
 /// @singleton
@@ -24,7 +60,12 @@ pub struct JsKeyboard {
     inner: super::Keyboard,
 }
 
-impl SingletonClass<'_> for JsKeyboard {}
+impl SingletonClass<'_> for JsKeyboard {
+    fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
+        register_enum::<JsKey>(ctx)?;
+        Ok(())
+    }
+}
 
 impl JsKeyboard {
     /// @skip
@@ -37,433 +78,760 @@ impl JsKeyboard {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsKeyboard {
-    // TODO
+    pub async fn text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
+        self.inner.text(&text).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub async fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
+        let key = key.try_into().map_err(|_| {
+            Exception::throw_message(
+                &ctx,
+                &format!("key {key} is not supported on this platform"),
+            )
+        })?;
+
+        self.inner.key(key, direction.into()).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub async fn raw(&self, ctx: Ctx<'_>, keycode: u16, direction: JsDirection) -> Result<()> {
+        self.inner
+            .raw(keycode, direction.into())
+            .into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub async fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
+        let key = key.try_into().map_err(|_| {
+            Exception::throw_message(
+                &ctx,
+                &format!("key {key} is not supported on this platform"),
+            )
+        })?;
+
+        self.inner.is_key_pressed(key).await.into_js_result(&ctx)
+    }
+
+    pub async fn wait_for_key(&self, ctx: Ctx<'_>) -> Result<()> {
+        let cancellation_token = ctx.user_data().cancellation_token();
+
+        self.inner
+            .wait_for_key(cancellation_token)
+            .await
+            .into_js_result(&ctx)
+    }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    Hash,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "Key")]
 pub enum JsKey {
+    /// Top-row digit '0' key (not numpad)
     Num0,
+    /// Top-row digit '1' key (not numpad)
     Num1,
+    /// Top-row digit '2' key (not numpad)
     Num2,
+    /// Top-row digit '3' key (not numpad)
     Num3,
+    /// Top-row digit '4' key (not numpad)
     Num4,
+    /// Top-row digit '5' key (not numpad)
     Num5,
+    /// Top-row digit '6' key (not numpad)
     Num6,
+    /// Top-row digit '7' key (not numpad)
     Num7,
+    /// Top-row digit '8' key (not numpad)
     Num8,
+    /// Top-row digit '9' key (not numpad)
     Num9,
+    /// Letter key 'A'
     A,
+    /// Letter key 'B'
     B,
+    /// Letter key 'C'
     C,
+    /// Letter key 'D'
     D,
+    /// Letter key 'E'
     E,
+    /// Letter key 'F'
     F,
+    /// Letter key 'G'
     G,
+    /// Letter key 'H'
     H,
+    /// Letter key 'I'
     I,
+    /// Letter key 'J'
     J,
+    /// Letter key 'K'
     K,
+    /// Letter key 'L'
     L,
+    /// Letter key 'M'
     M,
+    /// Letter key 'N'
     N,
+    /// Letter key 'O'
     O,
+    /// Letter key 'P'
     P,
+    /// Letter key 'Q'
     Q,
+    /// Letter key 'R'
     R,
+    /// Letter key 'S'
     S,
+    /// Letter key 'T'
     T,
+    /// Letter key 'U'
     U,
+    /// Letter key 'V'
     V,
+    /// Letter key 'W'
     W,
+    /// Letter key 'X'
     X,
+    /// Letter key 'Y'
     Y,
+    /// Letter key 'Z'
     Z,
+    /// Brazilian ABNT keyboard key C1
     /// @platforms =windows
     AbntC1,
+    /// Brazilian ABNT keyboard key C2
     /// @platforms =windows
     AbntC2,
+    /// IME “Accept” / commit conversion
     /// @platforms =windows
     Accept,
+    /// Numpad '+' (addition) key
     Add,
+    /// Alt (Alternate) modifier key
     Alt,
+    /// Application/Menu key
     /// @platforms =windows
     Apps,
+    /// Attention key (legacy/rare)
     /// @platforms =windows
     Attn,
+    /// Backspace / Delete-previous-character
     Backspace,
+    /// Break key (X11/Linux)
     /// @platforms =linux
     Break,
+    /// Begin key (X11)
     /// @platforms =linux
     Begin,
+    /// Browser Back
     /// @platforms =windows
     BrowserBack,
+    /// Browser Favorites
     /// @platforms =windows
     BrowserFavorites,
+    /// Browser Forward
     /// @platforms =windows
     BrowserForward,
+    /// Browser Home
     /// @platforms =windows
     BrowserHome,
+    /// Browser Refresh
     /// @platforms =windows
     BrowserRefresh,
+    /// Browser Search
     /// @platforms =windows
     BrowserSearch,
+    /// Browser Stop
     /// @platforms =windows
     BrowserStop,
+    /// Cancel key (legacy)
     Cancel,
+    /// Caps Lock toggle
     CapsLock,
+    /// Clear key
     Clear,
+    /// Control (Ctrl) modifier key
     Control,
+    /// IME Convert (start/confirm conversion)
     /// @platforms =windows
     Convert,
+    /// Cursor Select (CRSel)
     /// @platforms =windows
     Crsel,
+    /// IME: switch to alphanumeric
     /// @platforms =windows
     DBEAlphanumeric,
+    /// IME: code input mode
     /// @platforms =windows
     DBECodeinput,
+    /// IME: determine string
     /// @platforms =windows
     DBEDetermineString,
+    /// IME: enter dialog conversion mode
     /// @platforms =windows
     DBEEnterDLGConversionMode,
+    /// IME: open configuration
     /// @platforms =windows
     DBEEnterIMEConfigMode,
+    /// IME: word register mode
     /// @platforms =windows
     DBEEnterWordRegisterMode,
+    /// IME: flush/reset composition string
     /// @platforms =windows
     DBEFlushString,
+    /// IME: Hiragana
     /// @platforms =windows
     DBEHiragana,
+    /// IME: Katakana
     /// @platforms =windows
     DBEKatakana,
+    /// IME: no code point
     /// @platforms =windows
     DBENoCodepoint,
+    /// IME: no roman
     /// @platforms =windows
     DBENoRoman,
+    /// IME: Roman
     /// @platforms =windows
     DBERoman,
+    /// IME: SBCS character
     /// @platforms =windows
     DBESBCSChar,
+    /// IME: SBCS/Special char
     /// @platforms =windows
     DBESChar,
+    /// Numpad decimal point '.'
     Decimal,
+    /// Delete / Forward delete
     Delete,
+    /// Numpad divide '/'
     Divide,
+    /// Arrow: Down
     DownArrow,
+    /// End key
     End,
+    /// Erase EOF
     /// @platforms =windows
     Ereof,
+    /// Escape key
     Escape,
+    /// Execute key
     Execute,
+    /// Extend Selection (ExSel)
     /// @platforms =windows
     Exsel,
+    /// Function key F1
     F1,
+    /// Function key F2
     F2,
+    /// Function key F3
     F3,
+    /// Function key F4
     F4,
+    /// Function key F5
     F5,
+    /// Function key F6
     F6,
+    /// Function key F7
     F7,
+    /// Function key F8
     F8,
+    /// Function key F9
     F9,
+    /// Function key F10
     F10,
+    /// Function key F11
     F11,
+    /// Function key F12
     F12,
+    /// Function key F13
     F13,
+    /// Function key F14
     F14,
+    /// Function key F15
     F15,
+    /// Function key F16
     F16,
+    /// Function key F17
     F17,
+    /// Function key F18
     F18,
+    /// Function key F19
     F19,
+    /// Function key F20
     F20,
+    /// Function key F21
     F21,
+    /// Function key F22
     F22,
+    /// Function key F23
     F23,
+    /// Function key F24
     F24,
+    /// Function key F25
     /// @platforms =linux
     F25,
+    /// Function key F26
     /// @platforms =linux
     F26,
+    /// Function key F27
     /// @platforms =linux
     F27,
+    /// Function key F28
     /// @platforms =linux
     F28,
+    /// Function key F29
     /// @platforms =linux
     F29,
+    /// Function key F30
     /// @platforms =linux
     F30,
+    /// Function key F31
     /// @platforms =linux
     F31,
+    /// Function key F32
     /// @platforms =linux
     F32,
+    /// Function key F33
     /// @platforms =linux
     F33,
+    /// Function key F34
     /// @platforms =linux
     F34,
+    /// Function key F35
     /// @platforms =linux
     F35,
+    /// IME Final (end conversion)
     /// @platforms =windows
     Final,
+    /// Find key (X11)
     /// @platforms =linux
     Find,
+    /// Gamepad: A button
     /// @platforms =windows
     GamepadA,
+    /// Gamepad: B button
     /// @platforms =windows
     GamepadB,
+    /// Gamepad: D-Pad Down
     /// @platforms =windows
     GamepadDPadDown,
+    /// Gamepad: D-Pad Left
     /// @platforms =windows
     GamepadDPadLeft,
+    /// Gamepad: D-Pad Right
     /// @platforms =windows
     GamepadDPadRight,
+    /// Gamepad: D-Pad Up
     /// @platforms =windows
     GamepadDPadUp,
+    /// Gamepad: Left shoulder (L1)
     /// @platforms =windows
     GamepadLeftShoulder,
+    /// Gamepad: Left thumbstick button (L3)
     /// @platforms =windows
     GamepadLeftThumbstickButton,
+    /// Gamepad: Left thumbstick down
     /// @platforms =windows
     GamepadLeftThumbstickDown,
+    /// Gamepad: Left thumbstick left
     /// @platforms =windows
     GamepadLeftThumbstickLeft,
+    /// Gamepad: Left thumbstick right
     /// @platforms =windows
     GamepadLeftThumbstickRight,
+    /// Gamepad: Left thumbstick up
     /// @platforms =windows
     GamepadLeftThumbstickUp,
+    /// Gamepad: Left trigger (L2)
     /// @platforms =windows
     GamepadLeftTrigger,
+    /// Gamepad: Menu / Start
     /// @platforms =windows
     GamepadMenu,
+    /// Gamepad: Right shoulder (R1)
     /// @platforms =windows
     GamepadRightShoulder,
+    /// Gamepad: Right thumbstick button (R3)
     /// @platforms =windows
     GamepadRightThumbstickButton,
+    /// Gamepad: Right thumbstick down
     /// @platforms =windows
     GamepadRightThumbstickDown,
+    /// Gamepad: Right thumbstick left
     /// @platforms =windows
     GamepadRightThumbstickLeft,
+    /// Gamepad: Right thumbstick right
     /// @platforms =windows
     GamepadRightThumbstickRight,
+    /// Gamepad: Right thumbstick up
     /// @platforms =windows
     GamepadRightThumbstickUp,
+    /// Gamepad: Right trigger (R2)
     /// @platforms =windows
     GamepadRightTrigger,
+    /// Gamepad: View / Back
     /// @platforms =windows
     GamepadView,
+    /// Gamepad: X button
     /// @platforms =windows
     GamepadX,
+    /// Gamepad: Y button
     /// @platforms =windows
     GamepadY,
+    /// Hangeul toggle (Korean layout)
     /// @platforms =windows
     Hangeul,
+    /// Hangul toggle (Korean layout)
     Hangul,
+    /// Hanja toggle (Chinese characters on Korean layout)
     Hanja,
+    /// Help key
     Help,
+    /// Home key
     Home,
+    /// ICO (legacy) key 00
     /// @platforms =windows
     Ico00,
+    /// ICO (legacy) Clear
     /// @platforms =windows
     IcoClear,
+    /// ICO (legacy) Help
     /// @platforms =windows
     IcoHelp,
+    /// IME Off (disable IME)
     /// @platforms =windows
     IMEOff,
+    /// IME On (enable IME)
     /// @platforms =windows
     IMEOn,
+    /// Insert key
     Insert,
+    /// IME: Junja mode
     /// @platforms =windows
     Junja,
+    /// IME: Kana mode
     /// @platforms =windows
     Kana,
+    /// Kanji toggle (Japanese layout)
     Kanji,
+    /// Launch application 1
     /// @platforms =windows
     LaunchApp1,
+    /// Launch application 2
     /// @platforms =windows
     LaunchApp2,
+    /// Launch default mail client
     /// @platforms =windows
     LaunchMail,
+    /// Launch media selector
     /// @platforms =windows
     LaunchMediaSelect,
+    /// Mouse left button
     /// @platforms =windows
     LButton,
+    /// Left Control
     LControl,
+    /// Arrow: Left
     LeftArrow,
+    /// Line Feed key (X11)
     /// @platforms =linux
     Linefeed,
+    /// Left Alt/Menu
     LMenu,
+    /// Left Shift
     LShift,
+    /// Left Windows / Super key
     /// @platforms =windows
     LWin,
+    /// Mouse middle button
     /// @platforms =windows
     MButton,
+    /// Next media track
     MediaNextTrack,
+    /// Play/Pause media
     MediaPlayPause,
+    /// Previous media track
     MediaPrevTrack,
+    /// Stop media
     MediaStop,
-    /// meta key (also known as "windows", "super", and "command")
+    /// Meta key (also known as "windows", "super", and "command")
     Meta,
+    /// IME mode change
     ModeChange,
+    /// Numpad multiply '*'
     Multiply,
+    /// Navigation: Accept/OK (UWP)
     /// @platforms =windows
     NavigationAccept,
+    /// Navigation: Cancel/Back (UWP)
     /// @platforms =windows
     NavigationCancel,
+    /// Navigation: Down (UWP)
     /// @platforms =windows
     NavigationDown,
+    /// Navigation: Left (UWP)
     /// @platforms =windows
     NavigationLeft,
+    /// Navigation: Menu (UWP)
     /// @platforms =windows
     NavigationMenu,
+    /// Navigation: Right (UWP)
     /// @platforms =windows
     NavigationRight,
+    /// Navigation: Up (UWP)
     /// @platforms =windows
     NavigationUp,
+    /// Navigation: View (UWP)
     /// @platforms =windows
     NavigationView,
+    /// NoName key (reserved)
     /// @platforms =windows
     NoName,
+    /// IME Non-Convert (cancel conversion)
     /// @platforms =windows
     NonConvert,
+    /// Placeholder "no key"
     /// @platforms =windows
     None,
+    /// Num Lock toggle
     Numlock,
+    /// Numpad digit '0'
     Numpad0,
+    /// Numpad digit '1'
     Numpad1,
+    /// Numpad digit '2'
     Numpad2,
+    /// Numpad digit '3'
     Numpad3,
+    /// Numpad digit '4'
     Numpad4,
+    /// Numpad digit '5'
     Numpad5,
+    /// Numpad digit '6'
     Numpad6,
+    /// Numpad digit '7'
     Numpad7,
+    /// Numpad digit '8'
     Numpad8,
+    /// Numpad digit '9'
     Numpad9,
+    /// Numpad Enter
     NumpadEnter,
+    /// OEM specific key 1
     /// @platforms =windows
     OEM1,
+    /// OEM specific key 102 (angle bracket/pipe on some layouts)
     /// @platforms =windows
     OEM102,
+    /// OEM specific key 2
     /// @platforms =windows
     OEM2,
+    /// OEM specific key 3 (backtick/tilde on some layouts)
     /// @platforms =windows
     OEM3,
+    /// OEM specific key 4 (left bracket on some layouts)
     /// @platforms =windows
     OEM4,
+    /// OEM specific key 5 (right bracket on some layouts)
     /// @platforms =windows
     OEM5,
+    /// OEM specific key 6 (semicolon on some layouts)
     /// @platforms =windows
     OEM6,
+    /// OEM specific key 7 (quote on some layouts)
     /// @platforms =windows
     OEM7,
+    /// OEM specific key 8
     /// @platforms =windows
     OEM8,
+    /// OEM Attention
     /// @platforms =windows
     OEMAttn,
+    /// OEM Auto
     /// @platforms =windows
     OEMAuto,
+    /// OEM Ax
     /// @platforms =windows
     OEMAx,
+    /// OEM Backtab (reverse Tab)
     /// @platforms =windows
     OEMBacktab,
+    /// OEM Clear
     /// @platforms =windows
     OEMClear,
+    /// OEM Comma ','
     /// @platforms =windows
     OEMComma,
+    /// OEM Copy
     /// @platforms =windows
     OEMCopy,
+    /// OEM Cusel
     /// @platforms =windows
     OEMCusel,
+    /// OEM Enlw
     /// @platforms =windows
     OEMEnlw,
+    /// OEM Finish
     /// @platforms =windows
     OEMFinish,
+    /// OEM FJ Jisho (dictionary)
     /// @platforms =windows
     OEMFJJisho,
+    /// OEM FJ Loya
     /// @platforms =windows
     OEMFJLoya,
+    /// OEM FJ Masshou
     /// @platforms =windows
     OEMFJMasshou,
+    /// OEM FJ Roya
     /// @platforms =windows
     OEMFJRoya,
+    /// OEM FJ Touroku
     /// @platforms =windows
     OEMFJTouroku,
+    /// OEM Jump
     /// @platforms =windows
     OEMJump,
+    /// OEM Minus '-'
     /// @platforms =windows
     OEMMinus,
+    /// OEM NEC Equal '='
     /// @platforms =windows
     OEMNECEqual,
+    /// OEM PA1
     /// @platforms =windows
     OEMPA1,
+    /// OEM PA2
     /// @platforms =windows
     OEMPA2,
+    /// OEM PA3
     /// @platforms =windows
     OEMPA3,
+    /// OEM Period '.'
     /// @platforms =windows
     OEMPeriod,
+    /// OEM Plus '+'
     /// @platforms =windows
     OEMPlus,
+    /// OEM Reset
     /// @platforms =windows
     OEMReset,
+    /// OEM Wsctrl
     /// @platforms =windows
     OEMWsctrl,
     /// Same as Alt
     Option,
+    /// PA1 key
     /// @platforms =windows
     PA1,
+    /// Packet key (used to pass Unicode chars)
     /// @platforms =windows
     Packet,
+    /// Page Down
     PageDown,
+    /// Page Up
     PageUp,
+    /// Pause key
     Pause,
+    /// Media Play
     /// @platforms =windows
     Play,
     /// Screenshot
     PrintScr,
+    /// IME Process key
     /// @platforms =windows
     Processkey,
+    /// Mouse right button
     /// @platforms =windows
     RButton,
+    /// Right Control
     RControl,
+    /// Redo (X11)
     /// @platforms =linux
     Redo,
+    /// Enter / Return
     Return,
+    /// Arrow: Right
     RightArrow,
+    /// Right Alt/Menu
     /// @platforms =windows
     RMenu,
+    /// Right Shift
     RShift,
+    /// Right Windows / Super key
     /// @platforms =windows
     RWin,
+    /// Scroll key (legacy)
     /// @platforms =windows
     Scroll,
+    /// Scroll Lock (X11)
     /// @platforms =linux
     ScrollLock,
+    /// Select key
     Select,
+    /// Script switch (X11)
     /// @platforms =linux
     ScriptSwitch,
+    /// Numpad separator (locale-dependent)
     /// @platforms =windows
     Separator,
+    /// Shift modifier
     Shift,
+    /// Shift Lock (X11)
     /// @platforms =linux
     ShiftLock,
+    /// System Sleep
     /// @platforms =windows
     Sleep,
+    /// Spacebar
     Space,
+    /// Numpad '-' (subtract)
     Subtract,
+    /// System Request (SysRq)
     /// @platforms =linux
     SysReq,
+    /// Tab / focus next
     Tab,
+    /// Undo (X11)
     /// @platforms =linux
     Undo,
+    /// Arrow: Up
     UpArrow,
+    /// Volume down
     VolumeDown,
+    /// Volume mute
     VolumeMute,
+    /// Volume up
     VolumeUp,
+    /// Microphone mute (X11)
     /// @platforms =linux
     MicMute,
+    /// Mouse XButton1 (back)
     /// @platforms =windows
     XButton1,
+    /// Mouse XButton2 (forward)
     /// @platforms =windows
     XButton2,
+    /// Zoom key
     /// @platforms =windows
     Zoom,
 }
@@ -1151,5 +1519,47 @@ impl TryFrom<JsKey> for enigo::Key {
             | SysReq | Undo | MicMute | F25 | F26 | F27 | F28 | F29 | F30 | F31 | F32 | F33
             | F34 | F35 => return Err(KeyError::Unsupported),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use tracing_test::traced_test;
+
+    use crate::runtime::Runtime;
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_keyboard_is_pressed() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    while(true) {
+                        await sleep(1000);
+                        console.printLn("hello", await keyboard.isKeyPressed(Key.A));
+                    }
+                "#,
+                )
+                .await
+                .unwrap();
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_wait_for_key() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    await keyboard.waitForKey();
+                "#,
+                )
+                .await
+                .unwrap();
+        });
     }
 }

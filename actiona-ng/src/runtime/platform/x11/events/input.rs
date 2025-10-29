@@ -1,14 +1,31 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    cell::RefCell,
+    collections::HashMap,
+    sync::{Arc, Mutex, Weak},
+};
 
 use derive_more::Constructor;
+use derive_where::derive_where;
+use enigo::Key;
+use eyre::Result;
+use itertools::Itertools;
+use once_cell::sync::OnceCell;
 use tracing::error;
-use x11rb::protocol::xinput::{Device, EventMask, XIEventMask};
-use x11rb_async::{connection::Connection, protocol::xinput::xi_select_events};
+use x11rb::protocol::{
+    xinput::{Device, EventMask, XIEventMask},
+    xproto::ModMask,
+};
+use x11rb_async::{
+    connection::Connection,
+    protocol::{xinput::xi_select_events, xproto::ConnectionExt},
+};
+use xkbcommon::xkb::{self, CONTEXT_NO_FLAGS, KeyDirection, LayoutIndex};
+use xkeysym::{KeyCode, Keysym};
 
 use crate::{
-    core::point::Point,
+    core::{displays::platform::x11, point::Point},
     platform::x11::X11Connection,
-    runtime::events::{AllSignals, LatestOnlySignals, MouseButtonEvent, Topic},
+    runtime::events::{AllSignals, KeyboardKeyEvent, LatestOnlySignals, MouseButtonEvent, Topic},
 };
 
 #[derive(Clone, Debug, Default)]
@@ -124,5 +141,270 @@ impl Topic for MouseMoveTopic {
             self.input_mask.clone(),
         )
         .await;
+    }
+}
+
+#[derive(Debug)]
+pub struct KeyboardKeysTopic {
+    x11_connection: Arc<X11Connection>,
+    input_mask: Arc<InputMask>,
+}
+
+struct State {
+    state: xkb::State,
+}
+
+thread_local! {
+    static XKB_STATE: RefCell<Option<State>> = const { RefCell::new(None) };
+}
+
+impl State {
+    pub fn new(x11_connection: Arc<X11Connection>) -> Self {
+        let xcb_connection = x11_connection.xcb_connection();
+        let ctx = xkb::Context::new(CONTEXT_NO_FLAGS);
+        let dev = xkb::x11::get_core_keyboard_device_id(xcb_connection);
+        let keymap = xkb::x11::keymap_new_from_device(
+            &ctx,
+            xcb_connection,
+            dev,
+            xkb::KEYMAP_COMPILE_NO_FLAGS,
+        );
+
+        Self {
+            state: xkb::x11::state_new_from_device(&keymap, xcb_connection, dev),
+        }
+    }
+}
+
+impl Topic for KeyboardKeysTopic {
+    type T = KeyboardKeyEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) {
+        self.recreate_state();
+
+        self.input_mask
+            .set(XIEventMask::RAW_KEY_PRESS | XIEventMask::RAW_KEY_RELEASE);
+
+        apply_mask(
+            "keyboard_keys",
+            self.x11_connection.clone(),
+            self.input_mask.clone(),
+        )
+        .await;
+    }
+
+    async fn on_stop(&self) {
+        self.input_mask
+            .remove(XIEventMask::RAW_KEY_PRESS | XIEventMask::RAW_KEY_RELEASE);
+
+        apply_mask(
+            "keyboard_keys",
+            self.x11_connection.clone(),
+            self.input_mask.clone(),
+        )
+        .await;
+    }
+}
+
+impl KeyboardKeysTopic {
+    pub async fn new(
+        x11_connection: Arc<X11Connection>,
+        input_mask: Arc<InputMask>,
+    ) -> Result<Self> {
+        Ok(Self {
+            x11_connection,
+            input_mask,
+        })
+    }
+
+    #[must_use]
+    pub fn translate_keycode(&self, key: KeyCode, direction: KeyDirection) -> (Keysym, String) {
+        let local_x11_connection = self.x11_connection.clone();
+        XKB_STATE.with(move |state| {
+            let mut state_ref = state.borrow_mut();
+            let state = state_ref.get_or_insert(State::new(local_x11_connection));
+
+            println!("THREAD {:?}", std::thread::current().id());
+
+            /*
+            let (keysym, name) = match direction {
+                KeyDirection::Up => {
+                    let Some((keysym, name)) = state
+                        .pressed_keys
+                        .get(&key)
+                        .cloned() else {
+                            (
+                        state.state.key_get_one_sym(key),
+                        state.state.key_get_utf8(key),
+                    )
+                        }
+
+                        (keysym, name)
+                }
+                KeyDirection::Down => {
+                    let (keysym, name) = (
+                        state.state.key_get_one_sym(key),
+                        state.state.key_get_utf8(key),
+                    );
+
+                    state.pressed_keys.insert(key, (keysym, name.clone()));
+
+                    (keysym, name)
+                }
+            };
+            */
+
+            let (keysym, name) = (
+                state.state.key_get_one_sym(key),
+                state.state.key_get_utf8(key),
+            );
+
+            state.state.update_key(key, direction);
+            (keysym, name)
+        })
+    }
+
+    pub fn recreate_state(&self) {
+        let local_x11_connection = self.x11_connection.clone();
+        XKB_STATE.with(move |state| {
+            let mut state_ref = state.borrow_mut();
+            let _ = state_ref.insert(State::new(local_x11_connection));
+        })
+    }
+
+    pub fn update_state(
+        &self,
+        depressed_mods: ModMask,
+        latched_mods: ModMask,
+        locked_mods: ModMask,
+        depressed_layout: LayoutIndex,
+        latched_layout: LayoutIndex,
+        locked_layout: LayoutIndex,
+    ) {
+        let local_x11_connection = self.x11_connection.clone();
+        XKB_STATE.with(move |state| {
+            let mut state_ref = state.borrow_mut();
+            let state = state_ref.get_or_insert(State::new(local_x11_connection));
+            state.state.update_mask(
+                depressed_mods.into(),
+                latched_mods.into(),
+                locked_mods.into(),
+                depressed_layout,
+                latched_layout,
+                locked_layout,
+            );
+        })
+    }
+}
+
+pub fn keysym_to_key(keysym: Keysym) -> Key {
+    match keysym {
+        Keysym::KP_Add => Key::Add,
+        Keysym::Alt_L => Key::Alt,
+        Keysym::BackSpace => Key::Backspace,
+        Keysym::Begin => Key::Begin,
+        Keysym::Break => Key::Break,
+        Keysym::Cancel => Key::Cancel,
+        Keysym::Caps_Lock => Key::CapsLock,
+        Keysym::Clear => Key::Clear,
+        Keysym::Control_L => Key::LControl,
+        Keysym::KP_Decimal => Key::Decimal,
+        Keysym::Delete => Key::Delete,
+        Keysym::KP_Divide => Key::Divide,
+        Keysym::Down => Key::DownArrow,
+        Keysym::End => Key::End,
+        Keysym::KP_Enter => Key::NumpadEnter,
+        Keysym::Escape => Key::Escape,
+        Keysym::Execute => Key::Execute,
+        Keysym::F1 => Key::F1,
+        Keysym::F2 => Key::F2,
+        Keysym::F3 => Key::F3,
+        Keysym::F4 => Key::F4,
+        Keysym::F5 => Key::F5,
+        Keysym::F6 => Key::F6,
+        Keysym::F7 => Key::F7,
+        Keysym::F8 => Key::F8,
+        Keysym::F9 => Key::F9,
+        Keysym::F10 => Key::F10,
+        Keysym::F11 => Key::F11,
+        Keysym::F12 => Key::F12,
+        Keysym::F13 => Key::F13,
+        Keysym::F14 => Key::F14,
+        Keysym::F15 => Key::F15,
+        Keysym::F16 => Key::F16,
+        Keysym::F17 => Key::F17,
+        Keysym::F18 => Key::F18,
+        Keysym::F19 => Key::F19,
+        Keysym::F20 => Key::F20,
+        Keysym::F21 => Key::F21,
+        Keysym::F22 => Key::F22,
+        Keysym::F23 => Key::F23,
+        Keysym::F24 => Key::F24,
+        Keysym::F25 => Key::F25,
+        Keysym::F26 => Key::F26,
+        Keysym::F27 => Key::F27,
+        Keysym::F28 => Key::F28,
+        Keysym::F29 => Key::F29,
+        Keysym::F30 => Key::F30,
+        Keysym::F31 => Key::F31,
+        Keysym::F32 => Key::F32,
+        Keysym::F33 => Key::F33,
+        Keysym::F34 => Key::F34,
+        Keysym::F35 => Key::F35,
+        Keysym::Find => Key::Find,
+        Keysym::Hangul => Key::Hangul,
+        Keysym::Hangul_Hanja => Key::Hanja,
+        Keysym::Help => Key::Help,
+        Keysym::Home => Key::Home,
+        Keysym::Insert => Key::Insert,
+        Keysym::Kanji => Key::Kanji,
+        Keysym::Left => Key::LeftArrow,
+        Keysym::Linefeed => Key::Linefeed,
+        Keysym::Menu => Key::LMenu,
+        Keysym::Mode_switch => Key::ModeChange,
+        Keysym::KP_Multiply => Key::Multiply,
+        Keysym::XF86_AudioNext => Key::MediaNextTrack,
+        Keysym::XF86_AudioPlay => Key::MediaPlayPause,
+        Keysym::XF86_AudioPrev => Key::MediaPrevTrack,
+        Keysym::XF86_AudioStop => Key::MediaStop,
+        Keysym::Num_Lock => Key::Numlock,
+        Keysym::KP_0 => Key::Numpad0,
+        Keysym::KP_1 => Key::Numpad1,
+        Keysym::KP_2 => Key::Numpad2,
+        Keysym::KP_3 => Key::Numpad3,
+        Keysym::KP_4 => Key::Numpad4,
+        Keysym::KP_5 => Key::Numpad5,
+        Keysym::KP_6 => Key::Numpad6,
+        Keysym::KP_7 => Key::Numpad7,
+        Keysym::KP_8 => Key::Numpad8,
+        Keysym::KP_9 => Key::Numpad9,
+        Keysym::Page_Down => Key::PageDown,
+        Keysym::Page_Up => Key::PageUp,
+        Keysym::Pause => Key::Pause,
+        Keysym::Print => Key::PrintScr,
+        Keysym::Control_R => Key::RControl,
+        Keysym::Redo => Key::Redo,
+        Keysym::Return => Key::Return,
+        Keysym::Right => Key::RightArrow,
+        Keysym::Shift_R => Key::RShift,
+        Keysym::Scroll_Lock => Key::ScrollLock,
+        Keysym::Select => Key::Select,
+        Keysym::Shift_L => Key::LShift,
+        Keysym::Shift_Lock => Key::ShiftLock,
+        Keysym::space => Key::Space,
+        Keysym::KP_Subtract => Key::Subtract,
+        Keysym::Sys_Req => Key::SysReq,
+        Keysym::Tab => Key::Tab,
+        Keysym::Undo => Key::Undo,
+        Keysym::Up => Key::UpArrow,
+        Keysym::XF86_AudioLowerVolume => Key::VolumeDown,
+        Keysym::XF86_AudioRaiseVolume => Key::VolumeUp,
+        Keysym::XF86_AudioMute => Key::VolumeMute,
+        Keysym::XF86_AudioMicMute => Key::MicMute,
+        Keysym::Super_L => Key::Meta,
+        other => other
+            .key_char()
+            .map_or_else(|| Key::Other(other.into()), Key::Unicode),
     }
 }

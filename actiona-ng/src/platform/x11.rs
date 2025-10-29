@@ -1,7 +1,9 @@
+use std::ffi::{CString, NulError};
+
 use thiserror::Error;
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use x11rb::rust_connection::RustConnection;
+use x11rb::{rust_connection::RustConnection, xcb_ffi::XCBConnection};
 use x11rb_async::{
     connection::Connection as AsyncConnection,
     errors::{ConnectError, ConnectionError, ReplyError},
@@ -20,6 +22,9 @@ pub enum X11Error {
 
     #[error("X11 reply error: {0}")]
     ReplyError(String),
+
+    #[error(transparent)]
+    NulErr(#[from] NulError),
 }
 
 impl From<ConnectError> for X11Error {
@@ -45,7 +50,8 @@ pub type Result<T> = std::result::Result<T, X11Error>;
 #[derive(Debug)]
 pub struct X11Connection {
     async_connection: AsyncRustConnection,
-    connection: RustConnection,
+    sync_connection: RustConnection,
+    xcb_connection: XCBConnection,
     screen: Screen,
     screen_index: usize,
 }
@@ -54,12 +60,16 @@ impl X11Connection {
     pub(crate) async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
+        display_name: Option<&str>,
     ) -> Result<Self> {
         let (async_connection, screen_index, packet_reader) =
-            AsyncRustConnection::connect(None).await?;
+            AsyncRustConnection::connect(display_name).await?;
         let screen = async_connection.setup().roots[screen_index].clone();
 
-        let (connection, _) = RustConnection::connect(None)?;
+        let (sync_connection, _) = RustConnection::connect(display_name)?;
+
+        let display_name = display_name.map(CString::new).transpose()?;
+        let (xcb_connection, _) = XCBConnection::connect(display_name.as_deref())?;
 
         let local_cancellation_token = cancellation_token.clone();
         task_tracker.spawn(async move {
@@ -71,7 +81,8 @@ impl X11Connection {
 
         Ok(Self {
             async_connection,
-            connection,
+            sync_connection,
+            xcb_connection,
             screen,
             screen_index,
         })
@@ -82,7 +93,11 @@ impl X11Connection {
     }
 
     pub const fn sync_connection(&self) -> &RustConnection {
-        &self.connection
+        &self.sync_connection
+    }
+
+    pub const fn xcb_connection(&self) -> &XCBConnection {
+        &self.xcb_connection
     }
 
     pub const fn screen(&self) -> &Screen {

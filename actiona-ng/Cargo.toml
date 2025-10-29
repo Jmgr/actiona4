@@ -22,6 +22,7 @@ x11rb.workspace = true
 x11rb-async.workspace = true
 xkeysym.workspace = true
 zbus.workspace = true
+xkbcommon.workspace = true
 
 [dependencies]
 arboard.workspace = true

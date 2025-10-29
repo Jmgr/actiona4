@@ -183,6 +183,7 @@ impl Topic for MouseMoveTopic {
 pub struct InputDispatcher {
     mouse_buttons: Arc<TopicWrapper<MouseButtonsTopic>>,
     mouse_move: Arc<TopicWrapper<MouseMoveTopic>>,
+    keyboard_keys: Arc<TopicWrapper<KeyboardKeysTopic>>,
     subscribers: Arc<AtomicUsize>,
     message_pump: SafeMessagePump,
 }

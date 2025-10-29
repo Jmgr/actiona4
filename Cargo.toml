@@ -149,9 +149,12 @@ x11rb-async = { version = "0.13.2", features = [
     "randr",
     "shm",
     "extra-traits",
+    "xkb",
+    "allow-unsafe-code",
 ] }
 xkeysym = "0.2.1"
 zbus = { version = "5.11.0", default-features = false, features = ["tokio"] }
+xkbcommon = { version = "0.9.0", default-features = false, features = ["x11"] }
 
 # Dev dependencies
 askama = "0.14.0"

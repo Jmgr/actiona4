@@ -137,8 +137,9 @@ impl Runtime {
         task_tracker: TaskTracker,
         app_handle: Option<AppHandle>,
     ) -> Result<(Arc<Self>, Arc<ScriptEngine>)> {
-        #[cfg(unix)]
-        let runtime = x11::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
+        #[cfg(unix)] // TODO: add the option to choose the display name
+        let runtime =
+            x11::Runtime::new(cancellation_token.clone(), task_tracker.clone(), None).await?;
 
         #[cfg(windows)]
         let runtime = win::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;

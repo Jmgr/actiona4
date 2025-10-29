@@ -55,862 +55,1301 @@ declare enum Interpolation {
 
     Bicubic,
 }
+/**
+ * Top-row digit '0' key (not numpad)
+ */
 declare enum Key {
+    /**
+     * Top-row digit '0' key (not numpad)
+     */
     Num0,
 
+    /**
+     * Top-row digit '1' key (not numpad)
+     */
     Num1,
 
+    /**
+     * Top-row digit '2' key (not numpad)
+     */
     Num2,
 
+    /**
+     * Top-row digit '3' key (not numpad)
+     */
     Num3,
 
+    /**
+     * Top-row digit '4' key (not numpad)
+     */
     Num4,
 
+    /**
+     * Top-row digit '5' key (not numpad)
+     */
     Num5,
 
+    /**
+     * Top-row digit '6' key (not numpad)
+     */
     Num6,
 
+    /**
+     * Top-row digit '7' key (not numpad)
+     */
     Num7,
 
+    /**
+     * Top-row digit '8' key (not numpad)
+     */
     Num8,
 
+    /**
+     * Top-row digit '9' key (not numpad)
+     */
     Num9,
 
+    /**
+     * Letter key 'A'
+     */
     A,
 
+    /**
+     * Letter key 'B'
+     */
     B,
 
+    /**
+     * Letter key 'C'
+     */
     C,
 
+    /**
+     * Letter key 'D'
+     */
     D,
 
+    /**
+     * Letter key 'E'
+     */
     E,
 
+    /**
+     * Letter key 'F'
+     */
     F,
 
+    /**
+     * Letter key 'G'
+     */
     G,
 
+    /**
+     * Letter key 'H'
+     */
     H,
 
+    /**
+     * Letter key 'I'
+     */
     I,
 
+    /**
+     * Letter key 'J'
+     */
     J,
 
+    /**
+     * Letter key 'K'
+     */
     K,
 
+    /**
+     * Letter key 'L'
+     */
     L,
 
+    /**
+     * Letter key 'M'
+     */
     M,
 
+    /**
+     * Letter key 'N'
+     */
     N,
 
+    /**
+     * Letter key 'O'
+     */
     O,
 
+    /**
+     * Letter key 'P'
+     */
     P,
 
+    /**
+     * Letter key 'Q'
+     */
     Q,
 
+    /**
+     * Letter key 'R'
+     */
     R,
 
+    /**
+     * Letter key 'S'
+     */
     S,
 
+    /**
+     * Letter key 'T'
+     */
     T,
 
+    /**
+     * Letter key 'U'
+     */
     U,
 
+    /**
+     * Letter key 'V'
+     */
     V,
 
+    /**
+     * Letter key 'W'
+     */
     W,
 
+    /**
+     * Letter key 'X'
+     */
     X,
 
+    /**
+     * Letter key 'Y'
+     */
     Y,
 
+    /**
+     * Letter key 'Z'
+     */
     Z,
 
     /**
+     * Brazilian ABNT keyboard key C1
      * @platform only works on Windows
      */
     AbntC1,
 
     /**
+     * Brazilian ABNT keyboard key C2
      * @platform only works on Windows
      */
     AbntC2,
 
     /**
+     * IME “Accept” / commit conversion
      * @platform only works on Windows
      */
     Accept,
 
+    /**
+     * Numpad '+' (addition) key
+     */
     Add,
 
+    /**
+     * Alt (Alternate) modifier key
+     */
     Alt,
 
     /**
+     * Application/Menu key
      * @platform only works on Windows
      */
     Apps,
 
     /**
+     * Attention key (legacy/rare)
      * @platform only works on Windows
      */
     Attn,
 
+    /**
+     * Backspace / Delete-previous-character
+     */
     Backspace,
 
     /**
+     * Break key (X11/Linux)
      * @platform only works on Linux
      */
     Break,
 
     /**
+     * Begin key (X11)
      * @platform only works on Linux
      */
     Begin,
 
     /**
+     * Browser Back
      * @platform only works on Windows
      */
     BrowserBack,
 
     /**
+     * Browser Favorites
      * @platform only works on Windows
      */
     BrowserFavorites,
 
     /**
+     * Browser Forward
      * @platform only works on Windows
      */
     BrowserForward,
 
     /**
+     * Browser Home
      * @platform only works on Windows
      */
     BrowserHome,
 
     /**
+     * Browser Refresh
      * @platform only works on Windows
      */
     BrowserRefresh,
 
     /**
+     * Browser Search
      * @platform only works on Windows
      */
     BrowserSearch,
 
     /**
+     * Browser Stop
      * @platform only works on Windows
      */
     BrowserStop,
 
+    /**
+     * Cancel key (legacy)
+     */
     Cancel,
 
+    /**
+     * Caps Lock toggle
+     */
     CapsLock,
 
+    /**
+     * Clear key
+     */
     Clear,
 
+    /**
+     * Control (Ctrl) modifier key
+     */
     Control,
 
     /**
+     * IME Convert (start/confirm conversion)
      * @platform only works on Windows
      */
     Convert,
 
     /**
+     * Cursor Select (CRSel)
      * @platform only works on Windows
      */
     Crsel,
 
     /**
+     * IME: switch to alphanumeric
      * @platform only works on Windows
      */
     DbeAlphanumeric,
 
     /**
+     * IME: code input mode
      * @platform only works on Windows
      */
     DbeCodeinput,
 
     /**
+     * IME: determine string
      * @platform only works on Windows
      */
     DbeDetermineString,
 
     /**
+     * IME: enter dialog conversion mode
      * @platform only works on Windows
      */
     DbeEnterDlgConversionMode,
 
     /**
+     * IME: open configuration
      * @platform only works on Windows
      */
     DbeEnterImeConfigMode,
 
     /**
+     * IME: word register mode
      * @platform only works on Windows
      */
     DbeEnterWordRegisterMode,
 
     /**
+     * IME: flush/reset composition string
      * @platform only works on Windows
      */
     DbeFlushString,
 
     /**
+     * IME: Hiragana
      * @platform only works on Windows
      */
     DbeHiragana,
 
     /**
+     * IME: Katakana
      * @platform only works on Windows
      */
     DbeKatakana,
 
     /**
+     * IME: no code point
      * @platform only works on Windows
      */
     DbeNoCodepoint,
 
     /**
+     * IME: no roman
      * @platform only works on Windows
      */
     DbeNoRoman,
 
     /**
+     * IME: Roman
      * @platform only works on Windows
      */
     DbeRoman,
 
     /**
+     * IME: SBCS character
      * @platform only works on Windows
      */
     DbesbcsChar,
 
     /**
+     * IME: SBCS/Special char
      * @platform only works on Windows
      */
     DbesChar,
 
+    /**
+     * Numpad decimal point '.'
+     */
     Decimal,
 
+    /**
+     * Delete / Forward delete
+     */
     Delete,
 
+    /**
+     * Numpad divide '/'
+     */
     Divide,
 
+    /**
+     * Arrow: Down
+     */
     DownArrow,
 
+    /**
+     * End key
+     */
     End,
 
     /**
+     * Erase EOF
      * @platform only works on Windows
      */
     Ereof,
 
+    /**
+     * Escape key
+     */
     Escape,
 
+    /**
+     * Execute key
+     */
     Execute,
 
     /**
+     * Extend Selection (ExSel)
      * @platform only works on Windows
      */
     Exsel,
 
+    /**
+     * Function key F1
+     */
     F1,
 
+    /**
+     * Function key F2
+     */
     F2,
 
+    /**
+     * Function key F3
+     */
     F3,
 
+    /**
+     * Function key F4
+     */
     F4,
 
+    /**
+     * Function key F5
+     */
     F5,
 
+    /**
+     * Function key F6
+     */
     F6,
 
+    /**
+     * Function key F7
+     */
     F7,
 
+    /**
+     * Function key F8
+     */
     F8,
 
+    /**
+     * Function key F9
+     */
     F9,
 
+    /**
+     * Function key F10
+     */
     F10,
 
+    /**
+     * Function key F11
+     */
     F11,
 
+    /**
+     * Function key F12
+     */
     F12,
 
+    /**
+     * Function key F13
+     */
     F13,
 
+    /**
+     * Function key F14
+     */
     F14,
 
+    /**
+     * Function key F15
+     */
     F15,
 
+    /**
+     * Function key F16
+     */
     F16,
 
+    /**
+     * Function key F17
+     */
     F17,
 
+    /**
+     * Function key F18
+     */
     F18,
 
+    /**
+     * Function key F19
+     */
     F19,
 
+    /**
+     * Function key F20
+     */
     F20,
 
+    /**
+     * Function key F21
+     */
     F21,
 
+    /**
+     * Function key F22
+     */
     F22,
 
+    /**
+     * Function key F23
+     */
     F23,
 
+    /**
+     * Function key F24
+     */
     F24,
 
     /**
+     * Function key F25
      * @platform only works on Linux
      */
     F25,
 
     /**
+     * Function key F26
      * @platform only works on Linux
      */
     F26,
 
     /**
+     * Function key F27
      * @platform only works on Linux
      */
     F27,
 
     /**
+     * Function key F28
      * @platform only works on Linux
      */
     F28,
 
     /**
+     * Function key F29
      * @platform only works on Linux
      */
     F29,
 
     /**
+     * Function key F30
      * @platform only works on Linux
      */
     F30,
 
     /**
+     * Function key F31
      * @platform only works on Linux
      */
     F31,
 
     /**
+     * Function key F32
      * @platform only works on Linux
      */
     F32,
 
     /**
+     * Function key F33
      * @platform only works on Linux
      */
     F33,
 
     /**
+     * Function key F34
      * @platform only works on Linux
      */
     F34,
 
     /**
+     * Function key F35
      * @platform only works on Linux
      */
     F35,
 
     /**
+     * IME Final (end conversion)
      * @platform only works on Windows
      */
     Final,
 
     /**
+     * Find key (X11)
      * @platform only works on Linux
      */
     Find,
 
     /**
+     * Gamepad: A button
      * @platform only works on Windows
      */
     GamepadA,
 
     /**
+     * Gamepad: B button
      * @platform only works on Windows
      */
     GamepadB,
 
     /**
+     * Gamepad: D-Pad Down
      * @platform only works on Windows
      */
     GamepadDPadDown,
 
     /**
+     * Gamepad: D-Pad Left
      * @platform only works on Windows
      */
     GamepadDPadLeft,
 
     /**
+     * Gamepad: D-Pad Right
      * @platform only works on Windows
      */
     GamepadDPadRight,
 
     /**
+     * Gamepad: D-Pad Up
      * @platform only works on Windows
      */
     GamepadDPadUp,
 
     /**
+     * Gamepad: Left shoulder (L1)
      * @platform only works on Windows
      */
     GamepadLeftShoulder,
 
     /**
+     * Gamepad: Left thumbstick button (L3)
      * @platform only works on Windows
      */
     GamepadLeftThumbstickButton,
 
     /**
+     * Gamepad: Left thumbstick down
      * @platform only works on Windows
      */
     GamepadLeftThumbstickDown,
 
     /**
+     * Gamepad: Left thumbstick left
      * @platform only works on Windows
      */
     GamepadLeftThumbstickLeft,
 
     /**
+     * Gamepad: Left thumbstick right
      * @platform only works on Windows
      */
     GamepadLeftThumbstickRight,
 
     /**
+     * Gamepad: Left thumbstick up
      * @platform only works on Windows
      */
     GamepadLeftThumbstickUp,
 
     /**
+     * Gamepad: Left trigger (L2)
      * @platform only works on Windows
      */
     GamepadLeftTrigger,
 
     /**
+     * Gamepad: Menu / Start
      * @platform only works on Windows
      */
     GamepadMenu,
 
     /**
+     * Gamepad: Right shoulder (R1)
      * @platform only works on Windows
      */
     GamepadRightShoulder,
 
     /**
+     * Gamepad: Right thumbstick button (R3)
      * @platform only works on Windows
      */
     GamepadRightThumbstickButton,
 
     /**
+     * Gamepad: Right thumbstick down
      * @platform only works on Windows
      */
     GamepadRightThumbstickDown,
 
     /**
+     * Gamepad: Right thumbstick left
      * @platform only works on Windows
      */
     GamepadRightThumbstickLeft,
 
     /**
+     * Gamepad: Right thumbstick right
      * @platform only works on Windows
      */
     GamepadRightThumbstickRight,
 
     /**
+     * Gamepad: Right thumbstick up
      * @platform only works on Windows
      */
     GamepadRightThumbstickUp,
 
     /**
+     * Gamepad: Right trigger (R2)
      * @platform only works on Windows
      */
     GamepadRightTrigger,
 
     /**
+     * Gamepad: View / Back
      * @platform only works on Windows
      */
     GamepadView,
 
     /**
+     * Gamepad: X button
      * @platform only works on Windows
      */
     GamepadX,
 
     /**
+     * Gamepad: Y button
      * @platform only works on Windows
      */
     GamepadY,
 
     /**
+     * Hangeul toggle (Korean layout)
      * @platform only works on Windows
      */
     Hangeul,
 
+    /**
+     * Hangul toggle (Korean layout)
+     */
     Hangul,
 
+    /**
+     * Hanja toggle (Chinese characters on Korean layout)
+     */
     Hanja,
 
+    /**
+     * Help key
+     */
     Help,
 
+    /**
+     * Home key
+     */
     Home,
 
     /**
+     * ICO (legacy) key 00
      * @platform only works on Windows
      */
     Ico00,
 
     /**
+     * ICO (legacy) Clear
      * @platform only works on Windows
      */
     IcoClear,
 
     /**
+     * ICO (legacy) Help
      * @platform only works on Windows
      */
     IcoHelp,
 
     /**
+     * IME Off (disable IME)
      * @platform only works on Windows
      */
     ImeOff,
 
     /**
+     * IME On (enable IME)
      * @platform only works on Windows
      */
     ImeOn,
 
+    /**
+     * Insert key
+     */
     Insert,
 
     /**
+     * IME: Junja mode
      * @platform only works on Windows
      */
     Junja,
 
     /**
+     * IME: Kana mode
      * @platform only works on Windows
      */
     Kana,
 
+    /**
+     * Kanji toggle (Japanese layout)
+     */
     Kanji,
 
     /**
+     * Launch application 1
      * @platform only works on Windows
      */
     LaunchApp1,
 
     /**
+     * Launch application 2
      * @platform only works on Windows
      */
     LaunchApp2,
 
     /**
+     * Launch default mail client
      * @platform only works on Windows
      */
     LaunchMail,
 
     /**
+     * Launch media selector
      * @platform only works on Windows
      */
     LaunchMediaSelect,
 
     /**
+     * Mouse left button
      * @platform only works on Windows
      */
     LButton,
 
+    /**
+     * Left Control
+     */
     LControl,
 
+    /**
+     * Arrow: Left
+     */
     LeftArrow,
 
     /**
+     * Line Feed key (X11)
      * @platform only works on Linux
      */
     Linefeed,
 
+    /**
+     * Left Alt/Menu
+     */
     LMenu,
 
+    /**
+     * Left Shift
+     */
     LShift,
 
     /**
+     * Left Windows / Super key
      * @platform only works on Windows
      */
     LWin,
 
     /**
+     * Mouse middle button
      * @platform only works on Windows
      */
     MButton,
 
+    /**
+     * Next media track
+     */
     MediaNextTrack,
 
+    /**
+     * Play/Pause media
+     */
     MediaPlayPause,
 
+    /**
+     * Previous media track
+     */
     MediaPrevTrack,
 
+    /**
+     * Stop media
+     */
     MediaStop,
 
     /**
-     * meta key (also known as "windows", "super", and "command")
+     * Meta key (also known as "windows", "super", and "command")
      */
     Meta,
 
+    /**
+     * IME mode change
+     */
     ModeChange,
 
+    /**
+     * Numpad multiply '*'
+     */
     Multiply,
 
     /**
+     * Navigation: Accept/OK (UWP)
      * @platform only works on Windows
      */
     NavigationAccept,
 
     /**
+     * Navigation: Cancel/Back (UWP)
      * @platform only works on Windows
      */
     NavigationCancel,
 
     /**
+     * Navigation: Down (UWP)
      * @platform only works on Windows
      */
     NavigationDown,
 
     /**
+     * Navigation: Left (UWP)
      * @platform only works on Windows
      */
     NavigationLeft,
 
     /**
+     * Navigation: Menu (UWP)
      * @platform only works on Windows
      */
     NavigationMenu,
 
     /**
+     * Navigation: Right (UWP)
      * @platform only works on Windows
      */
     NavigationRight,
 
     /**
+     * Navigation: Up (UWP)
      * @platform only works on Windows
      */
     NavigationUp,
 
     /**
+     * Navigation: View (UWP)
      * @platform only works on Windows
      */
     NavigationView,
 
     /**
+     * NoName key (reserved)
      * @platform only works on Windows
      */
     NoName,
 
     /**
+     * IME Non-Convert (cancel conversion)
      * @platform only works on Windows
      */
     NonConvert,
 
     /**
+     * Placeholder "no key"
      * @platform only works on Windows
      */
     None,
 
+    /**
+     * Num Lock toggle
+     */
     Numlock,
 
+    /**
+     * Numpad digit '0'
+     */
     Numpad0,
 
+    /**
+     * Numpad digit '1'
+     */
     Numpad1,
 
+    /**
+     * Numpad digit '2'
+     */
     Numpad2,
 
+    /**
+     * Numpad digit '3'
+     */
     Numpad3,
 
+    /**
+     * Numpad digit '4'
+     */
     Numpad4,
 
+    /**
+     * Numpad digit '5'
+     */
     Numpad5,
 
+    /**
+     * Numpad digit '6'
+     */
     Numpad6,
 
+    /**
+     * Numpad digit '7'
+     */
     Numpad7,
 
+    /**
+     * Numpad digit '8'
+     */
     Numpad8,
 
+    /**
+     * Numpad digit '9'
+     */
     Numpad9,
 
+    /**
+     * Numpad Enter
+     */
     NumpadEnter,
 
     /**
+     * OEM specific key 1
      * @platform only works on Windows
      */
     Oem1,
 
     /**
+     * OEM specific key 102 (angle bracket/pipe on some layouts)
      * @platform only works on Windows
      */
     Oem102,
 
     /**
+     * OEM specific key 2
      * @platform only works on Windows
      */
     Oem2,
 
     /**
+     * OEM specific key 3 (backtick/tilde on some layouts)
      * @platform only works on Windows
      */
     Oem3,
 
     /**
+     * OEM specific key 4 (left bracket on some layouts)
      * @platform only works on Windows
      */
     Oem4,
 
     /**
+     * OEM specific key 5 (right bracket on some layouts)
      * @platform only works on Windows
      */
     Oem5,
 
     /**
+     * OEM specific key 6 (semicolon on some layouts)
      * @platform only works on Windows
      */
     Oem6,
 
     /**
+     * OEM specific key 7 (quote on some layouts)
      * @platform only works on Windows
      */
     Oem7,
 
     /**
+     * OEM specific key 8
      * @platform only works on Windows
      */
     Oem8,
 
     /**
+     * OEM Attention
      * @platform only works on Windows
      */
     OemAttn,
 
     /**
+     * OEM Auto
      * @platform only works on Windows
      */
     OemAuto,
 
     /**
+     * OEM Ax
      * @platform only works on Windows
      */
     OemAx,
 
     /**
+     * OEM Backtab (reverse Tab)
      * @platform only works on Windows
      */
     OemBacktab,
 
     /**
+     * OEM Clear
      * @platform only works on Windows
      */
     OemClear,
 
     /**
+     * OEM Comma ','
      * @platform only works on Windows
      */
     OemComma,
 
     /**
+     * OEM Copy
      * @platform only works on Windows
      */
     OemCopy,
 
     /**
+     * OEM Cusel
      * @platform only works on Windows
      */
     OemCusel,
 
     /**
+     * OEM Enlw
      * @platform only works on Windows
      */
     OemEnlw,
 
     /**
+     * OEM Finish
      * @platform only works on Windows
      */
     OemFinish,
 
     /**
+     * OEM FJ Jisho (dictionary)
      * @platform only works on Windows
      */
     OemfjJisho,
 
     /**
+     * OEM FJ Loya
      * @platform only works on Windows
      */
     OemfjLoya,
 
     /**
+     * OEM FJ Masshou
      * @platform only works on Windows
      */
     OemfjMasshou,
 
     /**
+     * OEM FJ Roya
      * @platform only works on Windows
      */
     OemfjRoya,
 
     /**
+     * OEM FJ Touroku
      * @platform only works on Windows
      */
     OemfjTouroku,
 
     /**
+     * OEM Jump
      * @platform only works on Windows
      */
     OemJump,
 
     /**
+     * OEM Minus '-'
      * @platform only works on Windows
      */
     OemMinus,
 
     /**
+     * OEM NEC Equal '='
      * @platform only works on Windows
      */
     OemnecEqual,
 
     /**
+     * OEM PA1
      * @platform only works on Windows
      */
     Oempa1,
 
     /**
+     * OEM PA2
      * @platform only works on Windows
      */
     Oempa2,
 
     /**
+     * OEM PA3
      * @platform only works on Windows
      */
     Oempa3,
 
     /**
+     * OEM Period '.'
      * @platform only works on Windows
      */
     OemPeriod,
 
     /**
+     * OEM Plus '+'
      * @platform only works on Windows
      */
     OemPlus,
 
     /**
+     * OEM Reset
      * @platform only works on Windows
      */
     OemReset,
 
     /**
+     * OEM Wsctrl
      * @platform only works on Windows
      */
     OemWsctrl,
@@ -921,22 +1360,34 @@ declare enum Key {
     Option,
 
     /**
+     * PA1 key
      * @platform only works on Windows
      */
     Pa1,
 
     /**
+     * Packet key (used to pass Unicode chars)
      * @platform only works on Windows
      */
     Packet,
 
+    /**
+     * Page Down
+     */
     PageDown,
 
+    /**
+     * Page Up
+     */
     PageUp,
 
+    /**
+     * Pause key
+     */
     Pause,
 
     /**
+     * Media Play
      * @platform only works on Windows
      */
     Play,
@@ -947,112 +1398,168 @@ declare enum Key {
     PrintScr,
 
     /**
+     * IME Process key
      * @platform only works on Windows
      */
     Processkey,
 
     /**
+     * Mouse right button
      * @platform only works on Windows
      */
     RButton,
 
+    /**
+     * Right Control
+     */
     RControl,
 
     /**
+     * Redo (X11)
      * @platform only works on Linux
      */
     Redo,
 
+    /**
+     * Enter / Return
+     */
     Return,
 
+    /**
+     * Arrow: Right
+     */
     RightArrow,
 
     /**
+     * Right Alt/Menu
      * @platform only works on Windows
      */
     RMenu,
 
+    /**
+     * Right Shift
+     */
     RShift,
 
     /**
+     * Right Windows / Super key
      * @platform only works on Windows
      */
     RWin,
 
     /**
+     * Scroll key (legacy)
      * @platform only works on Windows
      */
     Scroll,
 
     /**
+     * Scroll Lock (X11)
      * @platform only works on Linux
      */
     ScrollLock,
 
+    /**
+     * Select key
+     */
     Select,
 
     /**
+     * Script switch (X11)
      * @platform only works on Linux
      */
     ScriptSwitch,
 
     /**
+     * Numpad separator (locale-dependent)
      * @platform only works on Windows
      */
     Separator,
 
+    /**
+     * Shift modifier
+     */
     Shift,
 
     /**
+     * Shift Lock (X11)
      * @platform only works on Linux
      */
     ShiftLock,
 
     /**
+     * System Sleep
      * @platform only works on Windows
      */
     Sleep,
 
+    /**
+     * Spacebar
+     */
     Space,
 
+    /**
+     * Numpad '-' (subtract)
+     */
     Subtract,
 
     /**
+     * System Request (SysRq)
      * @platform only works on Linux
      */
     SysReq,
 
+    /**
+     * Tab / focus next
+     */
     Tab,
 
     /**
+     * Undo (X11)
      * @platform only works on Linux
      */
     Undo,
 
+    /**
+     * Arrow: Up
+     */
     UpArrow,
 
+    /**
+     * Volume down
+     */
     VolumeDown,
 
+    /**
+     * Volume mute
+     */
     VolumeMute,
 
+    /**
+     * Volume up
+     */
     VolumeUp,
 
     /**
+     * Microphone mute (X11)
      * @platform only works on Linux
      */
     MicMute,
 
     /**
+     * Mouse XButton1 (back)
      * @platform only works on Windows
      */
     XButton1,
 
     /**
+     * Mouse XButton2 (forward)
      * @platform only works on Windows
      */
     XButton2,
 
     /**
+     * Zoom key
      * @platform only works on Windows
      */
     Zoom,
@@ -2681,12 +3188,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
-    readonly path: string;
-    readonly size: number;
-    readonly isFile: boolean;
     readonly isSymlink: boolean;
-    readonly isDirectory: boolean;
+    readonly path: string;
+    readonly isFile: boolean;
+    readonly size: number;
     readonly fileName: string;
+    readonly isDirectory: boolean;
 }
 /**
  * Directory options
@@ -2901,21 +3408,29 @@ declare interface DisplayInfo {
      */
     readonly id: number;
     /**
-     * The display rectangle
+     * The display friendly name
      */
-    readonly rect: Rect;
-    /**
-     * The display pixel width
-     */
-    readonly widthMm: number;
+    readonly friendlyName: string;
     /**
      * The display pixel height
      */
     readonly heightMm: number;
     /**
-     * Output device's pixel scale factor
+     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
      */
-    readonly scaleFactor: number;
+    readonly rotation: number;
+    /**
+     * The display refresh rate
+     */
+    readonly frequency: number;
+    /**
+     * The display pixel width
+     */
+    readonly widthMm: number;
+    /**
+     * The display rectangle
+     */
+    readonly rect: Rect;
     /**
      * Whether the screen is the main screen
      */
@@ -2925,17 +3440,9 @@ declare interface DisplayInfo {
      */
     readonly name: string;
     /**
-     * The display friendly name
+     * Output device's pixel scale factor
      */
-    readonly friendlyName: string;
-    /**
-     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
-     */
-    readonly rotation: number;
-    /**
-     * The display refresh rate
-     */
-    readonly frequency: number;
+    readonly scaleFactor: number;
 }
 declare class Rect {
     /**
@@ -3270,18 +3777,6 @@ declare interface System {
      */
     readonly hardware: Hardware;
     /**
-     * Storage information
-     */
-    readonly storage: Storage;
-    /**
-     * Processes information
-     */
-    readonly processes: Processes;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
      * Network information
      */
     readonly network: Network;
@@ -3289,6 +3784,18 @@ declare interface System {
      * Memory information
      */
     readonly memory: Memory;
+    /**
+     * Os information
+     */
+    readonly os: Os;
+    /**
+     * Processes information
+     */
+    readonly processes: Processes;
+    /**
+     * Storage information
+     */
+    readonly storage: Storage;
     /**
      * Cpu information
      */
@@ -3451,9 +3958,9 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
+    total(): number;
     current(): number;
     finished(): boolean;
-    total(): number;
 }
 /**
  * Cpu
@@ -3485,33 +3992,33 @@ declare interface Hardware {
      */
     readonly vendorName?: string;
     /**
-     * Motherboard
+     * Uuid
      */
-    readonly motherboard: Motherboard;
-    /**
-     * Name
-     */
-    readonly name?: string;
+    readonly uuid?: string;
     /**
      * Stock keeping unit
      */
     readonly stockKeepingUnit?: string;
     /**
+     * Motherboard
+     */
+    readonly motherboard: Motherboard;
+    /**
      * Family
      */
     readonly family?: string;
-    /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
     /**
      * Version
      */
     readonly version?: string;
     /**
-     * Uuid
+     * Name
      */
-    readonly uuid?: string;
+    readonly name?: string;
+    /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
     /**
      * Hardware components
      */
@@ -3520,44 +4027,44 @@ declare interface Hardware {
 }
 declare interface Motherboard {
     /**
-     * Name
+     * Serial number
      */
-    readonly name?: string;
-    /**
-     * Asset tag
-     */
-    readonly assetTag?: string;
+    readonly serialNumber?: string;
     /**
      * Version
      */
     readonly version?: string;
     /**
-     * Serial number
+     * Name
      */
-    readonly serialNumber?: string;
+    readonly name?: string;
     /**
      * Vendor name
      */
     readonly vendorName?: string;
+    /**
+     * Asset tag
+     */
+    readonly assetTag?: string;
     toString(): string;
 }
 declare interface Component {
     /**
-     * Maximum temperature
+     * Temperature
      */
-    readonly maxTemperature?: number;
-    /**
-     * Label
-     */
-    readonly label: string;
+    readonly temperature?: number;
     /**
      * ID
      */
     readonly id?: string;
     /**
-     * Temperature
+     * Label
      */
-    readonly temperature?: number;
+    readonly label: string;
+    /**
+     * Maximum temperature
+     */
+    readonly maxTemperature?: number;
     /**
      * Critical temperature
      */
@@ -3589,13 +4096,13 @@ declare interface MemoryUsage {
      */
     readonly used: number;
     /**
-     * Available
-     */
-    readonly available: number;
-    /**
      * Free
      */
     readonly free: number;
+    /**
+     * Available
+     */
+    readonly available: number;
     /**
      * Total
      */
@@ -3608,6 +4115,10 @@ declare interface MemoryUsage {
  */
 declare interface CGroupLimits {
     /**
+     * Free memory
+     */
+    readonly freeMemory: number;
+    /**
      * RSS
      */
     readonly rss: number;
@@ -3619,10 +4130,6 @@ declare interface CGroupLimits {
      * Free swap
      */
     readonly freeSwap: number;
-    /**
-     * Free memory
-     */
-    readonly freeMemory: number;
     toString(): string;
 }
 /**
@@ -3645,40 +4152,40 @@ declare interface NetworkInterface {
      */
     readonly macAddress?: string;
     /**
-     * Name
+     * Outbound
      */
-    readonly name: string;
+    readonly outbound: Traffic;
     /**
      * Inbound
      */
     readonly inbound: Traffic;
     /**
-     * MTU
-     */
-    readonly mtu: number;
-    /**
      * Subnets
      */
     readonly subnets: string[];
     /**
-     * Outbound
+     * Name
      */
-    readonly outbound: Traffic;
+    readonly name: string;
+    /**
+     * MTU
+     */
+    readonly mtu: number;
     toString(): string;
 }
 declare interface Counters {
     /**
-     * Data
+     * Packets
      */
-    readonly data: number;
+    readonly packets: number;
     /**
      * Errors
      */
     readonly errors: number;
     /**
-     * Packets
+     * Data
      */
-    readonly packets: number;
+    readonly data: number;
     toString(): string;
 }
 declare interface Traffic {
@@ -3748,40 +4255,40 @@ declare interface Os {
 }
 declare interface User {
     /**
+     * Groups
+     */
+    readonly groups: number[];
+    /**
      * Name
      */
     readonly name: string;
     /**
-     * ID
+     * Group names
      */
-    readonly id: string;
-    /**
-     * Groups
-     */
-    readonly groups: number[];
+    readonly groupNames: string[];
     /**
      * Group ID
      */
     readonly groupId?: number;
     /**
+     * ID
+     */
+    readonly id: string;
+    /**
      * Group name
      */
     readonly groupName?: string;
-    /**
-     * Group names
-     */
-    readonly groupNames: string[];
     toString(): string;
 }
 declare interface Group {
     /**
-     * ID
-     */
-    readonly id: number;
-    /**
      * Name
      */
     readonly name: string;
+    /**
+     * ID
+     */
+    readonly id: number;
     toString(): string;
 }
 /**
@@ -3796,53 +4303,9 @@ declare interface Processes {
 }
 declare interface Process {
     /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Env
-     */
-    readonly env: string[];
-    /**
      * Name
      */
     readonly name?: string;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Cmd
-     */
-    readonly cmd: string[];
-    /**
-     * Exe
-     */
-    readonly exe?: string;
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * Run time
-     */
-    readonly runTime: number;
-    /**
-     * Effective group ID
-     */
-    readonly effectiveGroupId?: number;
-    /**
-     * Status
-     */
-    readonly status: ProcessStatus;
-    /**
-     * Cwd
-     */
-    readonly cwd?: string;
-    /**
-     * Pid
-     */
-    readonly pid: number;
     /**
      * Accumulated CPU time
      */
@@ -3852,29 +4315,29 @@ declare interface Process {
      */
     readonly diskUsage: DiskUsage;
     /**
-     * Start time
+     * Cwd
      */
-    readonly startTime: Object;
+    readonly cwd?: string;
     /**
-     * Memory
+     * Root
      */
-    readonly memory: number;
+    readonly root?: string;
     /**
-     * Effective user ID
+     * Virtual memory
      */
-    readonly effectiveUserId?: string;
+    readonly virtualMemory: number;
     /**
-     * Open files
+     * Run time
      */
-    readonly openFiles?: number;
+    readonly runTime: number;
     /**
-     * Exists
+     * User ID
      */
-    readonly exists: boolean;
+    readonly userId?: string;
     /**
-     * Open files limit
+     * Status
      */
-    readonly openFilesLimit?: number;
+    readonly status: ProcessStatus;
     /**
      * Group ID
      */
@@ -3884,13 +4347,57 @@ declare interface Process {
      */
     readonly cpuUsage: number;
     /**
+     * Parent
+     */
+    readonly parent?: number;
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Exists
+     */
+    readonly exists: boolean;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
      * Session ID
      */
     readonly sessionId?: number;
     /**
-     * User ID
+     * Open files
      */
-    readonly userId?: string;
+    readonly openFiles?: number;
+    /**
+     * Open files limit
+     */
+    readonly openFilesLimit?: number;
+    /**
+     * Effective group ID
+     */
+    readonly effectiveGroupId?: number;
+    /**
+     * Pid
+     */
+    readonly pid: number;
+    /**
+     * Cmd
+     */
+    readonly cmd: string[];
+    /**
+     * Exe
+     */
+    readonly exe?: string;
+    /**
+     * Memory
+     */
+    readonly memory: number;
+    /**
+     * Env
+     */
+    readonly env: string[];
     toString(): string;
 }
 /**
@@ -3905,37 +4412,37 @@ declare interface Storage {
 }
 declare interface Disk {
     /**
-     * Is removable
-     */
-    readonly isRemovable: boolean;
-    /**
      * File system
      */
     readonly fileSystem?: string;
-    /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
-    /**
-     * Mount point
-     */
-    readonly mountPoint: string;
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
     /**
      * Available space
      */
     readonly availableSpace: number;
     /**
+     * Mount point
+     */
+    readonly mountPoint: string;
+    /**
      * Name
      */
     readonly name?: string;
     /**
+     * Is removable
+     */
+    readonly isRemovable: boolean;
+    /**
      * Total space
      */
     readonly totalSpace: number;
+    /**
+     * Kind
+     */
+    readonly kind: DiskKind;
+    /**
+     * Is read-only
+     */
+    readonly isReadOnly: boolean;
     /**
      * Usage
      */
@@ -3944,24 +4451,24 @@ declare interface Disk {
 }
 declare interface IoStats {
     /**
-     * Total
-     */
-    readonly total: number;
-    /**
      * Delta
      */
     readonly delta: number;
+    /**
+     * Total
+     */
+    readonly total: number;
     toString(): string;
 }
 declare interface DiskUsage {
     /**
-     * Written
-     */
-    readonly written: IoStats;
-    /**
      * Read
      */
     readonly read: IoStats;
+    /**
+     * Written
+     */
+    readonly written: IoStats;
     toString(): string;
 }
 declare interface Concurrency {

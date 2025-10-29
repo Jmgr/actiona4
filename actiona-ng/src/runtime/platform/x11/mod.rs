@@ -1,12 +1,30 @@
-use std::sync::Arc;
+use std::{
+    fmt::Debug,
+    sync::Arc,
+    thread::{self, JoinHandle},
+};
 
 use enigo::Direction;
 use eyre::{Result, eyre};
 use libwmctl::AtomCollection;
-use tokio::{select, sync::broadcast};
-use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tokio::{
+    runtime::Builder,
+    select,
+    sync::{broadcast, oneshot, watch},
+    task::LocalSet,
+};
+use tokio_util::{
+    sync::CancellationToken,
+    task::{TaskTracker, task_tracker},
+};
 use tracing::{error, info};
-use x11rb::protocol::xinput::PointerEventFlags;
+use x11rb::{
+    protocol::{
+        xinput::{KeyEventFlags, PointerEventFlags},
+        xproto::Mapping,
+    },
+    xcb_ffi::XCBConnection,
+};
 use x11rb_async::{
     connection::Connection,
     protocol::{
@@ -14,6 +32,14 @@ use x11rb_async::{
         randr::{self},
         shm,
         xinput::xi_query_version,
+        xkb::{ConnectionExt, DeviceSpec, EventType, ID, MapPart, SelectEventsAux},
+    },
+};
+use xkbcommon::xkb::{
+    self, CONTEXT_NO_FLAGS,
+    x11::{
+        MIN_MAJOR_XKB_VERSION, MIN_MINOR_XKB_VERSION, SetupXkbExtensionFlags,
+        get_core_keyboard_device_id, setup_xkb_extension,
     },
 };
 
@@ -21,10 +47,12 @@ use crate::{
     core::{mouse::Button, point::point, windows::platform::x11::events::WindowEvent},
     platform::x11::X11Connection,
     runtime::{
-        events::{MouseButtonEvent, TopicWrapper},
+        events::{KeyboardKeyEvent, MouseButtonEvent, TopicWrapper},
         platform::x11::events::{
             displays::ScreenChangeTopic,
-            input::{InputMask, MouseButtonsTopic, MouseMoveTopic},
+            input::{
+                InputMask, KeyboardKeysTopic, MouseButtonsTopic, MouseMoveTopic, keysym_to_key,
+            },
         },
     },
 };
@@ -51,17 +79,50 @@ pub struct Runtime {
     atoms: AtomCollection,
     mouse_buttons_topic: Arc<TopicWrapper<MouseButtonsTopic>>,
     mouse_move_topic: Arc<TopicWrapper<MouseMoveTopic>>,
+    keyboard_keys_topic: Arc<TopicWrapper<KeyboardKeysTopic>>,
     screen_change_topic: Arc<TopicWrapper<ScreenChangeTopic>>,
     window_event_sender: broadcast::Sender<WindowEvent>,
+    main_loop_thread: Option<JoinHandle<Result<()>>>,
+}
+
+impl Drop for Runtime {
+    fn drop(&mut self) {
+        if let Some(main_loop_thread) = self.main_loop_thread.take()
+            && let Err(err) = main_loop_thread.join().expect("thread join should succeed")
+        {
+            error!("main loop thread finished with an error: {err}");
+        }
+    }
+}
+
+fn spawn_on_dedicated<F, Fut, T>(make_fut: F) -> JoinHandle<T>
+where
+    F: FnOnce() -> Fut + Send + 'static,
+    Fut: std::future::Future<Output = T> + 'static,
+    T: Debug + Send + 'static,
+{
+    thread::spawn(move || {
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+        let local_set = LocalSet::new();
+
+        local_set.block_on(&runtime, async move { Box::pin((make_fut)()).await })
+    })
 }
 
 impl Runtime {
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
+        display_name: Option<&str>,
     ) -> Result<Self> {
-        let x11_connection =
-            Arc::new(X11Connection::new(cancellation_token.clone(), task_tracker.clone()).await?);
+        let x11_connection = Arc::new(
+            X11Connection::new(
+                cancellation_token.clone(),
+                task_tracker.clone(),
+                display_name,
+            )
+            .await?,
+        );
         let connection = x11_connection.async_connection();
         let atoms = AtomCollection::new(x11_connection.sync_connection())?.reply()?;
 
@@ -82,6 +143,54 @@ impl Runtime {
             version.major_version, version.minor_version
         );
 
+        // Make sure XKB is available
+        let ue = connection
+            .xkb_use_extension(MIN_MAJOR_XKB_VERSION, MIN_MINOR_XKB_VERSION)
+            .await?
+            .reply()
+            .await?;
+        if !ue.supported {
+            return Err(eyre!("required XKB extension not available"));
+        }
+
+        let xcb_connection = x11_connection.xcb_connection();
+        let mut major_version = 0;
+        let mut minor_version = 0;
+        let mut base_event = 0;
+        let mut base_error = 0;
+        if !setup_xkb_extension(
+            xcb_connection,
+            MIN_MAJOR_XKB_VERSION,
+            MIN_MINOR_XKB_VERSION,
+            SetupXkbExtensionFlags::NoFlags,
+            &mut major_version,
+            &mut minor_version,
+            &mut base_event,
+            &mut base_error,
+        ) {
+            return Err(eyre!("required XKB extension not available"));
+        }
+        info!(
+            "XKB available, version: {}.{}",
+            major_version, minor_version
+        );
+
+        let map_parts =
+            MapPart::KEY_TYPES | MapPart::KEY_SYMS | MapPart::MODIFIER_MAP | MapPart::VIRTUAL_MODS;
+
+        connection
+            .xkb_select_events(
+                get_core_keyboard_device_id(xcb_connection).try_into()?,
+                EventType::default(),
+                EventType::NEW_KEYBOARD_NOTIFY | EventType::MAP_NOTIFY | EventType::STATE_NOTIFY,
+                map_parts,
+                map_parts,
+                &SelectEventsAux::new(),
+            )
+            .await?;
+        connection.flush().await?;
+
+        // Check if SHM is available (used for faster screenshots)
         let has_shm = async {
             let version = shm::query_version(connection).await?.reply().await?;
             Result::<shm::QueryVersionReply>::Ok(version)
@@ -110,7 +219,12 @@ impl Runtime {
             task_tracker.clone(),
         ));
         let mouse_move_topic = Arc::new(TopicWrapper::new(
-            MouseMoveTopic::new(x11_connection.clone(), input_mask),
+            MouseMoveTopic::new(x11_connection.clone(), input_mask.clone()),
+            cancellation_token.clone(),
+            task_tracker.clone(),
+        ));
+        let keyboard_keys_topic = Arc::new(TopicWrapper::new(
+            KeyboardKeysTopic::new(x11_connection.clone(), input_mask).await?,
             cancellation_token.clone(),
             task_tracker.clone(),
         ));
@@ -125,10 +239,28 @@ impl Runtime {
         let local_x11_connection = x11_connection.clone();
         let local_mouse_buttons_topic = mouse_buttons_topic.clone();
         let local_mouse_move_topic = mouse_move_topic.clone();
+        let local_keyboard_keys_topic = keyboard_keys_topic.clone();
         let local_screen_change_topic = screen_change_topic.clone();
         let local_window_event_sender = window_event_sender.clone();
 
-        task_tracker.spawn(async move {
+        println!("INIT THREAD {:?}", std::thread::current().id());
+
+        let main_loop_thread = spawn_on_dedicated(|| async move {
+            println!("SPAWN THREAD {:?}", std::thread::current().id());
+
+            /*
+            let xcb_connection = local_x11_connection.xcb_connection();
+            let ctx = xkb::Context::new(CONTEXT_NO_FLAGS);
+            let dev = xkb::x11::get_core_keyboard_device_id(xcb_connection);
+            let keymap = xkb::x11::keymap_new_from_device(
+                &ctx,
+                xcb_connection,
+                dev,
+                xkb::KEYMAP_COMPILE_NO_FLAGS,
+            );
+            let mut state = xkb::x11::state_new_from_device(&keymap, xcb_connection, dev);
+            */
+
             let connection = local_x11_connection.async_connection();
             loop {
                 let event = select! {
@@ -164,6 +296,53 @@ impl Runtime {
                         Event::XinputMotion(event) => {
                             local_mouse_move_topic.publish(point(event.root_x, event.root_y));
                         }
+                        Event::XinputRawKeyPress(event) => {
+                            info!("XinputRawKeyPress event");
+                            let keycode = event.detail;
+                            let (keysym, name) = local_keyboard_keys_topic
+                                .topic()
+                                .translate_keycode(keycode.into(), xkb::KeyDirection::Down);
+                            local_keyboard_keys_topic.publish(KeyboardKeyEvent {
+                                key: keysym_to_key(keysym),
+                                direction: Direction::Press,
+                                injected: false, // Unsupported
+                                name,
+                            });
+                        }
+                        Event::XinputRawKeyRelease(event) => {
+                            info!("XinputRawKeyRelease event");
+                            let keycode = event.detail;
+                            let (keysym, name) = local_keyboard_keys_topic
+                                .topic()
+                                .translate_keycode(keycode.into(), xkb::KeyDirection::Up);
+                            local_keyboard_keys_topic.publish(KeyboardKeyEvent {
+                                key: keysym_to_key(keysym),
+                                direction: Direction::Release,
+                                injected: false, // Unsupported
+                                name,
+                            });
+                        }
+                        Event::XkbMapNotify(_event) => {
+                            info!("XkbMapNotify event");
+                            local_keyboard_keys_topic.topic().recreate_state();
+                        }
+                        Event::XkbNewKeyboardNotify(_event) => {
+                            info!("XkbNewKeyboardNotify event");
+                            local_keyboard_keys_topic.topic().recreate_state();
+                        }
+                        Event::XkbStateNotify(event) => {
+                            /*
+                            info!("XkbStateNotify event, updating state");
+                            local_keyboard_keys_topic.topic().update_state(
+                                event.base_mods,
+                                event.latched_mods,
+                                event.locked_mods,
+                                event.base_group.try_into()?,
+                                event.latched_group.try_into()?,
+                                event.locked_group.into(),
+                            );
+                            */
+                        }
                         Event::RandrScreenChangeNotify(_event) => {
                             match display_info::DisplayInfo::all() {
                                 Ok(infos) => {
@@ -177,6 +356,11 @@ impl Runtime {
                         Event::DestroyNotify(e) => {
                             let handle = libwmctl::window(e.window).into();
                             let _ = local_window_event_sender.send(WindowEvent::Closed(handle));
+                        }
+                        Event::MappingNotify(event) => {
+                            if event.request == Mapping::KEYBOARD {
+                                // TODO: local_keyboard_keys_topic should refresh keyboard mapping
+                            }
                         }
 
                         /*
@@ -193,6 +377,8 @@ impl Runtime {
                     error!("x11 event: {err}");
                 };
             }
+
+            Result::<()>::Ok(())
         });
 
         Ok(Self {
@@ -201,8 +387,10 @@ impl Runtime {
             atoms,
             mouse_buttons_topic,
             mouse_move_topic,
+            keyboard_keys_topic,
             screen_change_topic,
             window_event_sender,
+            main_loop_thread: Some(main_loop_thread),
         })
     }
 
@@ -229,6 +417,11 @@ impl Runtime {
     #[must_use]
     pub fn mouse_move(&self) -> Arc<TopicWrapper<MouseMoveTopic>> {
         self.mouse_move_topic.clone()
+    }
+
+    #[must_use]
+    pub fn keyboard_keys(&self) -> Arc<TopicWrapper<KeyboardKeysTopic>> {
+        self.keyboard_keys_topic.clone()
     }
 
     #[must_use]

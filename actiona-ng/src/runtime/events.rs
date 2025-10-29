@@ -4,7 +4,7 @@ use std::sync::{
 };
 
 use derive_more::{Constructor, Deref, DerefMut};
-use enigo::Direction;
+use enigo::{Direction, Key};
 use itertools::Itertools;
 use tokio::{
     select,
@@ -93,6 +93,7 @@ enum SubscribersChange {
 pub struct TopicWrapper<T: Topic> {
     signal_sender: T::Signal,
     subscribers_change_sender: mpsc::UnboundedSender<SubscribersChange>,
+    topic: Arc<T>,
 }
 
 impl<T: Topic + 'static> TopicWrapper<T> {
@@ -100,6 +101,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
         let (sender, mut receiver) = mpsc::unbounded_channel();
         let topic = Arc::new(topic);
 
+        let local_topic = topic.clone();
         task_tracker.spawn(async move {
             let mut count: usize = 0;
             loop {
@@ -115,14 +117,14 @@ impl<T: Topic + 'static> TopicWrapper<T> {
                 match command {
                     SubscribersChange::Increment => {
                         if count == 0 {
-                            topic.on_start().await;
+                            local_topic.on_start().await;
                         }
 
                         count += 1;
                     }
                     SubscribersChange::Decrement => {
                         if count == 1 {
-                            topic.on_stop().await;
+                            local_topic.on_stop().await;
                         }
 
                         count -= 1;
@@ -134,6 +136,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
         Self {
             signal_sender: T::Signal::new(),
             subscribers_change_sender: sender,
+            topic,
         }
     }
 
@@ -161,6 +164,10 @@ impl<T: Topic + 'static> TopicWrapper<T> {
         let _ = self
             .subscribers_change_sender
             .send(SubscribersChange::Decrement);
+    }
+
+    pub fn topic(&self) -> Arc<T> {
+        self.topic.clone()
     }
 }
 
@@ -273,6 +280,14 @@ pub struct MouseButtonEvent {
 pub struct MouseMoveEvent {
     pub position: Point,
     pub injected: bool,
+}
+
+#[derive(Clone, Constructor, Debug)]
+pub struct KeyboardKeyEvent {
+    pub key: Key,
+    pub direction: Direction,
+    pub injected: bool,
+    pub name: String,
 }
 
 // This is the same as display_info::DisplayInfo, but without the pointer to the raw monitor handle, since it is not Send.
