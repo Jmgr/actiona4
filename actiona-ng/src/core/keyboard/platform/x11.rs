@@ -38,7 +38,7 @@ impl KeyboardImpl {
         &self,
         //conditions: ButtonConditions,
         cancellation_token: CancellationToken,
-    ) -> Result<()> {
+    ) -> Result<Key> {
         // MouseButtonEvent
         let guard = self.runtime.platform().keyboard_keys().subscribe();
         let mut receiver = guard.subscribe();
@@ -54,7 +54,11 @@ impl KeyboardImpl {
                 break;
             };
 
-            println!("{:?}", event);
+            if event.key == Key::Escape {
+                runtime_cancellation_token.cancel();
+            }
+
+            return Ok(event.key);
 
             /*
             let button_result = conditions

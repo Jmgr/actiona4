@@ -61,11 +61,9 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             });
         }
 
-        let (comments, instructions, _) =
+        let (comments, enum_instructions, _) =
             process_rustdoc(enum_docs.as_ref(), RustdocContext::Enum)?;
-        if !instructions.is_empty() {
-            warn!("Unexpected instructions: {enum_name}");
-        }
+        let verbatim = enum_instructions.verbatim();
 
         // Remove "Js" prefix if present
         let enum_name = enum_name.strip_prefix("Js").unwrap_or(enum_name);
@@ -74,7 +72,8 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             name: enum_name.to_string(),
             variants: result_variants,
             comments,
-            platforms: instructions.platforms(),
+            platforms: enum_instructions.platforms(),
+            verbatim,
         });
     }
 

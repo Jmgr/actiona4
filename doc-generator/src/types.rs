@@ -19,6 +19,7 @@ pub struct Enum {
     pub variants: Vec<EnumVariant>,
     pub comments: Comments,
     pub platforms: Platforms,
+    pub verbatim: Vec<String>,
 }
 
 #[derive(Clone, Debug, EnumIs, PartialEq)]

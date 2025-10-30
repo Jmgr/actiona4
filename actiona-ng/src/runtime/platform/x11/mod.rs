@@ -4,27 +4,14 @@ use std::{
     thread::{self, JoinHandle},
 };
 
+use derive_more::{Deref, DerefMut};
 use enigo::Direction;
 use eyre::{Result, eyre};
 use libwmctl::AtomCollection;
-use tokio::{
-    runtime::Builder,
-    select,
-    sync::{broadcast, oneshot, watch},
-    task::LocalSet,
-};
-use tokio_util::{
-    sync::CancellationToken,
-    task::{TaskTracker, task_tracker},
-};
+use tokio::{runtime::Builder, select, sync::broadcast, task::LocalSet};
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, info};
-use x11rb::{
-    protocol::{
-        xinput::{KeyEventFlags, PointerEventFlags},
-        xproto::Mapping,
-    },
-    xcb_ffi::XCBConnection,
-};
+use x11rb::protocol::xinput::PointerEventFlags;
 use x11rb_async::{
     connection::Connection,
     protocol::{
@@ -32,11 +19,11 @@ use x11rb_async::{
         randr::{self},
         shm,
         xinput::xi_query_version,
-        xkb::{ConnectionExt, DeviceSpec, EventType, ID, MapPart, SelectEventsAux},
+        xkb::{ConnectionExt, EventType, MapPart, SelectEventsAux},
     },
 };
 use xkbcommon::xkb::{
-    self, CONTEXT_NO_FLAGS,
+    self, CONTEXT_NO_FLAGS, KeyDirection,
     x11::{
         MIN_MAJOR_XKB_VERSION, MIN_MINOR_XKB_VERSION, SetupXkbExtensionFlags,
         get_core_keyboard_device_id, setup_xkb_extension,
@@ -95,20 +82,6 @@ impl Drop for Runtime {
     }
 }
 
-fn spawn_on_dedicated<F, Fut, T>(make_fut: F) -> JoinHandle<T>
-where
-    F: FnOnce() -> Fut + Send + 'static,
-    Fut: std::future::Future<Output = T> + 'static,
-    T: Debug + Send + 'static,
-{
-    thread::spawn(move || {
-        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
-        let local_set = LocalSet::new();
-
-        local_set.block_on(&runtime, async move { Box::pin((make_fut)()).await })
-    })
-}
-
 impl Runtime {
     pub async fn new(
         cancellation_token: CancellationToken,
@@ -143,7 +116,7 @@ impl Runtime {
             version.major_version, version.minor_version
         );
 
-        // Make sure XKB is available
+        // Use XKB
         let ue = connection
             .xkb_use_extension(MIN_MAJOR_XKB_VERSION, MIN_MINOR_XKB_VERSION)
             .await?
@@ -182,7 +155,7 @@ impl Runtime {
             .xkb_select_events(
                 get_core_keyboard_device_id(xcb_connection).try_into()?,
                 EventType::default(),
-                EventType::NEW_KEYBOARD_NOTIFY | EventType::MAP_NOTIFY | EventType::STATE_NOTIFY,
+                EventType::NEW_KEYBOARD_NOTIFY | EventType::MAP_NOTIFY,
                 map_parts,
                 map_parts,
                 &SelectEventsAux::new(),
@@ -224,7 +197,7 @@ impl Runtime {
             task_tracker.clone(),
         ));
         let keyboard_keys_topic = Arc::new(TopicWrapper::new(
-            KeyboardKeysTopic::new(x11_connection.clone(), input_mask).await?,
+            KeyboardKeysTopic::new(x11_connection.clone(), input_mask),
             cancellation_token.clone(),
             task_tracker.clone(),
         ));
@@ -243,23 +216,8 @@ impl Runtime {
         let local_screen_change_topic = screen_change_topic.clone();
         let local_window_event_sender = window_event_sender.clone();
 
-        println!("INIT THREAD {:?}", std::thread::current().id());
-
-        let main_loop_thread = spawn_on_dedicated(|| async move {
-            println!("SPAWN THREAD {:?}", std::thread::current().id());
-
-            /*
-            let xcb_connection = local_x11_connection.xcb_connection();
-            let ctx = xkb::Context::new(CONTEXT_NO_FLAGS);
-            let dev = xkb::x11::get_core_keyboard_device_id(xcb_connection);
-            let keymap = xkb::x11::keymap_new_from_device(
-                &ctx,
-                xcb_connection,
-                dev,
-                xkb::KEYMAP_COMPILE_NO_FLAGS,
-            );
-            let mut state = xkb::x11::state_new_from_device(&keymap, xcb_connection, dev);
-            */
+        let main_loop_thread = spawn_on_dedicated_thread(|| async move {
+            let mut keyboard_state = KeyboardState::new(local_x11_connection.clone());
 
             let connection = local_x11_connection.async_connection();
             loop {
@@ -275,106 +233,72 @@ impl Runtime {
                     }
                 };
 
-                if let Err(err) = (|| {
-                    match event {
-                        Event::XinputRawButtonPress(event) => {
-                            let button = Button::from_event(event.detail)?;
-                            local_mouse_buttons_topic.publish(MouseButtonEvent {
-                                button,
-                                direction: Direction::Press,
-                                injected: event.flags == PointerEventFlags::POINTER_EMULATED,
-                            });
-                        }
-                        Event::XinputRawButtonRelease(event) => {
-                            let button = Button::from_event(event.detail)?;
-                            local_mouse_buttons_topic.publish(MouseButtonEvent {
-                                button,
-                                direction: Direction::Release,
-                                injected: event.flags == PointerEventFlags::POINTER_EMULATED,
-                            });
-                        }
-                        Event::XinputMotion(event) => {
-                            local_mouse_move_topic.publish(point(event.root_x, event.root_y));
-                        }
-                        Event::XinputRawKeyPress(event) => {
-                            info!("XinputRawKeyPress event");
-                            let keycode = event.detail;
-                            let (keysym, name) = local_keyboard_keys_topic
-                                .topic()
-                                .translate_keycode(keycode.into(), xkb::KeyDirection::Down);
-                            local_keyboard_keys_topic.publish(KeyboardKeyEvent {
-                                key: keysym_to_key(keysym),
-                                direction: Direction::Press,
-                                injected: false, // Unsupported
-                                name,
-                            });
-                        }
-                        Event::XinputRawKeyRelease(event) => {
-                            info!("XinputRawKeyRelease event");
-                            let keycode = event.detail;
-                            let (keysym, name) = local_keyboard_keys_topic
-                                .topic()
-                                .translate_keycode(keycode.into(), xkb::KeyDirection::Up);
-                            local_keyboard_keys_topic.publish(KeyboardKeyEvent {
-                                key: keysym_to_key(keysym),
-                                direction: Direction::Release,
-                                injected: false, // Unsupported
-                                name,
-                            });
-                        }
-                        Event::XkbMapNotify(_event) => {
-                            info!("XkbMapNotify event");
-                            local_keyboard_keys_topic.topic().recreate_state();
-                        }
-                        Event::XkbNewKeyboardNotify(_event) => {
-                            info!("XkbNewKeyboardNotify event");
-                            local_keyboard_keys_topic.topic().recreate_state();
-                        }
-                        Event::XkbStateNotify(event) => {
-                            /*
-                            info!("XkbStateNotify event, updating state");
-                            local_keyboard_keys_topic.topic().update_state(
-                                event.base_mods,
-                                event.latched_mods,
-                                event.locked_mods,
-                                event.base_group.try_into()?,
-                                event.latched_group.try_into()?,
-                                event.locked_group.into(),
-                            );
-                            */
-                        }
-                        Event::RandrScreenChangeNotify(_event) => {
-                            match display_info::DisplayInfo::all() {
-                                Ok(infos) => {
-                                    local_screen_change_topic.publish(infos.into());
-                                }
-                                Err(err) => {
-                                    error!("fetching display info: {err}");
-                                }
+                match event {
+                    Event::XinputRawButtonPress(event) => {
+                        let button = Button::from_event(event.detail)?;
+                        local_mouse_buttons_topic.publish(MouseButtonEvent {
+                            button,
+                            direction: Direction::Press,
+                            injected: event.flags == PointerEventFlags::POINTER_EMULATED,
+                        });
+                    }
+                    Event::XinputRawButtonRelease(event) => {
+                        let button = Button::from_event(event.detail)?;
+                        local_mouse_buttons_topic.publish(MouseButtonEvent {
+                            button,
+                            direction: Direction::Release,
+                            injected: event.flags == PointerEventFlags::POINTER_EMULATED,
+                        });
+                    }
+                    Event::XinputMotion(event) => {
+                        local_mouse_move_topic.publish(point(event.root_x, event.root_y));
+                    }
+                    Event::XinputRawKeyPress(event) => {
+                        let keycode = event.detail.into();
+                        let keysym = keyboard_state.key_get_one_sym(keycode);
+                        let name = keyboard_state.key_get_utf8(keycode);
+
+                        keyboard_state.update_key(keycode, KeyDirection::Down);
+
+                        local_keyboard_keys_topic.publish(KeyboardKeyEvent {
+                            key: keysym_to_key(keysym),
+                            direction: Direction::Press,
+                            injected: false, // Unsupported
+                            name,
+                        });
+                    }
+                    Event::XinputRawKeyRelease(event) => {
+                        let keycode = event.detail.into();
+                        let keysym = keyboard_state.key_get_one_sym(keycode);
+                        let name = keyboard_state.key_get_utf8(keycode);
+
+                        keyboard_state.update_key(keycode, KeyDirection::Up);
+
+                        local_keyboard_keys_topic.publish(KeyboardKeyEvent {
+                            key: keysym_to_key(keysym),
+                            direction: Direction::Release,
+                            injected: false, // Unsupported
+                            name,
+                        });
+                    }
+                    Event::XkbMapNotify(_) | Event::XkbNewKeyboardNotify(_) => {
+                        keyboard_state = KeyboardState::new(local_x11_connection.clone());
+                    }
+                    Event::RandrScreenChangeNotify(_event) => {
+                        match display_info::DisplayInfo::all() {
+                            Ok(infos) => {
+                                local_screen_change_topic.publish(infos.into());
+                            }
+                            Err(err) => {
+                                error!("fetching display info: {err}");
                             }
                         }
-                        Event::DestroyNotify(e) => {
-                            let handle = libwmctl::window(e.window).into();
-                            let _ = local_window_event_sender.send(WindowEvent::Closed(handle));
-                        }
-                        Event::MappingNotify(event) => {
-                            if event.request == Mapping::KEYBOARD {
-                                // TODO: local_keyboard_keys_topic should refresh keyboard mapping
-                            }
-                        }
-
-                        /*
-                        Event::XinputRawKeyPress(event) => Button::from_event(event.detail)
-                            .map(|button| RecordEvent::MouseButton(button, Direction::Pressed)), // TODO: keys
-                        Event::XinputRawKeyRelease(event) => Button::from_event(event.detail)
-                            .map(|button| RecordEvent::MouseButton(button, Direction::Released)), // TODO: keys
-
-                        */
-                        _ => {}
-                    };
-                    Result::<()>::Ok(())
-                })() {
-                    error!("x11 event: {err}");
+                    }
+                    Event::DestroyNotify(e) => {
+                        let handle = libwmctl::window(e.window).into();
+                        let _ = local_window_event_sender.send(WindowEvent::Closed(handle));
+                    }
+                    _ => {}
                 };
             }
 
@@ -432,5 +356,42 @@ impl Runtime {
     #[must_use]
     pub fn subscribe_window_events(&self) -> broadcast::Receiver<WindowEvent> {
         self.window_event_sender.subscribe()
+    }
+}
+
+fn spawn_on_dedicated_thread<F, Fut, T>(make_fut: F) -> JoinHandle<T>
+where
+    F: FnOnce() -> Fut + Send + 'static,
+    Fut: std::future::Future<Output = T> + 'static,
+    T: Debug + Send + 'static,
+{
+    thread::spawn(move || {
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+        let local_set = LocalSet::new();
+
+        local_set.block_on(&runtime, async move { Box::pin((make_fut)()).await })
+    })
+}
+
+#[derive(Deref, DerefMut)]
+struct KeyboardState(xkb::State);
+
+impl KeyboardState {
+    pub fn new(x11_connection: Arc<X11Connection>) -> Self {
+        let xcb_connection = x11_connection.xcb_connection();
+        let ctx = xkb::Context::new(CONTEXT_NO_FLAGS);
+        let dev = xkb::x11::get_core_keyboard_device_id(xcb_connection);
+        let keymap = xkb::x11::keymap_new_from_device(
+            &ctx,
+            xcb_connection,
+            dev,
+            xkb::KEYMAP_COMPILE_NO_FLAGS,
+        );
+
+        Self(xkb::x11::state_new_from_device(
+            &keymap,
+            xcb_connection,
+            dev,
+        ))
     }
 }

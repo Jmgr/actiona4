@@ -238,27 +238,32 @@ impl File {
 
             write_comments(&comments, "", &mut output_file)?;
 
-            writeln!(output_file, "declare enum {} {{", enum_.name)?;
+            let verbatim = enum_.verbatim.join("\n");
+            if verbatim.is_empty() {
+                writeln!(output_file, "declare enum {} {{", enum_.name)?;
 
-            for (i, variant) in enum_.variants.iter().enumerate() {
-                let is_first = i == 0;
+                for (i, variant) in enum_.variants.iter().enumerate() {
+                    let is_first = i == 0;
 
-                if !is_first {
-                    writeln!(output_file)?;
+                    if !is_first {
+                        writeln!(output_file)?;
+                    }
+
+                    let mut comments = variant.comments.clone();
+
+                    if !variant.platforms.is_empty() {
+                        comments.push(format!("@platform {}", variant.platforms));
+                    }
+
+                    write_comments(&comments, "    ", &mut output_file)?;
+
+                    writeln!(output_file, "    {},", variant.name)?;
                 }
 
-                let mut comments = variant.comments.clone();
-
-                if !variant.platforms.is_empty() {
-                    comments.push(format!("@platform {}", variant.platforms));
-                }
-
-                write_comments(&comments, "    ", &mut output_file)?;
-
-                writeln!(output_file, "    {},", variant.name)?;
+                writeln!(output_file, "}}")?;
+            } else {
+                writeln!(output_file, "{}", verbatim)?;
             }
-
-            writeln!(output_file, "}}")?;
         }
 
         for struct_ in self.structs.iter() {

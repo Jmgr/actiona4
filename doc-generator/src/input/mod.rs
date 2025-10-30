@@ -433,7 +433,11 @@ const fn allowed_context_for_instruction(
         Generic => &[RustdocContext::Struct, RustdocContext::Method],
         Method => &[RustdocContext::Struct],
         Type => &[RustdocContext::Property],
-        Verbatim => &[RustdocContext::Struct, RustdocContext::Module],
+        Verbatim => &[
+            RustdocContext::Struct,
+            RustdocContext::Module,
+            RustdocContext::Enum,
+        ],
         Getter => &[RustdocContext::Method],
     }
 }

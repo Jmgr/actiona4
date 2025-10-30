@@ -1,29 +1,14 @@
-use std::{
-    cell::RefCell,
-    collections::HashMap,
-    sync::{Arc, Mutex, Weak},
-};
+use std::sync::{Arc, Mutex};
 
 use derive_more::Constructor;
-use derive_where::derive_where;
 use enigo::Key;
-use eyre::Result;
-use itertools::Itertools;
-use once_cell::sync::OnceCell;
 use tracing::error;
-use x11rb::protocol::{
-    xinput::{Device, EventMask, XIEventMask},
-    xproto::ModMask,
-};
-use x11rb_async::{
-    connection::Connection,
-    protocol::{xinput::xi_select_events, xproto::ConnectionExt},
-};
-use xkbcommon::xkb::{self, CONTEXT_NO_FLAGS, KeyDirection, LayoutIndex};
-use xkeysym::{KeyCode, Keysym};
+use x11rb::protocol::xinput::{Device, EventMask, XIEventMask};
+use x11rb_async::{connection::Connection, protocol::xinput::xi_select_events};
+use xkeysym::Keysym;
 
 use crate::{
-    core::{displays::platform::x11, point::Point},
+    core::point::Point,
     platform::x11::X11Connection,
     runtime::events::{AllSignals, KeyboardKeyEvent, LatestOnlySignals, MouseButtonEvent, Topic},
 };
@@ -144,36 +129,10 @@ impl Topic for MouseMoveTopic {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Constructor)]
 pub struct KeyboardKeysTopic {
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
-}
-
-struct State {
-    state: xkb::State,
-}
-
-thread_local! {
-    static XKB_STATE: RefCell<Option<State>> = const { RefCell::new(None) };
-}
-
-impl State {
-    pub fn new(x11_connection: Arc<X11Connection>) -> Self {
-        let xcb_connection = x11_connection.xcb_connection();
-        let ctx = xkb::Context::new(CONTEXT_NO_FLAGS);
-        let dev = xkb::x11::get_core_keyboard_device_id(xcb_connection);
-        let keymap = xkb::x11::keymap_new_from_device(
-            &ctx,
-            xcb_connection,
-            dev,
-            xkb::KEYMAP_COMPILE_NO_FLAGS,
-        );
-
-        Self {
-            state: xkb::x11::state_new_from_device(&keymap, xcb_connection, dev),
-        }
-    }
 }
 
 impl Topic for KeyboardKeysTopic {
@@ -181,8 +140,6 @@ impl Topic for KeyboardKeysTopic {
     type Signal = AllSignals<Self::T>;
 
     async fn on_start(&self) {
-        self.recreate_state();
-
         self.input_mask
             .set(XIEventMask::RAW_KEY_PRESS | XIEventMask::RAW_KEY_RELEASE);
 
@@ -204,97 +161,6 @@ impl Topic for KeyboardKeysTopic {
             self.input_mask.clone(),
         )
         .await;
-    }
-}
-
-impl KeyboardKeysTopic {
-    pub async fn new(
-        x11_connection: Arc<X11Connection>,
-        input_mask: Arc<InputMask>,
-    ) -> Result<Self> {
-        Ok(Self {
-            x11_connection,
-            input_mask,
-        })
-    }
-
-    #[must_use]
-    pub fn translate_keycode(&self, key: KeyCode, direction: KeyDirection) -> (Keysym, String) {
-        let local_x11_connection = self.x11_connection.clone();
-        XKB_STATE.with(move |state| {
-            let mut state_ref = state.borrow_mut();
-            let state = state_ref.get_or_insert(State::new(local_x11_connection));
-
-            println!("THREAD {:?}", std::thread::current().id());
-
-            /*
-            let (keysym, name) = match direction {
-                KeyDirection::Up => {
-                    let Some((keysym, name)) = state
-                        .pressed_keys
-                        .get(&key)
-                        .cloned() else {
-                            (
-                        state.state.key_get_one_sym(key),
-                        state.state.key_get_utf8(key),
-                    )
-                        }
-
-                        (keysym, name)
-                }
-                KeyDirection::Down => {
-                    let (keysym, name) = (
-                        state.state.key_get_one_sym(key),
-                        state.state.key_get_utf8(key),
-                    );
-
-                    state.pressed_keys.insert(key, (keysym, name.clone()));
-
-                    (keysym, name)
-                }
-            };
-            */
-
-            let (keysym, name) = (
-                state.state.key_get_one_sym(key),
-                state.state.key_get_utf8(key),
-            );
-
-            state.state.update_key(key, direction);
-            (keysym, name)
-        })
-    }
-
-    pub fn recreate_state(&self) {
-        let local_x11_connection = self.x11_connection.clone();
-        XKB_STATE.with(move |state| {
-            let mut state_ref = state.borrow_mut();
-            let _ = state_ref.insert(State::new(local_x11_connection));
-        })
-    }
-
-    pub fn update_state(
-        &self,
-        depressed_mods: ModMask,
-        latched_mods: ModMask,
-        locked_mods: ModMask,
-        depressed_layout: LayoutIndex,
-        latched_layout: LayoutIndex,
-        locked_layout: LayoutIndex,
-    ) {
-        let local_x11_connection = self.x11_connection.clone();
-        XKB_STATE.with(move |state| {
-            let mut state_ref = state.borrow_mut();
-            let state = state_ref.get_or_insert(State::new(local_x11_connection));
-            state.state.update_mask(
-                depressed_mods.into(),
-                latched_mods.into(),
-                locked_mods.into(),
-                depressed_layout,
-                latched_layout,
-                locked_layout,
-            );
-        })
     }
 }
 
