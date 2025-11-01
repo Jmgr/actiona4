@@ -239,7 +239,7 @@ impl Runtime {
                         local_mouse_buttons_topic.publish(MouseButtonEvent {
                             button,
                             direction: Direction::Press,
-                            injected: event.flags == PointerEventFlags::POINTER_EMULATED,
+                            injected: event.flags == PointerEventFlags::POINTER_EMULATED, // TODO: fix
                         });
                     }
                     Event::XinputRawButtonRelease(event) => {
@@ -247,7 +247,7 @@ impl Runtime {
                         local_mouse_buttons_topic.publish(MouseButtonEvent {
                             button,
                             direction: Direction::Release,
-                            injected: event.flags == PointerEventFlags::POINTER_EMULATED,
+                            injected: event.flags == PointerEventFlags::POINTER_EMULATED, // TODO: fix
                         });
                     }
                     Event::XinputMotion(event) => {

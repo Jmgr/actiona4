@@ -23,6 +23,7 @@ use crate::{
     core::{
         point::Point,
         rect::Rect,
+        size::Size,
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
     },
     platform::win::safe_handle::SafeDesktopHandle,
@@ -158,8 +159,8 @@ impl WindowsHandler for WindowsWindowHandler {
             SetWindowPos(
                 **handle,
                 None,
-                position.x,
-                position.y,
+                position.x.into(),
+                position.y.into(),
                 0,
                 0,
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE,
@@ -173,11 +174,11 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(self.rect(id)?.top_left())
     }
 
-    fn set_size(&self, id: WindowId, size: Point) -> Result<()> {
+    fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         todo!()
     }
 
-    fn size(&self, id: WindowId) -> Result<Point> {
+    fn size(&self, id: WindowId) -> Result<Size> {
         todo!()
     }
 

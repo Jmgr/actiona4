@@ -30,7 +30,12 @@ use windows::{
 use crate::{
     error::CommonError,
     platform::win::safe_handle::SafeWindowHandle,
-    runtime::{events::DisplayInfoVec, platform::win::events::input::InputDispatcher},
+    runtime::{
+        events::DisplayInfoVec,
+        platform::win::events::input::{
+            keyboard::KeyboardInputDispatcher, mouse::MouseInputDispatcher,
+        },
+    },
 };
 
 pub mod events;
@@ -119,7 +124,8 @@ impl MessagePumpRunner for DisplayRunner {
 
 #[derive(Debug)]
 pub struct Runtime {
-    input_dispatcher: Arc<InputDispatcher>,
+    mouse_input_dispatcher: Arc<MouseInputDispatcher>,
+    keyboard_input_dispatcher: Arc<KeyboardInputDispatcher>,
     _message_pump: SafeMessagePump,
     screen_change_sender: broadcast::Sender<DisplayInfoVec>,
 }
@@ -137,8 +143,10 @@ impl Runtime {
         )
         .await?;
 
-        let input_dispatcher =
-            InputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
+        let mouse_input_dispatcher =
+            MouseInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
+        let keyboard_input_dispatcher =
+            KeyboardInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
         let (screen_change_sender, _) = broadcast::channel(1024); // TODO
 
@@ -148,17 +156,25 @@ impl Runtime {
             }
 
             Self {
-                input_dispatcher,
+                mouse_input_dispatcher,
+                keyboard_input_dispatcher,
                 _message_pump: message_pump,
                 screen_change_sender,
             }
         }))
     }
 
-    pub fn input_dispatcher(&self) -> Arc<InputDispatcher> {
-        self.input_dispatcher.clone()
+    #[must_use]
+    pub fn mouse_input_dispatcher(&self) -> Arc<MouseInputDispatcher> {
+        self.mouse_input_dispatcher.clone()
     }
 
+    #[must_use]
+    pub fn keyboard_input_dispatcher(&self) -> Arc<KeyboardInputDispatcher> {
+        self.keyboard_input_dispatcher.clone()
+    }
+
+    #[must_use]
     pub fn subscribe_screen_change(&self) -> broadcast::Receiver<DisplayInfoVec> {
         self.screen_change_sender.subscribe()
     }

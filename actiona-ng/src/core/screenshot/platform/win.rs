@@ -30,17 +30,22 @@ impl ScreenshotImplTrait for ScreenshotImpl {
         let hdc_screen = unsafe { GetDC(None) };
         let hdc_mem = unsafe { CreateCompatibleDC(Some(hdc_screen)) };
 
-        let hbm =
-            unsafe { CreateCompatibleBitmap(hdc_screen, rect.width as i32, rect.height as i32) };
+        let hbm = unsafe {
+            CreateCompatibleBitmap(
+                hdc_screen,
+                rect.size.width.try_into()?,
+                rect.size.height.try_into()?,
+            )
+        };
         unsafe { SelectObject(hdc_mem, hbm.into()) };
 
         unsafe {
             BitBlt(
                 hdc_mem,
-                rect.x,
-                rect.y,
-                rect.width as i32,
-                rect.height as i32,
+                rect.origin.x.try_into()?,
+                rect.origin.y.try_into()?,
+                rect.size.width.try_into()?,
+                rect.size.height.try_into()?,
                 Some(hdc_screen),
                 0,
                 0,
@@ -52,8 +57,8 @@ impl ScreenshotImplTrait for ScreenshotImpl {
         let mut bitmap_info = BITMAPINFO {
             bmiHeader: BITMAPINFOHEADER {
                 biSize: std::mem::size_of::<BITMAPINFOHEADER>() as u32,
-                biWidth: rect.width as i32,
-                biHeight: -(rect.height as i32), // Top-down bitmap
+                biWidth: rect.size.width.try_into()?,
+                biHeight: -(rect.size.height.try_into()?), // Top-down bitmap
                 biPlanes: 1,
                 biBitCount: 32,
                 biCompression: BI_RGB.0,
@@ -71,7 +76,7 @@ impl ScreenshotImplTrait for ScreenshotImpl {
             }],
         };
 
-        let mut image = RgbaImage::new(rect.width, rect.height);
+        let mut image = RgbaImage::new(rect.size.width.try_into()?, rect.size.height.try_into()?);
         let image_data: &mut [u8] = image.as_mut();
         let image_data_ptr = image_data.as_mut_ptr() as *mut c_void;
 
@@ -80,7 +85,7 @@ impl ScreenshotImplTrait for ScreenshotImpl {
                 hdc_mem,
                 hbm,
                 0,
-                rect.height,
+                rect.size.height.try_into()?,
                 Some(image_data_ptr as *mut _),
                 &mut bitmap_info,
                 DIB_RGB_COLORS,
@@ -121,8 +126,10 @@ mod tests {
     use crate::{
         core::{
             displays::Displays,
+            point::point,
             rect::rect,
             screenshot::platform::{ScreenshotImplTrait, win::ScreenshotImpl},
+            size::size,
         },
         runtime::Runtime,
     };
@@ -167,7 +174,10 @@ mod tests {
 
             let start = Instant::now();
 
-            let image = imp.capture_rect(rect(0, 0, 0, 0)).await.unwrap();
+            let image = imp
+                .capture_rect(rect(point(0, 0), size(0, 0)))
+                .await
+                .unwrap();
 
             println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
 

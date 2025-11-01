@@ -532,7 +532,7 @@ impl JsFile {
         #[cfg(windows)]
         {
             let task_tracker = ctx.user_data().task_tracker();
-            let system_time = Self::system_time_from_date(ctx.clone(), date)?;
+            let system_time = system_time_from_date(ctx.clone(), date)?;
             let opened_file = self.opened_file(&ctx.clone())?;
 
             Self::set_times(

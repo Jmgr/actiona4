@@ -11,6 +11,12 @@ default-run = "actiona-ng"
 [[bin]]
 name = "actiona-ng"
 
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+    "Wdk_System_SystemServices",
+    "Win32_System_SystemInformation",
+] }
+
 [dependencies]
 actiona-ng = { path = "../actiona-ng" }
 

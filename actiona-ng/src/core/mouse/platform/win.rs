@@ -53,7 +53,7 @@ impl MouseImplTrait for MouseImpl {
         let guard = self
             .runtime
             .platform()
-            .input_dispatcher()
+            .mouse_input_dispatcher()
             .subscribe_mouse_buttons();
         let mut receiver = guard.subscribe();
         let runtime_cancellation_token = self.runtime.cancellation_token();

@@ -102,7 +102,7 @@ syn = { version = "2.0", features = ["parsing"] }
 sysinfo = "0.37.0"
 tauri = { version = "2.8.5", default-features = false, features = [
     "wry",
-    "common-controls-v6",
+    #"common-controls-v6", # breaks tests on Windows: TODO
     "x11",
 ] }
 tauri-plugin-dialog = "2.4.0"
@@ -152,9 +152,9 @@ x11rb-async = { version = "0.13.2", features = [
     "xkb",
     "allow-unsafe-code",
 ] }
+xkbcommon = { version = "0.9.0", default-features = false, features = ["x11"] }
 xkeysym = "0.2.1"
 zbus = { version = "5.11.0", default-features = false, features = ["tokio"] }
-xkbcommon = { version = "0.9.0", default-features = false, features = ["x11"] }
 
 # Dev dependencies
 askama = "0.14.0"
@@ -162,7 +162,7 @@ base64 = "0.22.1"
 bon = "3.8.1"
 console-subscriber = "0.4.1"
 httptest = "0.16.3"
-libtest-mimic-collect = { path = "../libtest-mimic-collect" }
+libtest-mimic-collect = "0.3.3"
 pretty_assertions = "1.4.1"
 rstest = "0.26.1"
 tempfile = "3.22.0"

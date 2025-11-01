@@ -142,13 +142,13 @@ impl JsKeyboard {
     Deserialize,
     Display,
     EnumIter,
+    EnumString,
     Eq,
     FromSerde,
     Hash,
     IntoSerde,
     PartialEq,
     Serialize,
-    EnumString,
 )]
 #[serde(rename = "StandardKey")]
 pub enum JsStandardKey {
@@ -248,7 +248,7 @@ pub enum JsStandardKey {
     /// Break key (X11/Linux)
     /// @platforms =linux
     Break,
-    /// Begin key (X11)
+    /// Begin key
     /// @platforms =linux
     Begin,
     /// Browser Back
@@ -432,7 +432,7 @@ pub enum JsStandardKey {
     /// IME Final (end conversion)
     /// @platforms =windows
     Final,
-    /// Find key (X11)
+    /// Find key
     /// @platforms =linux
     Find,
     /// Gamepad: A button
@@ -562,7 +562,7 @@ pub enum JsStandardKey {
     LControl,
     /// Arrow: Left
     LeftArrow,
-    /// Line Feed key (X11)
+    /// Line Feed key
     /// @platforms =linux
     Linefeed,
     /// Left Alt/Menu
@@ -775,7 +775,7 @@ pub enum JsStandardKey {
     RButton,
     /// Right Control
     RControl,
-    /// Redo (X11)
+    /// Redo
     /// @platforms =linux
     Redo,
     /// Enter / Return
@@ -793,12 +793,12 @@ pub enum JsStandardKey {
     /// Scroll key (legacy)
     /// @platforms =windows
     Scroll,
-    /// Scroll Lock (X11)
+    /// Scroll Lock
     /// @platforms =linux
     ScrollLock,
     /// Select key
     Select,
-    /// Script switch (X11)
+    /// Script switch
     /// @platforms =linux
     ScriptSwitch,
     /// Numpad separator (locale-dependent)
@@ -806,7 +806,7 @@ pub enum JsStandardKey {
     Separator,
     /// Shift modifier
     Shift,
-    /// Shift Lock (X11)
+    /// Shift Lock
     /// @platforms =linux
     ShiftLock,
     /// System Sleep
@@ -821,7 +821,7 @@ pub enum JsStandardKey {
     SysReq,
     /// Tab / focus next
     Tab,
-    /// Undo (X11)
+    /// Undo
     /// @platforms =linux
     Undo,
     /// Arrow: Up
@@ -832,7 +832,7 @@ pub enum JsStandardKey {
     VolumeMute,
     /// Volume up
     VolumeUp,
-    /// Microphone mute (X11)
+    /// Microphone mute
     /// @platforms =linux
     MicMute,
     /// Mouse XButton1 (back)
@@ -850,7 +850,7 @@ pub enum JsStandardKey {
 /// @verbatim  * Key
 /// @verbatim  */
 /// @verbatim type Key = StandardKey | string | number;
-#[derive(Clone, Copy, Debug, Display, Eq, Hash, PartialEq, JsLifetime)]
+#[derive(Clone, Copy, Debug, Display, Eq, Hash, JsLifetime, PartialEq)]
 pub enum JsKey {
     Standard(JsStandardKey),
     Unicode(char),
@@ -2151,6 +2151,9 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             Super => Self::Meta,
             #[allow(deprecated)]
             Print => Self::PrintScr,
+            #[cfg(target_os = "windows")]
+            #[allow(deprecated)]
+            Snapshot => Self::PrintScr,
 
             // TODO
             Other(_) => return Err(KeyError::Unsupported),

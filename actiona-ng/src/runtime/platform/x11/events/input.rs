@@ -129,7 +129,7 @@ impl Topic for MouseMoveTopic {
     }
 }
 
-#[derive(Debug, Constructor)]
+#[derive(Constructor, Debug)]
 pub struct KeyboardKeysTopic {
     x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
