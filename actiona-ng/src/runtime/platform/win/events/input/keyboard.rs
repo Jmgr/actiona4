@@ -1,3 +1,5 @@
+#![allow(clippy::as_conversions)]
+
 use std::{
     collections::HashSet,
     sync::{
@@ -6,8 +8,8 @@ use std::{
     },
 };
 
-use derive_more::Constructor;
 use derive_more::Display;
+use derive_more::{Constructor, Deref};
 use enigo::{Direction, Key};
 use eyre::Result;
 use once_cell::sync::OnceCell;
@@ -17,49 +19,31 @@ use windows::Win32::{
     Foundation::{LPARAM, LRESULT, WPARAM},
     UI::{
         Input::KeyboardAndMouse::{
-            GetAsyncKeyState, GetKeyState, GetKeyboardLayout, HKL, ToUnicode, ToUnicodeEx,
-            VIRTUAL_KEY, VK__none_, VK_0, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9,
-            VK_A, VK_ABNT_C1, VK_ABNT_C2, VK_ACCEPT, VK_ADD, VK_APPS, VK_ATTN, VK_B, VK_BACK,
+            GetKeyNameTextW, GetKeyState, GetKeyboardLayout, HKL, ToUnicodeEx, VIRTUAL_KEY,
+            VK__none_, VK_0, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9, VK_A,
+            VK_ABNT_C1, VK_ABNT_C2, VK_ACCEPT, VK_ADD, VK_APPS, VK_ATTN, VK_B, VK_BACK,
             VK_BROWSER_BACK, VK_BROWSER_FAVORITES, VK_BROWSER_FORWARD, VK_BROWSER_HOME,
             VK_BROWSER_REFRESH, VK_BROWSER_SEARCH, VK_BROWSER_STOP, VK_C, VK_CANCEL, VK_CAPITAL,
-            VK_CLEAR, VK_CONTROL, VK_CONVERT, VK_CRSEL, VK_D, VK_DBE_ALPHANUMERIC,
-            VK_DBE_CODEINPUT, VK_DBE_DBCSCHAR, VK_DBE_DETERMINESTRING,
-            VK_DBE_ENTERDLGCONVERSIONMODE, VK_DBE_ENTERIMECONFIGMODE, VK_DBE_ENTERWORDREGISTERMODE,
-            VK_DBE_FLUSHSTRING, VK_DBE_HIRAGANA, VK_DBE_KATAKANA, VK_DBE_NOCODEINPUT,
-            VK_DBE_NOROMAN, VK_DBE_ROMAN, VK_DBE_SBCSCHAR, VK_DECIMAL, VK_DELETE, VK_DIVIDE,
+            VK_CLEAR, VK_CONTROL, VK_CONVERT, VK_CRSEL, VK_D, VK_DECIMAL, VK_DELETE, VK_DIVIDE,
             VK_DOWN, VK_E, VK_END, VK_EREOF, VK_ESCAPE, VK_EXECUTE, VK_EXSEL, VK_F, VK_F1, VK_F2,
             VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9, VK_F10, VK_F11, VK_F12, VK_F13,
             VK_F14, VK_F15, VK_F16, VK_F17, VK_F18, VK_F19, VK_F20, VK_F21, VK_F22, VK_F23, VK_F24,
-            VK_FINAL, VK_G, VK_GAMEPAD_A, VK_GAMEPAD_B, VK_GAMEPAD_DPAD_DOWN, VK_GAMEPAD_DPAD_LEFT,
-            VK_GAMEPAD_DPAD_RIGHT, VK_GAMEPAD_DPAD_UP, VK_GAMEPAD_LEFT_SHOULDER,
-            VK_GAMEPAD_LEFT_THUMBSTICK_BUTTON, VK_GAMEPAD_LEFT_THUMBSTICK_DOWN,
-            VK_GAMEPAD_LEFT_THUMBSTICK_LEFT, VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT,
-            VK_GAMEPAD_LEFT_THUMBSTICK_UP, VK_GAMEPAD_LEFT_TRIGGER, VK_GAMEPAD_MENU,
-            VK_GAMEPAD_RIGHT_SHOULDER, VK_GAMEPAD_RIGHT_THUMBSTICK_BUTTON,
-            VK_GAMEPAD_RIGHT_THUMBSTICK_DOWN, VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT,
-            VK_GAMEPAD_RIGHT_THUMBSTICK_RIGHT, VK_GAMEPAD_RIGHT_THUMBSTICK_UP,
-            VK_GAMEPAD_RIGHT_TRIGGER, VK_GAMEPAD_VIEW, VK_GAMEPAD_X, VK_GAMEPAD_Y, VK_H,
-            VK_HANGEUL, VK_HANGUL, VK_HANJA, VK_HELP, VK_HOME, VK_I, VK_ICO_00, VK_ICO_CLEAR,
-            VK_ICO_HELP, VK_IME_OFF, VK_IME_ON, VK_INSERT, VK_J, VK_JUNJA, VK_K, VK_KANA, VK_KANJI,
-            VK_L, VK_LAUNCH_APP1, VK_LAUNCH_APP2, VK_LAUNCH_MAIL, VK_LAUNCH_MEDIA_SELECT,
-            VK_LBUTTON, VK_LCONTROL, VK_LEFT, VK_LMENU, VK_LSHIFT, VK_LWIN, VK_M, VK_MBUTTON,
-            VK_MEDIA_NEXT_TRACK, VK_MEDIA_PLAY_PAUSE, VK_MEDIA_PREV_TRACK, VK_MEDIA_STOP, VK_MENU,
-            VK_MODECHANGE, VK_MULTIPLY, VK_N, VK_NAVIGATION_ACCEPT, VK_NAVIGATION_CANCEL,
-            VK_NAVIGATION_DOWN, VK_NAVIGATION_LEFT, VK_NAVIGATION_MENU, VK_NAVIGATION_RIGHT,
-            VK_NAVIGATION_UP, VK_NAVIGATION_VIEW, VK_NEXT, VK_NONAME, VK_NONCONVERT, VK_NUMLOCK,
-            VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6,
-            VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9, VK_O, VK_OEM_1, VK_OEM_2, VK_OEM_3, VK_OEM_4,
-            VK_OEM_5, VK_OEM_6, VK_OEM_7, VK_OEM_8, VK_OEM_102, VK_OEM_ATTN, VK_OEM_AUTO,
-            VK_OEM_AX, VK_OEM_BACKTAB, VK_OEM_CLEAR, VK_OEM_COMMA, VK_OEM_COPY, VK_OEM_CUSEL,
-            VK_OEM_ENLW, VK_OEM_FINISH, VK_OEM_FJ_JISHO, VK_OEM_FJ_LOYA, VK_OEM_FJ_MASSHOU,
-            VK_OEM_FJ_ROYA, VK_OEM_FJ_TOUROKU, VK_OEM_JUMP, VK_OEM_MINUS, VK_OEM_NEC_EQUAL,
-            VK_OEM_PA1, VK_OEM_PA2, VK_OEM_PA3, VK_OEM_PERIOD, VK_OEM_PLUS, VK_OEM_RESET,
-            VK_OEM_WSCTRL, VK_P, VK_PA1, VK_PACKET, VK_PAUSE, VK_PLAY, VK_PRINT, VK_PRIOR,
-            VK_PROCESSKEY, VK_Q, VK_R, VK_RBUTTON, VK_RCONTROL, VK_RETURN, VK_RIGHT, VK_RMENU,
-            VK_RSHIFT, VK_RWIN, VK_S, VK_SCROLL, VK_SELECT, VK_SEPARATOR, VK_SHIFT, VK_SLEEP,
-            VK_SNAPSHOT, VK_SPACE, VK_SUBTRACT, VK_T, VK_TAB, VK_U, VK_UP, VK_V, VK_VOLUME_DOWN,
-            VK_VOLUME_MUTE, VK_VOLUME_UP, VK_W, VK_X, VK_XBUTTON1, VK_XBUTTON2, VK_Y, VK_Z,
-            VK_ZOOM,
+            VK_FINAL, VK_G, VK_H, VK_HELP, VK_HOME, VK_I, VK_ICO_00, VK_ICO_CLEAR, VK_ICO_HELP,
+            VK_IME_OFF, VK_IME_ON, VK_INSERT, VK_J, VK_K, VK_L, VK_LAUNCH_APP1, VK_LAUNCH_APP2,
+            VK_LAUNCH_MAIL, VK_LAUNCH_MEDIA_SELECT, VK_LBUTTON, VK_LCONTROL, VK_LEFT, VK_LMENU,
+            VK_LSHIFT, VK_LWIN, VK_M, VK_MBUTTON, VK_MEDIA_NEXT_TRACK, VK_MEDIA_PLAY_PAUSE,
+            VK_MEDIA_PREV_TRACK, VK_MEDIA_STOP, VK_MENU, VK_MODECHANGE, VK_MULTIPLY, VK_N,
+            VK_NAVIGATION_ACCEPT, VK_NAVIGATION_CANCEL, VK_NAVIGATION_DOWN, VK_NAVIGATION_LEFT,
+            VK_NAVIGATION_MENU, VK_NAVIGATION_RIGHT, VK_NAVIGATION_UP, VK_NAVIGATION_VIEW, VK_NEXT,
+            VK_NONAME, VK_NONCONVERT, VK_NUMLOCK, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3,
+            VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9, VK_O, VK_OEM_1,
+            VK_OEM_2, VK_OEM_3, VK_OEM_4, VK_OEM_5, VK_OEM_6, VK_OEM_7, VK_OEM_8, VK_OEM_102,
+            VK_OEM_COMMA, VK_OEM_MINUS, VK_OEM_PERIOD, VK_OEM_PLUS, VK_P, VK_PA1, VK_PACKET,
+            VK_PAUSE, VK_PLAY, VK_PRINT, VK_PRIOR, VK_PROCESSKEY, VK_Q, VK_R, VK_RBUTTON,
+            VK_RCONTROL, VK_RETURN, VK_RIGHT, VK_RMENU, VK_RSHIFT, VK_RWIN, VK_S, VK_SCROLL,
+            VK_SELECT, VK_SEPARATOR, VK_SHIFT, VK_SLEEP, VK_SNAPSHOT, VK_SPACE, VK_SUBTRACT, VK_T,
+            VK_TAB, VK_U, VK_UP, VK_V, VK_VOLUME_DOWN, VK_VOLUME_MUTE, VK_VOLUME_UP, VK_W, VK_X,
+            VK_XBUTTON1, VK_XBUTTON2, VK_Y, VK_Z, VK_ZOOM,
         },
         WindowsAndMessaging::{
             CallNextHookEx, GetForegroundWindow, GetWindowThreadProcessId, HC_ACTION, HOOKPROC,
@@ -70,7 +54,7 @@ use windows::Win32::{
 };
 
 use crate::runtime::{
-    events::{AllSignals, Guard, KeyboardKeyEvent, Topic, TopicWrapper},
+    events::{AllSignals, Guard, KeyboardKeyEvent, KeyboardTextEvent, Topic, TopicWrapper},
     platform::win::{
         SafeMessagePump,
         events::input::{HookSpec, LowLevelHookRunner, MSG_START, MSG_STOP},
@@ -100,7 +84,8 @@ struct KeyId {
 
 #[derive(Debug)]
 pub struct KeyboardInputDispatcher {
-    keyboard_keys: Arc<TopicWrapper<KeyboardKeysTopic>>,
+    keys: Arc<TopicWrapper<KeyboardKeysTopic>>,
+    text: Arc<TopicWrapper<KeyboardTextTopic>>,
     subscribers: Arc<AtomicUsize>,
     message_pump: SafeMessagePump,
     pressed_keys: Mutex<HashSet<KeyId>>,
@@ -120,12 +105,19 @@ impl KeyboardInputDispatcher {
 
         Ok(Arc::new_cyclic(|me| {
             if KEYBOARD_INPUT_DISPATCHER.set(me.clone()).is_err() {
-                panic!("InputDispatcher should only be intantiated once");
+                panic!("InputDispatcher should only be instantiated once");
             }
 
             Self {
-                keyboard_keys: Arc::new(TopicWrapper::new(
+                keys: Arc::new(TopicWrapper::new(
                     KeyboardKeysTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                )),
+                text: Arc::new(TopicWrapper::new(
+                    KeyboardTextTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
@@ -140,15 +132,24 @@ impl KeyboardInputDispatcher {
 
     #[must_use]
     pub fn subscribe_keyboard_keys(&self) -> Guard<KeyboardKeysTopic> {
-        self.keyboard_keys.subscribe()
+        self.keys.subscribe()
+    }
+
+    fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool) -> bool {
+        let mut pressed_keys = self.pressed_keys.lock().unwrap();
+        if is_pressed {
+            if !pressed_keys.insert(*key_id) {
+                return true;
+            }
+        } else if !pressed_keys.remove(key_id) {
+            warn!("releasing a non-pressed key: {key_id}");
+        }
+
+        false
     }
 
     fn event_received(&self, keyboard_struct: &KBDLLHOOKSTRUCT, message: u32) {
-        if message != WM_KEYDOWN
-            && message != WM_SYSKEYDOWN
-            && message != WM_KEYUP
-            && message != WM_SYSKEYUP
-        {
+        if !matches!(message, WM_KEYDOWN | WM_SYSKEYDOWN | WM_KEYUP | WM_SYSKEYUP) {
             return;
         }
 
@@ -159,35 +160,38 @@ impl KeyboardInputDispatcher {
             keyboard_struct.vkCode,
             is_extended,
         );
+        let is_repeat = self.check_is_repeat(&key_id, is_pressed);
 
-        {
-            // Filter out repeat keys
-            let mut pressed_keys = self.pressed_keys.lock().unwrap();
-            if is_pressed {
-                if !pressed_keys.insert(key_id) {
-                    return;
-                }
-            } else if !pressed_keys.remove(&key_id) {
-                warn!("releasing a non-pressed key: {key_id}");
-            }
-        }
-
+        let keystate = get_keystate();
         let is_injected = keyboard_struct.flags & LLKHF_INJECTED == LLKHF_INJECTED;
         let key = vk_to_enigo_key(
             keyboard_struct.vkCode,
             keyboard_struct.scanCode,
             is_extended,
+            &keystate,
         );
 
-        self.keyboard_keys.publish(KeyboardKeyEvent::new(
+        if is_pressed
+            && let Some(character) =
+                to_unicode(keyboard_struct.vkCode, keyboard_struct.scanCode, &keystate)
+        {
+            self.text
+                .publish(KeyboardTextEvent::new(character, is_injected, is_repeat));
+        }
+
+        let name = key_name_from_llhook(keyboard_struct.scanCode, is_extended).unwrap_or_default();
+
+        self.keys.publish(KeyboardKeyEvent::new(
             key,
+            keyboard_struct.scanCode,
             if is_pressed {
                 Direction::Press
             } else {
                 Direction::Release
             },
             is_injected,
-            String::new(), // TODO
+            name,
+            is_repeat,
         ))
     }
 
@@ -199,11 +203,6 @@ impl KeyboardInputDispatcher {
 
     async fn on_stop(&self) {
         if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
-            {
-                let mut pressed_keys = self.pressed_keys.lock().unwrap();
-                pressed_keys.clear();
-            }
-
             self.message_pump.send_message(MSG_STOP);
         }
     }
@@ -231,7 +230,28 @@ impl Topic for KeyboardKeysTopic {
     }
 }
 
-#[allow(clippy::as_conversions)]
+#[derive(Debug, Default)]
+pub struct KeyboardTextTopic {
+    dispatcher: Weak<KeyboardInputDispatcher>,
+}
+
+impl Topic for KeyboardTextTopic {
+    type T = KeyboardTextEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await;
+        }
+    }
+
+    async fn on_stop(&self) {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await;
+        }
+    }
+}
+
 unsafe extern "system" fn low_level_keyboard_proc(
     n_code: i32,
     w_param: WPARAM,
@@ -255,7 +275,25 @@ unsafe extern "system" fn low_level_keyboard_proc(
     unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
 }
 
-fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
+fn key_name_from_llhook(scan_code: u32, is_extended: bool) -> Option<String> {
+    // Build an lParam like WM_KEYDOWN:
+    // bits 16..23 = scan code
+    // bit 24      = extended (E0 prefix)
+    let mut lparam: i32 = (scan_code as i32) << 16;
+    if is_extended {
+        lparam |= 1 << 24;
+    }
+
+    let mut buf = [0u16; 64];
+    let len = unsafe { GetKeyNameTextW(lparam, &mut buf) };
+    if len > 0 {
+        Some(String::from_utf16_lossy(&buf[..len as usize]))
+    } else {
+        None
+    }
+}
+
+fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool, keystate: &Keystate) -> Key {
     match VIRTUAL_KEY(vk_code as u16) {
         VK_RETURN if is_extended => Key::NumpadEnter,
         VK_RETURN if !is_extended => Key::Return,
@@ -320,6 +358,8 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_CONTROL if !is_extended => Key::LControl,
         VK_CONVERT => Key::Convert,
         VK_CRSEL => Key::Crsel,
+        /*
+        // TODO: we ignore this for now
         VK_DBE_ALPHANUMERIC => Key::DBEAlphanumeric,
         VK_DBE_CODEINPUT => Key::DBECodeinput,
         VK_DBE_DETERMINESTRING => Key::DBEDetermineString,
@@ -334,6 +374,7 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_DBE_ROMAN => Key::DBERoman,
         VK_DBE_SBCSCHAR => Key::DBESBCSChar,
         VK_DBE_DBCSCHAR => Key::DBESChar,
+        */
         VK_DECIMAL => Key::Decimal,
         VK_DELETE => Key::Delete,
         VK_DIVIDE => Key::Divide,
@@ -370,33 +411,12 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_F24 => Key::F24,
 
         VK_FINAL => Key::Final,
-        VK_GAMEPAD_A => Key::GamepadA,
-        VK_GAMEPAD_B => Key::GamepadB,
-        VK_GAMEPAD_DPAD_DOWN => Key::GamepadDPadDown,
-        VK_GAMEPAD_DPAD_LEFT => Key::GamepadDPadLeft,
-        VK_GAMEPAD_DPAD_RIGHT => Key::GamepadDPadRight,
-        VK_GAMEPAD_DPAD_UP => Key::GamepadDPadUp,
-        VK_GAMEPAD_LEFT_SHOULDER => Key::GamepadLeftShoulder,
-        VK_GAMEPAD_LEFT_THUMBSTICK_BUTTON => Key::GamepadLeftThumbstickButton,
-        VK_GAMEPAD_LEFT_THUMBSTICK_DOWN => Key::GamepadLeftThumbstickDown,
-        VK_GAMEPAD_LEFT_THUMBSTICK_LEFT => Key::GamepadLeftThumbstickLeft,
-        VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT => Key::GamepadLeftThumbstickRight,
-        VK_GAMEPAD_LEFT_THUMBSTICK_UP => Key::GamepadLeftThumbstickUp,
-        VK_GAMEPAD_LEFT_TRIGGER => Key::GamepadLeftTrigger,
-        VK_GAMEPAD_MENU => Key::GamepadMenu,
-        VK_GAMEPAD_RIGHT_SHOULDER => Key::GamepadRightShoulder,
-        VK_GAMEPAD_RIGHT_THUMBSTICK_BUTTON => Key::GamepadRightThumbstickButton,
-        VK_GAMEPAD_RIGHT_THUMBSTICK_DOWN => Key::GamepadRightThumbstickDown,
-        VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT => Key::GamepadRightThumbstickLeft,
-        VK_GAMEPAD_RIGHT_THUMBSTICK_RIGHT => Key::GamepadRightThumbstickRight,
-        VK_GAMEPAD_RIGHT_THUMBSTICK_UP => Key::GamepadRightThumbstickUp,
-        VK_GAMEPAD_RIGHT_TRIGGER => Key::GamepadRightTrigger,
-        VK_GAMEPAD_VIEW => Key::GamepadView,
-        VK_GAMEPAD_X => Key::GamepadX,
-        VK_GAMEPAD_Y => Key::GamepadY,
+        /*
+        // TODO: we ignore this for now
         VK_HANGEUL => Key::Hangeul,
         VK_HANGUL => Key::Hangul,
         VK_HANJA => Key::Hanja,
+        */
         VK_HELP => Key::Help,
         VK_HOME => Key::Home,
         VK_ICO_00 => Key::Ico00,
@@ -405,9 +425,12 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_IME_OFF => Key::IMEOff,
         VK_IME_ON => Key::IMEOn,
         VK_INSERT => Key::Insert,
+        /*
+        // TODO: we ignore this for now
         VK_JUNJA => Key::Junja,
         VK_KANA => Key::Kana,
         VK_KANJI => Key::Kanji,
+        */
         VK_LAUNCH_APP1 => Key::LaunchApp1,
         VK_LAUNCH_APP2 => Key::LaunchApp2,
         VK_LAUNCH_MAIL => Key::LaunchMail,
@@ -417,6 +440,7 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_LEFT => Key::LeftArrow,
         VK_LMENU => Key::LMenu,
         VK_LSHIFT => Key::LShift,
+        VK_LWIN => Key::LWin,
         VK_MBUTTON => Key::MButton,
         VK_MEDIA_NEXT_TRACK => Key::MediaNextTrack,
         VK_MEDIA_PLAY_PAUSE => Key::MediaPlayPause,
@@ -434,6 +458,7 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_NAVIGATION_VIEW => Key::NavigationView,
         VK_NONAME => Key::NoName,
         VK_NONCONVERT => Key::NonConvert,
+        #[allow(non_upper_case_globals)]
         VK__none_ => Key::None,
         VK_NUMLOCK => Key::Numlock,
         VK_NUMPAD0 => Key::Numpad0,
@@ -455,12 +480,17 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_OEM_6 => Key::OEM6,
         VK_OEM_7 => Key::OEM7,
         VK_OEM_8 => Key::OEM8,
+        VK_OEM_COMMA => Key::OEMComma,
+        VK_OEM_PERIOD => Key::OEMPeriod,
+        VK_OEM_MINUS => Key::OEMMinus,
+        VK_OEM_PLUS => Key::OEMPlus,
+        /*
+        // TODO: we ignore this for now
         VK_OEM_ATTN => Key::OEMAttn,
         VK_OEM_AUTO => Key::OEMAuto,
         VK_OEM_AX => Key::OEMAx,
         VK_OEM_BACKTAB => Key::OEMBacktab,
         VK_OEM_CLEAR => Key::OEMClear,
-        VK_OEM_COMMA => Key::OEMComma,
         VK_OEM_COPY => Key::OEMCopy,
         VK_OEM_CUSEL => Key::OEMCusel,
         VK_OEM_ENLW => Key::OEMEnlw,
@@ -471,15 +501,13 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_OEM_FJ_ROYA => Key::OEMFJRoya,
         VK_OEM_FJ_TOUROKU => Key::OEMFJTouroku,
         VK_OEM_JUMP => Key::OEMJump,
-        VK_OEM_MINUS => Key::OEMMinus,
         VK_OEM_NEC_EQUAL => Key::OEMNECEqual,
         VK_OEM_PA1 => Key::OEMPA1,
         VK_OEM_PA2 => Key::OEMPA2,
         VK_OEM_PA3 => Key::OEMPA3,
-        VK_OEM_PERIOD => Key::OEMPeriod,
-        VK_OEM_PLUS => Key::OEMPlus,
         VK_OEM_RESET => Key::OEMReset,
         VK_OEM_WSCTRL => Key::OEMWsctrl,
+        */
         VK_PA1 => Key::PA1,
         VK_PACKET => Key::Packet,
         VK_NEXT => Key::PageDown,
@@ -509,28 +537,52 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool) -> Key {
         VK_XBUTTON1 => Key::XButton1,
         VK_XBUTTON2 => Key::XButton2,
         VK_ZOOM => Key::Zoom,
-        _ => printable_from_vk(vk_code, scan_code)
-            .map_or_else(|| Key::Other(vk_code.into()), Key::Unicode),
+        _ => to_unicode(vk_code, scan_code, keystate)
+            .map_or_else(|| Key::Other(vk_code), Key::Unicode),
     }
 }
 
-fn printable_from_vk(vk_code: u32, scan_code: u32) -> Option<char> {
-    // Snapshot minimal keystate so ToUnicodeEx can consider modifiers. You can replace
-    // this with your own tracked keystate for better accuracy.
+#[derive(Debug, Deref)]
+struct Keystate([u8; 256]);
+
+fn get_keystate() -> Keystate {
     let mut keystate = [0u8; 256];
-    unsafe {
-        for &mod_vk in [VK_SHIFT, VK_CONTROL, VK_MENU, VK_CAPITAL].iter() {
-            let s = GetAsyncKeyState(mod_vk.0 as i32) as u16;
-            if (s & 0x8000) != 0 {
-                keystate[mod_vk.0 as usize] |= 0x80;
-            } // key is down
-            if (s & 1) != 0 {
-                keystate[mod_vk.0 as usize] |= 0x01;
-            } // toggle (CapsLock)
-        }
+
+    for &mod_vk in [
+        VK_SHIFT,
+        VK_LSHIFT,
+        VK_RSHIFT,
+        VK_CONTROL,
+        VK_LCONTROL,
+        VK_RCONTROL,
+        VK_MENU,
+        VK_LMENU,
+        VK_RMENU,
+        VK_LWIN,
+        VK_RWIN,
+        VK_CAPITAL,
+    ]
+    .iter()
+    {
+        let s = unsafe { GetKeyState(mod_vk.0 as i32) as u16 };
+        if (s & 0x8000) != 0 {
+            keystate[mod_vk.0 as usize] |= 0x80;
+        } // key is down
+        if (s & 1) != 0 {
+            keystate[mod_vk.0 as usize] |= 0x01;
+        } // toggle (CapsLock)
     }
 
-    let mut buf = [0; 256];
+    keystate[VK_SHIFT.0 as usize] = keystate[VK_LSHIFT.0 as usize] | keystate[VK_RSHIFT.0 as usize];
+    keystate[VK_CONTROL.0 as usize] =
+        keystate[VK_LCONTROL.0 as usize] | keystate[VK_RCONTROL.0 as usize];
+    keystate[VK_MENU.0 as usize] = keystate[VK_LMENU.0 as usize] | keystate[VK_RMENU.0 as usize];
+
+    Keystate(keystate)
+}
+
+fn to_unicode(vk_code: u32, scan_code: u32, keystate: &Keystate) -> Option<char> {
+    let mut buf = [0; 8];
 
     // On Windows 10 1607 or more recent, don't change the global key state
     const TOUNICODEEX_NO_STATE_CHANGE: u32 = 1 << 2;
@@ -543,7 +595,7 @@ fn printable_from_vk(vk_code: u32, scan_code: u32) -> Option<char> {
         ToUnicodeEx(
             vk_code,
             scan_code,
-            &keystate,
+            keystate,
             &mut buf,
             TOUNICODEEX_NO_STATE_CHANGE,
             Some(get_keyboard_layout()),

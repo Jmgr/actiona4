@@ -152,7 +152,7 @@ impl Runtime {
 
         Ok(Arc::new_cyclic(|me| {
             if RUNTIME.set(me.clone()).is_err() {
-                panic!("Runtime should only be intantiated once");
+                panic!("Runtime should only be instantiated once");
             }
 
             Self {

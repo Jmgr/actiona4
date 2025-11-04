@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    sync::{Arc, Mutex},
+    sync::Arc,
     time::{Duration, Instant},
 };
 
@@ -10,6 +10,7 @@ use indexmap::IndexSet;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use num_traits::ToPrimitive;
+use parking_lot::Mutex;
 use platform::MouseImplTrait;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -329,25 +330,24 @@ impl Mouse {
     pub fn scroll(&self, length: i32, axis: Axis) -> Result<()> {
         use enigo::Mouse;
 
-        Ok(self.enigo.lock().unwrap().scroll(length, axis.into())?)
+        Ok(self.enigo.lock().scroll(length, axis.into())?)
     }
 
     #[instrument(skip(self), err, ret)]
     pub fn set_position(&self, position: Point, coordinate: Coordinate) -> Result<()> {
         use enigo::Mouse;
 
-        Ok(self.enigo.lock().unwrap().move_mouse(
-            position.x.into(),
-            position.y.into(),
-            coordinate,
-        )?)
+        Ok(self
+            .enigo
+            .lock()
+            .move_mouse(position.x.into(), position.y.into(), coordinate)?)
     }
 
     #[instrument(skip(self), err, ret)]
     pub fn position(&self) -> Result<Point> {
         use enigo::Mouse;
 
-        let pos = self.enigo.lock().unwrap().location()?;
+        let pos = self.enigo.lock().location()?;
 
         Ok(point(pos.0, pos.1))
     }
@@ -566,14 +566,14 @@ impl Mouse {
 
         let mut action = {
             if let Some(position) = &options.press.position {
-                self.enigo.lock().unwrap().move_mouse(
+                self.enigo.lock().move_mouse(
                     position.inner().x.into(),
                     position.inner().y.into(),
                     coordinate,
                 )?;
             }
 
-            let mut enigo = self.enigo.lock().unwrap();
+            let mut enigo = self.enigo.lock();
 
             move |direction| enigo.button(options.press.button.into(), direction)
         };
@@ -581,7 +581,7 @@ impl Mouse {
         for i in 0..options.amount {
             if !options.duration.0.is_zero() {
                 let contains = {
-                    let lock = self.pressed_buttons.lock().unwrap();
+                    let lock = self.pressed_buttons.lock();
                     lock.contains(&options.press.button)
                 };
 
@@ -602,7 +602,7 @@ impl Mouse {
             info!("removing {} from the pressed buttons", options.press.button);
 
             {
-                let mut lock = self.pressed_buttons.lock().unwrap();
+                let mut lock = self.pressed_buttons.lock();
                 lock.shift_remove(&options.press.button);
             }
 
@@ -677,7 +677,7 @@ impl Mouse {
         use enigo::Mouse;
 
         let contains = {
-            let lock = self.pressed_buttons.lock().unwrap();
+            let lock = self.pressed_buttons.lock();
             lock.contains(&options.button)
         };
 
@@ -694,7 +694,7 @@ impl Mouse {
         };
 
         if let Some(position) = &options.position {
-            self.enigo.lock().unwrap().move_mouse(
+            self.enigo.lock().move_mouse(
                 position.inner().x.into(),
                 position.inner().y.into(),
                 coordinate,
@@ -703,13 +703,12 @@ impl Mouse {
 
         self.enigo
             .lock()
-            .unwrap()
             .button(options.button.into(), enigo::Direction::Press)?;
 
         info!("adding {} to the pressed buttons", options.button);
 
         {
-            let mut lock = self.pressed_buttons.lock().unwrap();
+            let mut lock = self.pressed_buttons.lock();
             lock.insert(options.button);
         }
 
@@ -722,7 +721,7 @@ impl Mouse {
 
         let button = if let Some(button) = button {
             let contains = {
-                let lock = self.pressed_buttons.lock().unwrap();
+                let lock = self.pressed_buttons.lock();
                 lock.contains(&button)
             };
 
@@ -735,7 +734,7 @@ impl Mouse {
             button
         } else {
             let last_pressed_button = {
-                let mut lock = self.pressed_buttons.lock().unwrap();
+                let mut lock = self.pressed_buttons.lock();
                 lock.pop()
             };
 
@@ -752,13 +751,12 @@ impl Mouse {
 
         self.enigo
             .lock()
-            .unwrap()
             .button(button.into(), Direction::Release)?;
 
         info!("removing {} from the pressed buttons", button);
 
         {
-            let mut lock = self.pressed_buttons.lock().unwrap();
+            let mut lock = self.pressed_buttons.lock();
             lock.shift_remove(&button);
         }
 

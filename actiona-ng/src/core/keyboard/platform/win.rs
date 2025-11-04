@@ -58,11 +58,15 @@ impl KeyboardImpl {
                 break;
             };
 
+            if event.is_repeat {
+                continue;
+            }
+
             if event.key == Key::Escape {
                 runtime_cancellation_token.cancel();
             }
 
-            println!("{:?}", event);
+            //println!("{:?}", event);
 
             return Ok(event.key); // TODO
 

@@ -70,7 +70,7 @@ impl MouseInputDispatcher {
 
         Ok(Arc::new_cyclic(|me| {
             if MOUSE_INPUT_DISPATCHER.set(me.clone()).is_err() {
-                panic!("InputDispatcher should only be intantiated once");
+                panic!("InputDispatcher should only be instantiated once");
             }
 
             Self {

@@ -1,7 +1,8 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use enigo::{Direction, Enigo, Key};
 use eyre::Result;
+use parking_lot::Mutex;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
@@ -36,7 +37,7 @@ impl Keyboard {
     pub fn text(&self, text: &str) -> Result<()> {
         use enigo::Keyboard;
 
-        self.enigo.lock().unwrap().text(text)?;
+        self.enigo.lock().text(text)?;
 
         Ok(())
     }
@@ -45,7 +46,7 @@ impl Keyboard {
     pub fn key(&self, key: Key, direction: Direction) -> Result<()> {
         use enigo::Keyboard;
 
-        self.enigo.lock().unwrap().key(key, direction)?;
+        self.enigo.lock().key(key, direction)?;
 
         Ok(())
     }
@@ -54,7 +55,7 @@ impl Keyboard {
     pub fn raw(&self, keycode: u16, direction: Direction) -> Result<()> {
         use enigo::Keyboard;
 
-        self.enigo.lock().unwrap().raw(keycode, direction)?;
+        self.enigo.lock().raw(keycode, direction)?;
 
         Ok(())
     }

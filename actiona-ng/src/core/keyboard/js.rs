@@ -86,12 +86,7 @@ impl JsKeyboard {
         Ok(())
     }
 
-    pub async fn key(
-        &self,
-        ctx: Ctx<'_>,
-        key: JsStandardKey,
-        direction: JsDirection,
-    ) -> Result<()> {
+    pub async fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
         let key = key.try_into().map_err(|_| {
             Exception::throw_message(
                 &ctx,
@@ -112,7 +107,7 @@ impl JsKeyboard {
         Ok(())
     }
 
-    pub async fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsStandardKey) -> Result<bool> {
+    pub async fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = key.try_into().map_err(|_| {
             Exception::throw_message(
                 &ctx,
@@ -123,7 +118,7 @@ impl JsKeyboard {
         self.inner.is_key_pressed(key).await.into_js_result(&ctx)
     }
 
-    pub async fn wait_for_key(&self, ctx: Ctx<'_>) -> Result<JsStandardKey> {
+    pub async fn wait_for_key(&self, ctx: Ctx<'_>) -> Result<JsKey> {
         let cancellation_token = ctx.user_data().cancellation_token();
         let key = self
             .inner
@@ -131,7 +126,7 @@ impl JsKeyboard {
             .await
             .into_js_result(&ctx)?;
 
-        JsStandardKey::try_from(key).map_err(|_| Exception::throw_message(&ctx, "unknown key"))
+        JsKey::try_from(key).map_err(|_| Exception::throw_message(&ctx, "unknown key"))
     }
 }
 
@@ -242,7 +237,7 @@ pub enum JsStandardKey {
     Apps,
     /// Attention key (legacy/rare)
     /// @platforms =windows
-    Attn,
+    Attention,
     /// Backspace / Delete-previous-character
     Backspace,
     /// Break key (X11/Linux)
@@ -285,7 +280,7 @@ pub enum JsStandardKey {
     Convert,
     /// Cursor Select (CRSel)
     /// @platforms =windows
-    Crsel,
+    CursorSelect,
     /// IME: switch to alphanumeric
     /// @platforms =windows
     DBEAlphanumeric,
@@ -555,26 +550,20 @@ pub enum JsStandardKey {
     /// Launch media selector
     /// @platforms =windows
     LaunchMediaSelect,
-    /// Mouse left button
-    /// @platforms =windows
-    LButton,
     /// Left Control
-    LControl,
+    LeftControl,
     /// Arrow: Left
     LeftArrow,
     /// Line Feed key
     /// @platforms =linux
     Linefeed,
     /// Left Alt/Menu
-    LMenu,
+    LeftAlt,
     /// Left Shift
-    LShift,
+    LeftShift,
     /// Left Windows / Super key
     /// @platforms =windows
-    LWin,
-    /// Mouse middle button
-    /// @platforms =windows
-    MButton,
+    LeftWindows,
     /// Next media track
     MediaNextTrack,
     /// Play/Pause media
@@ -766,15 +755,12 @@ pub enum JsStandardKey {
     /// @platforms =windows
     Play,
     /// Screenshot
-    PrintScr,
+    PrintScreen,
     /// IME Process key
     /// @platforms =windows
     Processkey,
-    /// Mouse right button
-    /// @platforms =windows
-    RButton,
     /// Right Control
-    RControl,
+    RightControl,
     /// Redo
     /// @platforms =linux
     Redo,
@@ -784,12 +770,12 @@ pub enum JsStandardKey {
     RightArrow,
     /// Right Alt/Menu
     /// @platforms =windows
-    RMenu,
+    RightAlt,
     /// Right Shift
-    RShift,
+    RightShift,
     /// Right Windows / Super key
     /// @platforms =windows
-    RWin,
+    RightWindows,
     /// Scroll key (legacy)
     /// @platforms =windows
     Scroll,
@@ -834,13 +820,7 @@ pub enum JsStandardKey {
     VolumeUp,
     /// Microphone mute
     /// @platforms =linux
-    MicMute,
-    /// Mouse XButton1 (back)
-    /// @platforms =windows
-    XButton1,
-    /// Mouse XButton2 (forward)
-    /// @platforms =windows
-    XButton2,
+    MicrophoneMute,
     /// Zoom key
     /// @platforms =windows
     Zoom,
@@ -916,7 +896,19 @@ pub enum KeyError {
     Unsupported,
 }
 
-// TODO: replace JsStandardKey with JsKey
+impl TryFrom<JsKey> for enigo::Key {
+    type Error = KeyError;
+
+    fn try_from(value: JsKey) -> std::result::Result<Self, KeyError> {
+        use JsKey::*;
+        Ok(match value {
+            Standard(js_standard_key) => js_standard_key.try_into()?,
+            Unicode(c) => Self::Unicode(c),
+            Other(v) => Self::Other(v),
+        })
+    }
+}
+
 impl TryFrom<JsStandardKey> for enigo::Key {
     type Error = KeyError;
 
@@ -943,10 +935,10 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             Home => Self::Home,
             Insert => Self::Insert,
             Kanji => Self::Kanji,
-            LControl => Self::LControl,
+            LeftControl => Self::LControl,
             LeftArrow => Self::LeftArrow,
-            LMenu => Self::LMenu,
-            LShift => Self::LShift,
+            LeftAlt => Self::LMenu,
+            LeftShift => Self::LShift,
             MediaNextTrack => Self::MediaNextTrack,
             MediaPlayPause => Self::MediaPlayPause,
             MediaPrevTrack => Self::MediaPrevTrack,
@@ -970,11 +962,11 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             PageDown => Self::PageDown,
             PageUp => Self::PageUp,
             Pause => Self::Pause,
-            PrintScr => Self::PrintScr,
-            RControl => Self::RControl,
+            PrintScreen => Self::PrintScr,
+            RightControl => Self::RControl,
             Return => Self::Return,
             RightArrow => Self::RightArrow,
-            RShift => Self::RShift,
+            RightShift => Self::RShift,
             Select => Self::Select,
             Shift => Self::Shift,
             Space => Self::Space,
@@ -1093,7 +1085,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             #[cfg(target_os = "windows")]
             Apps => Self::Apps,
             #[cfg(target_os = "windows")]
-            Attn => Self::Attn,
+            Attention => Self::Attn,
             #[cfg(target_os = "windows")]
             BrowserBack => Self::BrowserBack,
             #[cfg(target_os = "windows")]
@@ -1111,7 +1103,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             #[cfg(target_os = "windows")]
             Convert => Self::Convert,
             #[cfg(target_os = "windows")]
-            Crsel => Self::Crsel,
+            CursorSelect => Self::Crsel,
             #[cfg(target_os = "windows")]
             DBEAlphanumeric => Self::DBEAlphanumeric,
             #[cfg(target_os = "windows")]
@@ -1219,11 +1211,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             #[cfg(target_os = "windows")]
             LaunchMediaSelect => Self::LaunchMediaSelect,
             #[cfg(target_os = "windows")]
-            LButton => Self::LButton,
-            #[cfg(target_os = "windows")]
-            LWin => Self::LWin,
-            #[cfg(target_os = "windows")]
-            MButton => Self::MButton,
+            LeftWindows => Self::LWin,
             #[cfg(target_os = "windows")]
             NavigationAccept => Self::NavigationAccept,
             #[cfg(target_os = "windows")]
@@ -1319,9 +1307,9 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             #[cfg(target_os = "windows")]
             Packet => Self::Packet,
             #[cfg(target_os = "windows")]
-            RMenu => Self::RMenu,
+            RightAlt => Self::RMenu,
             #[cfg(target_os = "windows")]
-            RWin => Self::RWin,
+            RightWindows => Self::RWin,
             #[cfg(target_os = "windows")]
             Scroll => Self::Scroll,
             #[cfg(target_os = "windows")]
@@ -1329,15 +1317,9 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             #[cfg(target_os = "windows")]
             Processkey => Self::Processkey,
             #[cfg(target_os = "windows")]
-            RButton => Self::RButton,
-            #[cfg(target_os = "windows")]
             Separator => Self::Separator,
             #[cfg(target_os = "windows")]
             Sleep => Self::Sleep,
-            #[cfg(target_os = "windows")]
-            XButton1 => Self::XButton1,
-            #[cfg(target_os = "windows")]
-            XButton2 => Self::XButton2,
             #[cfg(target_os = "windows")]
             Zoom => Self::Zoom,
 
@@ -1593,8 +1575,21 @@ impl TryFrom<JsStandardKey> for enigo::Key {
 
             #[cfg(target_os = "windows")]
             Break | Begin | Find | Linefeed | Redo | ScrollLock | ScriptSwitch | ShiftLock
-            | SysReq | Undo | MicMute | F25 | F26 | F27 | F28 | F29 | F30 | F31 | F32 | F33
-            | F34 | F35 => return Err(KeyError::Unsupported),
+            | SysReq | Undo | MicrophoneMute | F25 | F26 | F27 | F28 | F29 | F30 | F31 | F32
+            | F33 | F34 | F35 => return Err(KeyError::Unsupported),
+        })
+    }
+}
+
+impl TryFrom<enigo::Key> for JsKey {
+    type Error = KeyError;
+
+    fn try_from(value: enigo::Key) -> std::result::Result<Self, KeyError> {
+        use enigo::Key::*;
+        Ok(match value {
+            Unicode(c) => Self::Unicode(c),
+            Other(v) => Self::Other(v),
+            value => Self::Standard(value.try_into()?),
         })
     }
 }
@@ -1625,10 +1620,10 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             Home => Self::Home,
             Insert => Self::Insert,
             Kanji => Self::Kanji,
-            LControl => Self::LControl,
+            LControl => Self::LeftControl,
             LeftArrow => Self::LeftArrow,
-            LMenu => Self::LMenu,
-            LShift => Self::LShift,
+            LMenu => Self::LeftAlt,
+            LShift => Self::LeftShift,
             MediaNextTrack => Self::MediaNextTrack,
             MediaPlayPause => Self::MediaPlayPause,
             MediaPrevTrack => Self::MediaPrevTrack,
@@ -1652,11 +1647,11 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             PageDown => Self::PageDown,
             PageUp => Self::PageUp,
             Pause => Self::Pause,
-            PrintScr => Self::PrintScr,
-            RControl => Self::RControl,
+            PrintScr => Self::PrintScreen,
+            RControl => Self::RightControl,
             Return => Self::Return,
             RightArrow => Self::RightArrow,
-            RShift => Self::RShift,
+            RShift => Self::RightShift,
             Select => Self::Select,
             Shift => Self::Shift,
             Space => Self::Space,
@@ -1775,7 +1770,7 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[cfg(target_os = "windows")]
             Apps => Self::Apps,
             #[cfg(target_os = "windows")]
-            Attn => Self::Attn,
+            Attn => Self::Attention,
             #[cfg(target_os = "windows")]
             BrowserBack => Self::BrowserBack,
             #[cfg(target_os = "windows")]
@@ -1793,7 +1788,7 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[cfg(target_os = "windows")]
             Convert => Self::Convert,
             #[cfg(target_os = "windows")]
-            Crsel => Self::Crsel,
+            Crsel => Self::CursorSelect,
             #[cfg(target_os = "windows")]
             DBEAlphanumeric => Self::DBEAlphanumeric,
             #[cfg(target_os = "windows")]
@@ -1901,11 +1896,7 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[cfg(target_os = "windows")]
             LaunchMediaSelect => Self::LaunchMediaSelect,
             #[cfg(target_os = "windows")]
-            LButton => Self::LButton,
-            #[cfg(target_os = "windows")]
-            LWin => Self::LWin,
-            #[cfg(target_os = "windows")]
-            MButton => Self::MButton,
+            LWin => Self::LeftWindows,
             #[cfg(target_os = "windows")]
             NavigationAccept => Self::NavigationAccept,
             #[cfg(target_os = "windows")]
@@ -2001,9 +1992,9 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[cfg(target_os = "windows")]
             Packet => Self::Packet,
             #[cfg(target_os = "windows")]
-            RMenu => Self::RMenu,
+            RMenu => Self::RightAlt,
             #[cfg(target_os = "windows")]
-            RWin => Self::RWin,
+            RWin => Self::RightWindows,
             #[cfg(target_os = "windows")]
             Scroll => Self::Scroll,
             #[cfg(target_os = "windows")]
@@ -2011,15 +2002,9 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[cfg(target_os = "windows")]
             Processkey => Self::Processkey,
             #[cfg(target_os = "windows")]
-            RButton => Self::RButton,
-            #[cfg(target_os = "windows")]
             Separator => Self::Separator,
             #[cfg(target_os = "windows")]
             Sleep => Self::Sleep,
-            #[cfg(target_os = "windows")]
-            XButton1 => Self::XButton1,
-            #[cfg(target_os = "windows")]
-            XButton2 => Self::XButton2,
             #[cfg(target_os = "windows")]
             Zoom => Self::Zoom,
 
@@ -2150,14 +2135,15 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[allow(deprecated)]
             Super => Self::Meta,
             #[allow(deprecated)]
-            Print => Self::PrintScr,
+            Print => Self::PrintScreen,
             #[cfg(target_os = "windows")]
             #[allow(deprecated)]
-            Snapshot => Self::PrintScr,
+            Snapshot => Self::PrintScreen,
 
-            // TODO
-            Other(_) => return Err(KeyError::Unsupported),
-            Unicode(_) => return Err(KeyError::Unsupported),
+            #[cfg(target_os = "windows")]
+            LButton | MButton | RButton | XButton1 | XButton2 => return Err(KeyError::Unsupported),
+
+            Unicode(_) | Other(_) => return Err(KeyError::Unsupported),
         })
     }
 }
@@ -2200,8 +2186,9 @@ mod tests {
                     r#"
                     while(true) {
                         let key = await keyboard.waitForKey();
-                        console.printLn("key", key);
+                        //console.printLn("key", key);
                     }
+                    console.printLn("END");
                 "#,
                 )
                 .await;

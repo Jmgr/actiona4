@@ -66,6 +66,7 @@ dependencies = [
  "num-traits",
  "once_cell",
  "opencv",
+ "parking_lot",
  "pe-parser",
  "pretty_assertions",
  "procfs",

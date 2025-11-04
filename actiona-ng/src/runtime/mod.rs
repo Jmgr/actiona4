@@ -1,10 +1,11 @@
 use std::sync::{
-    Arc, Mutex,
+    Arc,
     atomic::{AtomicBool, Ordering},
 };
 
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
+use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use tauri::AppHandle;
 use tokio::{runtime::Handle, select, signal, task::block_in_place};

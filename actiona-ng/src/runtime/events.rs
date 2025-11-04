@@ -273,21 +273,30 @@ impl MultiTest {
 pub struct MouseButtonEvent {
     pub button: Button,
     pub direction: Direction,
-    pub injected: bool,
+    pub is_injected: bool,
 }
 
 #[derive(Clone, Constructor, Debug, Default)]
 pub struct MouseMoveEvent {
     pub position: Point,
-    pub injected: bool,
+    pub is_injected: bool,
 }
 
 #[derive(Clone, Constructor, Debug)]
 pub struct KeyboardKeyEvent {
     pub key: Key,
+    pub scan_code: u32,
     pub direction: Direction,
-    pub injected: bool,
+    pub is_injected: bool,
     pub name: String,
+    pub is_repeat: bool,
+}
+
+#[derive(Clone, Constructor, Debug)]
+pub struct KeyboardTextEvent {
+    pub character: char,
+    pub is_injected: bool,
+    pub is_repeat: bool,
 }
 
 // This is the same as display_info::DisplayInfo, but without the pointer to the raw monitor handle, since it is not Send.
