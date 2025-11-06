@@ -135,6 +135,11 @@ impl KeyboardInputDispatcher {
         self.keys.subscribe()
     }
 
+    #[must_use]
+    pub fn subscribe_keyboard_text(&self) -> Guard<KeyboardTextTopic> {
+        self.text.subscribe()
+    }
+
     fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool) -> bool {
         let mut pressed_keys = self.pressed_keys.lock().unwrap();
         if is_pressed {

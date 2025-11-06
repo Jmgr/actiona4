@@ -305,7 +305,7 @@ impl Mouse {
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self {
             enigo: runtime.enigo(),
-            implementation: MouseImpl::new(runtime).await?,
+            implementation: MouseImpl::new(runtime)?,
             pressed_buttons: Mutex::new(Default::default()),
         })
     }

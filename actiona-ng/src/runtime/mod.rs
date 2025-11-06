@@ -11,13 +11,14 @@ use tauri::AppHandle;
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
-#[cfg(windows)]
-use crate::runtime::platform::win::events::input::{
-    KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
-};
 #[cfg(unix)]
 use crate::runtime::platform::x11::events::input::{
     KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
+};
+#[cfg(windows)]
+use crate::runtime::win::events::input::{
+    keyboard::KeyboardKeysTopic, keyboard::KeyboardTextTopic, mouse::MouseButtonsTopic,
+    mouse::MouseMoveTopic,
 };
 use crate::{
     core::{
@@ -366,22 +367,22 @@ impl Runtime {
 
     #[must_use]
     pub fn mouse_buttons(&self) -> Guard<MouseButtonsTopic> {
-        self.platform().mouse_buttons().subscribe()
+        self.platform().mouse_buttons()
     }
 
     #[must_use]
     pub fn mouse_move(&self) -> Guard<MouseMoveTopic> {
-        self.platform().mouse_move().subscribe()
+        self.platform().mouse_move()
     }
 
     #[must_use]
     pub fn keyboard_keys(&self) -> Guard<KeyboardKeysTopic> {
-        self.platform().keyboard_keys().subscribe()
+        self.platform().keyboard_keys()
     }
 
     #[must_use]
     pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
-        self.platform().keyboard_text().subscribe()
+        self.platform().keyboard_text()
     }
 
     #[must_use]

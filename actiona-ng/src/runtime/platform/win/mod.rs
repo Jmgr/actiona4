@@ -31,9 +31,10 @@ use crate::{
     error::CommonError,
     platform::win::safe_handle::SafeWindowHandle,
     runtime::{
-        events::DisplayInfoVec,
+        events::{DisplayInfoVec, Guard, TopicWrapper},
         platform::win::events::input::{
-            keyboard::KeyboardInputDispatcher, mouse::MouseInputDispatcher,
+            keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
+            mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},
         },
     },
 };
@@ -165,13 +166,23 @@ impl Runtime {
     }
 
     #[must_use]
-    pub fn mouse_input_dispatcher(&self) -> Arc<MouseInputDispatcher> {
-        self.mouse_input_dispatcher.clone()
+    pub fn mouse_buttons(&self) -> Guard<MouseButtonsTopic> {
+        self.mouse_input_dispatcher.subscribe_mouse_buttons()
     }
 
     #[must_use]
-    pub fn keyboard_input_dispatcher(&self) -> Arc<KeyboardInputDispatcher> {
-        self.keyboard_input_dispatcher.clone()
+    pub fn mouse_move(&self) -> Guard<MouseMoveTopic> {
+        self.mouse_input_dispatcher.subscribe_mouse_move()
+    }
+
+    #[must_use]
+    pub fn keyboard_keys(&self) -> Guard<KeyboardKeysTopic> {
+        self.keyboard_input_dispatcher.subscribe_keyboard_keys()
+    }
+
+    #[must_use]
+    pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
+        self.keyboard_input_dispatcher.subscribe_keyboard_text()
     }
 
     #[must_use]
