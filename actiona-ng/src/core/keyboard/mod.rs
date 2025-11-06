@@ -61,7 +61,7 @@ impl Keyboard {
     }
 
     pub async fn is_key_pressed(&self, key: Key) -> Result<bool> {
-        self.implementation.is_key_pressed(key)
+        self.implementation.is_key_pressed(key).await
     }
 
     pub async fn wait_for_key(&self, cancellation_token: CancellationToken) -> Result<Key> {

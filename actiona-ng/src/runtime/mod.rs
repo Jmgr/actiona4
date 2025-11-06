@@ -11,6 +11,14 @@ use tauri::AppHandle;
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
+#[cfg(windows)]
+use crate::runtime::platform::win::events::input::{
+    KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
+};
+#[cfg(unix)]
+use crate::runtime::platform::x11::events::input::{
+    KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
+};
 use crate::{
     core::{
         clipboard::js::JsClipboard,
@@ -40,7 +48,7 @@ use crate::{
         ui::js::JsUi,
         web::js::JsWeb,
     },
-    runtime::shared_rng::SharedRng,
+    runtime::{events::Guard, shared_rng::SharedRng},
     scripting::Engine as ScriptEngine,
 };
 
@@ -354,6 +362,26 @@ impl Runtime {
     #[must_use]
     pub fn platform(&self) -> &win::Runtime {
         &self.runtime
+    }
+
+    #[must_use]
+    pub fn mouse_buttons(&self) -> Guard<MouseButtonsTopic> {
+        self.platform().mouse_buttons().subscribe()
+    }
+
+    #[must_use]
+    pub fn mouse_move(&self) -> Guard<MouseMoveTopic> {
+        self.platform().mouse_move().subscribe()
+    }
+
+    #[must_use]
+    pub fn keyboard_keys(&self) -> Guard<KeyboardKeysTopic> {
+        self.platform().keyboard_keys().subscribe()
+    }
+
+    #[must_use]
+    pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
+        self.platform().keyboard_text().subscribe()
     }
 
     #[must_use]

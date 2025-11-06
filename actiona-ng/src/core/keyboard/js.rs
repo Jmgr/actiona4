@@ -1418,7 +1418,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             #[cfg(target_os = "linux")]
             Undo => Self::Undo,
             #[cfg(target_os = "linux")]
-            MicMute => Self::MicMute,
+            MicrophoneMute => Self::MicMute,
 
             #[cfg(target_os = "linux")]
             F25 => Self::F25,
@@ -1448,7 +1448,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             | AbntC2
             | Accept
             | Apps
-            | Attn
+            | Attention
             | BrowserBack
             | BrowserFavorites
             | BrowserForward
@@ -1457,7 +1457,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             | BrowserSearch
             | BrowserStop
             | Convert
-            | Crsel
+            | CursorSelect
             | DBEAlphanumeric
             | DBECodeinput
             | DBEDetermineString
@@ -1511,9 +1511,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             | LaunchApp2
             | LaunchMail
             | LaunchMediaSelect
-            | LButton
-            | LWin
-            | MButton
+            | LeftWindows
             | NavigationAccept
             | NavigationCancel
             | NavigationDown
@@ -1561,16 +1559,13 @@ impl TryFrom<JsStandardKey> for enigo::Key {
             | OEMWsctrl
             | PA1
             | Packet
-            | RMenu
-            | RWin
+            | RightAlt
+            | RightWindows
             | Scroll
             | Play
             | Processkey
-            | RButton
             | Separator
             | Sleep
-            | XButton1
-            | XButton2
             | Zoom => return Err(KeyError::Unsupported),
 
             #[cfg(target_os = "windows")]
@@ -2103,7 +2098,7 @@ impl TryFrom<enigo::Key> for JsStandardKey {
             #[cfg(target_os = "linux")]
             Undo => Self::Undo,
             #[cfg(target_os = "linux")]
-            MicMute => Self::MicMute,
+            MicMute => Self::MicrophoneMute,
 
             #[cfg(target_os = "linux")]
             F25 => Self::F25,

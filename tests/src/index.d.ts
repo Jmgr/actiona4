@@ -65,6 +65,10 @@ declare enum Direction {
 
     Click,
 }
+/**
+ * Key
+ */
+type Key = StandardKey | string | number;
 declare enum StandardKey {
     /**
      * Top-row digit '0' key (not numpad)
@@ -284,7 +288,7 @@ declare enum StandardKey {
      * Attention key (legacy/rare)
      * @platform only works on Windows
      */
-    Attn,
+    Attention,
 
     /**
      * Backspace / Delete-previous-character
@@ -298,7 +302,7 @@ declare enum StandardKey {
     Break,
 
     /**
-     * Begin key (X11)
+     * Begin key
      * @platform only works on Linux
      */
     Begin,
@@ -375,7 +379,7 @@ declare enum StandardKey {
      * Cursor Select (CRSel)
      * @platform only works on Windows
      */
-    Crsel,
+    CursorSelect,
 
     /**
      * IME: switch to alphanumeric
@@ -701,7 +705,7 @@ declare enum StandardKey {
     Final,
 
     /**
-     * Find key (X11)
+     * Find key
      * @platform only works on Linux
      */
     Find,
@@ -953,15 +957,9 @@ declare enum StandardKey {
     LaunchMediaSelect,
 
     /**
-     * Mouse left button
-     * @platform only works on Windows
-     */
-    LButton,
-
-    /**
      * Left Control
      */
-    LControl,
+    LeftControl,
 
     /**
      * Arrow: Left
@@ -969,7 +967,7 @@ declare enum StandardKey {
     LeftArrow,
 
     /**
-     * Line Feed key (X11)
+     * Line Feed key
      * @platform only works on Linux
      */
     Linefeed,
@@ -977,24 +975,18 @@ declare enum StandardKey {
     /**
      * Left Alt/Menu
      */
-    LMenu,
+    LeftAlt,
 
     /**
      * Left Shift
      */
-    LShift,
+    LeftShift,
 
     /**
      * Left Windows / Super key
      * @platform only works on Windows
      */
-    LWin,
-
-    /**
-     * Mouse middle button
-     * @platform only works on Windows
-     */
-    MButton,
+    LeftWindows,
 
     /**
      * Next media track
@@ -1402,7 +1394,7 @@ declare enum StandardKey {
     /**
      * Screenshot
      */
-    PrintScr,
+    PrintScreen,
 
     /**
      * IME Process key
@@ -1411,18 +1403,12 @@ declare enum StandardKey {
     Processkey,
 
     /**
-     * Mouse right button
-     * @platform only works on Windows
-     */
-    RButton,
-
-    /**
      * Right Control
      */
-    RControl,
+    RightControl,
 
     /**
-     * Redo (X11)
+     * Redo
      * @platform only works on Linux
      */
     Redo,
@@ -1441,18 +1427,18 @@ declare enum StandardKey {
      * Right Alt/Menu
      * @platform only works on Windows
      */
-    RMenu,
+    RightAlt,
 
     /**
      * Right Shift
      */
-    RShift,
+    RightShift,
 
     /**
      * Right Windows / Super key
      * @platform only works on Windows
      */
-    RWin,
+    RightWindows,
 
     /**
      * Scroll key (legacy)
@@ -1461,7 +1447,7 @@ declare enum StandardKey {
     Scroll,
 
     /**
-     * Scroll Lock (X11)
+     * Scroll Lock
      * @platform only works on Linux
      */
     ScrollLock,
@@ -1472,7 +1458,7 @@ declare enum StandardKey {
     Select,
 
     /**
-     * Script switch (X11)
+     * Script switch
      * @platform only works on Linux
      */
     ScriptSwitch,
@@ -1489,7 +1475,7 @@ declare enum StandardKey {
     Shift,
 
     /**
-     * Shift Lock (X11)
+     * Shift Lock
      * @platform only works on Linux
      */
     ShiftLock,
@@ -1522,7 +1508,7 @@ declare enum StandardKey {
     Tab,
 
     /**
-     * Undo (X11)
+     * Undo
      * @platform only works on Linux
      */
     Undo,
@@ -1548,22 +1534,10 @@ declare enum StandardKey {
     VolumeUp,
 
     /**
-     * Microphone mute (X11)
+     * Microphone mute
      * @platform only works on Linux
      */
-    MicMute,
-
-    /**
-     * Mouse XButton1 (back)
-     * @platform only works on Windows
-     */
-    XButton1,
-
-    /**
-     * Mouse XButton2 (forward)
-     * @platform only works on Windows
-     */
-    XButton2,
+    MicrophoneMute,
 
     /**
      * Zoom key
@@ -1574,10 +1548,6 @@ declare enum StandardKey {
 declare enum KeyError {
     Unsupported,
 }
-/**
- * Key
- */
-type Key = StandardKey | string | number;
 /**
  * Process status
  */
@@ -3199,12 +3169,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
-    readonly path: string;
-    readonly isDirectory: boolean;
     readonly isSymlink: boolean;
-    readonly fileName: string;
-    readonly isFile: boolean;
+    readonly isDirectory: boolean;
+    readonly path: string;
     readonly size: number;
+    readonly isFile: boolean;
+    readonly fileName: string;
 }
 /**
  * Directory options
@@ -3415,45 +3385,45 @@ declare class Point {
  */
 declare interface DisplayInfo {
     /**
-     * Output device's pixel scale factor
+     * Unique identifier associated with the display
      */
-    readonly scaleFactor: number;
-    /**
-     * The display refresh rate
-     */
-    readonly frequency: number;
+    readonly id: number;
     /**
      * The display friendly name
      */
     readonly friendlyName: string;
     /**
-     * The display pixel height
+     * The display rectangle
      */
-    readonly heightMm: number;
+    readonly rect: Rect;
     /**
-     * Whether the screen is the main screen
+     * Output device's pixel scale factor
      */
-    readonly isPrimary: boolean;
+    readonly scaleFactor: number;
     /**
      * The display pixel width
      */
     readonly widthMm: number;
     /**
-     * The display rectangle
-     */
-    readonly rect: Rect;
-    /**
      * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
      */
     readonly rotation: number;
     /**
+     * The display refresh rate
+     */
+    readonly frequency: number;
+    /**
+     * Whether the screen is the main screen
+     */
+    readonly isPrimary: boolean;
+    /**
+     * The display pixel height
+     */
+    readonly heightMm: number;
+    /**
      * The display name
      */
     readonly name: string;
-    /**
-     * Unique identifier associated with the display
-     */
-    readonly id: number;
 }
 declare class Rect {
     /**
@@ -3706,10 +3676,10 @@ declare class AbortController {
 }
 declare interface Keyboard {
     text(text: string): Promise<void>;
-    key(key: StandardKey, direction: Direction): Promise<void>;
+    key(key: Key, direction: Direction): Promise<void>;
     raw(keycode: number, direction: Direction): Promise<void>;
-    isKeyPressed(key: StandardKey): Promise<boolean>;
-    waitForKey(): Promise<StandardKey>;
+    isKeyPressed(key: Key): Promise<boolean>;
+    waitForKey(): Promise<Key>;
 }
 declare const keyboard: Keyboard;
 declare interface Mouse {
@@ -3789,33 +3759,33 @@ declare const screenshot: Screenshot;
  */
 declare interface System {
     /**
-     * Memory information
+     * Storage information
      */
-    readonly memory: Memory;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
-     * Hardware information
-     */
-    readonly hardware: Hardware;
+    readonly storage: Storage;
     /**
      * Cpu information
      */
     readonly cpu: Cpu;
     /**
+     * Memory information
+     */
+    readonly memory: Memory;
+    /**
      * Network information
      */
     readonly network: Network;
+    /**
+     * Os information
+     */
+    readonly os: Os;
     /**
      * Processes information
      */
     readonly processes: Processes;
     /**
-     * Storage information
+     * Hardware information
      */
-    readonly storage: Storage;
+    readonly hardware: Hardware;
 }
 declare const system: System;
 declare class Ui {
@@ -3983,17 +3953,17 @@ declare class WebProgress {
  */
 declare interface Cpu {
     /**
-     * Physical core count
+     * Logical core count
      */
-    readonly physicalCoreCount?: number;
+    readonly logicalCoreCount: number;
     /**
      * Architecture
      */
     readonly architecture: string;
     /**
-     * Logical core count
+     * Physical core count
      */
-    readonly logicalCoreCount: number;
+    readonly physicalCoreCount?: number;
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
     frequencies(): Promise<number[]>;
@@ -4004,21 +3974,9 @@ declare interface Cpu {
  */
 declare interface Hardware {
     /**
-     * Stock keeping unit
-     */
-    readonly stockKeepingUnit?: string;
-    /**
-     * Vendor name
-     */
-    readonly vendorName?: string;
-    /**
      * Family
      */
     readonly family?: string;
-    /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
     /**
      * Version
      */
@@ -4028,6 +3986,14 @@ declare interface Hardware {
      */
     readonly motherboard: Motherboard;
     /**
+     * Vendor name
+     */
+    readonly vendorName?: string;
+    /**
+     * Stock keeping unit
+     */
+    readonly stockKeepingUnit?: string;
+    /**
      * Name
      */
     readonly name?: string;
@@ -4036,6 +4002,10 @@ declare interface Hardware {
      */
     readonly uuid?: string;
     /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
+    /**
      * Hardware components
      */
     listComponents(options?: ListComponentsOptions): Promise<Component[]>;
@@ -4043,48 +4013,48 @@ declare interface Hardware {
 }
 declare interface Motherboard {
     /**
-     * Vendor name
+     * Version
      */
-    readonly vendorName?: string;
-    /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
-    /**
-     * Asset tag
-     */
-    readonly assetTag?: string;
+    readonly version?: string;
     /**
      * Name
      */
     readonly name?: string;
     /**
-     * Version
+     * Serial number
      */
-    readonly version?: string;
+    readonly serialNumber?: string;
+    /**
+     * Vendor name
+     */
+    readonly vendorName?: string;
+    /**
+     * Asset tag
+     */
+    readonly assetTag?: string;
     toString(): string;
 }
 declare interface Component {
     /**
-     * Critical temperature
+     * Temperature
      */
-    readonly criticalTemperature?: number;
-    /**
-     * Label
-     */
-    readonly label: string;
-    /**
-     * Maximum temperature
-     */
-    readonly maxTemperature?: number;
+    readonly temperature?: number;
     /**
      * ID
      */
     readonly id?: string;
     /**
-     * Temperature
+     * Maximum temperature
      */
-    readonly temperature?: number;
+    readonly maxTemperature?: number;
+    /**
+     * Label
+     */
+    readonly label: string;
+    /**
+     * Critical temperature
+     */
+    readonly criticalTemperature?: number;
     toString(): string;
 }
 /**
@@ -4112,17 +4082,17 @@ declare interface MemoryUsage {
      */
     readonly available: number;
     /**
-     * Total
+     * Used
      */
-    readonly total: number;
+    readonly used: number;
     /**
      * Free
      */
     readonly free: number;
     /**
-     * Used
+     * Total
      */
-    readonly used: number;
+    readonly total: number;
     toString(): string;
 }
 /**
@@ -4135,13 +4105,13 @@ declare interface CGroupLimits {
      */
     readonly freeMemory: number;
     /**
-     * Free swap
-     */
-    readonly freeSwap: number;
-    /**
      * RSS
      */
     readonly rss: number;
+    /**
+     * Free swap
+     */
+    readonly freeSwap: number;
     /**
      * Total memory
      */
@@ -4164,18 +4134,6 @@ declare interface Network {
 }
 declare interface NetworkInterface {
     /**
-     * MTU
-     */
-    readonly mtu: number;
-    /**
-     * Inbound
-     */
-    readonly inbound: Traffic;
-    /**
-     * Subnets
-     */
-    readonly subnets: string[];
-    /**
      * Outbound
      */
     readonly outbound: Traffic;
@@ -4187,21 +4145,33 @@ declare interface NetworkInterface {
      * MAC address
      */
     readonly macAddress?: string;
+    /**
+     * MTU
+     */
+    readonly mtu: number;
+    /**
+     * Subnets
+     */
+    readonly subnets: string[];
+    /**
+     * Inbound
+     */
+    readonly inbound: Traffic;
     toString(): string;
 }
 declare interface Counters {
     /**
-     * Packets
+     * Errors
      */
-    readonly packets: number;
+    readonly errors: number;
     /**
      * Data
      */
     readonly data: number;
     /**
-     * Errors
+     * Packets
      */
-    readonly errors: number;
+    readonly packets: number;
     toString(): string;
 }
 declare interface Traffic {
@@ -4271,17 +4241,21 @@ declare interface Os {
 }
 declare interface User {
     /**
-     * Name
+     * ID
      */
-    readonly name: string;
+    readonly id: string;
     /**
      * Group ID
      */
     readonly groupId?: number;
     /**
-     * ID
+     * Groups
      */
-    readonly id: string;
+    readonly groups: number[];
+    /**
+     * Name
+     */
+    readonly name: string;
     /**
      * Group name
      */
@@ -4290,10 +4264,6 @@ declare interface User {
      * Group names
      */
     readonly groupNames: string[];
-    /**
-     * Groups
-     */
-    readonly groups: number[];
     toString(): string;
 }
 declare interface Group {
@@ -4319,101 +4289,101 @@ declare interface Processes {
 }
 declare interface Process {
     /**
-     * Exists
-     */
-    readonly exists: boolean;
-    /**
-     * CPU usage
-     */
-    readonly cpuUsage: number;
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
      * Cmd
      */
     readonly cmd: string[];
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: DiskUsage;
-    /**
-     * Status
-     */
-    readonly status: ProcessStatus;
-    /**
-     * Open files
-     */
-    readonly openFiles?: number;
-    /**
-     * Effective user ID
-     */
-    readonly effectiveUserId?: string;
-    /**
-     * Effective group ID
-     */
-    readonly effectiveGroupId?: number;
-    /**
-     * Env
-     */
-    readonly env: string[];
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * User ID
-     */
-    readonly userId?: string;
-    /**
-     * Start time
-     */
-    readonly startTime: Object;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Cwd
-     */
-    readonly cwd?: string;
-    /**
-     * Accumulated CPU time
-     */
-    readonly accumulatedCpuTime: number;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
     /**
      * Exe
      */
     readonly exe?: string;
     /**
-     * Pid
+     * Parent
      */
-    readonly pid: number;
+    readonly parent?: number;
     /**
-     * Group ID
+     * Virtual memory
      */
-    readonly groupId?: number;
+    readonly virtualMemory: number;
     /**
-     * Run time
+     * Root
      */
-    readonly runTime: number;
+    readonly root?: string;
     /**
      * Memory
      */
     readonly memory: number;
     /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
+     * Run time
+     */
+    readonly runTime: number;
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Pid
+     */
+    readonly pid: number;
+    /**
+     * Accumulated CPU time
+     */
+    readonly accumulatedCpuTime: number;
+    /**
+     * Exists
+     */
+    readonly exists: boolean;
+    /**
+     * Open files
+     */
+    readonly openFiles?: number;
+    /**
+     * User ID
+     */
+    readonly userId?: string;
+    /**
+     * Env
+     */
+    readonly env: string[];
+    /**
+     * Effective group ID
+     */
+    readonly effectiveGroupId?: number;
+    /**
      * Session ID
      */
     readonly sessionId?: number;
+    /**
+     * Status
+     */
+    readonly status: ProcessStatus;
+    /**
+     * CPU usage
+     */
+    readonly cpuUsage: number;
+    /**
+     * Open files limit
+     */
+    readonly openFilesLimit?: number;
+    /**
+     * Group ID
+     */
+    readonly groupId?: number;
+    /**
+     * Cwd
+     */
+    readonly cwd?: string;
+    /**
+     * Disk usage
+     */
+    readonly diskUsage: DiskUsage;
     toString(): string;
 }
 /**
@@ -4432,26 +4402,6 @@ declare interface Disk {
      */
     readonly name?: string;
     /**
-     * Total space
-     */
-    readonly totalSpace: number;
-    /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
-    /**
-     * Mount point
-     */
-    readonly mountPoint: string;
-    /**
-     * Usage
-     */
-    readonly usage: DiskUsage;
-    /**
      * Is removable
      */
     readonly isRemovable: boolean;
@@ -4460,9 +4410,29 @@ declare interface Disk {
      */
     readonly fileSystem?: string;
     /**
+     * Total space
+     */
+    readonly totalSpace: number;
+    /**
+     * Usage
+     */
+    readonly usage: DiskUsage;
+    /**
+     * Mount point
+     */
+    readonly mountPoint: string;
+    /**
+     * Kind
+     */
+    readonly kind: DiskKind;
+    /**
      * Available space
      */
     readonly availableSpace: number;
+    /**
+     * Is read-only
+     */
+    readonly isReadOnly: boolean;
     toString(): string;
 }
 declare interface IoStats {

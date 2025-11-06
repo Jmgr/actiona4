@@ -1,15 +1,19 @@
 use std::{
     fmt::Debug,
-    sync::Arc,
+    sync::{Arc, atomic::AtomicUsize},
     thread::{self, JoinHandle},
+    time::Duration,
 };
 
 use derive_more::{Deref, DerefMut};
 use enigo::Direction;
 use eyre::{Result, eyre};
 use libwmctl::AtomCollection;
-use tokio::{runtime::Builder, select, sync::broadcast, task::LocalSet};
-use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tokio::{runtime::Builder, select, sync::broadcast, task::LocalSet, time::sleep};
+use tokio_util::{
+    sync::{CancellationToken, DropGuard},
+    task::TaskTracker,
+};
 use tracing::{error, info};
 use x11rb::protocol::xinput::PointerEventFlags;
 use x11rb_async::{
@@ -19,7 +23,11 @@ use x11rb_async::{
         randr::{self},
         shm,
         xinput::xi_query_version,
-        xkb::{ConnectionExt, EventType, MapPart, SelectEventsAux},
+        xkb::{
+            BoolCtrl, ConnectionExt, ControlsNotifyEvent, EventType, MapPart, SelectEventsAux,
+            get_controls,
+        },
+        xproto::get_keyboard_control,
     },
 };
 use xkbcommon::xkb::{
@@ -29,16 +37,18 @@ use xkbcommon::xkb::{
         get_core_keyboard_device_id, setup_xkb_extension,
     },
 };
+use xkeysym::KeyCode;
 
 use crate::{
     core::{mouse::Button, point::point, windows::platform::x11::events::WindowEvent},
     platform::x11::X11Connection,
     runtime::{
-        events::{KeyboardKeyEvent, MouseButtonEvent, TopicWrapper},
+        events::{KeyboardKeyEvent, KeyboardTextEvent, MouseButtonEvent, TopicWrapper},
         platform::x11::events::{
             displays::ScreenChangeTopic,
             input::{
-                InputMask, KeyboardKeysTopic, MouseButtonsTopic, MouseMoveTopic, keysym_to_key,
+                InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
+                keysym_to_key,
             },
         },
     },
@@ -67,6 +77,7 @@ pub struct Runtime {
     mouse_buttons_topic: Arc<TopicWrapper<MouseButtonsTopic>>,
     mouse_move_topic: Arc<TopicWrapper<MouseMoveTopic>>,
     keyboard_keys_topic: Arc<TopicWrapper<KeyboardKeysTopic>>,
+    keyboard_text_topic: Arc<TopicWrapper<KeyboardTextTopic>>,
     screen_change_topic: Arc<TopicWrapper<ScreenChangeTopic>>,
     window_event_sender: broadcast::Sender<WindowEvent>,
     main_loop_thread: Option<JoinHandle<Result<()>>>,
@@ -117,12 +128,12 @@ impl Runtime {
         );
 
         // Use XKB
-        let ue = connection
+        let reply = connection
             .xkb_use_extension(MIN_MAJOR_XKB_VERSION, MIN_MINOR_XKB_VERSION)
             .await?
             .reply()
             .await?;
-        if !ue.supported {
+        if !reply.supported {
             return Err(eyre!("required XKB extension not available"));
         }
 
@@ -148,14 +159,15 @@ impl Runtime {
             major_version, minor_version
         );
 
+        let core_keyboard = get_core_keyboard_device_id(xcb_connection).try_into()?;
         let map_parts =
             MapPart::KEY_TYPES | MapPart::KEY_SYMS | MapPart::MODIFIER_MAP | MapPart::VIRTUAL_MODS;
 
         connection
             .xkb_select_events(
-                get_core_keyboard_device_id(xcb_connection).try_into()?,
+                core_keyboard,
                 EventType::default(),
-                EventType::NEW_KEYBOARD_NOTIFY | EventType::MAP_NOTIFY,
+                EventType::NEW_KEYBOARD_NOTIFY | EventType::MAP_NOTIFY | EventType::CONTROLS_NOTIFY,
                 map_parts,
                 map_parts,
                 &SelectEventsAux::new(),
@@ -196,8 +208,18 @@ impl Runtime {
             cancellation_token.clone(),
             task_tracker.clone(),
         ));
+        let activation_counter = Arc::new(AtomicUsize::new(0));
         let keyboard_keys_topic = Arc::new(TopicWrapper::new(
-            KeyboardKeysTopic::new(x11_connection.clone(), input_mask),
+            KeyboardKeysTopic::new(
+                x11_connection.clone(),
+                input_mask.clone(),
+                activation_counter.clone(),
+            ),
+            cancellation_token.clone(),
+            task_tracker.clone(),
+        ));
+        let keyboard_text_topic = Arc::new(TopicWrapper::new(
+            KeyboardTextTopic::new(x11_connection.clone(), input_mask, activation_counter),
             cancellation_token.clone(),
             task_tracker.clone(),
         ));
@@ -213,13 +235,19 @@ impl Runtime {
         let local_mouse_buttons_topic = mouse_buttons_topic.clone();
         let local_mouse_move_topic = mouse_move_topic.clone();
         let local_keyboard_keys_topic = keyboard_keys_topic.clone();
+        let local_keyboard_text_topic = keyboard_text_topic.clone();
         let local_screen_change_topic = screen_change_topic.clone();
         let local_window_event_sender = window_event_sender.clone();
 
-        let main_loop_thread = spawn_on_dedicated_thread(|| async move {
+        let main_loop_thread = spawn_on_dedicated_thread(move || async move {
             let mut keyboard_state = KeyboardState::new(local_x11_connection.clone());
 
             let connection = local_x11_connection.async_connection();
+
+            let mut key_repeat =
+                KeyRepeat::new(local_x11_connection.clone(), core_keyboard).await?;
+            let mut repeating_key = None;
+
             loop {
                 let event = select! {
                     _ = local_cancellation_token.cancelled() => { break; }
@@ -239,7 +267,7 @@ impl Runtime {
                         local_mouse_buttons_topic.publish(MouseButtonEvent {
                             button,
                             direction: Direction::Press,
-                            injected: event.flags == PointerEventFlags::POINTER_EMULATED, // TODO: fix
+                            is_injected: event.flags == PointerEventFlags::POINTER_EMULATED, // TODO: fix
                         });
                     }
                     Event::XinputRawButtonRelease(event) => {
@@ -247,7 +275,7 @@ impl Runtime {
                         local_mouse_buttons_topic.publish(MouseButtonEvent {
                             button,
                             direction: Direction::Release,
-                            injected: event.flags == PointerEventFlags::POINTER_EMULATED, // TODO: fix
+                            is_injected: event.flags == PointerEventFlags::POINTER_EMULATED, // TODO: fix
                         });
                     }
                     Event::XinputMotion(event) => {
@@ -260,12 +288,65 @@ impl Runtime {
 
                         keyboard_state.update_key(keycode, KeyDirection::Down);
 
-                        local_keyboard_keys_topic.publish(KeyboardKeyEvent {
-                            key: keysym_to_key(keysym),
-                            direction: Direction::Press,
-                            injected: false, // Unsupported
-                            name,
+                        let text_event = name.chars().next().map(|char| KeyboardTextEvent {
+                            character: char,
+                            is_injected: false, // Unsupported
+                            is_repeat: false,
                         });
+                        if let Some(ref text_event) = text_event {
+                            local_keyboard_text_topic.publish(text_event.clone());
+                            println!("# {:?}", text_event);
+                        }
+
+                        let key_event = KeyboardKeyEvent {
+                            key: keysym_to_key(keysym),
+                            scan_code: keycode.into(),
+                            direction: Direction::Press,
+                            is_injected: false, // Unsupported
+                            name,
+                            is_repeat: false,
+                        };
+                        local_keyboard_keys_topic.publish(key_event.clone());
+
+                        if key_repeat.is_enabled() && key_repeat.should_key_code_repeat(keycode)? {
+                            let cancellation_token = local_cancellation_token.child_token();
+                            let delay = key_repeat.repeat_delay();
+                            let interval = key_repeat.repeat_interval();
+                            let local_keyboard_keys_topic = local_keyboard_keys_topic.clone();
+                            let local_keyboard_text_topic = local_keyboard_text_topic.clone();
+
+                            let mut key_event = key_event;
+                            key_event.is_repeat = true;
+                            let text_event = text_event.map(|mut event| {
+                                event.is_repeat = true;
+                                event
+                            });
+
+                            repeating_key = Some(RepeatingKey {
+                                key: keycode,
+                                drop_guard: cancellation_token.clone().drop_guard(),
+                            });
+
+                            task_tracker.spawn(async move {
+                                select! {
+                                    _ = sleep(Duration::from_millis(delay.into())) => {},
+                                    _ = cancellation_token.cancelled() => { return; },
+                                }
+
+                                loop {
+                                    local_keyboard_keys_topic.publish(key_event.clone());
+                                    if let Some(ref text_event) = text_event {
+                                        local_keyboard_text_topic.publish(text_event.clone());
+                                        println!("# {:?}", text_event);
+                                    }
+
+                                    select! {
+                                        _ = sleep(Duration::from_millis(interval.into())) => {},
+                                        _ = cancellation_token.cancelled() => { return; },
+                                    }
+                                }
+                            });
+                        }
                     }
                     Event::XinputRawKeyRelease(event) => {
                         let keycode = event.detail.into();
@@ -274,14 +355,37 @@ impl Runtime {
 
                         keyboard_state.update_key(keycode, KeyDirection::Up);
 
+                        // Stop the key repeat task if it's the same key
+                        repeating_key.take_if(|repeating_key| repeating_key.key == keycode);
+
                         local_keyboard_keys_topic.publish(KeyboardKeyEvent {
                             key: keysym_to_key(keysym),
+                            scan_code: keycode.into(),
                             direction: Direction::Release,
-                            injected: false, // Unsupported
+                            is_injected: false, // Unsupported
                             name,
+                            is_repeat: false,
                         });
                     }
-                    Event::XkbMapNotify(_) | Event::XkbNewKeyboardNotify(_) => {
+                    Event::XkbControlsNotify(event) => {
+                        key_repeat.refresh_from_event(&event).await?;
+
+                        // Stop all key repeats
+                        if !key_repeat.is_enabled() {
+                            let _ = repeating_key.take();
+                        }
+                    }
+                    Event::XkbNewKeyboardNotify(_) => {
+                        key_repeat.refresh().await?;
+
+                        // Stop all key repeats
+                        if !key_repeat.is_enabled() {
+                            let _ = repeating_key.take();
+                        }
+
+                        keyboard_state = KeyboardState::new(local_x11_connection.clone());
+                    }
+                    Event::XkbMapNotify(_) => {
                         keyboard_state = KeyboardState::new(local_x11_connection.clone());
                     }
                     Event::RandrScreenChangeNotify(_event) => {
@@ -312,6 +416,7 @@ impl Runtime {
             mouse_buttons_topic,
             mouse_move_topic,
             keyboard_keys_topic,
+            keyboard_text_topic,
             screen_change_topic,
             window_event_sender,
             main_loop_thread: Some(main_loop_thread),
@@ -346,6 +451,11 @@ impl Runtime {
     #[must_use]
     pub fn keyboard_keys(&self) -> Arc<TopicWrapper<KeyboardKeysTopic>> {
         self.keyboard_keys_topic.clone()
+    }
+
+    #[must_use]
+    pub fn keyboard_text(&self) -> Arc<TopicWrapper<KeyboardTextTopic>> {
+        self.keyboard_text_topic.clone()
     }
 
     #[must_use]
@@ -392,6 +502,103 @@ impl KeyboardState {
             &keymap,
             xcb_connection,
             dev,
+        ))
+    }
+}
+
+struct RepeatingKey {
+    key: KeyCode,
+    drop_guard: DropGuard,
+}
+
+struct KeyRepeat {
+    x11_connection: Arc<X11Connection>,
+    core_keyboard: u16,
+    is_enabled: bool,
+    repeat_delay: u16,
+    repeat_interval: u16,
+    auto_repeat_keys: [bool; 256],
+}
+
+impl KeyRepeat {
+    pub async fn new(x11_connection: Arc<X11Connection>, core_keyboard: u16) -> Result<Self> {
+        let (is_enabled, repeat_delay, repeat_interval, auto_repeat_keys) =
+            Self::fetch(x11_connection.clone(), core_keyboard).await?;
+
+        Ok(Self {
+            x11_connection,
+            core_keyboard,
+            is_enabled,
+            repeat_delay,
+            repeat_interval,
+            auto_repeat_keys,
+        })
+    }
+
+    pub async fn refresh_from_event(&mut self, event: &ControlsNotifyEvent) -> Result<()> {
+        let is_enabled = event.enabled_controls.contains(BoolCtrl::REPEAT_KEYS);
+        if is_enabled {
+            self.refresh().await?;
+        }
+        self.is_enabled = is_enabled;
+        Ok(())
+    }
+
+    pub async fn refresh(&mut self) -> Result<()> {
+        let (is_enabled, repeat_delay, repeat_interval, auto_repeat_keys) =
+            Self::fetch(self.x11_connection.clone(), self.core_keyboard).await?;
+
+        self.is_enabled = is_enabled;
+        self.repeat_delay = repeat_delay;
+        self.repeat_interval = repeat_interval;
+        self.auto_repeat_keys = auto_repeat_keys;
+
+        Ok(())
+    }
+
+    pub const fn is_enabled(&self) -> bool {
+        self.is_enabled
+    }
+
+    pub const fn repeat_delay(&self) -> u16 {
+        self.repeat_delay
+    }
+
+    pub const fn repeat_interval(&self) -> u16 {
+        self.repeat_interval
+    }
+
+    pub fn should_key_code_repeat(&self, key_code: KeyCode) -> Result<bool> {
+        let result = self
+            .auto_repeat_keys
+            .get::<usize>(key_code.raw().try_into()?)
+            .ok_or_else(|| eyre!("unexpected key code: {key_code:?}"))?;
+        Ok(*result)
+    }
+
+    async fn fetch(
+        x11_connection: Arc<X11Connection>,
+        core_keyboard: u16,
+    ) -> Result<(bool, u16, u16, [bool; 256])> {
+        let connection = x11_connection.async_connection();
+        let controls = get_controls(connection, core_keyboard)
+            .await?
+            .reply()
+            .await?;
+        let keyboard_control = get_keyboard_control(connection).await?.reply().await?;
+        let mut auto_repeat_keys = [false; 256];
+        for (i, byte) in keyboard_control.auto_repeats.iter().copied().enumerate() {
+            for bit in 0..8 {
+                let key_code = u8::try_from(i * 8 + bit)?;
+                auto_repeat_keys[usize::from(key_code)] = (byte & (1 << bit)) != 0;
+            }
+        }
+
+        Ok((
+            controls.enabled_controls.contains(BoolCtrl::REPEAT_KEYS),
+            controls.repeat_delay,
+            controls.repeat_interval,
+            auto_repeat_keys,
         ))
     }
 }
