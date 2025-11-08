@@ -3,7 +3,6 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
-use enigo::Direction;
 use eyre::Result;
 use once_cell::sync::OnceCell;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -29,6 +28,7 @@ use crate::{
             events::input::{HookSpec, LowLevelHookRunner, MSG_START, MSG_STOP},
         },
     },
+    types::input::Direction,
 };
 
 static MOUSE_INPUT_DISPATCHER: OnceCell<Weak<MouseInputDispatcher>> = OnceCell::new();
@@ -112,16 +112,18 @@ impl MouseInputDispatcher {
         self.mouse_move.publish(value);
     }
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
             self.message_pump.send_message(MSG_START);
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
             self.message_pump.send_message(MSG_STOP);
         }
+        Ok(())
     }
 }
 
@@ -134,16 +136,18 @@ impl Topic for MouseButtonsTopic {
     type T = MouseButtonEvent;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
-            dispatcher.on_start().await;
+            dispatcher.on_start().await?;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
             dispatcher.on_stop().await;
         }
+        Ok(())
     }
 }
 
@@ -156,16 +160,18 @@ impl Topic for MouseMoveTopic {
     type T = MouseMoveEvent;
     type Signal = LatestOnlySignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
-            dispatcher.on_start().await;
+            dispatcher.on_start().await?;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
-            dispatcher.on_stop().await;
+            dispatcher.on_stop().await?;
         }
+        Ok(())
     }
 }
 

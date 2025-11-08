@@ -10,7 +10,7 @@ use std::{
 
 use derive_more::Display;
 use derive_more::{Constructor, Deref};
-use enigo::{Direction, Key};
+use enigo::Key;
 use eyre::Result;
 use once_cell::sync::OnceCell;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -53,12 +53,15 @@ use windows::Win32::{
     },
 };
 
-use crate::runtime::{
-    events::{AllSignals, Guard, KeyboardKeyEvent, KeyboardTextEvent, Topic, TopicWrapper},
-    platform::win::{
-        SafeMessagePump,
-        events::input::{HookSpec, LowLevelHookRunner, MSG_START, MSG_STOP},
+use crate::{
+    runtime::{
+        events::{AllSignals, Guard, KeyboardKeyEvent, KeyboardTextEvent, Topic, TopicWrapper},
+        platform::win::{
+            SafeMessagePump,
+            events::input::{HookSpec, LowLevelHookRunner, MSG_START, MSG_STOP},
+        },
     },
+    types::input::Direction,
 };
 
 static KEYBOARD_INPUT_DISPATCHER: OnceCell<Weak<KeyboardInputDispatcher>> = OnceCell::new();
@@ -222,16 +225,18 @@ impl Topic for KeyboardKeysTopic {
     type T = KeyboardKeyEvent;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
             dispatcher.on_start().await;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
             dispatcher.on_stop().await;
         }
+        Ok(())
     }
 }
 
@@ -244,16 +249,18 @@ impl Topic for KeyboardTextTopic {
     type T = KeyboardTextEvent;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
             dispatcher.on_start().await;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
             dispatcher.on_stop().await;
         }
+        Ok(())
     }
 }
 

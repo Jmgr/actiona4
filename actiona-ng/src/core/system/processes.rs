@@ -24,6 +24,8 @@ use crate::{
         pid::Pid,
     },
 };
+#[cfg(windows)]
+use eyre::eyre;
 
 /// TODO: Linux only
 #[derive(Clone, Copy, Debug, Display)]
