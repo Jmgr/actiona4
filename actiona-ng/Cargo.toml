@@ -29,7 +29,6 @@ arboard.workspace = true
 askama.workspace = true
 macros = { path = "../macros" }
 
-async-compat.workspace = true
 base64.workspace = true
 bimap.workspace = true
 bon.workspace = true
@@ -63,6 +62,7 @@ noiselib.workspace = true
 num-traits.workspace = true
 once_cell.workspace = true
 opencv.workspace = true
+parking_lot.workspace = true
 rand.workspace = true
 rand_chacha.workspace = true
 rayon.workspace = true
@@ -91,15 +91,14 @@ thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
-tween.workspace = true
-wildmatch.workspace = true
-parking_lot.workspace = true
-unicode-segmentation.workspace = true
 tray-icon.workspace = true
+tween.workspace = true
+unicode-segmentation.workspace = true
+wildmatch.workspace = true
 
 [build-dependencies]
-cfg_aliases.workspace = true
 built.workspace = true
+cfg_aliases.workspace = true
 
 [dev-dependencies]
 base64.workspace = true

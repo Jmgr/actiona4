@@ -120,10 +120,6 @@ criteria = "safe-to-deploy"
 version = "2.3.1"
 criteria = "safe-to-deploy"
 
-[[exemptions.async-compat]]
-version = "0.2.4"
-criteria = "safe-to-deploy"
-
 [[exemptions.async-executor]]
 version = "1.13.1"
 criteria = "safe-to-deploy"

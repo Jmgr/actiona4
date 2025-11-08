@@ -8,8 +8,7 @@ use std::{
     },
 };
 
-use derive_more::Display;
-use derive_more::{Constructor, Deref};
+use derive_more::{Constructor, Deref, Display};
 use enigo::Key;
 use eyre::Result;
 use once_cell::sync::OnceCell;
@@ -77,7 +76,7 @@ impl HookSpec for KeyboardHook {
     }
 }
 
-#[derive(Debug, Clone, Copy, Hash, Constructor, PartialEq, Eq, Display)]
+#[derive(Clone, Constructor, Copy, Debug, Display, Eq, Hash, PartialEq)]
 #[display("(scan code: {scan_code}, vk code: {vk_code}, extended: {extended})")]
 struct KeyId {
     scan_code: u32,

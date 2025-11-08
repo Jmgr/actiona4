@@ -21,7 +21,7 @@ use crate::runtime::{
     events::{KeyboardKeyEvent, KeyboardTextEvent},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct Hotstrings {
     hotstrings: Arc<Mutex<IndexMap<String, String>>>,
     max_graphemes: Arc<AtomicUsize>,

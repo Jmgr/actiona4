@@ -5,7 +5,6 @@ use std::{fs, path::PathBuf};
 use actiona_ng::runtime::Runtime;
 use clap::Parser;
 use eyre::Result;
-
 #[cfg(windows)]
 use windows::{
     Wdk::System::SystemServices::RtlGetVersion, Win32::System::SystemInformation::OSVERSIONINFOW,

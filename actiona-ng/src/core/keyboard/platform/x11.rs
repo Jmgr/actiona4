@@ -7,7 +7,7 @@ use x11rb_async::{
 };
 use xkeysym::Keysym;
 
-use crate::{runtime::Runtime};
+use crate::runtime::Runtime;
 
 #[derive(Debug)]
 pub struct KeyboardImpl {

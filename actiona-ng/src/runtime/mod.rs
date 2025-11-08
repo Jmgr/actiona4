@@ -136,16 +136,16 @@ impl JsUserData {
     Clone,
     Copy,
     Debug,
+    Default,
     Deserialize,
+    EnumIs,
     EnumIter,
     Eq,
+    FromRepr,
     FromSerde,
     IntoSerde,
     PartialEq,
     Serialize,
-    EnumIs,
-    Default,
-    FromRepr,
 )]
 #[repr(u8)]
 pub enum WaitAtEnd {
