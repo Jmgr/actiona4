@@ -80,6 +80,16 @@ impl Instructions {
         })
     }
 
+    pub fn default_value(&self) -> Option<String> {
+        self.iter().find_map(|instruction| {
+            if let Instruction::Default(default_value) = instruction {
+                Some(default_value.clone())
+            } else {
+                None
+            }
+        })
+    }
+
     pub fn returns(&self) -> Option<Type> {
         self.iter().find_map(|instruction| {
             if let Instruction::Returns(type_) = instruction {
@@ -185,11 +195,10 @@ static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
         (?P<name>\w+\??)                      # required name
         \s*:\s*
        
-        # (3) Required type - either '{...}' (no nesting!) or a nonwhitespace token
         (?P<type>
             \{[^}]*\}
             |
-            [^\s=]+
+            (?:[^=\s|]+(?:\s*\|\s*[^=\s|]+)*)
         )
 
         (?: \s*=\s*(?P<default>[^/]+?))?      # optional default
@@ -416,7 +425,7 @@ const fn allowed_context_for_instruction(
         Returns => &[RustdocContext::Method],
         Singleton => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Const => &[RustdocContext::Struct, RustdocContext::StructAlias],
-        Default => &[RustdocContext::Property],
+        Default => &[RustdocContext::Property, RustdocContext::Enum],
         Options => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Extends => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Rest => &[RustdocContext::Method],

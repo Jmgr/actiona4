@@ -5,7 +5,7 @@ use std::{
 };
 
 use derive_more::Display;
-use eyre::{Report, Result, eyre};
+use eyre::{Report, Result};
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};

@@ -94,9 +94,12 @@ tracing.workspace = true
 tween.workspace = true
 wildmatch.workspace = true
 parking_lot.workspace = true
+unicode-segmentation.workspace = true
+tray-icon.workspace = true
 
 [build-dependencies]
 cfg_aliases.workspace = true
+built.workspace = true
 
 [dev-dependencies]
 base64.workspace = true

@@ -2,14 +2,12 @@ use std::sync::Arc;
 
 use enigo::Key;
 use eyre::Result;
-use tokio::select;
-use tokio_util::sync::CancellationToken;
 use x11rb_async::{
     connection::Connection, protocol::xproto::ConnectionExt, rust_connection::RustConnection,
 };
 use xkeysym::Keysym;
 
-use crate::{error::CommonError, runtime::Runtime};
+use crate::{runtime::Runtime};
 
 #[derive(Debug)]
 pub struct KeyboardImpl {
@@ -32,51 +30,6 @@ impl KeyboardImpl {
         };
 
         is_key_pressed(connection, keycode).await
-    }
-
-    pub async fn wait_for_key(
-        &self,
-        //conditions: ButtonConditions,
-        cancellation_token: CancellationToken,
-    ) -> Result<Key> {
-        // MouseButtonEvent
-        let guard = self.runtime.platform().keyboard_keys().subscribe();
-        let mut receiver = guard.subscribe();
-        let runtime_cancellation_token = self.runtime.cancellation_token();
-        loop {
-            let event = select! {
-                _ = runtime_cancellation_token.cancelled() => { break; }
-                _ = cancellation_token.cancelled() => { break; }
-                event = receiver.recv() => { event }
-            };
-
-            let Ok(event) = event else {
-                break;
-            };
-
-            if event.key == Key::Escape {
-                runtime_cancellation_token.cancel();
-            }
-
-            //println!("# {:?}", event);
-
-            return Ok(event.key); // TODO
-
-            /*
-            let button_result = conditions
-                .button
-                .is_none_or(|button| button == event.button);
-            let direction_result = conditions
-                .direction
-                .is_none_or(|direction| direction == event.direction);
-
-            if button_result && direction_result {
-                return Ok(event);
-            }
-            */
-        }
-
-        Err(CommonError::Cancelled.into())
     }
 }
 

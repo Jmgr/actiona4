@@ -4,19 +4,24 @@ use std::sync::{
 };
 
 use derive_more::{Constructor, Deref, DerefMut};
-use enigo::{Direction, Key};
+use enigo::Key;
+use eyre::Result;
 use itertools::Itertools;
 use tokio::{
     select,
     sync::{broadcast, mpsc, watch},
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::error;
 
-use crate::core::{
-    mouse::Button,
-    point::{Point, point},
-    rect::{Rect, rect},
-    size::size,
+use crate::{
+    core::{
+        mouse::Button,
+        point::{Point, point},
+        rect::{Rect, rect},
+        size::size,
+    },
+    types::input::Direction,
 };
 
 pub trait Signal<T>: Send + Sync + 'static {
@@ -62,8 +67,8 @@ pub trait Topic: Send + Sync + 'static {
     type T;
     type Signal: Signal<Self::T> + Clone;
 
-    fn on_start(&self) -> impl Future<Output = ()> + Send;
-    fn on_stop(&self) -> impl Future<Output = ()> + Send;
+    fn on_start(&self) -> impl Future<Output = Result<()>> + Send;
+    fn on_stop(&self) -> impl Future<Output = Result<()>> + Send;
 }
 
 #[derive(Debug)]
@@ -116,15 +121,19 @@ impl<T: Topic + 'static> TopicWrapper<T> {
 
                 match command {
                     SubscribersChange::Increment => {
-                        if count == 0 {
-                            local_topic.on_start().await;
+                        if count == 0
+                            && let Err(err) = local_topic.on_start().await
+                        {
+                            error!("{}", err); // TODO: improve this
                         }
 
                         count += 1;
                     }
                     SubscribersChange::Decrement => {
-                        if count == 1 {
-                            local_topic.on_stop().await;
+                        if count == 1
+                            && let Err(err) = local_topic.on_stop().await
+                        {
+                            error!("{}", err);
                         }
 
                         count -= 1;
@@ -180,16 +189,18 @@ impl Topic for Test {
     type T = u32;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if let Some(parent) = self.parent.upgrade() {
-            parent.on_start().await;
+            parent.on_start().await?;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if let Some(parent) = self.parent.upgrade() {
-            parent.on_stop().await;
+            parent.on_stop().await?;
         }
+        Ok(())
     }
 }
 
@@ -201,16 +212,18 @@ impl Topic for Test2 {
     type T = u64;
     type Signal = LatestOnlySignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if let Some(parent) = self.parent.upgrade() {
-            parent.on_start().await;
+            parent.on_start().await?;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if let Some(parent) = self.parent.upgrade() {
-            parent.on_stop().await;
+            parent.on_stop().await?;
         }
+        Ok(())
     }
 }
 
@@ -256,16 +269,18 @@ impl MultiTest {
         self.test2.publish(value);
     }
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
             println!("MultiTest start");
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
             println!("MultiTest stop");
         }
+        Ok(())
     }
 }
 

@@ -65,7 +65,6 @@ impl X11Connection {
         let (async_connection, screen_index, packet_reader) =
             AsyncRustConnection::connect(display_name).await?;
         let screen = async_connection.setup().roots[screen_index].clone();
-
         let (sync_connection, _) = RustConnection::connect(display_name)?;
 
         let display_name = display_name.map(CString::new).transpose()?;

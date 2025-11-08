@@ -232,6 +232,10 @@ impl File {
         for enum_ in self.enums.iter() {
             let mut comments = enum_.comments.clone();
 
+            if let Some(default) = &enum_.default_value {
+                comments.push(format!("@defaultValue {default}"));
+            }
+
             if !enum_.platforms.is_empty() {
                 comments.push(format!("@platform {}", enum_.platforms));
             }

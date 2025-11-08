@@ -5,8 +5,8 @@ use std::sync::{
 
 use derive_more::Constructor;
 use enigo::Key;
+use eyre::Result;
 use parking_lot::Mutex;
-use tracing::error;
 use x11rb::protocol::xinput::{Device, EventMask, XIEventMask};
 use x11rb_async::{connection::Connection, protocol::xinput::xi_select_events};
 use xkeysym::Keysym;
@@ -19,57 +19,65 @@ use crate::{
     },
 };
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct InputMask {
+    x11_connection: Arc<X11Connection>,
     inner: Arc<Mutex<XIEventMask>>,
 }
 
 impl InputMask {
-    pub fn set(&self, mask: XIEventMask) {
-        let mut inner = self.inner.lock();
-        *inner |= mask;
+    pub async fn new(x11_connection: Arc<X11Connection>) -> Result<Self> {
+        let result = Self {
+            x11_connection,
+            inner: Arc::new(Mutex::new(XIEventMask::default())),
+        };
+
+        Ok(result)
     }
 
-    pub fn remove(&self, mask: XIEventMask) {
-        let mut inner = self.inner.lock();
-        *inner = inner.remove(mask);
+    pub async fn set(&self, mask: XIEventMask) -> Result<()> {
+        {
+            let mut inner = self.inner.lock();
+            *inner |= mask;
+        }
+
+        self.apply().await
+    }
+
+    pub async fn remove(&self, mask: XIEventMask) -> Result<()> {
+        {
+            let mut inner = self.inner.lock();
+            *inner = inner.remove(mask);
+        }
+
+        self.apply().await
     }
 
     #[must_use]
-    pub fn to_vec(&self) -> Vec<XIEventMask> {
+    fn to_vec(&self) -> Vec<XIEventMask> {
         let inner = self.inner.lock();
         vec![*inner]
     }
-}
 
-async fn apply_mask(
-    name: &'static str,
-    x11_connection: Arc<X11Connection>,
-    input_mask: Arc<InputMask>,
-) {
-    let connection = x11_connection.async_connection();
-
-    if let Err(err) = xi_select_events(
-        connection,
-        x11_connection.screen().root,
-        &[EventMask {
+    async fn apply(&self) -> Result<()> {
+        let connection = self.x11_connection.async_connection();
+        let mask = self.to_vec();
+        let masks = &[EventMask {
             deviceid: Device::ALL_MASTER.into(),
-            mask: input_mask.to_vec(),
-        }],
-    )
-    .await
-    {
-        error!("{name}: xi_select_events failed: {err}");
-    }
+            mask,
+        }];
+        let root_window = self.x11_connection.screen().root;
 
-    if let Err(err) = connection.flush().await {
-        error!("flush failed: {err}");
+        xi_select_events(connection, root_window, masks).await?;
+
+        connection.flush().await?;
+
+        Ok(())
     }
 }
 
 #[derive(Constructor, Debug)]
 pub struct MouseButtonsTopic {
-    x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
 }
 
@@ -81,32 +89,17 @@ impl Topic for MouseButtonsTopic {
     type T = MouseButtonEvent;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
-        self.input_mask.set(mouse_buttons_events());
-
-        apply_mask(
-            "mouse_buttons",
-            self.x11_connection.clone(),
-            self.input_mask.clone(),
-        )
-        .await;
+    async fn on_start(&self) -> Result<()> {
+        self.input_mask.set(mouse_buttons_events()).await
     }
 
-    async fn on_stop(&self) {
-        self.input_mask.remove(mouse_buttons_events());
-
-        apply_mask(
-            "mouse_buttons",
-            self.x11_connection.clone(),
-            self.input_mask.clone(),
-        )
-        .await;
+    async fn on_stop(&self) -> Result<()> {
+        self.input_mask.remove(mouse_buttons_events()).await
     }
 }
 
 #[derive(Constructor, Debug)]
 pub struct MouseMoveTopic {
-    x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
 }
 
@@ -118,32 +111,17 @@ impl Topic for MouseMoveTopic {
     type T = Point;
     type Signal = LatestOnlySignals<Self::T>;
 
-    async fn on_start(&self) {
-        self.input_mask.set(mouse_motion_events());
-
-        apply_mask(
-            "mouse_buttons",
-            self.x11_connection.clone(),
-            self.input_mask.clone(),
-        )
-        .await;
+    async fn on_start(&self) -> Result<()> {
+        self.input_mask.set(mouse_motion_events()).await
     }
 
-    async fn on_stop(&self) {
-        self.input_mask.remove(mouse_motion_events());
-
-        apply_mask(
-            "mouse_buttons",
-            self.x11_connection.clone(),
-            self.input_mask.clone(),
-        )
-        .await;
+    async fn on_stop(&self) -> Result<()> {
+        self.input_mask.remove(mouse_motion_events()).await
     }
 }
 
 #[derive(Constructor, Debug)]
 pub struct KeyboardKeysTopic {
-    x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
     activation_counter: Arc<AtomicUsize>, // TODO: use dispatcher, like Windows
 }
@@ -152,38 +130,35 @@ fn keyboard_keys_events() -> XIEventMask {
     XIEventMask::RAW_KEY_PRESS | XIEventMask::RAW_KEY_RELEASE
 }
 
-async fn keyboard_start(x11_connection: Arc<X11Connection>, input_mask: Arc<InputMask>) {
-    input_mask.set(keyboard_keys_events());
-
-    apply_mask("keyboard_keys", x11_connection.clone(), input_mask.clone()).await;
+async fn keyboard_start(input_mask: Arc<InputMask>) -> Result<()> {
+    input_mask.set(keyboard_keys_events()).await
 }
 
-async fn keyboard_stop(x11_connection: Arc<X11Connection>, input_mask: Arc<InputMask>) {
-    input_mask.remove(keyboard_keys_events());
-
-    apply_mask("keyboard_keys", x11_connection.clone(), input_mask.clone()).await;
+async fn keyboard_stop(input_mask: Arc<InputMask>) -> Result<()> {
+    input_mask.remove(keyboard_keys_events()).await
 }
 
 impl Topic for KeyboardKeysTopic {
     type T = KeyboardKeyEvent;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if self.activation_counter.fetch_add(1, Ordering::Relaxed) == 0 {
-            keyboard_start(self.x11_connection.clone(), self.input_mask.clone()).await;
+            keyboard_start(self.input_mask.clone()).await?;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if self.activation_counter.fetch_sub(1, Ordering::Relaxed) == 1 {
-            keyboard_stop(self.x11_connection.clone(), self.input_mask.clone()).await;
+            keyboard_stop(self.input_mask.clone()).await?;
         }
+        Ok(())
     }
 }
 
 #[derive(Constructor, Debug)]
 pub struct KeyboardTextTopic {
-    x11_connection: Arc<X11Connection>,
     input_mask: Arc<InputMask>,
     activation_counter: Arc<AtomicUsize>,
 }
@@ -192,16 +167,18 @@ impl Topic for KeyboardTextTopic {
     type T = KeyboardTextEvent;
     type Signal = AllSignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         if self.activation_counter.fetch_add(1, Ordering::Relaxed) == 0 {
-            keyboard_start(self.x11_connection.clone(), self.input_mask.clone()).await;
+            keyboard_start(self.input_mask.clone()).await?;
         }
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         if self.activation_counter.fetch_sub(1, Ordering::Relaxed) == 1 {
-            keyboard_stop(self.x11_connection.clone(), self.input_mask.clone()).await;
+            keyboard_stop(self.input_mask.clone()).await?;
         }
+        Ok(())
     }
 }
 

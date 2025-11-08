@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::HashSet, sync::Arc};
 
 use enigo::{Direction, Enigo, Key};
 use eyre::Result;
@@ -16,10 +16,11 @@ use platform::win::KeyboardImpl;
 #[cfg(unix)]
 use platform::x11::KeyboardImpl;
 
-use crate::runtime::Runtime;
+use crate::{cancel_on, runtime::Runtime};
 
 #[derive(Debug)]
 pub struct Keyboard {
+    runtime: Arc<Runtime>,
     enigo: Arc<Mutex<Enigo>>,
     implementation: KeyboardImpl,
 }
@@ -27,9 +28,12 @@ pub struct Keyboard {
 impl Keyboard {
     #[instrument]
     pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
+        let enigo = runtime.enigo();
+        let implementation = KeyboardImpl::new(runtime.clone())?;
         Ok(Self {
-            enigo: runtime.enigo(),
-            implementation: KeyboardImpl::new(runtime)?,
+            runtime,
+            enigo,
+            implementation,
         })
     }
 
@@ -61,11 +65,50 @@ impl Keyboard {
     }
 
     pub async fn is_key_pressed(&self, key: Key) -> Result<bool> {
-        self.implementation.is_key_pressed(key)
+        self.implementation.is_key_pressed(key).await
     }
 
-    pub async fn wait_for_key(&self, cancellation_token: CancellationToken) -> Result<Key> {
-        self.implementation.wait_for_key(cancellation_token).await
+    pub async fn wait_for_keys(
+        &self,
+        keys: &HashSet<Key>,
+        exclusive: bool, // TODO: options
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
+        if keys.is_empty() {
+            return Ok(());
+        }
+
+        let guard = self.runtime.keyboard_keys();
+        let mut receiver = guard.subscribe();
+        let mut pressed_keys = HashSet::with_capacity(keys.len());
+
+        loop {
+            let event = cancel_on(&cancellation_token, receiver.recv()).await??;
+            if event.is_injected || event.is_repeat {
+                continue;
+            }
+
+            // Ignore keys that are not part of the list
+            if !keys.contains(&event.key) {
+                continue;
+            }
+
+            // Remove released keys
+            if event.direction.is_release() {
+                pressed_keys.remove(&event.key);
+                continue;
+            }
+
+            pressed_keys.insert(event.key);
+
+            if exclusive {
+                if pressed_keys == *keys {
+                    return Ok(());
+                }
+            } else if keys.is_subset(&pressed_keys) {
+                return Ok(());
+            }
+        }
     }
 }
 

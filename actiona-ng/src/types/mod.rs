@@ -16,6 +16,7 @@ use crate::{core::system::processes::ThreadKind, types::pid::Pid};
 
 pub mod convert;
 pub mod display;
+pub mod input;
 pub mod ops;
 pub mod pid;
 pub mod si32;

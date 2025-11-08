@@ -5,7 +5,7 @@ use std::{
 };
 
 use derive_more::Display;
-use enigo::{Direction, Enigo, InputError, NewConError};
+use enigo::{Enigo, InputError, NewConError};
 use indexmap::IndexSet;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
@@ -27,6 +27,7 @@ use crate::{
     },
     error::CommonError,
     runtime::{events::MouseButtonEvent, shared_rng::SharedRng},
+    types::input::Direction,
 };
 
 pub(crate) mod platform;
@@ -305,7 +306,7 @@ impl Mouse {
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self {
             enigo: runtime.enigo(),
-            implementation: MouseImpl::new(runtime)?,
+            implementation: MouseImpl::new(runtime).await?,
             pressed_buttons: Mutex::new(Default::default()),
         })
     }
@@ -751,7 +752,7 @@ impl Mouse {
 
         self.enigo
             .lock()
-            .button(button.into(), Direction::Release)?;
+            .button(button.into(), enigo::Direction::Release)?;
 
         info!("removing {} from the pressed buttons", button);
 

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use derive_more::Constructor;
-use tracing::error;
+use eyre::Result;
 use x11rb::protocol::randr::NotifyMask;
 use x11rb_async::{connection::Connection, protocol::randr::ConnectionExt};
 
@@ -19,33 +19,27 @@ impl Topic for ScreenChangeTopic {
     type T = DisplayInfoVec;
     type Signal = LatestOnlySignals<Self::T>;
 
-    async fn on_start(&self) {
+    async fn on_start(&self) -> Result<()> {
         let connection = self.x11_connection.async_connection();
 
-        if let Err(err) = connection
+        connection
             .randr_select_input(self.x11_connection.screen().root, NotifyMask::SCREEN_CHANGE)
-            .await
-        {
-            error!("randr_select_input failed: {err}");
-        }
+            .await?;
 
-        if let Err(err) = connection.flush().await {
-            error!("flush failed: {err}");
-        }
+        connection.flush().await?;
+
+        Ok(())
     }
 
-    async fn on_stop(&self) {
+    async fn on_stop(&self) -> Result<()> {
         let connection = self.x11_connection.async_connection();
 
-        if let Err(err) = connection
+        connection
             .randr_select_input(self.x11_connection.screen().root, NotifyMask::default())
-            .await
-        {
-            error!("randr_select_input failed: {err}");
-        }
+            .await?;
 
-        if let Err(err) = connection.flush().await {
-            error!("flush failed: {err}");
-        }
+        connection.flush().await?;
+
+        Ok(())
     }
 }

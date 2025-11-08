@@ -1,12 +1,15 @@
 use std::sync::{
     Arc,
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicU8, Ordering},
 };
 
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
+use macros::{FromSerde, IntoSerde};
 use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
+use serde::{Deserialize, Serialize};
+use strum::{EnumIs, EnumIter, FromRepr};
 use tauri::AppHandle;
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -22,6 +25,7 @@ use crate::runtime::win::events::input::{
 };
 use crate::{
     core::{
+        app::js::JsApp,
         clipboard::js::JsClipboard,
         color::js::JsColor,
         console::js::JsConsole,
@@ -126,6 +130,37 @@ impl JsUserData {
     }
 }
 
+/// Should the script wait at the end of the execution?
+/// @default WaitAtEnd.Automatic
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+    EnumIs,
+    Default,
+    FromRepr,
+)]
+#[repr(u8)]
+pub enum WaitAtEnd {
+    /// Automatically decide if the script should wait.
+    /// Setting hotstrings will have the script wait.
+    #[default]
+    Automatic,
+
+    /// Always wait.
+    Yes,
+
+    /// Never wait.
+    No,
+}
+
 #[derive(Debug)]
 pub struct Runtime {
     #[cfg(unix)]
@@ -138,6 +173,7 @@ pub struct Runtime {
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
     app_handle: Option<AppHandle>,
+    wait_at_end: AtomicU8,
 }
 
 impl Runtime {
@@ -160,12 +196,15 @@ impl Runtime {
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
             app_handle: app_handle.clone(),
+            #[allow(clippy::as_conversions)]
+            wait_at_end: AtomicU8::new(WaitAtEnd::default() as u8),
         });
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
 
         let rng = SharedRng::default();
 
+        let app = JsApp::new(runtime.clone());
         let mouse = JsMouse::new(runtime.clone()).await?;
         let keyboard = JsKeyboard::new(runtime.clone())?;
         let console = JsConsole::new(runtime.clone())?;
@@ -208,6 +247,7 @@ impl Runtime {
                     register_value_class::<JsAbortController>(&ctx)?;
 
                     // Singletons
+                    register_singleton_class::<JsApp>(&ctx, app)?;
                     register_singleton_class::<JsMouse>(&ctx, mouse)?;
                     register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
                     register_singleton_class::<JsUi>(&ctx, JsUi::default())?;
@@ -336,7 +376,13 @@ impl Runtime {
         let (runtime, script_engine) =
             Self::new(cancellation_token.clone(), task_tracker.clone(), app_handle).await?;
 
-        f(runtime, script_engine.clone()).await?;
+        f(runtime.clone(), script_engine.clone()).await?;
+
+        let should_wait_at_end = false; // TODO: hotstrings?
+        let wait_at_end = runtime.wait_at_end();
+        if wait_at_end.is_yes() || (wait_at_end.is_automatic() && should_wait_at_end) {
+            cancellation_token.cancelled().await;
+        }
 
         // TODO: proper error
         let unhandled_exceptions = script_engine.idle().await;
@@ -468,6 +514,15 @@ impl Runtime {
             Ok(())
         })
         .unwrap();
+    }
+
+    pub fn set_wait_at_end(&self, wait_at_end: WaitAtEnd) {
+        #[allow(clippy::as_conversions)]
+        self.wait_at_end.store(wait_at_end as u8, Ordering::Relaxed);
+    }
+
+    pub fn wait_at_end(&self) -> WaitAtEnd {
+        WaitAtEnd::from_repr(self.wait_at_end.load(Ordering::Relaxed)).unwrap()
     }
 }
 

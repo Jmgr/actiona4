@@ -59,13 +59,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                     continue;
                 }
 
-                let default_value = instructions.iter().find_map(|instruction| {
-                    if let Instruction::Default(default_value) = instruction {
-                        Some(default_value.clone())
-                    } else {
-                        None
-                    }
-                });
+                let default_value = instructions.default_value();
 
                 let type_ = if let Some(type_) = instructions.type_() {
                     type_

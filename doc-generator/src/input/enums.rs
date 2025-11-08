@@ -68,12 +68,15 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
         // Remove "Js" prefix if present
         let enum_name = enum_name.strip_prefix("Js").unwrap_or(enum_name);
 
+        let default_value = enum_instructions.default_value();
+
         result.push(Enum {
             name: enum_name.to_string(),
             variants: result_variants,
             comments,
             platforms: enum_instructions.platforms(),
             verbatim,
+            default_value,
         });
     }
 

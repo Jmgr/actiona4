@@ -3,6 +3,7 @@ use tokio::{select, sync::watch};
 
 use crate::{core::js::task::IsDone, runtime::WithUserData};
 
+pub mod app;
 pub mod clipboard;
 pub mod color;
 pub mod console;
@@ -10,6 +11,7 @@ pub mod directory;
 pub mod displays;
 pub mod file;
 pub mod filesystem;
+pub mod hotstrings;
 pub mod image;
 pub mod js;
 pub mod keyboard;

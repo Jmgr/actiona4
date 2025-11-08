@@ -33,7 +33,7 @@ impl Button {
 }
 
 impl MouseImpl {
-    pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
+    pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self { runtime })
     }
 }

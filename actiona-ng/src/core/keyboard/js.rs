@@ -1,11 +1,13 @@
-use std::{str::FromStr, sync::Arc};
+use std::{collections::HashSet, str::FromStr, sync::Arc};
 
 use derive_more::Display;
+use enigo::Key;
 use macros::{FromSerde, IntoSerde};
 use rquickjs::{
     Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Result, Value,
     class::{JsClass, Readable, Trace, Tracer},
     function::Constructor,
+    prelude::Opt,
 };
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, EnumString};
@@ -118,17 +120,30 @@ impl JsKeyboard {
         self.inner.is_key_pressed(key).await.into_js_result(&ctx)
     }
 
-    pub async fn wait_for_key(&self, ctx: Ctx<'_>) -> Result<JsKey> {
+    pub async fn wait_for_keys(
+        &self,
+        ctx: Ctx<'_>,
+        keys: Vec<JsKey>,
+        exclusive: Opt<bool>,
+    ) -> Result<()> {
+        let exclusive = exclusive.0.unwrap_or_default();
         let cancellation_token = ctx.user_data().cancellation_token();
-        let key = self
-            .inner
-            .wait_for_key(cancellation_token)
+        let keys = keys
+            .into_iter()
+            .map(|key| {
+                Key::try_from(key).map_err(|_| {
+                    Exception::throw_message(&ctx, &format!("key {key} is not supported"))
+                })
+            })
+            .collect::<Result<HashSet<_>>>()?;
+        self.inner
+            .wait_for_keys(&keys, exclusive, cancellation_token)
             .await
-            .into_js_result(&ctx)?;
-
-        JsKey::try_from(key).map_err(|_| Exception::throw_message(&ctx, "unknown key"))
+            .into_js_result(&ctx)
     }
 }
+
+// TODO: remove JsStandardKey and expose all keys on a Key type
 
 #[derive(
     Clone,
@@ -2179,10 +2194,8 @@ mod tests {
             let _ = script_engine
                 .eval_async::<()>(
                     r#"
-                    while(true) {
-                        let key = await keyboard.waitForKey();
-                        //console.printLn("key", key);
-                    }
+                    await keyboard.waitForKeys(["a", "z"]);
+                    //console.printLn("key", key);
                     console.printLn("END");
                 "#,
                 )

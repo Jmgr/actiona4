@@ -20,6 +20,7 @@ pub struct Enum {
     pub comments: Comments,
     pub platforms: Platforms,
     pub verbatim: Vec<String>,
+    pub default_value: Option<String>,
 }
 
 #[derive(Clone, Debug, EnumIs, PartialEq)]
