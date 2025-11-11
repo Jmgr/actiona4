@@ -91,10 +91,10 @@ thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
-tray-icon.workspace = true
 tween.workspace = true
 unicode-segmentation.workspace = true
 wildmatch.workspace = true
+derivative.workspace = true
 
 [build-dependencies]
 built.workspace = true

@@ -1,29 +1,48 @@
 use std::{
     collections::HashSet,
+    pin::Pin,
     sync::{
         Arc,
         atomic::{AtomicUsize, Ordering},
     },
-    time::Duration,
+    time::{Duration, Instant},
 };
 
+use derivative::Derivative;
 use enigo::{Direction, Key, Keyboard};
 use eyre::Result;
+use humantime::format_duration;
 use indexmap::IndexMap;
 use itertools::Itertools;
 use parking_lot::Mutex;
-use tokio::{select, time::sleep};
+use rquickjs::{AsyncContext, Coerced, async_with};
+use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::info;
 use unicode_segmentation::UnicodeSegmentation;
 
-use crate::runtime::{
-    Runtime,
-    events::{KeyboardKeyEvent, KeyboardTextEvent},
+use crate::{
+    runtime::{
+        Runtime, WithUserData,
+        events::{KeyboardKeyEvent, KeyboardTextEvent},
+    },
+    scripting::callbacks::FunctionKey,
 };
+
+pub mod js;
+
+type DynStringFuture = Pin<Box<dyn Future<Output = String> + Send + 'static>>;
+
+#[derive(Clone, Derivative)]
+#[derivative(Debug)]
+pub enum Replacement {
+    Text(String),
+    JsCallback(#[derivative(Debug = "ignore")] (AsyncContext, FunctionKey)),
+}
 
 #[derive(Clone, Debug)]
 pub struct Hotstrings {
-    hotstrings: Arc<Mutex<IndexMap<String, String>>>,
+    hotstrings: Arc<Mutex<IndexMap<String, Replacement>>>,
     max_graphemes: Arc<AtomicUsize>,
 }
 
@@ -33,7 +52,7 @@ impl Hotstrings {
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
-        let hotstrings = Arc::new(Mutex::new(IndexMap::<String, String>::default()));
+        let hotstrings = Arc::new(Mutex::new(IndexMap::<String, Replacement>::default()));
         let max_graphemes = Arc::new(AtomicUsize::new(0));
 
         let local_hotstrings = hotstrings.clone();
@@ -97,7 +116,7 @@ impl Hotstrings {
         buffer: &mut StringRingBuffer,
         trigger_characters: &HashSet<char>,
         max_graphemes: Arc<AtomicUsize>,
-        hotstrings: Arc<Mutex<IndexMap<String, String>>>,
+        hotstrings: Arc<Mutex<IndexMap<String, Replacement>>>,
         runtime: Arc<Runtime>,
     ) -> Result<()> {
         if event.is_injected {
@@ -120,7 +139,7 @@ impl Hotstrings {
         }
         */
 
-        let (backspaces, suffix) = {
+        let (key, replacement) = {
             let hotstrings = hotstrings.lock();
 
             let key_char = event.character;
@@ -136,26 +155,70 @@ impl Hotstrings {
                 return Ok(());
             };
 
-            let grapheme_prefix_len = grapheme_prefix_len(key, replacement);
-            let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
-            let replacement = replacement.graphemes(true).collect_vec();
-            let mut suffix = replacement[grapheme_prefix_len..].concat();
+            (key.clone(), replacement.clone())
+        };
 
-            //suffix.push(key_char); // Add the trigger character back
+        info!("replacement ongoing");
 
-            (backspaces, suffix)
+        let (backspaces, suffix) = match replacement {
+            Replacement::Text(text) => {
+                info!("text");
+                let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
+                let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
+                let text = text.graphemes(true).collect_vec();
+                let mut suffix = text[grapheme_prefix_len..].concat();
+
+                //suffix.push(key_char); // Add the trigger character back
+
+                (backspaces, suffix)
+            }
+            Replacement::JsCallback((context, function_key)) => {
+                info!("JsCallback start");
+                let text = async_with!(context => |ctx| {
+                    let user_data = ctx.user_data();
+                    let callbacks = user_data.callbacks();
+                    let result = callbacks.call(&ctx, function_key, Vec::new()).await.unwrap();
+                    result.get::<Coerced<String>>().unwrap().0
+                })
+                .await;
+
+                info!("JsCallback end");
+
+                // TODO: remove copy paste
+                let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
+                let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
+                let text = text.graphemes(true).collect_vec();
+                let mut suffix = text[grapheme_prefix_len..].concat();
+
+                (backspaces, suffix)
+            }
         };
 
         {
             let enigo = runtime.enigo();
             let mut guard = enigo.lock();
 
+            let start = Instant::now();
+            info!("backspaces");
+
             for _ in 0..backspaces {
                 guard.key(Key::Backspace, Direction::Click)?;
             }
 
+            info!(
+                "backspaces end: {}",
+                format_duration(Instant::now() - start)
+            );
+            let start = Instant::now();
+            info!("replacement");
+
             // Write the replacement
             guard.text(&suffix)?;
+
+            info!(
+                "replacement end: {}",
+                format_duration(Instant::now() - start)
+            );
         };
 
         // Clear the buffer to prevent firing again
@@ -164,10 +227,10 @@ impl Hotstrings {
         Ok(())
     }
 
-    pub fn add(&self, key: &str, replacement: &str) {
+    pub fn add(&self, key: &str, replacement: Replacement) {
         let mut hotstrings = self.hotstrings.lock();
 
-        hotstrings.insert_sorted_by_key(key.to_string(), replacement.to_string(), |a, b| {
+        hotstrings.insert_sorted_by(key.to_string(), replacement, |a, _, b, _| {
             b.graphemes(true).count().cmp(&a.graphemes(true).count())
         });
 
@@ -390,9 +453,10 @@ mod tests {
             let cancellation_token = CancellationToken::new();
 
             let hotstrings = Hotstrings::new(runtime, task_tracker.clone(), cancellation_token);
-            hotstrings.add(":)", "😀");
-            hotstrings.add(":D", "😁");
-            hotstrings.add("beaver", "🦫");
+            hotstrings.add(":)", Replacement::Text("😀".to_string()));
+            hotstrings.add(":D", Replacement::Text("😁".to_string()));
+            hotstrings.add("fire", Replacement::Text("🔥".to_string()));
+            hotstrings.add("beaver", Replacement::Text("🦫".to_string()));
 
             sleep(Duration::from_secs(6000)).await;
 

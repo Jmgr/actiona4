@@ -3,6 +3,7 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU8, Ordering},
 };
 
+use derive_more::Constructor;
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
 use macros::{FromSerde, IntoSerde};
@@ -10,7 +11,11 @@ use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
 use strum::{EnumIs, EnumIter, FromRepr};
-use tauri::AppHandle;
+use tauri::{
+    AppHandle,
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+};
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
@@ -33,6 +38,7 @@ use crate::{
         displays::{Displays, js::JsDisplays},
         file::js::JsFile,
         filesystem::js::JsFilesystem,
+        hotstrings::js::JsHotstrings,
         image::js::JsImage,
         js::{
             abort_controller::{JsAbortController, JsAbortSignal},
@@ -54,7 +60,7 @@ use crate::{
         web::js::JsWeb,
     },
     runtime::{events::Guard, shared_rng::SharedRng},
-    scripting::Engine as ScriptEngine,
+    scripting::{Engine as ScriptEngine, callbacks::Callbacks},
 };
 
 pub mod events;
@@ -76,32 +82,18 @@ impl<'js> WithUserData for Ctx<'js> {
     }
 }
 
-#[derive(Debug, JsLifetime)]
+#[derive(Debug, JsLifetime, Constructor)]
 pub(crate) struct JsUserData {
     displays: Arc<Displays>,
     cancellation_token: CancellationToken,
     rng: SharedRng,
     task_tracker: TaskTracker,
     app_handle: Option<AppHandle>,
+    script_engine: Arc<ScriptEngine>,
+    callbacks: Callbacks,
 }
 
 impl JsUserData {
-    const fn new(
-        displays: Arc<Displays>,
-        cancellation_token: CancellationToken,
-        rng: SharedRng,
-        task_tracker: TaskTracker,
-        app_handle: Option<AppHandle>,
-    ) -> Self {
-        Self {
-            displays,
-            cancellation_token,
-            rng,
-            task_tracker,
-            app_handle,
-        }
-    }
-
     pub(crate) fn displays(&self) -> Arc<Displays> {
         self.displays.clone()
     }
@@ -127,6 +119,14 @@ impl JsUserData {
             .as_ref()
             .expect("Tauri app handle should be available")
             .clone()
+    }
+
+    pub(crate) fn script_engine(&self) -> Arc<ScriptEngine> {
+        self.script_engine.clone()
+    }
+
+    pub(crate) const fn callbacks(&self) -> &Callbacks {
+        &self.callbacks
     }
 }
 
@@ -207,22 +207,36 @@ impl Runtime {
         let app = JsApp::new(runtime.clone());
         let mouse = JsMouse::new(runtime.clone()).await?;
         let keyboard = JsKeyboard::new(runtime.clone())?;
-        let console = JsConsole::new(runtime.clone())?;
+        let console = JsConsole::default();
         let js_displays = JsDisplays::new(displays.clone())?;
         let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
         let system = JsSystem::new(task_tracker.clone()).await?;
+        let hotstrings = JsHotstrings::new(
+            runtime.clone(),
+            task_tracker.clone(),
+            cancellation_token.clone(),
+        );
 
-        let script_engine = ScriptEngine::new().await?;
+        let script_engine = Arc::new(ScriptEngine::new().await?);
 
         let local_rng = rng.clone();
+        let local_script_engine = script_engine.clone();
         script_engine
             .with(|ctx| -> Result<()> {
+                let callbacks = Callbacks::new(
+                    script_engine.context(),
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                );
+
                 ctx.store_userdata(JsUserData::new(
                     displays,
                     cancellation_token.clone(),
                     local_rng,
                     task_tracker.clone(),
                     app_handle,
+                    local_script_engine,
+                    callbacks,
                 ))
                 .unwrap();
 
@@ -258,6 +272,7 @@ impl Runtime {
                     register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
                     register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
                     register_singleton_class::<JsSystem>(&ctx, system)?;
+                    register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
 
                     Ok(())
                 })()
@@ -270,7 +285,7 @@ impl Runtime {
             })
             .await?;
 
-        Ok((runtime, Arc::new(script_engine)))
+        Ok((runtime, script_engine))
     }
 
     pub fn run_with_ui<F, Fut>(
@@ -301,8 +316,40 @@ impl Runtime {
                     .await
                     .unwrap();
 
+                    println!("EXIT");
+
                     app_handle.exit(0);
                 });
+
+                let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+                let show = MenuItem::with_id(app, "show", "Show Info", true, None::<&str>)?;
+                let menu = Menu::with_items(app, &[&show, &quit])?;
+
+                let _tray = TrayIconBuilder::new()
+                    .icon(app.default_window_icon().unwrap().clone()) // or .title("Actiona-ng")
+                    .tooltip("Actiona-ng daemon") // hover text
+                    .menu(&menu)
+                    .show_menu_on_left_click(true) // default is true; set to false if you want left-click to do something else
+                    .on_menu_event(|app, event| match event.id.as_ref() {
+                        "quit" => app.exit(0),
+                        "show" => {
+                            println!("Tray -> Show Info clicked");
+                            // do something: emit an event, open a window, etc.
+                        }
+                        _ => {}
+                    })
+                    .on_tray_icon_event(|_tray, event| {
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            // left click released; you could toggle a window here instead of showing the menu
+                            println!("Left click on tray");
+                        }
+                    })
+                    .build(app)?;
 
                 Ok(())
             })

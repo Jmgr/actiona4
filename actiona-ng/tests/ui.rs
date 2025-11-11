@@ -78,21 +78,10 @@ fn test_success() {
 #[ignore]
 fn test_success() {
     Runtime::test_with_ui(|_, scripting_engine| async move {
-        let result = scripting_engine
-            .eval_async::<JsMessageBoxResult>(
-                r#"
-            let button = await MessageBox.show(
-                "Hello",
-                "Some title",
-                MessageBoxButtons.yesNoCancelCustom("yeah", "nope", "arg"),
-                MessageBoxIcon.Error
-                );
-            button
-        "#,
-            )
+        scripting_engine
+            .eval_async::<()>(r#"sleep(100000)"#)
             .await
             .unwrap();
-        println!("result: {result}");
     });
 }
 

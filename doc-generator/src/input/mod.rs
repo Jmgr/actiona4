@@ -194,11 +194,28 @@ static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
         (?: (?P<keyword>\w+) \s+ )?           # optional keyword
         (?P<name>\w+\??)                      # required name
         \s*:\s*
-       
+
         (?P<type>
-            \{[^}]*\}
+            \{[^}]*\}                         # object type: { foo: string }
             |
-            (?:[^=\s|]+(?:\s*\|\s*[^=\s|]+)*)
+            # union of atoms (function types or simple types)
+            (?:
+                # first atom
+                (?:
+                    \( [^)]* \) \s* => \s* [^=|]+   # function atom: () => string
+                    |
+                    [^=\s|]+                        # simple atom: Foo, Promise<string>
+                )
+                # zero or more: | atom
+                (?:
+                    \s* \| \s*
+                    (?:
+                        \( [^)]* \) \s* => \s* [^=|]+
+                        |
+                        [^=\s|]+
+                    )
+                )*
+            )
         )
 
         (?: \s*=\s*(?P<default>[^/]+?))?      # optional default

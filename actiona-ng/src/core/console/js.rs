@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc, time::Instant};
+use std::{collections::HashMap, time::Instant};
 
 use console::{Style, Term};
 use humantime::format_duration;
@@ -10,7 +10,7 @@ use rquickjs::{
     prelude::*,
 };
 
-use crate::{core::js::classes::SingletonClass, runtime::Runtime};
+use crate::core::js::classes::SingletonClass;
 
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
@@ -27,11 +27,6 @@ impl<'js> Trace<'js> for JsConsole {
 impl SingletonClass<'_> for JsConsole {}
 
 impl JsConsole {
-    /// @skip
-    pub fn new(_runtime: Arc<Runtime>) -> Result<Self> {
-        Ok(Self::default())
-    }
-
     fn print_value<'js>(ctx: &Ctx<'js>, value: Value<'js>) -> String {
         use rquickjs::*;
 
