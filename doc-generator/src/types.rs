@@ -113,6 +113,12 @@ pub struct MethodOverload {
     pub platforms: Platforms,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct Const {
+    pub value: String,
+    pub comments: Comments,
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct Struct {
     pub name: String,
@@ -120,7 +126,7 @@ pub struct Struct {
     pub methods: Vec<Method>,
     pub comments: Comments,
     pub is_singleton: bool,
-    pub consts: Vec<String>,
+    pub consts: Vec<Const>,
     pub is_options: bool,
     pub extends: Option<String>,
     pub platforms: Platforms,
@@ -269,7 +275,7 @@ pub enum Instruction {
     Skip,
     Returns(Type),
     Singleton,
-    Const(String),
+    Const(Const),
     Default(String),
     Options,
     Extends(String),

@@ -102,8 +102,8 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let consts = struct_instructions
             .iter()
             .filter_map(|instruction| {
-                if let Instruction::Const(code) = instruction {
-                    Some(code)
+                if let Instruction::Const(const_) = instruction {
+                    Some(const_)
                 } else {
                     None
                 }

@@ -1,4 +1,4 @@
-use std::{borrow::Cow, fmt::Debug, num::TryFromIntError};
+use std::{borrow::Cow, fmt::Debug, num::TryFromIntError, sync::Arc};
 
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
@@ -8,6 +8,7 @@ use eyre::Report;
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
 use macros::{FromSerde, IntoSerde};
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 use thiserror::Error;
@@ -72,60 +73,67 @@ pub enum ClipboardMode {
     Selection,
 }
 
+#[derive(Clone)]
 pub struct Clipboard {
-    inner: arboard::Clipboard,
+    inner: Arc<Mutex<arboard::Clipboard>>,
 }
 
 impl Clipboard {
     pub fn new() -> Result<Self> {
         Ok(Self {
-            inner: arboard::Clipboard::new()?,
+            inner: Arc::new(Mutex::new(arboard::Clipboard::new()?)),
         })
     }
 
-    fn set(&'_ mut self, mode: Option<ClipboardMode>) -> Set<'_> {
+    fn set<F, R>(&'_ self, function: F, mode: Option<ClipboardMode>) -> R
+    where
+        F: FnOnce(Set<'_>) -> R,
+    {
         let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner;
+        let mut inner = self.inner.lock();
 
         #[cfg(linux)]
         if mode == ClipboardMode::Selection {
-            inner.set().clipboard(LinuxClipboardKind::Primary)
+            function(inner.set().clipboard(LinuxClipboardKind::Primary))
         } else {
-            inner.set()
+            function(inner.set())
         }
 
         #[cfg(not(linux))]
         {
+            let _ = function;
             let _ = mode;
-            inner.set()
         }
     }
 
-    fn get(&'_ mut self, mode: Option<ClipboardMode>) -> Get<'_> {
+    fn get<F, R>(&'_ self, function: F, mode: Option<ClipboardMode>) -> R
+    where
+        F: FnOnce(Get<'_>) -> R,
+    {
         let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner;
+        let mut inner = self.inner.lock();
 
         #[cfg(linux)]
         if mode == ClipboardMode::Selection {
-            inner.get().clipboard(LinuxClipboardKind::Primary)
+            function(inner.get().clipboard(LinuxClipboardKind::Primary))
         } else {
-            inner.get()
+            function(inner.get())
         }
 
         #[cfg(not(linux))]
         {
+            let _ = function;
             let _ = mode;
-            inner.get()
         }
     }
 
-    pub async fn set_text<'a, T: Into<Cow<'a, str>>>(
-        &mut self,
+    pub fn set_text<'a, T: Into<Cow<'a, str>>>(
+        &self,
         text: T,
         mode: Option<ClipboardMode>,
     ) -> Result<()> {
         let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner;
+        let mut inner = self.inner.lock();
 
         let clipboard = {
             #[cfg(linux)]
@@ -147,28 +155,34 @@ impl Clipboard {
         Ok(())
     }
 
-    pub async fn get_text(&mut self, mode: Option<ClipboardMode>) -> Result<String> {
-        let text = self.get(mode).text()?;
+    pub fn get_text(&self, mode: Option<ClipboardMode>) -> Result<String> {
+        let text = self.get(|get| get.text(), mode)?;
 
         Ok(text)
     }
 
-    pub async fn set_image(&mut self, image: Image, mode: Option<ClipboardMode>) -> Result<()> {
+    pub fn set_image(&self, image: Image, mode: Option<ClipboardMode>) -> Result<()> {
         let image = image.to_rgba8().into_owned();
         let (width, height) = image.dimensions();
         let bytes = Cow::Owned(image.into_raw());
 
-        self.set(mode).image(ImageData {
-            width: width.try_into()?,
-            height: height.try_into()?,
-            bytes,
-        })?;
+        self.set(
+            |set| {
+                set.image(ImageData {
+                    width: width.try_into()?,
+                    height: height.try_into()?,
+                    bytes,
+                });
+                Result::Ok(())
+            },
+            mode,
+        )?;
 
         Ok(())
     }
 
-    pub async fn get_image(&mut self, mode: Option<ClipboardMode>) -> Result<Image> {
-        let image = self.get(mode).image()?;
+    pub fn get_image(&self, mode: Option<ClipboardMode>) -> Result<Image> {
+        let image = self.get(|get| get.image(), mode)?;
 
         let img = RgbaImage::from_vec(
             image.width.try_into()?,
@@ -180,8 +194,8 @@ impl Clipboard {
         Ok(DynamicImage::ImageRgba8(img).into())
     }
 
-    pub async fn get_file_list(&mut self, mode: Option<ClipboardMode>) -> Result<Vec<String>> {
-        let result = self.get(mode).file_list()?;
+    pub fn get_file_list(&self, mode: Option<ClipboardMode>) -> Result<Vec<String>> {
+        let result = self.get(|get| get.file_list(), mode)?;
 
         let result = result
             .into_iter()
@@ -191,26 +205,26 @@ impl Clipboard {
         Ok(result)
     }
 
-    pub async fn set_html(
-        &mut self,
+    pub fn set_html(
+        &self,
         html: String,
         alt_text: Option<String>,
         mode: Option<ClipboardMode>,
     ) -> Result<()> {
-        self.set(mode).html(html, alt_text)?;
+        self.set(|set| set.html(html, alt_text), mode)?;
 
         Ok(())
     }
 
-    pub async fn get_html(&mut self, mode: Option<ClipboardMode>) -> Result<String> {
-        let html = self.get(mode).html()?;
+    pub fn get_html(&self, mode: Option<ClipboardMode>) -> Result<String> {
+        let html = self.get(|get| get.html(), mode)?;
 
         Ok(html)
     }
 
-    pub async fn clear(&mut self, mode: Option<ClipboardMode>) -> Result<()> {
+    pub fn clear(&self, mode: Option<ClipboardMode>) -> Result<()> {
         let mode = mode.unwrap_or_default();
-        let inner = &mut self.inner;
+        let mut inner = self.inner.lock();
 
         #[cfg(linux)]
         if mode == ClipboardMode::Selection {

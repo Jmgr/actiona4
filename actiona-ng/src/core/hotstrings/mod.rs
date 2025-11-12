@@ -5,15 +5,17 @@ use std::{
         Arc,
         atomic::{AtomicUsize, Ordering},
     },
-    time::{Duration, Instant},
+    time::Instant,
 };
 
 use derivative::Derivative;
 use enigo::{Direction, Key, Keyboard};
 use eyre::Result;
 use humantime::format_duration;
+use image::DynamicImage;
 use indexmap::IndexMap;
 use itertools::Itertools;
+use macros::FromJsObject;
 use parking_lot::Mutex;
 use rquickjs::{AsyncContext, Coerced, async_with};
 use tokio::select;
@@ -22,6 +24,7 @@ use tracing::info;
 use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
+    core::image::Image,
     runtime::{
         Runtime, WithUserData,
         events::{KeyboardKeyEvent, KeyboardTextEvent},
@@ -31,19 +34,39 @@ use crate::{
 
 pub mod js;
 
-type DynStringFuture = Pin<Box<dyn Future<Output = String> + Send + 'static>>;
-
 #[derive(Clone, Derivative)]
 #[derivative(Debug)]
 pub enum Replacement {
     Text(String),
+    Image(Image),
     JsCallback(#[derivative(Debug = "ignore")] (AsyncContext, FunctionKey)),
+}
+
+/// Hotstring options
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct HotstringOptions {
+    /// @default true
+    pub erase_key: bool,
+
+    /// @default false
+    pub use_clipboard: bool,
+}
+
+impl Default for HotstringOptions {
+    fn default() -> Self {
+        Self {
+            erase_key: true,
+            use_clipboard: false,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
 pub struct Hotstrings {
-    hotstrings: Arc<Mutex<IndexMap<String, Replacement>>>,
+    hotstrings: Arc<Mutex<IndexMap<String, (Replacement, HotstringOptions)>>>,
     max_graphemes: Arc<AtomicUsize>,
+    runtime: Arc<Runtime>,
 }
 
 impl Hotstrings {
@@ -52,16 +75,17 @@ impl Hotstrings {
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
-        let hotstrings = Arc::new(Mutex::new(IndexMap::<String, Replacement>::default()));
+        let hotstrings = Arc::new(Mutex::new(IndexMap::default()));
         let max_graphemes = Arc::new(AtomicUsize::new(0));
 
+        let local_runtime = runtime.clone();
         let local_hotstrings = hotstrings.clone();
         let local_max_graphemes = max_graphemes.clone();
 
         task_tracker.spawn(async move {
-            let text_guard = runtime.keyboard_text();
+            let text_guard = local_runtime.keyboard_text();
             let mut text_receiver = text_guard.subscribe();
-            let keys_guard = runtime.keyboard_keys();
+            let keys_guard = local_runtime.keyboard_keys();
             let mut keys_receiver = keys_guard.subscribe();
 
             let mut buffer = StringRingBuffer::default();
@@ -76,7 +100,7 @@ impl Hotstrings {
                             break;
                         };
 
-                        Self::on_text(text, &mut buffer, &trigger_characters, local_max_graphemes.clone(), local_hotstrings.clone(), runtime.clone()).await?;
+                        Self::on_text(text, &mut buffer, &trigger_characters, local_max_graphemes.clone(), local_hotstrings.clone(), local_runtime.clone()).await?;
                     },
                     key = keys_receiver.recv() => {
                         let Ok(key) = key else {
@@ -94,6 +118,7 @@ impl Hotstrings {
         Self {
             hotstrings,
             max_graphemes,
+            runtime,
         }
     }
 
@@ -116,7 +141,7 @@ impl Hotstrings {
         buffer: &mut StringRingBuffer,
         trigger_characters: &HashSet<char>,
         max_graphemes: Arc<AtomicUsize>,
-        hotstrings: Arc<Mutex<IndexMap<String, Replacement>>>,
+        hotstrings: Arc<Mutex<IndexMap<String, (Replacement, HotstringOptions)>>>,
         runtime: Arc<Runtime>,
     ) -> Result<()> {
         if event.is_injected {
@@ -139,7 +164,7 @@ impl Hotstrings {
         }
         */
 
-        let (key, replacement) = {
+        let (key, replacement, options) = {
             let hotstrings = hotstrings.lock();
 
             let key_char = event.character;
@@ -150,17 +175,22 @@ impl Hotstrings {
                 .iter()
                 .find(|(key, _)| buffer.value().ends_with(*key));
 
-            let Some((key, replacement)) = hotstring else {
+            let Some((key, (replacement, options))) = hotstring else {
                 // No match
                 return Ok(());
             };
 
-            (key.clone(), replacement.clone())
+            (key.clone(), replacement.clone(), *options)
         };
 
         info!("replacement ongoing");
 
-        let (backspaces, suffix) = match replacement {
+        enum ReplacementData {
+            Text(String),
+            Image(Image),
+        }
+
+        let (backspaces, replacement_data) = match replacement {
             Replacement::Text(text) => {
                 info!("text");
                 let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
@@ -170,7 +200,10 @@ impl Hotstrings {
 
                 //suffix.push(key_char); // Add the trigger character back
 
-                (backspaces, suffix)
+                (backspaces, ReplacementData::Text(suffix))
+            }
+            Replacement::Image(image) => {
+                (key.graphemes(true).count(), ReplacementData::Image(image))
             }
             Replacement::JsCallback((context, function_key)) => {
                 info!("JsCallback start");
@@ -190,30 +223,60 @@ impl Hotstrings {
                 let text = text.graphemes(true).collect_vec();
                 let mut suffix = text[grapheme_prefix_len..].concat();
 
-                (backspaces, suffix)
+                (backspaces, ReplacementData::Text(suffix))
             }
         };
 
         {
             let enigo = runtime.enigo();
-            let mut guard = enigo.lock();
+            let mut enigo = enigo.lock();
 
-            let start = Instant::now();
-            info!("backspaces");
+            if options.erase_key {
+                let start = Instant::now();
+                info!("backspaces");
 
-            for _ in 0..backspaces {
-                guard.key(Key::Backspace, Direction::Click)?;
+                for _ in 0..backspaces {
+                    enigo.key(Key::Backspace, Direction::Click)?;
+                }
+
+                info!(
+                    "backspaces end: {}",
+                    format_duration(Instant::now() - start)
+                );
             }
 
-            info!(
-                "backspaces end: {}",
-                format_duration(Instant::now() - start)
-            );
             let start = Instant::now();
             info!("replacement");
 
-            // Write the replacement
-            guard.text(&suffix)?;
+            match replacement_data {
+                ReplacementData::Text(replacement) => {
+                    if options.use_clipboard {
+                        // Copy the text to the clipboard
+                        let clipboard = runtime.clipboard();
+                        clipboard.set_text(&replacement, None)?;
+
+                        // Paste it
+                        enigo.key(Key::Control, Direction::Press)?;
+                        enigo.key(Key::Unicode('v'), Direction::Press)?;
+                        enigo.key(Key::Unicode('v'), Direction::Release)?;
+                        enigo.key(Key::Control, Direction::Release)?;
+                    } else {
+                        // Write the replacement
+                        enigo.text(&replacement)?;
+                    }
+                }
+                ReplacementData::Image(dynamic_image) => {
+                    // Copy the image to the clipboard
+                    let clipboard = runtime.clipboard();
+                    clipboard.set_image(dynamic_image, None)?;
+
+                    // Paste it
+                    enigo.key(Key::Control, Direction::Press)?;
+                    enigo.key(Key::Unicode('v'), Direction::Press)?;
+                    enigo.key(Key::Unicode('v'), Direction::Release)?;
+                    enigo.key(Key::Control, Direction::Release)?;
+                }
+            }
 
             info!(
                 "replacement end: {}",
@@ -227,10 +290,11 @@ impl Hotstrings {
         Ok(())
     }
 
-    pub fn add(&self, key: &str, replacement: Replacement) {
+    pub fn add(&self, key: &str, replacement: Replacement, options: HotstringOptions) {
         let mut hotstrings = self.hotstrings.lock();
 
-        hotstrings.insert_sorted_by(key.to_string(), replacement, |a, _, b, _| {
+        // Make sure hotstrings are sorted by key length in decreasing order.
+        hotstrings.insert_sorted_by(key.to_string(), (replacement, options), |a, _, b, _| {
             b.graphemes(true).count().cmp(&a.graphemes(true).count())
         });
 
@@ -241,6 +305,10 @@ impl Hotstrings {
             .expect("hotstrings should contain at least one entry");
 
         self.max_graphemes.store(max_graphemes, Ordering::Relaxed);
+
+        if hotstrings.len() == 1 {
+            self.runtime.increase_background_tasks_counter();
+        }
     }
 
     pub fn remove(&self, key: &str) {
@@ -249,6 +317,10 @@ impl Hotstrings {
         hotstrings.shift_remove(key);
 
         self.max_graphemes.store(0, Ordering::Relaxed);
+
+        if hotstrings.is_empty() {
+            self.runtime.decrease_background_tasks_counter();
+        }
     }
 }
 
@@ -334,7 +406,9 @@ impl StringRingBuffer {
 mod tests {
     use std::time::Duration;
 
+    use image::ImageReader;
     use tokio::time::sleep;
+    use tracing_test::traced_test;
     use unicode_segmentation::UnicodeSegmentation;
 
     use super::*;
@@ -446,6 +520,7 @@ mod tests {
     }
 
     #[test]
+    #[traced_test]
     #[ignore]
     fn test_replacement() {
         Runtime::test(async |runtime| {
@@ -453,10 +528,47 @@ mod tests {
             let cancellation_token = CancellationToken::new();
 
             let hotstrings = Hotstrings::new(runtime, task_tracker.clone(), cancellation_token);
-            hotstrings.add(":)", Replacement::Text("😀".to_string()));
-            hotstrings.add(":D", Replacement::Text("😁".to_string()));
-            hotstrings.add("fire", Replacement::Text("🔥".to_string()));
-            hotstrings.add("beaver", Replacement::Text("🦫".to_string()));
+            hotstrings.add(
+                ":)",
+                Replacement::Text("😀".to_string()),
+                HotstringOptions::default(),
+            );
+            hotstrings.add(
+                ":D",
+                Replacement::Text("😁".to_string()),
+                HotstringOptions::default(),
+            );
+            hotstrings.add(
+                "fire",
+                Replacement::Text("🔥".to_string()),
+                HotstringOptions::default(),
+            );
+            let image = ImageReader::open("/home/jmgr/Pictures/cat.jpeg")
+                .unwrap()
+                .decode()
+                .unwrap();
+            hotstrings.add(
+                "cat",
+                Replacement::Image(image.into()),
+                HotstringOptions::default(),
+            );
+            hotstrings.add(
+                "beaver",
+                Replacement::Text("🦫".to_string()),
+                HotstringOptions {
+                    use_clipboard: true,
+                    ..Default::default()
+                },
+            );
+            hotstrings.add(
+                // TODO: bugged
+                "<br>",
+                Replacement::Text("</br>".to_string()),
+                HotstringOptions {
+                    erase_key: false,
+                    ..Default::default()
+                },
+            );
 
             sleep(Duration::from_secs(6000)).await;
 

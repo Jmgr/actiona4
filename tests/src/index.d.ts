@@ -65,11 +65,7 @@ declare enum Direction {
 
     Click,
 }
-/**
- * Key
- */
-type Key = StandardKey | string | number;
-declare enum StandardKey {
+declare enum Key {
     /**
      * Top-row digit '0' key (not numpad)
      */
@@ -2984,8 +2980,8 @@ declare class Image {
      * TODO
      */
     findImage(Image: Image, options?: FindImageOptions): void;
-    height(): number;
     width(): number;
+    height(): number;
 }
 /**
  * A Color.
@@ -2998,147 +2994,573 @@ declare class Image {
  * ```
  */
 declare class Color {
+    /**
+     * #FF0000FF
+     */
     static readonly Red: Color;
+    /**
+     * #008000FF
+     */
     static readonly Green: Color;
+    /**
+     * #0000FFFF
+     */
     static readonly Blue: Color;
+    /**
+     * #FFFFFFFF
+     */
     static readonly White: Color;
+    /**
+     * #000000FF
+     */
     static readonly Black: Color;
+    /**
+     * #00000000
+     */
     static readonly Transparent: Color;
+    /**
+     * #F0F8FFFF
+     */
     static readonly AliceBlue: Color;
+    /**
+     * #FAEBD7FF
+     */
     static readonly AntiqueWhite: Color;
+    /**
+     * #00FFFFFF
+     */
     static readonly Aqua: Color;
+    /**
+     * #7FFFD4FF
+     */
     static readonly Aquamarine: Color;
+    /**
+     * #F0FFFFFF
+     */
     static readonly Azure: Color;
+    /**
+     * #F5F5DCFF
+     */
     static readonly Beige: Color;
+    /**
+     * #FFE4C4FF
+     */
     static readonly Bisque: Color;
+    /**
+     * #FFEBCDFF
+     */
     static readonly BlanchedAlmond: Color;
+    /**
+     * #8A2BE2FF
+     */
     static readonly BlueViolet: Color;
+    /**
+     * #A52A2AFF
+     */
     static readonly Brown: Color;
+    /**
+     * #DEB887FF
+     */
     static readonly BurlyWood: Color;
+    /**
+     * #5F9EA0FF
+     */
     static readonly CadetBlue: Color;
+    /**
+     * #7FFF00FF
+     */
     static readonly Chartreuse: Color;
+    /**
+     * #D2691EFF
+     */
     static readonly Chocolate: Color;
+    /**
+     * #FF7F50FF
+     */
     static readonly Coral: Color;
+    /**
+     * #6495EDFF
+     */
     static readonly CornflowerBlue: Color;
+    /**
+     * #FFF8DCFF
+     */
     static readonly Cornsilk: Color;
+    /**
+     * #DC143CFF
+     */
     static readonly Crimson: Color;
+    /**
+     * #00FFFFFF
+     */
     static readonly Cyan: Color;
+    /**
+     * #00008BFF
+     */
     static readonly DarkBlue: Color;
+    /**
+     * #008B8BFF
+     */
     static readonly DarkCyan: Color;
+    /**
+     * #B8860BFF
+     */
     static readonly DarkGoldenRod: Color;
+    /**
+     * #A9A9A9FF
+     */
     static readonly DarkGray: Color;
+    /**
+     * #006400FF
+     */
     static readonly DarkGreen: Color;
+    /**
+     * #BDB76BFF
+     */
     static readonly DarkKhaki: Color;
+    /**
+     * #8B008BFF
+     */
     static readonly DarkMagenta: Color;
+    /**
+     * #556B2FFF
+     */
     static readonly DarkOliveGreen: Color;
+    /**
+     * #FF8C00FF
+     */
     static readonly DarkOrange: Color;
+    /**
+     * #9932CCFF
+     */
     static readonly DarkOrchid: Color;
+    /**
+     * #8B0000FF
+     */
     static readonly DarkRed: Color;
+    /**
+     * #E9967AFF
+     */
     static readonly DarkSalmon: Color;
+    /**
+     * #8FBC8FFF
+     */
     static readonly DarkSeaGreen: Color;
+    /**
+     * #483D8BFF
+     */
     static readonly DarkSlateBlue: Color;
+    /**
+     * #2F4F4FFF
+     */
     static readonly DarkSlateGray: Color;
+    /**
+     * #00CED1FF
+     */
     static readonly DarkTurquoise: Color;
+    /**
+     * #9400D3FF
+     */
     static readonly DarkViolet: Color;
+    /**
+     * #FF1493FF
+     */
     static readonly DeepPink: Color;
+    /**
+     * #00BFFFFF
+     */
     static readonly DeepSkyBlue: Color;
+    /**
+     * #696969FF
+     */
     static readonly DimGray: Color;
+    /**
+     * #1E90FFFF
+     */
     static readonly DodgerBlue: Color;
+    /**
+     * #B22222FF
+     */
     static readonly Firebrick: Color;
+    /**
+     * #FFFAF0FF
+     */
     static readonly FloralWhite: Color;
+    /**
+     * #228B22FF
+     */
     static readonly ForestGreen: Color;
+    /**
+     * #FF00FFFF
+     */
     static readonly Fuchsia: Color;
+    /**
+     * #DCDCDCFF
+     */
     static readonly Gainsboro: Color;
+    /**
+     * #F8F8FFFF
+     */
     static readonly GhostWhite: Color;
+    /**
+     * #FFD700FF
+     */
     static readonly Gold: Color;
+    /**
+     * #DAA520FF
+     */
     static readonly GoldenRod: Color;
+    /**
+     * #808080FF
+     */
     static readonly Gray: Color;
+    /**
+     * #ADFF2FFF
+     */
     static readonly GreenYellow: Color;
+    /**
+     * #F0FFF0FF
+     */
     static readonly HoneyDew: Color;
+    /**
+     * #FF69B4FF
+     */
     static readonly HotPink: Color;
+    /**
+     * #CD5C5CFF
+     */
     static readonly IndianRed: Color;
+    /**
+     * #4B0082FF
+     */
     static readonly Indigo: Color;
+    /**
+     * #FFFFF0FF
+     */
     static readonly Ivory: Color;
+    /**
+     * #F0E68CFF
+     */
     static readonly Khaki: Color;
+    /**
+     * #E6E6FAFF
+     */
     static readonly Lavender: Color;
+    /**
+     * #FFF0F5FF
+     */
     static readonly LavenderBlush: Color;
+    /**
+     * #7CFC00FF
+     */
     static readonly LawnGreen: Color;
+    /**
+     * #FFFACDFF
+     */
     static readonly LemonChiffon: Color;
+    /**
+     * #ADD8E6FF
+     */
     static readonly LightBlue: Color;
+    /**
+     * #F08080FF
+     */
     static readonly LightCoral: Color;
+    /**
+     * #E0FFFFFF
+     */
     static readonly LightCyan: Color;
+    /**
+     * #FAFAD2FF
+     */
     static readonly LightGoldenRodYellow: Color;
+    /**
+     * #D3D3D3FF
+     */
     static readonly LightGray: Color;
+    /**
+     * #90EE90FF
+     */
     static readonly LightGreen: Color;
+    /**
+     * #FFB6C1FF
+     */
     static readonly LightPink: Color;
+    /**
+     * #FFA07AFF
+     */
     static readonly LightSalmon: Color;
+    /**
+     * #20B2AAFF
+     */
     static readonly LightSeaGreen: Color;
+    /**
+     * #87CEFAFF
+     */
     static readonly LightSkyBlue: Color;
+    /**
+     * #778899FF
+     */
     static readonly LightSlateGray: Color;
+    /**
+     * #B0C4DEFF
+     */
     static readonly LightSteelBlue: Color;
+    /**
+     * #FFFFE0FF
+     */
     static readonly LightYellow: Color;
+    /**
+     * #00FF00FF
+     */
     static readonly Lime: Color;
+    /**
+     * #32CD32FF
+     */
     static readonly LimeGreen: Color;
+    /**
+     * #FAF0E6FF
+     */
     static readonly Linen: Color;
+    /**
+     * #FF00FFFF
+     */
     static readonly Magenta: Color;
+    /**
+     * #800000FF
+     */
     static readonly Maroon: Color;
+    /**
+     * #66CDAAFF
+     */
     static readonly MediumAquaMarine: Color;
+    /**
+     * #0000CDFF
+     */
     static readonly MediumBlue: Color;
+    /**
+     * #BA55D3FF
+     */
     static readonly MediumOrchid: Color;
+    /**
+     * #9370DBFF
+     */
     static readonly MediumPurple: Color;
+    /**
+     * #3CB371FF
+     */
     static readonly MediumSeaGreen: Color;
+    /**
+     * #7B68EEFF
+     */
     static readonly MediumSlateBlue: Color;
+    /**
+     * #00FA9AFF
+     */
     static readonly MediumSpringGreen: Color;
+    /**
+     * #48D1CCFF
+     */
     static readonly MediumTurquoise: Color;
+    /**
+     * #C71585FF
+     */
     static readonly MediumVioletRed: Color;
+    /**
+     * #191970FF
+     */
     static readonly MidnightBlue: Color;
+    /**
+     * #F5FFFAFF
+     */
     static readonly MintCream: Color;
+    /**
+     * #FFE4E1FF
+     */
     static readonly MistyRose: Color;
+    /**
+     * #FFE4B5FF
+     */
     static readonly Moccasin: Color;
+    /**
+     * #FFDEADFF
+     */
     static readonly NavajoWhite: Color;
+    /**
+     * #000080FF
+     */
     static readonly Navy: Color;
+    /**
+     * #FDF5E6FF
+     */
     static readonly OldLace: Color;
+    /**
+     * #808000FF
+     */
     static readonly Olive: Color;
+    /**
+     * #6B8E23FF
+     */
     static readonly OliveDrab: Color;
+    /**
+     * #FFA500FF
+     */
     static readonly Orange: Color;
+    /**
+     * #FF4500FF
+     */
     static readonly OrangeRed: Color;
+    /**
+     * #DA70D6FF
+     */
     static readonly Orchid: Color;
+    /**
+     * #EEE8AAFF
+     */
     static readonly PaleGoldenRod: Color;
+    /**
+     * #98FB98FF
+     */
     static readonly PaleGreen: Color;
+    /**
+     * #AFEEEEFF
+     */
     static readonly PaleTurquoise: Color;
+    /**
+     * #DB7093FF
+     */
     static readonly PaleVioletRed: Color;
+    /**
+     * #FFEFD5FF
+     */
     static readonly PapayaWhip: Color;
+    /**
+     * #FFDAB9FF
+     */
     static readonly PeachPuff: Color;
+    /**
+     * #CD853FFF
+     */
     static readonly Peru: Color;
+    /**
+     * #FFC0CBFF
+     */
     static readonly Pink: Color;
+    /**
+     * #DDA0DDFF
+     */
     static readonly Plum: Color;
+    /**
+     * #B0E0E6FF
+     */
     static readonly PowderBlue: Color;
+    /**
+     * #800080FF
+     */
     static readonly Purple: Color;
+    /**
+     * #663399FF
+     */
     static readonly RebeccaPurple: Color;
+    /**
+     * #BC8F8FFF
+     */
     static readonly RosyBrown: Color;
+    /**
+     * #4169E1FF
+     */
     static readonly RoyalBlue: Color;
+    /**
+     * #8B4513FF
+     */
     static readonly SaddleBrown: Color;
+    /**
+     * #FA8072FF
+     */
     static readonly Salmon: Color;
+    /**
+     * #F4A460FF
+     */
     static readonly SandyBrown: Color;
+    /**
+     * #2E8B57FF
+     */
     static readonly SeaGreen: Color;
+    /**
+     * #FFF5EEFF
+     */
     static readonly SeaShell: Color;
+    /**
+     * #A0522DFF
+     */
     static readonly Sienna: Color;
+    /**
+     * #C0C0C0FF
+     */
     static readonly Silver: Color;
+    /**
+     * #87CEEBFF
+     */
     static readonly SkyBlue: Color;
+    /**
+     * #6A5ACDFF
+     */
     static readonly SlateBlue: Color;
+    /**
+     * #708090FF
+     */
     static readonly SlateGray: Color;
+    /**
+     * #FFFAFAFF
+     */
     static readonly Snow: Color;
+    /**
+     * #00FF7FFF
+     */
     static readonly SpringGreen: Color;
+    /**
+     * #4682B4FF
+     */
     static readonly SteelBlue: Color;
+    /**
+     * #D2B48CFF
+     */
     static readonly Tan: Color;
+    /**
+     * #008080FF
+     */
     static readonly Teal: Color;
+    /**
+     * #D8BFD8FF
+     */
     static readonly Thistle: Color;
+    /**
+     * #FF6347FF
+     */
     static readonly Tomato: Color;
+    /**
+     * #40E0D0FF
+     */
     static readonly Turquoise: Color;
+    /**
+     * #EE82EEFF
+     */
     static readonly Violet: Color;
+    /**
+     * #F5DEB3FF
+     */
     static readonly Wheat: Color;
+    /**
+     * #F5F5F5FF
+     */
     static readonly WhiteSmoke: Color;
+    /**
+     * #FFFF00FF
+     */
     static readonly Yellow: Color;
+    /**
+     * #9ACD32FF
+     */
     static readonly YellowGreen: Color;
     /**
      * Red (should be between 0-255)
@@ -3201,12 +3623,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
-    readonly path: string;
-    readonly size: number;
-    readonly isSymlink: boolean;
-    readonly isFile: boolean;
-    readonly fileName: string;
     readonly isDirectory: boolean;
+    readonly isSymlink: boolean;
+    readonly path: string;
+    readonly fileName: string;
+    readonly size: number;
+    readonly isFile: boolean;
 }
 /**
  * Directory options
@@ -3417,45 +3839,45 @@ declare class Point {
  */
 declare interface DisplayInfo {
     /**
-     * The display friendly name
-     */
-    readonly friendlyName: string;
-    /**
-     * The display pixel height
-     */
-    readonly heightMm: number;
-    /**
-     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
-     */
-    readonly rotation: number;
-    /**
-     * The display refresh rate
-     */
-    readonly frequency: number;
-    /**
      * Whether the screen is the main screen
      */
     readonly isPrimary: boolean;
-    /**
-     * The display pixel width
-     */
-    readonly widthMm: number;
     /**
      * The display name
      */
     readonly name: string;
     /**
+     * The display pixel width
+     */
+    readonly widthMm: number;
+    /**
+     * The display pixel height
+     */
+    readonly heightMm: number;
+    /**
+     * The display rectangle
+     */
+    readonly rect: Rect;
+    /**
      * Output device's pixel scale factor
      */
     readonly scaleFactor: number;
+    /**
+     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+     */
+    readonly rotation: number;
     /**
      * Unique identifier associated with the display
      */
     readonly id: number;
     /**
-     * The display rectangle
+     * The display refresh rate
      */
-    readonly rect: Rect;
+    readonly frequency: number;
+    /**
+     * The display friendly name
+     */
+    readonly friendlyName: string;
 }
 declare class Rect {
     /**
@@ -3628,7 +4050,7 @@ declare class Filesystem {
     static isSymlink(path: string): Promise<boolean>;
 }
 declare interface Hotstrings {
-    add(source: string, replacement: string | (() => string | Promise<string>)): void;
+    add(source: string, replacement: string | (() => string | Promise<string>), options?: HotstringOptions): void;
     remove(source: string): void;
 }
 declare const hotstrings: Hotstrings;
@@ -3713,10 +4135,10 @@ declare class AbortController {
 }
 declare interface Keyboard {
     text(text: string): Promise<void>;
-    key(key: Key, direction: Direction): Promise<void>;
+    key(key: Key | string | number, direction: Direction): Promise<void>;
     raw(keycode: number, direction: Direction): Promise<void>;
-    isKeyPressed(key: Key): Promise<boolean>;
-    waitForKeys(keys: Key[], exclusive?: boolean): Promise<void>;
+    isKeyPressed(key: Key | string | number): Promise<boolean>;
+    waitForKeys(keys: (Key | string | number)[], exclusive?: boolean): Promise<void>;
 }
 declare const keyboard: Keyboard;
 declare interface Mouse {
@@ -3796,17 +4218,21 @@ declare const screenshot: Screenshot;
  */
 declare interface System {
     /**
+     * Hardware information
+     */
+    readonly hardware: Hardware;
+    /**
      * Cpu information
      */
     readonly cpu: Cpu;
     /**
-     * Memory information
+     * Os information
      */
-    readonly memory: Memory;
+    readonly os: Os;
     /**
-     * Hardware information
+     * Network information
      */
-    readonly hardware: Hardware;
+    readonly network: Network;
     /**
      * Processes information
      */
@@ -3816,13 +4242,9 @@ declare interface System {
      */
     readonly storage: Storage;
     /**
-     * Network information
+     * Memory information
      */
-    readonly network: Network;
-    /**
-     * Os information
-     */
-    readonly os: Os;
+    readonly memory: Memory;
 }
 declare const system: System;
 declare class Ui {
@@ -3982,8 +4404,8 @@ declare interface MultipartForm {
 declare class WebProgress {
     private constructor();
     total(): number;
-    current(): number;
     finished(): boolean;
+    current(): number;
 }
 /**
  * Cpu
@@ -4011,37 +4433,37 @@ declare interface Cpu {
  */
 declare interface Hardware {
     /**
-     * Stock keeping unit
-     */
-    readonly stockKeepingUnit?: string;
-    /**
      * Family
      */
     readonly family?: string;
     /**
-     * Uuid
+     * Stock keeping unit
      */
-    readonly uuid?: string;
-    /**
-     * Name
-     */
-    readonly name?: string;
+    readonly stockKeepingUnit?: string;
     /**
      * Version
      */
     readonly version?: string;
     /**
-     * Vendor name
-     */
-    readonly vendorName?: string;
-    /**
      * Serial number
      */
     readonly serialNumber?: string;
     /**
+     * Uuid
+     */
+    readonly uuid?: string;
+    /**
+     * Vendor name
+     */
+    readonly vendorName?: string;
+    /**
      * Motherboard
      */
     readonly motherboard: Motherboard;
+    /**
+     * Name
+     */
+    readonly name?: string;
     /**
      * Hardware components
      */
@@ -4050,25 +4472,25 @@ declare interface Hardware {
 }
 declare interface Motherboard {
     /**
-     * Name
+     * Vendor name
      */
-    readonly name?: string;
+    readonly vendorName?: string;
+    /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
     /**
      * Asset tag
      */
     readonly assetTag?: string;
     /**
-     * Vendor name
-     */
-    readonly vendorName?: string;
-    /**
      * Version
      */
     readonly version?: string;
     /**
-     * Serial number
+     * Name
      */
-    readonly serialNumber?: string;
+    readonly name?: string;
     toString(): string;
 }
 declare interface Component {
@@ -4077,6 +4499,14 @@ declare interface Component {
      */
     readonly label: string;
     /**
+     * Temperature
+     */
+    readonly temperature?: number;
+    /**
+     * Critical temperature
+     */
+    readonly criticalTemperature?: number;
+    /**
      * ID
      */
     readonly id?: string;
@@ -4084,14 +4514,6 @@ declare interface Component {
      * Maximum temperature
      */
     readonly maxTemperature?: number;
-    /**
-     * Critical temperature
-     */
-    readonly criticalTemperature?: number;
-    /**
-     * Temperature
-     */
-    readonly temperature?: number;
     toString(): string;
 }
 /**
@@ -4115,17 +4537,17 @@ declare interface Memory {
 }
 declare interface MemoryUsage {
     /**
-     * Used
+     * Free
      */
-    readonly used: number;
+    readonly free: number;
     /**
      * Available
      */
     readonly available: number;
     /**
-     * Free
+     * Used
      */
-    readonly free: number;
+    readonly used: number;
     /**
      * Total
      */
@@ -4142,17 +4564,17 @@ declare interface CGroupLimits {
      */
     readonly rss: number;
     /**
-     * Free swap
+     * Total memory
      */
-    readonly freeSwap: number;
+    readonly totalMemory: number;
     /**
      * Free memory
      */
     readonly freeMemory: number;
     /**
-     * Total memory
+     * Free swap
      */
-    readonly totalMemory: number;
+    readonly freeSwap: number;
     toString(): string;
 }
 /**
@@ -4171,10 +4593,6 @@ declare interface Network {
 }
 declare interface NetworkInterface {
     /**
-     * Outbound
-     */
-    readonly outbound: Traffic;
-    /**
      * Inbound
      */
     readonly inbound: Traffic;
@@ -4183,10 +4601,6 @@ declare interface NetworkInterface {
      */
     readonly name: string;
     /**
-     * MTU
-     */
-    readonly mtu: number;
-    /**
      * MAC address
      */
     readonly macAddress?: string;
@@ -4194,17 +4608,25 @@ declare interface NetworkInterface {
      * Subnets
      */
     readonly subnets: string[];
+    /**
+     * Outbound
+     */
+    readonly outbound: Traffic;
+    /**
+     * MTU
+     */
+    readonly mtu: number;
     toString(): string;
 }
 declare interface Counters {
     /**
-     * Packets
-     */
-    readonly packets: number;
-    /**
      * Data
      */
     readonly data: number;
+    /**
+     * Packets
+     */
+    readonly packets: number;
     /**
      * Errors
      */
@@ -4213,13 +4635,13 @@ declare interface Counters {
 }
 declare interface Traffic {
     /**
-     * Delta
-     */
-    readonly delta: Counters;
-    /**
      * Total
      */
     readonly total: Counters;
+    /**
+     * Delta
+     */
+    readonly delta: Counters;
     toString(): string;
 }
 /**
@@ -4278,14 +4700,6 @@ declare interface Os {
 }
 declare interface User {
     /**
-     * Group ID
-     */
-    readonly groupId?: number;
-    /**
-     * Group names
-     */
-    readonly groupNames: string[];
-    /**
      * Name
      */
     readonly name: string;
@@ -4294,24 +4708,32 @@ declare interface User {
      */
     readonly groupName?: string;
     /**
+     * Groups
+     */
+    readonly groups: number[];
+    /**
      * ID
      */
     readonly id: string;
     /**
-     * Groups
+     * Group names
      */
-    readonly groups: number[];
+    readonly groupNames: string[];
+    /**
+     * Group ID
+     */
+    readonly groupId?: number;
     toString(): string;
 }
 declare interface Group {
     /**
-     * Name
-     */
-    readonly name: string;
-    /**
      * ID
      */
     readonly id: number;
+    /**
+     * Name
+     */
+    readonly name: string;
     toString(): string;
 }
 /**
@@ -4326,49 +4748,41 @@ declare interface Processes {
 }
 declare interface Process {
     /**
-     * Run time
+     * CPU usage
      */
-    readonly runTime: number;
+    readonly cpuUsage: number;
     /**
-     * Cwd
+     * Session ID
      */
-    readonly cwd?: string;
-    /**
-     * Cmd
-     */
-    readonly cmd: string[];
-    /**
-     * Accumulated CPU time
-     */
-    readonly accumulatedCpuTime: number;
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: DiskUsage;
-    /**
-     * Effective user ID
-     */
-    readonly effectiveUserId?: string;
-    /**
-     * Group ID
-     */
-    readonly groupId?: number;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
+    readonly sessionId?: number;
     /**
      * Pid
      */
     readonly pid: number;
     /**
+     * Virtual memory
+     */
+    readonly virtualMemory: number;
+    /**
      * Root
      */
     readonly root?: string;
     /**
-     * Name
+     * Parent
      */
-    readonly name?: string;
+    readonly parent?: number;
+    /**
+     * Cwd
+     */
+    readonly cwd?: string;
+    /**
+     * Status
+     */
+    readonly status: ProcessStatus;
+    /**
+     * Accumulated CPU time
+     */
+    readonly accumulatedCpuTime: number;
     /**
      * User ID
      */
@@ -4378,49 +4792,57 @@ declare interface Process {
      */
     readonly exe?: string;
     /**
-     * Start time
+     * Group ID
      */
-    readonly startTime: Object;
+    readonly groupId?: number;
     /**
-     * Open files
+     * Disk usage
      */
-    readonly openFiles?: number;
-    /**
-     * Status
-     */
-    readonly status: ProcessStatus;
-    /**
-     * Effective group ID
-     */
-    readonly effectiveGroupId?: number;
-    /**
-     * Session ID
-     */
-    readonly sessionId?: number;
-    /**
-     * Exists
-     */
-    readonly exists: boolean;
-    /**
-     * Env
-     */
-    readonly env: string[];
+    readonly diskUsage: DiskUsage;
     /**
      * Memory
      */
     readonly memory: number;
     /**
-     * Parent
+     * Effective group ID
      */
-    readonly parent?: number;
+    readonly effectiveGroupId?: number;
     /**
-     * CPU usage
+     * Exists
      */
-    readonly cpuUsage: number;
+    readonly exists: boolean;
     /**
-     * Virtual memory
+     * Open files limit
      */
-    readonly virtualMemory: number;
+    readonly openFilesLimit?: number;
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Open files
+     */
+    readonly openFiles?: number;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
+     * Run time
+     */
+    readonly runTime: number;
+    /**
+     * Cmd
+     */
+    readonly cmd: string[];
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * Env
+     */
+    readonly env: string[];
     toString(): string;
 }
 /**
@@ -4435,33 +4857,33 @@ declare interface Storage {
 }
 declare interface Disk {
     /**
-     * Usage
+     * File system
      */
-    readonly usage: DiskUsage;
-    /**
-     * Mount point
-     */
-    readonly mountPoint: string;
+    readonly fileSystem?: string;
     /**
      * Kind
      */
     readonly kind: DiskKind;
     /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
-    /**
      * Name
      */
     readonly name?: string;
     /**
-     * File system
+     * Mount point
      */
-    readonly fileSystem?: string;
+    readonly mountPoint: string;
+    /**
+     * Is read-only
+     */
+    readonly isReadOnly: boolean;
     /**
      * Total space
      */
     readonly totalSpace: number;
+    /**
+     * Usage
+     */
+    readonly usage: DiskUsage;
     /**
      * Available space
      */
@@ -4588,6 +5010,15 @@ declare interface WebOptions {
      * @defaultValue undefined
      */
     multipart?: MultipartForm;
+}
+/**
+ * Hotstring options
+ */
+declare interface HotstringOptions {
+    /**
+     * @defaultValue true
+     */
+    eraseKey?: boolean;
 }
 /**
  * Find image options

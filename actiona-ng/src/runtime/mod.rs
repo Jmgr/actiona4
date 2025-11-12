@@ -1,8 +1,9 @@
 use std::sync::{
     Arc,
-    atomic::{AtomicBool, AtomicU8, Ordering},
+    atomic::{AtomicBool, AtomicU8, AtomicU64, Ordering},
 };
 
+use derivative::Derivative;
 use derive_more::Constructor;
 use enigo::{Enigo, Settings};
 use eyre::{Result, eyre};
@@ -10,7 +11,7 @@ use macros::{FromSerde, IntoSerde};
 use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
-use strum::{EnumIs, EnumIter, FromRepr};
+use strum::{Display, EnumIs, EnumIter, FromRepr};
 use tauri::{
     AppHandle,
     menu::{Menu, MenuItem},
@@ -18,6 +19,7 @@ use tauri::{
 };
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::{info, warn};
 
 #[cfg(unix)]
 use crate::runtime::platform::x11::events::input::{
@@ -31,7 +33,7 @@ use crate::runtime::win::events::input::{
 use crate::{
     core::{
         app::js::JsApp,
-        clipboard::js::JsClipboard,
+        clipboard::{Clipboard, js::JsClipboard},
         color::js::JsColor,
         console::js::JsConsole,
         directory::js::JsDirectory,
@@ -146,6 +148,7 @@ impl JsUserData {
     IntoSerde,
     PartialEq,
     Serialize,
+    Display,
 )]
 #[repr(u8)]
 pub enum WaitAtEnd {
@@ -161,7 +164,8 @@ pub enum WaitAtEnd {
     No,
 }
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct Runtime {
     #[cfg(unix)]
     runtime: x11::Runtime,
@@ -174,6 +178,10 @@ pub struct Runtime {
     task_tracker: TaskTracker,
     app_handle: Option<AppHandle>,
     wait_at_end: AtomicU8,
+    background_tasks_counter: AtomicU64,
+
+    #[derivative(Debug = "ignore")]
+    clipboard: Arc<Clipboard>,
 }
 
 impl Runtime {
@@ -190,6 +198,7 @@ impl Runtime {
         #[cfg(windows)]
         let runtime = win::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
+        let clipboard = Arc::new(Clipboard::new()?);
         let runtime = Arc::new(Self {
             runtime,
             enigo: Arc::new(Mutex::new(Enigo::new(&Settings::default())?)),
@@ -198,6 +207,8 @@ impl Runtime {
             app_handle: app_handle.clone(),
             #[allow(clippy::as_conversions)]
             wait_at_end: AtomicU8::new(WaitAtEnd::default() as u8),
+            background_tasks_counter: AtomicU64::new(0),
+            clipboard: clipboard.clone(),
         });
 
         let displays = Arc::new(Displays::new(runtime.clone())?);
@@ -210,6 +221,7 @@ impl Runtime {
         let console = JsConsole::default();
         let js_displays = JsDisplays::new(displays.clone())?;
         let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
+        let clipboard = JsClipboard::new(clipboard);
         let system = JsSystem::new(task_tracker.clone()).await?;
         let hotstrings = JsHotstrings::new(
             runtime.clone(),
@@ -268,7 +280,7 @@ impl Runtime {
                     register_singleton_class::<JsConsole>(&ctx, console)?;
                     register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
                     register_singleton_class::<JsScreenshot>(&ctx, screenshot)?;
-                    register_singleton_class::<JsClipboard>(&ctx, JsClipboard::new(&ctx)?)?;
+                    register_singleton_class::<JsClipboard>(&ctx, clipboard)?;
                     register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
                     register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
                     register_singleton_class::<JsSystem>(&ctx, system)?;
@@ -425,9 +437,13 @@ impl Runtime {
 
         f(runtime.clone(), script_engine.clone()).await?;
 
-        let should_wait_at_end = false; // TODO: hotstrings?
         let wait_at_end = runtime.wait_at_end();
-        if wait_at_end.is_yes() || (wait_at_end.is_automatic() && should_wait_at_end) {
+        info!(
+            "Wait at end: {}, background tasks: {}",
+            wait_at_end,
+            runtime.has_background_tasks()
+        );
+        if wait_at_end.is_yes() || (wait_at_end.is_automatic() && runtime.has_background_tasks()) {
             cancellation_token.cancelled().await;
         }
 
@@ -496,6 +512,11 @@ impl Runtime {
     #[must_use]
     pub const fn tauri_app(&self) -> &AppHandle {
         self.app_handle.as_ref().unwrap()
+    }
+
+    #[must_use]
+    pub fn clipboard(&self) -> Arc<Clipboard> {
+        self.clipboard.clone()
     }
 
     #[inline]
@@ -570,6 +591,27 @@ impl Runtime {
 
     pub fn wait_at_end(&self) -> WaitAtEnd {
         WaitAtEnd::from_repr(self.wait_at_end.load(Ordering::Relaxed)).unwrap()
+    }
+
+    pub fn increase_background_tasks_counter(&self) {
+        self.background_tasks_counter
+            .fetch_add(1, Ordering::Relaxed);
+    }
+
+    pub fn decrease_background_tasks_counter(&self) {
+        if self
+            .background_tasks_counter
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |old| {
+                old.checked_sub(1)
+            })
+            .is_err()
+        {
+            warn!("trying to decrement background_tasks_counter below 0");
+        }
+    }
+
+    fn has_background_tasks(&self) -> bool {
+        self.background_tasks_counter.load(Ordering::Relaxed) > 0
     }
 }
 

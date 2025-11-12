@@ -21,6 +21,19 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
         });
 
     for (enum_name, enum_docs, enum_) in enums {
+        let (comments, enum_instructions, _) =
+            process_rustdoc(enum_docs.as_ref(), RustdocContext::Enum)?;
+
+        if enum_instructions.has_skip() {
+            continue;
+        }
+
+        let enum_name = if let Some(new_name) = enum_instructions.rename() {
+            new_name
+        } else {
+            enum_name.to_string()
+        };
+
         let variants = enum_
             .variants
             .iter()
@@ -61,12 +74,10 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             });
         }
 
-        let (comments, enum_instructions, _) =
-            process_rustdoc(enum_docs.as_ref(), RustdocContext::Enum)?;
         let verbatim = enum_instructions.verbatim();
 
         // Remove "Js" prefix if present
-        let enum_name = enum_name.strip_prefix("Js").unwrap_or(enum_name);
+        let enum_name = enum_name.strip_prefix("Js").unwrap_or(&enum_name);
 
         let default_value = enum_instructions.default_value();
 

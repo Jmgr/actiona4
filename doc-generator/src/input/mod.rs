@@ -13,8 +13,8 @@ use crate::{
     input::{functions::process_functions, modules::process_modules},
     items::Items,
     types::{
-        File, Instruction, InstructionDiscriminants, Platforms, RestParams, RustdocContext, Type,
-        Variable, strip_modules,
+        Const, File, Instruction, InstructionDiscriminants, Platforms, RestParams, RustdocContext,
+        Type, Variable, strip_modules,
     },
 };
 
@@ -186,6 +186,8 @@ newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+) ?(.*)$"#).unwrap());
 static RETURNS_AND_TYPE_REGEX: Lazy<Regex> =
     Lazy::new(|| Regex::new(r#"^([\w\s\[\]<>,]+)$"#).unwrap());
+static CONST_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r#"^(?P<value>[\w]+)(?: // (?P<comment>.+))?$"#).unwrap());
 static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r#"(?x)
@@ -262,6 +264,29 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
         is_readonly,
         default_value: default,
         platforms: Default::default(),
+    })
+}
+
+fn extract_const(parameters: &str) -> Result<Const> {
+    let captures = CONST_REGEX
+        .captures(parameters)
+        .ok_or(eyre!("expected parameters, got: \"{parameters}\""))?;
+
+    let value = captures
+        .name("value")
+        .map(|m| m.as_str().to_string())
+        .ok_or(eyre!("expected value"))?;
+    let comment = captures.name("comment").map(|m| m.as_str().to_string());
+
+    let comments = if let Some(comment) = comment {
+        vec![comment]
+    } else {
+        vec![]
+    };
+
+    Ok(Const {
+        value,
+        comments: comments.into(),
     })
 }
 
@@ -369,8 +394,8 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Some(parameters.to_string())
         }),
 
-        // @const
-        "const" => Instruction::Const(parameters.to_string()),
+        // @const // comment
+        "const" => Instruction::Const(extract_const(parameters)?),
 
         // @extends
         "extends" => Instruction::Extends(parameters.to_string()),
@@ -438,6 +463,7 @@ const fn allowed_context_for_instruction(
             RustdocContext::Struct,
             RustdocContext::Property,
             RustdocContext::Module,
+            RustdocContext::Enum,
         ],
         Returns => &[RustdocContext::Method],
         Singleton => &[RustdocContext::Struct, RustdocContext::StructAlias],
@@ -446,7 +472,7 @@ const fn allowed_context_for_instruction(
         Options => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Extends => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Rest => &[RustdocContext::Method],
-        Rename => &[RustdocContext::Method],
+        Rename => &[RustdocContext::Method, RustdocContext::Enum],
         Static => &[RustdocContext::Method],
         Platforms => &[
             RustdocContext::Method,

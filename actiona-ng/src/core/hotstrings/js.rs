@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
 use rquickjs::{
-    Coerced, Ctx, Function, JsLifetime, Result, Value,
+    Coerced, Ctx, JsLifetime, Result, Value,
     class::{Trace, Tracer},
+    prelude::Opt,
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
@@ -11,11 +12,12 @@ use crate::{
     runtime::{Runtime, WithUserData},
 };
 
+pub type JsHotstringOptions = super::HotstringOptions;
+
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Hotstrings")]
 pub struct JsHotstrings {
-    runtime: Arc<Runtime>,
     inner: super::Hotstrings,
 }
 
@@ -33,7 +35,6 @@ impl JsHotstrings {
         cancellation_token: CancellationToken,
     ) -> Self {
         Self {
-            runtime: runtime.clone(),
             inner: super::Hotstrings::new(runtime, task_tracker, cancellation_token),
         }
     }
@@ -41,10 +42,17 @@ impl JsHotstrings {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsHotstrings {
-    /// @overload
     /// @param source: string
     /// @param replacement: string | (() => string | Promise<string>)
-    pub fn add<'js>(&self, ctx: Ctx<'js>, source: String, replacement: Value<'js>) -> Result<()> {
+    /// @param options?: HotstringOptions
+    pub fn add<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        source: String,
+        replacement: Value<'js>,
+        options: Opt<JsHotstringOptions>,
+    ) -> Result<()> {
+        let options = options.0.unwrap_or_default();
         if let Some(replacement) = replacement.as_function() {
             let user_data = ctx.user_data();
             let callbacks = user_data.callbacks();
@@ -52,10 +60,11 @@ impl JsHotstrings {
             self.inner.add(
                 &source,
                 Replacement::JsCallback((user_data.script_engine().context(), function_key)),
+                options,
             );
         } else {
             let text = replacement.get::<Coerced<String>>()?.0;
-            self.inner.add(&source, Replacement::Text(text));
+            self.inner.add(&source, Replacement::Text(text), options);
         }
 
         Ok(())
@@ -68,13 +77,10 @@ impl JsHotstrings {
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
-
-    use tokio::time::sleep;
     use tracing::info;
     use tracing_test::traced_test;
 
-    use crate::{core::color::js::JsColor, runtime::Runtime};
+    use crate::runtime::Runtime;
 
     #[test]
     #[traced_test]
@@ -87,15 +93,14 @@ mod tests {
                     r#"
                     console.printLn("time: " + Date.now());
 
-                hotstrings.add("time", async () => "" + Date.now());
+                //hotstrings.add("time", async () => "" + Date.now());
                 //hotstrings.add("time", "1762879038878");
 
-                await sleep(100000);
+                //await sleep(100000);
             "#,
                 )
                 .await
                 .unwrap();
-            sleep(Duration::from_secs(60)).await;
         });
     }
 }

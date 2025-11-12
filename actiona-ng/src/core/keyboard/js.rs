@@ -88,6 +88,8 @@ impl JsKeyboard {
         Ok(())
     }
 
+    /// @param key: Key | string | number
+    /// @param direction: Direction
     pub async fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
         let key = key.try_into().map_err(|_| {
             Exception::throw_message(
@@ -109,6 +111,7 @@ impl JsKeyboard {
         Ok(())
     }
 
+    /// @param key: Key | string | number
     pub async fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = key.try_into().map_err(|_| {
             Exception::throw_message(
@@ -120,6 +123,8 @@ impl JsKeyboard {
         self.inner.is_key_pressed(key).await.into_js_result(&ctx)
     }
 
+    /// @param keys: (Key | string | number)[]
+    /// @param exclusive?: boolean
     pub async fn wait_for_keys(
         &self,
         ctx: Ctx<'_>,
@@ -143,8 +148,6 @@ impl JsKeyboard {
     }
 }
 
-// TODO: remove JsStandardKey and expose all keys on a Key type
-
 #[derive(
     Clone,
     Copy,
@@ -160,7 +163,8 @@ impl JsKeyboard {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "StandardKey")]
+#[serde(rename = "Key")]
+/// @rename Key
 pub enum JsStandardKey {
     /// Top-row digit '0' key (not numpad)
     Num0,
@@ -841,10 +845,7 @@ pub enum JsStandardKey {
     Zoom,
 }
 
-/// @verbatim /**
-/// @verbatim  * Key
-/// @verbatim  */
-/// @verbatim type Key = StandardKey | string | number;
+/// @skip
 #[derive(Clone, Copy, Debug, Display, Eq, Hash, JsLifetime, PartialEq)]
 pub enum JsKey {
     Standard(JsStandardKey),

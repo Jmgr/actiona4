@@ -67,149 +67,149 @@ impl<'js> FromParam<'js> for JsColorParam {
 /// @prop b: number // Blue (should be between 0-255)
 /// @prop a: number // Alpha (should be between 0-255)
 ///
-/// @const Red
-/// @const Green
-/// @const Blue
-/// @const White
-/// @const Black
-/// @const Transparent
+/// @const Red // #FF0000FF
+/// @const Green // #008000FF
+/// @const Blue // #0000FFFF
+/// @const White // #FFFFFFFF
+/// @const Black // #000000FF
+/// @const Transparent // #00000000
 ///
-/// @const AliceBlue
-/// @const AntiqueWhite
-/// @const Aqua
-/// @const Aquamarine
-/// @const Azure
-/// @const Beige
-/// @const Bisque
-/// @const BlanchedAlmond
-/// @const BlueViolet
-/// @const Brown
-/// @const BurlyWood
-/// @const CadetBlue
-/// @const Chartreuse
-/// @const Chocolate
-/// @const Coral
-/// @const CornflowerBlue
-/// @const Cornsilk
-/// @const Crimson
-/// @const Cyan
-/// @const DarkBlue
-/// @const DarkCyan
-/// @const DarkGoldenRod
-/// @const DarkGray
-/// @const DarkGreen
-/// @const DarkKhaki
-/// @const DarkMagenta
-/// @const DarkOliveGreen
-/// @const DarkOrange
-/// @const DarkOrchid
-/// @const DarkRed
-/// @const DarkSalmon
-/// @const DarkSeaGreen
-/// @const DarkSlateBlue
-/// @const DarkSlateGray
-/// @const DarkTurquoise
-/// @const DarkViolet
-/// @const DeepPink
-/// @const DeepSkyBlue
-/// @const DimGray
-/// @const DodgerBlue
-/// @const Firebrick
-/// @const FloralWhite
-/// @const ForestGreen
-/// @const Fuchsia
-/// @const Gainsboro
-/// @const GhostWhite
-/// @const Gold
-/// @const GoldenRod
-/// @const Gray
-/// @const GreenYellow
-/// @const HoneyDew
-/// @const HotPink
-/// @const IndianRed
-/// @const Indigo
-/// @const Ivory
-/// @const Khaki
-/// @const Lavender
-/// @const LavenderBlush
-/// @const LawnGreen
-/// @const LemonChiffon
-/// @const LightBlue
-/// @const LightCoral
-/// @const LightCyan
-/// @const LightGoldenRodYellow
-/// @const LightGray
-/// @const LightGreen
-/// @const LightPink
-/// @const LightSalmon
-/// @const LightSeaGreen
-/// @const LightSkyBlue
-/// @const LightSlateGray
-/// @const LightSteelBlue
-/// @const LightYellow
-/// @const Lime
-/// @const LimeGreen
-/// @const Linen
-/// @const Magenta
-/// @const Maroon
-/// @const MediumAquaMarine
-/// @const MediumBlue
-/// @const MediumOrchid
-/// @const MediumPurple
-/// @const MediumSeaGreen
-/// @const MediumSlateBlue
-/// @const MediumSpringGreen
-/// @const MediumTurquoise
-/// @const MediumVioletRed
-/// @const MidnightBlue
-/// @const MintCream
-/// @const MistyRose
-/// @const Moccasin
-/// @const NavajoWhite
-/// @const Navy
-/// @const OldLace
-/// @const Olive
-/// @const OliveDrab
-/// @const Orange
-/// @const OrangeRed
-/// @const Orchid
-/// @const PaleGoldenRod
-/// @const PaleGreen
-/// @const PaleTurquoise
-/// @const PaleVioletRed
-/// @const PapayaWhip
-/// @const PeachPuff
-/// @const Peru
-/// @const Pink
-/// @const Plum
-/// @const PowderBlue
-/// @const Purple
-/// @const RebeccaPurple
-/// @const RosyBrown
-/// @const RoyalBlue
-/// @const SaddleBrown
-/// @const Salmon
-/// @const SandyBrown
-/// @const SeaGreen
-/// @const SeaShell
-/// @const Sienna
-/// @const Silver
-/// @const SkyBlue
-/// @const SlateBlue
-/// @const SlateGray
-/// @const Snow
-/// @const SpringGreen
-/// @const SteelBlue
-/// @const Tan
-/// @const Teal
-/// @const Thistle
-/// @const Tomato
-/// @const Turquoise
-/// @const Violet
-/// @const Wheat
-/// @const WhiteSmoke
-/// @const Yellow
-/// @const YellowGreen
+/// @const AliceBlue // #F0F8FFFF
+/// @const AntiqueWhite // #FAEBD7FF
+/// @const Aqua // #00FFFFFF
+/// @const Aquamarine // #7FFFD4FF
+/// @const Azure // #F0FFFFFF
+/// @const Beige // #F5F5DCFF
+/// @const Bisque // #FFE4C4FF
+/// @const BlanchedAlmond // #FFEBCDFF
+/// @const BlueViolet // #8A2BE2FF
+/// @const Brown // #A52A2AFF
+/// @const BurlyWood // #DEB887FF
+/// @const CadetBlue // #5F9EA0FF
+/// @const Chartreuse // #7FFF00FF
+/// @const Chocolate // #D2691EFF
+/// @const Coral // #FF7F50FF
+/// @const CornflowerBlue // #6495EDFF
+/// @const Cornsilk // #FFF8DCFF
+/// @const Crimson // #DC143CFF
+/// @const Cyan // #00FFFFFF
+/// @const DarkBlue // #00008BFF
+/// @const DarkCyan // #008B8BFF
+/// @const DarkGoldenRod // #B8860BFF
+/// @const DarkGray // #A9A9A9FF
+/// @const DarkGreen // #006400FF
+/// @const DarkKhaki // #BDB76BFF
+/// @const DarkMagenta // #8B008BFF
+/// @const DarkOliveGreen // #556B2FFF
+/// @const DarkOrange // #FF8C00FF
+/// @const DarkOrchid // #9932CCFF
+/// @const DarkRed // #8B0000FF
+/// @const DarkSalmon // #E9967AFF
+/// @const DarkSeaGreen // #8FBC8FFF
+/// @const DarkSlateBlue // #483D8BFF
+/// @const DarkSlateGray // #2F4F4FFF
+/// @const DarkTurquoise // #00CED1FF
+/// @const DarkViolet // #9400D3FF
+/// @const DeepPink // #FF1493FF
+/// @const DeepSkyBlue // #00BFFFFF
+/// @const DimGray // #696969FF
+/// @const DodgerBlue // #1E90FFFF
+/// @const Firebrick // #B22222FF
+/// @const FloralWhite // #FFFAF0FF
+/// @const ForestGreen // #228B22FF
+/// @const Fuchsia // #FF00FFFF
+/// @const Gainsboro // #DCDCDCFF
+/// @const GhostWhite // #F8F8FFFF
+/// @const Gold // #FFD700FF
+/// @const GoldenRod // #DAA520FF
+/// @const Gray // #808080FF
+/// @const GreenYellow // #ADFF2FFF
+/// @const HoneyDew // #F0FFF0FF
+/// @const HotPink // #FF69B4FF
+/// @const IndianRed // #CD5C5CFF
+/// @const Indigo // #4B0082FF
+/// @const Ivory // #FFFFF0FF
+/// @const Khaki // #F0E68CFF
+/// @const Lavender // #E6E6FAFF
+/// @const LavenderBlush // #FFF0F5FF
+/// @const LawnGreen // #7CFC00FF
+/// @const LemonChiffon // #FFFACDFF
+/// @const LightBlue // #ADD8E6FF
+/// @const LightCoral // #F08080FF
+/// @const LightCyan // #E0FFFFFF
+/// @const LightGoldenRodYellow // #FAFAD2FF
+/// @const LightGray // #D3D3D3FF
+/// @const LightGreen // #90EE90FF
+/// @const LightPink // #FFB6C1FF
+/// @const LightSalmon // #FFA07AFF
+/// @const LightSeaGreen // #20B2AAFF
+/// @const LightSkyBlue // #87CEFAFF
+/// @const LightSlateGray // #778899FF
+/// @const LightSteelBlue // #B0C4DEFF
+/// @const LightYellow // #FFFFE0FF
+/// @const Lime // #00FF00FF
+/// @const LimeGreen // #32CD32FF
+/// @const Linen // #FAF0E6FF
+/// @const Magenta // #FF00FFFF
+/// @const Maroon // #800000FF
+/// @const MediumAquaMarine // #66CDAAFF
+/// @const MediumBlue // #0000CDFF
+/// @const MediumOrchid // #BA55D3FF
+/// @const MediumPurple // #9370DBFF
+/// @const MediumSeaGreen // #3CB371FF
+/// @const MediumSlateBlue // #7B68EEFF
+/// @const MediumSpringGreen // #00FA9AFF
+/// @const MediumTurquoise // #48D1CCFF
+/// @const MediumVioletRed // #C71585FF
+/// @const MidnightBlue // #191970FF
+/// @const MintCream // #F5FFFAFF
+/// @const MistyRose // #FFE4E1FF
+/// @const Moccasin // #FFE4B5FF
+/// @const NavajoWhite // #FFDEADFF
+/// @const Navy // #000080FF
+/// @const OldLace // #FDF5E6FF
+/// @const Olive // #808000FF
+/// @const OliveDrab // #6B8E23FF
+/// @const Orange // #FFA500FF
+/// @const OrangeRed // #FF4500FF
+/// @const Orchid // #DA70D6FF
+/// @const PaleGoldenRod // #EEE8AAFF
+/// @const PaleGreen // #98FB98FF
+/// @const PaleTurquoise // #AFEEEEFF
+/// @const PaleVioletRed // #DB7093FF
+/// @const PapayaWhip // #FFEFD5FF
+/// @const PeachPuff // #FFDAB9FF
+/// @const Peru // #CD853FFF
+/// @const Pink // #FFC0CBFF
+/// @const Plum // #DDA0DDFF
+/// @const PowderBlue // #B0E0E6FF
+/// @const Purple // #800080FF
+/// @const RebeccaPurple // #663399FF
+/// @const RosyBrown // #BC8F8FFF
+/// @const RoyalBlue // #4169E1FF
+/// @const SaddleBrown // #8B4513FF
+/// @const Salmon // #FA8072FF
+/// @const SandyBrown // #F4A460FF
+/// @const SeaGreen // #2E8B57FF
+/// @const SeaShell // #FFF5EEFF
+/// @const Sienna // #A0522DFF
+/// @const Silver // #C0C0C0FF
+/// @const SkyBlue // #87CEEBFF
+/// @const SlateBlue // #6A5ACDFF
+/// @const SlateGray // #708090FF
+/// @const Snow // #FFFAFAFF
+/// @const SpringGreen // #00FF7FFF
+/// @const SteelBlue // #4682B4FF
+/// @const Tan // #D2B48CFF
+/// @const Teal // #008080FF
+/// @const Thistle // #D8BFD8FF
+/// @const Tomato // #FF6347FF
+/// @const Turquoise // #40E0D0FF
+/// @const Violet // #EE82EEFF
+/// @const Wheat // #F5DEB3FF
+/// @const WhiteSmoke // #F5F5F5FF
+/// @const Yellow // #FFFF00FF
+/// @const YellowGreen // #9ACD32FF
 ///
 /// ```js
 /// let c = new Color(128, 255, 255, 255);

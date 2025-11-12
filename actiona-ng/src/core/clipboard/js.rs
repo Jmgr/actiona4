@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, sync::Arc};
 
 use rquickjs::{
     JsLifetime, Result,
@@ -35,7 +35,7 @@ pub type JsClipboardMode = super::ClipboardMode;
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Clipboard")]
 pub struct JsClipboard {
-    inner: super::Clipboard,
+    inner: Arc<super::Clipboard>,
 }
 
 impl<'js> Trace<'js> for JsClipboard {
@@ -52,56 +52,44 @@ impl<'js> SingletonClass<'js> for JsClipboard {
 
 impl JsClipboard {
     /// @skip
-    pub fn new(ctx: &Ctx<'_>) -> Result<Self> {
-        Ok(Self {
-            inner: super::Clipboard::new().into_js_result(ctx)?,
-        })
+    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+        Self { inner: clipboard }
     }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboard {
-    pub async fn set_text(
-        &mut self,
-        ctx: Ctx<'_>,
-        text: String,
-        mode: Opt<JsClipboardMode>,
-    ) -> Result<()> {
-        self.inner.set_text(text, *mode).await.into_js_result(&ctx)
+    pub fn set_text(&self, ctx: Ctx<'_>, text: String, mode: Opt<JsClipboardMode>) -> Result<()> {
+        self.inner.set_text(text, *mode).into_js_result(&ctx)
     }
 
-    pub async fn get_text(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
-        self.inner.get_text(*mode).await.into_js_result(&ctx)
+    pub fn get_text(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
+        self.inner.get_text(*mode).into_js_result(&ctx)
     }
 
-    pub async fn set_image(
-        &mut self,
+    pub fn set_image(
+        &self,
         ctx: Ctx<'_>,
         image: JsImage,
         mode: Opt<JsClipboardMode>,
     ) -> Result<()> {
         self.inner
             .set_image(image.into_inner(), *mode)
-            .await
             .into_js_result(&ctx)
     }
 
-    pub async fn get_image(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
-        let image = self.inner.get_image(*mode).await.into_js_result(&ctx)?;
+    pub fn get_image(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
+        let image = self.inner.get_image(*mode).into_js_result(&ctx)?;
 
         Ok(image.into())
     }
 
-    pub async fn get_file_list(
-        &mut self,
-        ctx: Ctx<'_>,
-        mode: Opt<JsClipboardMode>,
-    ) -> Result<Vec<String>> {
-        self.inner.get_file_list(*mode).await.into_js_result(&ctx)
+    pub fn get_file_list(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
+        self.inner.get_file_list(*mode).into_js_result(&ctx)
     }
 
-    pub async fn set_html(
-        &mut self,
+    pub fn set_html(
+        &self,
         ctx: Ctx<'_>,
         html: String,
         alt_text: Opt<String>,
@@ -109,16 +97,15 @@ impl JsClipboard {
     ) -> Result<()> {
         self.inner
             .set_html(html, alt_text.0, *mode)
-            .await
             .into_js_result(&ctx)
     }
 
-    pub async fn get_html(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
-        self.inner.get_html(*mode).await.into_js_result(&ctx)
+    pub fn get_html(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
+        self.inner.get_html(*mode).into_js_result(&ctx)
     }
 
-    pub async fn clear(&mut self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
-        self.inner.clear(*mode).await.into_js_result(&ctx)
+    pub fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
+        self.inner.clear(*mode).into_js_result(&ctx)
     }
 }
 

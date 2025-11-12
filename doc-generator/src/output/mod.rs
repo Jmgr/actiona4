@@ -301,10 +301,12 @@ impl File {
                 )?;
 
                 for const_ in &struct_.consts {
+                    write_comments(&const_.comments, "    ", &mut output_file)?;
+
                     writeln!(
                         output_file,
                         "    static readonly {}: {};",
-                        const_, struct_.name
+                        const_.value, struct_.name
                     )?;
                 }
 
