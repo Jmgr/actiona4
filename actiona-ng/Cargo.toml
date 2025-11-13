@@ -31,7 +31,6 @@ macros = { path = "../macros" }
 
 base64.workspace = true
 bimap.workspace = true
-bon.workspace = true
 bytes.workspace = true
 chrono.workspace = true
 console.workspace = true
@@ -43,7 +42,6 @@ encoding_rs.workspace = true
 enigo.workspace = true
 eyre.workspace = true
 futures.workspace = true
-futures-util.workspace = true
 http-body.workspace = true
 http-body-util.workspace = true
 human-units.workspace = true

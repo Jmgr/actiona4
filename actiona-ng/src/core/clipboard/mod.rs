@@ -1,10 +1,10 @@
-use std::{borrow::Cow, fmt::Debug, num::TryFromIntError, sync::Arc};
+use std::{borrow::Cow, fmt::Debug, num::TryFromIntError, path::PathBuf, sync::Arc};
 
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
 use derive_more::Display;
-use eyre::Report;
+use eyre::{Report, eyre};
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
 use macros::{FromSerde, IntoSerde};
@@ -73,6 +73,13 @@ pub enum ClipboardMode {
     Selection,
 }
 
+pub enum ClipboardData {
+    Text(String),
+    Image(ImageData<'static>),
+    Html(String),
+    FileList(Vec<PathBuf>),
+}
+
 #[derive(Clone)]
 pub struct Clipboard {
     inner: Arc<Mutex<arboard::Clipboard>>,
@@ -127,6 +134,33 @@ impl Clipboard {
         }
     }
 
+    pub fn save(&self, mode: Option<ClipboardMode>) -> Result<ClipboardData> {
+        Ok(if let Ok(data) = self.get(|get| get.image(), mode) {
+            ClipboardData::Image(data)
+        } else if let Ok(data) = self.get(|get| get.file_list(), mode) {
+            ClipboardData::FileList(data)
+        } else if let Ok(data) = self.get(|get| get.html(), mode) {
+            ClipboardData::Html(data)
+        } else if let Ok(data) = self.get(|get| get.text(), mode) {
+            ClipboardData::Text(data)
+        } else {
+            return Err(eyre!("unknown clipboard data").into());
+        })
+    }
+
+    pub fn restore(&self, data: ClipboardData, mode: Option<ClipboardMode>) -> Result<()> {
+        self.set(
+            |set| match data {
+                ClipboardData::Text(text) => set.text(text),
+                ClipboardData::Image(image_data) => set.image(image_data),
+                ClipboardData::Html(html) => set.html(html, None),
+                ClipboardData::FileList(file_list) => set.file_list(&file_list),
+            },
+            mode,
+        )?;
+        Ok(())
+    }
+
     pub fn set_text<'a, T: Into<Cow<'a, str>>>(
         &self,
         text: T,
@@ -172,7 +206,7 @@ impl Clipboard {
                     width: width.try_into()?,
                     height: height.try_into()?,
                     bytes,
-                });
+                })?;
                 Result::Ok(())
             },
             mode,

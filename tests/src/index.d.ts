@@ -1862,14 +1862,14 @@ declare interface App {
 }
 declare const app: App;
 declare interface Clipboard {
-    setText(text: string, mode?: ClipboardMode): Promise<void>;
-    getText(mode?: ClipboardMode): Promise<string>;
-    setImage(image: Image, mode?: ClipboardMode): Promise<void>;
-    getImage(mode?: ClipboardMode): Promise<Image>;
-    getFileList(mode?: ClipboardMode): Promise<string[]>;
-    setHtml(html: string, altText?: string, mode?: ClipboardMode): Promise<void>;
-    getHtml(mode?: ClipboardMode): Promise<string>;
-    clear(mode?: ClipboardMode): Promise<void>;
+    setText(text: string, mode?: ClipboardMode): void;
+    getText(mode?: ClipboardMode): string;
+    setImage(image: Image, mode?: ClipboardMode): void;
+    getImage(mode?: ClipboardMode): Image;
+    getFileList(mode?: ClipboardMode): string[];
+    setHtml(html: string, altText?: string, mode?: ClipboardMode): void;
+    getHtml(mode?: ClipboardMode): string;
+    clear(mode?: ClipboardMode): void;
 }
 declare const clipboard: Clipboard;
 declare class Image {
@@ -2980,8 +2980,8 @@ declare class Image {
      * TODO
      */
     findImage(Image: Image, options?: FindImageOptions): void;
-    width(): number;
     height(): number;
+    width(): number;
 }
 /**
  * A Color.
@@ -3623,12 +3623,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
-    readonly isDirectory: boolean;
-    readonly isSymlink: boolean;
-    readonly path: string;
-    readonly fileName: string;
     readonly size: number;
     readonly isFile: boolean;
+    readonly path: string;
+    readonly isSymlink: boolean;
+    readonly fileName: string;
+    readonly isDirectory: boolean;
 }
 /**
  * Directory options
@@ -3839,45 +3839,45 @@ declare class Point {
  */
 declare interface DisplayInfo {
     /**
-     * Whether the screen is the main screen
+     * The display refresh rate
      */
-    readonly isPrimary: boolean;
-    /**
-     * The display name
-     */
-    readonly name: string;
-    /**
-     * The display pixel width
-     */
-    readonly widthMm: number;
-    /**
-     * The display pixel height
-     */
-    readonly heightMm: number;
+    readonly frequency: number;
     /**
      * The display rectangle
      */
     readonly rect: Rect;
     /**
+     * Whether the screen is the main screen
+     */
+    readonly isPrimary: boolean;
+    /**
      * Output device's pixel scale factor
      */
     readonly scaleFactor: number;
+    /**
+     * The display friendly name
+     */
+    readonly friendlyName: string;
     /**
      * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
      */
     readonly rotation: number;
     /**
+     * The display pixel height
+     */
+    readonly heightMm: number;
+    /**
+     * The display pixel width
+     */
+    readonly widthMm: number;
+    /**
+     * The display name
+     */
+    readonly name: string;
+    /**
      * Unique identifier associated with the display
      */
     readonly id: number;
-    /**
-     * The display refresh rate
-     */
-    readonly frequency: number;
-    /**
-     * The display friendly name
-     */
-    readonly friendlyName: string;
 }
 declare class Rect {
     /**
@@ -4050,7 +4050,7 @@ declare class Filesystem {
     static isSymlink(path: string): Promise<boolean>;
 }
 declare interface Hotstrings {
-    add(source: string, replacement: string | (() => string | Promise<string>), options?: HotstringOptions): void;
+    add(source: string, replacement: string | (() => string | Promise<string>) | Image | (() => Image | Promise<Image>), options?: HotstringOptions): void;
     remove(source: string): void;
 }
 declare const hotstrings: Hotstrings;
@@ -4218,26 +4218,6 @@ declare const screenshot: Screenshot;
  */
 declare interface System {
     /**
-     * Hardware information
-     */
-    readonly hardware: Hardware;
-    /**
-     * Cpu information
-     */
-    readonly cpu: Cpu;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
-     * Network information
-     */
-    readonly network: Network;
-    /**
-     * Processes information
-     */
-    readonly processes: Processes;
-    /**
      * Storage information
      */
     readonly storage: Storage;
@@ -4245,6 +4225,26 @@ declare interface System {
      * Memory information
      */
     readonly memory: Memory;
+    /**
+     * Cpu information
+     */
+    readonly cpu: Cpu;
+    /**
+     * Network information
+     */
+    readonly network: Network;
+    /**
+     * Hardware information
+     */
+    readonly hardware: Hardware;
+    /**
+     * Os information
+     */
+    readonly os: Os;
+    /**
+     * Processes information
+     */
+    readonly processes: Processes;
 }
 declare const system: System;
 declare class Ui {
@@ -4403,8 +4403,8 @@ declare interface MultipartForm {
 }
 declare class WebProgress {
     private constructor();
-    total(): number;
     finished(): boolean;
+    total(): number;
     current(): number;
 }
 /**
@@ -4412,13 +4412,13 @@ declare class WebProgress {
  */
 declare interface Cpu {
     /**
-     * Logical core count
-     */
-    readonly logicalCoreCount: number;
-    /**
      * Physical core count
      */
     readonly physicalCoreCount?: number;
+    /**
+     * Logical core count
+     */
+    readonly logicalCoreCount: number;
     /**
      * Architecture
      */
@@ -4433,17 +4433,13 @@ declare interface Cpu {
  */
 declare interface Hardware {
     /**
-     * Family
-     */
-    readonly family?: string;
-    /**
      * Stock keeping unit
      */
     readonly stockKeepingUnit?: string;
     /**
-     * Version
+     * Motherboard
      */
-    readonly version?: string;
+    readonly motherboard: Motherboard;
     /**
      * Serial number
      */
@@ -4453,13 +4449,17 @@ declare interface Hardware {
      */
     readonly uuid?: string;
     /**
+     * Version
+     */
+    readonly version?: string;
+    /**
+     * Family
+     */
+    readonly family?: string;
+    /**
      * Vendor name
      */
     readonly vendorName?: string;
-    /**
-     * Motherboard
-     */
-    readonly motherboard: Motherboard;
     /**
      * Name
      */
@@ -4472,13 +4472,9 @@ declare interface Hardware {
 }
 declare interface Motherboard {
     /**
-     * Vendor name
+     * Name
      */
-    readonly vendorName?: string;
-    /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
+    readonly name?: string;
     /**
      * Asset tag
      */
@@ -4488,24 +4484,28 @@ declare interface Motherboard {
      */
     readonly version?: string;
     /**
-     * Name
+     * Vendor name
      */
-    readonly name?: string;
+    readonly vendorName?: string;
+    /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
     toString(): string;
 }
 declare interface Component {
     /**
-     * Label
+     * Critical temperature
      */
-    readonly label: string;
+    readonly criticalTemperature?: number;
     /**
      * Temperature
      */
     readonly temperature?: number;
     /**
-     * Critical temperature
+     * Label
      */
-    readonly criticalTemperature?: number;
+    readonly label: string;
     /**
      * ID
      */
@@ -4537,21 +4537,21 @@ declare interface Memory {
 }
 declare interface MemoryUsage {
     /**
-     * Free
-     */
-    readonly free: number;
-    /**
      * Available
      */
     readonly available: number;
     /**
-     * Used
+     * Free
      */
-    readonly used: number;
+    readonly free: number;
     /**
      * Total
      */
     readonly total: number;
+    /**
+     * Used
+     */
+    readonly used: number;
     toString(): string;
 }
 /**
@@ -4560,14 +4560,6 @@ declare interface MemoryUsage {
  */
 declare interface CGroupLimits {
     /**
-     * RSS
-     */
-    readonly rss: number;
-    /**
-     * Total memory
-     */
-    readonly totalMemory: number;
-    /**
      * Free memory
      */
     readonly freeMemory: number;
@@ -4575,6 +4567,14 @@ declare interface CGroupLimits {
      * Free swap
      */
     readonly freeSwap: number;
+    /**
+     * RSS
+     */
+    readonly rss: number;
+    /**
+     * Total memory
+     */
+    readonly totalMemory: number;
     toString(): string;
 }
 /**
@@ -4597,18 +4597,6 @@ declare interface NetworkInterface {
      */
     readonly inbound: Traffic;
     /**
-     * Name
-     */
-    readonly name: string;
-    /**
-     * MAC address
-     */
-    readonly macAddress?: string;
-    /**
-     * Subnets
-     */
-    readonly subnets: string[];
-    /**
      * Outbound
      */
     readonly outbound: Traffic;
@@ -4616,13 +4604,21 @@ declare interface NetworkInterface {
      * MTU
      */
     readonly mtu: number;
+    /**
+     * MAC address
+     */
+    readonly macAddress?: string;
+    /**
+     * Name
+     */
+    readonly name: string;
+    /**
+     * Subnets
+     */
+    readonly subnets: string[];
     toString(): string;
 }
 declare interface Counters {
-    /**
-     * Data
-     */
-    readonly data: number;
     /**
      * Packets
      */
@@ -4631,6 +4627,10 @@ declare interface Counters {
      * Errors
      */
     readonly errors: number;
+    /**
+     * Data
+     */
+    readonly data: number;
     toString(): string;
 }
 declare interface Traffic {
@@ -4704,36 +4704,36 @@ declare interface User {
      */
     readonly name: string;
     /**
-     * Group name
+     * Group ID
      */
-    readonly groupName?: string;
-    /**
-     * Groups
-     */
-    readonly groups: number[];
+    readonly groupId?: number;
     /**
      * ID
      */
     readonly id: string;
     /**
+     * Groups
+     */
+    readonly groups: number[];
+    /**
      * Group names
      */
     readonly groupNames: string[];
     /**
-     * Group ID
+     * Group name
      */
-    readonly groupId?: number;
+    readonly groupName?: string;
     toString(): string;
 }
 declare interface Group {
     /**
-     * ID
-     */
-    readonly id: number;
-    /**
      * Name
      */
     readonly name: string;
+    /**
+     * ID
+     */
+    readonly id: number;
     toString(): string;
 }
 /**
@@ -4748,101 +4748,101 @@ declare interface Processes {
 }
 declare interface Process {
     /**
-     * CPU usage
+     * Open files limit
      */
-    readonly cpuUsage: number;
-    /**
-     * Session ID
-     */
-    readonly sessionId?: number;
-    /**
-     * Pid
-     */
-    readonly pid: number;
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Cwd
-     */
-    readonly cwd?: string;
-    /**
-     * Status
-     */
-    readonly status: ProcessStatus;
-    /**
-     * Accumulated CPU time
-     */
-    readonly accumulatedCpuTime: number;
-    /**
-     * User ID
-     */
-    readonly userId?: string;
-    /**
-     * Exe
-     */
-    readonly exe?: string;
-    /**
-     * Group ID
-     */
-    readonly groupId?: number;
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: DiskUsage;
+    readonly openFilesLimit?: number;
     /**
      * Memory
      */
     readonly memory: number;
     /**
+     * Pid
+     */
+    readonly pid: number;
+    /**
+     * Accumulated CPU time
+     */
+    readonly accumulatedCpuTime: number;
+    /**
+     * Disk usage
+     */
+    readonly diskUsage: DiskUsage;
+    /**
      * Effective group ID
      */
     readonly effectiveGroupId?: number;
     /**
-     * Exists
+     * Session ID
      */
-    readonly exists: boolean;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
-    /**
-     * Effective user ID
-     */
-    readonly effectiveUserId?: string;
+    readonly sessionId?: number;
     /**
      * Open files
      */
     readonly openFiles?: number;
     /**
-     * Start time
+     * Parent
      */
-    readonly startTime: Object;
+    readonly parent?: number;
+    /**
+     * Group ID
+     */
+    readonly groupId?: number;
+    /**
+     * Exe
+     */
+    readonly exe?: string;
+    /**
+     * Exists
+     */
+    readonly exists: boolean;
+    /**
+     * Env
+     */
+    readonly env: string[];
+    /**
+     * Status
+     */
+    readonly status: ProcessStatus;
     /**
      * Run time
      */
     readonly runTime: number;
     /**
+     * CPU usage
+     */
+    readonly cpuUsage: number;
+    /**
      * Cmd
      */
     readonly cmd: string[];
+    /**
+     * Effective user ID
+     */
+    readonly effectiveUserId?: string;
+    /**
+     * Virtual memory
+     */
+    readonly virtualMemory: number;
     /**
      * Name
      */
     readonly name?: string;
     /**
-     * Env
+     * User ID
      */
-    readonly env: string[];
+    readonly userId?: string;
+    /**
+     * Cwd
+     */
+    readonly cwd?: string;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
+     * Root
+     */
+    readonly root?: string;
     toString(): string;
 }
 /**
@@ -4857,25 +4857,9 @@ declare interface Storage {
 }
 declare interface Disk {
     /**
-     * File system
-     */
-    readonly fileSystem?: string;
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
      * Mount point
      */
     readonly mountPoint: string;
-    /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
     /**
      * Total space
      */
@@ -4885,13 +4869,29 @@ declare interface Disk {
      */
     readonly usage: DiskUsage;
     /**
+     * Is removable
+     */
+    readonly isRemovable: boolean;
+    /**
      * Available space
      */
     readonly availableSpace: number;
     /**
-     * Is removable
+     * File system
      */
-    readonly isRemovable: boolean;
+    readonly fileSystem?: string;
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * Is read-only
+     */
+    readonly isReadOnly: boolean;
+    /**
+     * Kind
+     */
+    readonly kind: DiskKind;
     toString(): string;
 }
 declare interface IoStats {
@@ -4907,13 +4907,13 @@ declare interface IoStats {
 }
 declare interface DiskUsage {
     /**
-     * Read
-     */
-    readonly read: IoStats;
-    /**
      * Written
      */
     readonly written: IoStats;
+    /**
+     * Read
+     */
+    readonly read: IoStats;
     toString(): string;
 }
 declare interface Concurrency {
@@ -5019,6 +5019,10 @@ declare interface HotstringOptions {
      * @defaultValue true
      */
     eraseKey?: boolean;
+    /**
+     * @defaultValue false
+     */
+    useClipboard?: boolean;
 }
 /**
  * Find image options

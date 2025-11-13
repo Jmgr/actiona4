@@ -24,7 +24,7 @@ use tracing::info;
 use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
-    core::image::Image,
+    core::image::{Image, js::JsImage},
     runtime::{
         Runtime, WithUserData,
         events::{KeyboardKeyEvent, KeyboardTextEvent},
@@ -46,18 +46,26 @@ pub enum Replacement {
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct HotstringOptions {
+    /// Erase the key first before replacing it with the replacement content.
     /// @default true
     pub erase_key: bool,
 
+    /// When replacing with text, save it to the clipboard then simulate Ctrl+V to paste.
+    /// Replacing with an image always uses the clipboard.
     /// @default false
-    pub use_clipboard: bool,
+    pub use_clipboard_for_text: bool,
+
+    /// Try to save and restore the clipboard's contents.
+    /// @default true
+    pub save_restore_clipboard: bool,
 }
 
 impl Default for HotstringOptions {
     fn default() -> Self {
         Self {
             erase_key: true,
-            use_clipboard: false,
+            use_clipboard_for_text: false,
+            save_restore_clipboard: true,
         }
     }
 }
@@ -207,23 +215,34 @@ impl Hotstrings {
             }
             Replacement::JsCallback((context, function_key)) => {
                 info!("JsCallback start");
-                let text = async_with!(context => |ctx| {
+                let replacement_data = async_with!(context => |ctx| {
                     let user_data = ctx.user_data();
                     let callbacks = user_data.callbacks();
                     let result = callbacks.call(&ctx, function_key, Vec::new()).await.unwrap();
-                    result.get::<Coerced<String>>().unwrap().0
+                    if let Ok(image) = result.get::<JsImage>() {
+                        ReplacementData::Image(image.into_inner())
+                    } else {
+                        ReplacementData::Text(result.get::<Coerced<String>>().unwrap().0)
+                    }
                 })
                 .await;
 
                 info!("JsCallback end");
 
-                // TODO: remove copy paste
-                let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
-                let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
-                let text = text.graphemes(true).collect_vec();
-                let mut suffix = text[grapheme_prefix_len..].concat();
+                match replacement_data {
+                    ReplacementData::Text(text) => {
+                        // TODO: remove copy paste
+                        let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
+                        let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
+                        let text = text.graphemes(true).collect_vec();
+                        let mut suffix = text[grapheme_prefix_len..].concat();
 
-                (backspaces, ReplacementData::Text(suffix))
+                        (backspaces, ReplacementData::Text(suffix))
+                    }
+                    ReplacementData::Image(image) => {
+                        (key.graphemes(true).count(), ReplacementData::Image(image))
+                    }
+                }
             }
         };
 
@@ -250,9 +269,17 @@ impl Hotstrings {
 
             match replacement_data {
                 ReplacementData::Text(replacement) => {
-                    if options.use_clipboard {
-                        // Copy the text to the clipboard
+                    if options.use_clipboard_for_text {
                         let clipboard = runtime.clipboard();
+
+                        let data = if options.save_restore_clipboard {
+                            // Ignore errors if the format is unknown
+                            clipboard.save(None).ok()
+                        } else {
+                            None
+                        };
+
+                        // Copy the text to the clipboard
                         clipboard.set_text(&replacement, None)?;
 
                         // Paste it
@@ -260,14 +287,25 @@ impl Hotstrings {
                         enigo.key(Key::Unicode('v'), Direction::Press)?;
                         enigo.key(Key::Unicode('v'), Direction::Release)?;
                         enigo.key(Key::Control, Direction::Release)?;
+
+                        if let Some(data) = data {
+                            let _ = clipboard.restore(data, None);
+                        }
                     } else {
                         // Write the replacement
                         enigo.text(&replacement)?;
                     }
                 }
                 ReplacementData::Image(dynamic_image) => {
-                    // Copy the image to the clipboard
                     let clipboard = runtime.clipboard();
+
+                    let data = if options.save_restore_clipboard {
+                        Some(clipboard.save(None)?)
+                    } else {
+                        None
+                    };
+
+                    // Copy the image to the clipboard
                     clipboard.set_image(dynamic_image, None)?;
 
                     // Paste it
@@ -275,6 +313,10 @@ impl Hotstrings {
                     enigo.key(Key::Unicode('v'), Direction::Press)?;
                     enigo.key(Key::Unicode('v'), Direction::Release)?;
                     enigo.key(Key::Control, Direction::Release)?;
+
+                    if let Some(data) = data {
+                        clipboard.restore(data, None)?;
+                    }
                 }
             }
 
@@ -556,7 +598,7 @@ mod tests {
                 "beaver",
                 Replacement::Text("🦫".to_string()),
                 HotstringOptions {
-                    use_clipboard: true,
+                    use_clipboard_for_text: true,
                     ..Default::default()
                 },
             );

@@ -8,7 +8,7 @@ use rquickjs::{
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
-    core::{hotstrings::Replacement, js::classes::SingletonClass},
+    core::{hotstrings::Replacement, image::js::JsImage, js::classes::SingletonClass},
     runtime::{Runtime, WithUserData},
 };
 
@@ -43,7 +43,7 @@ impl JsHotstrings {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsHotstrings {
     /// @param source: string
-    /// @param replacement: string | (() => string | Promise<string>)
+    /// @param replacement: string | (() => string | Promise<string>) | Image | (() => Image | Promise<Image>)
     /// @param options?: HotstringOptions
     pub fn add<'js>(
         &self,
@@ -62,6 +62,9 @@ impl JsHotstrings {
                 Replacement::JsCallback((user_data.script_engine().context(), function_key)),
                 options,
             );
+        } else if let Ok(image) = replacement.get::<JsImage>() {
+            self.inner
+                .add(&source, Replacement::Image(image.into_inner()), options);
         } else {
             let text = replacement.get::<Coerced<String>>()?.0;
             self.inner.add(&source, Replacement::Text(text), options);
