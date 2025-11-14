@@ -1,4 +1,4 @@
-use eyre::{Context, Result};
+use color_eyre::{Result, eyre::Context};
 use itertools::Itertools;
 use log::warn;
 use rustdoc_types::{Id, ItemEnum, StructKind};
@@ -74,6 +74,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                     is_readonly: false,
                     default_value,
                     platforms: instructions.platforms(),
+                    is_promise: false,
                 });
             }
         } else {

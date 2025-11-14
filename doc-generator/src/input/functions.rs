@@ -1,5 +1,8 @@
+use color_eyre::{
+    Result,
+    eyre::{Context, eyre},
+};
 use convert_case::{Case, Casing};
-use eyre::{Context, Result, eyre};
 use itertools::Itertools;
 use log::error;
 use rustdoc_types::{Id, ItemEnum};
@@ -118,6 +121,7 @@ pub fn extract_functions(
                             is_readonly: false,
                             default_value: None,
                             platforms: instructions.platforms(),
+                            is_promise: false,
                         });
                     }
                     Err(err) => error!("{err:?}"),
@@ -228,6 +232,7 @@ pub fn extract_functions(
                 is_readonly: true,
                 default_value: None,
                 platforms: Default::default(),
+                is_promise: function.header.is_async,
             });
             continue;
         }

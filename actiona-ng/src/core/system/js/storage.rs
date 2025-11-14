@@ -68,7 +68,7 @@ impl JsStorage {
         ctx: Ctx<'js>,
         options: Opt<ListDisksOptions>,
     ) -> Result<Vec<JsDisk>> {
-        let options = options.0.unwrap_or_default();
+        let options = options.unwrap_or_default();
         Ok(self
             .inner
             .refresh_disks(options.rescan)

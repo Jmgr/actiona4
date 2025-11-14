@@ -1,6 +1,6 @@
 use std::num::Saturating;
 
-use eyre::{Report, Result, eyre};
+use color_eyre::{Report, Result, eyre::eyre};
 use rquickjs::{FromJs, IntoJs};
 
 use crate::{IntoJsResult, types::si32::Si32};

@@ -4,8 +4,11 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+#[cfg(windows)]
+use color_eyre::eyre;
+use color_eyre::{Report, Result};
 use derive_more::Display;
-use eyre::{Report, Result};
+use derive_where::derive_where;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
@@ -24,8 +27,6 @@ use crate::{
         pid::Pid,
     },
 };
-#[cfg(windows)]
-use eyre::eyre;
 
 /// TODO: Linux only
 #[derive(Clone, Copy, Debug, Display)]
@@ -404,7 +405,7 @@ impl Process {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Processes {
     #[derive_where(skip)]
     system: Arc<Mutex<sysinfo::System>>,

@@ -2,7 +2,7 @@
 
 use std::marker::PhantomData;
 
-use eyre::Result;
+use color_eyre::Result;
 use tracing::error;
 use windows::Win32::UI::WindowsAndMessaging::{
     HOOKPROC, MSG, SetWindowsHookExW, WINDOWS_HOOK_ID, WM_APP,

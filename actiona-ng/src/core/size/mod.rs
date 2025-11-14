@@ -3,8 +3,8 @@ use std::{
     ops::{Mul, MulAssign},
 };
 
+use color_eyre::{Report, Result};
 use derive_more::{Add, Constructor, Mul, MulAssign};
-use eyre::{Report, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
@@ -47,7 +47,7 @@ pub fn try_size<W, H>(width: W, height: H) -> Result<Size>
 where
     W: TryInto<Su32>,
     H: TryInto<Su32>,
-    eyre::Report: From<W::Error> + From<H::Error>,
+    color_eyre::Report: From<W::Error> + From<H::Error>,
 {
     Ok(Size::new(width.try_into()?, height.try_into()?))
 }
@@ -132,7 +132,7 @@ mod tests {
     where
         W: TryInto<Su32>,
         H: TryInto<Su32>,
-        eyre::Report: From<W::Error> + From<H::Error>,
+        color_eyre::Report: From<W::Error> + From<H::Error>,
     {
         let got = try_size(w, h).unwrap();
         assert_eq!(got, want);

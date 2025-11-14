@@ -5,8 +5,8 @@ use std::{
     time::Duration,
 };
 
+use color_eyre::{Result, eyre::eyre};
 use derive_more::{Deref, DerefMut};
-use eyre::{Result, eyre};
 use libwmctl::AtomCollection;
 use tokio::{runtime::Builder, select, sync::broadcast, task::LocalSet, time::sleep};
 use tokio_util::{

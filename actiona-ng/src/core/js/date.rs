@@ -1,6 +1,6 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use eyre::eyre;
+use color_eyre::eyre::eyre;
 use rquickjs::{
     Ctx, Exception, Function, Object, Result,
     atom::PredefinedAtom,

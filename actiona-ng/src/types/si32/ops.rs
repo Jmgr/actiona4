@@ -4,7 +4,7 @@ use std::{
     ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign},
 };
 
-use eyre::{Report, Result, eyre};
+use color_eyre::{Report, Result, eyre::eyre};
 
 use crate::types::{
     si32::Si32,

@@ -68,7 +68,7 @@ impl JsNetwork {
         ctx: Ctx<'js>,
         options: Opt<ListInterfacesOptions>,
     ) -> Result<Vec<JsNetworkInterface>> {
-        let options = options.0.unwrap_or_default();
+        let options = options.unwrap_or_default();
         Ok(self
             .inner
             .refresh_interfaces(options.rescan)

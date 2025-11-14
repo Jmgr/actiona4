@@ -4,7 +4,7 @@ use std::{fs, path::PathBuf};
 
 use actiona_ng::runtime::Runtime;
 use clap::Parser;
-use eyre::Result;
+use color_eyre::{Result, config::HookBuilder, eyre::Context};
 #[cfg(windows)]
 use windows::{
     Wdk::System::SystemServices::RtlGetVersion, Win32::System::SystemInformation::OSVERSIONINFOW,
@@ -13,6 +13,16 @@ use windows::{
 #[derive(Debug, Parser)]
 struct Args {
     filepath: PathBuf,
+
+    /// Show debug information
+    #[cfg(debug_assertions)]
+    #[arg(long, default_value_t = true)]
+    debug: bool,
+
+    /// Show debug information
+    #[cfg(not(debug_assertions))]
+    #[arg(long, default_value_t = false)]
+    debug: bool,
 }
 
 #[cfg(windows)]
@@ -26,6 +36,21 @@ fn is_windows10_1607_or_newer() -> Option<bool> {
 }
 
 fn main() -> Result<()> {
+    let args = Args::parse();
+
+    if args.debug {
+        color_eyre::install()?;
+    } else {
+        let (panic_hook, eyre_hook) = HookBuilder::default()
+            .capture_span_trace_by_default(false)
+            .display_location_section(false)
+            .display_env_section(false)
+            .into_hooks();
+
+        eyre_hook.install()?;
+        panic_hook.install();
+    }
+
     #[cfg(windows)]
     match is_windows10_1607_or_newer() {
         Some(true) => {}
@@ -41,10 +66,8 @@ fn main() -> Result<()> {
         }
     }
 
-    let args = Args::parse();
-
     // Read the input file
-    let script = fs::read_to_string(args.filepath)?;
+    let script = fs::read_to_string(args.filepath).context("reading input file")?;
 
     Runtime::run_with_ui(
         |_runtime, script_engine| async move { script_engine.eval_async::<()>(&script).await },

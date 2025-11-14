@@ -10,7 +10,7 @@ use std::{
     sync::Arc,
 };
 
-use eyre::{Result, eyre};
+use color_eyre::{Result, eyre::eyre};
 use image::{DynamicImage, RgbaImage};
 use memfd::{FileSeal, MemfdOptions};
 use nix::sys::mman::{MapFlags, ProtFlags, mmap, munmap};

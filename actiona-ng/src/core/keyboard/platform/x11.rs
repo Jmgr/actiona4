@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use enigo::Key;
-use eyre::Result;
+use color_eyre::Result;
 use x11rb_async::{
     connection::Connection, protocol::xproto::ConnectionExt, rust_connection::RustConnection,
 };

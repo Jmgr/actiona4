@@ -3,10 +3,10 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU8, AtomicU64, Ordering},
 };
 
-use derivative::Derivative;
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
+use derive_where::derive_where;
 use enigo::{Enigo, Settings};
-use eyre::{Result, eyre};
 use macros::{FromSerde, IntoSerde};
 use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
@@ -33,6 +33,7 @@ use crate::runtime::win::events::input::{
 use crate::{
     core::{
         app::js::JsApp,
+        audio::js::JsAudio,
         clipboard::{Clipboard, js::JsClipboard},
         color::js::JsColor,
         console::js::JsConsole,
@@ -164,8 +165,7 @@ pub enum WaitAtEnd {
     No,
 }
 
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive_where(Debug)]
 pub struct Runtime {
     #[cfg(unix)]
     runtime: x11::Runtime,
@@ -180,7 +180,7 @@ pub struct Runtime {
     wait_at_end: AtomicU8,
     background_tasks_counter: AtomicU64,
 
-    #[derivative(Debug = "ignore")]
+    #[derive_where(skip)]
     clipboard: Arc<Clipboard>,
 }
 
@@ -228,6 +228,7 @@ impl Runtime {
             task_tracker.clone(),
             cancellation_token.clone(),
         );
+        let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
 
         let script_engine = Arc::new(ScriptEngine::new().await?);
 
@@ -285,6 +286,7 @@ impl Runtime {
                     register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
                     register_singleton_class::<JsSystem>(&ctx, system)?;
                     register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
+                    register_singleton_class::<JsAudio>(&ctx, audio)?;
 
                     Ok(())
                 })()

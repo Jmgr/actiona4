@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
+use color_eyre::Result;
 use derive_more::Constructor;
-use eyre::Result;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};

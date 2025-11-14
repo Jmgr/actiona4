@@ -1,6 +1,6 @@
 use std::{env, fs::read_to_string};
 
-use eyre::{Result, eyre};
+use color_eyre::{Result, eyre::eyre};
 use rustdoc_types::Crate;
 use types::File;
 

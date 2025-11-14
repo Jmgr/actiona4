@@ -4,6 +4,7 @@ use tokio::{select, sync::watch};
 use crate::{core::js::task::IsDone, runtime::WithUserData};
 
 pub mod app;
+pub mod audio;
 pub mod clipboard;
 pub mod color;
 pub mod console;

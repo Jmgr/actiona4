@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-use eyre::Result;
+use color_eyre::Result;
 use pe_parser::pe::parse_portable_executable;
 use tokio::fs;
 use windows::{

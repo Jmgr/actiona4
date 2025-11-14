@@ -1,6 +1,9 @@
 use std::num::{NonZeroU32, NonZeroUsize, Saturating};
 
-use eyre::{OptionExt, Report, Result, eyre};
+use color_eyre::{
+    Report, Result,
+    eyre::{OptionExt, eyre},
+};
 use rquickjs::{FromJs, IntoJs};
 
 use crate::{IntoJsResult, types::su32::Su32};

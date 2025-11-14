@@ -5,7 +5,8 @@ use std::{
     thread::sleep,
 };
 
-use eyre::{Result, eyre};
+use color_eyre::{Result, eyre::eyre};
+use derive_where::derive_where;
 use itertools::Itertools;
 use sysinfo::{CpuRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
@@ -97,7 +98,7 @@ impl Display for CpuVariant {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Cpu {
     #[derive_where(skip)]
     system: Arc<Mutex<sysinfo::System>>,

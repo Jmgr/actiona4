@@ -1,5 +1,5 @@
 use convert_case::{Case, Casing};
-use eyre::Result;
+use color_eyre::Result;
 use log::warn;
 use rustdoc_types::{ItemEnum, VariantKind};
 

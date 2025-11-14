@@ -5,7 +5,7 @@ use std::{
     thread::{self, JoinHandle},
 };
 
-use eyre::Result;
+use color_eyre::Result;
 use once_cell::sync::OnceCell;
 use tokio::{
     select,

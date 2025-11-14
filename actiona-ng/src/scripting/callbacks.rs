@@ -1,13 +1,10 @@
 use std::{sync::Arc, time::Instant};
 
-use derivative::Derivative;
-use eyre::eyre;
+use derive_where::derive_where;
 use humantime::format_duration;
-use opencv::core::DftFlags;
 use parking_lot::Mutex;
 use rquickjs::{
-    AsyncContext, Ctx, FromJs, Function, Persistent, Result, Value, async_with, function::Args,
-    prelude::IntoArgs,
+    AsyncContext, Ctx, Function, Persistent, Result, Value, async_with, function::Args,
 };
 use slotmap::{SlotMap, new_key_type};
 use tokio::{
@@ -83,14 +80,13 @@ struct Call {
 new_key_type! { pub struct FunctionKey; }
 new_key_type! { struct CallKey; }
 
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive_where(Debug)]
 pub struct Callbacks {
     /// Callback functions
     functions: Arc<Mutex<SlotMap<FunctionKey, Persistent<Function<'static>>>>>,
 
     /// Function calls
-    #[derivative(Debug = "ignore")]
+    #[derive_where(skip)]
     calls: Arc<Mutex<SlotMap<CallKey, Call>>>,
 
     call_sender: mpsc::UnboundedSender<CallKey>,

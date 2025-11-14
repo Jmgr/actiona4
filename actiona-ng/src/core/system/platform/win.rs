@@ -1,5 +1,5 @@
 #![allow(unsafe_code)]
 
-use eyre::Result;
+use color_eyre::Result;
 
 // TODO: "graceful" process kill

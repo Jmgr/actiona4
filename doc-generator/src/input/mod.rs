@@ -1,8 +1,11 @@
 use std::mem::take;
 
 use actiona_ng::newtype;
+use color_eyre::{
+    Result,
+    eyre::{bail, eyre},
+};
 use enums::process_enums;
-use eyre::{Result, bail, eyre};
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -264,6 +267,7 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
         is_readonly,
         default_value: default,
         platforms: Default::default(),
+        is_promise: false,
     })
 }
 
@@ -740,7 +744,7 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
 }
 
 impl TryFrom<Crate> for File {
-    type Error = eyre::Error;
+    type Error = color_eyre::Report;
 
     fn try_from(crate_: Crate) -> Result<Self, Self::Error> {
         let items = Items::new(crate_);
@@ -870,6 +874,7 @@ mod tests {
                             is_readonly: false,
                             default_value: None,
                             platforms: instructions.platforms(),
+                            is_promise: false,
                         }),
                         Instruction::Parameter(Variable {
                             name: "y".to_string(),
@@ -878,6 +883,7 @@ mod tests {
                             is_readonly: false,
                             default_value: Some("42".to_string()),
                             platforms: instructions.platforms(),
+                            is_promise: false,
                         })
                     ]),
                     Comments(vec!["Comment for the first overload".to_string()])
@@ -894,6 +900,7 @@ mod tests {
                             is_readonly: false,
                             default_value: None,
                             platforms: instructions.platforms(),
+                            is_promise: false,
                         })
                     ]),
                     Comments(vec![])
@@ -908,6 +915,7 @@ mod tests {
                             is_readonly: false,
                             default_value: None,
                             platforms: instructions.platforms(),
+                            is_promise: false,
                         })
                     ]),
                     Comments(vec!["Comment for the last overload".to_string()])

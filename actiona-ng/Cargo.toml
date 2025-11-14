@@ -40,7 +40,7 @@ derive_more.workspace = true
 display-info.workspace = true
 encoding_rs.workspace = true
 enigo.workspace = true
-eyre.workspace = true
+color-eyre.workspace = true
 futures.workspace = true
 http-body.workspace = true
 http-body-util.workspace = true
@@ -92,7 +92,7 @@ tracing.workspace = true
 tween.workspace = true
 unicode-segmentation.workspace = true
 wildmatch.workspace = true
-derivative.workspace = true
+rodio.workspace = true
 
 [build-dependencies]
 built.workspace = true
@@ -103,9 +103,7 @@ base64.workspace = true
 console-subscriber.workspace = true
 httptest.workspace = true
 libtest-mimic-collect.workspace = true
-pretty_assertions.workspace = true
 rstest.workspace = true
-tempfile.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
 
@@ -113,3 +111,6 @@ tracing-test.workspace = true
 name = "ui"
 harness = false
 path = "tests/ui.rs"
+
+[package.metadata.cargo-machete]
+ignored = ["built", "cfg_aliases", "rquickjs-serde"]

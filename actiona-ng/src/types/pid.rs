@@ -1,7 +1,10 @@
 use std::num::{NonZeroI32, NonZeroU32};
 
+use color_eyre::{
+    Report, Result,
+    eyre::{OptionExt, bail, eyre},
+};
 use derive_more::{Constructor, Display, From, Into};
-use eyre::{OptionExt, Report, Result, bail, eyre};
 
 /// Process ID
 #[derive(Clone, Constructor, Copy, Debug, Display, Eq, From, Hash, Into, PartialEq)]

@@ -1,6 +1,9 @@
 use std::{os::fd::AsFd, time::Duration};
 
-use eyre::{Result, eyre};
+use color_eyre::{
+    Result,
+    eyre::{self, eyre},
+};
 use procfs::process::Process;
 use rustix::{
     io::Errno,

@@ -8,9 +8,9 @@ use std::{
     },
 };
 
+use color_eyre::Result;
 use derive_more::{Constructor, Deref, Display};
 use enigo::Key;
-use eyre::Result;
 use once_cell::sync::OnceCell;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::warn;

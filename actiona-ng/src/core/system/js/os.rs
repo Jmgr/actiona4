@@ -86,9 +86,9 @@ impl JsOs {
         self.inner.kernel_long_version()
     }
 
-    /// Uptime
-    pub fn uptime(&self, ctx: Ctx<'_>) -> Result<u64> {
-        u64::try_from((*self.inner.uptime()).as_millis()).into_js_result(&ctx)
+    /// Uptime in seconds
+    pub fn uptime(&self) -> f64 {
+        self.inner.uptime().as_secs_f64()
     }
 
     /// Boot time

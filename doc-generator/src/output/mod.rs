@@ -1,7 +1,7 @@
 use std::{collections::HashMap, fs, io::Write};
 
+use color_eyre::Result;
 use convert_case::{Case, Casing};
-use eyre::Result;
 use itertools::Itertools;
 
 use crate::{
@@ -329,6 +329,12 @@ impl File {
                         ""
                     };
 
+                    let mut type_ = property.type_.to_string(Context::Property)?;
+
+                    if property.is_promise {
+                        type_ = format!("Promise<{type_}>");
+                    }
+
                     writeln!(
                         output_file,
                         "    {}{}{}: {};",
@@ -339,7 +345,7 @@ impl File {
                         },
                         property.name.to_case(Case::Camel),
                         optional,
-                        property.type_.to_string(Context::Property)?
+                        type_
                     )?;
                 }
 
@@ -492,6 +498,7 @@ mod tests {
                                 is_readonly: false,
                                 default_value: None,
                                 platforms: Default::default(),
+                                is_promise: false,
                             },
                             Variable {
                                 name: "b".to_string(),
@@ -500,6 +507,7 @@ mod tests {
                                 is_readonly: false,
                                 default_value: None,
                                 platforms: Default::default(),
+                                is_promise: false,
                             },
                         ],
                         return_: Type::Verbatim("Foo".to_string()),
@@ -515,6 +523,7 @@ mod tests {
                             is_readonly: false,
                             default_value: None,
                             platforms: Default::default(),
+                            is_promise: false,
                         }],
                         return_: Type::Verbatim("Foo".to_string()),
                         rest_params: None,
@@ -540,6 +549,7 @@ mod tests {
                         is_readonly: false,
                         default_value: None,
                         platforms: Default::default(),
+                        is_promise: false,
                     }],
                     return_: Type::Verbatim("Bar".to_string()),
                     rest_params: None,

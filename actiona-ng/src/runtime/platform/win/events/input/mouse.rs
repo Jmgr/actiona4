@@ -3,7 +3,7 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
-use eyre::Result;
+use color_eyre::Result;
 use once_cell::sync::OnceCell;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use windows::Win32::{

@@ -52,7 +52,7 @@ impl JsHotstrings {
         replacement: Value<'js>,
         options: Opt<JsHotstringOptions>,
     ) -> Result<()> {
-        let options = options.0.unwrap_or_default();
+        let options = options.unwrap_or_default();
         if let Some(replacement) = replacement.as_function() {
             let user_data = ctx.user_data();
             let callbacks = user_data.callbacks();

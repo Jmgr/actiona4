@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
+use color_eyre::Result;
 use derive_more::Constructor;
-use eyre::Result;
 use x11rb::protocol::randr::NotifyMask;
 use x11rb_async::{connection::Connection, protocol::randr::ConnectionExt};
 

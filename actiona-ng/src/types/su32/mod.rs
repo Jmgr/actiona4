@@ -9,8 +9,8 @@
 
 use std::num::Saturating;
 
+use color_eyre::{Report, Result};
 use derive_more::{Add, AddAssign, Display, Mul, MulAssign, Sub, SubAssign};
-use eyre::{Report, Result};
 use serde::{Deserialize, Serialize};
 
 pub use crate::types::try_traits::{TryDiv, TryDivAssign};
@@ -108,7 +108,10 @@ mod tests {
     #[case::u64_clamp(u64::MAX, Su32::new(u32::MAX))] // Ok + clamped
     #[case::f64_ok_clamped(1.6f64, Su32::new(1))]
     #[case::f64_low_clamped(-42.9f64, Su32::new(0))]
-    fn try_su32_ok(#[case] src: impl TryInto<Su32, Error = eyre::Report>, #[case] want: Su32) {
+    fn try_su32_ok(
+        #[case] src: impl TryInto<Su32, Error = color_eyre::Report>,
+        #[case] want: Su32,
+    ) {
         let got = try_su32(src);
         assert!(got.is_ok());
         assert_eq!(want, got.unwrap());

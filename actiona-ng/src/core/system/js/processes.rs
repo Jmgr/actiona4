@@ -70,7 +70,7 @@ impl JsProcesses {
         ctx: Ctx<'js>,
         options: Opt<ListProcessesOptions>,
     ) -> Result<Vec<JsProcess>> {
-        let options = options.0.unwrap_or_default();
+        let options = options.unwrap_or_default();
         Ok(self
             .inner
             .refresh_processes(options.rescan, false) // We don't return threads (tasks) for now
@@ -218,11 +218,12 @@ impl JsProcess {
         date_from_system_time(&ctx, &self.inner.start_time())
     }
 
-    /// Run time
+    /// Run time in seconds
     /// @get
     #[qjs(get)]
-    pub fn run_time(&self, ctx: Ctx<'_>) -> Result<u64> {
-        u64::try_from((*self.inner.run_time()).as_millis()).into_js_result(&ctx)
+    #[must_use]
+    pub fn run_time(&self) -> f64 {
+        self.inner.run_time().as_secs_f64()
     }
 
     /// CPU usage
@@ -233,11 +234,12 @@ impl JsProcess {
         *self.inner.cpu_usage()
     }
 
-    /// Accumulated CPU time
+    /// Accumulated CPU time in seconds
     /// @get
     #[qjs(get)]
-    pub fn accumulated_cpu_time(&self, ctx: Ctx<'_>) -> Result<u64> {
-        u64::try_from((*self.inner.accumulated_cpu_time()).as_millis()).into_js_result(&ctx)
+    #[must_use]
+    pub fn accumulated_cpu_time(&self) -> f64 {
+        self.inner.accumulated_cpu_time().as_secs_f64()
     }
 
     /// Disk usage

@@ -4,8 +4,8 @@ use std::{
     ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign},
 };
 
+use color_eyre::{Report, Result};
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
-use eyre::{Report, Result};
 use serde::{Deserialize, Serialize};
 use tween::TweenValue;
 
@@ -51,7 +51,7 @@ pub fn try_point<X, Y>(x: X, y: Y) -> Result<Point>
 where
     X: TryInto<Si32>,
     Y: TryInto<Si32>,
-    eyre::Report: From<X::Error> + From<Y::Error>,
+    color_eyre::Report: From<X::Error> + From<Y::Error>,
 {
     Ok(Point::new(x.try_into()?, y.try_into()?))
 }
@@ -254,7 +254,7 @@ mod tests {
     where
         TX: TryInto<Si32>,
         TY: TryInto<Si32>,
-        eyre::Report: From<TX::Error> + From<TY::Error>,
+        color_eyre::Report: From<TX::Error> + From<TY::Error>,
     {
         let p = try_point(x, y).unwrap();
         assert_eq!(want.0, p.x.into_inner());

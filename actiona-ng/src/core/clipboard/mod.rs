@@ -3,8 +3,8 @@ use std::{borrow::Cow, fmt::Debug, num::TryFromIntError, path::PathBuf, sync::Ar
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
+use color_eyre::{Report, eyre::eyre};
 use derive_more::Display;
-use eyre::{Report, eyre};
 use image::{DynamicImage, RgbaImage};
 use itertools::Itertools;
 use macros::{FromSerde, IntoSerde};

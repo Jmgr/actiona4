@@ -4,6 +4,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use color_eyre::Report;
 use derive_more::Display;
 use enigo::{Enigo, InputError, NewConError};
 use indexmap::IndexSet;
@@ -50,7 +51,7 @@ pub enum MouseError {
     CommonError(#[from] CommonError),
 
     #[error(transparent)]
-    EyreReport(#[from] eyre::Report),
+    EyreReport(#[from] Report),
 
     #[error("Connecting to the X11 server failed: {0}")]
     ConnectError(String),
@@ -506,8 +507,9 @@ impl Mouse {
             );
 
             let position = tween.move_next()
-                + try_point(noise_offset_x, noise_offset_y)
-                    .map_err(|err: eyre::Error| MouseError::ParameterError(err.to_string()))?;
+                + try_point(noise_offset_x, noise_offset_y).map_err(
+                    |err: color_eyre::eyre::Error| MouseError::ParameterError(err.to_string()),
+                )?;
 
             self.set_position(position, Coordinate::Abs)?;
 

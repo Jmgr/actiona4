@@ -1,4 +1,4 @@
-use eyre::Result;
+use color_eyre::Result;
 
 use crate::core::{color::Color, image::Image, point::Point, rect::Rect};
 

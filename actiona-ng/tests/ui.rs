@@ -3,7 +3,7 @@ use std::{io::Cursor, time::Duration};
 use actiona_ng::{core::ui::js::JsMessageBoxResult, runtime::Runtime};
 use askama::Template;
 use base64::Engine;
-use eyre::Result;
+use color_eyre::Result;
 use image::{DynamicImage, ImageFormat};
 use libtest_mimic_collect::libtest_mimic::Arguments;
 use tauri::{WebviewUrl, WebviewWindowBuilder};

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use eyre::Result;
+use color_eyre::Result;
 
 mod platform;
 

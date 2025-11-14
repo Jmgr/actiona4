@@ -9,9 +9,9 @@ use std::{
 };
 
 use bytes::Bytes;
+use color_eyre::Result;
 use derive_more::Display;
 use encoding_rs::{Encoding, UTF_8};
-use eyre::Result;
 use futures::{Stream, StreamExt, TryStreamExt};
 use http_body::Frame;
 use http_body_util::{BodyExt, StreamBody};

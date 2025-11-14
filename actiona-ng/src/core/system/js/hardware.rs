@@ -129,7 +129,7 @@ impl JsHardware {
         ctx: Ctx<'js>,
         options: Opt<ListComponentsOptions>,
     ) -> Result<Vec<JsComponent>> {
-        let options = options.0.unwrap_or_default();
+        let options = options.unwrap_or_default();
         let components = self
             .inner
             .refresh_components(options.rescan)

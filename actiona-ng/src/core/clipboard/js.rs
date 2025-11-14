@@ -52,7 +52,8 @@ impl<'js> SingletonClass<'js> for JsClipboard {
 
 impl JsClipboard {
     /// @skip
-    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    #[must_use]
+    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
         Self { inner: clipboard }
     }
 }

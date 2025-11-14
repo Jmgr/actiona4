@@ -3,9 +3,9 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
+use color_eyre::Result;
 use derive_more::Constructor;
 use enigo::Key;
-use eyre::Result;
 use parking_lot::Mutex;
 use x11rb::protocol::xinput::{Device, EventMask, XIEventMask};
 use x11rb_async::{connection::Connection, protocol::xinput::xi_select_events};

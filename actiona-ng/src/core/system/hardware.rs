@@ -3,7 +3,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::Result;
+use color_eyre::Result;
+use derive_where::derive_where;
 use itertools::Itertools;
 use sysinfo::Product;
 use tokio_util::task::TaskTracker;
@@ -152,7 +153,7 @@ impl Component {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Hardware {
     #[derive_where(skip)]
     components: Arc<Mutex<sysinfo::Components>>,

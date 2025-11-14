@@ -1,6 +1,6 @@
 use std::{ffi::c_void, sync::Arc};
 
-use eyre::Result;
+use color_eyre::Result;
 use image::{DynamicImage, RgbaImage};
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 use windows::Win32::Graphics::Gdi::{

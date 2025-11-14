@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use eyre::{Result, eyre};
+use color_eyre::{Result, eyre::eyre};
 use itertools::Itertools;
 use strum::{Display, EnumDiscriminants, EnumIs};
 
@@ -86,6 +86,7 @@ pub struct Variable {
     pub is_readonly: bool,
     pub default_value: Option<String>,
     pub platforms: Platforms,
+    pub is_promise: bool,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -155,7 +156,7 @@ pub enum PlatformConstraint {
 }
 
 impl TryFrom<char> for PlatformConstraint {
-    type Error = eyre::Error;
+    type Error = color_eyre::Report;
 
     fn try_from(value: char) -> std::result::Result<Self, Self::Error> {
         Ok(match value {
@@ -175,7 +176,7 @@ pub enum PlatformType {
 }
 
 impl TryFrom<&str> for PlatformType {
-    type Error = eyre::Error;
+    type Error = color_eyre::Report;
 
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         Ok(match value {
@@ -195,7 +196,7 @@ pub struct Platform {
 }
 
 impl TryFrom<&str> for Platform {
-    type Error = eyre::Error;
+    type Error = color_eyre::Report;
 
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         let mut chars = value.chars();
@@ -214,7 +215,7 @@ impl TryFrom<&str> for Platform {
 pub struct Platforms(Vec<Platform>);
 
 impl TryFrom<&str> for Platforms {
-    type Error = eyre::Error;
+    type Error = color_eyre::Report;
 
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         let platforms = value

@@ -124,7 +124,8 @@ tracing = "0.1.41"
 tween = "2.1.0"
 unicode-segmentation = "1.12.0"
 wildmatch = "2.6.0"
-derivative = "2.2.0"
+color-eyre = "0.6.5"
+rodio = { version = "0.21.1", features = ["tracing", "symphonia"] }
 
 # Windows
 pe-parser = "0.7.0"
@@ -166,9 +167,7 @@ bon = "3.8.1"
 console-subscriber = "0.5.0"
 httptest = "0.16.3"
 libtest-mimic-collect = "0.3.3"
-pretty_assertions = "1.4.1"
 rstest = "0.26.1"
-tempfile = "3.23.0"
 tracing-subscriber = { version = "0.3.20", features = [
     "fmt",
     "env-filter",

@@ -1,4 +1,4 @@
-use eyre::{Result, eyre};
+use color_eyre::{Result, eyre::eyre};
 use swc_common::{
     FileName, FilePathMapping, GLOBALS, Globals, Mark, SourceMap,
     errors::{ColorConfig, Handler},

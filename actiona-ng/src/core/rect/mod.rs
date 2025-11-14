@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
+use color_eyre::{Report, Result, eyre::eyre};
 use derive_more::Constructor;
-use eyre::{Report, Result, eyre};
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, point};

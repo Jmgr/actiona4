@@ -3,8 +3,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use color_eyre::Report;
 use display_info::error::DIError;
-use eyre::Report;
 use thiserror::Error;
 
 use crate::{

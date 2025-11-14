@@ -3,9 +3,9 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
+use color_eyre::Result;
 use derive_more::{Constructor, Deref, DerefMut};
 use enigo::Key;
-use eyre::Result;
 use itertools::Itertools;
 use tokio::{
     select,

@@ -3,7 +3,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::Result;
+use color_eyre::Result;
+use derive_where::derive_where;
 use sysinfo::{MemoryRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -122,7 +123,7 @@ impl CGroupLimits {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Memory {
     #[derive_where(skip)]
     system: Arc<Mutex<sysinfo::System>>,

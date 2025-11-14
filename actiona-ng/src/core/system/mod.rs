@@ -1,6 +1,6 @@
 use std::{fmt::Display, sync::Arc};
 
-use eyre::Result;
+use color_eyre::Result;
 use tokio::join;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;

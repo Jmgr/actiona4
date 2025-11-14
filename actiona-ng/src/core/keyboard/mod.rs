@@ -1,7 +1,7 @@
 use std::{collections::HashSet, sync::Arc};
 
+use color_eyre::Result;
 use enigo::{Direction, Enigo, Key};
-use eyre::Result;
 use parking_lot::Mutex;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;

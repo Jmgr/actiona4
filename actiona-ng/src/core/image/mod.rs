@@ -5,7 +5,7 @@ use std::{
     time::Instant,
 };
 
-use eyre::Result;
+use color_eyre::Result;
 use image::{ColorType, DynamicImage, GrayImage, ImageReader, RgbImage, RgbaImage};
 use imageproc::drawing::draw_hollow_rect_mut;
 use macros::FromJsObject;

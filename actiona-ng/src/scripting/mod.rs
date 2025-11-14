@@ -5,15 +5,14 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::{Result, eyre};
+use color_eyre::{Result, eyre::eyre};
+use derive_where::derive_where;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use rquickjs::{
     AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
     Promise, Value, async_with, context::EvalOptions, markers::ParallelSend,
 };
-use tokio::select;
-use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::scripting::typescript::TsToJs;
 
@@ -22,7 +21,7 @@ pub mod typescript;
 
 pub type UnhandledException = (String, Vec<CallStackFrame>);
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Engine {
     #[derive_where(skip)]
     runtime: AsyncRuntime,

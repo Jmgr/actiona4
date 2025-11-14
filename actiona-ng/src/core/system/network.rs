@@ -5,7 +5,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::Result;
+use color_eyre::Result;
+use derive_where::derive_where;
 use ipnet::IpNet;
 use itertools::Itertools;
 use tokio_util::task::TaskTracker;
@@ -194,7 +195,7 @@ impl NetworkInterface {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Network {
     #[derive_where(skip)]
     networks: Arc<Mutex<sysinfo::Networks>>,

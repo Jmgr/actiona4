@@ -1552,10 +1552,6 @@ criteria = "safe-to-deploy"
 version = "0.2.21"
 criteria = "safe-to-deploy"
 
-[[exemptions.pretty_assertions]]
-version = "1.4.1"
-criteria = "safe-to-run"
-
 [[exemptions.prettyplease]]
 version = "0.2.32"
 criteria = "safe-to-deploy"
@@ -2062,10 +2058,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.tar]]
 version = "0.4.44"
-criteria = "safe-to-deploy"
-
-[[exemptions.tempfile]]
-version = "3.20.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.termcolor]]

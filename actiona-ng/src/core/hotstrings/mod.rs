@@ -1,6 +1,5 @@
 use std::{
     collections::HashSet,
-    pin::Pin,
     sync::{
         Arc,
         atomic::{AtomicUsize, Ordering},
@@ -8,11 +7,10 @@ use std::{
     time::Instant,
 };
 
-use derivative::Derivative;
+use color_eyre::Result;
+use derive_where::derive_where;
 use enigo::{Direction, Key, Keyboard};
-use eyre::Result;
 use humantime::format_duration;
-use image::DynamicImage;
 use indexmap::IndexMap;
 use itertools::Itertools;
 use macros::FromJsObject;
@@ -34,12 +32,12 @@ use crate::{
 
 pub mod js;
 
-#[derive(Clone, Derivative)]
-#[derivative(Debug)]
+#[derive(Clone)]
+#[derive_where(Debug)]
 pub enum Replacement {
     Text(String),
     Image(Image),
-    JsCallback(#[derivative(Debug = "ignore")] (AsyncContext, FunctionKey)),
+    JsCallback(#[derive_where(skip)] (AsyncContext, FunctionKey)),
 }
 
 /// Hotstring options

@@ -4,7 +4,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::Result;
+use color_eyre::Result;
+use derive_where::derive_where;
 use itertools::Itertools;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -99,7 +100,7 @@ impl User {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Os {
     #[derive_where(skip)]
     users: Arc<Mutex<sysinfo::Users>>,

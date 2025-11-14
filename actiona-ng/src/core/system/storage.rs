@@ -4,7 +4,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use eyre::Result;
+use color_eyre::Result;
+use derive_where::derive_where;
 use itertools::Itertools;
 use sysinfo::DiskKind;
 use tokio_util::task::TaskTracker;
@@ -176,7 +177,7 @@ impl Disk {
     }
 }
 
-#[derive_where::derive_where(Debug)]
+#[derive_where(Debug)]
 pub struct Storage {
     #[derive_where(skip)]
     sysinfo_disks: Arc<Mutex<sysinfo::Disks>>,

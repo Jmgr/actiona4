@@ -1,5 +1,5 @@
+use color_eyre::eyre::Context;
 use convert_case::{Case, Casing};
-use eyre::Context;
 use rquickjs::{Class, Ctx, IntoJs, Object, class::JsClass};
 use serde::{Deserialize, Serialize};
 use serde_name::trace_name;

@@ -4,7 +4,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::os::windows::fs::FileTimesExt;
 use std::{fmt::Debug, fs::FileTimes, io::SeekFrom, sync::Arc};
 
-use eyre::eyre;
+use color_eyre::eyre::eyre;
 use macros::FromJsObject;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Object, Result, TypedArray,
