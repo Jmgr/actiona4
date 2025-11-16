@@ -108,8 +108,8 @@ impl Clipboard {
 
         #[cfg(not(linux))]
         {
-            let _ = function;
-            let _ = mode;
+            _ = function;
+            _ = mode;
         }
     }
 
@@ -129,8 +129,8 @@ impl Clipboard {
 
         #[cfg(not(linux))]
         {
-            let _ = function;
-            let _ = mode;
+            _ = function;
+            _ = mode;
         }
     }
 
@@ -179,7 +179,7 @@ impl Clipboard {
 
             #[cfg(not(linux))]
             {
-                let _ = mode;
+                _ = mode;
                 inner.set()
             }
         };
@@ -269,7 +269,7 @@ impl Clipboard {
 
         #[cfg(not(linux))]
         {
-            let _ = mode;
+            _ = mode;
             inner.clear()?;
         }
 

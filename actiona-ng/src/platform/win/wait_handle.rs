@@ -103,7 +103,7 @@ impl Future for WaitHandle {
 
 unsafe extern "system" fn callback(ptr: *mut std::ffi::c_void, _timer_fired: bool) {
     let complete = unsafe { &mut *(ptr as *mut Option<oneshot::Sender<()>>) };
-    let _ = complete.take().unwrap().send(());
+    _ = complete.take().unwrap().send(());
 }
 
 #[cfg(test)]

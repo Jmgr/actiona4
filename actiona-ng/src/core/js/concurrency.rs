@@ -66,7 +66,7 @@ impl JsConcurrency {
                 if let Some(obj) = p.as_object()
                     && let Ok(cancel) = obj.get::<_, Function<'js>>("cancel")
                 {
-                    let _ = cancel.call_arg::<()>(Args::new(ctx.clone(), 0));
+                    _ = cancel.call_arg::<()>(Args::new(ctx.clone(), 0));
                 }
             }
 

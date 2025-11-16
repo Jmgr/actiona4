@@ -527,8 +527,8 @@ impl Processes {
 
         #[cfg(windows)]
         {
-            let _ = pid;
-            let _ = signal;
+            _ = pid;
+            _ = signal;
             Err(eyre!("signals are not supported on Windows"))
         }
     }
@@ -547,9 +547,9 @@ impl Processes {
 
         #[cfg(windows)]
         {
-            let _ = pid;
-            let _ = signal;
-            let _ = cancellation_token;
+            _ = pid;
+            _ = signal;
+            _ = cancellation_token;
             Err(eyre!("signals are not supported on Windows"))
         }
     }

@@ -416,7 +416,7 @@ impl JsFile {
 
         #[cfg(windows)]
         {
-            let _ = ctx;
+            _ = ctx;
             return Ok(0);
         }
     }
@@ -441,8 +441,8 @@ impl JsFile {
 
         #[cfg(windows)]
         {
-            let _ = ctx;
-            let _ = mode;
+            _ = ctx;
+            _ = mode;
             return Ok(());
         }
     }
@@ -524,8 +524,8 @@ impl JsFile {
     pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         #[cfg(unix)]
         {
-            let _ = ctx;
-            let _ = date;
+            _ = ctx;
+            _ = date;
             Ok(())
         }
 
@@ -697,7 +697,7 @@ mod tests {
 
             f(script_engine).await;
 
-            let _ = fs::remove_file(&file_path).await;
+            _ = fs::remove_file(&file_path).await;
         });
     }
 

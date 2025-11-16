@@ -422,7 +422,7 @@ impl Runtime {
                     }
                     Event::DestroyNotify(e) => {
                         let handle = libwmctl::window(e.window).into();
-                        let _ = local_window_event_sender.send(WindowEvent::Closed(handle));
+                        _ = local_window_event_sender.send(WindowEvent::Closed(handle));
                     }
                     _ => {}
                 };

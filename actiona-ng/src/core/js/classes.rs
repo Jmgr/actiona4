@@ -15,7 +15,7 @@ pub trait SingletonClass<'js>: JsClass<'js> + IntoJs<'js> {
     ///
     /// This is called before the singleton instance is registered.
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        let _ = ctx; // Silence unused variable warning
+        _ = ctx; // Silence unused variable warning
         Ok(())
     }
 
@@ -23,7 +23,7 @@ pub trait SingletonClass<'js>: JsClass<'js> + IntoJs<'js> {
     ///
     /// This allows for additional configuration of the object in the JavaScript context.
     fn extra_registration(object: &Object<'js>) -> rquickjs::Result<()> {
-        let _ = object; // Silence unused variable warning
+        _ = object; // Silence unused variable warning
         Ok(())
     }
 }
@@ -61,7 +61,7 @@ pub trait ValueClass<'js>: JsClass<'js> {
     ///
     /// This is called before the class is defined in the JavaScript context.
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        let _ = ctx; // Silence unused variable warning
+        _ = ctx; // Silence unused variable warning
         Ok(())
     }
 
@@ -69,7 +69,7 @@ pub trait ValueClass<'js>: JsClass<'js> {
     ///
     /// This allows for additional configuration of the class in the JavaScript context.
     fn extra_registration(object: &Object<'js>) -> rquickjs::Result<()> {
-        let _ = object; // Silence unused variable warning
+        _ = object; // Silence unused variable warning
         Ok(())
     }
 }
@@ -113,7 +113,7 @@ pub trait HostClass<'js>: JsClass<'js> + IntoJs<'js> {
     ///
     /// This is called before the class is defined in the JavaScript context.
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        let _ = ctx; // Silence unused variable warning
+        _ = ctx; // Silence unused variable warning
         Ok(())
     }
 }

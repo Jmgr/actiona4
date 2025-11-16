@@ -90,7 +90,7 @@ impl Callbacks {
                         let (sender, receiver) = oneshot::channel();
                         ctx.spawn(async move {
                             let result = promise.into_future::<Value<'_>>().await.unwrap();
-                            let _ = sender.send(result);
+                            _ = sender.send(result);
                         });
                         receiver.await.unwrap()
                     } else {
@@ -103,7 +103,7 @@ impl Callbacks {
 
                     call.result = Some(Persistent::save(&ctx, result));
 
-                    let _ = call.finished.take().unwrap().send(());
+                    _ = call.finished.take().unwrap().send(());
                 })
                 .await;
             }
@@ -143,9 +143,9 @@ impl Callbacks {
 
         let start = Instant::now();
 
-        let _ = self.call_sender.send(call_id);
+        _ = self.call_sender.send(call_id);
 
-        let _ = finished_receiver.await;
+        _ = finished_receiver.await;
 
         info!(
             "call {:?} finished, duration: {}",

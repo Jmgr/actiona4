@@ -9,7 +9,7 @@ pub struct DisplayFields {
 impl DisplayFields {
     fn maybe_space(&mut self) {
         if self.not_first {
-            let _ = write!(self.buffer, ", ");
+            _ = write!(self.buffer, ", ");
         } else {
             self.not_first = true;
         }
@@ -17,14 +17,14 @@ impl DisplayFields {
 
     pub fn display<T: Display>(mut self, name: &str, value: T) -> Self {
         self.maybe_space();
-        let _ = write!(self.buffer, "{name}: {value}");
+        _ = write!(self.buffer, "{name}: {value}");
         self
     }
 
     pub fn display_if_some<T: Display>(mut self, name: &str, value: &Option<T>) -> Self {
         if let Some(value) = value {
             self.maybe_space();
-            let _ = write!(self.buffer, "{name}: {value}");
+            _ = write!(self.buffer, "{name}: {value}");
         }
         self
     }

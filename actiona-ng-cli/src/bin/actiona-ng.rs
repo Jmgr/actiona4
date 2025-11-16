@@ -23,6 +23,10 @@ struct Args {
     #[cfg(not(debug_assertions))]
     #[arg(long, default_value_t = false)]
     debug: bool,
+
+    /// Evaluate code
+    #[arg(trailing_var_arg = true)]
+    eval: Vec<String>,
 }
 
 #[cfg(windows)]
@@ -66,13 +70,20 @@ fn main() -> Result<()> {
         }
     }
 
-    // Read the input file
-    let script = fs::read_to_string(args.filepath).context("reading input file")?;
+    /*
+    let script = if let Some(eval) = args.eval {
+        eval.to_string()
+    } else {
+        fs::read_to_string(args.filepath).context("reading input file")?
+    };
 
     Runtime::run_with_ui(
         |_runtime, script_engine| async move { script_engine.eval_async::<()>(&script).await },
         tauri::generate_context!(),
     )?;
+    */
+
+    println!("{:?}", args.eval);
 
     Ok(())
 }

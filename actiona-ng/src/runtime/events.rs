@@ -37,7 +37,7 @@ pub struct AllSignals<T>(broadcast::Sender<T>);
 impl<T: Send + Sync + 'static> Signal<T> for AllSignals<T> {
     type Receiver = broadcast::Receiver<T>;
     fn send(&self, value: T) {
-        let _ = self.0.send(value);
+        _ = self.0.send(value);
     }
     fn subscribe(&self) -> Self::Receiver {
         self.0.subscribe()
@@ -53,7 +53,7 @@ pub struct LatestOnlySignals<T>(watch::Sender<T>);
 impl<T: Send + Sync + Default + 'static> Signal<T> for LatestOnlySignals<T> {
     type Receiver = watch::Receiver<T>;
     fn send(&self, value: T) {
-        let _ = self.0.send(value);
+        _ = self.0.send(value);
     }
     fn subscribe(&self) -> Self::Receiver {
         self.0.subscribe()
@@ -164,13 +164,13 @@ impl<T: Topic + 'static> TopicWrapper<T> {
     }
 
     fn increment(&self) {
-        let _ = self
+        _ = self
             .subscribers_change_sender
             .send(SubscribersChange::Increment);
     }
 
     fn decrement(&self) {
-        let _ = self
+        _ = self
             .subscribers_change_sender
             .send(SubscribersChange::Decrement);
     }

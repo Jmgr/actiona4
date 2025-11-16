@@ -2192,7 +2192,7 @@ mod tests {
     #[ignore]
     fn test_wait_for_key() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let _ = script_engine
+            _ = script_engine
                 .eval_async::<()>(
                     r#"
                     await keyboard.waitForKeys(["a", "z"]);

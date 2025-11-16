@@ -287,7 +287,7 @@ impl Hotstrings {
                         enigo.key(Key::Control, Direction::Release)?;
 
                         if let Some(data) = data {
-                            let _ = clipboard.restore(data, None);
+                            _ = clipboard.restore(data, None);
                         }
                     } else {
                         // Write the replacement

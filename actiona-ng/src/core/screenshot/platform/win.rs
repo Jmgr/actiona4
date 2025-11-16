@@ -99,22 +99,22 @@ impl ScreenshotImplTrait for ScreenshotImpl {
 
         unsafe { ReleaseDC(None, hdc_screen) };
         unsafe {
-            let _ = DeleteDC(hdc_mem);
+            _ = DeleteDC(hdc_mem);
         };
         unsafe {
-            let _ = DeleteObject(hbm.into());
+            _ = DeleteObject(hbm.into());
         };
 
         Ok(DynamicImage::ImageRgba8(image).into())
     }
 
     async fn _capture_display(&mut self, display_id: u32) -> Result<Image> {
-        let _ = display_id;
+        _ = display_id;
         todo!();
     }
 
     async fn _capture_pixel(&mut self, position: Point) -> Result<Color> {
-        let _ = position;
+        _ = position;
         todo!();
     }
 }

@@ -53,7 +53,7 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
         WM_DISPLAYCHANGE => {
             let infos = display_info::DisplayInfo::all().unwrap();
 
-            let _ = runtime.screen_change_sender.send(infos.into());
+            _ = runtime.screen_change_sender.send(infos.into());
         }
         WM_DESTROY => unsafe {
             PostQuitMessage(0);
@@ -115,7 +115,7 @@ impl MessagePumpRunner for DisplayRunner {
 
     fn on_message(&mut self, msg: &MSG) {
         unsafe {
-            let _ = TranslateMessage(msg);
+            _ = TranslateMessage(msg);
         }
         unsafe {
             DispatchMessageW(msg);
@@ -208,9 +208,9 @@ impl Drop for SafeMessagePump {
     fn drop(&mut self) {
         let thread_id = self.thread_id;
         unsafe {
-            let _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
+            _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
         }
-        let _ = self.join_handle.take().unwrap().join();
+        _ = self.join_handle.take().unwrap().join();
     }
 }
 
@@ -231,7 +231,7 @@ impl SafeMessagePump {
                 let mut runner = R::new().unwrap(); // TODO
 
                 let thread_id = unsafe { GetCurrentThreadId() };
-                let _ = thread_id_sender.send(thread_id);
+                _ = thread_id_sender.send(thread_id);
 
                 let mut msg = MSG::default();
                 loop {
@@ -256,7 +256,7 @@ impl SafeMessagePump {
         task_tracker.spawn(async move {
             cancellation_token.cancelled().await;
             unsafe {
-                let _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
+                _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
             }
         });
 
@@ -268,7 +268,7 @@ impl SafeMessagePump {
 
     pub fn send_message(&self, message: u32) {
         unsafe {
-            let _ = PostThreadMessageW(self.thread_id, message, WPARAM(0), LPARAM(0));
+            _ = PostThreadMessageW(self.thread_id, message, WPARAM(0), LPARAM(0));
         }
     }
 }

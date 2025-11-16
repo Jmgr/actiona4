@@ -53,13 +53,13 @@ impl Drop for ShmData {
     fn drop(&mut self) {
         use x11rb_async::protocol::shm::ConnectionExt;
 
-        let _ = Runtime::block_on(
+        _ = Runtime::block_on(
             self.x11_connection
                 .async_connection()
                 .shm_detach(self.shm_segment_id),
         );
         unsafe {
-            let _ = munmap(self.mapped_ptr, self.size);
+            _ = munmap(self.mapped_ptr, self.size);
         }
     }
 }
