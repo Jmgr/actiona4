@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use enigo::Key;
 use color_eyre::{Result, eyre};
+use enigo::Key;
 use tokio::select;
 use tokio_util::sync::CancellationToken;
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VIRTUAL_KEY};

@@ -50,7 +50,7 @@ impl JsStorage {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListDisksOptions {
     /// Rescan
-    /// @default true
+    /// @default `true`
     pub rescan: bool,
 }
 

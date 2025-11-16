@@ -47,45 +47,45 @@ impl ValueClass<'_> for JsMultipartForm {}
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsWebOptions {
-    /// @default undefined
+    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 
-    /// @default undefined
+    /// @default `undefined`
     pub user_name: Option<String>,
 
-    /// @default undefined
+    /// @default `undefined`
     pub password: Option<String>,
 
-    /// @default undefined
+    /// @default `undefined`
     pub headers: Option<IndexMap<String, String>>,
 
-    /// @default Method.Get
+    /// @default `Method.Get`
     pub method: JsMethod,
 
-    /// @default undefined
+    /// @default `undefined`
     pub timeout: Option<JsDuration>,
 
     /// Sets the content-type header.
     /// Overrides any content-type set by other fields.
     ///
-    /// @default undefined
+    /// @default `undefined`
     pub content_type: Option<String>,
 
     /// Form data as strings.
     /// Sets content-type to "application/x-www-form-urlencoded".
     ///
-    /// @default undefined
+    /// @default `undefined`
     pub form: Option<IndexMap<String, String>>,
 
     /// Additional query parameters.
     ///
-    /// @default undefined
+    /// @default `undefined`
     pub query: Option<IndexMap<String, String>>,
 
     /// Form multipart data.
     /// Sets content-type and content-length appropriately.
     ///
-    /// @default undefined
+    /// @default `undefined`
     pub multipart: Option<JsMultipartForm>,
 }
 

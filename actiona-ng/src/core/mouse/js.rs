@@ -12,10 +12,10 @@ use crate::{
     core::{
         js::{
             classes::{SingletonClass, register_enum},
-            duration::ms_to_duration,
+            duration::secs_to_duration,
             task::task,
         },
-        point::js::{JsPoint, JsPointParam},
+        point::js::{JsPoint, JsPointLike},
     },
     runtime::{Runtime, WithUserData},
 };
@@ -87,7 +87,7 @@ impl JsMouse {
     }
 
     pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f64> {
-        let duration = ms_to_duration(duration.unwrap_or(2000.));
+        let duration = secs_to_duration(duration.unwrap_or(2.));
         self.inner
             .measure_speed(duration)
             .await
@@ -99,7 +99,7 @@ impl JsMouse {
     pub fn r#move<'js>(
         &self,
         ctx: Ctx<'js>,
-        point: JsPointParam,
+        point: JsPointLike,
         options: Opt<JsMoveOptions>,
     ) -> Result<Promise<'js>> {
         let local_mouse = self.inner.clone();
@@ -117,13 +117,13 @@ impl JsMouse {
         })
     }
 
-    pub async fn set_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
+    pub async fn set_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
             .into_js_result(&ctx)
     }
 
-    pub async fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointParam) -> Result<()> {
+    pub async fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
             .into_js_result(&ctx)

@@ -1,3 +1,8 @@
+//! @verbatim /**
+//! @verbatim  * RectLike
+//! @verbatim  */
+//! @verbatim type RectLike = Rect | { x: number; y: number; width: number; height: number };
+
 use rquickjs::{
     Ctx, Exception, FromJs, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -16,9 +21,9 @@ use crate::{
     types::{si32::Si32, su32::Su32},
 };
 
-pub struct JsRectParam(pub super::Rect);
+pub struct JsRectLike(pub super::Rect);
 
-impl<'js> FromParam<'js> for JsRectParam {
+impl<'js> FromParam<'js> for JsRectLike {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::single()
             .combine(ParamRequirement::optional())
@@ -97,6 +102,7 @@ impl JsRect {
     /// @constructor
     ///
     /// @overload
+    /// @constructorOnly
     /// Constructor with a position and a size.
     /// @param x: number
     /// @param y: number
@@ -104,12 +110,8 @@ impl JsRect {
     /// @param height: number
     ///
     /// @overload
-    /// Constructor with an object.
-    /// @param o: {x: number, y: number, width: number, height: number}
-    ///
-    /// @overload
-    /// Constructor with another Rect.
-    /// @param r: Rect
+    /// Constructor with anything Rect-like.
+    /// @param r: RectLike
     #[qjs(constructor)]
     pub fn new(_ctx: Ctx<'_>, x: i32, y: i32, width: u32, height: u32) -> Result<Self> {
         // TODO: accept an object as arg

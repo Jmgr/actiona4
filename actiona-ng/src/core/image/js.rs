@@ -27,15 +27,15 @@ use strum::{Display, EnumIter};
 use crate::{
     IntoJsResult,
     core::{
-        color::js::{JsColor, JsColorParam},
+        color::js::{JsColor, JsColorLike},
         js::classes::{ValueClass, register_enum},
         point::{
             self,
-            js::{JsPoint, JsPointParam},
+            js::{JsPoint, JsPointLike},
             point,
         },
         rect::{
-            js::{JsRect, JsRectParam},
+            js::{JsRect, JsRectLike},
             rect,
         },
         size::size,
@@ -138,11 +138,11 @@ impl From<JsInterpolation> for geometric_transformations::Interpolation {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsResizeOptions {
     /// Should the aspect ratio be kept?
-    /// @default false
+    /// @default `false`
     pub keep_aspect_ratio: bool,
 
     /// What filter to use
-    /// @default ResizeFilter.Cubic
+    /// @default `ResizeFilter.Cubic`
     pub filter: JsResizeFilter,
 }
 
@@ -160,11 +160,11 @@ impl Default for JsResizeOptions {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsBlurOptions {
     /// Perform a fast, lower quality blur
-    /// @default false
+    /// @default `false`
     pub fast: bool,
 
     /// Standard deviation of the (approximated) Gaussian
-    /// @default 2
+    /// @default `2`
     pub sigma: f32,
 }
 
@@ -183,7 +183,7 @@ impl Default for JsBlurOptions {
 pub struct JsDrawImageOptions {
     /// Source rectangle.
     /// `undefined` means the whole image.
-    /// @default undefined
+    /// @default `undefined`
     pub source_rect: Option<JsRect>,
 }
 
@@ -192,7 +192,7 @@ pub struct JsDrawImageOptions {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsRotationOptions {
     /// Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-    /// @default Interpolation.Bilinear
+    /// @default `Interpolation.Bilinear`
     pub interpolation: JsInterpolation,
 
     /// Rotation center
@@ -200,7 +200,7 @@ pub struct JsRotationOptions {
     pub center: Option<JsPoint>,
 
     /// Default color, used if the rotation triggers more pixels to be displayed
-    /// @default Color.Black
+    /// @default `Color.Black`
     pub default_color: JsColor,
 }
 
@@ -219,7 +219,7 @@ impl Default for JsRotationOptions {
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
 pub struct JsDrawingOptions {
     /// Draw a hollow shape instead of a filled one
-    /// @default false
+    /// @default `false`
     pub hollow: bool,
 }
 
@@ -514,7 +514,7 @@ impl JsImage {
     pub fn crop<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
-        rect: JsRectParam,
+        rect: JsRectLike,
     ) -> Class<'js, Self> {
         let (x, y, width, height) = rect.0.clamped();
         *self.inner = self.inner.crop_imm(x, y, width, height);
@@ -524,7 +524,7 @@ impl JsImage {
 
     /// Returns a cropped version of this image.
     #[must_use]
-    pub fn cropped(&self, rect: JsRectParam) -> Self {
+    pub fn cropped(&self, rect: JsRectLike) -> Self {
         let (x, y, width, height) = rect.0.clamped();
         super::Image(self.inner.crop_imm(x, y, width, height)).into()
     }
@@ -598,7 +598,7 @@ impl JsImage {
     pub fn fill<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
-        color: JsColorParam,
+        color: JsColorLike,
     ) -> Class<'js, Self> {
         let rgba = self.ensure_rgba();
 
@@ -611,7 +611,7 @@ impl JsImage {
 
     /// Fill this image with a color.
     #[must_use]
-    pub fn filled(&self, color: JsColorParam) -> Self {
+    pub fn filled(&self, color: JsColorLike) -> Self {
         let mut rgba = self.inner.0.to_rgba8();
 
         for pixel in rgba.pixels_mut() {
@@ -638,7 +638,7 @@ impl JsImage {
     }
 
     /// Returns the value of a pixel.
-    pub fn get_pixel(&mut self, ctx: Ctx<'_>, position: JsPointParam) -> Result<JsColor> {
+    pub fn get_pixel(&mut self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         let (x, y) = self.check_position(&ctx, position.0)?;
 
         let rgba = self.ensure_rgba();
@@ -651,8 +651,8 @@ impl JsImage {
         &mut self,
         this: This<Class<'js, Self>>,
         ctx: Ctx<'js>,
-        position: JsPointParam,
-        color: JsColorParam,
+        position: JsPointLike,
+        color: JsColorLike,
     ) -> Result<Class<'js, Self>> {
         let (x, y) = self.check_position(&ctx, position.0)?;
 
@@ -664,7 +664,7 @@ impl JsImage {
     }
 
     /// Creates a new image from a part of this image.
-    pub fn copy_region(&self, ctx: Ctx<'_>, rect: JsRectParam) -> Result<Self> {
+    pub fn copy_region(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<Self> {
         let (x, y) = self.check_position(&ctx, point(rect.0.origin.x, rect.0.origin.y))?;
 
         Ok(super::Image(DynamicImage::ImageRgba8(
@@ -694,8 +694,8 @@ impl JsImage {
     pub fn draw_cross<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
-        position: JsPointParam,
-        color: JsColorParam,
+        position: JsPointLike,
+        color: JsColorLike,
     ) -> Class<'js, Self> {
         draw_cross_mut(
             &mut self.inner.0,
@@ -709,7 +709,7 @@ impl JsImage {
 
     /// Draw a cross on a copy of this image.
     #[must_use]
-    pub fn with_cross(&self, position: JsPointParam, color: JsColorParam) -> Self {
+    pub fn with_cross(&self, position: JsPointLike, color: JsColorLike) -> Self {
         super::Image(DynamicImage::ImageRgba8(draw_cross(
             &self.inner.0,
             *color.0,
@@ -723,9 +723,9 @@ impl JsImage {
     pub fn draw_line<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
-        start: JsPointParam,
-        end: JsPointParam,
-        color: JsColorParam,
+        start: JsPointLike,
+        end: JsPointLike,
+        color: JsColorLike,
     ) -> Class<'js, Self> {
         draw_line_segment_mut(
             &mut self.inner.0,
@@ -739,7 +739,7 @@ impl JsImage {
 
     /// Draw a line on a copy of this image.
     #[must_use]
-    pub fn with_line(&self, start: JsPointParam, end: JsPointParam, color: JsColorParam) -> Self {
+    pub fn with_line(&self, start: JsPointLike, end: JsPointLike, color: JsColorLike) -> Self {
         super::Image(DynamicImage::ImageRgba8(draw_line_segment(
             &self.inner.0,
             (start.0.x.into(), start.0.y.into()),
@@ -753,9 +753,9 @@ impl JsImage {
     pub fn draw_circle<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
-        center: JsPointParam,
+        center: JsPointLike,
         radius: i32,
-        color: JsColorParam,
+        color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Class<'js, Self> {
         let options = options.unwrap_or_default();
@@ -783,9 +783,9 @@ impl JsImage {
     #[must_use]
     pub fn with_circle(
         &self,
-        center: JsPointParam,
+        center: JsPointLike,
         radius: i32,
-        color: JsColorParam,
+        color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Self {
         let options = options.unwrap_or_default();
@@ -813,10 +813,10 @@ impl JsImage {
     pub fn draw_ellipse<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
-        center: JsPointParam,
+        center: JsPointLike,
         width_radius: i32,
         height_radius: i32,
-        color: JsColorParam,
+        color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Class<'js, Self> {
         let options = options.unwrap_or_default();
@@ -846,10 +846,10 @@ impl JsImage {
     #[must_use]
     pub fn with_ellipse(
         &self,
-        center: JsPointParam,
+        center: JsPointLike,
         width_radius: i32,
         height_radius: i32,
-        color: JsColorParam,
+        color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Self {
         let options = options.unwrap_or_default();
@@ -880,8 +880,8 @@ impl JsImage {
         &mut self,
         ctx: Ctx<'js>,
         this: This<Class<'js, Self>>,
-        rect: JsRectParam,
-        color: JsColorParam,
+        rect: JsRectLike,
+        color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Result<Class<'js, Self>> {
         let options = options.unwrap_or_default();
@@ -907,8 +907,8 @@ impl JsImage {
     pub fn with_rectangle<'js>(
         &self,
         ctx: Ctx<'js>,
-        rect: JsRectParam,
-        color: JsColorParam,
+        rect: JsRectLike,
+        color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Result<Self> {
         let options = options.unwrap_or_default();
@@ -935,7 +935,7 @@ impl JsImage {
         &mut self,
         ctx: Ctx<'js>,
         this: This<Class<'js, Self>>,
-        position: JsPointParam,
+        position: JsPointLike,
         image: &JsImage,
         options: Opt<JsDrawImageOptions>,
     ) -> Result<Class<'js, Self>> {
@@ -964,7 +964,7 @@ impl JsImage {
     pub fn with_image(
         &self,
         ctx: Ctx<'_>,
-        position: JsPointParam,
+        position: JsPointLike,
         image: &JsImage,
         options: Opt<JsDrawImageOptions>,
     ) -> Result<Self> {

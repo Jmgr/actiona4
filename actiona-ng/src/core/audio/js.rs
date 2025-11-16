@@ -81,8 +81,8 @@ impl JsAudio {
 
 /// PlayingSound
 ///
-/// @prop volume: number = 1 // Sound volume
-/// @prop playbackRate: number = 1 // Sound playing speed
+/// @prop volume: number = `1` // Sound volume
+/// @prop playbackRate: number = `1` // Sound playing speed
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "PlayingSound")]
 pub struct JsPlayingSound {

@@ -51,13 +51,14 @@ use crate::{
         },
         keyboard::js::JsKeyboard,
         mouse::js::JsMouse,
-        name::js::{JsName, JsWildcard},
+        name::js::JsWildcard,
         path::js::JsPath,
         point::js::JsPoint,
         random::js::JsRandom,
         rect::js::JsRect,
         screenshot::js::JsScreenshot,
         size::js::JsSize,
+        standardpaths::js::JsStandardPaths,
         system::js::JsSystem,
         ui::js::JsUi,
         web::js::JsWeb,
@@ -85,7 +86,7 @@ impl<'js> WithUserData for Ctx<'js> {
     }
 }
 
-#[derive(Debug, JsLifetime, Constructor)]
+#[derive(Constructor, Debug, JsLifetime)]
 pub(crate) struct JsUserData {
     displays: Arc<Displays>,
     cancellation_token: CancellationToken,
@@ -134,13 +135,14 @@ impl JsUserData {
 }
 
 /// Should the script wait at the end of the execution?
-/// @default WaitAtEnd.Automatic
+/// @default `WaitAtEnd.Automatic`
 #[derive(
     Clone,
     Copy,
     Debug,
     Default,
     Deserialize,
+    Display,
     EnumIs,
     EnumIter,
     Eq,
@@ -149,7 +151,6 @@ impl JsUserData {
     IntoSerde,
     PartialEq,
     Serialize,
-    Display,
 )]
 #[repr(u8)]
 pub enum WaitAtEnd {
@@ -229,6 +230,7 @@ impl Runtime {
             cancellation_token.clone(),
         );
         let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
+        let standard_paths = JsStandardPaths::default();
 
         let script_engine = Arc::new(ScriptEngine::new().await?);
 
@@ -266,7 +268,6 @@ impl Runtime {
                     register_value_class::<JsImage>(&ctx)?;
                     register_value_class::<JsFile>(&ctx)?;
                     register_value_class::<JsWildcard>(&ctx)?;
-                    register_value_class::<JsName>(&ctx)?;
                     register_value_class::<JsDirectory>(&ctx)?;
                     register_value_class::<JsPath>(&ctx)?;
                     register_value_class::<JsFilesystem>(&ctx)?;
@@ -287,6 +288,7 @@ impl Runtime {
                     register_singleton_class::<JsSystem>(&ctx, system)?;
                     register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
                     register_singleton_class::<JsAudio>(&ctx, audio)?;
+                    register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
 
                     Ok(())
                 })()

@@ -52,7 +52,7 @@ impl JsProcesses {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListProcessesOptions {
     /// Rescan
-    /// @default true
+    /// @default `true`
     pub rescan: bool,
 }
 

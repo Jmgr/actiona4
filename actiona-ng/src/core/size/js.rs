@@ -1,3 +1,8 @@
+//! @verbatim /**
+//! @verbatim  * SizeLike
+//! @verbatim  */
+//! @verbatim type SizeLike = Size | { width: number; height: number };
+
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
     atom::PredefinedAtom,
@@ -11,9 +16,9 @@ use crate::{
     core::{ResultExt, js::classes::ValueClass, size::try_size},
 };
 
-pub struct JsSizeParam(pub super::Size);
+pub struct JsSizeLike(pub super::Size);
 
-impl<'js> FromParam<'js> for JsSizeParam {
+impl<'js> FromParam<'js> for JsSizeLike {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::single()
             .combine(ParamRequirement::optional())
@@ -75,12 +80,9 @@ impl JsSize {
     /// @param height: number // height
     ///
     /// @overload
-    /// Constructor with an object.
-    /// @param o: {width: number, height: number} // Object containing the width and height
-    ///
-    /// @overload
-    /// Constructor with another Size.
-    /// @param p: Size // Other size
+    /// @constructorOnly
+    /// Constructor with anything Size-like.
+    /// @param s: SizeLike
     #[qjs(constructor)]
     pub fn new<'js>(ctx: Ctx<'js>, args: Rest<Value<'js>>) -> Result<Self> {
         let (size, _) = Self::from_args(&ctx, &args.0)?;

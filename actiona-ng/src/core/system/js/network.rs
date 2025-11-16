@@ -44,7 +44,7 @@ impl JsNetwork {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListInterfacesOptions {
     /// Rescan
-    /// @default true
+    /// @default `true`
     pub rescan: bool,
 }
 
@@ -57,7 +57,9 @@ impl Default for ListInterfacesOptions {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsNetwork {
     /// Host name
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn hostname(&self) -> Option<String> {
         self.inner.hostname()
     }

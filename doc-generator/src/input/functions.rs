@@ -155,6 +155,7 @@ pub fn extract_functions(
                 comments: comments.clone(),
                 rest_params,
                 platforms: instructions.platforms(),
+                constructor_only: instructions.has_constructor_only(),
             });
         } else {
             is_static = instructions.has_static();
@@ -196,6 +197,7 @@ pub fn extract_functions(
                     comments: comments.clone(),
                     rest_params: rest_params.clone(),
                     platforms: instructions.platforms(),
+                    constructor_only: instructions.has_constructor_only(),
                 });
             }
 
@@ -219,6 +221,7 @@ pub fn extract_functions(
                     comments: comments.clone(),
                     rest_params,
                     platforms: instructions.platforms(),
+                    constructor_only: instructions.has_constructor_only(),
                 });
             }
         };
@@ -231,7 +234,7 @@ pub fn extract_functions(
                 comments,
                 is_readonly: true,
                 default_value: None,
-                platforms: Default::default(),
+                platforms: instructions.platforms(),
                 is_promise: function.header.is_async,
             });
             continue;

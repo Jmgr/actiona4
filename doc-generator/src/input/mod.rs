@@ -182,6 +182,11 @@ impl Instructions {
     pub fn has_getter(&self) -> bool {
         self.iter().any(|instruction| instruction.is_getter())
     }
+
+    pub fn has_constructor_only(&self) -> bool {
+        self.iter()
+            .any(|instruction| instruction.is_constructor_only())
+    }
 }
 
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
@@ -391,6 +396,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Getter
         }
 
+        // @constructorOnly
+        "constructorOnly" => {
+            if !parameters.is_empty() {
+                bail!("unexpected parameters");
+            }
+
+            Instruction::ConstructorOnly
+        }
+
         // @rest
         "rest" => Instruction::Rest(if parameters.is_empty() {
             None
@@ -495,6 +509,7 @@ const fn allowed_context_for_instruction(
             RustdocContext::Enum,
         ],
         Getter => &[RustdocContext::Method],
+        ConstructorOnly => &[RustdocContext::MethodOverload],
     }
 }
 
@@ -697,7 +712,7 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
             let type_ = unwrap_generic(path)?;
             Type::Array(Box::new(convert_type(type_, struct_name)?))
         }
-        "HashMap" | "IndexMap" => {
+        "HashMap" | "BTreeMap" | "IndexMap" => {
             let (key_type, value_type) = unwrap_generic_pair(path)?;
             Type::Record(
                 Box::new(convert_type(key_type, struct_name)?),

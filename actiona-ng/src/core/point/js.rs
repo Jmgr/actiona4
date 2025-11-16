@@ -1,3 +1,8 @@
+//! @verbatim /**
+//! @verbatim  * PointLike
+//! @verbatim  */
+//! @verbatim type PointLike = Point | { x: number; y: number };
+
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
     atom::PredefinedAtom,
@@ -12,9 +17,9 @@ use crate::{
     runtime::WithUserData,
 };
 
-pub struct JsPointParam(pub super::Point);
+pub struct JsPointLike(pub super::Point);
 
-impl<'js> FromParam<'js> for JsPointParam {
+impl<'js> FromParam<'js> for JsPointLike {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::single()
             .combine(ParamRequirement::optional())
@@ -76,12 +81,9 @@ impl JsPoint {
     /// @param y: number // Y coordinate
     ///
     /// @overload
-    /// Constructor with an object.
-    /// @param o: {x: number, y: number} // Object containing the x and y coordinates
-    ///
-    /// @overload
-    /// Constructor with another Point.
-    /// @param p: Point // Other point
+    /// @constructorOnly
+    /// Constructor with anything Point-like.
+    /// @param p: PointLike
     #[qjs(constructor)]
     pub fn new<'js>(ctx: Ctx<'js>, args: Rest<Value<'js>>) -> Result<Self> {
         let (point, _) = Self::from_args(&ctx, &args.0)?;
@@ -173,7 +175,7 @@ impl JsPoint {
     /// Returns a random point around this point.
     #[qjs(static)]
     #[must_use]
-    pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointParam, radius: f64) -> Self {
+    pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Self {
         let user_data = ctx.user_data();
 
         super::Point::random_in_circle(center.0, radius, user_data.rng())

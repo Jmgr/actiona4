@@ -77,7 +77,7 @@ impl JsDirectoryEntry {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryOptions {
     /// Should the directories be created or removed recursively?
-    /// @default true
+    /// @default `true`
     pub recursive: bool,
 }
 
@@ -92,15 +92,15 @@ impl Default for JsDirectoryOptions {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryListOptions {
     /// Should the entries be sorted?
-    /// @default true
+    /// @default `true`
     pub sort: bool,
 
     /// Should each entry's absolute path be computed?
-    /// @default true
+    /// @default `true`
     pub absolute_path: bool,
 
     /// Should each entry's size be fetched?
-    /// @default true
+    /// @default `true`
     pub fetch_size: bool,
 }
 
@@ -119,6 +119,7 @@ impl Default for JsDirectoryListOptions {
 pub struct JsDirectory {}
 
 impl ValueClass<'_> for JsDirectory {
+    // TODO: should this be a HostValue?
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         register_value_class::<JsDirectoryEntry>(ctx)?;
 

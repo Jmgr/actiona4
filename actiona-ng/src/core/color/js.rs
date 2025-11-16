@@ -1,3 +1,8 @@
+//! @verbatim /**
+//! @verbatim  * ColorLike
+//! @verbatim  */
+//! @verbatim type ColorLike = Color | { r: number; g: number; b: number; a?: number };
+
 use image::Rgba;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Object, Result, Value,
@@ -9,9 +14,9 @@ use rquickjs::{
 
 use crate::core::{ResultExt, js::classes::ValueClass};
 
-pub struct JsColorParam(pub super::Color);
+pub struct JsColorLike(pub super::Color);
 
-impl<'js> FromParam<'js> for JsColorParam {
+impl<'js> FromParam<'js> for JsColorLike {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::single()
             .combine(ParamRequirement::optional())
@@ -22,6 +27,7 @@ impl<'js> FromParam<'js> for JsColorParam {
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
         Ok(Self(match params.len() {
+            // TODO: this variant (3 and 4 parameters) should only be accepted in constructors
             n if n >= 4 => super::Color::new(
                 params.arg().get()?,
                 params.arg().get()?,
@@ -394,31 +400,20 @@ impl JsColor {
     /// @constructor
     ///
     /// @overload
+    /// @constructorOnly
     /// Constructor with three color channels and an alpha channel.
     /// @param r: number // Red (should be between 0-255)
     /// @param g: number // Green (should be between 0-255)
     /// @param b: number // Blue (should be between 0-255)
-    /// @param a: number // Alpha (should be between 0-255)
+    /// @param a?: number // Alpha (should be between 0-255)
     ///
     /// @overload
-    /// Constructor with three color channels.
-    /// @param r: number // Red (should be between 0-255)
-    /// @param g: number // Green (should be between 0-255)
-    /// @param b: number // Blue (should be between 0-255)
-    ///
-    /// @overload
-    /// Constructor with an object.
-    /// @param o: {r: number, g: number, b: number}
-    ///
-    /// @overload
-    /// Constructor with an object.
-    /// @param o: {r: number, g: number, b: number, a: number}
-    ///
-    /// @overload
-    /// Constructor with another Color.
-    /// @param c: Color
+    /// Constructor with anything Color-like.
+    /// @param c: ColorLike
     #[qjs(constructor)]
     pub fn new_js(_ctx: Ctx<'_>, _args: Rest<Value<'_>>) -> Result<Self> {
+        // TODO: could use ColorLike here
+
         //let (point, _) = Self::from_args(&ctx, &args.0)?;
         //Ok(point)
         Ok(JsColor {

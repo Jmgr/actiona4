@@ -1,8 +1,12 @@
+//! @verbatim /**
+//! @verbatim  * NameLike
+//! @verbatim  */
+//! @verbatim type NameLike = string | Wildcard | RegExp;
+
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Result, Value,
+    Exception, JsLifetime, Result,
     class::{Trace, Tracer},
     function::{Constructor, FromParam, ParamRequirement, ParamsAccessor},
-    prelude::Rest,
 };
 use wildmatch::WildMatch;
 
@@ -49,52 +53,35 @@ impl JsWildcard {
     }
 }
 
-#[derive(Clone, Debug, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "Name")]
-pub struct JsName<'js> {
-    inner: super::Name<'js>,
-}
+/*
+// TODO
+/// Creates a new Name.
+///
+/// Example
+/// ```js
+/// let name = new Name("some name"); // Fixed name
+/// let name = new Name(new Wildcard("some *")); // Wildcard
+/// let name = new Name(/^\w+$/); // Regular expression
+/// ```
+///
+/// @constructor
+///
+/// @overload
+/// Constructor with a fixed name.
+/// @param name: string
+///
+/// @overload
+/// Constructor with a wildcard.
+/// @param wildcard: Wildcard
+///
+/// @overload
+/// Constructor with a regular expression.
+/// @param regexp: RegExp
+*/
 
-#[rquickjs::methods(rename_all = "camelCase")]
-impl<'js> JsName<'js> {
-    // TODO: The first part before the first overload is ignored
-    /// Creates a new Name.
-    ///
-    /// Example
-    /// ```js
-    /// let name = new Name("some name"); // Fixed name
-    /// let name = new Name(new Wildcard("some *")); // Wildcard
-    /// let name = new Name(/^\w+$/); // Regular expression
-    /// ```
-    ///
-    /// @constructor
-    ///
-    /// @overload
-    /// Constructor with a fixed name.
-    /// @param name: string
-    ///
-    /// @overload
-    /// Constructor with a wildcard.
-    /// @param wildcard: Wildcard
-    ///
-    /// @overload
-    /// Constructor with a regular expression.
-    /// @param regexp: RegExp
-    #[qjs(constructor)]
-    pub fn new(_ctx: Ctx<'js>, _args: Rest<Value<'js>>) -> Result<Self> {
-        // TODO: accept an object as arg
+pub struct JsNameLike<'js>(pub super::Name<'js>);
 
-        Ok(Self {
-            inner: super::Name::String("TMP".into()), // TODO
-        })
-    }
-}
-
-impl<'js> ValueClass<'js> for JsName<'js> {}
-
-pub struct JsNameParam<'js>(pub super::Name<'js>);
-
-impl<'js> FromParam<'js> for JsNameParam<'js> {
+impl<'js> FromParam<'js> for JsNameLike<'js> {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::single().combine(ParamRequirement::exhaustive())
     }
@@ -140,7 +127,7 @@ impl<'js> FromParam<'js> for JsNameParam<'js> {
 mod tests {
     use rquickjs::{Ctx, JsLifetime, class::Trace};
 
-    use super::{JsNameParam, JsWildcard};
+    use super::{JsNameLike, JsWildcard};
     use crate::{
         core::js::classes::{SingletonClass, register_singleton_class},
         runtime::Runtime,
@@ -154,7 +141,7 @@ mod tests {
 
     #[rquickjs::methods(rename_all = "camelCase")]
     impl JsTest {
-        pub fn name_match<'js>(&self, ctx: Ctx<'js>, name: JsNameParam<'js>, text: String) -> bool {
+        pub fn name_match<'js>(&self, ctx: Ctx<'js>, name: JsNameLike<'js>, text: String) -> bool {
             name.0.matches(&ctx, &text)
         }
     }

@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
@@ -6,8 +6,11 @@ use rquickjs::{
 };
 
 use crate::{
-    built_info,
-    core::js::classes::{SingletonClass, register_enum},
+    IntoJsResult, built_info,
+    core::{
+        app::App,
+        js::classes::{SingletonClass, register_enum},
+    },
     runtime::{Runtime, WaitAtEnd},
 };
 
@@ -80,6 +83,39 @@ impl JsApp {
     #[qjs(get)]
     pub fn version(&self) -> &str {
         built_info::PKG_VERSION
+    }
+
+    /// All environment variables
+    /// @get
+    // TODO: add @readonly that wraps the TS result with Readonly<T>
+    #[must_use]
+    #[qjs(get)]
+    pub fn env(&self) -> BTreeMap<String, String> {
+        App::env_vars()
+    }
+
+    /// Current working directory
+    /// @get
+    #[qjs(get)]
+    pub fn cwd(&self, ctx: Ctx<'_>) -> Result<String> {
+        std::env::current_dir()
+            .map(|dir| dir.to_string_lossy().to_string())
+            .into_js_result(&ctx)
+    }
+
+    /// Sets the current working directory
+    pub fn set_cwd(&self, ctx: Ctx<'_>, cwd: String) -> Result<()> {
+        std::env::set_current_dir(&cwd).into_js_result(&ctx)?;
+        Ok(())
+    }
+
+    /// Executable path
+    /// @get
+    #[qjs(get)]
+    pub fn executable_path(&self, ctx: Ctx<'_>) -> Result<String> {
+        std::env::current_exe()
+            .map(|dir| dir.to_string_lossy().to_string())
+            .into_js_result(&ctx)
     }
 }
 

@@ -394,23 +394,23 @@ impl Mouse {
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct MoveOptions {
-    /// @default 2000
+    /// @default `2000`
     pub speed: f64,
 
-    /// @default Tween.SineOut
+    /// @default `Tween.SineOut`
     pub tween: Tween,
 
-    /// @default 50
+    /// @default `50`
     pub perlin_scale: f64,
 
-    /// @default 5
+    /// @default `5`
     pub perlin_amplitude: f64,
 
-    /// @default 0
+    /// @default `0`
     pub target_randomness: f64,
 
-    /// Interval in milliseconds
-    /// @default 10
+    /// Interval in seconds
+    /// @default `0.01`
     pub interval: JsDuration,
 }
 
@@ -535,13 +535,13 @@ pub struct ClickOptions {
     /// @skip
     pub press: PressOptions,
 
-    /// @default 1
+    /// @default `1`
     pub amount: i32,
 
-    /// @default 0
+    /// @default `0`
     pub interval: JsDuration,
 
-    /// @default 0
+    /// @default `0`
     pub duration: JsDuration,
 }
 
@@ -626,7 +626,7 @@ pub struct DoubleClickOptions {
     /// @skip
     pub click: ClickOptions,
 
-    /// @default 250
+    /// @default `0.25`
     pub delay: JsDuration,
 }
 
@@ -654,13 +654,13 @@ impl Mouse {
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PressOptions {
-    /// @default Button.Left
+    /// @default `Button.Left`
     pub button: Button,
 
-    /// @default undefined
+    /// @default `undefined`
     pub position: Option<JsPoint>,
 
-    /// @default false
+    /// @default `false`
     pub relative_position: bool,
 }
 

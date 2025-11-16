@@ -45,59 +45,80 @@ impl JsOs {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsOs {
     /// Name
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn name(&self) -> Option<&str> {
         self.inner.name()
     }
 
     /// Kernel version
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn kernel_version(&self) -> Option<&str> {
         self.inner.kernel_version()
     }
 
     /// Version
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn version(&self) -> Option<&str> {
         self.inner.version()
     }
 
     /// Long version
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn long_version(&self) -> Option<&str> {
         self.inner.long_version()
     }
 
     /// Distribution ID
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn distribution_id(&self) -> &str {
         self.inner.distribution_id()
     }
 
     /// Distribution ID like
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn distribution_id_like(&self) -> &[String] {
         self.inner.distribution_id_like().as_ref()
     }
 
     /// Kernel long version
+    /// @get
     #[must_use]
+    #[qjs(get)]
     pub fn kernel_long_version(&self) -> &str {
         self.inner.kernel_long_version()
     }
 
     /// Uptime in seconds
+    /// @get
+    #[must_use]
+    #[qjs(get)]
     pub fn uptime(&self) -> f64 {
         self.inner.uptime().as_secs_f64()
     }
 
     /// Boot time
+    /// @get
     /// @returns Date
+    #[qjs(get)]
     pub fn boot_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         date_from_system_time(&ctx, &self.inner.boot_time())
     }
 
     /// Open files limit
+    /// @get
+    #[qjs(get)]
     pub fn open_files_limit(&self, ctx: Ctx<'_>) -> Result<Option<u64>> {
         self.inner
             .open_files_limit()

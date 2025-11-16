@@ -48,9 +48,8 @@ impl Type {
             Type::Verbatim(type_) => {
                 let type_ = strip_modules(type_);
 
-                // Remove "Js" prefix and "Param" suffix if present
+                // Remove "Js" prefix if present
                 let type_ = type_.strip_prefix("Js").unwrap_or(type_);
-                let type_ = type_.strip_suffix("Param").unwrap_or(type_);
 
                 type_.to_string()
             }
@@ -90,6 +89,8 @@ impl File {
 
     pub fn auto_generate_overloads(&mut self) -> Result<()> {
         // TODO: cleanup
+        // TODO: bug: PointLike is detected as Point, so
+        // setPixel(x, y, ...) is missing
         // We can auto-generate overloads for types that have multiple constructors, like Point.
         // For instance: mouse.move(p: Point) should also have mouse.move(x, y) and mouse.move({x: number, y: number})
 
@@ -101,34 +102,33 @@ impl File {
         for s in &self.structs {
             let struct_type = Type::Verbatim(s.name.clone());
             // Find a constructor method on that struct
-            let maybe_constructor_method = s
-                .methods
-                .iter()
-                .find(|m| m.is_constructor)
-                .map(|m| m.overloads.clone());
+            let maybe_constructor_method = s.methods.iter().find(|m| m.is_constructor).map(|m| {
+                m.overloads
+                    .iter()
+                    .filter(|overload| !overload.constructor_only)
+                    .cloned()
+                    .collect_vec()
+            });
 
             let Some(overloads) = maybe_constructor_method else {
                 // No constructor method on this type => skip
                 continue;
             };
 
-            // We only want to store it if it has multiple ways to construct
-            if overloads.len() > 1 {
-                constructors_for_type.insert(
-                    s.name.clone(),
-                    overloads
-                        .iter()
-                        .filter(|overload| {
-                            if let Some(parameter) = overload.parameters.first() {
-                                parameter.type_ != struct_type
-                            } else {
-                                false
-                            }
-                        })
-                        .cloned()
-                        .collect_vec(),
-                );
-            }
+            constructors_for_type.insert(
+                format!("{}Like", s.name), // TODO: hack
+                overloads
+                    .iter()
+                    .filter(|overload| {
+                        if let Some(parameter) = overload.parameters.first() {
+                            parameter.type_ != struct_type
+                        } else {
+                            false
+                        }
+                    })
+                    .cloned()
+                    .collect_vec(),
+            );
         }
 
         // 2) Now for each struct & each method, expand the overloads
@@ -172,10 +172,10 @@ impl File {
                         let param = &ov.parameters[param_idx];
                         let type_ = param.type_.to_string(Context::Variable)?;
                         if let Some(ctor_overloads) = constructors_for_type.get(&type_) {
-                            // (a) Keep the original overload:
+                            // Keep the original overload:
                             next_round.push(ov.clone());
 
-                            // (b) For each constructor form, generate a new Overload
+                            // For each constructor form, generate a new Overload
                             //     with those parameters inlined at param_idx.
                             for ctor_ov in ctor_overloads {
                                 let mut new_ov = ov.clone();
@@ -396,7 +396,7 @@ fn output_methods(
                     if let Some(type_) = &rest_params.type_ {
                         &type_
                     } else {
-                        "any"
+                        "unknown"
                     }
                 );
             } else {
@@ -513,6 +513,7 @@ mod tests {
                         return_: Type::Verbatim("Foo".to_string()),
                         rest_params: None,
                         platforms: Default::default(),
+                        constructor_only: false,
                     },
                     MethodOverload {
                         comments: Comments::default(),
@@ -528,6 +529,7 @@ mod tests {
                         return_: Type::Verbatim("Foo".to_string()),
                         rest_params: None,
                         platforms: Default::default(),
+                        constructor_only: false,
                     },
                 ],
                 is_constructor: true,
@@ -554,6 +556,7 @@ mod tests {
                     return_: Type::Verbatim("Bar".to_string()),
                     rest_params: None,
                     platforms: Default::default(),
+                    constructor_only: false,
                 }],
                 is_constructor: true,
                 ..Default::default()

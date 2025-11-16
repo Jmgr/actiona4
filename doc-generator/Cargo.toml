@@ -7,12 +7,15 @@ description.workspace = true
 documentation.workspace = true
 license.workspace = true
 
+[package.metadata.cargo-machete]
+ignored = ["built"]
+
 [dependencies]
 actiona-ng = { path = "../actiona-ng" }
+color-eyre.workspace = true
 
 convert_case.workspace = true
 env_logger.workspace = true
-color-eyre.workspace = true
 itertools.workspace = true
 log.workspace = true
 once_cell.workspace = true
@@ -23,6 +26,3 @@ strum.workspace = true
 
 [build-dependencies]
 built.workspace = true
-
-[package.metadata.cargo-machete]
-ignored = ["built"]

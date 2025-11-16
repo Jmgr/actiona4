@@ -45,16 +45,16 @@ pub enum Replacement {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct HotstringOptions {
     /// Erase the key first before replacing it with the replacement content.
-    /// @default true
+    /// @default `true`
     pub erase_key: bool,
 
     /// When replacing with text, save it to the clipboard then simulate Ctrl+V to paste.
     /// Replacing with an image always uses the clipboard.
-    /// @default false
+    /// @default `false`
     pub use_clipboard_for_text: bool,
 
     /// Try to save and restore the clipboard's contents.
-    /// @default true
+    /// @default `true`
     pub save_restore_clipboard: bool,
 }
 

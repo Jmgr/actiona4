@@ -9,8 +9,8 @@ use crate::{
     IntoJsResult,
     core::{
         js::classes::{SingletonClass, ValueClass},
-        name::js::JsNameParam,
-        point::js::{JsPoint, JsPointParam},
+        name::js::JsNameLike,
+        point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
     },
     runtime::{self, WithUserData},
@@ -53,14 +53,14 @@ impl JsDisplays {
     }
 
     #[must_use]
-    pub fn from_point(&self, point: JsPointParam) -> Option<JsDisplayInfo> {
+    pub fn from_point(&self, point: JsPointLike) -> Option<JsDisplayInfo> {
         self.inner
             .from_point(point.0)
             .map(|display_info| display_info.into())
     }
 
     #[must_use]
-    pub fn from_name<'js>(&self, ctx: Ctx<'js>, name: JsNameParam<'js>) -> Option<JsDisplayInfo> {
+    pub fn from_name<'js>(&self, ctx: Ctx<'js>, name: JsNameLike<'js>) -> Option<JsDisplayInfo> {
         let displays_infos = self.inner.displays_info.lock().unwrap();
         displays_infos
             .iter()
@@ -73,7 +73,7 @@ impl JsDisplays {
     pub fn from_device_name<'js>(
         &self,
         ctx: Ctx<'js>,
-        name: JsNameParam<'js>,
+        name: JsNameLike<'js>,
     ) -> Option<JsDisplayInfo> {
         let displays_infos = self.inner.displays_info.lock().unwrap();
         displays_infos

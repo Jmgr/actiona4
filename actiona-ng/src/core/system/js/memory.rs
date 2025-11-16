@@ -57,8 +57,11 @@ impl JsMemory {
             .into_js_result(&ctx)
     }
 
+    // TODO: @platforms does not work on properties?
     /// CGroup limits
     /// @platforms =linux
+    /// @get
+    #[qjs(get)]
     pub fn cgroup_limits(&self) -> Option<JsCGroupLimits> {
         self.inner.cgroup_limits().map(JsCGroupLimits::from)
     }

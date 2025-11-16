@@ -1,6 +1,9 @@
-use std::{fmt::Display, sync::Arc};
+use std::{ffi::OsStr, fmt::Display, path::Path, sync::Arc};
 
 use color_eyre::Result;
+use system_shutdown::{
+    force_logout, force_reboot, force_shutdown, hibernate, logout, reboot, shutdown, sleep,
+};
 use tokio::join;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -105,6 +108,68 @@ impl System {
     #[must_use]
     pub fn processes(&self) -> Arc<Processes> {
         self.processes.clone()
+    }
+
+    pub fn shutdown(force: bool) -> Result<()> {
+        if force {
+            force_shutdown()?;
+        } else {
+            shutdown()?;
+        }
+
+        Ok(())
+    }
+
+    pub fn reboot(force: bool) -> Result<()> {
+        if force {
+            force_reboot()?;
+        } else {
+            reboot()?;
+        }
+
+        Ok(())
+    }
+
+    pub fn logout(force: bool) -> Result<()> {
+        if force {
+            force_logout()?;
+        } else {
+            logout()?;
+        }
+
+        Ok(())
+    }
+
+    pub fn hibernate() -> Result<()> {
+        hibernate()?;
+
+        Ok(())
+    }
+
+    pub fn sleep() -> Result<()> {
+        sleep()?;
+
+        Ok(())
+    }
+
+    pub fn open(path: &OsStr, with: Option<&str>) -> Result<()> {
+        if let Some(with) = with {
+            open::with_detached(path, with)?;
+        } else {
+            open::that_detached(path)?;
+        }
+
+        Ok(())
+    }
+
+    pub fn open_path(path: &Path, with: Option<&str>) -> Result<()> {
+        if with.is_none() {
+            _ = path.metadata()?;
+        }
+
+        Self::open(path.as_os_str(), with)?;
+
+        Ok(())
     }
 }
 

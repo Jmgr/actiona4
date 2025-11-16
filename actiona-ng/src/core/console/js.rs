@@ -79,9 +79,12 @@ impl JsConsole {
                 format!("Object {{ {} }}", fields.join(", "))
             }
             Type::Module => "[Module]".to_string(),
-            Type::BigInt => {
-                format!("{}", value.as_big_int().unwrap().clone().to_i64().unwrap())
-            }
+            Type::BigInt => value
+                .get::<Coerced<String>>()
+                .unwrap()
+                .0
+                .to_string()
+                .unwrap(),
             Type::Unknown => "[Unknown]".to_string(),
         }
     }
@@ -89,45 +92,54 @@ impl JsConsole {
     fn args_to_string<'js>(ctx: &Ctx<'js>, args: Rest<Value<'js>>) -> String {
         args.0
             .into_iter()
-            .map(|arg| Self::print_value(ctx, arg))
+            .map(|arg| {
+                use rquickjs::Type;
+
+                match arg.type_of() {
+                    // Top-level string: no quotes
+                    Type::String => arg.as_string().unwrap().to_string().unwrap(),
+                    // Everything else: use full inspector
+                    _ => Self::print_value(ctx, arg),
+                }
+            })
             .join(" ")
     }
 }
 
-const DEFAULT_NAME: &str = "default";
+const DEFAULT_LABEL: &str = "default";
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsConsole {
     /// @rest
-    pub fn print<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
-        print!("{}", Self::args_to_string(&ctx, args));
+    pub fn print<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
+        print!("{}", Self::args_to_string(&ctx, data));
     }
 
     /// @rest
-    pub fn print_ln<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
-        println!("{}", Self::args_to_string(&ctx, args));
+    pub fn print_ln<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
+        println!("{}", Self::args_to_string(&ctx, data));
     }
 
     /// @rest
-    pub fn log<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
-        println!("{}", Self::args_to_string(&ctx, args));
+    pub fn log<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
+        println!("{}", Self::args_to_string(&ctx, data));
     }
 
     /// @rest
-    pub fn info<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
-        println!("{}", Self::args_to_string(&ctx, args));
+    pub fn info<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
+        println!("{}", Self::args_to_string(&ctx, data));
     }
 
     /// @rest
-    pub fn warn<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
+    pub fn warn<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         let yellow = Style::new().yellow();
-        println!("{}", yellow.apply_to(Self::args_to_string(&ctx, args)));
+        println!("{}", yellow.apply_to(Self::args_to_string(&ctx, data)));
     }
 
     /// @rest
-    pub fn error<'js>(&self, ctx: Ctx<'js>, args: Rest<Value<'js>>) {
+    pub fn error<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         let red = Style::new().red().bold();
-        println!("{}", red.apply_to(Self::args_to_string(&ctx, args)));
+        println!("{}", red.apply_to(Self::args_to_string(&ctx, data)));
     }
 
     pub fn clear(&self) {
@@ -135,32 +147,53 @@ impl JsConsole {
         term.clear_screen().unwrap();
     }
 
-    pub fn time(&mut self, name: Opt<String>) {
-        let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
+    pub fn time(&mut self, label: Opt<String>) {
+        let name = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
         self.timers.insert(name, Instant::now());
     }
 
-    pub fn time_end(&mut self, ctx: Ctx<'_>, name: Opt<String>) -> Result<()> {
-        let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
-        if let Some(timer_start) = self.timers.remove(&name) {
+    pub fn time_end(&mut self, ctx: Ctx<'_>, label: Opt<String>) -> Result<()> {
+        let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
+        if let Some(timer_start) = self.timers.remove(&label) {
             println!(
-                "{name}: {} - timer ended",
+                "{label}: {} - timer ended",
                 format_duration(Instant::now() - timer_start)
             );
         } else {
             return Err(Exception::throw_message(
                 &ctx,
-                &format!("Timer \"{name}\" doesn't exist."),
+                &format!("Timer \"{label}\" doesn't exist."),
             ));
         };
 
         Ok(())
     }
 
-    pub fn count(&mut self, name: Opt<String>) {
-        let name = name.clone().unwrap_or_else(|| DEFAULT_NAME.to_string());
-        let value = self.counters.entry(name.clone()).or_default();
+    pub fn count(&mut self, label: Opt<String>) {
+        let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
+        let value = self.counters.entry(label.clone()).or_default();
         *value += 1;
-        println!("{name}: {value}");
+        println!("{label}: {value}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::runtime::Runtime;
+
+    #[test]
+    fn test_log() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval::<()>(
+                    r#"
+                let a = {
+                    "foo": 10
+                };
+                console.log("hello", a)"#,
+                )
+                .await
+                .unwrap();
+        });
     }
 }

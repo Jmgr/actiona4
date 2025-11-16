@@ -9,8 +9,8 @@
 
 use std::num::Saturating;
 
-use derive_more::{Add, AddAssign, Display, Mul, MulAssign, Neg, Sub, SubAssign};
 use color_eyre::{Report, Result};
+use derive_more::{Add, AddAssign, Display, Mul, MulAssign, Neg, Sub, SubAssign};
 use serde::{Deserialize, Serialize};
 
 use crate::types::su32::Su32;
@@ -124,7 +124,10 @@ mod tests {
     #[case::f64_ok_clamped(1.6f64, Si32::new(1))]
     #[case::f64_low_clamped((i32::MIN as f64) - 1.0, Si32::new(i32::MIN))]
     #[case::f64_high_clamped((i32::MAX as f64) + 1.0, Si32::new(i32::MAX))]
-    fn try_si32_ok(#[case] src: impl TryInto<Si32, Error = color_eyre::Report>, #[case] want: Si32) {
+    fn try_si32_ok(
+        #[case] src: impl TryInto<Si32, Error = color_eyre::Report>,
+        #[case] want: Si32,
+    ) {
         let got = try_si32(src);
         assert!(got.is_ok());
         assert_eq!(want, got.unwrap());

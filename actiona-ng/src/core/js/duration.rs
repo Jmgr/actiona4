@@ -19,11 +19,11 @@ impl From<JsDuration> for Duration {
 
 impl<'js> FromJs<'js> for JsDuration {
     fn from_js(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
-        let ms = f64::from_js(ctx, value)?;
-        Ok(Self(ms_to_duration(ms)))
+        let secs = f64::from_js(ctx, value)?;
+        Ok(Self(secs_to_duration(secs)))
     }
 }
 
-pub(crate) fn ms_to_duration(ms: f64) -> Duration {
-    Duration::from_secs_f64(ms / 1000_f64)
+pub(crate) fn secs_to_duration(secs: f64) -> Duration {
+    Duration::from_secs_f64(secs)
 }

@@ -24,6 +24,7 @@ pub mod random;
 pub mod rect;
 pub mod screenshot;
 pub mod size;
+pub mod standardpaths;
 pub mod system;
 pub mod ui;
 pub mod web;

@@ -6,6 +6,8 @@ use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
+use crate::core::js::duration::JsDuration;
+
 pub mod js;
 
 pub struct PlayingSound {
@@ -75,20 +77,28 @@ impl PlayingSound {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PlaySoundOptions {
     /// Volume to play the sound at
-    /// @default 1.0
+    /// @default `1.0`
     pub volume: f32,
 
     /// Speed to play the sound at
-    /// @default 1.0
+    /// @default `1.0`
     pub playback_rate: f32,
 
     /// Should the sound start paused
-    /// @default false
+    /// @default `false`
     pub paused: bool,
 
     /// Should the sound loop
-    /// @default false
+    /// @default `false`
     pub r#loop: bool,
+
+    /// Fade in duration
+    /// @default `0`
+    pub fade_in: Option<JsDuration>,
+
+    /// Fade out duration
+    /// @default `0`
+    pub fade_out: Option<JsDuration>,
 }
 
 impl Default for PlaySoundOptions {
@@ -98,6 +108,8 @@ impl Default for PlaySoundOptions {
             playback_rate: 1.0,
             paused: false,
             r#loop: false,
+            fade_in: None,
+            fade_out: None,
         }
     }
 }
@@ -119,12 +131,20 @@ impl Audio {
 
     pub fn play_file(&self, path: &Path, options: PlaySoundOptions) -> Result<PlayingSound> {
         let file = File::open(path)?;
-        let source = Decoder::try_from(file)?;
+        let mut source: Box<dyn Source<Item = f32> + Send> = Box::new(Decoder::try_from(file)?);
         let duration = source.total_duration();
         let sink = Sink::connect_new(self.output_stream.mixer());
 
         sink.set_volume(options.volume);
         sink.set_speed(options.playback_rate);
+
+        if let Some(fade_in) = options.fade_in {
+            source = Box::new(source.fade_in(fade_in.into()));
+        }
+
+        if let Some(fade_out) = options.fade_out {
+            source = Box::new(source.fade_out(fade_out.into()));
+        }
 
         if options.r#loop {
             sink.append(source.repeat_infinite());

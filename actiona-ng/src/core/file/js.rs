@@ -46,32 +46,32 @@ impl PartialEq for OpenedFile {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsOpenOptions {
     /// Should the file be opened with read access?
-    /// @default true
+    /// @default `true`
     pub read: bool,
 
     /// Should the file be opened with write access?
-    /// @default false
+    /// @default `false`
     pub write: bool,
 
     /// Writing: open the file in append mode.
     /// Note that setting this to `true` implies setting `write` to `true`.
-    /// @default false
+    /// @default `false`
     pub append: bool,
 
     /// Writing: truncate (remove all contents of) the file.
     /// Note that this only works if `write` is `true`.
-    /// @default false
+    /// @default `false`
     pub truncate: bool,
 
     /// Writing: create a new file if it doesn't exist.
     /// Note that this only works if `write` or `append` are set to `true`.
-    /// @default false
+    /// @default `false`
     pub create: bool,
 
     /// Writing: always create a new file, even if one already exists.
     /// Note that this only works if `write` or `append` are set to `true`.
     /// Note that `create` and `truncate` are ignored if this is set to `true`.
-    /// @default false
+    /// @default `false`
     pub create_new: bool,
 }
 

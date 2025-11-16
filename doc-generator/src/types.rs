@@ -112,6 +112,7 @@ pub struct MethodOverload {
     pub comments: Comments,
     pub rest_params: Option<RestParams>,
     pub platforms: Platforms,
+    pub constructor_only: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -289,6 +290,7 @@ pub enum Instruction {
     Type(Type),
     Verbatim(String),
     Getter,
+    ConstructorOnly,
 }
 
 pub fn strip_modules(name: &str) -> &str {

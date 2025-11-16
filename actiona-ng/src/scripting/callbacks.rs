@@ -19,57 +19,6 @@ use tracing::info;
 
 use crate::runtime::WithUserData;
 
-/*
-async fn call_impl<'js, A, R>(
-    ctx: Ctx<'js>,
-    persistent: Persistent<Function<'static>>,
-    args: A,
-) -> rquickjs::Result<R>
-where
-    A: IntoArgs<'js>,
-    R: FromJs<'js>,
-{
-    let function = persistent.clone().restore(&ctx)?;
-    let result = function.call::<A, Value<'js>>(args)?;
-
-    if let Some(promise) = result.as_promise() {
-        promise.clone().into_future::<R>().await
-    } else {
-        result.get::<R>()
-    }
-}
-
-impl CallbackStorage {
-    pub fn register<'js>(&mut self, ctx: &Ctx<'js>, function: Function<'js>) -> CallbackKey {
-        self.map.insert(Persistent::save(ctx, function))
-    }
-
-    pub async fn call<'js, A, R>(&self, ctx: &'js Ctx<'js>, key: CallbackKey, args: A) -> Result<R>
-    where
-        A: IntoArgs<'js> + 'js,
-        R: FromJs<'js> + 'js,
-    {
-        let persistent = self
-            .map
-            .get(key)
-            .ok_or_else(|| eyre!("callback not found"))?
-            .clone();
-        let (sender, receiver) = oneshot::channel();
-
-        ctx.spawn(async move {
-            let result = call_impl::<'js, A, R>(ctx.clone(), persistent, args).await;
-            let _ = sender.send(result);
-        });
-
-        Ok(receiver.await??)
-    }
-
-    pub fn clear(&mut self) {
-        self.map.clear();
-    }
-}
-    */
-
 struct Call {
     function_key: FunctionKey,
     parameters: Option<Persistent<Vec<Value<'static>>>>,

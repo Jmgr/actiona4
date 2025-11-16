@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use human_units::{FormatSize, si::Prefix};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
@@ -6,13 +8,16 @@ use rquickjs::{
 };
 use tokio_util::task::TaskTracker;
 
-use crate::core::{
-    js::classes::{SingletonClass, register_host_class},
-    system::{
-        System,
-        js::{
-            cpu::JsCpu, hardware::JsHardware, memory::JsMemory, network::JsNetwork, os::JsOs,
-            processes::JsProcesses, storage::JsStorage,
+use crate::{
+    IntoJsResult,
+    core::{
+        js::classes::{SingletonClass, register_host_class},
+        system::{
+            System,
+            js::{
+                cpu::JsCpu, hardware::JsHardware, memory::JsMemory, network::JsNetwork, os::JsOs,
+                processes::JsProcesses, storage::JsStorage,
+            },
         },
     },
 };
@@ -121,6 +126,54 @@ impl JsSystem {
     #[must_use]
     pub fn storage(&self) -> JsStorage {
         JsStorage::new(self.inner.storage())
+    }
+
+    pub fn shutdown(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
+        let force = force.unwrap_or_default();
+
+        System::shutdown(force).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub fn reboot(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
+        let force = force.unwrap_or_default();
+
+        System::reboot(force).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub fn logout(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
+        let force = force.unwrap_or_default();
+
+        System::logout(force).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub fn hibernate(&self, ctx: Ctx<'_>) -> Result<()> {
+        System::hibernate().into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub fn sleep(&self, ctx: Ctx<'_>) -> Result<()> {
+        System::sleep().into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub fn open(&self, ctx: Ctx<'_>, path: String, with_app: Opt<String>) -> Result<()> {
+        System::open(path.as_ref(), with_app.as_deref()).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    pub fn open_path(&self, ctx: Ctx<'_>, path: String, with_app: Option<String>) -> Result<()> {
+        System::open_path(Path::new(&path), with_app.as_deref()).into_js_result(&ctx)?;
+
+        Ok(())
     }
 }
 

@@ -85,6 +85,7 @@ impl JsClipboard {
         Ok(image.into())
     }
 
+    // TODO: missing setFileList
     pub fn get_file_list(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
     }

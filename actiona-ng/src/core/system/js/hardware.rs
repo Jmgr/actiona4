@@ -47,7 +47,7 @@ impl JsHardware {
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListComponentsOptions {
     /// Rescan
-    /// @default true
+    /// @default `true`
     pub rescan: bool,
 }
 
