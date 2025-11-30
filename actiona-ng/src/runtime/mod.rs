@@ -332,8 +332,6 @@ impl Runtime {
                     .await
                     .unwrap();
 
-                    println!("EXIT");
-
                     app_handle.exit(0);
                 });
 
@@ -441,6 +439,7 @@ impl Runtime {
 
         f(runtime.clone(), script_engine.clone()).await?;
 
+        // TODO: wait if there is a sound playing
         let wait_at_end = runtime.wait_at_end();
         info!(
             "Wait at end: {}, background tasks: {}",

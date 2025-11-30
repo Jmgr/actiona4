@@ -99,6 +99,11 @@ tracing.workspace = true
 tween.workspace = true
 unicode-segmentation.workspace = true
 wildmatch.workspace = true
+toml.workspace = true
+uuid.workspace = true
+versions.workspace = true
+sys-locale.workspace = true
+time.workspace = true
 
 [build-dependencies]
 built.workspace = true

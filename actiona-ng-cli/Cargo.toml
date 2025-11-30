@@ -23,12 +23,19 @@ windows = { workspace = true, features = [
 [dependencies]
 actiona-ng = { path = "../actiona-ng" }
 
-clap.workspace = true
+clap = { workspace = true, features = ["env"] }
 color-eyre.workspace = true
 tauri.workspace = true
 tauri-plugin-dialog.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
+versions.workspace = true
+tracing.workspace = true
+console.workspace = true
+tracing-subscriber.workspace = true
+time.workspace = true
+humantime.workspace = true
 
 [build-dependencies]
 tauri-build.workspace = true
+built.workspace = true

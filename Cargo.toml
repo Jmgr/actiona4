@@ -18,7 +18,7 @@ chrono = "0.4.42"
 clap = { version = "4.5.51", features = ["cargo", "derive"] }
 color-eyre = "0.6.5"
 console = "0.16.1"
-convert_case = "0.9.0"
+convert_case = "0.10.0"
 derive-where = "1.6.0"
 derive_more = { version = "2.0.1", default-features = false, features = [
     "add",
@@ -79,7 +79,7 @@ rand = "0.9.2"
 rand_chacha = "0.9.0"
 rayon = "1.11.0"
 regex = "1.12.2"
-reqwest = { version = "0.12.24", features = ["stream", "multipart"] }
+reqwest = { version = "0.12.24", features = ["stream", "multipart", "json"] }
 rodio = { version = "0.21.1", features = ["tracing", "symphonia"] }
 rquickjs = { git = "https://github.com/DelSkayn/rquickjs.git", rev = "3fc3d357c08ae3df2090a4954dfa0739cd44a602", default-features = false, features = [
     "macro",
@@ -129,6 +129,16 @@ tracing = "0.1.41"
 tween = "2.1.0"
 unicode-segmentation = "1.12.0"
 wildmatch = "2.6.0"
+toml = "0.9.8"
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
+versions = { version = "7.0.0", features = ["serde"] }
+sys-locale = "0.3.2"
+time = { version = "0.3.44", features = ["serde"] }
+tracing-subscriber = { version = "0.3.22", features = [
+    "env-filter",
+    "fmt",
+    "time",
+] }
 
 # Windows
 pe-parser = "0.7.0"
@@ -171,11 +181,6 @@ console-subscriber = "0.5.0"
 httptest = "0.16.3"
 libtest-mimic-collect = "0.3.3"
 rstest = "0.26.1"
-tracing-subscriber = { version = "0.3.20", features = [
-    "fmt",
-    "env-filter",
-    "registry",
-] }
 tracing-test = "0.2.5"
 
 # Build dependencies

@@ -1,5 +1,6 @@
 use std::fmt::{self, Display, Formatter, Write};
 
+// TODO: replace with debug_struct
 #[derive(Default)]
 pub struct DisplayFields {
     buffer: String,
