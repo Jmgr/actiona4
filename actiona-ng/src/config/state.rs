@@ -6,7 +6,7 @@ use versions::SemVer;
 
 use crate::config::store::Store;
 
-#[derive(Clone, Copy, Debug, Display, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Display, Serialize)]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum Channel {
@@ -15,7 +15,7 @@ pub enum Channel {
     Dev,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct VersionInfo {
     pub app: String,
     pub channel: Channel,
@@ -26,7 +26,7 @@ pub struct VersionInfo {
     pub changelog_url: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct State {
     #[serde(with = "time::serde::iso8601::option")]
     pub next_update_check: Option<OffsetDateTime>,

@@ -7,7 +7,8 @@
 #![allow(clippy::significant_drop_tightening)]
 #![allow(clippy::future_not_send)]
 
-use rquickjs::{Ctx, Exception};
+use color_eyre::Result;
+use rquickjs::{Coerced, Ctx, Exception, Value};
 use tokio_util::sync::CancellationToken;
 
 use crate::error::{CommonError, Error};
@@ -46,6 +47,16 @@ where
 {
     fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
         self.map_err(|err| err.into_js(ctx))
+    }
+}
+
+pub trait JsValueToString {
+    fn to_string_coerced(&self) -> Result<String>;
+}
+
+impl<'js> JsValueToString for Value<'js> {
+    fn to_string_coerced(&self) -> Result<String> {
+        Ok(self.get::<Coerced<String>>()?.0)
     }
 }
 

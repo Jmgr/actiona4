@@ -54,7 +54,7 @@ impl LinuxDisplay {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Deserialize)]
 struct UpdateResponse {
     update_available: bool,
     info: Option<VersionInfo>,

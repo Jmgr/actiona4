@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::config::store::Store;
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Settings {
     pub disable_updates: bool,
     pub telemetry: Option<Uuid>,

@@ -1,0 +1,127 @@
+#![windows_subsystem = "console"]
+
+use std::sync::Arc;
+
+use actiona_ng::{
+    config::Config,
+    runtime::{Runtime, WaitAtEnd},
+};
+use clap::Parser;
+use color_eyre::{Result, config::HookBuilder, eyre::Context};
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
+#[cfg(windows)]
+use windows::{
+    Wdk::System::SystemServices::RtlGetVersion, Win32::System::SystemInformation::OSVERSIONINFOW,
+};
+
+use crate::{
+    args::{Args, Commands},
+    repl::repl,
+    updates::check_updates,
+};
+
+mod built_info {
+    include!(concat!(env!("OUT_DIR"), "/built.rs"));
+}
+
+mod args;
+mod repl;
+mod updates;
+
+#[cfg(windows)]
+fn is_windows10_1607_or_newer() -> Option<bool> {
+    const WINDOWS_1607_BUILD: u32 = 14393;
+
+    let mut info = OSVERSIONINFOW::default();
+    unsafe { RtlGetVersion(&mut info).ok().ok()? };
+
+    Some(info.dwBuildNumber >= WINDOWS_1607_BUILD)
+}
+
+fn main() -> Result<()> {
+    init_tracing();
+
+    let args = Arc::new(Args::parse());
+
+    if args.debug {
+        color_eyre::install()?;
+    } else {
+        let (panic_hook, eyre_hook) = HookBuilder::default()
+            .capture_span_trace_by_default(false)
+            .display_location_section(false)
+            .display_env_section(false)
+            .into_hooks();
+
+        eyre_hook.install()?;
+        panic_hook.install();
+    }
+
+    #[cfg(windows)]
+    match is_windows10_1607_or_newer() {
+        Some(true) => {}
+        Some(false) => {
+            eprintln!(
+                "⚠️  You are running an unsupported version of Windows (older than 10 1607). Some features may not work properly."
+            )
+        }
+        None => {
+            eprintln!(
+                "⚠️  Unable to determine your version of Windows. Actiona is only supported on Windows 10 1067 or never."
+            )
+        }
+    }
+
+    Runtime::run_with_ui(
+        move |runtime, script_engine| async move {
+            let config = Arc::new(Config::new().await?);
+
+            check_updates(
+                &args,
+                config,
+                runtime.cancellation_token(),
+                runtime.task_tracker(),
+            )
+            .await?;
+
+            match &args.command {
+                Commands::Run { filepath } => {
+                    let script: String = tokio::fs::read_to_string(&filepath)
+                        .await
+                        .context("reading input file")?;
+
+                    script_engine.eval_async::<()>(&script).await?;
+                }
+                Commands::Eval { code } => {
+                    let code = code.join("\n");
+
+                    script_engine.eval_async::<()>(&code).await?;
+                }
+                Commands::Repl => {
+                    runtime.set_wait_at_end(WaitAtEnd::No);
+
+                    repl(script_engine).await?;
+                }
+            };
+
+            Ok(())
+        },
+        tauri::generate_context!(),
+    )?;
+
+    Ok(())
+}
+
+fn init_tracing() {
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
+
+    let stdout_layer = tracing_subscriber::fmt::layer()
+        .with_writer(std::io::stdout)
+        .with_ansi(true)
+        .with_target(true)
+        .with_line_number(true);
+
+    tracing_subscriber::registry()
+        .with(filter)
+        .with(stdout_layer)
+        .init();
+}

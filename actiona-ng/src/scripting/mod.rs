@@ -2,12 +2,13 @@ use std::{
     collections::{HashMap, hash_map::Entry},
     hash::{DefaultHasher, Hash, Hasher},
     mem::take,
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
 
 use color_eyre::{Result, eyre::eyre};
 use derive_where::derive_where;
 use once_cell::sync::Lazy;
+use parking_lot::Mutex;
 use regex::Regex;
 use rquickjs::{
     AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
@@ -91,8 +92,7 @@ impl Engine {
                         let (message, stack) =
                             Self::process_exception(object, sourcemaps_clone.clone()).unwrap();
 
-                        let mut unhandled_exceptions_clone =
-                            unhandled_exceptions_clone.lock().unwrap();
+                        let mut unhandled_exceptions_clone = unhandled_exceptions_clone.lock();
                         unhandled_exceptions_clone.push((message, stack));
                     }
                 },
@@ -121,7 +121,7 @@ impl Engine {
         script.hash(&mut hasher);
         let hash = hasher.finish();
 
-        let mut sourcemaps = self.sourcemaps.lock().unwrap();
+        let mut sourcemaps = self.sourcemaps.lock();
         let sourcemap = sourcemaps.entry(hash);
 
         Ok((
@@ -198,7 +198,7 @@ impl Engine {
                     col: 0,
                 });
             };
-            let sourcemaps = sourcemaps.lock().unwrap();
+            let sourcemaps = sourcemaps.lock();
             let ts_to_js = sourcemaps.get(&source_hash).ok_or_else(|| {
                 eyre!("failed to find sourcemap for code with hash {source_hash}")
             })?;
@@ -239,11 +239,12 @@ impl Engine {
     pub async fn idle(&self) -> Vec<UnhandledException> {
         self.runtime.idle().await;
 
-        let mut unhandled_exceptions = self.unhandled_exceptions.lock().unwrap();
+        let mut unhandled_exceptions = self.unhandled_exceptions.lock();
 
         take(&mut *unhandled_exceptions)
     }
 
+    #[must_use]
     pub fn context(&self) -> AsyncContext {
         self.context.clone()
     }
@@ -369,13 +370,13 @@ outer();
         // first compile + run
         let first: i32 = engine.eval(script).await.unwrap();
         assert_eq!(first, 42);
-        let maps_after_first = engine.sourcemaps.lock().unwrap().len();
+        let maps_after_first = engine.sourcemaps.lock().len();
 
         // second run should *not* add a new TsToJs
         let second: i32 = engine.eval(script).await.unwrap();
         assert_eq!(second, 42);
         assert_eq!(
-            engine.sourcemaps.lock().unwrap().len(),
+            engine.sourcemaps.lock().len(),
             maps_after_first,
             "running the identical script twice should hit the cache"
         );

@@ -17,7 +17,7 @@ use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
-use tokio::{runtime::Handle, select, signal, task::block_in_place};
+use tokio::{runtime::Handle, select, signal, sync::oneshot, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{info, warn};
 
@@ -64,7 +64,7 @@ use crate::{
         web::js::JsWeb,
     },
     runtime::{events::Guard, shared_rng::SharedRng},
-    scripting::{Engine as ScriptEngine, callbacks::Callbacks},
+    scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
 
 pub mod events;
@@ -307,13 +307,14 @@ impl Runtime {
     pub fn run_with_ui<F, Fut>(
         f: F,
         tauri_context: tauri::Context<tauri_runtime_wry::Wry<tauri::EventLoopMessage>>,
-    ) -> Result<()>
+    ) -> Result<Vec<UnhandledException>>
     where
         F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
     {
         let cancellation_token = CancellationToken::new();
         let task_tracker = TaskTracker::new();
+        let (result_sender, result_receiver) = oneshot::channel();
 
         let local_cancellation_token = cancellation_token.clone();
         let local_task_tracker = task_tracker.clone();
@@ -323,16 +324,17 @@ impl Runtime {
                 let app_handle = app.handle().clone();
 
                 tauri::async_runtime::spawn(async move {
-                    Self::run_impl(
+                    let unhandled_exceptions = Self::run_impl(
                         f,
                         local_cancellation_token,
                         local_task_tracker,
                         Some(app_handle.clone()),
                     )
-                    .await
-                    .unwrap();
+                    .await;
 
                     app_handle.exit(0);
+
+                    let _ = result_sender.send(unhandled_exceptions);
                 });
 
                 let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
@@ -391,10 +393,12 @@ impl Runtime {
             }
         });
 
-        Ok(())
+        let result = result_receiver.blocking_recv()??;
+
+        Ok(result)
     }
 
-    pub fn run<F, Fut>(f: F) -> Result<()>
+    pub fn run<F, Fut>(f: F) -> Result<Vec<UnhandledException>>
     where
         F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
@@ -407,11 +411,11 @@ impl Runtime {
             .build()
             .unwrap();
 
-        tokio_runtime.block_on(async move {
+        let unhandled_exceptions = tokio_runtime.block_on(async move {
             Self::run_impl(f, cancellation_token, task_tracker, None).await
         })?;
 
-        Ok(())
+        Ok(unhandled_exceptions)
     }
 
     async fn run_impl<F, Fut>(
@@ -419,7 +423,7 @@ impl Runtime {
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
         app_handle: Option<AppHandle>,
-    ) -> Result<()>
+    ) -> Result<Vec<UnhandledException>>
     where
         F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
@@ -440,6 +444,7 @@ impl Runtime {
         f(runtime.clone(), script_engine.clone()).await?;
 
         // TODO: wait if there is a sound playing
+        // TODO: never wait at end in the REPL
         let wait_at_end = runtime.wait_at_end();
         info!(
             "Wait at end: {}, background tasks: {}",
@@ -450,19 +455,14 @@ impl Runtime {
             cancellation_token.cancelled().await;
         }
 
-        // TODO: proper error
         let unhandled_exceptions = script_engine.idle().await;
-        assert!(
-            unhandled_exceptions.is_empty(),
-            "unhandled exceptions found: {unhandled_exceptions:?}"
-        );
 
         task_tracker.close();
         cancellation_token.cancel();
 
         task_tracker.wait().await;
 
-        Result::<()>::Ok(())
+        Result::Ok(unhandled_exceptions)
     }
 
     #[cfg(unix)]
@@ -551,21 +551,20 @@ impl Runtime {
         F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
-        Self::run_with_ui(
+        let unhandled_exceptions = Self::run_with_ui(
             async |runtime, script_engine| {
                 f(runtime, script_engine.clone()).await;
-
-                let unhandled_exceptions = script_engine.idle().await;
-                assert!(
-                    unhandled_exceptions.is_empty(),
-                    "unhandled exceptions found: {unhandled_exceptions:?}"
-                );
 
                 Ok(())
             },
             tauri::generate_context!(),
         )
         .unwrap();
+
+        assert!(
+            unhandled_exceptions.is_empty(),
+            "unhandled exceptions found: {unhandled_exceptions:?}"
+        );
     }
 
     pub fn test_with_script_engine<F, Fut>(f: F)
@@ -573,18 +572,17 @@ impl Runtime {
         F: FnOnce(Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
-        Self::run(async move |_runtime, script_engine| {
+        let unhandled_exceptions = Self::run(async move |_runtime, script_engine| {
             f(script_engine.clone()).await;
-
-            let unhandled_exceptions = script_engine.idle().await;
-            assert!(
-                unhandled_exceptions.is_empty(),
-                "unhandled exceptions found: {unhandled_exceptions:?}"
-            );
 
             Ok(())
         })
         .unwrap();
+
+        assert!(
+            unhandled_exceptions.is_empty(),
+            "unhandled exceptions found: {unhandled_exceptions:?}"
+        );
     }
 
     pub fn set_wait_at_end(&self, wait_at_end: WaitAtEnd) {

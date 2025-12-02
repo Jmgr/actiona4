@@ -1,0 +1,150 @@
+#compdef actiona-ng-cli
+
+autoload -U is-at-least
+
+_actiona-ng-cli() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" : \
+'--disable-updates=[Should Actiona-ng check for updates once per day? Default is true]:DISABLE_UPDATES:(true false)' \
+'--display=[X11 display to use (Linux/X11 only 🐧)]:DISPLAY:_default' \
+'--debug[Show debug information]' \
+'--disable-telemetry[Should Actiona-ng send anonymous telemetry data? Default is false]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_actiona-ng-cli_commands" \
+"*::: :->actiona-ng-cli" \
+&& ret=0
+    case $state in
+    (actiona-ng-cli)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:actiona-ng-cli-command-$line[1]:"
+        case $line[1] in
+            (run)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':filepath -- file path to the script:_files' \
+&& ret=0
+;;
+(eval)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+'*::code -- the code to evaluate:_default' \
+&& ret=0
+;;
+(repl)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_actiona-ng-cli__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:actiona-ng-cli-help-command-$line[1]:"
+        case $line[1] in
+            (run)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(eval)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(repl)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_actiona-ng-cli_commands] )) ||
+_actiona-ng-cli_commands() {
+    local commands; commands=(
+'run:🤖 runs a script' \
+'eval:🧪 evaluates code' \
+'repl:💻 starts the interactive terminal (REPL)' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'actiona-ng-cli commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__eval_commands] )) ||
+_actiona-ng-cli__eval_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli eval commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__help_commands] )) ||
+_actiona-ng-cli__help_commands() {
+    local commands; commands=(
+'run:🤖 runs a script' \
+'eval:🧪 evaluates code' \
+'repl:💻 starts the interactive terminal (REPL)' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'actiona-ng-cli help commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__help__eval_commands] )) ||
+_actiona-ng-cli__help__eval_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli help eval commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__help__help_commands] )) ||
+_actiona-ng-cli__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli help help commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__help__repl_commands] )) ||
+_actiona-ng-cli__help__repl_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli help repl commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__help__run_commands] )) ||
+_actiona-ng-cli__help__run_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli help run commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__repl_commands] )) ||
+_actiona-ng-cli__repl_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli repl commands' commands "$@"
+}
+(( $+functions[_actiona-ng-cli__run_commands] )) ||
+_actiona-ng-cli__run_commands() {
+    local commands; commands=()
+    _describe -t commands 'actiona-ng-cli run commands' commands "$@"
+}
+
+if [ "$funcstack[1]" = "_actiona-ng-cli" ]; then
+    _actiona-ng-cli "$@"
+else
+    compdef _actiona-ng-cli actiona-ng-cli
+fi

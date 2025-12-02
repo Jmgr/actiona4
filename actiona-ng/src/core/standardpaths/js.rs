@@ -7,7 +7,7 @@ use rquickjs::{
 use crate::core::{js::classes::SingletonClass, standardpaths::StandardPaths};
 
 /// @singleton
-#[derive(Debug, Default, Clone, JsLifetime)]
+#[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "StandardPaths")]
 pub struct JsStandardPaths {
     inner: StandardPaths,

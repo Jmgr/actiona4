@@ -6,7 +6,7 @@ use crate::types::{OptionalPath, display::DisplayFields};
 
 pub mod js;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct StandardPaths {
     base: Option<BaseDirs>,
     user: Option<UserDirs>,

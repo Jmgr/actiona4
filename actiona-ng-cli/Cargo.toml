@@ -6,13 +6,10 @@ authors.workspace = true
 description.workspace = true
 documentation.workspace = true
 license.workspace = true
-default-run = "actiona-ng"
+default-run = "actiona-ng-cli"
 
 [package.metadata.cargo-machete]
 ignored = ["tauri-build"]
-
-[[bin]]
-name = "actiona-ng"
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
@@ -25,17 +22,25 @@ actiona-ng = { path = "../actiona-ng" }
 
 clap = { workspace = true, features = ["env"] }
 color-eyre.workspace = true
+console.workspace = true
+humantime.workspace = true
 tauri.workspace = true
 tauri-plugin-dialog.workspace = true
+time.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
-versions.workspace = true
 tracing.workspace = true
-console.workspace = true
 tracing-subscriber.workspace = true
-time.workspace = true
-humantime.workspace = true
+versions.workspace = true
+rquickjs.workspace = true
+rustyline.workspace = true
+syntect.workspace = true
+shell-words.workspace = true
+directories.workspace = true
 
 [build-dependencies]
-tauri-build.workspace = true
 built.workspace = true
+tauri-build.workspace = true
+clap_complete.workspace = true
+clap = { workspace = true, features = ["env"] }
+cfg_aliases.workspace = true
