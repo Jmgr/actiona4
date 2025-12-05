@@ -34,7 +34,7 @@ tracing-subscriber.workspace = true
 versions.workspace = true
 rquickjs.workspace = true
 rustyline.workspace = true
-syntect.workspace = true
+two-face.workspace = true
 shell-words.workspace = true
 directories.workspace = true
 

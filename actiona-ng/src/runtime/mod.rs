@@ -19,7 +19,7 @@ use tauri::{
 };
 use tokio::{runtime::Handle, select, signal, sync::oneshot, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::{info, warn};
+use tracing::{info, instrument, warn};
 
 #[cfg(unix)]
 use crate::runtime::platform::x11::events::input::{
@@ -67,6 +67,7 @@ use crate::{
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
 
+pub mod async_resource;
 pub mod events;
 pub mod platform;
 pub mod shared_rng;
@@ -88,7 +89,7 @@ impl<'js> WithUserData for Ctx<'js> {
 
 #[derive(Constructor, Debug, JsLifetime)]
 pub(crate) struct JsUserData {
-    displays: Arc<Displays>,
+    displays: Displays,
     cancellation_token: CancellationToken,
     rng: SharedRng,
     task_tracker: TaskTracker,
@@ -98,7 +99,7 @@ pub(crate) struct JsUserData {
 }
 
 impl JsUserData {
-    pub(crate) fn displays(&self) -> Arc<Displays> {
+    pub(crate) fn displays(&self) -> Displays {
         self.displays.clone()
     }
 
@@ -166,6 +167,12 @@ pub enum WaitAtEnd {
     No,
 }
 
+#[derive(Debug, Default)]
+pub struct RuntimeOptions {
+    #[cfg(unix)]
+    pub display_name: Option<String>,
+}
+
 #[derive_where(Debug)]
 pub struct Runtime {
     #[cfg(unix)]
@@ -185,16 +192,30 @@ pub struct Runtime {
     clipboard: Arc<Clipboard>,
 }
 
+#[instrument(skip_all)]
+fn new_enigo() -> Result<Arc<Mutex<Enigo>>> {
+    Ok(Arc::new(Mutex::new(Enigo::new(&Settings::default())?)))
+}
+
 impl Runtime {
     // TODO: make private
+    #[instrument(name = "Runtime::new", skip_all)]
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
         app_handle: Option<AppHandle>,
+        options: RuntimeOptions,
     ) -> Result<(Arc<Self>, Arc<ScriptEngine>)> {
-        #[cfg(unix)] // TODO: add the option to choose the display name
-        let runtime =
-            x11::Runtime::new(cancellation_token.clone(), task_tracker.clone(), None).await?;
+        let displays = Displays::new(cancellation_token.clone(), task_tracker.clone())?;
+
+        #[cfg(unix)]
+        let runtime = x11::Runtime::new(
+            cancellation_token.clone(),
+            task_tracker.clone(),
+            options.display_name.as_deref(),
+            displays.clone(),
+        )
+        .await?;
 
         #[cfg(windows)]
         let runtime = win::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
@@ -202,7 +223,7 @@ impl Runtime {
         let clipboard = Arc::new(Clipboard::new()?);
         let runtime = Arc::new(Self {
             runtime,
-            enigo: Arc::new(Mutex::new(Enigo::new(&Settings::default())?)),
+            enigo: new_enigo()?,
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
             app_handle: app_handle.clone(),
@@ -211,8 +232,6 @@ impl Runtime {
             background_tasks_counter: AtomicU64::new(0),
             clipboard: clipboard.clone(),
         });
-
-        let displays = Arc::new(Displays::new(runtime.clone())?);
 
         let rng = SharedRng::default();
 
@@ -255,43 +274,21 @@ impl Runtime {
                 ))
                 .unwrap();
 
-                (|| -> rquickjs::Result<()> {
-                    // Tools
-                    JsConcurrency::register(&ctx)?;
-                    global::register(&ctx)?;
-
-                    // Value classes
-                    register_value_class::<JsPoint>(&ctx)?;
-                    register_value_class::<JsSize>(&ctx)?;
-                    register_value_class::<JsRect>(&ctx)?;
-                    register_value_class::<JsColor>(&ctx)?;
-                    register_value_class::<JsImage>(&ctx)?;
-                    register_value_class::<JsFile>(&ctx)?;
-                    register_value_class::<JsWildcard>(&ctx)?;
-                    register_value_class::<JsDirectory>(&ctx)?;
-                    register_value_class::<JsPath>(&ctx)?;
-                    register_value_class::<JsFilesystem>(&ctx)?;
-                    register_value_class::<JsAbortSignal>(&ctx)?;
-                    register_value_class::<JsAbortController>(&ctx)?;
-
-                    // Singletons
-                    register_singleton_class::<JsApp>(&ctx, app)?;
-                    register_singleton_class::<JsMouse>(&ctx, mouse)?;
-                    register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
-                    register_singleton_class::<JsUi>(&ctx, JsUi::default())?;
-                    register_singleton_class::<JsConsole>(&ctx, console)?;
-                    register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
-                    register_singleton_class::<JsScreenshot>(&ctx, screenshot)?;
-                    register_singleton_class::<JsClipboard>(&ctx, clipboard)?;
-                    register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
-                    register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
-                    register_singleton_class::<JsSystem>(&ctx, system)?;
-                    register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
-                    register_singleton_class::<JsAudio>(&ctx, audio)?;
-                    register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
-
-                    Ok(())
-                })()
+                Self::register_classes(
+                    ctx.clone(),
+                    app,
+                    mouse,
+                    keyboard,
+                    console,
+                    js_displays,
+                    screenshot,
+                    clipboard,
+                    task_tracker,
+                    system,
+                    hotstrings,
+                    audio,
+                    standard_paths,
+                )
                 .map_err(|_| {
                     let caught_error = ctx.catch();
                     eyre!("registration error: {:?}", caught_error)
@@ -304,8 +301,64 @@ impl Runtime {
         Ok((runtime, script_engine))
     }
 
+    #[instrument(skip_all)]
+    #[allow(clippy::too_many_arguments)]
+    fn register_classes(
+        ctx: Ctx,
+        app: JsApp,
+        mouse: JsMouse,
+        keyboard: JsKeyboard,
+        console: JsConsole,
+        js_displays: JsDisplays,
+        screenshot: JsScreenshot,
+        clipboard: JsClipboard,
+        task_tracker: TaskTracker,
+        system: JsSystem,
+        hotstrings: JsHotstrings,
+        audio: JsAudio,
+        standard_paths: JsStandardPaths,
+    ) -> rquickjs::Result<()> {
+        // Tools
+        JsConcurrency::register(&ctx)?;
+        global::register(&ctx)?;
+
+        // Value classes
+        register_value_class::<JsPoint>(&ctx)?;
+        register_value_class::<JsSize>(&ctx)?;
+        register_value_class::<JsRect>(&ctx)?;
+        register_value_class::<JsColor>(&ctx)?;
+        register_value_class::<JsImage>(&ctx)?;
+        register_value_class::<JsFile>(&ctx)?;
+        register_value_class::<JsWildcard>(&ctx)?;
+        register_value_class::<JsDirectory>(&ctx)?;
+        register_value_class::<JsPath>(&ctx)?;
+        register_value_class::<JsFilesystem>(&ctx)?;
+        register_value_class::<JsAbortSignal>(&ctx)?;
+        register_value_class::<JsAbortController>(&ctx)?;
+
+        // Singletons
+        register_singleton_class::<JsApp>(&ctx, app)?;
+        register_singleton_class::<JsMouse>(&ctx, mouse)?;
+        register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
+        register_singleton_class::<JsUi>(&ctx, JsUi::default())?;
+        register_singleton_class::<JsConsole>(&ctx, console)?;
+        register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
+        register_singleton_class::<JsScreenshot>(&ctx, screenshot)?;
+        register_singleton_class::<JsClipboard>(&ctx, clipboard)?;
+        register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
+        register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
+        register_singleton_class::<JsSystem>(&ctx, system)?;
+        register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
+        register_singleton_class::<JsAudio>(&ctx, audio)?;
+        register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
+
+        Ok(())
+    }
+
+    #[instrument(skip_all)]
     pub fn run_with_ui<F, Fut>(
         f: F,
+        runtime_options: RuntimeOptions,
         tauri_context: tauri::Context<tauri_runtime_wry::Wry<tauri::EventLoopMessage>>,
     ) -> Result<Vec<UnhandledException>>
     where
@@ -329,6 +382,7 @@ impl Runtime {
                         local_cancellation_token,
                         local_task_tracker,
                         Some(app_handle.clone()),
+                        runtime_options,
                     )
                     .await;
 
@@ -398,7 +452,7 @@ impl Runtime {
         Ok(result)
     }
 
-    pub fn run<F, Fut>(f: F) -> Result<Vec<UnhandledException>>
+    pub fn run<F, Fut>(f: F, runtime_options: RuntimeOptions) -> Result<Vec<UnhandledException>>
     where
         F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
@@ -412,17 +466,19 @@ impl Runtime {
             .unwrap();
 
         let unhandled_exceptions = tokio_runtime.block_on(async move {
-            Self::run_impl(f, cancellation_token, task_tracker, None).await
+            Self::run_impl(f, cancellation_token, task_tracker, None, runtime_options).await
         })?;
 
         Ok(unhandled_exceptions)
     }
 
+    #[instrument(skip_all)]
     async fn run_impl<F, Fut>(
         f: F,
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
         app_handle: Option<AppHandle>,
+        runtime_options: RuntimeOptions,
     ) -> Result<Vec<UnhandledException>>
     where
         F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
@@ -438,13 +494,17 @@ impl Runtime {
             }
         });
 
-        let (runtime, script_engine) =
-            Self::new(cancellation_token.clone(), task_tracker.clone(), app_handle).await?;
+        let (runtime, script_engine) = Self::new(
+            cancellation_token.clone(),
+            task_tracker.clone(),
+            app_handle,
+            runtime_options,
+        )
+        .await?;
 
         f(runtime.clone(), script_engine.clone()).await?;
 
         // TODO: wait if there is a sound playing
-        // TODO: never wait at end in the REPL
         let wait_at_end = runtime.wait_at_end();
         info!(
             "Wait at end: {}, background tasks: {}",
@@ -532,17 +592,20 @@ impl Runtime {
         F: FnOnce(Arc<Self>) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
-        Self::run(async |runtime, script_engine| {
-            f(runtime).await;
+        Self::run(
+            async |runtime, script_engine| {
+                f(runtime).await;
 
-            let unhandled_exceptions = script_engine.idle().await;
-            assert!(
-                unhandled_exceptions.is_empty(),
-                "unhandled exceptions found: {unhandled_exceptions:?}"
-            );
+                let unhandled_exceptions = script_engine.idle().await;
+                assert!(
+                    unhandled_exceptions.is_empty(),
+                    "unhandled exceptions found: {unhandled_exceptions:?}"
+                );
 
-            Ok(())
-        })
+                Ok(())
+            },
+            RuntimeOptions::default(),
+        )
         .unwrap();
     }
 
@@ -557,6 +620,7 @@ impl Runtime {
 
                 Ok(())
             },
+            RuntimeOptions::default(),
             tauri::generate_context!(),
         )
         .unwrap();
@@ -572,11 +636,14 @@ impl Runtime {
         F: FnOnce(Arc<ScriptEngine>) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
-        let unhandled_exceptions = Self::run(async move |_runtime, script_engine| {
-            f(script_engine.clone()).await;
+        let unhandled_exceptions = Self::run(
+            async move |_runtime, script_engine| {
+                f(script_engine.clone()).await;
 
-            Ok(())
-        })
+                Ok(())
+            },
+            RuntimeOptions::default(),
+        )
         .unwrap();
 
         assert!(

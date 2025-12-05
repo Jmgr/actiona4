@@ -1,13 +1,9 @@
-use std::{
-    collections::HashSet,
-    fmt::Display,
-    sync::{Arc, Mutex},
-    thread::sleep,
-};
+use std::{collections::HashSet, fmt::Display, sync::Arc, thread::sleep};
 
 use color_eyre::{Result, eyre::eyre};
 use derive_where::derive_where;
 use itertools::Itertools;
+use parking_lot::Mutex;
 use sysinfo::{CpuRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -175,7 +171,7 @@ impl Cpu {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system = local_system.lock().unwrap();
+                let mut system = local_system.lock();
                 system.refresh_cpu_usage();
 
                 sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
@@ -189,7 +185,7 @@ impl Cpu {
 
     #[must_use]
     pub fn global_usage(&self) -> Percent {
-        let system = self.system.lock().unwrap();
+        let system = self.system.lock();
         system.global_cpu_usage().into()
     }
 
@@ -202,7 +198,7 @@ impl Cpu {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system = local_system.lock().unwrap();
+                let mut system = local_system.lock();
                 if index >= system.cpus().len() {
                     return Err(eyre!("invalid index"));
                 }
@@ -223,7 +219,7 @@ impl Cpu {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system = local_system.lock().unwrap();
+                let mut system = local_system.lock();
                 system.refresh_cpu_frequency();
                 system
                     .cpus()
@@ -238,7 +234,7 @@ impl Cpu {
 
     #[must_use]
     pub fn cores(&self) -> Vec<CpuCore> {
-        let system = self.system.lock().unwrap();
+        let system = self.system.lock();
         system
             .cpus()
             .iter()

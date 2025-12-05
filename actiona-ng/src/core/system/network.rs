@@ -1,14 +1,10 @@
-use std::{
-    collections::HashMap,
-    fmt::Display,
-    net::IpAddr,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, fmt::Display, net::IpAddr, sync::Arc};
 
 use color_eyre::Result;
 use derive_where::derive_where;
 use ipnet::IpNet;
 use itertools::Itertools;
+use parking_lot::Mutex;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
@@ -239,7 +235,7 @@ impl Network {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut networks = networks.lock().unwrap();
+                let mut networks = networks.lock();
                 networks.refresh(rescan);
                 networks
                     .list()
@@ -253,7 +249,7 @@ impl Network {
 
     #[must_use]
     pub fn interfaces(&self) -> HashMap<String, NetworkInterface> {
-        let networks = self.networks.lock().unwrap();
+        let networks = self.networks.lock();
         networks
             .list()
             .iter()

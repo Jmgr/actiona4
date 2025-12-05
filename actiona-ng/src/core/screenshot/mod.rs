@@ -17,11 +17,11 @@ use crate::runtime::Runtime;
 
 #[derive(Debug)]
 pub struct Screenshot {
-    implementation: ScreenshotImpl,
+    implementation: Arc<ScreenshotImpl>,
 }
 
 impl Screenshot {
-    pub async fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> Result<Self> {
+    pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Self> {
         Ok(Self {
             implementation: ScreenshotImpl::new(runtime, displays).await?,
         })

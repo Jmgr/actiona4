@@ -1,16 +1,15 @@
-use std::{
-    num::TryFromIntError,
-    sync::{Arc, Mutex},
-};
+use std::{num::TryFromIntError, sync::Arc};
 
 use color_eyre::Report;
 use display_info::error::DIError;
 use thiserror::Error;
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::{error, instrument};
 
 use crate::{
     core::point::try_point,
     runtime::{
-        Runtime,
+        async_resource::AsyncResource,
         events::{DisplayInfo, DisplayInfoVec},
         shared_rng::SharedRng,
     },
@@ -51,50 +50,37 @@ pub enum DisplaysError {
 
 pub type Result<T> = std::result::Result<T, DisplaysError>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Displays {
-    _implementation: DisplaysImpl,
-    displays_info: Arc<Mutex<DisplayInfoVec>>,
+    cancellation_token: CancellationToken,
+    task_tracker: TaskTracker,
+    implementation: Arc<DisplaysImpl>,
+    displays_info: AsyncResource<DisplayInfoVec>,
 }
 
 impl Displays {
-    pub fn new(_runtime: Arc<Runtime>) -> Result<Self> {
-        let displays_info = Arc::new(Mutex::new(display_info::DisplayInfo::all()?.into()));
-        //let local_displays_info = displays_info.clone();
+    #[instrument(skip_all)]
+    pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Result<Self> {
+        let implementation = Arc::new(DisplaysImpl::new()?);
+        let displays_info = AsyncResource::new(cancellation_token.clone());
 
-        //let cancellation_token = runtime.cancellation_token();
-
-        /*
-        let screen_change_guard = runtime.platform().screen_change().subscribe();
-        let mut screen_change_receiver = screen_change_guard.subscribe();
-
-        runtime.task_tracker().spawn(async move {
-            loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    event = screen_change_receiver.changed() => {
-                        if event.is_err() { break; }
-                    }
-                }
-
-                let mut displays_info = local_displays_info.lock().unwrap();
-                *displays_info = screen_change_receiver.borrow_and_update().clone();
-            }
-        });
-        */
-        // TODO
-
-        Ok(Self {
-            _implementation: DisplaysImpl::new(_runtime)?,
+        let displays = Self {
+            cancellation_token,
+            task_tracker,
+            implementation,
             displays_info,
-        })
+        };
+
+        displays.refresh();
+
+        Ok(displays)
     }
 
-    pub fn random_point(&self, rng: SharedRng) -> Result<Point> {
-        let displays_info = self.displays_info.lock().unwrap();
+    pub async fn random_point(&self, rng: SharedRng) -> Result<Point> {
+        let displays_info = self.displays_info.wait_get().await?;
         // Total area across all displays (skip zero-area just in case)
         let mut total_area = Su32::ZERO;
-        for display_info in &displays_info.0 {
+        for display_info in displays_info.iter() {
             let rect = display_info.rect;
             total_area += rect.size.width * rect.size.height;
         }
@@ -106,7 +92,7 @@ impl Displays {
         let pick = Su32::from(rng.random_range(0..total_area.into_inner())); // [0, total_area)
         let mut acc = Su32::ZERO;
         let mut chosen = None;
-        for display_info in &displays_info.0 {
+        for display_info in displays_info.iter() {
             let rect = display_info.rect;
             let area = rect.size.width * rect.size.height;
             if area == 0 {
@@ -133,8 +119,8 @@ impl Displays {
         Ok(try_point(x, y)?)
     }
 
-    pub fn primary_display(&self) -> Result<DisplayInfo> {
-        let displays_info = self.displays_info.lock().unwrap();
+    pub async fn primary_display(&self) -> Result<DisplayInfo> {
+        let displays_info = self.displays_info.wait_get().await?;
         displays_info
             .iter()
             .find(|display| display.is_primary)
@@ -142,25 +128,38 @@ impl Displays {
             .ok_or(DisplaysError::NoPrimaryDisplay)
     }
 
-    #[must_use]
-    pub const fn displays_info(&self) -> &Arc<Mutex<DisplayInfoVec>> {
-        &self.displays_info
+    pub async fn wait_get_info(&self) -> Result<Arc<DisplayInfoVec>> {
+        Ok(self.displays_info.wait_get().await?)
     }
 
-    #[must_use]
-    pub fn from_point(&self, point: Point) -> Option<DisplayInfo> {
-        let displays_info = self.displays_info.lock().unwrap();
+    pub async fn changed(&self) -> Result<()> {
+        Ok(self.displays_info.changed().await?)
+    }
 
-        displays_info
+    pub fn refresh(&self) {
+        let displays_info = self.displays_info.clone();
+
+        self.task_tracker
+            .spawn_blocking(move || match display_info::DisplayInfo::all() {
+                Ok(info) => {
+                    displays_info.set(DisplayInfoVec::from(info));
+                }
+                Err(err) => error!("fetching display info failed: {err}"),
+            });
+    }
+
+    pub async fn from_point(&self, point: Point) -> Result<Option<DisplayInfo>> {
+        let displays_info = self.displays_info.wait_get().await?;
+
+        Ok(displays_info
             .iter()
             .find(|display_info| display_info.rect.contains(point))
-            .cloned()
+            .cloned())
     }
 
-    #[must_use]
-    pub fn smallest(&self) -> Option<DisplayInfo> {
-        let displays_infos = self.displays_info.lock().unwrap();
-        displays_infos
+    pub async fn smallest(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.displays_info.wait_get().await?;
+        Ok(displays_infos
             .iter()
             .min_by(|left_display_info, right_display_info| {
                 left_display_info
@@ -168,13 +167,12 @@ impl Displays {
                     .surface()
                     .cmp(&right_display_info.rect.surface())
             })
-            .cloned()
+            .cloned())
     }
 
-    #[must_use]
-    pub fn largest(&self) -> Option<DisplayInfo> {
-        let displays_infos = self.displays_info.lock().unwrap();
-        displays_infos
+    pub async fn largest(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.displays_info.wait_get().await?;
+        Ok(displays_infos
             .iter()
             .max_by(|left_display_info, right_display_info| {
                 left_display_info
@@ -182,7 +180,7 @@ impl Displays {
                     .surface()
                     .cmp(&right_display_info.rect.surface())
             })
-            .cloned()
+            .cloned())
     }
 }
 

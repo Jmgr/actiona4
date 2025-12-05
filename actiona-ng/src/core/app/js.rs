@@ -4,6 +4,7 @@ use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
     class::{Trace, Tracer},
 };
+use tracing::instrument;
 
 use crate::{
     IntoJsResult, built_info,
@@ -38,7 +39,8 @@ impl SingletonClass<'_> for JsApp {
 impl JsApp {
     /// @skip
     #[must_use]
-    pub const fn new(runtime: Arc<Runtime>) -> Self {
+    #[instrument(skip_all)]
+    pub fn new(runtime: Arc<Runtime>) -> Self {
         Self { runtime }
     }
 }

@@ -8,11 +8,12 @@ use color_eyre::{Result, eyre::OptionExt, owo_colors::OwoColorize};
 use console::Emoji;
 use time::OffsetDateTime;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::warn;
+use tracing::{instrument, warn};
 use versions::SemVer;
 
 use crate::{args::Args, built_info};
 
+#[instrument(skip_all)]
 pub async fn check_updates(
     args: &Args,
     config: Arc<Config>,

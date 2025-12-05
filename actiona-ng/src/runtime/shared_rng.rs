@@ -9,11 +9,13 @@ use rand::{
     },
 };
 use rand_chacha::{ChaCha8Rng, rand_core::SeedableRng};
+use tracing::instrument;
 
 #[derive(Clone, Debug)]
 pub struct SharedRng(Arc<Mutex<ChaCha8Rng>>);
 
 impl Default for SharedRng {
+    #[instrument(skip_all)]
     fn default() -> Self {
         Self(Arc::new(Mutex::new(ChaCha8Rng::from_os_rng())))
     }

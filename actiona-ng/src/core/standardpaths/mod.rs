@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use directories::{BaseDirs, UserDirs};
+use tracing::instrument;
 
 use crate::types::{OptionalPath, display::DisplayFields};
 
@@ -13,6 +14,7 @@ pub struct StandardPaths {
 }
 
 impl Default for StandardPaths {
+    #[instrument(skip_all)]
     fn default() -> Self {
         Self {
             base: BaseDirs::new(),

@@ -1,13 +1,10 @@
-use std::sync::Arc;
-
 use super::Result;
-use crate::runtime::Runtime;
 
 #[derive(Debug)]
-pub struct DisplaysImpl {}
+pub struct DisplaysImpl {} // TODO: needed?
 
 impl DisplaysImpl {
-    pub fn new(_runtime: Arc<Runtime>) -> Result<Self> {
+    pub fn new() -> Result<Self> {
         Ok(Self {})
     }
 }

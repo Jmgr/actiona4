@@ -1,9 +1,8 @@
-use std::sync::Arc;
-
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     class::{Trace, Tracer},
 };
+use tracing::instrument;
 
 use crate::{
     IntoJsResult,
@@ -26,7 +25,7 @@ impl<T> IntoJsResult<T> for super::Result<T> {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "Displays")]
 pub struct JsDisplays {
-    inner: Arc<super::Displays>,
+    inner: super::Displays,
 }
 
 impl SingletonClass<'_> for JsDisplays {}
@@ -37,72 +36,102 @@ impl<'js> Trace<'js> for JsDisplays {
 
 impl JsDisplays {
     /// @skip
-    pub const fn new(displays: Arc<super::Displays>) -> Result<Self> {
+    #[instrument(skip_all)]
+    pub fn new(displays: super::Displays) -> Result<Self> {
         Ok(Self { inner: displays })
     }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDisplays {
-    pub fn random_point(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
+    pub async fn random_point(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self
             .inner
             .random_point(ctx.user_data().rng())
+            .await
             .into_js_result(&ctx)?
             .into())
     }
 
-    #[must_use]
-    pub fn from_point(&self, point: JsPointLike) -> Option<JsDisplayInfo> {
-        self.inner
+    pub async fn from_point(
+        &self,
+        ctx: Ctx<'_>,
+        point: JsPointLike,
+    ) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
             .from_point(point.0)
-            .map(|display_info| display_info.into())
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
     }
 
-    #[must_use]
-    pub fn from_name<'js>(&self, ctx: Ctx<'js>, name: JsNameLike<'js>) -> Option<JsDisplayInfo> {
-        let displays_infos = self.inner.displays_info.lock().unwrap();
-        displays_infos
-            .iter()
-            .find(|display_info| name.0.matches(&ctx, &display_info.friendly_name))
-            .cloned()
-            .map(|display_info| display_info.into())
-    }
-
-    #[must_use]
-    pub fn from_device_name<'js>(
+    pub async fn from_name<'js>(
         &self,
         ctx: Ctx<'js>,
         name: JsNameLike<'js>,
-    ) -> Option<JsDisplayInfo> {
-        let displays_infos = self.inner.displays_info.lock().unwrap();
-        displays_infos
+    ) -> Result<Option<JsDisplayInfo>> {
+        let displays_infos = self
+            .inner
+            .displays_info
+            .wait_get()
+            .await
+            .into_js_result(&ctx)?;
+        Ok(displays_infos
+            .iter()
+            .find(|display_info| name.0.matches(&ctx, &display_info.friendly_name))
+            .cloned()
+            .map(|display_info| display_info.into()))
+    }
+
+    pub async fn from_device_name<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        name: JsNameLike<'js>,
+    ) -> Result<Option<JsDisplayInfo>> {
+        let displays_infos = self
+            .inner
+            .displays_info
+            .wait_get()
+            .await
+            .into_js_result(&ctx)?;
+        Ok(displays_infos
             .iter()
             .find(|display_info| name.0.matches(&ctx, &display_info.name))
             .cloned()
-            .map(|display_info| display_info.into())
+            .map(|display_info| display_info.into()))
     }
 
-    #[must_use]
-    pub fn from_id(&self, id: u32) -> Option<JsDisplayInfo> {
-        let displays_infos = self.inner.displays_info.lock().unwrap();
-        displays_infos
+    pub async fn from_id<'js>(&self, ctx: Ctx<'js>, id: u32) -> Result<Option<JsDisplayInfo>> {
+        let displays_infos = self
+            .inner
+            .displays_info
+            .wait_get()
+            .await
+            .into_js_result(&ctx)?;
+        Ok(displays_infos
             .iter()
             .find(|display_info| display_info.id == id)
             .cloned()
-            .map(|display_info| display_info.into())
+            .map(|display_info| display_info.into()))
     }
 
-    #[must_use]
-    pub fn smallest(&self) -> Option<JsDisplayInfo> {
-        self.inner
+    pub async fn smallest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
             .smallest()
-            .map(|display_info| display_info.into())
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
     }
 
-    #[must_use]
-    pub fn largest(&self) -> Option<JsDisplayInfo> {
-        self.inner.largest().map(|display_info| display_info.into())
+    pub async fn largest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .largest()
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
     }
 }
 

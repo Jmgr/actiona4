@@ -1,5 +1,6 @@
 use std::{num::TryFromIntError, time::SystemTimeError};
 
+use strum::EnumIs;
 use thiserror::Error;
 
 use crate::{IntoJSError, core::clipboard};
@@ -13,11 +14,21 @@ pub enum Error {
     CommonError(CommonError),
 }
 
+impl Error {
+    pub fn is_cancelled(&self) -> bool {
+        if let Self::CommonError(err) = self {
+            return err.is_cancelled();
+        }
+
+        false
+    }
+}
+
 impl IntoJSError for Error {}
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, EnumIs)]
 pub enum CommonError {
     #[error("Unsupported on this platform: {0}")]
     UnsupportedPlatform(String),

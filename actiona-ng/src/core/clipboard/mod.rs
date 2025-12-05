@@ -12,6 +12,7 @@ use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 use thiserror::Error;
+use tracing::instrument;
 
 use crate::{core::image::Image, error::CommonError};
 
@@ -86,6 +87,7 @@ pub struct Clipboard {
 }
 
 impl Clipboard {
+    #[instrument(skip_all)]
     pub fn new() -> Result<Self> {
         Ok(Self {
             inner: Arc::new(Mutex::new(arboard::Clipboard::new()?)),

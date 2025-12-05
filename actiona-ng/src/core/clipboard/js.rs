@@ -5,6 +5,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     prelude::*,
 };
+use tracing::instrument;
 
 use crate::{
     IntoJSError, IntoJsResult,
@@ -53,7 +54,8 @@ impl<'js> SingletonClass<'js> for JsClipboard {
 impl JsClipboard {
     /// @skip
     #[must_use]
-    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    #[instrument(skip_all)]
+    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
         Self { inner: clipboard }
     }
 }

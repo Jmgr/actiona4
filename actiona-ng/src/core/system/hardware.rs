@@ -1,11 +1,9 @@
-use std::{
-    fmt::Display,
-    sync::{Arc, Mutex},
-};
+use std::{fmt::Display, sync::Arc};
 
 use color_eyre::Result;
 use derive_where::derive_where;
 use itertools::Itertools;
+use parking_lot::Mutex;
 use sysinfo::Product;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -191,7 +189,7 @@ impl Hardware {
     #[instrument(name = "hardware", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let components = task_tracker
-            .spawn_blocking(sysinfo::Components::new_with_refreshed_list)
+            .spawn_blocking(sysinfo::Components::new)
             .await?;
 
         Ok(Self {
@@ -253,7 +251,7 @@ impl Hardware {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut components = components.lock().unwrap();
+                let mut components = components.lock();
                 components.refresh(rescan);
                 components.list().iter().map(Component::from).collect_vec()
             })
@@ -268,7 +266,7 @@ impl Hardware {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut components = components.lock().unwrap();
+                let mut components = components.lock();
                 let component = if let Some(id) = component_id.as_ref() {
                     components
                         .list_mut()
@@ -288,7 +286,7 @@ impl Hardware {
     }
 
     pub fn components(&self) -> Vec<Component> {
-        let components = self.components.lock().unwrap();
+        let components = self.components.lock();
 
         components.list().iter().map(Component::from).collect_vec()
     }

@@ -1,21 +1,11 @@
-#![allow(unsafe_code)]
-
-// TODO: https://chatgpt.com/share/68cbf389-ce58-8001-bbd8-4e0b543ae240
-
-use std::{
-    collections::HashMap,
-    ffi::c_void,
-    os::fd::{AsFd, OwnedFd},
-    ptr::NonNull,
-    sync::Arc,
-};
+use std::{collections::HashMap, os::fd::OwnedFd, sync::Arc};
 
 use color_eyre::{Result, eyre::eyre};
 use image::{DynamicImage, RgbaImage};
 use memfd::{FileSeal, MemfdOptions};
-use nix::sys::mman::{MapFlags, ProtFlags, mmap, munmap};
+use memmap2::MmapMut;
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
-use tokio::{select, sync::Mutex};
+use tracing::error;
 use x11rb_async::{connection::Connection, protocol::xproto::ImageFormat};
 
 use super::ScreenshotImplTrait;
@@ -31,8 +21,8 @@ use crate::{
     platform::x11::X11Connection,
     runtime::{
         Runtime,
-        events::{DisplayInfo, DisplayInfoVec, Guard},
-        platform::x11::events::displays::ScreenChangeTopic,
+        async_resource::AsyncResource,
+        events::{DisplayInfo, DisplayInfoVec},
     },
     types::su32::su32,
 };
@@ -40,14 +30,9 @@ use crate::{
 #[derive(Debug)]
 struct ShmData {
     shm_segment_id: u32,
-    mapped_ptr: NonNull<c_void>,
-    size: usize,
+    map: MmapMut,
     x11_connection: Arc<X11Connection>,
 }
-
-// TODO: Safety?
-unsafe impl Send for ShmData {}
-unsafe impl Sync for ShmData {}
 
 impl Drop for ShmData {
     fn drop(&mut self) {
@@ -58,9 +43,6 @@ impl Drop for ShmData {
                 .async_connection()
                 .shm_detach(self.shm_segment_id),
         );
-        unsafe {
-            _ = munmap(self.mapped_ptr, self.size);
-        }
     }
 }
 
@@ -72,14 +54,13 @@ struct Display {
 }
 
 impl Display {
-    async fn new(
-        runtime: Arc<Runtime>,
-        display_info: &DisplayInfo,
-        x11_connection: Arc<X11Connection>,
-    ) -> Result<Self> {
+    #[allow(unsafe_code)]
+    async fn new(runtime: Arc<Runtime>, display_info: &DisplayInfo) -> Result<Self> {
         const BYTES_PER_PIXEL: usize = 4;
+
         let rect = display_info.rect;
         let image_size = rect.size.width * rect.size.height * su32(BYTES_PER_PIXEL);
+        let x11_connection = runtime.platform().x11_connection();
 
         let shm_data = if runtime.platform().has_shm() {
             let shm_segment_id = x11_connection.async_connection().generate_id().await?;
@@ -93,21 +74,11 @@ impl Display {
 
             memfd.add_seals(&[FileSeal::SealGrow, FileSeal::SealShrink, FileSeal::SealSeal])?;
 
-            let mapped_ptr = unsafe {
-                mmap(
-                    None,
-                    image_size.try_into()?,
-                    ProtFlags::PROT_READ | ProtFlags::PROT_WRITE,
-                    MapFlags::MAP_SHARED,
-                    memfd_file.as_fd(),
-                    0,
-                )?
-            };
+            let map = unsafe { MmapMut::map_mut(memfd_file)? };
 
             let result = ShmData {
                 shm_segment_id,
-                mapped_ptr,
-                size: image_size.try_into()?,
+                map,
                 x11_connection: x11_connection.clone(),
             };
 
@@ -154,9 +125,7 @@ impl Display {
             .await?;
 
         // Extract pixel data from shared memory
-        let pixel_data = unsafe {
-            std::slice::from_raw_parts(shm_data.mapped_ptr.as_ptr() as *const u8, shm_data.size)
-        };
+        let pixel_data = &shm_data.map;
 
         Ok(image_from_bgr_data(
             pixel_data,
@@ -176,99 +145,72 @@ impl Display {
 
 #[derive(Debug)]
 pub struct ScreenshotImpl {
-    display_map: Arc<Mutex<HashMap<u32, Display>>>,
-    x11_connection: Arc<X11Connection>,
-    screen_change_guard: Guard<ScreenChangeTopic>,
+    runtime: Arc<Runtime>,
+    display_map: AsyncResource<HashMap<u32, Arc<Display>>>,
 }
 
 impl ScreenshotImpl {
-    pub async fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> Result<Self> {
-        let display_map = Arc::new(Mutex::new(HashMap::new()));
-        let local_display_map = display_map.clone();
+    pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Arc<Self>> {
+        let screenshot_impl = Arc::new(Self {
+            runtime: runtime.clone(),
+            display_map: AsyncResource::new(runtime.cancellation_token()),
+        });
 
-        let local_runtime = runtime.clone();
+        async fn wait_and_update(
+            displays: &Displays,
+            screenshot_impl: &ScreenshotImpl,
+        ) -> Result<()> {
+            let displays_info = displays.wait_get_info().await?;
 
-        let x11_connection = runtime.platform().x11_connection();
-        let local_x11_connection = x11_connection.clone();
+            screenshot_impl.update(displays_info).await?;
 
-        let displays_info = {
-            let displays_info = displays.displays_info().lock().unwrap();
-            displays_info.clone()
-        };
+            Ok(())
+        }
 
-        Self::update_displays(
-            runtime.clone(),
-            display_map.clone(),
-            displays_info,
-            x11_connection.clone(),
-        )
-        .await?;
-
-        let cancellation_token = runtime.cancellation_token();
-        let screen_change_guard = local_runtime.platform().screen_change().subscribe();
-        let mut screen_change_receiver = screen_change_guard.subscribe();
-
+        let local_screenshot_impl = screenshot_impl.clone();
         runtime.task_tracker().spawn(async move {
+            if let Err(err) = wait_and_update(&displays, &local_screenshot_impl).await {
+                error!("error getting displays info: {err}");
+            }
+
             loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    event = screen_change_receiver.changed() => {
-                        if event.is_err() { break; }
-                    }
+                if displays.changed().await.is_err() {
+                    break;
                 }
 
-                let displays_info = screen_change_receiver.borrow_and_update().clone();
-
-                Self::update_displays(
-                    local_runtime.clone(),
-                    local_display_map.clone(),
-                    displays_info,
-                    local_x11_connection.clone(),
-                )
-                .await
-                .unwrap();
+                if let Err(err) = wait_and_update(&displays, &local_screenshot_impl).await {
+                    error!("error getting displays info: {err}");
+                }
             }
         });
 
-        let result = Self {
-            display_map,
-            x11_connection,
-            screen_change_guard,
-        };
-
-        Ok(result)
+        Ok(screenshot_impl)
     }
 
-    #[allow(clippy::significant_drop_tightening)]
-    async fn update_displays(
-        runtime: Arc<Runtime>,
-        display_map: Arc<Mutex<HashMap<u32, Display>>>,
-        displays_info: DisplayInfoVec,
-        x11_connection: Arc<X11Connection>,
-    ) -> Result<()> {
-        let mut display_map = display_map.lock().await;
-
-        display_map.clear();
-
+    async fn update(&self, displays_info: Arc<DisplayInfoVec>) -> Result<()> {
+        let mut new_display_map = HashMap::with_capacity(displays_info.len());
         for display_info in displays_info.iter() {
-            display_map.insert(
+            new_display_map.insert(
                 display_info.id,
-                Display::new(runtime.clone(), display_info, x11_connection.clone()).await?,
+                Arc::new(Display::new(self.runtime.clone(), display_info).await?),
             );
         }
+
+        self.display_map.set(new_display_map);
 
         Ok(())
     }
 }
 
 impl ScreenshotImplTrait for ScreenshotImpl {
-    async fn capture_rect(&mut self, rect: Rect) -> Result<Image> {
-        capture_get_image(self.x11_connection.clone(), rect).await
+    async fn capture_rect(&self, rect: Rect) -> Result<Image> {
+        let x11_connection = self.runtime.platform().x11_connection();
+
+        capture_get_image(x11_connection, rect).await
     }
 
-    #[allow(clippy::significant_drop_tightening)]
-    async fn _capture_display(&mut self, display_id: u32) -> Result<Image> {
-        let display_map = self.display_map.lock().await;
+    async fn capture_display(&self, display_id: u32) -> Result<Image> {
+        let display_map = self.display_map.wait_get().await?;
         let display = display_map
             .get(&display_id)
             .ok_or_else(|| eyre!("unknown display id: {display_id}"))?;
@@ -276,7 +218,7 @@ impl ScreenshotImplTrait for ScreenshotImpl {
         display.capture().await
     }
 
-    async fn _capture_pixel(&mut self, position: Point) -> Result<Color> {
+    async fn capture_pixel(&self, position: Point) -> Result<Color> {
         let result = self
             .capture_rect(rect(point(position.x, position.y), size(1, 1)))
             .await?;
@@ -334,7 +276,12 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
 
 #[cfg(test)]
 mod tests {
-    use std::{sync::Arc, time::Instant};
+    use std::{
+        sync::Arc,
+        time::{Duration, Instant},
+    };
+
+    use tokio::{fs, time::sleep};
 
     use crate::{
         core::{
@@ -348,7 +295,8 @@ mod tests {
     #[ignore]
     fn test_screenshot() {
         Runtime::test(async |runtime| {
-            let displays = Displays::new(runtime.clone()).unwrap();
+            let displays =
+                Displays::new(runtime.cancellation_token(), runtime.task_tracker()).unwrap();
 
             /*
             let rect2 = {
@@ -392,22 +340,20 @@ mod tests {
             elapsed: 0.00688114
              */
 
-            let displays_info = {
-                let displays_info = displays.displays_info().lock().unwrap();
-                displays_info.clone()
-            };
+            let imp = ScreenshotImpl::new(runtime, displays.clone())
+                .await
+                .unwrap();
 
-            let displays = Arc::new(displays);
-
-            let mut imp = ScreenshotImpl::new(runtime, displays).await.unwrap();
+            let displays_info = displays.wait_get_info().await.unwrap();
 
             for display in displays_info.iter() {
                 let start = Instant::now();
 
-                let image = imp._capture_display(display.id).await.unwrap();
+                let image = imp.capture_display(display.id).await.unwrap();
 
                 println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
 
+                fs::create_dir_all("/tmp/test").await.unwrap();
                 image
                     .save(format!("/tmp/test/test{}.bmp", display.id))
                     .unwrap();

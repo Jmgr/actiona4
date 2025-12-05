@@ -1,10 +1,8 @@
-use std::{
-    fmt::Display,
-    sync::{Arc, Mutex},
-};
+use std::{fmt::Display, sync::Arc};
 
 use color_eyre::Result;
 use derive_where::derive_where;
+use parking_lot::Mutex;
 use sysinfo::{MemoryRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -163,7 +161,7 @@ impl Memory {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system_guard = local_system.lock().unwrap();
+                let mut system_guard = local_system.lock();
                 system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
                 MemoryUsage::new_with_memory(&system_guard)
             })
@@ -173,7 +171,7 @@ impl Memory {
 
     #[must_use]
     pub fn memory_usage(&self) -> MemoryUsage {
-        let system_guard = self.system.lock().unwrap();
+        let system_guard = self.system.lock();
 
         MemoryUsage::new_with_memory(&system_guard)
     }
@@ -183,7 +181,7 @@ impl Memory {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system_guard = local_system.lock().unwrap();
+                let mut system_guard = local_system.lock();
                 system_guard.refresh_memory_specifics(MemoryRefreshKind::nothing().with_swap());
                 MemoryUsage::new_with_swap(&system_guard)
             })
@@ -193,14 +191,14 @@ impl Memory {
 
     #[must_use]
     pub fn swap_usage(&self) -> MemoryUsage {
-        let system_guard = self.system.lock().unwrap();
+        let system_guard = self.system.lock();
 
         MemoryUsage::new_with_swap(&system_guard)
     }
 
     /// Note: only works on Linux
     pub fn cgroup_limits(&self) -> Option<CGroupLimits> {
-        let system_guard = self.system.lock().unwrap();
+        let system_guard = self.system.lock();
         system_guard.cgroup_limits().map(CGroupLimits::from)
     }
 }

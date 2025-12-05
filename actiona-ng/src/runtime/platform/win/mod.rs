@@ -51,9 +51,7 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
 
     match msg {
         WM_DISPLAYCHANGE => {
-            let infos = display_info::DisplayInfo::all().unwrap();
-
-            _ = runtime.screen_change_sender.send(infos.into());
+            runtime.displays.refresh();
         }
         WM_DESTROY => unsafe {
             PostQuitMessage(0);
@@ -128,14 +126,16 @@ pub struct Runtime {
     mouse_input_dispatcher: Arc<MouseInputDispatcher>,
     keyboard_input_dispatcher: Arc<KeyboardInputDispatcher>,
     _message_pump: SafeMessagePump,
-    screen_change_sender: broadcast::Sender<DisplayInfoVec>,
+    displays: Displays,
 }
 
 #[allow(unsafe_code)]
 impl Runtime {
+    #[instrument(name = "WinRuntime::new", skip_all)]
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
+        displays: Displays,
     ) -> Result<Arc<Self>> {
         let message_pump = SafeMessagePump::new::<DisplayRunner>(
             "window",
@@ -149,8 +149,6 @@ impl Runtime {
         let keyboard_input_dispatcher =
             KeyboardInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
-        let (screen_change_sender, _) = broadcast::channel(1024); // TODO
-
         Ok(Arc::new_cyclic(|me| {
             if RUNTIME.set(me.clone()).is_err() {
                 panic!("Runtime should only be instantiated once");
@@ -160,7 +158,7 @@ impl Runtime {
                 mouse_input_dispatcher,
                 keyboard_input_dispatcher,
                 _message_pump: message_pump,
-                screen_change_sender,
+                displays,
             }
         }))
     }
@@ -183,11 +181,6 @@ impl Runtime {
     #[must_use]
     pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
         self.keyboard_input_dispatcher.subscribe_keyboard_text()
-    }
-
-    #[must_use]
-    pub fn subscribe_screen_change(&self) -> broadcast::Receiver<DisplayInfoVec> {
-        self.screen_change_sender.subscribe()
     }
 }
 

@@ -5,6 +5,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     prelude::*,
 };
+use tracing::instrument;
 
 use super::Coordinate;
 use crate::{
@@ -56,6 +57,7 @@ impl<'js> Trace<'js> for JsMouse {
 
 impl JsMouse {
     /// @skip
+    #[instrument(skip_all)]
     pub async fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
         Ok(Self {
             inner: Arc::new(super::Mouse::new(runtime).await?),

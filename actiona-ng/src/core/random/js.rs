@@ -110,12 +110,13 @@ impl JsRandom {
     }
 
     /// Returns a random position on any display.
-    pub fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
+    pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
         let user_data = ctx.user_data();
 
         let point: displays::Result<JsPoint> = user_data
             .displays()
             .random_point(user_data.rng())
+            .await
             .map(|point| point.into());
 
         point.into_js_result(&ctx)

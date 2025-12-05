@@ -2,9 +2,11 @@ use std::{fs::File, path::Path, sync::Arc, time::Duration};
 
 use color_eyre::Result;
 use macros::FromJsObject;
+use once_cell::sync::OnceCell;
 use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::error;
 
 use crate::core::js::duration::JsDuration;
 
@@ -114,26 +116,49 @@ impl Default for PlaySoundOptions {
     }
 }
 
+#[derive(Default)]
+struct OutputStreamCell(OnceCell<OutputStream>);
+
+impl OutputStreamCell {
+    fn get_or_try_init(&self) -> Result<&OutputStream> {
+        Ok(self
+            .0
+            .get_or_try_init(OutputStreamBuilder::open_default_stream)?)
+    }
+}
+
 pub struct Audio {
-    output_stream: OutputStream,
+    output_stream: Arc<OutputStreamCell>,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
 }
 
 impl Audio {
     pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Result<Self> {
+        let output_stream = Arc::new(OutputStreamCell::default());
+
+        // Delayed initialization
+        let local_output_stream = output_stream.clone();
+        task_tracker.spawn_blocking(move || {
+            if let Err(err) = local_output_stream.get_or_try_init() {
+                error!("open_default_stream failed: {err}");
+            }
+        });
+
         Ok(Self {
-            output_stream: OutputStreamBuilder::open_default_stream()?,
+            output_stream,
             cancellation_token,
             task_tracker,
         })
     }
 
     pub fn play_file(&self, path: &Path, options: PlaySoundOptions) -> Result<PlayingSound> {
+        let output_stream = self.output_stream.get_or_try_init()?;
+
         let file = File::open(path)?;
         let mut source: Box<dyn Source<Item = f32> + Send> = Box::new(Decoder::try_from(file)?);
         let duration = source.total_duration();
-        let sink = Sink::connect_new(self.output_stream.mixer());
+        let sink = Sink::connect_new(output_stream.mixer());
 
         sink.set_volume(options.volume);
         sink.set_speed(options.playback_rate);

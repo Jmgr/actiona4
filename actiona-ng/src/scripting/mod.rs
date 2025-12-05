@@ -14,6 +14,7 @@ use rquickjs::{
     AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
     Promise, Value, async_with, context::EvalOptions, markers::ParallelSend,
 };
+use tracing::instrument;
 
 use crate::scripting::typescript::TsToJs;
 
@@ -72,6 +73,7 @@ fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
 }
 
 impl Engine {
+    #[instrument(skip_all)]
     pub async fn new() -> Result<Self> {
         let runtime = AsyncRuntime::new()?;
         let context = AsyncContext::full(&runtime).await?;
@@ -116,7 +118,7 @@ impl Engine {
     }
 
     #[allow(clippy::significant_drop_tightening)]
-    fn ts_to_js(&self, script: &str) -> Result<(u64, String)> {
+    pub fn ts_to_js(&self, script: &str) -> Result<(u64, String)> {
         let mut hasher = DefaultHasher::new();
         script.hash(&mut hasher);
         let hash = hasher.finish();
@@ -153,9 +155,10 @@ impl Engine {
 
     // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
     #[allow(unsafe_op_in_unsafe_fn)]
+    #[instrument(skip_all)]
     pub async fn eval_async<T>(&self, script: &str) -> Result<T>
     where
-        for<'any_js> T: FromJs<'any_js> + Send + 'static + std::fmt::Debug,
+        for<'any_js> T: FromJs<'any_js> + Send + 'static,
     {
         let (hash, js_code) = self.ts_to_js(script)?;
         let sourcemaps = self.sourcemaps.clone();
@@ -172,6 +175,38 @@ impl Engine {
             }.await;
 
             Self::process_caught_result(result, sourcemaps)
+        })
+        .await
+    }
+
+    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+    #[allow(unsafe_op_in_unsafe_fn)]
+    #[instrument(skip_all)]
+    pub async fn eval_async_fn<T>(
+        &self,
+        script: &str,
+        f: impl FnOnce(Value) -> Result<T> + Send,
+    ) -> Result<T>
+    where
+        for<'any_js> T: FromJs<'any_js> + Send + 'static,
+    {
+        let (hash, js_code) = self.ts_to_js(script)?;
+        let sourcemaps = self.sourcemaps.clone();
+
+        async_with!(self.context => |ctx| {
+            let mut options = EvalOptions::default();
+            options.promise = true;
+            options.filename = Some(format!("{hash}"));
+
+            let result = async {
+                let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
+                let future: Object = func.into_future().await.catch(&ctx)?;
+                future.get::<_, Value>("value").catch(&ctx)
+            }.await;
+
+            let result = Self::process_caught_result(result, sourcemaps)?;
+
+            f(result)
         })
         .await
     }

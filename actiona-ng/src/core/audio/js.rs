@@ -6,6 +6,7 @@ use rquickjs::{
     prelude::*,
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::instrument;
 
 use crate::{
     IntoJsResult,
@@ -38,6 +39,7 @@ impl<'js> SingletonClass<'js> for JsAudio {
 
 impl JsAudio {
     /// @skip
+    #[instrument(skip_all)]
     pub fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,

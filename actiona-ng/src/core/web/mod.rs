@@ -699,10 +699,7 @@ mod helper {
 #[cfg(test)]
 #[allow(clippy::as_conversions)]
 mod tests {
-    use std::{
-        fs,
-        sync::{Arc, Mutex},
-    };
+    use std::{fs, sync::Arc};
 
     use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
     use httptest::{
@@ -710,6 +707,7 @@ mod tests {
         matchers::{contains, request},
         responders::status_code,
     };
+    use parking_lot::Mutex;
     use tokio::sync::watch;
 
     use super::*;
@@ -854,7 +852,6 @@ mod tests {
                 while receiver.changed().await.is_ok() {
                     local_received_progress
                         .lock()
-                        .unwrap()
                         .push(*receiver.borrow_and_update());
                 }
             });
@@ -880,7 +877,7 @@ mod tests {
             drop(web);
             receiver_handle.await.unwrap();
 
-            let received_progress = received_progress.lock().unwrap();
+            let received_progress = received_progress.lock();
 
             println!("{:?}", received_progress);
 

@@ -13,7 +13,7 @@ use tokio_util::{
     sync::{CancellationToken, DropGuard},
     task::TaskTracker,
 };
-use tracing::{error, info};
+use tracing::{error, info, instrument};
 use x11rb::protocol::xinput::{Device, DeviceType, EventMask, XIEventMask};
 use x11rb_async::{
     connection::Connection,
@@ -39,16 +39,16 @@ use xkbcommon::xkb::{
 use xkeysym::{KeyCode, Keysym};
 
 use crate::{
-    core::{mouse::Button, point::point, windows::platform::x11::events::WindowEvent},
+    core::{
+        displays::Displays, mouse::Button, point::point,
+        windows::platform::x11::events::WindowEvent,
+    },
     platform::x11::X11Connection,
     runtime::{
         events::{Guard, KeyboardKeyEvent, KeyboardTextEvent, MouseButtonEvent, TopicWrapper},
-        platform::x11::events::{
-            displays::ScreenChangeTopic,
-            input::{
-                InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
-                keysym_to_key,
-            },
+        platform::x11::events::input::{
+            InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
+            keysym_to_key,
         },
     },
     types::input::Direction,
@@ -78,7 +78,6 @@ pub struct Runtime {
     mouse_move_topic: Arc<TopicWrapper<MouseMoveTopic>>,
     keyboard_keys_topic: Arc<TopicWrapper<KeyboardKeysTopic>>,
     keyboard_text_topic: Arc<TopicWrapper<KeyboardTextTopic>>,
-    screen_change_topic: Arc<TopicWrapper<ScreenChangeTopic>>,
     window_event_sender: broadcast::Sender<WindowEvent>,
     main_loop_thread: Option<JoinHandle<Result<()>>>,
 }
@@ -94,10 +93,12 @@ impl Drop for Runtime {
 }
 
 impl Runtime {
+    #[instrument(name = "X11Runtime::new", skip_all)]
     pub async fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
         display_name: Option<&str>,
+        displays: Displays,
     ) -> Result<Self> {
         let x11_connection = Arc::new(
             X11Connection::new(
@@ -232,11 +233,6 @@ impl Runtime {
             cancellation_token.clone(),
             task_tracker.clone(),
         ));
-        let screen_change_topic = Arc::new(TopicWrapper::new(
-            ScreenChangeTopic::new(x11_connection.clone()),
-            cancellation_token.clone(),
-            task_tracker.clone(),
-        ));
         let (window_event_sender, _) = broadcast::channel(1024);
 
         let local_cancellation_token = cancellation_token.clone();
@@ -245,7 +241,6 @@ impl Runtime {
         let local_mouse_move_topic = mouse_move_topic.clone();
         let local_keyboard_keys_topic = keyboard_keys_topic.clone();
         let local_keyboard_text_topic = keyboard_text_topic.clone();
-        let local_screen_change_topic = screen_change_topic.clone();
         let local_window_event_sender = window_event_sender.clone();
 
         let main_loop_thread = spawn_on_dedicated_thread(move || async move {
@@ -411,14 +406,7 @@ impl Runtime {
                         keyboard_state = KeyboardState::new(local_x11_connection.clone());
                     }
                     Event::RandrScreenChangeNotify(_event) => {
-                        match display_info::DisplayInfo::all() {
-                            Ok(infos) => {
-                                local_screen_change_topic.publish(infos.into());
-                            }
-                            Err(err) => {
-                                error!("fetching display info: {err}");
-                            }
-                        }
+                        displays.refresh();
                     }
                     Event::DestroyNotify(e) => {
                         let handle = libwmctl::window(e.window).into();
@@ -439,7 +427,6 @@ impl Runtime {
             mouse_move_topic,
             keyboard_keys_topic,
             keyboard_text_topic,
-            screen_change_topic,
             window_event_sender,
             main_loop_thread: Some(main_loop_thread),
         })
@@ -478,11 +465,6 @@ impl Runtime {
     #[must_use]
     pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
         self.keyboard_text_topic.subscribe()
-    }
-
-    #[must_use]
-    pub fn screen_change(&self) -> Arc<TopicWrapper<ScreenChangeTopic>> {
-        self.screen_change_topic.clone() // TODO: return guard?
     }
 
     #[must_use]

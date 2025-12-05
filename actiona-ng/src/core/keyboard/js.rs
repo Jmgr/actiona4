@@ -11,6 +11,7 @@ use rquickjs::{
 };
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, EnumString};
+use tracing::instrument;
 
 use crate::{
     IntoJsResult,
@@ -73,6 +74,7 @@ impl SingletonClass<'_> for JsKeyboard {
 
 impl JsKeyboard {
     /// @skip
+    #[instrument(skip_all)]
     pub fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
         Ok(Self {
             inner: super::Keyboard::new(runtime)?,

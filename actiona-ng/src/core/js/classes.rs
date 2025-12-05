@@ -4,6 +4,7 @@ use rquickjs::{Class, Ctx, IntoJs, Object, class::JsClass};
 use serde::{Deserialize, Serialize};
 use serde_name::trace_name;
 use strum::IntoEnumIterator;
+use tracing::instrument;
 
 use crate::IntoJsResult;
 
@@ -33,6 +34,7 @@ pub trait SingletonClass<'js>: JsClass<'js> + IntoJs<'js> {
 /// This creates a global variable with the snake_case version of the class name
 /// and assigns the instance to it.
 /// @skip
+#[instrument(skip_all)]
 pub fn register_singleton_class<'js, T: SingletonClass<'js> + JsClass<'js> + Sized>(
     ctx: &Ctx<'js>,
     instance: T,
@@ -78,6 +80,7 @@ pub trait ValueClass<'js>: JsClass<'js> {
 ///
 /// This defines the class in the global scope, making it available for instantiation.
 /// @skip
+#[instrument(skip_all)]
 pub fn register_value_class<'js, T: ValueClass<'js> + JsClass<'js>>(
     ctx: &Ctx<'js>,
 ) -> rquickjs::Result<()> {
@@ -122,6 +125,7 @@ pub trait HostClass<'js>: JsClass<'js> + IntoJs<'js> {
 ///
 /// This defines the class in the global scope, making it available for instantiation.
 /// @skip
+#[instrument(skip_all)]
 pub fn register_host_class<'js, T: HostClass<'js> + JsClass<'js>>(
     ctx: &Ctx<'js>,
 ) -> rquickjs::Result<()> {
@@ -144,6 +148,7 @@ pub fn register_host_class<'js, T: HostClass<'js> + JsClass<'js>>(
 }
 
 /// @skip
+#[instrument(skip_all)]
 pub fn register_enum<'js, E>(ctx: &Ctx<'js>) -> rquickjs::Result<()>
 where
     E: Serialize + for<'de> Deserialize<'de> + IntoEnumIterator,

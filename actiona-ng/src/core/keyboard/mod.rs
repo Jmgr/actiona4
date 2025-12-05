@@ -26,7 +26,7 @@ pub struct Keyboard {
 }
 
 impl Keyboard {
-    #[instrument]
+    #[instrument(skip_all)]
     pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
         let enigo = runtime.enigo();
         let implementation = KeyboardImpl::new(runtime.clone())?;

@@ -48,6 +48,6 @@ pub struct Args {
     pub disable_telemetry: bool,
 
     #[cfg(unix)]
-    #[arg(long, help = "X11 display to use (Linux/X11 only 🐧)")]
+    #[arg(long, env, help = "X11 display to use (Linux/X11 only 🐧)")]
     pub display: Option<String>,
 }

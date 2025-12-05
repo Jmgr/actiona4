@@ -4,6 +4,7 @@ use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     class::{Trace, Tracer},
 };
+use tracing::instrument;
 
 use crate::{
     IntoJsResult,
@@ -32,7 +33,8 @@ impl SingletonClass<'_> for JsScreenshot {}
 
 impl JsScreenshot {
     /// @skip
-    pub async fn new(runtime: Arc<Runtime>, displays: Arc<Displays>) -> super::Result<Self> {
+    #[instrument(skip_all)]
+    pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> super::Result<Self> {
         Ok(Self {
             inner: super::Screenshot::new(runtime, displays).await?,
         })

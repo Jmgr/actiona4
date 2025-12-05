@@ -11,7 +11,7 @@ use color_eyre::{
     owo_colors::{self, OwoColorize},
 };
 use directories::BaseDirs;
-use rquickjs::{AsyncContext, Ctx, Module, Object, Value, async_with};
+use rquickjs::{CatchResultExt, Ctx, Module, Value};
 use rustyline::{
     Editor, Helper, Hinter,
     completion::{Completer, FilenameCompleter, Pair},
@@ -19,13 +19,14 @@ use rustyline::{
     highlight::{CmdKind, Highlighter, MatchingBracketHighlighter},
     validate::{ValidationContext, ValidationResult, Validator},
 };
-use syntect::{
+use tokio::{fs, runtime::Handle};
+use tracing::instrument;
+use two_face::re_exports::syntect::{
     easy::HighlightLines,
-    highlighting::{Style, Theme, ThemeSet},
+    highlighting::{Style, Theme},
     parsing::{SyntaxReference, SyntaxSet},
     util::as_24_bit_terminal_escaped,
 };
-use tokio::{fs, runtime::Handle};
 
 #[derive(Parser)]
 #[command(
@@ -57,7 +58,7 @@ struct ReplHelper {
     cmd_names: Vec<String>,
     bracket: MatchingBracketHighlighter,
     syntax_set: SyntaxSet,
-    js_syntax: SyntaxReference,
+    syntax_reference: SyntaxReference,
     theme: Theme,
 }
 
@@ -71,7 +72,7 @@ impl Highlighter for ReplHelper {
         }
 
         // Otherwise apply JS highlighting
-        let mut h = HighlightLines::new(&self.js_syntax, &self.theme);
+        let mut h = HighlightLines::new(&self.syntax_reference, &self.theme);
         // For simplicity we just highlight entire line as one chunk
         let ranges: Vec<(Style, &str)> = match h.highlight_line(line, &self.syntax_set) {
             Ok(r) => r,
@@ -162,10 +163,11 @@ impl Validator for ReplHelper {
         }
 
         let result = tokio::task::block_in_place(|| {
-            Handle::current().block_on(async {
+            let script_engine = self.script_engine.clone();
+            Handle::current().block_on(async move {
                 self.script_engine
-                    .with(|ctx| {
-                        if is_syntax_complete(&ctx, input) {
+                    .with(move |ctx| {
+                        if is_syntax_complete(&ctx, input, script_engine) {
                             ValidationResult::Valid(None)
                         } else {
                             ValidationResult::Invalid(None)
@@ -256,13 +258,18 @@ async fn parse_and_process_dot_command(
     process_dot_command(command, script_engine).await
 }
 
+#[instrument(skip_all)]
+fn setup_highlighting() -> (SyntaxSet, Theme, SyntaxReference) {
+    let syntax_set = two_face::syntax::extra_no_newlines();
+    let theme_set = two_face::theme::extra();
+    let theme = theme_set.get(two_face::theme::EmbeddedThemeName::Nord);
+    let syntax_reference = syntax_set.find_syntax_by_extension("ts").unwrap().clone();
+
+    (syntax_set, theme.clone(), syntax_reference)
+}
+
 pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
-    // Prepare syntect once
-    let syntax_set = SyntaxSet::load_defaults_nonewlines();
-    let theme_set = ThemeSet::load_defaults();
-    // Choose e.g. "base16-ocean.dark"
-    let theme = theme_set.themes["base16-ocean.dark"].clone();
-    let js_syntax = syntax_set.find_syntax_by_extension("js").unwrap().clone();
+    let (syntax_set, theme, syntax_reference) = setup_highlighting();
 
     let validator = ReplHelper {
         script_engine: script_engine.clone(),
@@ -273,8 +280,8 @@ pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
             .collect(),
         bracket: MatchingBracketHighlighter::new(),
         syntax_set,
-        js_syntax,
-        theme,
+        syntax_reference,
+        theme: theme.clone(),
     };
 
     let mut repl = Editor::new()?;
@@ -316,41 +323,24 @@ pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
                     continue;
                 }
 
-                {
-                    //let value = script_engine.eval_async::<Value>(&line).await;
-                }
-
-                /*
-                let value: Result<Option<String>> = async_with!(context => |ctx| {
-                    let code = line.as_str();
-
-                    let Ok(promise) = ctx.eval_promise::<_>(code) else {
-                        return Ok(Some(ctx.catch().to_string_coerced()?));
-                    };
-
-                    let object = match promise.into_future::<Object>().await {
-                        Ok(object) => object,
-                        Err(_) => return Ok(Some(ctx.catch().to_string_coerced()?)),
-                    };
-
-                    let value: Value = object.get("value")?;
-
-                    Ok(if value.is_undefined() {
-                        None // TODO: print objects
-                    } else if value.is_promise() {
-                        Some(format!("{} (hint: call `await {code}`)", value.to_string_coerced()?))
-                    } else {
-                        Some(value.to_string_coerced()?)
+                let value = script_engine
+                    .eval_async_fn::<Option<String>>(&line, |value| {
+                        Ok(if value.is_undefined() {
+                            None // TODO: print objects
+                        } else if value.is_promise() {
+                            Some(format!(
+                                "{} (hint: call `await {line}`)",
+                                value.to_string_coerced()?
+                            ))
+                        } else {
+                            Some(value.to_string_coerced()?)
+                        })
                     })
-                })
-                .await;
-                */
+                    .await;
 
-                /*
                 if let Some(value) = value? {
                     println!("{value}");
                 }
-                */
             }
             Err(ReadlineError::Interrupted) => {
                 // Ctrl + C
@@ -375,8 +365,11 @@ pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
     Ok(())
 }
 
-fn is_syntax_complete<'js>(ctx: &Ctx<'js>, code: &str) -> bool {
-    Module::declare(ctx.clone(), "repl_temp", code).is_ok()
+fn is_syntax_complete<'js>(ctx: &Ctx<'js>, code: &str, script_engine: Arc<Engine>) -> bool {
+    let Ok((_, js)) = script_engine.ts_to_js(code) else {
+        return false;
+    };
+    Module::declare(ctx.clone(), "repl_temp", js)
+        .catch(ctx)
+        .is_ok()
 }
-
-// TODO: TS

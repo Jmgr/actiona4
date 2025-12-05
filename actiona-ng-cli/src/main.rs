@@ -4,11 +4,13 @@ use std::sync::Arc;
 
 use actiona_ng::{
     config::Config,
-    runtime::{Runtime, WaitAtEnd},
+    runtime::{Runtime, RuntimeOptions, WaitAtEnd},
 };
 use clap::Parser;
 use color_eyre::{Result, config::HookBuilder, eyre::Context};
-use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{
+    EnvFilter, fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt,
+};
 #[cfg(windows)]
 use windows::{
     Wdk::System::SystemServices::RtlGetVersion, Win32::System::SystemInformation::OSVERSIONINFOW,
@@ -71,6 +73,11 @@ fn main() -> Result<()> {
         }
     }
 
+    let runtime_options = RuntimeOptions {
+        #[cfg(unix)]
+        display_name: args.display.clone(),
+    };
+
     Runtime::run_with_ui(
         move |runtime, script_engine| async move {
             let config = Arc::new(Config::new().await?);
@@ -105,6 +112,7 @@ fn main() -> Result<()> {
 
             Ok(())
         },
+        runtime_options,
         tauri::generate_context!(),
     )?;
 
@@ -118,7 +126,8 @@ fn init_tracing() {
         .with_writer(std::io::stdout)
         .with_ansi(true)
         .with_target(true)
-        .with_line_number(true);
+        .with_line_number(true)
+        .with_span_events(FmtSpan::CLOSE);
 
     tracing_subscriber::registry()
         .with(filter)

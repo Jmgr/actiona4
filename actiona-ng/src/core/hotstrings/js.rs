@@ -6,6 +6,7 @@ use rquickjs::{
     prelude::Opt,
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::instrument;
 
 use crate::{
     core::{hotstrings::Replacement, image::js::JsImage, js::classes::SingletonClass},
@@ -29,6 +30,7 @@ impl<'js> SingletonClass<'js> for JsHotstrings {}
 
 impl JsHotstrings {
     /// @skip
+    #[instrument(skip_all)]
     pub fn new(
         runtime: Arc<Runtime>,
         task_tracker: TaskTracker,

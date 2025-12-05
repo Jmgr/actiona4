@@ -4,6 +4,7 @@ use futures::future::select_all;
 use rquickjs::{
     Array, Ctx, Function, JsLifetime, Promise, Result, Value, class::Trace, function::Args,
 };
+use tracing::instrument;
 
 use crate::core::js::task::task;
 
@@ -77,6 +78,7 @@ impl JsConcurrency {
 
 impl JsConcurrency {
     /// @skip
+    #[instrument(skip_all)]
     pub fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
         ctx.globals().prop("Concurrency", Self::new())
     }

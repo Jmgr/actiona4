@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use rquickjs::{Ctx, Function, Promise, Result};
 use tokio::select;
+use tracing::instrument;
 
 use crate::{IntoJsResult, core::js::task::task, error::CommonError, runtime::WithUserData};
 
@@ -23,6 +24,7 @@ pub fn exit<'js>(ctx: Ctx<'js>) {
     token.cancel();
 }
 
+#[instrument(skip_all)]
 pub(crate) fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
     ctx.globals()
         .prop("sleep", Function::new(ctx.clone(), sleep))?;

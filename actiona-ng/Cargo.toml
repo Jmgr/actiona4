@@ -15,7 +15,6 @@ windows-result.workspace = true
 [target.'cfg(unix)'.dependencies]
 libwmctl.workspace = true
 memfd.workspace = true
-nix.workspace = true
 procfs.workspace = true
 rustix.workspace = true
 x11rb.workspace = true
@@ -23,6 +22,7 @@ x11rb-async.workspace = true
 xkbcommon.workspace = true
 xkeysym.workspace = true
 zbus.workspace = true
+memmap2.workspace = true
 
 [package.metadata.cargo-machete]
 ignored = ["built", "cfg_aliases", "rquickjs-serde"]
@@ -104,6 +104,7 @@ unicode-segmentation.workspace = true
 uuid.workspace = true
 versions.workspace = true
 wildmatch.workspace = true
+arc-swap.workspace = true
 
 [build-dependencies]
 built.workspace = true

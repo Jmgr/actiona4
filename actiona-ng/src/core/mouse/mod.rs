@@ -303,7 +303,7 @@ pub struct Mouse {
 // TODO: drag and drop?
 
 impl Mouse {
-    #[instrument]
+    #[instrument(skip_all)]
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self {
             enigo: runtime.enigo(),

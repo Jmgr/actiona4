@@ -1,12 +1,9 @@
-use std::{
-    collections::HashMap,
-    fmt::Display,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, fmt::Display, sync::Arc};
 
 use color_eyre::Result;
 use derive_where::derive_where;
 use itertools::Itertools;
+use parking_lot::Mutex;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
@@ -163,12 +160,7 @@ impl Os {
     #[instrument(name = "os", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let (users, groups) = task_tracker
-            .spawn_blocking(|| {
-                (
-                    sysinfo::Users::new_with_refreshed_list(),
-                    sysinfo::Groups::new_with_refreshed_list(),
-                )
-            })
+            .spawn_blocking(|| (sysinfo::Users::new(), sysinfo::Groups::new()))
             .await?;
 
         Ok(Self {
@@ -240,7 +232,7 @@ impl Os {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut users = users.lock().unwrap();
+                let mut users = users.lock();
                 users.refresh();
 
                 users
@@ -256,7 +248,7 @@ impl Os {
 
     #[must_use]
     pub fn users(&self) -> HashMap<UidUnit, User> {
-        let users = self.users.lock().unwrap();
+        let users = self.users.lock();
         users
             .list()
             .iter()
@@ -269,7 +261,7 @@ impl Os {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut groups = groups.lock().unwrap();
+                let mut groups = groups.lock();
                 groups.refresh();
 
                 groups
@@ -285,7 +277,7 @@ impl Os {
 
     #[must_use]
     pub fn groups(&self) -> HashMap<u32, Group> {
-        let groups = self.groups.lock().unwrap();
+        let groups = self.groups.lock();
         groups
             .list()
             .iter()

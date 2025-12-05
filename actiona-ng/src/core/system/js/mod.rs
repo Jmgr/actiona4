@@ -7,6 +7,7 @@ use rquickjs::{
     prelude::{Func, Opt},
 };
 use tokio_util::task::TaskTracker;
+use tracing::instrument;
 
 use crate::{
     IntoJsResult,
@@ -63,6 +64,7 @@ impl<'js> Trace<'js> for JsSystem {
 
 impl JsSystem {
     /// @skip
+    #[instrument(skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> super::Result<Self> {
         Ok(Self {
             inner: System::new(task_tracker).await?,

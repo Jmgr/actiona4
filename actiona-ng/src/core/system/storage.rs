@@ -1,12 +1,13 @@
 use std::{
     fmt::Display,
     path::{Path, PathBuf},
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
 
 use color_eyre::Result;
 use derive_where::derive_where;
 use itertools::Itertools;
+use parking_lot::Mutex;
 use sysinfo::DiskKind;
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
@@ -212,7 +213,7 @@ impl Storage {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut sysinfo_disks = sysinfo_disks.lock().unwrap();
+                let mut sysinfo_disks = sysinfo_disks.lock();
                 sysinfo_disks.refresh(rescan);
                 sysinfo_disks.list().iter().map(Disk::from).collect_vec()
             })
@@ -226,7 +227,7 @@ impl Storage {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut sysinfo_disks = sysinfo_disks.lock().unwrap();
+                let mut sysinfo_disks = sysinfo_disks.lock();
                 let disk = sysinfo_disks
                     .list_mut()
                     .iter_mut()
@@ -239,7 +240,7 @@ impl Storage {
     }
 
     pub fn disks(&self) -> Vec<Disk> {
-        let sysinfo_disks = self.sysinfo_disks.lock().unwrap();
+        let sysinfo_disks = self.sysinfo_disks.lock();
         sysinfo_disks.list().iter().map(Disk::from).collect_vec()
     }
 }

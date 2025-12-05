@@ -1,7 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     fmt::Display,
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
 
 #[cfg(windows)]
@@ -9,7 +9,8 @@ use color_eyre::eyre;
 use color_eyre::{Report, Result};
 use derive_more::Display;
 use derive_where::derive_where;
-use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, RefreshKind};
+use parking_lot::Mutex;
+use sysinfo::{ProcessRefreshKind, ProcessesToUpdate};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 
@@ -430,14 +431,7 @@ impl Display for Processes {
 impl Processes {
     #[instrument(name = "processes", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
-        let system = task_tracker
-            .spawn_blocking(move || {
-                sysinfo::System::new_with_specifics(
-                    RefreshKind::nothing()
-                        .with_processes(ProcessRefreshKind::everything().without_tasks()),
-                )
-            })
-            .await?;
+        let system = task_tracker.spawn_blocking(sysinfo::System::new).await?;
 
         Ok(Self {
             system: Arc::new(Mutex::new(system)),
@@ -454,7 +448,7 @@ impl Processes {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system = system.lock().unwrap();
+                let mut system = system.lock();
                 system.refresh_processes_specifics(
                     ProcessesToUpdate::All,
                     rescan,
@@ -485,7 +479,7 @@ impl Processes {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system = system.lock().unwrap();
+                let mut system = system.lock();
                 system.refresh_processes_specifics(
                     ProcessesToUpdate::Some(&[process_id]),
                     false,
@@ -505,7 +499,7 @@ impl Processes {
     }
 
     pub fn processes(&self) -> Result<HashMap<Pid, Process>> {
-        let system = self.system.lock().unwrap();
+        let system = self.system.lock();
         system
             .processes()
             .iter()
@@ -560,7 +554,7 @@ impl Processes {
         let result = self
             .task_tracker
             .spawn_blocking(move || {
-                let mut system = system.lock().unwrap();
+                let mut system = system.lock();
                 system.refresh_processes_specifics(
                     ProcessesToUpdate::Some(&[process_id]),
                     false,
