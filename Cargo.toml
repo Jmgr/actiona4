@@ -12,10 +12,12 @@ license = "MIT"
 
 [workspace.dependencies]
 arboard = "3.6.1"
+arc-swap = "1.7.1"
 bimap = "0.6.3"
 bytes = "1.11.0"
 chrono = "0.4.42"
 clap = { version = "4.5.53", features = ["cargo", "derive"] }
+clap_complete = "4.5.61"
 color-eyre = "0.6.5"
 console = "0.16.1"
 convert_case = "0.10.0"
@@ -72,6 +74,7 @@ once_cell = "1.21.3"
 open = "5.3.3"
 opencv = { version = "0.97.2", default-features = false, features = [
     "imgproc",
+    "imgcodecs", # TMP
 ] }
 parking_lot = "0.12.5"
 quote = "1.0.42"
@@ -89,10 +92,12 @@ rquickjs = { git = "https://github.com/DelSkayn/rquickjs.git", rev = "3fc3d357c0
 ] }
 rquickjs-serde = { git = "https://github.com/Jmgr/rquickjs-serde.git", rev = "0825bf178ff475a806d4150919538a1b42142d2f" }
 rustdoc-types = "0.57.0"
+rustyline = { version = "17.0.2", features = ["derive"] }
 serde = "1.0.228"
 serde-name = "0.2.1"
 serde_json = "1.0.145"
 serde_plain = "1.0.2"
+shell-words = "1.1.0"
 slotmap = { version = "1.0.7", features = ["serde"] }
 strum = { version = "0.27.2", features = ["derive"] }
 swc_common = { version = "18.0.0", features = ["tty-emitter", "sourcemap"] }
@@ -135,15 +140,11 @@ tracing-subscriber = { version = "0.3.22", features = [
     "time",
 ] }
 tween = "2.1.0"
+two-face = "0.4.4"
 unicode-segmentation = "1.12.0"
 uuid = { version = "1.18.1", features = ["v4", "serde"] }
 versions = { version = "7.0.0", features = ["serde"] }
 wildmatch = "2.6.1"
-clap_complete = "4.5.61"
-rustyline = { version = "17.0.2", features = ["derive"] }
-two-face = "0.4.4"
-shell-words = "1.1.0"
-arc-swap = "1.7.1"
 
 # Windows
 pe-parser = "0.7.0"
@@ -162,6 +163,7 @@ windows-result = "0.4.1"
 # Unix
 libwmctl = "0.0.51"
 memfd = "0.6.5"
+memmap2 = "0.9.9"
 procfs = { version = "0.18.0", default-features = false, features = ["flate2"] }
 rustix = { version = "1.1.2", default-features = false, features = ["process"] }
 x11rb = "0.13.2"
@@ -176,7 +178,6 @@ x11rb-async = { version = "0.13.2", features = [
 xkbcommon = { version = "0.9.0", default-features = false, features = ["x11"] }
 xkeysym = "0.2.1"
 zbus = { version = "5.12.0", default-features = false, features = ["tokio"] }
-memmap2 = "0.9.9"
 
 # Dev dependencies
 askama = "0.14.0"
@@ -202,3 +203,5 @@ panic = "abort"
 
 [profile.dev]
 lto = false
+debug = 1
+opt-level = 0

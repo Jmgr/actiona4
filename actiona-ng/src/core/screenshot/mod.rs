@@ -13,7 +13,10 @@ use platform::win::ScreenshotImpl;
 use platform::x11::ScreenshotImpl;
 
 use super::{displays::Displays, image::Image, rect::Rect};
-use crate::runtime::Runtime;
+use crate::{
+    core::{color::Color, point::Point},
+    runtime::Runtime,
+};
 
 #[derive(Debug)]
 pub struct Screenshot {
@@ -29,5 +32,13 @@ impl Screenshot {
 
     pub async fn capture_rect(&mut self, rect: Rect) -> Result<Image> {
         self.implementation.capture_rect(rect).await
+    }
+
+    pub async fn capture_display(&self, display_id: u32) -> Result<Image> {
+        self.implementation.capture_display(display_id).await
+    }
+
+    pub async fn capture_pixel(&self, position: Point) -> Result<Color> {
+        self.implementation.capture_pixel(position).await
     }
 }

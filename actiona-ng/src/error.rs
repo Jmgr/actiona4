@@ -28,7 +28,7 @@ impl IntoJSError for Error {}
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Error, EnumIs)]
+#[derive(Debug, EnumIs, Error)]
 pub enum CommonError {
     #[error("Unsupported on this platform: {0}")]
     UnsupportedPlatform(String),

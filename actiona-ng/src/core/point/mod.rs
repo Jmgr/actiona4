@@ -6,6 +6,7 @@ use std::{
 
 use color_eyre::{Report, Result};
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
+use opencv::core::Point as CvPoint;
 use serde::{Deserialize, Serialize};
 use tween::TweenValue;
 
@@ -54,6 +55,18 @@ where
     color_eyre::Report: From<X::Error> + From<Y::Error>,
 {
     Ok(Point::new(x.try_into()?, y.try_into()?))
+}
+
+impl From<CvPoint> for Point {
+    fn from(value: CvPoint) -> Self {
+        Self::new(value.x.into(), value.y.into())
+    }
+}
+
+impl From<Point> for CvPoint {
+    fn from(value: Point) -> Self {
+        Self::new(value.x.into(), value.y.into())
+    }
 }
 
 impl Mul<i32> for Point {

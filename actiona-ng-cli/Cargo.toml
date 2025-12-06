@@ -23,7 +23,11 @@ actiona-ng = { path = "../actiona-ng" }
 clap = { workspace = true, features = ["env"] }
 color-eyre.workspace = true
 console.workspace = true
+directories.workspace = true
 humantime.workspace = true
+rquickjs.workspace = true
+rustyline.workspace = true
+shell-words.workspace = true
 tauri.workspace = true
 tauri-plugin-dialog.workspace = true
 time.workspace = true
@@ -31,16 +35,12 @@ tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
-versions.workspace = true
-rquickjs.workspace = true
-rustyline.workspace = true
 two-face.workspace = true
-shell-words.workspace = true
-directories.workspace = true
+versions.workspace = true
 
 [build-dependencies]
 built.workspace = true
-tauri-build.workspace = true
-clap_complete.workspace = true
-clap = { workspace = true, features = ["env"] }
 cfg_aliases.workspace = true
+clap = { workspace = true, features = ["env"] }
+clap_complete.workspace = true
+tauri-build.workspace = true

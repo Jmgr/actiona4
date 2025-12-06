@@ -6,6 +6,7 @@ use thiserror::Error;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 
+use super::point::Point;
 use crate::{
     core::point::try_point,
     runtime::{
@@ -15,15 +16,6 @@ use crate::{
     },
     types::su32::Su32,
 };
-
-pub(crate) mod platform;
-
-#[cfg(windows)]
-use platform::win::DisplaysImpl;
-#[cfg(unix)]
-use platform::x11::DisplaysImpl;
-
-use super::point::Point;
 
 pub mod js;
 
@@ -50,24 +42,19 @@ pub enum DisplaysError {
 
 pub type Result<T> = std::result::Result<T, DisplaysError>;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct Displays {
-    cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
-    implementation: Arc<DisplaysImpl>,
     displays_info: AsyncResource<DisplayInfoVec>,
 }
 
 impl Displays {
     #[instrument(skip_all)]
     pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Result<Self> {
-        let implementation = Arc::new(DisplaysImpl::new()?);
-        let displays_info = AsyncResource::new(cancellation_token.clone());
+        let displays_info = AsyncResource::new(cancellation_token);
 
         let displays = Self {
-            cancellation_token,
             task_tracker,
-            implementation,
             displays_info,
         };
 

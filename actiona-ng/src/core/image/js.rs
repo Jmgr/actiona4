@@ -223,7 +223,7 @@ pub struct JsDrawingOptions {
     pub hollow: bool,
 }
 
-pub type FindImageOptions = super::JsFindImageOptions;
+pub type FindImageOptions = super::find_image::JsFindImageOptions;
 
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Image")]
@@ -305,7 +305,7 @@ impl JsImage {
             .decode()
             .into_js_result(&ctx)?;
 
-        Ok(super::Image(image).into())
+        Ok(super::Image::from_dynamic_image(image).into())
     }
 
     #[qjs(get)]
@@ -366,7 +366,7 @@ impl JsImage {
     /// Blur the image and returns a new image.
     #[must_use]
     pub fn blurred(&self, options: Opt<JsBlurOptions>) -> Self {
-        super::Image(self.blur_impl(options)).into()
+        super::Image::from_dynamic_image(self.blur_impl(options)).into()
     }
 
     #[qjs(skip)]
@@ -450,7 +450,7 @@ impl JsImage {
             },
         );
 
-        super::Image(result).into()
+        super::Image::from_dynamic_image(result).into()
     }
 
     /// Flip the image.
@@ -473,7 +473,7 @@ impl JsImage {
     #[must_use]
     pub fn flipped(&self, flip_direction: JsFlipDirection) -> Self {
         use JsFlipDirection::*;
-        super::Image(match flip_direction {
+        super::Image::from_dynamic_image(match flip_direction {
             Horizontal => self.inner.fliph(),
             Vertical => self.inner.flipv(),
         })
@@ -494,7 +494,7 @@ impl JsImage {
     /// Hue rotate the image and returns a new image.
     #[must_use]
     pub fn hue_rotated(&self, value: i32) -> Self {
-        super::Image(self.inner.huerotate(value)).into()
+        super::Image::from_dynamic_image(self.inner.huerotate(value)).into()
     }
 
     /// Transform this image into a grayscale.
@@ -507,7 +507,7 @@ impl JsImage {
     /// Returns a grayscale version of this image.
     #[must_use]
     pub fn grayscaled(&self) -> Self {
-        super::Image(self.inner.grayscale()).into()
+        super::Image::from_dynamic_image(self.inner.grayscale()).into()
     }
 
     /// Crops this image.
@@ -526,7 +526,7 @@ impl JsImage {
     #[must_use]
     pub fn cropped(&self, rect: JsRectLike) -> Self {
         let (x, y, width, height) = rect.0.clamped();
-        super::Image(self.inner.crop_imm(x, y, width, height)).into()
+        super::Image::from_dynamic_image(self.inner.crop_imm(x, y, width, height)).into()
     }
 
     /// Resizes this image.
@@ -545,7 +545,7 @@ impl JsImage {
     /// Returns a resized version of this image.
     #[must_use]
     pub fn resized(&self, width: u32, height: u32, options: Opt<JsResizeOptions>) -> Self {
-        super::Image(self.resize_impl(width, height, options)).into()
+        super::Image::from_dynamic_image(self.resize_impl(width, height, options)).into()
     }
 
     #[qjs(skip)]
@@ -574,7 +574,7 @@ impl JsImage {
     /// Returns a brightened or darkened version of this image.
     #[must_use]
     pub fn adjusted_brightness(&self, value: i32) -> Self {
-        super::Image(self.inner.brighten(value)).into()
+        super::Image::from_dynamic_image(self.inner.brighten(value)).into()
     }
 
     /// Adjusts the contrast of this image.
@@ -591,7 +591,7 @@ impl JsImage {
     /// Returns a new image with an adjusted contrast.
     #[must_use]
     pub fn adjusted_contrast(&self, value: f32) -> Self {
-        super::Image(self.inner.adjust_contrast(value)).into()
+        super::Image::from_dynamic_image(self.inner.adjust_contrast(value)).into()
     }
 
     /// Fill this image with a color.
@@ -612,13 +612,13 @@ impl JsImage {
     /// Fill this image with a color.
     #[must_use]
     pub fn filled(&self, color: JsColorLike) -> Self {
-        let mut rgba = self.inner.0.to_rgba8();
+        let mut rgba = self.inner.to_rgba8().into_owned();
 
         for pixel in rgba.pixels_mut() {
             *pixel = color.0.into();
         }
 
-        super::Image(DynamicImage::ImageRgba8(rgba)).into()
+        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(rgba)).into()
     }
 
     #[qjs(skip)]
@@ -667,7 +667,7 @@ impl JsImage {
     pub fn copy_region(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<Self> {
         let (x, y) = self.check_position(&ctx, point(rect.0.origin.x, rect.0.origin.y))?;
 
-        Ok(super::Image(DynamicImage::ImageRgba8(
+        Ok(super::Image::from_dynamic_image(DynamicImage::ImageRgba8(
             self.inner
                 .view(x, y, rect.0.size.width.into(), rect.0.size.height.into())
                 .to_image(),
@@ -684,7 +684,7 @@ impl JsImage {
     #[qjs(skip)]
     fn ensure_rgba(&mut self) -> &mut RgbaImage {
         if self.inner.color() != ColorType::Rgba8 {
-            *self.inner = DynamicImage::ImageRgba8(self.inner.0.to_rgba8());
+            *self.inner = DynamicImage::ImageRgba8(self.inner.inner.to_rgba8());
         }
 
         self.inner.as_mut_rgba8().expect("image should be the RGBA")
@@ -698,7 +698,7 @@ impl JsImage {
         color: JsColorLike,
     ) -> Class<'js, Self> {
         draw_cross_mut(
-            &mut self.inner.0,
+            &mut self.inner.inner,
             *color.0,
             position.0.x.into(),
             position.0.y.into(),
@@ -710,8 +710,8 @@ impl JsImage {
     /// Draw a cross on a copy of this image.
     #[must_use]
     pub fn with_cross(&self, position: JsPointLike, color: JsColorLike) -> Self {
-        super::Image(DynamicImage::ImageRgba8(draw_cross(
-            &self.inner.0,
+        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(draw_cross(
+            &self.inner.inner,
             *color.0,
             position.0.x.into(),
             position.0.y.into(),
@@ -728,7 +728,7 @@ impl JsImage {
         color: JsColorLike,
     ) -> Class<'js, Self> {
         draw_line_segment_mut(
-            &mut self.inner.0,
+            &mut self.inner.inner,
             (start.0.x.into(), start.0.y.into()),
             (end.0.x.into(), end.0.y.into()),
             *color.0,
@@ -740,8 +740,8 @@ impl JsImage {
     /// Draw a line on a copy of this image.
     #[must_use]
     pub fn with_line(&self, start: JsPointLike, end: JsPointLike, color: JsColorLike) -> Self {
-        super::Image(DynamicImage::ImageRgba8(draw_line_segment(
-            &self.inner.0,
+        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(draw_line_segment(
+            &self.inner.inner,
             (start.0.x.into(), start.0.y.into()),
             (end.0.x.into(), end.0.y.into()),
             *color.0,
@@ -762,14 +762,14 @@ impl JsImage {
 
         if options.hollow {
             draw_hollow_circle_mut(
-                &mut self.inner.0,
+                &mut self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 radius,
                 *color.0,
             );
         } else {
             draw_filled_circle_mut(
-                &mut self.inner.0,
+                &mut self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 radius,
                 *color.0,
@@ -792,21 +792,21 @@ impl JsImage {
 
         let image = if options.hollow {
             draw_hollow_circle(
-                &self.inner.0,
+                &self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 radius,
                 *color.0,
             )
         } else {
             draw_filled_circle(
-                &self.inner.0,
+                &self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 radius,
                 *color.0,
             )
         };
 
-        super::Image(DynamicImage::ImageRgba8(image)).into()
+        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into()
     }
 
     /// Draw an ellipse on this image.
@@ -823,7 +823,7 @@ impl JsImage {
 
         if options.hollow {
             draw_hollow_ellipse_mut(
-                &mut self.inner.0,
+                &mut self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 width_radius,
                 height_radius,
@@ -831,7 +831,7 @@ impl JsImage {
             );
         } else {
             draw_filled_ellipse_mut(
-                &mut self.inner.0,
+                &mut self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 width_radius,
                 height_radius,
@@ -856,7 +856,7 @@ impl JsImage {
 
         let image = if options.hollow {
             draw_hollow_ellipse(
-                &self.inner.0,
+                &self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 width_radius,
                 height_radius,
@@ -864,7 +864,7 @@ impl JsImage {
             )
         } else {
             draw_filled_ellipse(
-                &self.inner.0,
+                &self.inner.inner,
                 (center.0.x.into(), center.0.y.into()),
                 width_radius,
                 height_radius,
@@ -872,7 +872,7 @@ impl JsImage {
             )
         };
 
-        super::Image(DynamicImage::ImageRgba8(image)).into()
+        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into()
     }
 
     /// Draw a rectangle on this image.
@@ -888,13 +888,13 @@ impl JsImage {
 
         if options.hollow {
             draw_hollow_rect_mut(
-                &mut self.inner.0,
+                &mut self.inner.inner,
                 Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             );
         } else {
             draw_filled_rect_mut(
-                &mut self.inner.0,
+                &mut self.inner.inner,
                 Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             );
@@ -915,19 +915,19 @@ impl JsImage {
 
         let image = if options.hollow {
             draw_hollow_rect(
-                &self.inner.0,
+                &self.inner.inner,
                 Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             )
         } else {
             draw_filled_rect(
-                &self.inner.0,
+                &self.inner.inner,
                 Rect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             )
         };
 
-        Ok(super::Image(DynamicImage::ImageRgba8(image)).into())
+        Ok(super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into())
     }
 
     /// Draw another image on this image.
@@ -953,7 +953,7 @@ impl JsImage {
                 .into_js_result(&ctx)?;
         } else {
             self.inner
-                .copy_from(&image.inner.0, x, y)
+                .copy_from(&image.inner.inner, x, y)
                 .into_js_result(&ctx)?;
         }
 
@@ -982,7 +982,7 @@ impl JsImage {
                 .into_js_result(&ctx)?;
         } else {
             target_image
-                .copy_from(&image.inner.0, x, y)
+                .copy_from(&image.inner.inner, x, y)
                 .into_js_result(&ctx)?;
         }
 

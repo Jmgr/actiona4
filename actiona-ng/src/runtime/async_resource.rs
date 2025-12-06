@@ -7,7 +7,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::cancel_on;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct AsyncResource<T> {
     value: Arc<ArcSwapOption<T>>,
     notify: Arc<Notify>,

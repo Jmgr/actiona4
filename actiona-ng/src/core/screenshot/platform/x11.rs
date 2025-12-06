@@ -5,6 +5,7 @@ use image::{DynamicImage, RgbaImage};
 use memfd::{FileSeal, MemfdOptions};
 use memmap2::MmapMut;
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
+use tokio::sync::Mutex;
 use tracing::error;
 use x11rb_async::{connection::Connection, protocol::xproto::ImageFormat};
 
@@ -27,23 +28,12 @@ use crate::{
     types::su32::su32,
 };
 
+const BYTES_PER_PIXEL: usize = 4;
+
 #[derive(Debug)]
 struct ShmData {
     shm_segment_id: u32,
     map: MmapMut,
-    x11_connection: Arc<X11Connection>,
-}
-
-impl Drop for ShmData {
-    fn drop(&mut self) {
-        use x11rb_async::protocol::shm::ConnectionExt;
-
-        _ = Runtime::block_on(
-            self.x11_connection
-                .async_connection()
-                .shm_detach(self.shm_segment_id),
-        );
-    }
 }
 
 #[derive(Debug)]
@@ -51,16 +41,20 @@ struct Display {
     rect: Rect,
     shm_data: Option<ShmData>,
     x11_connection: Arc<X11Connection>,
+    shm_lock: Mutex<()>,
 }
 
 impl Display {
     #[allow(unsafe_code)]
     async fn new(runtime: Arc<Runtime>, display_info: &DisplayInfo) -> Result<Self> {
-        const BYTES_PER_PIXEL: usize = 4;
-
         let rect = display_info.rect;
         let image_size = rect.size.width * rect.size.height * su32(BYTES_PER_PIXEL);
         let x11_connection = runtime.platform().x11_connection();
+
+        let root_depth = x11_connection.screen().root_depth;
+        if root_depth != 24 {
+            return Err(eyre!("unsupported X11 depth: {}", root_depth));
+        }
 
         let shm_data = if runtime.platform().has_shm() {
             let shm_segment_id = x11_connection.async_connection().generate_id().await?;
@@ -79,7 +73,6 @@ impl Display {
             let result = ShmData {
                 shm_segment_id,
                 map,
-                x11_connection: x11_connection.clone(),
             };
 
             use x11rb_async::protocol::shm::ConnectionExt;
@@ -99,22 +92,25 @@ impl Display {
             rect,
             shm_data,
             x11_connection,
+            shm_lock: Mutex::new(()),
         })
     }
 
-    async fn capture_shm_get_image(&self, shm_data: &ShmData) -> Result<Image> {
+    async fn capture_shm_get_image(&self, shm_data: &ShmData, rect: Rect) -> Result<Image> {
         use x11rb_async::protocol::shm::ConnectionExt;
 
         let root = self.x11_connection.screen().root;
+
+        let _guard = self.shm_lock.lock().await;
 
         self.x11_connection
             .async_connection()
             .shm_get_image(
                 root,
-                self.rect.origin.x.into(),
-                self.rect.origin.y.into(),
-                self.rect.size.width.into(), // TODO: document that the max image size is u16::MAX
-                self.rect.size.height.into(),
+                rect.origin.x.into(),
+                rect.origin.y.into(),
+                rect.size.width.into(), // TODO: document that the max image size is u16::MAX
+                rect.size.height.into(),
                 u32::MAX, // plane mask (capture all planes)
                 ImageFormat::Z_PIXMAP.into(),
                 shm_data.shm_segment_id,
@@ -127,16 +123,16 @@ impl Display {
         // Extract pixel data from shared memory
         let pixel_data = &shm_data.map;
 
-        Ok(image_from_bgr_data(
+        image_from_bgr_data(
             pixel_data,
-            self.rect.size.width.into(),
-            self.rect.size.height.into(),
-        ))
+            rect.size.width.try_into()?,
+            rect.size.height.try_into()?,
+        )
     }
 
     pub async fn capture(&self) -> Result<Image> {
         if let Some(shm_data) = &self.shm_data {
-            self.capture_shm_get_image(shm_data).await
+            self.capture_shm_get_image(shm_data, self.rect).await
         } else {
             capture_get_image(self.x11_connection.clone(), self.rect).await
         }
@@ -206,6 +202,8 @@ impl ScreenshotImplTrait for ScreenshotImpl {
     async fn capture_rect(&self, rect: Rect) -> Result<Image> {
         let x11_connection = self.runtime.platform().x11_connection();
 
+        // For now we use non-SHM for rects.
+        // We might want to do some benchmark on start later.
         capture_get_image(x11_connection, rect).await
     }
 
@@ -231,12 +229,26 @@ impl ScreenshotImplTrait for ScreenshotImpl {
     }
 }
 
-fn image_from_bgr_data(data: &[u8], width: u32, height: u32) -> Image {
-    let mut image = RgbaImage::new(width, height);
+fn image_from_bgr_data(data: &[u8], width: usize, height: usize) -> Result<Image> {
+    let needed = width
+        .checked_mul(height)
+        .and_then(|pixel_count| pixel_count.checked_mul(BYTES_PER_PIXEL))
+        .ok_or_else(|| eyre!("image dimensions overflow: {width}x{height}"))?;
 
+    if data.len() < needed {
+        return Err(eyre!(
+            "X11 image data too small: expected {needed} bytes, got {}",
+            data.len()
+        ));
+    }
+
+    let width = u32::try_from(width)?;
+    let height = u32::try_from(height)?;
+
+    let mut image = RgbaImage::new(width, height);
     let image_data: &mut [u8] = image.as_mut();
 
-    image_data.copy_from_slice(data);
+    image_data.copy_from_slice(&data[..needed]);
 
     // Convert from BGR to RGB
     image_data.par_chunks_exact_mut(4).for_each(|c| {
@@ -244,7 +256,7 @@ fn image_from_bgr_data(data: &[u8], width: u32, height: u32) -> Image {
         c[3] = 255; // Set alpha to 255 (fully opaque)
     });
 
-    DynamicImage::ImageRgba8(image).into()
+    Ok(DynamicImage::ImageRgba8(image).into())
 }
 
 async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Result<Image> {
@@ -267,21 +279,18 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
         .reply()
         .await?;
 
-    Ok(image_from_bgr_data(
+    image_from_bgr_data(
         &reply.data,
-        rect.size.width.into(),
-        rect.size.height.into(),
-    ))
+        rect.size.width.try_into()?,
+        rect.size.height.try_into()?,
+    )
 }
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        sync::Arc,
-        time::{Duration, Instant},
-    };
+    use std::time::Instant;
 
-    use tokio::{fs, time::sleep};
+    use tokio::{fs, join};
 
     use crate::{
         core::{
@@ -339,17 +348,18 @@ mod tests {
             elapsed: 0.014961153
             elapsed: 0.00688114
              */
-
-            let imp = ScreenshotImpl::new(runtime, displays.clone())
+            let imp2 = ScreenshotImpl::new(runtime, displays.clone())
                 .await
                 .unwrap();
+
+            /*
 
             let displays_info = displays.wait_get_info().await.unwrap();
 
             for display in displays_info.iter() {
                 let start = Instant::now();
 
-                let image = imp.capture_display(display.id).await.unwrap();
+                let image = imp2.capture_display(display.id).await.unwrap();
 
                 println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
 
@@ -358,6 +368,45 @@ mod tests {
                     .save(format!("/tmp/test/test{}.bmp", display.id))
                     .unwrap();
             }
+            */
+
+            let displays_info = displays.wait_get_info().await.unwrap();
+            let mut iter = displays_info.iter();
+            let a = iter.next().unwrap().id;
+            let b = iter.next().unwrap().id;
+            let c = iter.next().unwrap().id;
+
+            let start = Instant::now();
+
+            let (image1, image2, image3) = join!(
+                imp2.capture_display(a),
+                imp2.capture_display(b),
+                imp2.capture_display(c)
+            );
+
+            println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
+
+            let image1 = image1.unwrap();
+            let image2 = image2.unwrap();
+            let image3 = image3.unwrap();
+
+            fs::create_dir_all("/tmp/test").await.unwrap();
+            image1.save("/tmp/test/test1.bmp").unwrap();
+            image2.save("/tmp/test/test2.bmp").unwrap();
+            image3.save("/tmp/test/test3.bmp").unwrap();
+
+            /*
+            let start = Instant::now();
+
+            let image = imp2
+                .capture_rect(rect(point(1800, 0), size(300, 100)))
+                .await
+                .unwrap();
+            println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
+
+
+            image.save("/tmp/test/test.bmp").unwrap();
+            */
         });
     }
 }
