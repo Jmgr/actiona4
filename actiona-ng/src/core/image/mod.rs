@@ -9,7 +9,7 @@ use opencv::core::Mat;
 pub mod find_image;
 pub mod js;
 
-#[derive(Default, Debug)]
+#[derive(Debug, Default)]
 struct MatCache(ArcSwapOption<Mat>);
 
 impl MatCache {

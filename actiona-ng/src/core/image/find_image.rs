@@ -1,8 +1,9 @@
-use std::{cmp::Ordering, sync::Arc, time::Instant};
+use std::{cmp::Ordering, collections::HashMap, sync::Arc, time::Instant};
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
 use image::{GrayImage, RgbImage, RgbaImage};
+use itertools::Itertools;
 use macros::FromJsObject;
 use opencv::{
     core::{
@@ -11,9 +12,11 @@ use opencv::{
     },
     imgcodecs::imwrite,
     imgproc::{
-        COLOR_RGB2BGR, COLOR_RGBA2BGRA, TM_CCOEFF_NORMED, cvt_color, match_template, pyr_down,
+        self, COLOR_RGB2BGR, COLOR_RGBA2BGRA, TM_CCOEFF_NORMED, cvt_color,
+        match_template as cv_match_template, pyr_down,
     },
 };
+use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use tracing::instrument;
 
 use crate::core::{
@@ -33,10 +36,7 @@ pub struct JsFindImageOptions {
     /// Radius to consider proximity (in pixels)
     non_maximum_suppression_radius: Option<i32>,
 
-    /// Number of pyramid levels (0 = disabled)
-    max_pyramid_levels: Option<u8>,
-
-    max_results: Option<u8>,
+    max_results: Option<u32>,
 }
 
 impl Default for JsFindImageOptions {
@@ -47,106 +47,21 @@ impl Default for JsFindImageOptions {
             match_threshold: 0.8,
             search_one: false,
             non_maximum_suppression_radius: Some(10),
-            max_pyramid_levels: None,
             max_results: None,
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Constructor)]
+#[derive(Clone, Constructor, Debug, PartialEq)]
 pub struct FindImageMatch {
     point: Point,
     score: f32,
-    label: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Constructor)]
-pub struct SearchedImage {
+#[derive(Clone, Constructor, Debug, PartialEq)]
+pub struct FindImagesImage {
     image: Image,
     label: Option<String>,
-}
-
-struct PyramidLevel {
-    source: Mat,
-    template: Mat,
-    mask: Option<Mat>,
-    inv_scale: f32, // 1.0 at full res, 2.0 after one pyr_down, 4.0 after two, etc.
-}
-
-#[instrument(skip_all)]
-fn build_pyramid_levels(
-    base_source: &Mat,
-    base_template: &Mat,
-    base_mask: Option<&Mat>,
-    max_levels: u8,
-) -> Result<Vec<PyramidLevel>> {
-    let mut levels = Vec::new();
-
-    // level 0 = full resolution
-    levels.push(PyramidLevel {
-        source: base_source.clone(),
-        template: base_template.clone(),
-        mask: base_mask.cloned(),
-        inv_scale: 1.0,
-    });
-
-    let mut current_source = base_source.clone();
-    let mut current_template = base_template.clone();
-    let mut current_mask = base_mask.cloned();
-    let mut inv_scale = 1.0_f32;
-
-    for level in 0..max_levels {
-        let mut src_down = Mat::default();
-        let mut tpl_down = Mat::default();
-
-        // downscale by factor 2
-        pyr_down(
-            &current_source,
-            &mut src_down,
-            CvSize::default(),
-            BORDER_DEFAULT,
-        )?;
-        pyr_down(
-            &current_template,
-            &mut tpl_down,
-            CvSize::default(),
-            BORDER_DEFAULT,
-        )?;
-
-        // stop if template becomes too small
-        if tpl_down.rows() < 1 || tpl_down.cols() < 1 {
-            break;
-        }
-
-        let mask_down = if let Some(ref m) = current_mask {
-            let mut m_down = Mat::default();
-            pyr_down(m, &mut m_down, CvSize::default(), BORDER_DEFAULT)?;
-            Some(m_down)
-        } else {
-            None
-        };
-
-        imwrite(&format!("source{level}.png"), &src_down, &Vector::new()).unwrap();
-        imwrite(&format!("template{level}.png"), &tpl_down, &Vector::new()).unwrap();
-        if let Some(m_down) = &mask_down {
-            imwrite(&format!("mask{level}.png"), &m_down, &Vector::new()).unwrap();
-        }
-
-        inv_scale *= 2.0;
-
-        levels.push(PyramidLevel {
-            source: src_down.clone(),
-            template: tpl_down.clone(),
-            mask: mask_down.clone(),
-            inv_scale,
-        });
-
-        current_source = src_down;
-        current_template = tpl_down;
-        current_mask = mask_down;
-    }
-
-    Ok(levels)
 }
 
 impl Image {
@@ -184,19 +99,197 @@ impl Image {
     }
 
     #[instrument(skip_all)]
-    fn prepare_template_matching_mats(
-        source: &Self,
-        template: &Self,
-        use_colors: bool,
-        use_transparency: bool,
-    ) -> Result<(Arc<Mat>, Arc<Mat>, Option<Mat>)> {
-        if !use_colors {
-            let source = source.greyscale_to_mat()?;
+    fn find_image(
+        &self,
+        image: &Image,
+        options: JsFindImageOptions,
+    ) -> Result<Vec<FindImageMatch>> {
+        if image.width() > self.width() || image.height() > self.height() {
+            return Err(eyre!(
+                "searched image size ({}, {}) larger than source size ({}, {})",
+                image.width(),
+                image.height(),
+                self.width(),
+                self.height(),
+            ));
+        }
 
-            if !use_transparency {
-                return Ok((source, template.greyscale_to_mat()?, None));
+        let source = if options.use_colors {
+            self.rgb_to_mat()?
+        } else {
+            self.greyscale_to_mat()?
+        };
+
+        let template =
+            image_to_template(&image, options.use_colors, options.use_transparency, None)?;
+
+        let (_, result) = match_template(source.as_ref(), &template)?;
+
+        let matches = compute_results(
+            &result,
+            options.match_threshold,
+            options.max_results,
+            options.non_maximum_suppression_radius,
+        )?;
+
+        Ok(matches)
+    }
+
+    #[instrument(skip_all)]
+    fn find_images(
+        &self,
+        images: &[FindImagesImage],
+        options: JsFindImageOptions,
+    ) -> Result<HashMap<Option<String>, Vec<FindImageMatch>>> {
+        for image in images {
+            if image.image.width() > self.width() || image.image.height() > self.height() {
+                return Err(eyre!(
+                    "searched image size ({}, {}) larger than source size ({}, {})",
+                    image.image.width(),
+                    image.image.height(),
+                    self.width(),
+                    self.height(),
+                ));
             }
+        }
 
+        let source = if options.use_colors {
+            self.rgb_to_mat()?
+        } else {
+            self.greyscale_to_mat()?
+        };
+
+        Ok(images
+            .par_iter()
+            .map(|image| {
+                image_to_template(
+                    &image.image,
+                    options.use_colors,
+                    options.use_transparency,
+                    image.label.clone(),
+                )
+            })
+            .collect::<Result<Vec<_>>>()?
+            .into_par_iter()
+            .map(|template| match_template(source.as_ref(), &template))
+            .collect::<Result<Vec<_>>>()?
+            .into_par_iter()
+            .map(|(label, result)| {
+                let matches = compute_results(
+                    &result,
+                    options.match_threshold,
+                    options.max_results,
+                    options.non_maximum_suppression_radius,
+                )?;
+
+                Ok((label, matches))
+            })
+            .collect::<Result<HashMap<Option<String>, Vec<FindImageMatch>>>>()?)
+    }
+}
+
+#[instrument(skip_all)]
+fn match_template(source: &Mat, template: &Template) -> Result<(Option<String>, Mat)> {
+    let template_mat = &template.mat;
+    let rows = source.rows() - template_mat.rows() + 1;
+    let cols = source.cols() - template_mat.cols() + 1;
+    let mut result = Mat::zeros(rows, cols, CV_32FC1)?.to_mat()?;
+
+    if let Some(mask) = &template.mask {
+        // Perform template matching on the color image with mask
+        cv_match_template(
+            source,
+            template_mat.as_ref(),
+            &mut result,
+            TM_CCOEFF_NORMED,
+            &mask, // Use the alpha channel as the mask
+        )?;
+    } else {
+        cv_match_template(
+            source,
+            template_mat.as_ref(),
+            &mut result,
+            TM_CCOEFF_NORMED,
+            &no_array(),
+        )?;
+    }
+
+    Ok((template.label.clone(), result))
+}
+
+#[instrument(skip_all)]
+fn compute_results(
+    match_template_result: &Mat,
+    match_threshold: f32,
+    maximum_results: Option<u32>,
+    non_maximum_suppression_radius: Option<i32>,
+) -> Result<Vec<FindImageMatch>> {
+    if maximum_results == Some(1) {
+        let mut max_val = 0.;
+        let mut max_loc = CvPoint::default();
+
+        min_max_loc(
+            &match_template_result,
+            None,
+            Some(&mut max_val),
+            None,
+            Some(&mut max_loc),
+            &no_array(),
+        )?;
+
+        if max_val >= match_threshold.into() {
+            #[allow(clippy::as_conversions)]
+            return Ok(vec![FindImageMatch::new(max_loc.into(), max_val as f32)]);
+        } else {
+            return Ok(vec![]);
+        }
+    }
+
+    // Collect all matches above the threshold
+    let mut match_points = Vec::new();
+    for row in 0..match_template_result.rows() {
+        for col in 0..match_template_result.cols() {
+            let match_score = *match_template_result.at_2d::<f32>(row, col)?;
+            if match_score >= match_threshold {
+                match_points.push(FindImageMatch::new(point(col, row), match_score));
+            }
+        }
+    }
+
+    // Sort matches by score (in descending order)
+    match_points.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(Ordering::Equal));
+
+    let mut matches = if let Some(non_maximum_suppression_radius) = non_maximum_suppression_radius {
+        non_maximum_suppression(&match_points, non_maximum_suppression_radius)
+    } else {
+        match_points
+    };
+
+    if let Some(maximum_results) = maximum_results {
+        matches.truncate(maximum_results.try_into()?);
+    }
+
+    Ok(matches)
+}
+
+#[derive(Debug, Constructor)]
+pub struct Template {
+    mat: Arc<Mat>,
+    mask: Option<Mat>,
+    label: Option<String>,
+}
+
+#[instrument(skip_all)]
+fn image_to_template(
+    template: &Image,
+    use_colors: bool,
+    use_transparency: bool,
+    label: Option<String>,
+) -> Result<Template> {
+    Ok(match (use_colors, use_transparency) {
+        (false, false) => Template::new(template.greyscale_to_mat()?, None, label),
+        (true, false) => Template::new(template.rgb_to_mat()?, None, label),
+        (false, true) => {
             let template_rgba = template.rgba_to_mat()?;
 
             // Split template channels to extract the alpha channel
@@ -207,371 +300,32 @@ impl Image {
 
             let template = template.greyscale_to_mat()?;
 
-            return Ok((source, template, Some(template_alpha)));
+            Template::new(template, Some(template_alpha), label)
         }
+        (true, true) => {
+            let template = template.rgba_to_mat()?;
 
-        let source = source.rgb_to_mat()?;
+            // Split template channels to extract the alpha channel
+            let mut rgba_channels = Vector::<Mat>::new();
+            split(template.as_ref(), &mut rgba_channels)?;
 
-        if !use_transparency {
-            return Ok((source, template.rgb_to_mat()?, None));
+            let template_alpha = rgba_channels.get(3)?; // Alpha channel
+
+            // Remove the alpha channel from the template to get BGR
+            let mut template_bgr = Mat::default();
+            let mut bgr_channels = Vector::<Mat>::new();
+
+            // Add the individual channels to the OpenCV Vector
+            bgr_channels.push(rgba_channels.get(0)?);
+            bgr_channels.push(rgba_channels.get(1)?);
+            bgr_channels.push(rgba_channels.get(2)?);
+
+            // Merge the BGR channels into a single BGR image
+            merge(&bgr_channels, &mut template_bgr)?;
+
+            Template::new(Arc::new(template_bgr), Some(template_alpha), label)
         }
-
-        let template = template.rgba_to_mat()?;
-
-        // Split template channels to extract the alpha channel
-        let mut rgba_channels = Vector::<Mat>::new();
-        split(template.as_ref(), &mut rgba_channels)?;
-
-        let template_alpha = rgba_channels.get(3)?; // Alpha channel
-
-        // Remove the alpha channel from the template to get BGR
-        let mut template_bgr = Mat::default();
-        let mut bgr_channels = Vector::<Mat>::new();
-
-        // Add the individual channels to the OpenCV Vector
-        bgr_channels.push(rgba_channels.get(0)?);
-        bgr_channels.push(rgba_channels.get(1)?);
-        bgr_channels.push(rgba_channels.get(2)?);
-
-        // Merge the BGR channels into a single BGR image
-        merge(&bgr_channels, &mut template_bgr)?;
-
-        Ok((source, Arc::new(template_bgr), Some(template_alpha)))
-    }
-
-    #[instrument(skip_all)]
-    fn find_image_single_scale(
-        &self,
-        searched_image: &SearchedImage,
-        options: JsFindImageOptions,
-    ) -> Result<Vec<FindImageMatch>> {
-        let searched_image = &searched_image.image;
-
-        if searched_image.width() > self.width() || searched_image.height() > self.height() {
-            return Err(eyre!(
-                "searched image size ({}, {}) larger than source size ({}, {})",
-                searched_image.width(),
-                searched_image.height(),
-                self.width(),
-                self.height(),
-            ));
-        }
-
-        let (source, template, mask) = Self::prepare_template_matching_mats(
-            self,
-            searched_image,
-            options.use_colors,
-            options.use_transparency,
-        )?;
-
-        // Create a result matrix for the matching result
-        let result_rows = source.rows() - template.rows() + 1;
-        let result_cols = source.cols() - template.cols() + 1;
-        let mut result = Mat::zeros(result_rows, result_cols, CV_32FC1)?.to_mat()?;
-
-        let start = Instant::now();
-
-        if let Some(mask) = mask {
-            // Perform template matching on the color image with mask
-            match_template(
-                source.as_ref(),
-                template.as_ref(),
-                &mut result,
-                TM_CCOEFF_NORMED,
-                &mask, // Use the alpha channel as the mask
-            )?;
-        } else {
-            match_template(
-                source.as_ref(),
-                template.as_ref(),
-                &mut result,
-                TM_CCOEFF_NORMED,
-                &no_array(),
-            )?;
-        }
-
-        let duration = start.elapsed();
-        println!("template matching took {duration:?}");
-
-        // Set a threshold for good matches
-        let match_threshold = options.match_threshold;
-
-        if options.search_one {
-            let mut max_val = 0.;
-            let mut max_loc = CvPoint::default();
-
-            min_max_loc(
-                &result,
-                None,
-                Some(&mut max_val),
-                None,
-                Some(&mut max_loc),
-                &no_array(),
-            )?;
-
-            if max_val >= match_threshold.into() {
-                #[allow(clippy::as_conversions)]
-                return Ok(vec![FindImageMatch::new(
-                    max_loc.into(),
-                    max_val as f32,
-                    None,
-                )]);
-            } else {
-                return Ok(vec![]);
-            }
-        }
-
-        // Collect all matches above the threshold
-        let mut match_points = Vec::new();
-        for row in 0..result.rows() {
-            for col in 0..result.cols() {
-                let match_score = *result.at_2d::<f32>(row, col)?;
-                if match_score >= match_threshold {
-                    match_points.push(FindImageMatch::new(point(col, row), match_score, None));
-                }
-            }
-        }
-
-        // Sort matches by score (in descending order)
-        match_points.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(Ordering::Equal));
-
-        let mut matches =
-            if let Some(non_maximum_suppression_radius) = options.non_maximum_suppression_radius {
-                non_maximum_suppression(&match_points, non_maximum_suppression_radius)
-            } else {
-                match_points
-            };
-
-        if let Some(max_results) = options.max_results {
-            matches.truncate(max_results.into());
-        }
-
-        Ok(matches)
-    }
-
-    #[instrument(skip_all)]
-    fn find_image_pyramid(
-        &self,
-        searched_image: &SearchedImage,
-        options: JsFindImageOptions,
-        max_pyramid_levels: u8,
-    ) -> Result<Vec<FindImageMatch>> {
-        let searched_image = &searched_image.image;
-
-        if searched_image.width() > self.width() || searched_image.height() > self.height() {
-            return Err(eyre!(
-                "searched image size ({}, {}) larger than source size ({}, {})",
-                searched_image.width(),
-                searched_image.height(),
-                self.width(),
-                self.height(),
-            ));
-        }
-
-        let (base_source, base_template, base_mask) = Self::prepare_template_matching_mats(
-            self,
-            searched_image,
-            options.use_colors,
-            options.use_transparency,
-        )?;
-
-        // Build pyramid levels
-        let levels = build_pyramid_levels(
-            base_source.as_ref(),
-            base_template.as_ref(),
-            base_mask.as_ref(),
-            max_pyramid_levels,
-        )?;
-
-        let start = Instant::now();
-
-        let match_threshold = options.match_threshold;
-
-        // --- 1. COARSE SEARCH ---
-        // Use the smallest pyramid level
-        let coarse_lvl = levels.last().unwrap();
-        let src = &coarse_lvl.source;
-        let tpl = &coarse_lvl.template;
-
-        if tpl.rows() > src.rows() || tpl.cols() > src.cols() {
-            return Ok(vec![]);
-        }
-
-        let result_rows = src.rows() - tpl.rows() + 1;
-        let result_cols = src.cols() - tpl.cols() + 1;
-        let mut coarse_result = Mat::zeros(result_rows, result_cols, CV_32FC1)?.to_mat()?;
-
-        if let Some(ref mask) = coarse_lvl.mask {
-            match_template(src, tpl, &mut coarse_result, TM_CCOEFF_NORMED, mask)?;
-        } else {
-            match_template(src, tpl, &mut coarse_result, TM_CCOEFF_NORMED, &no_array())?;
-        }
-
-        // --- 2. GATHER & CLUSTER CANDIDATES ---
-        let mut coarse_matches = Vec::new();
-
-        // Fast Path: If looking for only one, just take the absolute max on the coarse image
-        if options.search_one {
-            let mut max_val = 0.;
-            let mut max_loc = CvPoint::default();
-            min_max_loc(
-                &coarse_result,
-                None,
-                Some(&mut max_val),
-                None,
-                Some(&mut max_loc),
-                &no_array(),
-            )?;
-
-            // Loose threshold for coarse search
-            if max_val as f32 >= match_threshold * 0.85 {
-                coarse_matches.push(FindImageMatch::new(
-                    point(max_loc.x, max_loc.y),
-                    max_val as f32,
-                    None,
-                ));
-            }
-        } else {
-            // Multi-search path
-            for row in 0..coarse_result.rows() {
-                for col in 0..coarse_result.cols() {
-                    let score = *coarse_result.at_2d::<f32>(row, col)?;
-                    // Relaxed threshold for coarse check
-                    if score >= match_threshold * 0.9 {
-                        coarse_matches.push(FindImageMatch::new(point(col, row), score, None));
-                    }
-                }
-            }
-
-            // OPTIMIZATION: Sort & NMS on the *Coarse* matches immediately.
-            // A radius of 2 pixels in a 4x downscale = 8 pixels in real life.
-            // This condenses 100 neighboring pixels into 1 candidate.
-            coarse_matches.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(Ordering::Equal));
-            coarse_matches = non_maximum_suppression(&coarse_matches, 3); // 3px radius on small image
-        }
-
-        if coarse_matches.is_empty() {
-            return Ok(vec![]);
-        }
-
-        // --- 3. REFINE MATCHES (Full Resolution & Color) ---
-        // Now we only run the expensive color check on the few remaining distinct points.
-
-        let lvl0 = &levels[0];
-        let inv_scale = coarse_lvl.inv_scale;
-        let search_margin = (inv_scale + 2.0).ceil() as i32; // Search radius around predicted point
-
-        let mut refined_matches = Vec::new();
-
-        for coarse_match in coarse_matches {
-            let rough_x = (f32::try_from(coarse_match.point.x)? * inv_scale).round() as i32;
-            let rough_y = (f32::try_from(coarse_match.point.y)? * inv_scale).round() as i32;
-
-            // Define search ROI on Level 0
-            let start_x = (rough_x - search_margin).max(0);
-            let start_y = (rough_y - search_margin).max(0);
-
-            let max_valid_x = lvl0.source.cols() - lvl0.template.cols();
-            let max_valid_y = lvl0.source.rows() - lvl0.template.rows();
-
-            let roi_start_x = start_x.min(max_valid_x);
-            let roi_start_y = start_y.min(max_valid_y);
-
-            let search_w = (rough_x + search_margin).min(max_valid_x) - roi_start_x + 1;
-            let search_h = (rough_y + search_margin).min(max_valid_y) - roi_start_y + 1;
-
-            if search_w <= 0 || search_h <= 0 {
-                continue;
-            }
-
-            let crop_w = lvl0.template.cols() + search_w - 1;
-            let crop_h = lvl0.template.rows() + search_h - 1;
-
-            let roi = opencv::core::Rect::new(roi_start_x, roi_start_y, crop_w, crop_h);
-
-            // This is the expensive part, but now we run it rarely
-            let source_roi = Mat::roi(&lvl0.source, roi)?;
-
-            let mut roi_result = Mat::default();
-            if let Some(ref mask) = lvl0.mask {
-                match_template(
-                    &source_roi,
-                    &lvl0.template,
-                    &mut roi_result,
-                    TM_CCOEFF_NORMED,
-                    mask,
-                )?;
-            } else {
-                match_template(
-                    &source_roi,
-                    &lvl0.template,
-                    &mut roi_result,
-                    TM_CCOEFF_NORMED,
-                    &no_array(),
-                )?;
-            }
-
-            let mut best_val = 0.0;
-            let mut best_loc = CvPoint::default();
-            min_max_loc(
-                &roi_result,
-                None,
-                Some(&mut best_val),
-                None,
-                Some(&mut best_loc),
-                &no_array(),
-            )?;
-
-            // Final strict threshold check on color data
-            if (best_val as f32) >= match_threshold {
-                let final_x = roi_start_x + best_loc.x;
-                let final_y = roi_start_y + best_loc.y;
-
-                refined_matches.push(FindImageMatch::new(
-                    point(final_x, final_y),
-                    best_val as f32,
-                    None,
-                ));
-            }
-
-            // Optimization: If we found a good match and only want one, stop here.
-            if options.search_one && !refined_matches.is_empty() {
-                break;
-            }
-        }
-
-        let duration = start.elapsed();
-        println!("template matching took {duration:?}");
-
-        // Final Sort
-        refined_matches.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(Ordering::Equal));
-
-        // One last NMS (optional, but good if the refinement shifted points closer together)
-        if !options.search_one {
-            if let Some(radius) = options.non_maximum_suppression_radius {
-                refined_matches = non_maximum_suppression(&refined_matches, radius);
-            }
-        }
-
-        if let Some(max_results) = options.max_results {
-            refined_matches.truncate(max_results.into());
-        }
-
-        Ok(refined_matches)
-    }
-
-    #[instrument(skip_all)]
-    pub fn find_image(
-        &self,
-        searched_image: &SearchedImage,
-        options: JsFindImageOptions,
-    ) -> Result<Vec<FindImageMatch>> {
-        if let Some(max_pyramid_levels) = options.max_pyramid_levels {
-            self.find_image_pyramid(searched_image, options, max_pyramid_levels)
-        } else {
-            self.find_image_single_scale(searched_image, options)
-        }
-    }
+    })
 }
 
 #[instrument(skip_all)]
@@ -595,7 +349,7 @@ fn non_maximum_suppression(input: &[FindImageMatch], radius: i32) -> Vec<FindIma
         }
 
         if should_keep {
-            filtered_matches.push(FindImageMatch::new(*point, *score, None));
+            filtered_matches.push(FindImageMatch::new(*point, *score));
         }
     }
 
@@ -654,11 +408,13 @@ fn rgba_to_mat(image: &RgbaImage) -> Result<Mat> {
 
 #[cfg(test)]
 mod tests {
+    use ab_glyph::{FontArc, PxScale};
     use image::ImageReader;
-    use imageproc::drawing::draw_hollow_rect_mut;
-    use tracing::info;
+    use imageproc::drawing::{draw_hollow_rect_mut, draw_text, draw_text_mut};
     use tracing_subscriber::{
-        EnvFilter, fmt, fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt,
+        EnvFilter,
+        fmt::{fmt, format::FmtSpan},
+        util::SubscriberInitExt,
     };
 
     use crate::{
@@ -666,7 +422,9 @@ mod tests {
             color::Color,
             image::{
                 Image,
-                find_image::{FindImageMatch, JsFindImageOptions, SearchedImage},
+                find_image::{
+                    FindImageMatch, FindImagesImage, JsFindImageOptions, image_to_template,
+                },
             },
             rect::Rect,
             size::size,
@@ -680,50 +438,84 @@ mod tests {
     fn test_find_image() {
         let _ = fmt()
             .with_env_filter(EnvFilter::new("info"))
-            //.with_span_events(FmtSpan::CLOSE)
+            .with_span_events(FmtSpan::CLOSE)
             .try_init();
 
         Runtime::test(async |_runtime| {
-            let source = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/input.png")
+            let source = ImageReader::open("../tests/input.png")
                 .unwrap()
                 .with_guessed_format()
                 .unwrap()
                 .decode()
                 .unwrap();
-            let template = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/pear.png")
+            let pear = ImageReader::open("../tests/pear.png")
                 .unwrap()
                 .with_guessed_format()
                 .unwrap()
                 .decode()
                 .unwrap();
+            let fire = ImageReader::open("../tests/fire.png")
+                .unwrap()
+                .with_guessed_format()
+                .unwrap()
+                .decode()
+                .unwrap();
+            let template_w = pear.width();
+            let template_h = pear.height();
             let mut source = Image::from_dynamic_image(source);
-            let template = SearchedImage::new(Image::from_dynamic_image(template), None);
+
             let result = source
-                .find_image(
-                    &template,
+                .find_images(
+                    &vec![
+                        FindImagesImage::new(
+                            Image::from_dynamic_image(pear),
+                            Some("pear".to_string()),
+                        ),
+                        FindImagesImage::new(
+                            Image::from_dynamic_image(fire),
+                            Some("fire".to_string()),
+                        ),
+                    ],
                     JsFindImageOptions {
                         use_colors: true,
                         use_transparency: true,
-                        match_threshold: 0.3,
+                        match_threshold: 0.8,
                         non_maximum_suppression_radius: Some(10),
                         search_one: false,
-                        max_pyramid_levels: Some(1),
                         max_results: None,
                     },
                 )
                 .unwrap();
-            for FindImageMatch { point, score, .. } in result {
-                let rect = Rect::new(point, size(template.image.width(), template.image.height()));
-                draw_hollow_rect_mut(
-                    &mut source.inner,
-                    rect.try_into().unwrap(),
-                    Color::new(255, 0, 0, 255).into(),
-                );
-                println!("Match found at {} with score: {:.3}", point, score);
+
+            let font_data: &[u8] =
+                include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+            let font = FontArc::try_from_slice(font_data).expect("error constructing FontArc");
+
+            for (label, matches) in result {
+                for FindImageMatch { point, score, .. } in matches {
+                    let rect = Rect::new(point, size(template_w, template_h));
+                    draw_text_mut(
+                        &mut source.inner,
+                        Color::new(255, 0, 0, 255).into(),
+                        rect.origin.x.into(),
+                        rect.origin.y.into(),
+                        PxScale::from(24.0),
+                        &font,
+                        label.as_deref().unwrap_or("None"),
+                    );
+                    draw_hollow_rect_mut(
+                        &mut source.inner,
+                        rect.try_into().unwrap(),
+                        Color::new(255, 0, 0, 255).into(),
+                    );
+                    println!(
+                        "Match found for {label:?} at {} with score: {:.3}",
+                        point, score
+                    );
+                }
             }
-            source
-                .save("/media/jmgr/Main/rust/test_ai_actiona/output.png")
-                .unwrap();
+
+            source.save("../tests/output.png").unwrap();
         });
     }
 }

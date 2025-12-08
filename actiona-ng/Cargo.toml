@@ -105,6 +105,7 @@ unicode-segmentation.workspace = true
 uuid.workspace = true
 versions.workspace = true
 wildmatch.workspace = true
+ab_glyph.workspace = true
 
 [build-dependencies]
 built.workspace = true
