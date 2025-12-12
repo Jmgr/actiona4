@@ -3,12 +3,11 @@ use std::{cmp::Ordering, collections::HashMap, sync::Arc, time::Instant};
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
 use image::{GrayImage, RgbImage, RgbaImage};
-use itertools::Itertools;
 use macros::FromJsObject;
 use opencv::{
     core::{
         BORDER_DEFAULT, CV_32FC1, Mat, MatExprTraitConst, MatTraitConst, Point as CvPoint,
-        Size as CvSize, Vector, merge, min_max_loc, no_array, split,
+        Rect, Size as CvSize, Vector, merge, min_max_loc, no_array, split,
     },
     imgcodecs::imwrite,
     imgproc::{
@@ -16,6 +15,7 @@ use opencv::{
         match_template as cv_match_template, pyr_down,
     },
 };
+use opencv::prelude::MatTraitConstManual;
 use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use tracing::instrument;
 
@@ -193,16 +193,29 @@ fn match_template(source: &Mat, template: &Template) -> Result<(Option<String>, 
     let template_mat = &template.mat;
     let rows = source.rows() - template_mat.rows() + 1;
     let cols = source.cols() - template_mat.cols() + 1;
+    let tile_target_count = match_template_tile_target_count();
+    let use_tiled = tile_target_count > 1;
+
+    let result = if use_tiled {
+        match_template_tiled(source, template, rows, cols, tile_target_count)?
+    } else {
+        match_template_direct(source, template, rows, cols)?
+    };
+
+    Ok((template.label.clone(), result))
+}
+
+fn match_template_direct(source: &Mat, template: &Template, rows: i32, cols: i32) -> Result<Mat> {
+    let template_mat = &template.mat;
     let mut result = Mat::zeros(rows, cols, CV_32FC1)?.to_mat()?;
 
     if let Some(mask) = &template.mask {
-        // Perform template matching on the color image with mask
         cv_match_template(
             source,
             template_mat.as_ref(),
             &mut result,
             TM_CCOEFF_NORMED,
-            &mask, // Use the alpha channel as the mask
+            mask,
         )?;
     } else {
         cv_match_template(
@@ -214,7 +227,99 @@ fn match_template(source: &Mat, template: &Template) -> Result<(Option<String>, 
         )?;
     }
 
-    Ok((template.label.clone(), result))
+    Ok(result)
+}
+
+fn match_template_tile_target_count() -> i32 {
+    let target = sysinfo::System::physical_core_count()
+        .and_then(|count| count.checked_sub(1))
+        .unwrap_or(1);
+    target.min(i32::MAX as usize).max(1) as i32
+}
+
+fn match_template_tiled(
+    source: &Mat,
+    template: &Template,
+    rows: i32,
+    cols: i32,
+    tile_target_count: i32,
+) -> Result<Mat> {
+    #[derive(Clone, Copy)]
+    struct TileRects {
+        source_rect: Rect,
+        result_rect: Rect,
+    }
+
+    let template_mat = &template.mat;
+    let template_rows = template_mat.rows();
+    let template_cols = template_mat.cols();
+    let mut result = Mat::zeros(rows, cols, CV_32FC1)?.to_mat()?;
+    let tiles_y = rows.min(tile_target_count).max(1);
+    let tiles_x = ((tile_target_count + tiles_y - 1) / tiles_y).max(1);
+    let tile_rows_step = ((rows + tiles_y - 1) / tiles_y).max(1);
+    let tile_cols_step = ((cols + tiles_x - 1) / tiles_x).max(1);
+
+    let mut tiles = Vec::new();
+    let mut tile_origin_y = 0;
+    while tile_origin_y < rows {
+        let tile_rows = (rows - tile_origin_y).min(tile_rows_step);
+        let mut tile_origin_x = 0;
+
+        while tile_origin_x < cols {
+            let tile_cols = (cols - tile_origin_x).min(tile_cols_step);
+            tiles.push(TileRects {
+                source_rect: Rect::new(
+                    tile_origin_x,
+                    tile_origin_y,
+                    tile_cols + template_cols - 1,
+                    tile_rows + template_rows - 1,
+                ),
+                result_rect: Rect::new(tile_origin_x, tile_origin_y, tile_cols, tile_rows),
+            });
+            tile_origin_x += tile_cols;
+        }
+
+        tile_origin_y += tile_rows;
+    }
+
+    let mask = template.mask.as_ref();
+    let template_mat = template_mat.clone();
+    let tile_results = tiles
+        .into_par_iter()
+        .map(|rects| -> Result<(Rect, Mat)> {
+            let source_roi = source.roi(rects.source_rect)?;
+            let mut tile_result =
+                Mat::zeros(rects.result_rect.height, rects.result_rect.width, CV_32FC1)?
+                    .to_mat()?;
+
+            if let Some(mask) = mask {
+                cv_match_template(
+                    &source_roi,
+                    template_mat.as_ref(),
+                    &mut tile_result,
+                    TM_CCOEFF_NORMED,
+                    mask,
+                )?;
+            } else {
+                cv_match_template(
+                    &source_roi,
+                    template_mat.as_ref(),
+                    &mut tile_result,
+                    TM_CCOEFF_NORMED,
+                    &no_array(),
+                )?;
+            }
+
+            Ok((rects.result_rect, tile_result))
+        })
+        .collect::<Result<Vec<_>>>()?;
+
+    for (result_rect, tile_result) in tile_results {
+        let mut result_roi = Mat::roi_mut(&mut result, result_rect)?;
+        tile_result.copy_to(&mut result_roi)?;
+    }
+
+    Ok(result)
 }
 
 #[instrument(skip_all)]
@@ -247,11 +352,28 @@ fn compute_results(
 
     // Collect all matches above the threshold
     let mut match_points = Vec::new();
-    for row in 0..match_template_result.rows() {
-        for col in 0..match_template_result.cols() {
-            let match_score = *match_template_result.at_2d::<f32>(row, col)?;
+    let rows = match_template_result.rows();
+    let cols = match_template_result.cols();
+    if match_template_result.is_continuous() {
+        let values = match_template_result.data_typed::<f32>()?;
+        for (idx, &match_score) in values.iter().enumerate() {
             if match_score >= match_threshold {
+                #[allow(clippy::as_conversions)]
+                let idx = idx as i32;
+                let row = idx / cols;
+                let col = idx - row * cols;
                 match_points.push(FindImageMatch::new(point(col, row), match_score));
+            }
+        }
+    } else {
+        for row in 0..rows {
+            let row_values = match_template_result.at_row::<f32>(row)?;
+            for (col, &match_score) in row_values.iter().enumerate() {
+                if match_score >= match_threshold {
+                    #[allow(clippy::as_conversions)]
+                    let col = col as i32;
+                    match_points.push(FindImageMatch::new(point(col, row), match_score));
+                }
             }
         }
     }
@@ -411,6 +533,7 @@ mod tests {
     use ab_glyph::{FontArc, PxScale};
     use image::ImageReader;
     use imageproc::drawing::{draw_hollow_rect_mut, draw_text, draw_text_mut};
+    use opencv::core::set_num_threads;
     use tracing_subscriber::{
         EnvFilter,
         fmt::{fmt, format::FmtSpan},
@@ -440,6 +563,8 @@ mod tests {
             .with_env_filter(EnvFilter::new("info"))
             .with_span_events(FmtSpan::CLOSE)
             .try_init();
+
+        set_num_threads(0).unwrap();
 
         Runtime::test(async |_runtime| {
             let source = ImageReader::open("../tests/input.png")
