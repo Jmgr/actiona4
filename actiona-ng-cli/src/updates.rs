@@ -21,10 +21,9 @@ pub async fn check_updates(
     task_tracker: TaskTracker,
 ) -> Result<()> {
     // CLI and env have a higher priority than settings
-    let updates_enabled = args.disable_updates.map_or_else(
-        || config.settings(|settings| !settings.disable_updates),
-        |enabled| enabled,
-    );
+    let updates_enabled = args
+        .disable_updates
+        .unwrap_or_else(|| config.settings(|settings| !settings.disable_updates));
 
     let app_version =
         SemVer::new(built_info::PKG_VERSION).ok_or_eyre("failed to parse crate version")?;

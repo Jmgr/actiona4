@@ -1,7 +1,8 @@
-use std::io;
+use std::{fs, io};
 
+use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
 use image::{
-    ColorType, DynamicImage, GenericImage, GenericImageView, ImageReader, ImageResult, RgbaImage,
+    ColorType, DynamicImage, GenericImageView, ImageReader, ImageResult, RgbaImage,
     imageops::FilterType, metadata::Orientation,
 };
 use imageproc::{
@@ -10,9 +11,10 @@ use imageproc::{
         draw_filled_ellipse, draw_filled_ellipse_mut, draw_filled_rect, draw_filled_rect_mut,
         draw_hollow_circle, draw_hollow_circle_mut, draw_hollow_ellipse, draw_hollow_ellipse_mut,
         draw_hollow_rect, draw_hollow_rect_mut, draw_line_segment, draw_line_segment_mut,
+        draw_text_mut, text_size,
     },
     geometric_transformations::{self, rotate, rotate_about_center},
-    rect::Rect,
+    rect::Rect as ImgRect,
 };
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
@@ -35,13 +37,13 @@ use crate::{
             point,
         },
         rect::{
+            Rect,
             js::{JsRect, JsRectLike},
             rect,
         },
         size::size,
     },
     error::CommonError,
-    types::su32::su32,
 };
 
 #[derive(
@@ -223,7 +225,81 @@ pub struct JsDrawingOptions {
     pub hollow: bool,
 }
 
-pub type FindImageOptions = super::find_image::JsFindImageOptions;
+/// Horizontal alignment for text drawing.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "TextHorizontalAlign")]
+pub enum JsTextHorizontalAlign {
+    Left,
+    Center,
+    Right,
+}
+
+/// Vertical alignment for text drawing.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "TextVerticalAlign")]
+pub enum JsTextVerticalAlign {
+    Top,
+    Middle,
+    Bottom,
+}
+
+/// Text drawing options.
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct JsDrawTextOptions {
+    /// Font size in pixels.
+    /// @default `16`
+    pub font_size: f32,
+
+    /// Multiplier applied to the default line height when rendering multi-line text.
+    /// @default `1`
+    pub line_spacing: f32,
+
+    /// Horizontal alignment relative to the provided position.
+    /// @default `TextHorizontalAlign.Left`
+    pub horizontal_align: JsTextHorizontalAlign,
+
+    /// Vertical alignment relative to the provided position.
+    /// @default `TextVerticalAlign.Top`
+    pub vertical_align: JsTextVerticalAlign,
+}
+
+impl Default for JsDrawTextOptions {
+    fn default() -> Self {
+        Self {
+            font_size: 16.0,
+            line_spacing: 1.0,
+            horizontal_align: JsTextHorizontalAlign::Left,
+            vertical_align: JsTextVerticalAlign::Top,
+        }
+    }
+}
+
+pub type JsFindImageOptions = super::find_image::FindImageTemplateOptions;
 
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Image")]
@@ -250,6 +326,8 @@ impl<'js> ValueClass<'js> for JsImage {
         register_enum::<JsFlipDirection>(ctx)?;
         register_enum::<JsResizeFilter>(ctx)?;
         register_enum::<JsInterpolation>(ctx)?;
+        register_enum::<JsTextHorizontalAlign>(ctx)?;
+        register_enum::<JsTextVerticalAlign>(ctx)?;
 
         Ok(())
     }
@@ -338,7 +416,7 @@ impl JsImage {
     }
 
     /// Invert the colors of this image.
-    pub fn invert<'js>(&mut self, this: This<Class<'js, Self>>) -> Class<'js, Self> {
+    pub fn invert_colors<'js>(&mut self, this: This<Class<'js, Self>>) -> Class<'js, Self> {
         self.inner.invert();
 
         this.0
@@ -346,7 +424,7 @@ impl JsImage {
 
     /// Invert the colors of this image and returns a new image.
     #[must_use]
-    pub fn inverted(&self) -> Self {
+    pub fn inverted_colors(&self) -> Self {
         let mut cloned = self.clone();
         cloned.inner.invert();
         cloned
@@ -493,7 +571,7 @@ impl JsImage {
 
     /// Hue rotate the image and returns a new image.
     #[must_use]
-    pub fn hue_rotated(&self, value: i32) -> Self {
+    pub fn with_hue_rotation(&self, value: i32) -> Self {
         super::Image::from_dynamic_image(self.inner.huerotate(value)).into()
     }
 
@@ -506,7 +584,7 @@ impl JsImage {
 
     /// Returns a grayscale version of this image.
     #[must_use]
-    pub fn grayscaled(&self) -> Self {
+    pub fn with_grayscale(&self) -> Self {
         super::Image::from_dynamic_image(self.inner.grayscale()).into()
     }
 
@@ -573,7 +651,7 @@ impl JsImage {
 
     /// Returns a brightened or darkened version of this image.
     #[must_use]
-    pub fn adjusted_brightness(&self, value: i32) -> Self {
+    pub fn with_adjusted_brightness(&self, value: i32) -> Self {
         super::Image::from_dynamic_image(self.inner.brighten(value)).into()
     }
 
@@ -590,7 +668,7 @@ impl JsImage {
 
     /// Returns a new image with an adjusted contrast.
     #[must_use]
-    pub fn adjusted_contrast(&self, value: f32) -> Self {
+    pub fn with_adjusted_contrast(&self, value: f32) -> Self {
         super::Image::from_dynamic_image(self.inner.adjust_contrast(value)).into()
     }
 
@@ -623,18 +701,12 @@ impl JsImage {
 
     #[qjs(skip)]
     fn check_position(&self, ctx: &Ctx<'_>, position: point::Point) -> Result<(u32, u32)> {
-        if position.x < 0
-            || su32(position.x) >= su32(self.width())
-            || position.y < 0
-            || su32(position.y) >= su32(self.height())
-        {
-            return Err(Exception::throw_message(
-                ctx,
-                &format!("Invalid position: {position}"),
-            ));
-        }
+        Self::check_position_in_bounds(ctx, position, self.width(), self.height(), "position")
+    }
 
-        Ok((position.x.into(), position.y.into()))
+    #[qjs(skip)]
+    fn check_rect(&self, ctx: &Ctx<'_>, rect: &Rect) -> Result<(u32, u32, u32, u32)> {
+        Self::check_rect_in_bounds(ctx, rect, self.width(), self.height(), "rectangle")
     }
 
     /// Returns the value of a pixel.
@@ -665,12 +737,10 @@ impl JsImage {
 
     /// Creates a new image from a part of this image.
     pub fn copy_region(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<Self> {
-        let (x, y) = self.check_position(&ctx, point(rect.0.origin.x, rect.0.origin.y))?;
+        let (x, y, width, height) = self.check_rect(&ctx, &rect.0)?;
 
         Ok(super::Image::from_dynamic_image(DynamicImage::ImageRgba8(
-            self.inner
-                .view(x, y, rect.0.size.width.into(), rect.0.size.height.into())
-                .to_image(),
+            self.inner.view(x, y, width, height).to_image(),
         ))
         .into())
     }
@@ -683,11 +753,239 @@ impl JsImage {
 
     #[qjs(skip)]
     fn ensure_rgba(&mut self) -> &mut RgbaImage {
-        if self.inner.color() != ColorType::Rgba8 {
-            *self.inner = DynamicImage::ImageRgba8(self.inner.inner.to_rgba8());
+        Self::ensure_rgba_image(&mut self.inner)
+    }
+
+    #[qjs(skip)]
+    fn ensure_rgba_image(image: &mut super::Image) -> &mut RgbaImage {
+        if image.color() != ColorType::Rgba8 {
+            let rgba = image.inner.to_rgba8();
+            image.inner = DynamicImage::ImageRgba8(rgba);
         }
 
-        self.inner.as_mut_rgba8().expect("image should be the RGBA")
+        image.as_mut_rgba8().expect("image should be the RGBA")
+    }
+
+    #[qjs(skip)]
+    fn check_position_in_bounds(
+        ctx: &Ctx<'_>,
+        position: point::Point,
+        width: u32,
+        height: u32,
+        label: &str,
+    ) -> Result<(u32, u32)> {
+        let x = i32::from(position.x);
+        let y = i32::from(position.y);
+
+        if x < 0 || y < 0 {
+            return Err(Exception::throw_message(
+                ctx,
+                &format!("Invalid {label}: {position}"),
+            ));
+        }
+
+        let x_u = x as u32;
+        let y_u = y as u32;
+
+        if x_u >= width || y_u >= height {
+            return Err(Exception::throw_message(
+                ctx,
+                &format!("Invalid {label}: {position}"),
+            ));
+        }
+
+        Ok((x_u, y_u))
+    }
+
+    #[qjs(skip)]
+    fn check_rect_in_bounds(
+        ctx: &Ctx<'_>,
+        rect: &Rect,
+        width: u32,
+        height: u32,
+        label: &str,
+    ) -> Result<(u32, u32, u32, u32)> {
+        let (x, y) = Self::check_position_in_bounds(ctx, rect.origin, width, height, label)?;
+        let rect_width: u32 = rect.size.width.into();
+        let rect_height: u32 = rect.size.height.into();
+
+        Self::ensure_region_fits(ctx, width, height, x, y, rect_width, rect_height, label)?;
+
+        Ok((x, y, rect_width, rect_height))
+    }
+
+    #[qjs(skip)]
+    fn ensure_region_fits(
+        ctx: &Ctx<'_>,
+        width: u32,
+        height: u32,
+        start_x: u32,
+        start_y: u32,
+        region_width: u32,
+        region_height: u32,
+        label: &str,
+    ) -> Result<()> {
+        if region_width == 0 || region_height == 0 {
+            return Err(Exception::throw_message(
+                ctx,
+                &format!("{label} must have a non-zero size"),
+            ));
+        }
+
+        let end_x = start_x
+            .checked_add(region_width)
+            .ok_or_else(|| Exception::throw_message(ctx, &format!("{label} width is too large")))?;
+        let end_y = start_y.checked_add(region_height).ok_or_else(|| {
+            Exception::throw_message(ctx, &format!("{label} height is too large"))
+        })?;
+
+        if end_x > width || end_y > height {
+            return Err(Exception::throw_message(
+                ctx,
+                &format!("{label} extends beyond image bounds"),
+            ));
+        }
+
+        Ok(())
+    }
+
+    #[qjs(skip)]
+    fn draw_image_into(
+        ctx: &Ctx<'_>,
+        dest: &mut super::Image,
+        position: point::Point,
+        source: &super::Image,
+        source_rect: Option<JsRect>,
+    ) -> Result<()> {
+        let (dest_x, dest_y) = Self::check_position_in_bounds(
+            ctx,
+            position,
+            dest.width(),
+            dest.height(),
+            "destination position",
+        )?;
+
+        let (src_x, src_y, width, height) = if let Some(rect) = source_rect {
+            let rect: Rect = rect.into();
+            Self::check_rect_in_bounds(
+                ctx,
+                &rect,
+                source.width(),
+                source.height(),
+                "source rectangle",
+            )?
+        } else {
+            (0, 0, source.width(), source.height())
+        };
+
+        Self::ensure_region_fits(
+            ctx,
+            dest.width(),
+            dest.height(),
+            dest_x,
+            dest_y,
+            width,
+            height,
+            "destination region",
+        )?;
+
+        let source_rgba = source.to_rgba8();
+        let cropped =
+            image::imageops::crop_imm(source_rgba.as_ref(), src_x, src_y, width, height).to_image();
+
+        let sub_dynamic = DynamicImage::ImageRgba8(cropped);
+        Self::ensure_rgba_image(dest);
+        let dest_dynamic = &mut dest.inner;
+        image::imageops::overlay(
+            dest_dynamic,
+            &sub_dynamic,
+            i64::from(dest_x),
+            i64::from(dest_y),
+        );
+
+        Ok(())
+    }
+
+    #[qjs(skip)]
+    fn load_font(ctx: &Ctx<'_>, font_path: &str) -> Result<FontArc> {
+        let data = fs::read(font_path).map_err(|err| {
+            Exception::throw_message(ctx, &format!("Unable to read font \"{font_path}\": {err}"))
+        })?;
+
+        FontArc::try_from_vec(data).map_err(|err| {
+            Exception::throw_message(ctx, &format!("Unable to parse font \"{font_path}\": {err}"))
+        })
+    }
+
+    #[qjs(skip)]
+    fn render_text(
+        ctx: &Ctx<'_>,
+        image: &mut super::Image,
+        position: point::Point,
+        text: &str,
+        font: &FontArc,
+        color: JsColorLike,
+        options: JsDrawTextOptions,
+    ) -> Result<()> {
+        if text.is_empty() {
+            return Ok(());
+        }
+
+        let font_size = options.font_size.max(1.0);
+        let scale = PxScale::from(font_size);
+        let lines: Vec<&str> = text.split('\n').collect();
+
+        let scaled_font = font.as_scaled(scale);
+        let line_height = scaled_font.height().max(1.0);
+        let spacing_factor = if options.line_spacing <= 0.0 {
+            1.0
+        } else {
+            options.line_spacing
+        };
+        let line_step = (line_height * spacing_factor).max(1.0);
+
+        let line_widths: Vec<u32> = lines
+            .iter()
+            .map(|line| text_size(scale, font, line).0)
+            .collect();
+
+        let total_height = line_height + (lines.len().saturating_sub(1) as f32) * line_step;
+        let total_height_i32 = total_height.ceil() as i32;
+
+        let anchor_x: i32 = position.x.into();
+        let anchor_y: i32 = position.y.into();
+
+        let base_y = anchor_y
+            + match options.vertical_align {
+                JsTextVerticalAlign::Top => 0,
+                JsTextVerticalAlign::Middle => -(total_height_i32 / 2),
+                JsTextVerticalAlign::Bottom => -total_height_i32,
+            };
+
+        let mut current_y = base_y;
+        let line_step_i32 = line_step.round() as i32;
+        let color_pixel: image::Rgba<u8> = *color.0;
+        let canvas = Self::ensure_rgba_image(image);
+
+        for (line, width) in lines.iter().zip(line_widths.iter()) {
+            let width_i32 = (*width).min(i32::MAX as u32) as i32;
+            let line_x = anchor_x
+                + match options.horizontal_align {
+                    JsTextHorizontalAlign::Left => 0,
+                    JsTextHorizontalAlign::Center => -(width_i32 / 2),
+                    JsTextHorizontalAlign::Right => -width_i32,
+                };
+
+            if !line.is_empty() {
+                draw_text_mut(canvas, color_pixel, line_x, current_y, scale, font, line);
+            }
+
+            current_y = current_y.checked_add(line_step_i32).ok_or_else(|| {
+                Exception::throw_message(ctx, "Text position overflowed image coordinates")
+            })?;
+        }
+
+        Ok(())
     }
 
     /// Draw a cross on this image.
@@ -889,13 +1187,13 @@ impl JsImage {
         if options.hollow {
             draw_hollow_rect_mut(
                 &mut self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
+                ImgRect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             );
         } else {
             draw_filled_rect_mut(
                 &mut self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
+                ImgRect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             );
         }
@@ -916,18 +1214,62 @@ impl JsImage {
         let image = if options.hollow {
             draw_hollow_rect(
                 &self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
+                ImgRect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             )
         } else {
             draw_filled_rect(
                 &self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
+                ImgRect::try_from(rect.0).into_js_result(&ctx)?,
                 *color.0,
             )
         };
 
         Ok(super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into())
+    }
+
+    /// Draw text on this image using the provided font.
+    pub fn draw_text<'js>(
+        &mut self,
+        ctx: Ctx<'js>,
+        this: This<Class<'js, Self>>,
+        position: JsPointLike,
+        text: String,
+        font_path: String,
+        color: JsColorLike,
+        options: Opt<JsDrawTextOptions>,
+    ) -> Result<Class<'js, Self>> {
+        let options = options.unwrap_or_default();
+        let font = Self::load_font(&ctx, &font_path)?;
+        Self::render_text(
+            &ctx,
+            &mut self.inner,
+            position.0,
+            &text,
+            &font,
+            color,
+            options,
+        )?;
+
+        Ok(this.0)
+    }
+
+    /// Draw text on a copy of this image.
+    pub fn with_text(
+        &self,
+        ctx: Ctx<'_>,
+        position: JsPointLike,
+        text: String,
+        font_path: String,
+        color: JsColorLike,
+        options: Opt<JsDrawTextOptions>,
+    ) -> Result<Self> {
+        let options = options.unwrap_or_default();
+        let font = Self::load_font(&ctx, &font_path)?;
+        let mut image = self.inner.clone();
+        Self::render_text(&ctx, &mut image, position.0, &text, &font, color, options)?;
+
+        Ok(image.into())
     }
 
     /// Draw another image on this image.
@@ -941,21 +1283,13 @@ impl JsImage {
     ) -> Result<Class<'js, Self>> {
         let options = options.unwrap_or_default();
 
-        let (x, y) = self.check_position(&ctx, position.0)?;
-
-        self.ensure_rgba();
-
-        if let Some(rect) = options.source_rect {
-            let (x, y) = self.check_position(&ctx, point(rect.get_x(), rect.get_y()))?;
-            let view = image.inner.view(x, y, rect.get_width(), rect.get_height());
-            self.inner
-                .copy_from(&view.to_image(), x, y)
-                .into_js_result(&ctx)?;
-        } else {
-            self.inner
-                .copy_from(&image.inner.inner, x, y)
-                .into_js_result(&ctx)?;
-        }
+        Self::draw_image_into(
+            &ctx,
+            &mut self.inner,
+            position.0,
+            &image.inner,
+            options.source_rect,
+        )?;
 
         Ok(this.0)
     }
@@ -970,21 +1304,15 @@ impl JsImage {
     ) -> Result<Self> {
         let options = options.unwrap_or_default();
 
-        let (x, y) = self.check_position(&ctx, position.0)?;
-
         let mut target_image = self.inner.clone();
 
-        if let Some(rect) = options.source_rect {
-            let (x, y) = self.check_position(&ctx, point(rect.get_x(), rect.get_y()))?;
-            let view = image.inner.view(x, y, rect.get_width(), rect.get_height());
-            target_image
-                .copy_from(&view.to_image(), x, y)
-                .into_js_result(&ctx)?;
-        } else {
-            target_image
-                .copy_from(&image.inner.inner, x, y)
-                .into_js_result(&ctx)?;
-        }
+        Self::draw_image_into(
+            &ctx,
+            &mut target_image,
+            position.0,
+            &image.inner,
+            options.source_rect,
+        )?;
 
         Ok(target_image.into())
     }
@@ -994,9 +1322,9 @@ impl JsImage {
         &mut self,
         _ctx: Ctx<'_>,
         _image: &JsImage,
-        options: Opt<FindImageOptions>,
+        options: Opt<JsFindImageOptions>,
     ) -> Result<()> {
-        let _options = options.unwrap_or_default();
+        let _options = options.0.unwrap_or_default();
 
         /*
         //self.ensure_rgba();
@@ -1245,5 +1573,3 @@ mod tests {
         });
     }
 }
-
-// TODO: draw text
