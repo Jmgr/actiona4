@@ -400,7 +400,6 @@ impl JsColor {
     /// @constructor
     ///
     /// @overload
-    /// @constructorOnly
     /// Constructor with three color channels and an alpha channel.
     /// @param r: number // Red (should be between 0-255)
     /// @param g: number // Green (should be between 0-255)
@@ -408,6 +407,7 @@ impl JsColor {
     /// @param a?: number // Alpha (should be between 0-255)
     ///
     /// @overload
+    /// @constructorOnly
     /// Constructor with anything Color-like.
     /// @param c: ColorLike
     #[qjs(constructor)]

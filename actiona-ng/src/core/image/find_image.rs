@@ -1022,8 +1022,8 @@ mod tests {
                     draw_text_mut(
                         &mut source.inner,
                         Color::new(255, 0, 0, 255).into(),
-                        rect.origin.x.into(),
-                        rect.origin.y.into(),
+                        rect.top_left.x.into(),
+                        rect.top_left.y.into(),
                         PxScale::from(24.0),
                         &font,
                         label,

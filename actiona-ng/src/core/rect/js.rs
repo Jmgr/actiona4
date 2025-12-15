@@ -16,7 +16,7 @@ use crate::{
         ResultExt,
         js::classes::ValueClass,
         point::{js::JsPoint, point},
-        size::size,
+        size::{js::JsSize, size},
     },
     types::{si32::Si32, su32::Su32},
 };
@@ -82,6 +82,19 @@ impl<'js> FromParam<'js> for JsRectLike {
     }
 }
 
+// TODO: property for point + size
+/// A 2D Rectangle.
+///
+/// @prop x: number // X coordinate
+/// @prop y: number // Y coordinate
+/// @prop width: number // Width
+/// @prop height: number // Height
+/// @prop topLeft: Point // Top-left origin
+/// @prop size: Size // Size
+///
+/// ```js
+/// let r = new Rect(1, 2, 50, 100);
+/// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Rect")]
 pub struct JsRect {
@@ -102,7 +115,6 @@ impl JsRect {
     /// @constructor
     ///
     /// @overload
-    /// @constructorOnly
     /// Constructor with a position and a size.
     /// @param x: number
     /// @param y: number
@@ -110,6 +122,7 @@ impl JsRect {
     /// @param height: number
     ///
     /// @overload
+    /// @constructorOnly
     /// Constructor with anything Rect-like.
     /// @param r: RectLike
     #[qjs(constructor)]
@@ -125,26 +138,26 @@ impl JsRect {
     #[qjs(get, rename = "x")]
     #[must_use]
     pub fn get_x(&self) -> i32 {
-        self.inner.origin.x.into()
+        self.inner.top_left.x.into()
     }
 
     /// @skip
     #[qjs(set, rename = "x")]
     pub fn set_x(&mut self, x: i32) {
-        self.inner.origin.x = x.into();
+        self.inner.top_left.x = x.into();
     }
 
     /// @skip
     #[qjs(get, rename = "y")]
     #[must_use]
     pub fn get_y(&self) -> i32 {
-        self.inner.origin.y.into()
+        self.inner.top_left.y.into()
     }
 
     /// @skip
     #[qjs(set, rename = "y")]
     pub fn set_y(&mut self, y: i32) {
-        self.inner.origin.y = y.into();
+        self.inner.top_left.y = y.into();
     }
 
     /// @skip
@@ -173,6 +186,32 @@ impl JsRect {
         self.inner.size.height = height.into();
     }
 
+    /// @skip
+    #[qjs(get, rename = "topLeft")]
+    #[must_use]
+    pub fn get_top_left(&self) -> JsPoint {
+        self.inner.top_left.into()
+    }
+
+    /// @skip
+    #[qjs(set, rename = "topLeft")]
+    pub fn set_top_left(&mut self, top_left: JsPoint) {
+        self.inner.top_left = top_left.into();
+    }
+
+    /// @skip
+    #[qjs(get, rename = "size")]
+    #[must_use]
+    pub fn get_size(&self) -> JsSize {
+        self.inner.size.into()
+    }
+
+    /// @skip
+    #[qjs(set, rename = "size")]
+    pub fn set_size(&mut self, size: JsSize) {
+        self.inner.size = size.into();
+    }
+
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
@@ -188,7 +227,10 @@ impl JsRect {
     pub fn to_string_js(&self) -> String {
         format!(
             "({}, {}, {}, {})",
-            self.inner.origin.x, self.inner.origin.y, self.inner.size.width, self.inner.size.height
+            self.inner.top_left.x,
+            self.inner.top_left.y,
+            self.inner.size.width,
+            self.inner.size.height
         )
     }
 

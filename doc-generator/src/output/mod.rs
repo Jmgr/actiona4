@@ -89,8 +89,6 @@ impl File {
 
     pub fn auto_generate_overloads(&mut self) -> Result<()> {
         // TODO: cleanup
-        // TODO: bug: PointLike is detected as Point, so
-        // setPixel(x, y, ...) is missing
         // We can auto-generate overloads for types that have multiple constructors, like Point.
         // For instance: mouse.move(p: Point) should also have mouse.move(x, y) and mouse.move({x: number, y: number})
 

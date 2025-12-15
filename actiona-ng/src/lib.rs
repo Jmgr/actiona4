@@ -6,6 +6,7 @@
 #![allow(clippy::too_long_first_doc_paragraph)]
 #![allow(clippy::significant_drop_tightening)]
 #![allow(clippy::future_not_send)]
+#![allow(clippy::too_many_arguments)]
 
 use color_eyre::Result;
 use rquickjs::{Coerced, Ctx, Exception, Value};

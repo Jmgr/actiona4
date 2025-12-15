@@ -14,7 +14,7 @@ pub mod js;
 
 #[derive(Clone, Constructor, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Rect {
-    pub origin: Point,
+    pub top_left: Point,
     pub size: Size,
 }
 
@@ -26,8 +26,8 @@ pub const fn rect(origin: Point, size: Size) -> Rect {
 impl Display for Rect {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display("x", self.origin.x)
-            .display("y", self.origin.y)
+            .display("x", self.top_left.x)
+            .display("y", self.top_left.y)
             .display("width", self.size.width)
             .display("height", self.size.height)
             .finish(f)
@@ -42,18 +42,18 @@ impl Rect {
 
     #[must_use]
     pub fn contains(&self, point: Point) -> bool {
-        point.x >= self.origin.x
-            && point.x < self.origin.x + self.size.width
-            && point.y >= self.origin.y
-            && point.y < self.origin.y + self.size.height
+        point.x >= self.top_left.x
+            && point.x < self.top_left.x + self.size.width
+            && point.y >= self.top_left.y
+            && point.y < self.top_left.y + self.size.height
     }
 
     #[must_use]
     pub fn intersects(&self, other: Self) -> bool {
-        !(self.origin.x + self.size.width <= other.origin.x
-            || other.origin.x + other.size.width <= self.origin.x
-            || self.origin.y + self.size.height <= other.origin.y
-            || other.origin.y + other.size.height <= self.origin.y)
+        !(self.top_left.x + self.size.width <= other.top_left.x
+            || other.top_left.x + other.size.width <= self.top_left.x
+            || self.top_left.y + self.size.height <= other.top_left.y
+            || other.top_left.y + other.size.height <= self.top_left.y)
     }
 
     #[must_use]
@@ -62,43 +62,43 @@ impl Rect {
             return None;
         }
 
-        let x1 = self.origin.x.max(other.origin.x);
-        let y1 = self.origin.y.max(other.origin.y);
-        let x2 = (self.origin.x + self.size.width).min(other.origin.x + other.size.width);
-        let y2 = (self.origin.y + self.size.height).min(other.origin.y + other.size.height);
+        let x1 = self.top_left.x.max(other.top_left.x);
+        let y1 = self.top_left.y.max(other.top_left.y);
+        let x2 = (self.top_left.x + self.size.width).min(other.top_left.x + other.size.width);
+        let y2 = (self.top_left.y + self.size.height).min(other.top_left.y + other.size.height);
 
         Some(Self {
-            origin: point(x1, y1),
+            top_left: point(x1, y1),
             size: size(x2 - x1, y2 - y1),
         })
     }
 
     #[must_use]
     pub fn union(&self, other: Self) -> Self {
-        let x1 = self.origin.x.min(other.origin.x);
-        let y1 = self.origin.y.min(other.origin.y);
-        let x2 = (self.origin.x + self.size.width).max(other.origin.x + other.size.width);
-        let y2 = (self.origin.y + self.size.height).max(other.origin.y + other.size.height);
+        let x1 = self.top_left.x.min(other.top_left.x);
+        let y1 = self.top_left.y.min(other.top_left.y);
+        let x2 = (self.top_left.x + self.size.width).max(other.top_left.x + other.size.width);
+        let y2 = (self.top_left.y + self.size.height).max(other.top_left.y + other.size.height);
 
         Self {
-            origin: point(x1, y1),
+            top_left: point(x1, y1),
             size: size(x2 - x1, y2 - y1),
         }
     }
 
     #[must_use]
     pub fn clamped(&self) -> (u32, u32, u32, u32) {
-        let clamped_x: Su32 = self.origin.x.into_inner().max(0).into();
-        let clamped_y: Su32 = self.origin.y.into_inner().max(0).into();
+        let clamped_x: Su32 = self.top_left.x.into_inner().max(0).into();
+        let clamped_y: Su32 = self.top_left.y.into_inner().max(0).into();
 
-        let adjusted_width = if self.origin.x < 0 {
-            self.size.width - self.origin.x.unsigned_abs()
+        let adjusted_width = if self.top_left.x < 0 {
+            self.size.width - self.top_left.x.unsigned_abs()
         } else {
             self.size.width
         };
 
-        let adjusted_height = if self.origin.y < 0 {
-            self.size.height - self.origin.y.unsigned_abs()
+        let adjusted_height = if self.top_left.y < 0 {
+            self.size.height - self.top_left.y.unsigned_abs()
         } else {
             self.size.height
         };
@@ -113,17 +113,17 @@ impl Rect {
 
     #[must_use]
     pub fn center(&self) -> Point {
-        self.origin + self.size.try_div(2).unwrap()
+        self.top_left + self.size.try_div(2).unwrap()
     }
 
     #[must_use]
     pub const fn top_left(&self) -> Point {
-        self.origin
+        self.top_left
     }
 
     #[must_use]
     pub fn bottom_right(&self) -> Point {
-        self.origin + (self.size - size(1, 1))
+        self.top_left + (self.size - size(1, 1))
     }
 
     #[must_use]
@@ -145,7 +145,7 @@ impl TryFrom<Rect> for imageproc::rect::Rect {
             return Err(eyre!("rectangle must have a non-zero size"));
         }
 
-        Ok(Self::at(value.origin.x.into(), value.origin.y.into())
+        Ok(Self::at(value.top_left.x.into(), value.top_left.y.into())
             .of_size(value.size.width.into(), value.size.height.into()))
     }
 }

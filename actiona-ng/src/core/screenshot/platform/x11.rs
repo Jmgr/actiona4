@@ -131,8 +131,8 @@ impl Display {
             .async_connection()
             .shm_get_image(
                 root,
-                rect.origin.x.into(),
-                rect.origin.y.into(),
+                rect.top_left.x.into(),
+                rect.top_left.y.into(),
                 rect.size.width.into(), // TODO: document that the max image size is u16::MAX
                 rect.size.height.into(),
                 u32::MAX, // plane mask (capture all planes)
@@ -195,8 +195,8 @@ impl Display {
             .get_image(
                 ImageFormat::Z_PIXMAP,
                 root,
-                rect.origin.x.into(),
-                rect.origin.y.into(),
+                rect.top_left.x.into(),
+                rect.top_left.y.into(),
                 rect.size.width.into(),
                 rect.size.height.into(),
                 u32::MAX,
@@ -385,8 +385,8 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
         .get_image(
             ImageFormat::Z_PIXMAP,
             root,
-            rect.origin.x.into(),
-            rect.origin.y.into(),
+            rect.top_left.x.into(),
+            rect.top_left.y.into(),
             rect.size.width.into(),
             rect.size.height.into(),
             u32::MAX,
