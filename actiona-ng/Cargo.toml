@@ -119,6 +119,7 @@ libtest-mimic-collect.workspace = true
 rstest.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
+serial_test.workspace = true
 
 [[test]]
 name = "ui"

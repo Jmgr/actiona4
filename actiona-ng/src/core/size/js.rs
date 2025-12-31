@@ -26,29 +26,32 @@ impl<'js> FromParam<'js> for JsSizeLike {
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
-        Ok(Self(match params.len() {
-            n if n >= 2 => super::Size::new(params.arg().get()?, params.arg().get()?),
-            n if n >= 1 => {
-                let value = params.arg();
+        let value = params.arg();
 
-                // Also accept a JsSize as a parameter
-                if let Ok(js_size) = value.get::<JsSize>() {
-                    return Ok(Self(js_size.into()));
-                }
+        if let Some(width) = value.as_number() {
+            let height = params
+                .arg()
+                .as_number()
+                .or_throw_message(params.ctx(), "Expected height as a number")?;
 
-                let object = value
-                    .as_object()
-                    .or_throw_message(params.ctx(), "Expected an object")?;
+            let size = try_size(width, height).into_js_result(params.ctx())?;
+            return Ok(Self(size));
+        }
 
-                super::Size::new(object.get("width")?, object.get("height")?)
-            }
-            n => {
-                return Err(Exception::throw_message(
-                    params.ctx(),
-                    &format!("Unexpected number of parameter: {n}"),
-                ));
-            }
-        }))
+        // Also accept a JsSize as a parameter
+        if let Ok(js_size) = value.get::<JsSize>() {
+            return Ok(Self(js_size.into()));
+        }
+
+        let object = value
+            .as_object()
+            .or_throw_message(params.ctx(), "Expected an object")?;
+
+        let width: f64 = object.get("width")?;
+        let height: f64 = object.get("height")?;
+        let size = try_size(width, height).into_js_result(params.ctx())?;
+
+        Ok(Self(size))
     }
 }
 
@@ -242,7 +245,7 @@ mod tests {
     use super::JsSize;
     use crate::{core::size::size, runtime::Runtime, scripting::Engine as ScriptEngine};
 
-    async fn setup(script_engine: Arc<ScriptEngine>) {
+    async fn setup(script_engine: ScriptEngine) {
         script_engine
             .eval::<()>(
                 r#"

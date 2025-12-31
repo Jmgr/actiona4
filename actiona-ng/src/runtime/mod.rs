@@ -94,7 +94,7 @@ pub(crate) struct JsUserData {
     rng: SharedRng,
     task_tracker: TaskTracker,
     app_handle: Option<AppHandle>,
-    script_engine: Arc<ScriptEngine>,
+    script_engine: ScriptEngine,
     callbacks: Callbacks,
 }
 
@@ -126,7 +126,7 @@ impl JsUserData {
             .clone()
     }
 
-    pub(crate) fn script_engine(&self) -> Arc<ScriptEngine> {
+    pub(crate) fn script_engine(&self) -> ScriptEngine {
         self.script_engine.clone()
     }
 
@@ -205,7 +205,7 @@ impl Runtime {
         task_tracker: TaskTracker,
         app_handle: Option<AppHandle>,
         options: RuntimeOptions,
-    ) -> Result<(Arc<Self>, Arc<ScriptEngine>)> {
+    ) -> Result<(Arc<Self>, ScriptEngine)> {
         let displays = Displays::new(cancellation_token.clone(), task_tracker.clone())?;
 
         #[cfg(unix)]
@@ -251,7 +251,7 @@ impl Runtime {
         let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
         let standard_paths = JsStandardPaths::default();
 
-        let script_engine = Arc::new(ScriptEngine::new().await?);
+        let script_engine = ScriptEngine::new().await?;
 
         let local_rng = rng.clone();
         let local_script_engine = script_engine.clone();
@@ -362,7 +362,7 @@ impl Runtime {
         tauri_context: tauri::Context<tauri_runtime_wry::Wry<tauri::EventLoopMessage>>,
     ) -> Result<Vec<UnhandledException>>
     where
-        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
     {
         let cancellation_token = CancellationToken::new();
@@ -454,7 +454,7 @@ impl Runtime {
 
     pub fn run<F, Fut>(f: F, runtime_options: RuntimeOptions) -> Result<Vec<UnhandledException>>
     where
-        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
     {
         let cancellation_token = CancellationToken::new();
@@ -481,7 +481,7 @@ impl Runtime {
         runtime_options: RuntimeOptions,
     ) -> Result<Vec<UnhandledException>>
     where
-        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
     {
         let local_cancellation_token = cancellation_token.clone();
@@ -611,7 +611,7 @@ impl Runtime {
 
     pub fn test_with_ui<F, Fut>(f: F)
     where
-        F: FnOnce(Arc<Self>, Arc<ScriptEngine>) -> Fut + Send + 'static,
+        F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         let unhandled_exceptions = Self::run_with_ui(
@@ -633,7 +633,7 @@ impl Runtime {
 
     pub fn test_with_script_engine<F, Fut>(f: F)
     where
-        F: FnOnce(Arc<ScriptEngine>) -> Fut + Send + 'static,
+        F: FnOnce(ScriptEngine) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         let unhandled_exceptions = Self::run(
@@ -762,7 +762,7 @@ mod tests {
 
     impl SingletonClass<'_> for TestSingletonStruct {}
 
-    async fn setup(script_engine: Arc<ScriptEngine>) {
+    async fn setup(script_engine: ScriptEngine) {
         script_engine
             .with(|ctx| {
                 ctx.globals()

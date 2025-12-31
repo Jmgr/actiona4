@@ -27,29 +27,32 @@ impl<'js> FromParam<'js> for JsPointLike {
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
-        Ok(Self(match params.len() {
-            n if n >= 2 => super::Point::new(params.arg().get()?, params.arg().get()?),
-            n if n >= 1 => {
-                let value = params.arg();
+        // Prefer explicit numeric overloads when the first argument is a number.
+        // Otherwise accept a Point instance or an object with x/y.
+        let value = params.arg();
+        if let Some(x) = value.as_number() {
+            let second_arg = params.arg();
+            let y = second_arg
+                .as_number()
+                .or_throw_message(params.ctx(), "Expected second argument to be a number")?;
 
-                // Also accept a JsPoint as a parameter
-                if let Ok(js_point) = value.get::<JsPoint>() {
-                    return Ok(Self(js_point.into()));
-                }
+            let point = try_point(x, y).into_js_result(params.ctx())?;
+            return Ok(Self(point));
+        }
 
-                let object = value
-                    .as_object()
-                    .or_throw_message(params.ctx(), "Expected an object")?;
+        // Also accept a JsPoint as a parameter.
+        if let Ok(js_point) = value.get::<JsPoint>() {
+            return Ok(Self(js_point.into()));
+        }
 
-                super::Point::new(object.get("x")?, object.get("y")?)
-            }
-            n => {
-                return Err(Exception::throw_message(
-                    params.ctx(),
-                    &format!("Unexpected number of parameter: {n}"),
-                ));
-            }
-        }))
+        let object = value
+            .as_object()
+            .or_throw_message(params.ctx(), "Expected an object")?;
+
+        let x: f64 = object.get("x")?;
+        let y: f64 = object.get("y")?;
+        let point = try_point(x, y).into_js_result(params.ctx())?;
+        Ok(Self(point))
     }
 }
 
@@ -277,7 +280,7 @@ mod tests {
     use super::JsPoint;
     use crate::{core::point::point, runtime::Runtime, scripting::Engine as ScriptEngine};
 
-    async fn setup(script_engine: Arc<ScriptEngine>) {
+    async fn setup(script_engine: ScriptEngine) {
         script_engine
             .eval::<()>(
                 r#"

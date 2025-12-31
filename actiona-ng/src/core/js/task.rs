@@ -299,7 +299,7 @@ mod tests {
         }
     }
 
-    async fn setup(script_engine: Arc<scripting::Engine>, test: TestStruct) {
+    async fn setup(script_engine: scripting::Engine, test: TestStruct) {
         script_engine
             .with(|ctx| {
                 register_singleton_class::<TestStruct>(&ctx, test).unwrap();

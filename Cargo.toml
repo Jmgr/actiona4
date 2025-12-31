@@ -189,6 +189,7 @@ httptest = "0.16.3"
 libtest-mimic-collect = "0.3.3"
 rstest = "0.26.1"
 tracing-test = "0.2.5"
+serial_test = "3.2.0"
 
 # Build dependencies
 built = "0.8.0"

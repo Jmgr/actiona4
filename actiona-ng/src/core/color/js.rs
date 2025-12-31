@@ -5,7 +5,7 @@
 
 use image::Rgba;
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Object, Result, Value,
+    Ctx, JsLifetime, Object, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
@@ -26,43 +26,38 @@ impl<'js> FromParam<'js> for JsColorLike {
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
-        Ok(Self(match params.len() {
-            // TODO: this variant (3 and 4 parameters) should only be accepted in constructors
-            n if n >= 4 => super::Color::new(
-                params.arg().get()?,
-                params.arg().get()?,
-                params.arg().get()?,
-                params.arg().get()?,
-            ),
-            n if n >= 3 => super::Color::new(
-                params.arg().get()?,
-                params.arg().get()?,
-                params.arg().get()?,
-                255,
-            ),
-            n if n >= 1 => {
-                let value = params.arg();
+        // Numeric overloads: r, g, b[, a]
+        let arg_count = params.len();
+        let value = params.arg();
+        if value.is_number() {
+            let r: u8 = value.get()?;
+            let g: u8 = params.arg().get()?;
+            let b: u8 = params.arg().get()?;
+            let a: u8 = if arg_count >= 4 {
+                params.arg().get()?
+            } else {
+                255
+            };
 
-                // Also accept a js::Color as a parameter
-                if let Ok(js_color) = value.get::<JsColor>() {
-                    return Ok(Self(js_color.into()));
-                }
+            return Ok(Self(super::Color::new(r, g, b, a)));
+        }
 
-                let object = value
-                    .as_object()
-                    .or_throw_message(params.ctx(), "Expected an object")?;
+        // Also accept a js::Color as a parameter
+        if let Ok(js_color) = value.get::<JsColor>() {
+            return Ok(Self(js_color.into()));
+        }
 
-                let a = object.get("a").unwrap_or(255);
+        // Or an object with r/g/b/a.
+        let object = value
+            .as_object()
+            .or_throw_message(params.ctx(), "Expected an object")?;
 
-                super::Color::new(object.get("r")?, object.get("g")?, object.get("b")?, a)
-            }
-            n => {
-                return Err(Exception::throw_message(
-                    params.ctx(),
-                    &format!("Unexpected number of parameter: {n}"),
-                ));
-            }
-        }))
+        let r: u8 = object.get("r")?;
+        let g: u8 = object.get("g")?;
+        let b: u8 = object.get("b")?;
+        let a: u8 = object.get("a").unwrap_or(255);
+
+        Ok(Self(super::Color::new(r, g, b, a)))
     }
 }
 

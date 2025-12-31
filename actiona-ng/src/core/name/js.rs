@@ -87,39 +87,31 @@ impl<'js> FromParam<'js> for JsNameLike<'js> {
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
-        match params.len() {
-            n if n >= 1 => {
-                let value = params.arg();
+        let value = params.arg();
 
-                if value.is_string() {
-                    return Ok(Self(super::Name::String(
-                        value.as_string().unwrap().to_string().unwrap(),
-                    )));
-                }
-
-                if let Ok(wildcard) = value.get::<JsWildcard>() {
-                    return Ok(Self(super::Name::Wildcard(wildcard)));
-                }
-
-                let object = value
-                    .into_object()
-                    .or_throw_message(params.ctx(), "Expected an object")?;
-
-                let regexp_ctor: Constructor = params.ctx().globals().get("RegExp")?;
-                if object.is_instance_of(regexp_ctor) {
-                    return Ok(Self(super::Name::Regex(object)));
-                }
-
-                Err(Exception::throw_message(
-                    params.ctx(),
-                    "Unexpected object type",
-                ))
-            }
-            n => Err(Exception::throw_message(
-                params.ctx(),
-                &format!("Unexpected number of parameter: {n}"),
-            )),
+        if value.is_string() {
+            return Ok(Self(super::Name::String(
+                value.as_string().unwrap().to_string().unwrap(),
+            )));
         }
+
+        if let Ok(wildcard) = value.get::<JsWildcard>() {
+            return Ok(Self(super::Name::Wildcard(wildcard)));
+        }
+
+        let object = value
+            .into_object()
+            .or_throw_message(params.ctx(), "Expected an object")?;
+
+        let regexp_ctor: Constructor = params.ctx().globals().get("RegExp")?;
+        if object.is_instance_of(regexp_ctor) {
+            return Ok(Self(super::Name::Regex(object)));
+        }
+
+        Err(Exception::throw_message(
+            params.ctx(),
+            "Unexpected object type",
+        ))
     }
 }
 

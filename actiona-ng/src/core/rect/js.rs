@@ -4,7 +4,7 @@
 //! @verbatim type RectLike = Rect | { x: number; y: number; width: number; height: number };
 
 use rquickjs::{
-    Ctx, Exception, FromJs, JsLifetime, Result,
+    Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
@@ -12,13 +12,14 @@ use rquickjs::{
 
 use super::rect;
 use crate::{
+    IntoJsResult,
     core::{
         ResultExt,
+        point::{point, try_point},
         js::classes::ValueClass,
-        point::{js::JsPoint, point},
-        size::{js::JsSize, size},
+        point::js::JsPoint,
+        size::{js::JsSize, size, try_size},
     },
-    types::{si32::Si32, su32::Su32},
 };
 
 pub struct JsRectLike(pub super::Rect);
@@ -33,52 +34,44 @@ impl<'js> FromParam<'js> for JsRectLike {
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
-        Ok(Self(match params.len() {
-            n if n >= 4 => {
-                let param = params.arg();
-                let x = Si32::from_js(params.ctx(), param)?;
+        let value = params.arg();
 
-                let param = params.arg();
-                let y = Si32::from_js(params.ctx(), param)?;
+        if let Some(x) = value.as_number() {
+            let y = params
+                .arg()
+                .as_number()
+                .or_throw_message(params.ctx(), "Expected y as a number")?;
+            let width = params
+                .arg()
+                .as_number()
+                .or_throw_message(params.ctx(), "Expected width as a number")?;
+            let height = params
+                .arg()
+                .as_number()
+                .or_throw_message(params.ctx(), "Expected height as a number")?;
 
-                let param = params.arg();
-                let w = Su32::from_js(params.ctx(), param)?;
+            let origin = try_point(x, y).into_js_result(params.ctx())?;
+            let size = try_size(width, height).into_js_result(params.ctx())?;
+            return Ok(Self(super::Rect::new(origin, size)));
+        }
 
-                let param = params.arg();
-                let h = Su32::from_js(params.ctx(), param)?;
+        // Also accept a js::Rect as a parameter
+        if let Ok(js_rect) = value.get::<JsRect>() {
+            return Ok(Self(js_rect.into()));
+        }
 
-                super::Rect::new(point(x, y), size(w, h))
-            }
-            n if n >= 1 => {
-                let value = params.arg();
+        let object = value
+            .as_object()
+            .or_throw_message(params.ctx(), "Expected an object")?;
 
-                // Also accept a js::Color as a parameter
-                if let Ok(js_rect) = value.get::<JsRect>() {
-                    return Ok(Self(js_rect.into()));
-                }
+        let x: f64 = object.get("x")?;
+        let y: f64 = object.get("y")?;
+        let width: f64 = object.get("width")?;
+        let height: f64 = object.get("height")?;
 
-                let object = value
-                    .as_object()
-                    .or_throw_message(params.ctx(), "Expected an object")?;
-
-                super::Rect::new(
-                    point(
-                        Si32::from_js(params.ctx(), object.get("x")?)?,
-                        Si32::from_js(params.ctx(), object.get("y")?)?,
-                    ),
-                    size(
-                        Su32::from_js(params.ctx(), object.get("width")?)?,
-                        Su32::from_js(params.ctx(), object.get("height")?)?,
-                    ),
-                )
-            }
-            n => {
-                return Err(Exception::throw_message(
-                    params.ctx(),
-                    &format!("Unexpected number of parameter: {n}"),
-                ));
-            }
-        }))
+        let origin = try_point(x, y).into_js_result(params.ctx())?;
+        let size = try_size(width, height).into_js_result(params.ctx())?;
+        Ok(Self(super::Rect::new(origin, size)))
     }
 }
 

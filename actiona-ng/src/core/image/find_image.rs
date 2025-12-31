@@ -83,19 +83,19 @@ impl From<f32> for MatchScore {
 /// @options
 #[derive(Clone, Debug, FromJsObject, PartialEq)]
 pub struct FindImageTemplateOptions {
-    use_colors: bool,
-    use_transparency: bool,
-    match_threshold: f32,
-    max_results: Option<u32>,
+    pub use_colors: bool,
+    pub use_transparency: bool,
+    pub match_threshold: f32,
+    pub max_results: Option<u32>,
 
     /// Optional pixel radius (in result-map coordinates) to try around each hint.
     /// If omitted, a heuristic radius is used.
-    hint_search_radius: Option<i32>,
+    pub hint_search_radius: Option<i32>,
 
     /// Radius to consider proximity (in pixels)
-    non_maximum_suppression_radius: Option<i32>,
+    pub non_maximum_suppression_radius: Option<i32>,
 
-    position_hints: Option<Vec<JsPoint>>,
+    pub position_hints: Option<Vec<JsPoint>>,
 }
 
 impl Default for FindImageTemplateOptions {

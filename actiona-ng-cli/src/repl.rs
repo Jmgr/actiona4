@@ -1,7 +1,6 @@
 use std::{
     borrow::Cow,
     path::{Path, PathBuf},
-    sync::Arc,
 };
 
 use actiona_ng::{JsValueToString, scripting::Engine};
@@ -53,7 +52,7 @@ pub enum ReplArgs {
 
 #[derive(Helper, Hinter)]
 struct ReplHelper {
-    script_engine: Arc<Engine>,
+    script_engine: Engine,
     file_completer: FilenameCompleter,
     cmd_names: Vec<String>,
     bracket: MatchingBracketHighlighter,
@@ -167,7 +166,7 @@ impl Validator for ReplHelper {
             Handle::current().block_on(async move {
                 self.script_engine
                     .with(move |ctx| {
-                        if is_syntax_complete(&ctx, input, script_engine) {
+                        if is_syntax_complete(&ctx, input, &script_engine) {
                             ValidationResult::Valid(None)
                         } else {
                             ValidationResult::Invalid(None)
@@ -204,10 +203,7 @@ enum ProcessResult {
     Break,
 }
 
-async fn process_dot_command(
-    command: ReplArgs,
-    script_engine: Arc<Engine>,
-) -> Result<ProcessResult> {
+async fn process_dot_command(command: ReplArgs, script_engine: &Engine) -> Result<ProcessResult> {
     match command {
         ReplArgs::Load { filename } => {
             // TODO: read file and call
@@ -251,7 +247,7 @@ async fn process_dot_command(
 
 async fn parse_and_process_dot_command(
     line: &str,
-    script_engine: Arc<Engine>,
+    script_engine: &Engine,
 ) -> Result<ProcessResult> {
     let command = try_parse_dot_command(line)?;
 
@@ -268,7 +264,7 @@ fn setup_highlighting() -> (SyntaxSet, Theme, SyntaxReference) {
     (syntax_set, theme.clone(), syntax_reference)
 }
 
-pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
+pub async fn repl(script_engine: Engine) -> Result<()> {
     let (syntax_set, theme, syntax_reference) = setup_highlighting();
 
     let validator = ReplHelper {
@@ -303,7 +299,7 @@ pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
                 repl.add_history_entry(&line)?;
 
                 if let Some(line) = line.strip_prefix(".") {
-                    let result = parse_and_process_dot_command(line, script_engine.clone()).await;
+                    let result = parse_and_process_dot_command(line, &script_engine).await;
                     match result {
                         Ok(result) => match result {
                             ProcessResult::Continue => {}
@@ -365,7 +361,7 @@ pub async fn repl(script_engine: Arc<Engine>) -> Result<()> {
     Ok(())
 }
 
-fn is_syntax_complete<'js>(ctx: &Ctx<'js>, code: &str, script_engine: Arc<Engine>) -> bool {
+fn is_syntax_complete<'js>(ctx: &Ctx<'js>, code: &str, script_engine: &Engine) -> bool {
     let Ok((_, js)) = script_engine.ts_to_js(code) else {
         return false;
     };

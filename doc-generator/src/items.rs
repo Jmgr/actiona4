@@ -49,15 +49,19 @@ impl Items {
             .js_items
             .iter()
             .filter_map(|item| match &item.inner {
-                ItemEnum::TypeAlias(alias) => Some(alias.type_.clone()),
+                ItemEnum::TypeAlias(alias) => {
+                    let rustdoc_types::Type::ResolvedPath(path) = &alias.type_ else {
+                        return None;
+                    };
+
+                    // Clone the target item but preserve the alias's name so we emit the aliased
+                    // identifier in the TS output instead of the underlying target name.
+                    let mut target = self.get(path.id).clone();
+                    target.name = item.name.clone().or_else(|| target.name.clone());
+                    Some(target)
+                }
                 _ => None,
             })
-            .filter_map(|item| match &item {
-                rustdoc_types::Type::ResolvedPath(path) => Some(path.id),
-                _ => None,
-            })
-            .map(|id| self.get(id))
-            .cloned()
             .collect_vec();
 
         Self {

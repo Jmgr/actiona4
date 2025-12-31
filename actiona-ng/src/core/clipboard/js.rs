@@ -62,15 +62,20 @@ impl JsClipboard {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboard {
-    pub fn set_text(&self, ctx: Ctx<'_>, text: String, mode: Opt<JsClipboardMode>) -> Result<()> {
+    pub async fn set_text(
+        &self,
+        ctx: Ctx<'_>,
+        text: String,
+        mode: Opt<JsClipboardMode>,
+    ) -> Result<()> {
         self.inner.set_text(text, *mode).into_js_result(&ctx)
     }
 
-    pub fn get_text(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
+    pub async fn get_text(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_text(*mode).into_js_result(&ctx)
     }
 
-    pub fn set_image(
+    pub async fn set_image(
         &self,
         ctx: Ctx<'_>,
         image: JsImage,
@@ -81,18 +86,30 @@ impl JsClipboard {
             .into_js_result(&ctx)
     }
 
-    pub fn get_image(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
+    pub async fn get_image(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
         let image = self.inner.get_image(*mode).into_js_result(&ctx)?;
 
         Ok(image.into())
     }
 
-    // TODO: missing setFileList
-    pub fn get_file_list(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
+    pub async fn set_file_list(
+        &self,
+        ctx: Ctx<'_>,
+        list: Vec<String>,
+        mode: Opt<JsClipboardMode>,
+    ) -> Result<()> {
+        self.inner.set_file_list(&list, *mode).into_js_result(&ctx)
+    }
+
+    pub async fn get_file_list(
+        &self,
+        ctx: Ctx<'_>,
+        mode: Opt<JsClipboardMode>,
+    ) -> Result<Vec<String>> {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
     }
 
-    pub fn set_html(
+    pub async fn set_html(
         &self,
         ctx: Ctx<'_>,
         html: String,
@@ -104,11 +121,11 @@ impl JsClipboard {
             .into_js_result(&ctx)
     }
 
-    pub fn get_html(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
+    pub async fn get_html(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_html(*mode).into_js_result(&ctx)
     }
 
-    pub fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
+    pub async fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
         self.inner.clear(*mode).into_js_result(&ctx)
     }
 }

@@ -431,10 +431,12 @@ impl JsImage {
         })
     }
 
+    // TODO: make this async
     pub fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
         self.inner.save(path).into_js_result(&ctx)
     }
 
+    // TODO: make this async
     #[qjs(static)]
     pub fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
         let image = ImageReader::open(path)
@@ -973,6 +975,8 @@ impl<'js> Trace<'js> for JsImage {
 
 #[cfg(test)]
 mod tests {
+    use std::io::{BufReader, Cursor};
+
     use image::{DynamicImage, ImageReader};
     use opencv::{
         Result,
@@ -982,9 +986,14 @@ mod tests {
         },
         imgproc::{self, COLOR_RGB2BGR, cvt_color},
     };
+    use rstest::{fixture, rstest};
+    use serial_test::serial;
     use tracing_test::traced_test;
 
-    use crate::runtime::Runtime;
+    use crate::{
+        core::image::{Image, js::JsImage},
+        runtime::Runtime,
+    };
 
     /// Convert `image::DynamicImage` to `opencv::core::Mat` in BGR format
     fn dynamic_image_to_mat(img: &DynamicImage) -> Result<Mat> {
@@ -1075,5 +1084,123 @@ mod tests {
 
             println!("{min_val} {max_val} {min_loc:?} {max_loc:?}");
         });
+    }
+
+    fn sanitize(s: &str) -> String {
+        s.to_lowercase()
+            .chars()
+            .map(|c| {
+                if c.is_ascii_lowercase() || c.is_ascii_digit() {
+                    c
+                } else {
+                    '_'
+                }
+            })
+            .collect::<String>()
+            .trim_end_matches("_")
+            .to_string()
+    }
+
+    #[rstest]
+    #[serial]
+    #[case::invert_colors("invertColors()")]
+    #[case::blur_default("blur()")]
+    #[case::blur_sigma(r#"blur({sigma: 4})"#)]
+    #[case::flip_horizontal(r#"flip(FlipDirection.Horizontal)"#)]
+    #[case::flip_vertical(r#"flip(FlipDirection.Vertical)"#)]
+    #[case::hue_rotate("hueRotate(90)")]
+    #[case::grayscale("grayscale()")]
+    #[case::crop_rect(r#"crop(new Rect(5, 5, 50, 40))"#)]
+    #[case::resize_default(r#"resize(30, 40)"#)]
+    #[case::resize_keep_aspect(r#"resize(30, 40, {keepAspectRatio: true})"#)]
+    #[case::adjust_brightness("adjustBrightness(20)")]
+    #[case::adjust_contrast("adjustContrast(-15)")]
+    #[case::fill_color("fill(Color.Green)")]
+    #[case::set_pixel_point(r#"setPixel(new Point(0, 0), Color.Blue)"#)]
+    #[case::set_pixel_object(r#"setPixel({x: 1, y: 2}, Color.Red)"#)]
+    #[case::set_pixel_numbers(r#"setPixel(3, 4, Color.Green)"#)]
+    #[case::draw_cross(r#"drawCross(new Point(10, 10), Color.Red)"#)]
+    #[case::draw_line(r#"drawLine(new Point(0, 0), new Point(20, 10), Color.Blue)"#)]
+    #[case::draw_circle_hollow(r#"drawCircle(new Point(25, 25), 10, Color.Green, {hollow: true})"#)]
+    #[case::draw_ellipse(r#"drawEllipse(new Point(25, 20), 12, 8, Color.Black)"#)]
+    #[case::draw_rectangle_hollow(
+        r#"drawRectangle(new Rect(5, 5, 30, 15), Color.Black, {hollow: true})"#
+    )]
+    #[case::draw_text(
+        r#"drawText(new Point(5, 25), "Test", fontPath, Color.White, {fontSize: 12, horizontalAlign: TextHorizontalAlign.Left})"#
+    )]
+    #[case::draw_image(
+        r#"drawImage(new Point(10, 10), overlay, {sourceRect: new Rect(0, 0, 16, 16)})"#
+    )]
+    #[case::rotate_0("rotate(0)")]
+    #[case::rotate_90("rotate(90)")]
+    #[case::rotate_45("rotate(45)")]
+    #[case::rotate_0_center(r#"rotate(0, {center: new Point(0, 0)})"#)]
+    #[case::rotate_90_center(r#"rotate(90, {center: new Point(0, 0)})"#)]
+    #[case::rotate_45_center(r#"rotate(45, {center: new Point(0, 0)})"#)]
+    #[case::rotate_0_center_default_color(
+        r#"rotate(0, {center: new Point(0, 0), defaultColor: Color.Red})"#
+    )]
+    #[case::rotate_90_center_default_color(
+        r#"rotate(90, {center: new Point(0, 0), defaultColor: Color.Red})"#
+    )]
+    #[case::rotate_45_center_default_color(
+        r#"rotate(45, {center: new Point(0, 0), defaultColor: Color.Red})"#
+    )]
+    #[case::rotate_0_center_default_color_nearest(
+        r#"rotate(0, {center: new Point(0, 0), defaultColor: Color.Red, interpolation: Interpolation.Nearest})"#
+    )]
+    #[case::rotate_90_center_default_color_nearest(
+        r#"rotate(90, {center: new Point(0, 0), defaultColor: Color.Red, interpolation: Interpolation.Nearest})"#
+    )]
+    #[case::rotate_45_center_default_color_nearest(
+        r#"rotate(45, {center: new Point(0, 0), defaultColor: Color.Red, interpolation: Interpolation.Nearest})"#
+    )]
+    fn test_generate(#[case] operation: String) {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            // Load the input image
+            script_engine
+                .eval_async::<()>(
+                    r#"var input = await Image.load("../tests/pear.png");
+                    var overlay = await Image.load("../tests/fire.png");
+                    var fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";"#,
+                )
+                .await
+                .unwrap();
+
+            // Run the operation
+            script_engine
+                .eval::<()>(&format!("input.{operation}"))
+                .await
+                .unwrap();
+
+            // Save the result
+            let file_name = sanitize(&operation);
+            script_engine
+                .eval_async::<()>(&format!(r#"await input.save("test-data/{file_name}.png")"#))
+                .await
+                .unwrap();
+        })
+    }
+
+    #[rstest]
+    #[case("rotate(90)", "rotate.png")]
+    fn test_all(#[case] operation: String, #[case] output_filename: String) {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            script_engine
+                .eval_async::<()>(r#"var input = await Image.load("../tests/pear.png")"#)
+                .await
+                .unwrap();
+
+            let output = script_engine
+                .eval::<JsImage>(&format!("input.{operation}"))
+                .await
+                .unwrap();
+
+            script_engine
+                .with2(|ctx| output.save(ctx.clone(), format!("../tests/{output_filename}")))
+                .await
+                .unwrap();
+        })
     }
 }

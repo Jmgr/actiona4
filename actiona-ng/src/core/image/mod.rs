@@ -31,6 +31,7 @@ use crate::core::{
     rect::{Rect, rect},
     size::size,
 };
+use crate::types::{si32::Si32, su32::su32};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FlipDirection {
@@ -899,8 +900,8 @@ impl Image {
         let total_height = line_height + Self::u32_to_f32(extra_lines) * line_step;
         let total_height_i32 = Self::clamp_f32_to_i32(total_height.ceil());
 
-        let anchor_x: i32 = position.x.into();
-        let anchor_y: i32 = position.y.into();
+        let anchor_x: Si32 = position.x;
+        let anchor_y: Si32 = position.y;
 
         let base_y = anchor_y
             + match options.vertical_align {
@@ -915,9 +916,8 @@ impl Image {
         let canvas = image.ensure_rgba_mut();
 
         for (line, width) in lines.iter().zip(line_widths.iter()) {
-            let width_limit = u32::try_from(i32::MAX).expect("i32::MAX fits in u32");
-            let width_i32 = i32::try_from((*width).min(width_limit)).unwrap_or(i32::MAX);
-            let line_x = anchor_x
+            let width_i32: i32 = Si32::from(su32(*width)).into();
+            let line_x: Si32 = anchor_x
                 + match options.horizontal_align {
                     TextHorizontalAlign::Left => 0,
                     TextHorizontalAlign::Center => -(width_i32 / 2),
@@ -925,12 +925,18 @@ impl Image {
                 };
 
             if !line.is_empty() {
-                draw_text_mut(canvas, color_pixel, line_x, current_y, scale, font, line);
+                draw_text_mut(
+                    canvas,
+                    color_pixel,
+                    line_x.into(),
+                    current_y.into(),
+                    scale,
+                    font,
+                    line,
+                );
             }
 
-            current_y = current_y
-                .checked_add(line_step_i32)
-                .ok_or_else(|| eyre!("Text position overflowed image coordinates"))?;
+            current_y += line_step_i32;
         }
 
         Ok(())
