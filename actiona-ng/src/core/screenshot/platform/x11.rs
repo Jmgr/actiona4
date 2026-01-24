@@ -1,9 +1,15 @@
-use std::{collections::HashMap, os::fd::OwnedFd, sync::Arc};
+use std::{collections::HashMap, ffi::c_void, os::fd::OwnedFd, sync::Arc, time::Instant};
 
 use color_eyre::{Result, eyre::eyre};
 use image::{DynamicImage, RgbaImage};
 use memfd::{FileSeal, MemfdOptions};
 use memmap2::MmapMut;
+use opencv::{
+    boxed_ref::BoxedRef,
+    core::{CV_8UC1, CV_8UC3, CV_8UC4, Mat, MatTraitConst, Size as CvSize, Vector},
+    imgcodecs::imwrite,
+    imgproc::{COLOR_BGRA2BGR, COLOR_BGRA2GRAY, cvt_color},
+};
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 use tokio::sync::Mutex;
 use tracing::error;
@@ -42,6 +48,8 @@ struct Display {
     shm_data: Option<ShmData>,
     x11_connection: Arc<X11Connection>,
     shm_lock: Mutex<()>,
+    rgb_mat_buffer: parking_lot::Mutex<Mat>,
+    greyscale_mat_buffer: parking_lot::Mutex<Mat>,
 }
 
 impl Display {
@@ -88,11 +96,27 @@ impl Display {
             None
         };
 
+        let rgb_mat_buffer = unsafe {
+            Mat::new_size(
+                CvSize::new(rect.size.width.into(), rect.size.height.into()),
+                CV_8UC3,
+            )?
+        };
+
+        let greyscale_mat_buffer = unsafe {
+            Mat::new_size(
+                CvSize::new(rect.size.width.into(), rect.size.height.into()),
+                CV_8UC1,
+            )?
+        };
+
         Ok(Self {
             rect,
             shm_data,
             x11_connection,
             shm_lock: Mutex::new(()),
+            rgb_mat_buffer: parking_lot::Mutex::new(rgb_mat_buffer),
+            greyscale_mat_buffer: parking_lot::Mutex::new(greyscale_mat_buffer),
         })
     }
 
@@ -107,8 +131,8 @@ impl Display {
             .async_connection()
             .shm_get_image(
                 root,
-                rect.origin.x.into(),
-                rect.origin.y.into(),
+                rect.top_left.x.into(),
+                rect.top_left.y.into(),
                 rect.size.width.into(), // TODO: document that the max image size is u16::MAX
                 rect.size.height.into(),
                 u32::MAX, // plane mask (capture all planes)
@@ -135,6 +159,88 @@ impl Display {
             self.capture_shm_get_image(shm_data, self.rect).await
         } else {
             capture_get_image(self.x11_connection.clone(), self.rect).await
+        }
+    }
+
+    pub async fn capture_mat(&self, use_color: bool) -> Result<()> {
+        self.capture_image(self.x11_connection.clone(), self.rect, use_color, |mat| {
+            imwrite(
+                "/home/jmgr/rust/actiona-ng/output.png",
+                &mat,
+                &Vector::new(),
+            )?;
+            Result::<()>::Ok(())
+        })
+        .await??;
+        Ok(())
+    }
+
+    #[allow(unsafe_code)]
+    async fn capture_image<F, R>(
+        &self,
+        x11_connection: Arc<X11Connection>,
+        rect: Rect,
+        use_color: bool,
+        f: F,
+    ) -> Result<R>
+    where
+        F: FnOnce(&Mat) -> R,
+    {
+        use x11rb_async::protocol::xproto::ConnectionExt;
+
+        let root = x11_connection.screen().root;
+
+        let reply = x11_connection
+            .async_connection()
+            .get_image(
+                ImageFormat::Z_PIXMAP,
+                root,
+                rect.top_left.x.into(),
+                rect.top_left.y.into(),
+                rect.size.width.into(),
+                rect.size.height.into(),
+                u32::MAX,
+            )
+            .await?
+            .reply()
+            .await?;
+
+        let mat = Mat::new_rows_cols_with_bytes::<opencv::core::Vec4b>(
+            rect.size.height.into(),
+            rect.size.width.into(),
+            &reply.data,
+        )?;
+
+        if use_color {
+            let mut target_mat = self.rgb_mat_buffer.lock();
+
+            #[allow(clippy::redundant_closure_call)]
+            (|| {
+                opencv::opencv_has_inherent_feature_algorithm_hint! {
+                    {
+                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
+                    } else {
+                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2BGR, 0)
+                    }
+                }
+            })()?;
+
+            Ok(f(&*target_mat))
+        } else {
+            let mut target_mat = self.greyscale_mat_buffer.lock();
+
+            #[allow(clippy::redundant_closure_call)]
+            (|| {
+                opencv::opencv_has_inherent_feature_algorithm_hint! {
+                    {
+                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2GRAY, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
+                    } else {
+                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2GRAY, 0)
+                    }
+                }
+            })()?;
+
+            Ok(f(&*target_mat))
         }
     }
 }
@@ -195,6 +301,16 @@ impl ScreenshotImpl {
         self.display_map.set(new_display_map);
 
         Ok(())
+    }
+
+    // TMP
+    pub async fn capture_mat(&self, display_id: u32, use_color: bool) -> Result<()> {
+        let display_map = self.display_map.wait_get().await?;
+        let display = display_map
+            .get(&display_id)
+            .ok_or_else(|| eyre!("unknown display id: {display_id}"))?;
+
+        display.capture_mat(use_color).await
     }
 }
 
@@ -269,8 +385,8 @@ async fn capture_get_image(x11_connection: Arc<X11Connection>, rect: Rect) -> Re
         .get_image(
             ImageFormat::Z_PIXMAP,
             root,
-            rect.origin.x.into(),
-            rect.origin.y.into(),
+            rect.top_left.x.into(),
+            rect.top_left.y.into(),
             rect.size.width.into(),
             rect.size.height.into(),
             u32::MAX,
@@ -373,6 +489,10 @@ mod tests {
             let displays_info = displays.wait_get_info().await.unwrap();
             let mut iter = displays_info.iter();
             let a = iter.next().unwrap().id;
+
+            imp2.capture_mat(a, true).await.unwrap();
+
+            /*
             let b = iter.next().unwrap().id;
             let c = iter.next().unwrap().id;
 
@@ -394,6 +514,7 @@ mod tests {
             image1.save("/tmp/test/test1.bmp").unwrap();
             image2.save("/tmp/test/test2.bmp").unwrap();
             image3.save("/tmp/test/test3.bmp").unwrap();
+            */
 
             /*
             let start = Instant::now();

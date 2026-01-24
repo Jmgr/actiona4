@@ -1,7 +1,4 @@
-use std::sync::{
-    Arc, Weak,
-    atomic::{AtomicUsize, Ordering},
-};
+use std::sync::Arc;
 
 use color_eyre::Result;
 use derive_more::{Constructor, Deref, DerefMut};
@@ -125,6 +122,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
                             && let Err(err) = local_topic.on_start().await
                         {
                             error!("{}", err); // TODO: improve this
+                            continue;
                         }
 
                         count += 1;
@@ -177,110 +175,6 @@ impl<T: Topic + 'static> TopicWrapper<T> {
 
     pub fn topic(&self) -> Arc<T> {
         self.topic.clone()
-    }
-}
-
-// TODO: remove
-pub struct Test {
-    parent: Weak<MultiTest>,
-}
-
-impl Topic for Test {
-    type T = u32;
-    type Signal = AllSignals<Self::T>;
-
-    async fn on_start(&self) -> Result<()> {
-        if let Some(parent) = self.parent.upgrade() {
-            parent.on_start().await?;
-        }
-        Ok(())
-    }
-
-    async fn on_stop(&self) -> Result<()> {
-        if let Some(parent) = self.parent.upgrade() {
-            parent.on_stop().await?;
-        }
-        Ok(())
-    }
-}
-
-pub struct Test2 {
-    parent: Weak<MultiTest>,
-}
-
-impl Topic for Test2 {
-    type T = u64;
-    type Signal = LatestOnlySignals<Self::T>;
-
-    async fn on_start(&self) -> Result<()> {
-        if let Some(parent) = self.parent.upgrade() {
-            parent.on_start().await?;
-        }
-        Ok(())
-    }
-
-    async fn on_stop(&self) -> Result<()> {
-        if let Some(parent) = self.parent.upgrade() {
-            parent.on_stop().await?;
-        }
-        Ok(())
-    }
-}
-
-pub struct MultiTest {
-    test: Arc<TopicWrapper<Test>>,
-    test2: Arc<TopicWrapper<Test2>>,
-    subscribers: Arc<AtomicUsize>,
-}
-
-impl MultiTest {
-    #[must_use]
-    pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Arc<Self> {
-        Arc::new_cyclic(|me| Self {
-            test: Arc::new(TopicWrapper::new(
-                Test { parent: me.clone() },
-                cancellation_token.clone(),
-                task_tracker.clone(),
-            )),
-            test2: Arc::new(TopicWrapper::new(
-                Test2 { parent: me.clone() },
-                cancellation_token.clone(),
-                task_tracker,
-            )),
-            subscribers: Arc::new(AtomicUsize::new(0)),
-        })
-    }
-
-    #[must_use]
-    pub fn subscribe_test(&self) -> Guard<Test> {
-        self.test.subscribe()
-    }
-
-    #[must_use]
-    pub fn subscribe_test2(&self) -> Guard<Test2> {
-        self.test2.subscribe()
-    }
-
-    pub fn publish_test(&self, value: <Test as Topic>::T) {
-        self.test.publish(value);
-    }
-
-    pub fn publish_test2(&self, value: <Test2 as Topic>::T) {
-        self.test2.publish(value);
-    }
-
-    async fn on_start(&self) -> Result<()> {
-        if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
-            println!("MultiTest start");
-        }
-        Ok(())
-    }
-
-    async fn on_stop(&self) -> Result<()> {
-        if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
-            println!("MultiTest stop");
-        }
-        Ok(())
     }
 }
 

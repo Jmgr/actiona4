@@ -1,4 +1,10 @@
-use std::{borrow::Cow, fmt::Debug, num::TryFromIntError, path::PathBuf, sync::Arc};
+use std::{
+    borrow::Cow,
+    fmt::Debug,
+    num::TryFromIntError,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
@@ -212,6 +218,16 @@ impl Clipboard {
         .ok_or(Error::ConversionFailure)?;
 
         Ok(DynamicImage::ImageRgba8(img).into())
+    }
+
+    pub fn set_file_list(
+        &self,
+        file_list: &[impl AsRef<Path>],
+        mode: Option<ClipboardMode>,
+    ) -> Result<()> {
+        self.set(|set| set.file_list(file_list), mode)?;
+
+        Ok(())
     }
 
     pub fn get_file_list(&self, mode: Option<ClipboardMode>) -> Result<Vec<String>> {

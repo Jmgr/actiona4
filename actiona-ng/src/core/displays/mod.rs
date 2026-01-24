@@ -97,11 +97,11 @@ impl Displays {
 
         // Sample uniformly inside the chosen rect.
         // Use i64 for the range math to avoid overflows on x + width, etc.
-        let x_end = i64::from(rect.origin.x) + i64::from(rect.size.width);
-        let y_end = i64::from(rect.origin.y) + i64::from(rect.size.height);
+        let x_end = i64::from(rect.top_left.x) + i64::from(rect.size.width);
+        let y_end = i64::from(rect.top_left.y) + i64::from(rect.size.height);
 
-        let x = rng.random_range(i64::from(rect.origin.x)..x_end);
-        let y = rng.random_range(i64::from(rect.origin.y)..y_end);
+        let x = rng.random_range(i64::from(rect.top_left.x)..x_end);
+        let y = rng.random_range(i64::from(rect.top_left.y)..y_end);
 
         Ok(try_point(x, y)?)
     }

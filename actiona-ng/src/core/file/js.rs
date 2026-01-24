@@ -681,7 +681,7 @@ mod tests {
 
     fn test_with_file<F, Fut>(f: F)
     where
-        F: FnOnce(Arc<Engine>) -> Fut + Send + 'static,
+        F: FnOnce(Engine) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         Runtime::test_with_script_engine(|script_engine| async move {

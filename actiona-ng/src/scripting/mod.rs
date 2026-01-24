@@ -23,6 +23,7 @@ pub mod typescript;
 
 pub type UnhandledException = (String, Vec<CallStackFrame>);
 
+#[derive(Clone)]
 #[derive_where(Debug)]
 pub struct Engine {
     #[derive_where(skip)]
@@ -115,6 +116,20 @@ impl Engine {
         R: ParallelSend,
     {
         self.context.with(f).await
+    }
+
+    // TODO: replace "with" and use this one
+    pub async fn with2<F, R>(&self, f: F) -> Result<R>
+    where
+        F: for<'js> FnOnce(Ctx<'js>) -> rquickjs::Result<R> + ParallelSend,
+        R: Send,
+    {
+        let result = self
+            .context
+            .with(|ctx| f(ctx.clone()).catch(&ctx).map_err(|err| err.to_string()))
+            .await
+            .map_err(|err| eyre!("{err}"))?;
+        Ok(result)
     }
 
     #[allow(clippy::significant_drop_tightening)]

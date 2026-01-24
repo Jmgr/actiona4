@@ -107,11 +107,26 @@ impl WindowsHandler for X11WindowHandler {
         Ok(handle.class()?)
     }
 
+    // untested
     fn close(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
-        let connection = self.runtime.platform().x11_connection().sync_connection();
+        let platform = self.runtime.platform();
+        let x11_connection = platform.x11_connection();
+        let connection = x11_connection.sync_connection();
 
-        todo!();
+        let geometry = connection.get_geometry(handle.id)?.reply()?;
+        let root = geometry.root;
+        let close_atom = platform.atoms()._NET_CLOSE_WINDOW;
+
+        connection.send_event(
+            false,
+            root,
+            EventMask::SUBSTRUCTURE_REDIRECT | EventMask::SUBSTRUCTURE_NOTIFY,
+            ClientMessageEvent::new(32, handle.id, close_atom, [0, 0, 0, 0, 0]),
+        )?;
+        connection.flush()?;
+
+        Ok(())
     }
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
@@ -168,12 +183,24 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
+    // untested
     fn minimize(&self, id: WindowId) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+        let platform = self.runtime.platform();
+        let x11_connection = platform.x11_connection();
+        let connection = x11_connection.sync_connection();
+
+        connection.unmap_window(handle.id)?;
+        connection.flush()?;
+
+        Ok(())
     }
 
+    // untested
     fn maximize(&self, id: WindowId) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+        handle.maximize()?;
+        Ok(())
     }
 
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {

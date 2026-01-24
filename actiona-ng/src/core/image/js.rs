@@ -1,19 +1,6 @@
 use std::io;
 
-use image::{
-    ColorType, DynamicImage, GenericImage, GenericImageView, ImageReader, ImageResult, RgbaImage,
-    imageops::FilterType, metadata::Orientation,
-};
-use imageproc::{
-    drawing::{
-        draw_cross, draw_cross_mut, draw_filled_circle, draw_filled_circle_mut,
-        draw_filled_ellipse, draw_filled_ellipse_mut, draw_filled_rect, draw_filled_rect_mut,
-        draw_hollow_circle, draw_hollow_circle_mut, draw_hollow_ellipse, draw_hollow_ellipse_mut,
-        draw_hollow_rect, draw_hollow_rect_mut, draw_line_segment, draw_line_segment_mut,
-    },
-    geometric_transformations::{self, rotate, rotate_about_center},
-    rect::Rect,
-};
+use image::{ImageReader, ImageResult};
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Result, TypedArray,
@@ -28,20 +15,16 @@ use crate::{
     IntoJsResult,
     core::{
         color::js::{JsColor, JsColorLike},
+        image::{
+            BlurOptions, DrawImageOptions, DrawTextOptions, DrawingOptions, FlipDirection,
+            Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
+            TextVerticalAlign,
+        },
         js::classes::{ValueClass, register_enum},
-        point::{
-            self,
-            js::{JsPoint, JsPointLike},
-            point,
-        },
-        rect::{
-            js::{JsRect, JsRectLike},
-            rect,
-        },
-        size::size,
+        point::js::{JsPoint, JsPointLike},
+        rect::js::{JsRect, JsRectLike},
     },
     error::CommonError,
-    types::su32::su32,
 };
 
 #[derive(
@@ -61,6 +44,15 @@ use crate::{
 pub enum JsFlipDirection {
     Horizontal,
     Vertical,
+}
+
+impl From<JsFlipDirection> for FlipDirection {
+    fn from(value: JsFlipDirection) -> Self {
+        match value {
+            JsFlipDirection::Horizontal => Self::Horizontal,
+            JsFlipDirection::Vertical => Self::Vertical,
+        }
+    }
 }
 
 /// Resize filters
@@ -86,16 +78,14 @@ pub enum JsResizeFilter {
     Lanczos3,
 }
 
-impl From<JsResizeFilter> for FilterType {
+impl From<JsResizeFilter> for ResizeFilter {
     fn from(value: JsResizeFilter) -> Self {
-        use JsResizeFilter::*;
-
         match value {
-            Nearest => Self::Nearest,
-            Linear => Self::Triangle,
-            Cubic => Self::CatmullRom,
-            Gaussian => Self::Gaussian,
-            Lanczos3 => Self::Lanczos3,
+            JsResizeFilter::Nearest => Self::Nearest,
+            JsResizeFilter::Linear => Self::Linear,
+            JsResizeFilter::Cubic => Self::Cubic,
+            JsResizeFilter::Gaussian => Self::Gaussian,
+            JsResizeFilter::Lanczos3 => Self::Lanczos3,
         }
     }
 }
@@ -121,14 +111,12 @@ pub enum JsInterpolation {
     Bicubic,
 }
 
-impl From<JsInterpolation> for geometric_transformations::Interpolation {
+impl From<JsInterpolation> for Interpolation {
     fn from(value: JsInterpolation) -> Self {
-        use JsInterpolation::*;
-
         match value {
-            Nearest => Self::Nearest,
-            Bilinear => Self::Bilinear,
-            Bicubic => Self::Bicubic,
+            JsInterpolation::Nearest => Self::Nearest,
+            JsInterpolation::Bilinear => Self::Bilinear,
+            JsInterpolation::Bicubic => Self::Bicubic,
         }
     }
 }
@@ -155,6 +143,15 @@ impl Default for JsResizeOptions {
     }
 }
 
+impl From<JsResizeOptions> for ResizeOptions {
+    fn from(value: JsResizeOptions) -> Self {
+        Self {
+            keep_aspect_ratio: value.keep_aspect_ratio,
+            filter: value.filter.into(),
+        }
+    }
+}
+
 /// Blur options
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
@@ -177,6 +174,15 @@ impl Default for JsBlurOptions {
     }
 }
 
+impl From<JsBlurOptions> for BlurOptions {
+    fn from(value: JsBlurOptions) -> Self {
+        Self {
+            fast: value.fast,
+            sigma: value.sigma,
+        }
+    }
+}
+
 /// Draw image options
 /// @options
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
@@ -185,6 +191,14 @@ pub struct JsDrawImageOptions {
     /// `undefined` means the whole image.
     /// @default `undefined`
     pub source_rect: Option<JsRect>,
+}
+
+impl From<JsDrawImageOptions> for DrawImageOptions {
+    fn from(value: JsDrawImageOptions) -> Self {
+        Self {
+            source_rect: value.source_rect.map(Into::into),
+        }
+    }
 }
 
 /// Rotation options
@@ -214,6 +228,16 @@ impl Default for JsRotationOptions {
     }
 }
 
+impl From<JsRotationOptions> for RotationOptions {
+    fn from(value: JsRotationOptions) -> Self {
+        Self {
+            interpolation: value.interpolation.into(),
+            center: value.center.map(Into::into),
+            default_color: value.default_color.into(),
+        }
+    }
+}
+
 /// Drawing options
 /// @options
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
@@ -223,7 +247,120 @@ pub struct JsDrawingOptions {
     pub hollow: bool,
 }
 
-pub type FindImageOptions = super::find_image::JsFindImageOptions;
+impl From<JsDrawingOptions> for DrawingOptions {
+    fn from(value: JsDrawingOptions) -> Self {
+        Self {
+            hollow: value.hollow,
+        }
+    }
+}
+
+/// Horizontal alignment for text drawing.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "TextHorizontalAlign")]
+pub enum JsTextHorizontalAlign {
+    Left,
+    Center,
+    Right,
+}
+
+impl From<JsTextHorizontalAlign> for TextHorizontalAlign {
+    fn from(value: JsTextHorizontalAlign) -> Self {
+        match value {
+            JsTextHorizontalAlign::Left => Self::Left,
+            JsTextHorizontalAlign::Center => Self::Center,
+            JsTextHorizontalAlign::Right => Self::Right,
+        }
+    }
+}
+
+/// Vertical alignment for text drawing.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "TextVerticalAlign")]
+pub enum JsTextVerticalAlign {
+    Top,
+    Middle,
+    Bottom,
+}
+
+impl From<JsTextVerticalAlign> for TextVerticalAlign {
+    fn from(value: JsTextVerticalAlign) -> Self {
+        match value {
+            JsTextVerticalAlign::Top => Self::Top,
+            JsTextVerticalAlign::Middle => Self::Middle,
+            JsTextVerticalAlign::Bottom => Self::Bottom,
+        }
+    }
+}
+
+/// Text drawing options.
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct JsDrawTextOptions {
+    /// Font size in pixels.
+    /// @default `16`
+    pub font_size: f32,
+
+    /// Multiplier applied to the default line height when rendering multi-line text.
+    /// @default `1`
+    pub line_spacing: f32,
+
+    /// Horizontal alignment relative to the provided position.
+    /// @default `TextHorizontalAlign.Left`
+    pub horizontal_align: JsTextHorizontalAlign,
+
+    /// Vertical alignment relative to the provided position.
+    /// @default `TextVerticalAlign.Top`
+    pub vertical_align: JsTextVerticalAlign,
+}
+
+impl Default for JsDrawTextOptions {
+    fn default() -> Self {
+        Self {
+            font_size: 16.0,
+            line_spacing: 1.0,
+            horizontal_align: JsTextHorizontalAlign::Left,
+            vertical_align: JsTextVerticalAlign::Top,
+        }
+    }
+}
+
+impl From<JsDrawTextOptions> for DrawTextOptions {
+    fn from(value: JsDrawTextOptions) -> Self {
+        Self {
+            font_size: value.font_size,
+            line_spacing: value.line_spacing,
+            horizontal_align: value.horizontal_align.into(),
+            vertical_align: value.vertical_align.into(),
+        }
+    }
+}
+
+pub type JsFindImageOptions = super::find_image::FindImageTemplateOptions;
 
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Image")]
@@ -250,6 +387,8 @@ impl<'js> ValueClass<'js> for JsImage {
         register_enum::<JsFlipDirection>(ctx)?;
         register_enum::<JsResizeFilter>(ctx)?;
         register_enum::<JsInterpolation>(ctx)?;
+        register_enum::<JsTextHorizontalAlign>(ctx)?;
+        register_enum::<JsTextVerticalAlign>(ctx)?;
 
         Ok(())
     }
@@ -292,10 +431,12 @@ impl JsImage {
         })
     }
 
+    // TODO: make this async
     pub fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
         self.inner.save(path).into_js_result(&ctx)
     }
 
+    // TODO: make this async
     #[qjs(static)]
     pub fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
         let image = ImageReader::open(path)
@@ -308,12 +449,14 @@ impl JsImage {
         Ok(super::Image::from_dynamic_image(image).into())
     }
 
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub fn width(&self) -> u32 {
         self.inner.width()
     }
 
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub fn height(&self) -> u32 {
@@ -338,18 +481,16 @@ impl JsImage {
     }
 
     /// Invert the colors of this image.
-    pub fn invert<'js>(&mut self, this: This<Class<'js, Self>>) -> Class<'js, Self> {
-        self.inner.invert();
+    pub fn invert_colors<'js>(&mut self, this: This<Class<'js, Self>>) -> Class<'js, Self> {
+        self.inner.invert_mut();
 
         this.0
     }
 
     /// Invert the colors of this image and returns a new image.
     #[must_use]
-    pub fn inverted(&self) -> Self {
-        let mut cloned = self.clone();
-        cloned.inner.invert();
-        cloned
+    pub fn inverted_colors(&self) -> Self {
+        self.inner.inverted().into()
     }
 
     /// Blur the image.
@@ -358,7 +499,7 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         options: Opt<JsBlurOptions>,
     ) -> Class<'js, Self> {
-        *self.inner = self.blur_impl(options);
+        self.inner.blur_mut(options.unwrap_or_default().into());
 
         this.0
     }
@@ -366,18 +507,9 @@ impl JsImage {
     /// Blur the image and returns a new image.
     #[must_use]
     pub fn blurred(&self, options: Opt<JsBlurOptions>) -> Self {
-        super::Image::from_dynamic_image(self.blur_impl(options)).into()
-    }
-
-    #[qjs(skip)]
-    fn blur_impl(&self, options: Opt<JsBlurOptions>) -> DynamicImage {
-        let options = options.unwrap_or_default();
-
-        if options.fast {
-            self.inner.fast_blur(options.sigma)
-        } else {
-            self.inner.blur(options.sigma)
-        }
+        self.inner
+            .blurred(options.unwrap_or_default().into())
+            .into()
     }
 
     /// Rotate the image.
@@ -387,35 +519,8 @@ impl JsImage {
         angle: f32,
         options: Opt<JsRotationOptions>,
     ) -> Class<'js, Self> {
-        let options = options.unwrap_or_default();
-
-        if let Some(center) = options.center {
-            let rgba = self.ensure_rgba();
-            let center = center.inner();
-            *self.inner = DynamicImage::ImageRgba8(rotate(
-                rgba,
-                (center.x.into(), center.y.into()),
-                angle.to_radians(),
-                options.interpolation.into(),
-                options.default_color.into(),
-            ))
-        } else {
-            match angle {
-                0. => {}
-                90. => self.inner.apply_orientation(Orientation::Rotate90),
-                180. => self.inner.apply_orientation(Orientation::Rotate180),
-                270. => self.inner.apply_orientation(Orientation::Rotate270),
-                angle => {
-                    let rgba = self.ensure_rgba();
-                    *self.inner = DynamicImage::ImageRgba8(rotate_about_center(
-                        rgba,
-                        angle.to_radians(),
-                        options.interpolation.into(),
-                        options.default_color.into(),
-                    ))
-                }
-            }
-        }
+        self.inner
+            .rotate_mut(angle, options.unwrap_or_default().into());
 
         this.0
     }
@@ -423,34 +528,9 @@ impl JsImage {
     /// Rotate the image and returns a new image.
     #[must_use]
     pub fn rotated(&self, angle: f32, options: Opt<JsRotationOptions>) -> Self {
-        let options = options.unwrap_or_default();
-
-        let result = options.center.map_or_else(
-            || match angle {
-                0. => self.inner.clone().into(),
-                90. => self.inner.rotate90(),
-                180. => self.inner.rotate180(),
-                270. => self.inner.rotate270(),
-                angle => DynamicImage::ImageRgba8(rotate_about_center(
-                    &self.inner.to_rgba8(),
-                    angle.to_radians(),
-                    options.interpolation.into(),
-                    options.default_color.into(),
-                )),
-            },
-            |center| {
-                let center = center.inner();
-                DynamicImage::ImageRgba8(rotate(
-                    &self.inner.to_rgba8(),
-                    (center.x.into(), center.y.into()),
-                    angle.to_radians(),
-                    options.interpolation.into(),
-                    options.default_color.into(),
-                ))
-            },
-        );
-
-        super::Image::from_dynamic_image(result).into()
+        self.inner
+            .rotated(angle, options.unwrap_or_default().into())
+            .into()
     }
 
     /// Flip the image.
@@ -459,12 +539,7 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         flip_direction: JsFlipDirection,
     ) -> Class<'js, Self> {
-        use JsFlipDirection::*;
-        let orientation = match flip_direction {
-            Horizontal => Orientation::FlipHorizontal,
-            Vertical => Orientation::FlipVertical,
-        };
-        self.inner.apply_orientation(orientation);
+        self.inner.flip_mut(flip_direction.into());
 
         this.0
     }
@@ -472,12 +547,7 @@ impl JsImage {
     /// Flip the image and returns a new image.
     #[must_use]
     pub fn flipped(&self, flip_direction: JsFlipDirection) -> Self {
-        use JsFlipDirection::*;
-        super::Image::from_dynamic_image(match flip_direction {
-            Horizontal => self.inner.fliph(),
-            Vertical => self.inner.flipv(),
-        })
-        .into()
+        self.inner.flipped(flip_direction.into()).into()
     }
 
     /// Hue rotate the image.
@@ -486,28 +556,28 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         value: i32,
     ) -> Class<'js, Self> {
-        *self.inner = self.inner.huerotate(value);
+        self.inner.hue_rotate_mut(value);
 
         this.0
     }
 
     /// Hue rotate the image and returns a new image.
     #[must_use]
-    pub fn hue_rotated(&self, value: i32) -> Self {
-        super::Image::from_dynamic_image(self.inner.huerotate(value)).into()
+    pub fn with_hue_rotation(&self, value: i32) -> Self {
+        self.inner.hue_rotated(value).into()
     }
 
     /// Transform this image into a grayscale.
     pub fn grayscale<'js>(&mut self, this: This<Class<'js, Self>>) -> Class<'js, Self> {
-        *self.inner = self.inner.grayscale();
+        self.inner.grayscale_mut();
 
         this.0
     }
 
     /// Returns a grayscale version of this image.
     #[must_use]
-    pub fn grayscaled(&self) -> Self {
-        super::Image::from_dynamic_image(self.inner.grayscale()).into()
+    pub fn with_grayscale(&self) -> Self {
+        self.inner.grayscaled().into()
     }
 
     /// Crops this image.
@@ -516,8 +586,7 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         rect: JsRectLike,
     ) -> Class<'js, Self> {
-        let (x, y, width, height) = rect.0.clamped();
-        *self.inner = self.inner.crop_imm(x, y, width, height);
+        self.inner.crop_mut(rect.0);
 
         this.0
     }
@@ -525,8 +594,7 @@ impl JsImage {
     /// Returns a cropped version of this image.
     #[must_use]
     pub fn cropped(&self, rect: JsRectLike) -> Self {
-        let (x, y, width, height) = rect.0.clamped();
-        super::Image::from_dynamic_image(self.inner.crop_imm(x, y, width, height)).into()
+        self.inner.cropped(rect.0).into()
     }
 
     /// Resizes this image.
@@ -537,7 +605,8 @@ impl JsImage {
         height: u32,
         options: Opt<JsResizeOptions>,
     ) -> Class<'js, Self> {
-        *self.inner = self.resize_impl(width, height, options);
+        self.inner
+            .resize_mut(width, height, options.unwrap_or_default().into());
 
         this.0
     }
@@ -545,19 +614,9 @@ impl JsImage {
     /// Returns a resized version of this image.
     #[must_use]
     pub fn resized(&self, width: u32, height: u32, options: Opt<JsResizeOptions>) -> Self {
-        super::Image::from_dynamic_image(self.resize_impl(width, height, options)).into()
-    }
-
-    #[qjs(skip)]
-    fn resize_impl(&self, width: u32, height: u32, options: Opt<JsResizeOptions>) -> DynamicImage {
-        let options = options.unwrap_or_default();
-
-        if options.keep_aspect_ratio {
-            self.inner.resize(width, height, options.filter.into())
-        } else {
-            self.inner
-                .resize_exact(width, height, options.filter.into())
-        }
+        self.inner
+            .resized(width, height, options.unwrap_or_default().into())
+            .into()
     }
 
     /// Brightens or darkens the pixels of this image.
@@ -566,15 +625,15 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         value: i32,
     ) -> Class<'js, Self> {
-        *self.inner = self.inner.brighten(value);
+        self.inner.adjust_brightness_mut(value);
 
         this.0
     }
 
     /// Returns a brightened or darkened version of this image.
     #[must_use]
-    pub fn adjusted_brightness(&self, value: i32) -> Self {
-        super::Image::from_dynamic_image(self.inner.brighten(value)).into()
+    pub fn with_adjusted_brightness(&self, value: i32) -> Self {
+        self.inner.adjusted_brightness(value).into()
     }
 
     /// Adjusts the contrast of this image.
@@ -583,15 +642,15 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         value: f32,
     ) -> Class<'js, Self> {
-        *self.inner = self.inner.adjust_contrast(value);
+        self.inner.adjust_contrast_mut(value);
 
         this.0
     }
 
     /// Returns a new image with an adjusted contrast.
     #[must_use]
-    pub fn adjusted_contrast(&self, value: f32) -> Self {
-        super::Image::from_dynamic_image(self.inner.adjust_contrast(value)).into()
+    pub fn with_adjusted_contrast(&self, value: f32) -> Self {
+        self.inner.adjusted_contrast(value).into()
     }
 
     /// Fill this image with a color.
@@ -600,11 +659,7 @@ impl JsImage {
         this: This<Class<'js, Self>>,
         color: JsColorLike,
     ) -> Class<'js, Self> {
-        let rgba = self.ensure_rgba();
-
-        for pixel in rgba.pixels_mut() {
-            *pixel = color.0.into();
-        }
+        self.inner.fill_mut(color.0);
 
         this.0
     }
@@ -612,38 +667,15 @@ impl JsImage {
     /// Fill this image with a color.
     #[must_use]
     pub fn filled(&self, color: JsColorLike) -> Self {
-        let mut rgba = self.inner.to_rgba8().into_owned();
-
-        for pixel in rgba.pixels_mut() {
-            *pixel = color.0.into();
-        }
-
-        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(rgba)).into()
-    }
-
-    #[qjs(skip)]
-    fn check_position(&self, ctx: &Ctx<'_>, position: point::Point) -> Result<(u32, u32)> {
-        if position.x < 0
-            || su32(position.x) >= su32(self.width())
-            || position.y < 0
-            || su32(position.y) >= su32(self.height())
-        {
-            return Err(Exception::throw_message(
-                ctx,
-                &format!("Invalid position: {position}"),
-            ));
-        }
-
-        Ok((position.x.into(), position.y.into()))
+        self.inner.filled(color.0).into()
     }
 
     /// Returns the value of a pixel.
     pub fn get_pixel(&mut self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
-        let (x, y) = self.check_position(&ctx, position.0)?;
-
-        let rgba = self.ensure_rgba();
-
-        Ok((*rgba.get_pixel(x, y)).into())
+        self.inner
+            .get_pixel_color(position.0)
+            .into_js_result(&ctx)
+            .map(Into::into)
     }
 
     /// Returns the value of a pixel.
@@ -654,40 +686,27 @@ impl JsImage {
         position: JsPointLike,
         color: JsColorLike,
     ) -> Result<Class<'js, Self>> {
-        let (x, y) = self.check_position(&ctx, position.0)?;
-
-        let rgba = self.ensure_rgba();
-
-        rgba.put_pixel(x, y, color.0.into());
+        self.inner
+            .set_pixel_color(position.0, color.0)
+            .into_js_result(&ctx)?;
 
         Ok(this.0)
     }
 
     /// Creates a new image from a part of this image.
     pub fn copy_region(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<Self> {
-        let (x, y) = self.check_position(&ctx, point(rect.0.origin.x, rect.0.origin.y))?;
-
-        Ok(super::Image::from_dynamic_image(DynamicImage::ImageRgba8(
-            self.inner
-                .view(x, y, rect.0.size.width.into(), rect.0.size.height.into())
-                .to_image(),
-        ))
-        .into())
+        self.inner
+            .copy_region(rect.0)
+            .into_js_result(&ctx)
+            .map(Into::into)
     }
 
     /// Returns a Rect representing this image.
+    /// @get
+    #[qjs(get)]
     #[must_use]
     pub fn rect(&self) -> JsRect {
-        rect(point(0, 0), size(self.width(), self.height())).into()
-    }
-
-    #[qjs(skip)]
-    fn ensure_rgba(&mut self) -> &mut RgbaImage {
-        if self.inner.color() != ColorType::Rgba8 {
-            *self.inner = DynamicImage::ImageRgba8(self.inner.inner.to_rgba8());
-        }
-
-        self.inner.as_mut_rgba8().expect("image should be the RGBA")
+        self.inner.bounds_rect().into()
     }
 
     /// Draw a cross on this image.
@@ -697,12 +716,7 @@ impl JsImage {
         position: JsPointLike,
         color: JsColorLike,
     ) -> Class<'js, Self> {
-        draw_cross_mut(
-            &mut self.inner.inner,
-            *color.0,
-            position.0.x.into(),
-            position.0.y.into(),
-        );
+        self.inner.draw_cross_mut(position.0, color.0);
 
         this.0
     }
@@ -710,13 +724,7 @@ impl JsImage {
     /// Draw a cross on a copy of this image.
     #[must_use]
     pub fn with_cross(&self, position: JsPointLike, color: JsColorLike) -> Self {
-        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(draw_cross(
-            &self.inner.inner,
-            *color.0,
-            position.0.x.into(),
-            position.0.y.into(),
-        )))
-        .into()
+        self.inner.with_cross(position.0, color.0).into()
     }
 
     /// Draw a line on this image.
@@ -727,12 +735,7 @@ impl JsImage {
         end: JsPointLike,
         color: JsColorLike,
     ) -> Class<'js, Self> {
-        draw_line_segment_mut(
-            &mut self.inner.inner,
-            (start.0.x.into(), start.0.y.into()),
-            (end.0.x.into(), end.0.y.into()),
-            *color.0,
-        );
+        self.inner.draw_line_mut(start.0, end.0, color.0);
 
         this.0
     }
@@ -740,13 +743,7 @@ impl JsImage {
     /// Draw a line on a copy of this image.
     #[must_use]
     pub fn with_line(&self, start: JsPointLike, end: JsPointLike, color: JsColorLike) -> Self {
-        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(draw_line_segment(
-            &self.inner.inner,
-            (start.0.x.into(), start.0.y.into()),
-            (end.0.x.into(), end.0.y.into()),
-            *color.0,
-        )))
-        .into()
+        self.inner.with_line(start.0, end.0, color.0).into()
     }
 
     /// Draw a circle on this image.
@@ -758,23 +755,12 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Class<'js, Self> {
-        let options = options.unwrap_or_default();
-
-        if options.hollow {
-            draw_hollow_circle_mut(
-                &mut self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
-                radius,
-                *color.0,
-            );
-        } else {
-            draw_filled_circle_mut(
-                &mut self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
-                radius,
-                *color.0,
-            );
-        }
+        self.inner.draw_circle_mut(
+            center.0,
+            radius,
+            color.0,
+            options.unwrap_or_default().into(),
+        );
 
         this.0
     }
@@ -788,25 +774,14 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Self {
-        let options = options.unwrap_or_default();
-
-        let image = if options.hollow {
-            draw_hollow_circle(
-                &self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
+        self.inner
+            .with_circle(
+                center.0,
                 radius,
-                *color.0,
+                color.0,
+                options.unwrap_or_default().into(),
             )
-        } else {
-            draw_filled_circle(
-                &self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
-                radius,
-                *color.0,
-            )
-        };
-
-        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into()
+            .into()
     }
 
     /// Draw an ellipse on this image.
@@ -819,25 +794,13 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Class<'js, Self> {
-        let options = options.unwrap_or_default();
-
-        if options.hollow {
-            draw_hollow_ellipse_mut(
-                &mut self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
-                width_radius,
-                height_radius,
-                *color.0,
-            );
-        } else {
-            draw_filled_ellipse_mut(
-                &mut self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
-                width_radius,
-                height_radius,
-                *color.0,
-            );
-        }
+        self.inner.draw_ellipse_mut(
+            center.0,
+            width_radius,
+            height_radius,
+            color.0,
+            options.unwrap_or_default().into(),
+        );
 
         this.0
     }
@@ -852,27 +815,15 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Self {
-        let options = options.unwrap_or_default();
-
-        let image = if options.hollow {
-            draw_hollow_ellipse(
-                &self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
+        self.inner
+            .with_ellipse(
+                center.0,
                 width_radius,
                 height_radius,
-                *color.0,
+                color.0,
+                options.unwrap_or_default().into(),
             )
-        } else {
-            draw_filled_ellipse(
-                &self.inner.inner,
-                (center.0.x.into(), center.0.y.into()),
-                width_radius,
-                height_radius,
-                *color.0,
-            )
-        };
-
-        super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into()
+            .into()
     }
 
     /// Draw a rectangle on this image.
@@ -884,21 +835,9 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Result<Class<'js, Self>> {
-        let options = options.unwrap_or_default();
-
-        if options.hollow {
-            draw_hollow_rect_mut(
-                &mut self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
-                *color.0,
-            );
-        } else {
-            draw_filled_rect_mut(
-                &mut self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
-                *color.0,
-            );
-        }
+        self.inner
+            .draw_rectangle_mut(rect.0, color.0, options.unwrap_or_default().into())
+            .into_js_result(&ctx)?;
 
         Ok(this.0)
     }
@@ -911,23 +850,56 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,
     ) -> Result<Self> {
-        let options = options.unwrap_or_default();
+        self.inner
+            .with_rectangle(rect.0, color.0, options.unwrap_or_default().into())
+            .into_js_result(&ctx)
+            .map(Into::into)
+    }
 
-        let image = if options.hollow {
-            draw_hollow_rect(
-                &self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
-                *color.0,
+    /// Draw text on this image using the provided font.
+    pub fn draw_text<'js>(
+        &mut self,
+        ctx: Ctx<'js>,
+        this: This<Class<'js, Self>>,
+        position: JsPointLike,
+        text: String,
+        font_path: String,
+        color: JsColorLike,
+        options: Opt<JsDrawTextOptions>,
+    ) -> Result<Class<'js, Self>> {
+        self.inner
+            .draw_text_mut(
+                position.0,
+                &text,
+                &font_path,
+                color.0,
+                options.unwrap_or_default().into(),
             )
-        } else {
-            draw_filled_rect(
-                &self.inner.inner,
-                Rect::try_from(rect.0).into_js_result(&ctx)?,
-                *color.0,
-            )
-        };
+            .into_js_result(&ctx)?;
 
-        Ok(super::Image::from_dynamic_image(DynamicImage::ImageRgba8(image)).into())
+        Ok(this.0)
+    }
+
+    /// Draw text on a copy of this image.
+    pub fn with_text(
+        &self,
+        ctx: Ctx<'_>,
+        position: JsPointLike,
+        text: String,
+        font_path: String,
+        color: JsColorLike,
+        options: Opt<JsDrawTextOptions>,
+    ) -> Result<Self> {
+        self.inner
+            .with_text(
+                position.0,
+                &text,
+                &font_path,
+                color.0,
+                options.unwrap_or_default().into(),
+            )
+            .into_js_result(&ctx)
+            .map(Into::into)
     }
 
     /// Draw another image on this image.
@@ -939,23 +911,9 @@ impl JsImage {
         image: &JsImage,
         options: Opt<JsDrawImageOptions>,
     ) -> Result<Class<'js, Self>> {
-        let options = options.unwrap_or_default();
-
-        let (x, y) = self.check_position(&ctx, position.0)?;
-
-        self.ensure_rgba();
-
-        if let Some(rect) = options.source_rect {
-            let (x, y) = self.check_position(&ctx, point(rect.get_x(), rect.get_y()))?;
-            let view = image.inner.view(x, y, rect.get_width(), rect.get_height());
-            self.inner
-                .copy_from(&view.to_image(), x, y)
-                .into_js_result(&ctx)?;
-        } else {
-            self.inner
-                .copy_from(&image.inner.inner, x, y)
-                .into_js_result(&ctx)?;
-        }
+        self.inner
+            .draw_image_mut(position.0, &image.inner, options.unwrap_or_default().into())
+            .into_js_result(&ctx)?;
 
         Ok(this.0)
     }
@@ -968,25 +926,10 @@ impl JsImage {
         image: &JsImage,
         options: Opt<JsDrawImageOptions>,
     ) -> Result<Self> {
-        let options = options.unwrap_or_default();
-
-        let (x, y) = self.check_position(&ctx, position.0)?;
-
-        let mut target_image = self.inner.clone();
-
-        if let Some(rect) = options.source_rect {
-            let (x, y) = self.check_position(&ctx, point(rect.get_x(), rect.get_y()))?;
-            let view = image.inner.view(x, y, rect.get_width(), rect.get_height());
-            target_image
-                .copy_from(&view.to_image(), x, y)
-                .into_js_result(&ctx)?;
-        } else {
-            target_image
-                .copy_from(&image.inner.inner, x, y)
-                .into_js_result(&ctx)?;
-        }
-
-        Ok(target_image.into())
+        self.inner
+            .with_image(position.0, &image.inner, options.unwrap_or_default().into())
+            .into_js_result(&ctx)
+            .map(Into::into)
     }
 
     ///TODO
@@ -994,118 +937,9 @@ impl JsImage {
         &mut self,
         _ctx: Ctx<'_>,
         _image: &JsImage,
-        options: Opt<FindImageOptions>,
+        options: Opt<JsFindImageOptions>,
     ) -> Result<()> {
-        let _options = options.unwrap_or_default();
-
-        /*
-        //self.ensure_rgba();
-
-        // TODO
-
-        let source = self.inner.to_rgb8();
-        let template = image.inner.to_rgba8();
-
-        let source = dynamic_image_to_mat(&DynamicImage::ImageRgb8(source)).unwrap(); // TODO
-        let template = dynamic_image_to_mat(&DynamicImage::ImageRgba8(template)).unwrap();
-
-        // Split template channels to extract the alpha channel
-        let mut rgba_channels = opencv::core::Vector::<Mat>::new();
-        opencv::core::split(&template, &mut rgba_channels).unwrap();
-
-        let template_alpha = rgba_channels.get(3).unwrap(); // Alpha channel
-
-        // Remove the alpha channel from the template to get BGR
-        let mut template_bgr = Mat::default();
-        let mut bgr_channels = opencv::core::Vector::<Mat>::new();
-
-        // Add the individual channels to the OpenCV Vector
-        bgr_channels.push(rgba_channels.get(0).unwrap());
-        bgr_channels.push(rgba_channels.get(1).unwrap());
-        bgr_channels.push(rgba_channels.get(2).unwrap());
-
-        // Merge the BGR channels into a single BGR image
-        opencv::core::merge(&bgr_channels, &mut template_bgr).unwrap();
-
-        // Create a result matrix for the matching result
-        let result_rows = source.rows() - template_bgr.rows() + 1;
-        let result_cols = source.cols() - template_bgr.cols() + 1;
-        let mut result = Mat::zeros(result_rows, result_cols, CV_32FC1)
-            .unwrap()
-            .to_mat()
-            .unwrap();
-
-        let start = Instant::now();
-
-        // Perform template matching on the color image with mask
-        opencv::imgproc::match_template(
-            &source,
-            &template_bgr,
-            &mut result,
-            opencv::imgproc::TM_CCORR_NORMED, // Use TM_CCOEFF_NORMED for better matching
-            &template_alpha,                  // Use the alpha channel as the mask
-        )
-        .unwrap();
-
-        let duration = start.elapsed();
-        println!("template matching took {:?}", duration);
-
-        // Set a threshold for good matches
-        let match_threshold = 0.99;
-
-        // Collect all matches above the threshold
-        let mut match_points: Vec<(point::Point, f32)> = Vec::new();
-        for row in 0..result.rows() {
-            for col in 0..result.cols() {
-                let match_score = *result.at_2d::<f32>(row, col).unwrap();
-                if match_score >= match_threshold {
-                    match_points.push((point::point(col, row), match_score));
-                }
-            }
-        }
-
-        // Sort matches by score (in descending order)
-        match_points.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-
-        // Apply non-maximum suppression to remove overlapping matches
-        let mut filtered_matches: Vec<(point::Point, f32)> = Vec::new();
-        let suppression_radius = 10; // Define a radius to consider proximity (in pixels)
-
-        for (pt, score) in match_points {
-            let mut should_keep = true;
-            for (existing_pt, _) in &filtered_matches {
-                let dist_x = (pt.x - existing_pt.x).abs();
-                let dist_y = (pt.y - existing_pt.y).abs();
-                if dist_x < suppression_radius && dist_y < suppression_radius {
-                    should_keep = false; // Suppress this match
-                    break;
-                }
-            }
-
-            if should_keep {
-                filtered_matches.push((pt, score));
-            }
-        }
-
-        // Draw rectangles around the filtered matches
-        for (pt, score) in &filtered_matches {
-            let rect = rect::Rect::new(
-                pt.x,
-                pt.y,
-                template_bgr.cols() as u32,
-                template_bgr.rows() as u32,
-            );
-            draw_hollow_rect_mut(
-                &mut self.inner.0,
-                rect.into(),
-                Color::new(255, 0, 0, 255).into(),
-            );
-            println!(
-                "Match found at ({}, {}) with score: {:.3}",
-                pt.x, pt.y, score
-            );
-        }
-        */
+        let _options = options.0.unwrap_or_default();
 
         Ok(())
     }
@@ -1141,6 +975,8 @@ impl<'js> Trace<'js> for JsImage {
 
 #[cfg(test)]
 mod tests {
+    use std::io::{BufReader, Cursor};
+
     use image::{DynamicImage, ImageReader};
     use opencv::{
         Result,
@@ -1150,9 +986,14 @@ mod tests {
         },
         imgproc::{self, COLOR_RGB2BGR, cvt_color},
     };
+    use rstest::{fixture, rstest};
+    use serial_test::serial;
     use tracing_test::traced_test;
 
-    use crate::runtime::Runtime;
+    use crate::{
+        core::image::{Image, js::JsImage},
+        runtime::Runtime,
+    };
 
     /// Convert `image::DynamicImage` to `opencv::core::Mat` in BGR format
     fn dynamic_image_to_mat(img: &DynamicImage) -> Result<Mat> {
@@ -1243,5 +1084,123 @@ mod tests {
 
             println!("{min_val} {max_val} {min_loc:?} {max_loc:?}");
         });
+    }
+
+    fn sanitize(s: &str) -> String {
+        s.to_lowercase()
+            .chars()
+            .map(|c| {
+                if c.is_ascii_lowercase() || c.is_ascii_digit() {
+                    c
+                } else {
+                    '_'
+                }
+            })
+            .collect::<String>()
+            .trim_end_matches("_")
+            .to_string()
+    }
+
+    #[rstest]
+    #[serial]
+    #[case::invert_colors("invertColors()")]
+    #[case::blur_default("blur()")]
+    #[case::blur_sigma(r#"blur({sigma: 4})"#)]
+    #[case::flip_horizontal(r#"flip(FlipDirection.Horizontal)"#)]
+    #[case::flip_vertical(r#"flip(FlipDirection.Vertical)"#)]
+    #[case::hue_rotate("hueRotate(90)")]
+    #[case::grayscale("grayscale()")]
+    #[case::crop_rect(r#"crop(new Rect(5, 5, 50, 40))"#)]
+    #[case::resize_default(r#"resize(30, 40)"#)]
+    #[case::resize_keep_aspect(r#"resize(30, 40, {keepAspectRatio: true})"#)]
+    #[case::adjust_brightness("adjustBrightness(20)")]
+    #[case::adjust_contrast("adjustContrast(-15)")]
+    #[case::fill_color("fill(Color.Green)")]
+    #[case::set_pixel_point(r#"setPixel(new Point(0, 0), Color.Blue)"#)]
+    #[case::set_pixel_object(r#"setPixel({x: 1, y: 2}, Color.Red)"#)]
+    #[case::set_pixel_numbers(r#"setPixel(3, 4, Color.Green)"#)]
+    #[case::draw_cross(r#"drawCross(new Point(10, 10), Color.Red)"#)]
+    #[case::draw_line(r#"drawLine(new Point(0, 0), new Point(20, 10), Color.Blue)"#)]
+    #[case::draw_circle_hollow(r#"drawCircle(new Point(25, 25), 10, Color.Green, {hollow: true})"#)]
+    #[case::draw_ellipse(r#"drawEllipse(new Point(25, 20), 12, 8, Color.Black)"#)]
+    #[case::draw_rectangle_hollow(
+        r#"drawRectangle(new Rect(5, 5, 30, 15), Color.Black, {hollow: true})"#
+    )]
+    #[case::draw_text(
+        r#"drawText(new Point(5, 25), "Test", fontPath, Color.White, {fontSize: 12, horizontalAlign: TextHorizontalAlign.Left})"#
+    )]
+    #[case::draw_image(
+        r#"drawImage(new Point(10, 10), overlay, {sourceRect: new Rect(0, 0, 16, 16)})"#
+    )]
+    #[case::rotate_0("rotate(0)")]
+    #[case::rotate_90("rotate(90)")]
+    #[case::rotate_45("rotate(45)")]
+    #[case::rotate_0_center(r#"rotate(0, {center: new Point(0, 0)})"#)]
+    #[case::rotate_90_center(r#"rotate(90, {center: new Point(0, 0)})"#)]
+    #[case::rotate_45_center(r#"rotate(45, {center: new Point(0, 0)})"#)]
+    #[case::rotate_0_center_default_color(
+        r#"rotate(0, {center: new Point(0, 0), defaultColor: Color.Red})"#
+    )]
+    #[case::rotate_90_center_default_color(
+        r#"rotate(90, {center: new Point(0, 0), defaultColor: Color.Red})"#
+    )]
+    #[case::rotate_45_center_default_color(
+        r#"rotate(45, {center: new Point(0, 0), defaultColor: Color.Red})"#
+    )]
+    #[case::rotate_0_center_default_color_nearest(
+        r#"rotate(0, {center: new Point(0, 0), defaultColor: Color.Red, interpolation: Interpolation.Nearest})"#
+    )]
+    #[case::rotate_90_center_default_color_nearest(
+        r#"rotate(90, {center: new Point(0, 0), defaultColor: Color.Red, interpolation: Interpolation.Nearest})"#
+    )]
+    #[case::rotate_45_center_default_color_nearest(
+        r#"rotate(45, {center: new Point(0, 0), defaultColor: Color.Red, interpolation: Interpolation.Nearest})"#
+    )]
+    fn test_generate(#[case] operation: String) {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            // Load the input image
+            script_engine
+                .eval_async::<()>(
+                    r#"var input = await Image.load("../tests/pear.png");
+                    var overlay = await Image.load("../tests/fire.png");
+                    var fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";"#,
+                )
+                .await
+                .unwrap();
+
+            // Run the operation
+            script_engine
+                .eval::<()>(&format!("input.{operation}"))
+                .await
+                .unwrap();
+
+            // Save the result
+            let file_name = sanitize(&operation);
+            script_engine
+                .eval_async::<()>(&format!(r#"await input.save("test-data/{file_name}.png")"#))
+                .await
+                .unwrap();
+        })
+    }
+
+    #[rstest]
+    #[case("rotate(90)", "rotate.png")]
+    fn test_all(#[case] operation: String, #[case] output_filename: String) {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            script_engine
+                .eval_async::<()>(r#"var input = await Image.load("../tests/pear.png")"#)
+                .await
+                .unwrap();
+
+            let output = script_engine
+                .eval::<JsImage>(&format!("input.{operation}"))
+                .await
+                .unwrap();
+
+            script_engine
+                .with2(|ctx| output.save(ctx.clone(), format!("../tests/{output_filename}")))
+                .await
+                .unwrap();
+        })
     }
 }

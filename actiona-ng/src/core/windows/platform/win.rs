@@ -7,21 +7,22 @@ use std::{
 
 use derive_more::Deref;
 use windows::Win32::{
-    Foundation::{HWND, LPARAM},
+    Foundation::{HWND, LPARAM, RECT, WPARAM},
     System::StationsAndDesktops::{
         DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
     },
     UI::WindowsAndMessaging::{
-        GetClassNameW, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
-        IsWindowVisible, SET_WINDOW_POS_FLAGS, SWP_NOACTIVATE, SWP_NOSIZE, SWP_NOZORDER,
-        SetWindowPos,
+        GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
+        GetWindowThreadProcessId, IsWindowVisible, SET_WINDOW_POS_FLAGS, SW_MAXIMIZE, SW_MINIMIZE,
+        SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SendNotifyMessageW,
+        SetForegroundWindow, SetWindowPos, ShowWindow, WM_CLOSE,
     },
 };
 use windows_result::BOOL;
 
 use crate::{
     core::{
-        point::Point,
+        point::{Point, point},
         rect::Rect,
         size::Size,
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
@@ -123,8 +124,13 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(String::from_utf16_lossy(&buffer[..len as usize]))
     }
 
+    // untested
     fn close(&self, id: WindowId) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+
+        unsafe { SendNotifyMessageW(**handle, WM_CLOSE, WPARAM::default(), LPARAM::default())? };
+
+        Ok(())
     }
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
@@ -136,20 +142,63 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(process_id as u32)
     }
 
+    // untested
     fn rect(&self, id: WindowId) -> Result<Rect> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+        let mut win_rect = RECT::default();
+
+        unsafe {
+            if !GetWindowRect(**handle, &mut win_rect).as_bool() {
+                return Err(windows_result::Error::from_thread().into());
+            }
+        }
+
+        let width = (win_rect.right - win_rect.left).max(0);
+        let height = (win_rect.bottom - win_rect.top).max(0);
+
+        Ok(Rect::new(
+            point(win_rect.left, win_rect.top),
+            Size::new(width.into(), height.into()),
+        ))
     }
 
+    // untested
     fn set_active(&self, id: WindowId) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+
+        unsafe {
+            if !SetForegroundWindow(**handle).as_bool() {
+                return Err(windows_result::Error::from_thread().into());
+            }
+        }
+
+        Ok(())
     }
 
+    // untested
     fn minimize(&self, id: WindowId) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+
+        unsafe {
+            if !ShowWindow(**handle, SW_MINIMIZE).as_bool() {
+                return Err(windows_result::Error::from_thread().into());
+            }
+        }
+
+        Ok(())
     }
 
+    // untested
     fn maximize(&self, id: WindowId) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+
+        unsafe {
+            if !ShowWindow(**handle, SW_MAXIMIZE).as_bool() {
+                return Err(windows_result::Error::from_thread().into());
+            }
+        }
+
+        Ok(())
     }
 
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
@@ -174,20 +223,58 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(self.rect(id)?.top_left())
     }
 
+    // untested
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+
+        unsafe {
+            SetWindowPos(
+                **handle,
+                None,
+                0,
+                0,
+                i32::from(size.width),
+                i32::from(size.height),
+                SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE,
+            )?
+        };
+
+        Ok(())
     }
 
+    // untested
     fn size(&self, id: WindowId) -> Result<Size> {
-        todo!()
+        Ok(self.rect(id)?.size())
     }
 
+    // untested
     fn is_active(&self, id: WindowId) -> Result<bool> {
-        todo!()
+        let handle = self.inner.get_handle(id)?;
+        let foreground = unsafe { GetForegroundWindow() };
+
+        if foreground.0 == 0 {
+            return Ok(false);
+        }
+
+        Ok(foreground == **handle)
     }
 
+    // untested
     fn active_window(&mut self) -> Result<WindowId> {
-        todo!()
+        let foreground = unsafe { GetForegroundWindow() };
+        if foreground.0 == 0 {
+            return Err(Error::NotFound);
+        }
+
+        let window = WindowHandle(foreground);
+        if let Some(id) = self.inner.get_id(&window) {
+            return Ok(id);
+        }
+
+        let id = self.inner.next_id.next();
+        self.inner.map.insert(id, window);
+
+        Ok(id)
     }
 }
 
