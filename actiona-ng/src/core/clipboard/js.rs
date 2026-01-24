@@ -215,7 +215,17 @@ impl JsClipboardFileList {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboardFileList {
-    // TODO: missing set
+    pub async fn set(
+        &self,
+        ctx: Ctx<'_>,
+        file_list: Vec<String>,
+        mode: Opt<JsClipboardMode>,
+    ) -> Result<()> {
+        self.inner
+            .set_file_list(&file_list, *mode)
+            .into_js_result(&ctx)
+    }
+
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
     }
