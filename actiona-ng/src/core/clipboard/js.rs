@@ -11,7 +11,7 @@ use crate::{
     IntoJSError, IntoJsResult,
     core::{
         image::js::JsImage,
-        js::classes::{SingletonClass, register_enum},
+        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
     },
     newtype,
 };
@@ -32,11 +32,16 @@ impl Debug for Clipboard {
 
 pub type JsClipboardMode = super::ClipboardMode;
 
+// TODO: add waitForChanged
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Clipboard")]
 pub struct JsClipboard {
     inner: Arc<super::Clipboard>,
+    text: JsClipboardText,
+    image: JsClipboardImage,
+    file_list: JsClipboardFileList,
+    html: JsClipboardHtml,
 }
 
 impl<'js> Trace<'js> for JsClipboard {
@@ -46,6 +51,10 @@ impl<'js> Trace<'js> for JsClipboard {
 impl<'js> SingletonClass<'js> for JsClipboard {
     fn register_dependencies(ctx: &Ctx<'js>) -> Result<()> {
         register_enum::<JsClipboardMode>(ctx)?;
+        register_host_class::<JsClipboardText>(ctx)?;
+        register_host_class::<JsClipboardImage>(ctx)?;
+        register_host_class::<JsClipboardFileList>(ctx)?;
+        register_host_class::<JsClipboardHtml>(ctx)?;
 
         Ok(())
     }
@@ -56,21 +65,116 @@ impl JsClipboard {
     #[must_use]
     #[instrument(skip_all)]
     pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
-        Self { inner: clipboard }
+        let text = JsClipboardText::new(clipboard.clone());
+        let image = JsClipboardImage::new(clipboard.clone());
+        let file_list = JsClipboardFileList::new(clipboard.clone());
+        let html = JsClipboardHtml::new(clipboard.clone());
+
+        Self {
+            inner: clipboard,
+            text,
+            image,
+            file_list,
+            html,
+        }
     }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboard {
-    pub fn set_text(&self, ctx: Ctx<'_>, text: String, mode: Opt<JsClipboardMode>) -> Result<()> {
+    /// Text operations
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn text(&self) -> JsClipboardText {
+        self.text.clone()
+    }
+
+    /// Image operations
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn image(&self) -> JsClipboardImage {
+        self.image.clone()
+    }
+
+    /// File list operations
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn file_list(&self) -> JsClipboardFileList {
+        self.file_list.clone()
+    }
+
+    /// Html operations
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn html(&self) -> JsClipboardHtml {
+        self.html.clone()
+    }
+
+    pub async fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
+        self.inner.clear(*mode).into_js_result(&ctx)
+    }
+}
+
+/// ClipboardText
+#[derive(Clone, Debug, JsLifetime)]
+#[rquickjs::class(rename = "ClipboardText")]
+pub struct JsClipboardText {
+    inner: Arc<super::Clipboard>,
+}
+
+impl<'js> HostClass<'js> for JsClipboardText {}
+
+impl<'js> Trace<'js> for JsClipboardText {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl JsClipboardText {
+    /// @skip
+    #[must_use]
+    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+        Self { inner: clipboard }
+    }
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsClipboardText {
+    pub async fn set(&self, ctx: Ctx<'_>, text: String, mode: Opt<JsClipboardMode>) -> Result<()> {
         self.inner.set_text(text, *mode).into_js_result(&ctx)
     }
 
-    pub fn get_text(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
+    pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_text(*mode).into_js_result(&ctx)
     }
+}
 
-    pub fn set_image(
+/// ClipboardImage
+#[derive(Clone, Debug, JsLifetime)]
+#[rquickjs::class(rename = "ClipboardImage")]
+pub struct JsClipboardImage {
+    inner: Arc<super::Clipboard>,
+}
+
+impl<'js> HostClass<'js> for JsClipboardImage {}
+
+impl<'js> Trace<'js> for JsClipboardImage {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl JsClipboardImage {
+    /// @skip
+    #[must_use]
+    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+        Self { inner: clipboard }
+    }
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsClipboardImage {
+    pub async fn set(
         &self,
         ctx: Ctx<'_>,
         image: JsImage,
@@ -81,18 +185,66 @@ impl JsClipboard {
             .into_js_result(&ctx)
     }
 
-    pub fn get_image(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
+    pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
         let image = self.inner.get_image(*mode).into_js_result(&ctx)?;
 
         Ok(image.into())
     }
+}
 
-    // TODO: missing setFileList
-    pub fn get_file_list(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
+/// ClipboardFileList
+#[derive(Clone, Debug, JsLifetime)]
+#[rquickjs::class(rename = "ClipboardFileList")]
+pub struct JsClipboardFileList {
+    inner: Arc<super::Clipboard>,
+}
+
+impl<'js> HostClass<'js> for JsClipboardFileList {}
+
+impl<'js> Trace<'js> for JsClipboardFileList {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl JsClipboardFileList {
+    /// @skip
+    #[must_use]
+    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+        Self { inner: clipboard }
+    }
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsClipboardFileList {
+    // TODO: missing set
+    pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
     }
+}
 
-    pub fn set_html(
+/// ClipboardHtml
+#[derive(Clone, Debug, JsLifetime)]
+#[rquickjs::class(rename = "ClipboardHtml")]
+pub struct JsClipboardHtml {
+    inner: Arc<super::Clipboard>,
+}
+
+impl<'js> HostClass<'js> for JsClipboardHtml {}
+
+impl<'js> Trace<'js> for JsClipboardHtml {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl JsClipboardHtml {
+    /// @skip
+    #[must_use]
+    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+        Self { inner: clipboard }
+    }
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsClipboardHtml {
+    pub async fn set(
         &self,
         ctx: Ctx<'_>,
         html: String,
@@ -104,12 +256,8 @@ impl JsClipboard {
             .into_js_result(&ctx)
     }
 
-    pub fn get_html(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
+    pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_html(*mode).into_js_result(&ctx)
-    }
-
-    pub fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
-        self.inner.clear(*mode).into_js_result(&ctx)
     }
 }
 
@@ -129,8 +277,8 @@ mod tests {
             let result = script_engine
                 .eval_async::<String>(
                     r#"
-                await clipboard.setText("test");
-                await clipboard.getText()
+                await clipboard.text.set("test");
+                await clipboard.text.get()
                 "#,
                 )
                 .await
@@ -164,8 +312,8 @@ mod tests {
             let result = script_engine
                 .eval_async::<JsImage>(
                     r#"
-                await clipboard.setImage(image);
-                await clipboard.getImage()
+                await clipboard.image.set(image);
+                await clipboard.image.get()
                 "#,
                 )
                 .await
@@ -183,7 +331,7 @@ mod tests {
             script_engine
                 .eval_async::<()>(
                     r#"
-                await clipboard.setHtml("<b>test</b>", "test")
+                await clipboard.html.set("<b>test</b>", "test")
                 "#,
                 )
                 .await
@@ -192,7 +340,7 @@ mod tests {
             let result = script_engine
                 .eval_async::<String>(
                     r#"
-                await clipboard.getHtml()
+                await clipboard.html.get()
                 "#,
                 )
                 .await
@@ -203,7 +351,7 @@ mod tests {
             let result = script_engine
                 .eval_async::<String>(
                     r#"
-                await clipboard.getText()
+                await clipboard.text.get()
                 "#,
                 )
                 .await

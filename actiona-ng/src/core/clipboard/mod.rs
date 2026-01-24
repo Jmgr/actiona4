@@ -110,8 +110,9 @@ impl Clipboard {
 
         #[cfg(not(linux))]
         {
-            _ = function;
             _ = mode;
+
+            function(inner.set())
         }
     }
 
@@ -131,8 +132,9 @@ impl Clipboard {
 
         #[cfg(not(linux))]
         {
-            _ = function;
             _ = mode;
+
+            function(inner.get())
         }
     }
 
@@ -168,25 +170,7 @@ impl Clipboard {
         text: T,
         mode: Option<ClipboardMode>,
     ) -> Result<()> {
-        let mode = mode.unwrap_or_default();
-        let mut inner = self.inner.lock();
-
-        let clipboard = {
-            #[cfg(linux)]
-            if mode == ClipboardMode::Selection {
-                inner.set().clipboard(LinuxClipboardKind::Primary)
-            } else {
-                inner.set()
-            }
-
-            #[cfg(not(linux))]
-            {
-                _ = mode;
-                inner.set()
-            }
-        };
-
-        clipboard.text(text)?;
+        self.set(|set| set.text(text), mode)?;
 
         Ok(())
     }
@@ -225,7 +209,7 @@ impl Clipboard {
             image.height.try_into()?,
             image.bytes.to_vec(),
         )
-        .unwrap();
+        .ok_or(Error::ConversionFailure)?;
 
         Ok(DynamicImage::ImageRgba8(img).into())
     }
