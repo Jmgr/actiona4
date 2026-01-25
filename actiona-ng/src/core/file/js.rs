@@ -663,10 +663,7 @@ impl<'js> Trace<'js> for JsFile {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        env::{self},
-        sync::Arc,
-    };
+    use std::env::{self};
 
     use chrono::{DateTime, Datelike, Timelike, Utc};
     use rquickjs::{Object, TypedArray};

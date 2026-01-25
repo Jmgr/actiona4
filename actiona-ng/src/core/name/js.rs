@@ -83,7 +83,7 @@ pub struct JsNameLike<'js>(pub super::Name<'js>);
 
 impl<'js> FromParam<'js> for JsNameLike<'js> {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::single().combine(ParamRequirement::exhaustive())
+        ParamRequirement::single().combine(ParamRequirement::exhaustive()) // 1 -> 1
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {

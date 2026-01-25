@@ -104,7 +104,7 @@ pub struct FormField {
     pub value: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MultipartField {
     pub name: String,
     pub value: MultipartValue,
@@ -112,7 +112,7 @@ pub struct MultipartField {
     pub mimetype: Option<Mime>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum MultipartValue {
     Text(String),
     File(PathBuf),
@@ -314,16 +314,17 @@ impl Body {
                             Part::stream_with_length(body, size)
                         }
                         MultipartValue::Bytes(bytes) => {
-                            if let Some(mime) = Self::guess_mime_from_bytes(&bytes) {
-                                request = request.header(CONTENT_TYPE, mime);
-                            }
-
                             let (body, size) =
-                                Self::bytes_to_body(bytes, progress_reporter.clone()).await?;
+                                Self::bytes_to_body(bytes.clone(), progress_reporter.clone())
+                                    .await?;
 
                             total_size += size;
 
-                            Part::stream_with_length(body, size)
+                            let mut part = Part::stream_with_length(body, size);
+                            if let Some(mime) = Self::guess_mime_from_bytes(&bytes) {
+                                part = part.mime_str(mime)?;
+                            }
+                            part
                         }
                     };
 
@@ -704,7 +705,7 @@ mod tests {
     use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
     use httptest::{
         Expectation, Server, all_of,
-        matchers::{contains, request},
+        matchers::{contains, matches, request},
         responders::status_code,
     };
     use parking_lot::Mutex;
@@ -832,7 +833,6 @@ mod tests {
             let server = Server::run();
 
             let test_image = TestImage::default();
-            let total_size = test_image.bytes.len() as u64;
 
             server.expect(
                 Expectation::matching(request::method_path("GET", "/binary")).respond_with(
@@ -995,6 +995,43 @@ mod tests {
                         bytes: test_image.bytes.into(),
                         content_type: None,
                     },
+                    ..Default::default()
+                }),
+            )
+            .await
+            .unwrap();
+        });
+    }
+
+    #[test]
+    fn test_upload_multipart_bytes_content_type() {
+        Runtime::test(async move |runtime| {
+            let test_image = TestImage::default();
+
+            let server = Server::run();
+
+            server.expect(
+                Expectation::matching(all_of![
+                    request::method_path("POST", "/"),
+                    request::headers(contains(("content-type", matches("multipart/form-data")))),
+                    request::body(matches("image/png")),
+                ])
+                .respond_with(status_code(200)),
+            );
+
+            let web = Web::new(runtime.task_tracker());
+            let cancellation_token = CancellationToken::new();
+            web.upload(
+                &server.url("/").to_string(),
+                cancellation_token,
+                Some(WebOptions {
+                    method: Method::Post,
+                    request_body: Body::Multipart(vec![MultipartField {
+                        name: "file".to_string(),
+                        value: MultipartValue::Bytes(test_image.bytes.into()),
+                        filename: Some("image.png".to_string()),
+                        mimetype: None,
+                    }]),
                     ..Default::default()
                 }),
             )

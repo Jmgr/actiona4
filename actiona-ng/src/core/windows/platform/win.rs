@@ -124,7 +124,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(String::from_utf16_lossy(&buffer[..len as usize]))
     }
 
-    // untested
+    // TODO: untested
     fn close(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
 
@@ -142,7 +142,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(process_id as u32)
     }
 
-    // untested
+    // TODO: untested
     fn rect(&self, id: WindowId) -> Result<Rect> {
         let handle = self.inner.get_handle(id)?;
         let mut win_rect = RECT::default();
@@ -162,7 +162,7 @@ impl WindowsHandler for WindowsWindowHandler {
         ))
     }
 
-    // untested
+    // TODO: untested
     fn set_active(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
 
@@ -175,7 +175,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    // untested
+    // TODO: untested
     fn minimize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
 
@@ -188,7 +188,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    // untested
+    // TODO: untested
     fn maximize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
 
@@ -223,7 +223,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(self.rect(id)?.top_left())
     }
 
-    // untested
+    // TODO: untested
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
 
@@ -242,12 +242,12 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    // untested
+    // TODO: untested
     fn size(&self, id: WindowId) -> Result<Size> {
         Ok(self.rect(id)?.size())
     }
 
-    // untested
+    // TODO: untested
     fn is_active(&self, id: WindowId) -> Result<bool> {
         let handle = self.inner.get_handle(id)?;
         let foreground = unsafe { GetForegroundWindow() };
@@ -259,7 +259,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(foreground == **handle)
     }
 
-    // untested
+    // TODO: untested
     fn active_window(&mut self) -> Result<WindowId> {
         let foreground = unsafe { GetForegroundWindow() };
         if foreground.0 == 0 {

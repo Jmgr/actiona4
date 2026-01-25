@@ -18,10 +18,11 @@ pub struct JsColorLike(pub super::Color);
 
 impl<'js> FromParam<'js> for JsColorLike {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::single()
-            .combine(ParamRequirement::optional())
-            .combine(ParamRequirement::optional())
-            .combine(ParamRequirement::optional())
+        ParamRequirement::single() // 1 -> 1
+            .combine(ParamRequirement::optional()) // 1 -> 2
+            .combine(ParamRequirement::optional()) // 1 -> 3
+            .combine(ParamRequirement::optional()) // 1 -> 4
+            .combine(ParamRequirement::optional()) // 1 -> 5
             .combine(ParamRequirement::exhaustive())
     }
 

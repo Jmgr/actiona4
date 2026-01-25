@@ -9,6 +9,7 @@ use rquickjs::{
 
 use crate::IntoJsResult;
 
+/// Converts a `SystemTime` to a JavaScript `Date` object.
 /// @skip
 pub fn date_from_system_time<'js>(ctx: &Ctx<'js>, system_time: &SystemTime) -> Result<Object<'js>> {
     let global = ctx.globals();
@@ -22,6 +23,7 @@ pub fn date_from_system_time<'js>(ctx: &Ctx<'js>, system_time: &SystemTime) -> R
     date_constructor.construct::<_, Object<'js>>((millis,))
 }
 
+/// Converts a JavaScript `Date` object to a `SystemTime`.
 /// @skip
 pub fn system_time_from_date<'js>(ctx: Ctx<'js>, date: Object<'js>) -> Result<SystemTime> {
     let date_object: Object = ctx.globals().get(PredefinedAtom::Date)?;

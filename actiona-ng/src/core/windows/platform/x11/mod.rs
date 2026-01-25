@@ -107,7 +107,7 @@ impl WindowsHandler for X11WindowHandler {
         Ok(handle.class()?)
     }
 
-    // untested
+    // TODO: untested
     fn close(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
         let platform = self.runtime.platform();
@@ -183,7 +183,7 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
-    // untested
+    // TODO: untested
     fn minimize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
         let platform = self.runtime.platform();
@@ -196,7 +196,7 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
-    // untested
+    // TODO: untested
     fn maximize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?;
         handle.maximize()?;

@@ -93,6 +93,7 @@ where
     Ok(promise_object)
 }
 
+/// Something that can be done.
 pub trait IsDone {
     fn is_done(&self) -> bool;
 }
@@ -122,16 +123,17 @@ where
 
                 let cancellation_token = ctx.user_data().cancellation_token();
 
-                let mut rx = rx.lock().await;
+                let value = {
+                    let mut rx = rx.lock().await;
 
-                select! {
-                    _ = cancellation_token.cancelled() => { Err(CommonError::Cancelled) },
-                    _ = rx.changed() => { Ok(()) },
-                }
-                .into_js_result(&ctx)?;
+                    select! {
+                        _ = cancellation_token.cancelled() => { Err(CommonError::Cancelled) },
+                        _ = rx.changed() => { Ok(()) },
+                    }
+                    .into_js_result(&ctx)?;
 
-                let value = rx.borrow_and_update().clone();
-                drop(rx);
+                    rx.borrow_and_update().clone()
+                };
 
                 if value.is_done() {
                     finished.store(true, Ordering::Relaxed);

@@ -21,8 +21,8 @@ pub struct JsPointLike(pub super::Point);
 
 impl<'js> FromParam<'js> for JsPointLike {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::single()
-            .combine(ParamRequirement::optional())
+        ParamRequirement::single() // 1 -> 1
+            .combine(ParamRequirement::optional()) // 1 -> 2
             .combine(ParamRequirement::exhaustive())
     }
 
@@ -275,8 +275,6 @@ impl From<super::Point> for JsPoint {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use super::JsPoint;
     use crate::{core::point::point, runtime::Runtime, scripting::Engine as ScriptEngine};
 

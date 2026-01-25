@@ -49,7 +49,6 @@ impl JsConcurrency {
                     )
                     .collect();
 
-            // Add a *pure Rust* future for cancellation (no nested wrap_future!)
             let cancel_ctx = ctx.clone();
             let cancel_fut = async move {
                 token.cancelled().await;

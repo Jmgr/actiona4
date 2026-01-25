@@ -20,8 +20,8 @@ pub struct JsSizeLike(pub super::Size);
 
 impl<'js> FromParam<'js> for JsSizeLike {
     fn param_requirement() -> ParamRequirement {
-        ParamRequirement::single()
-            .combine(ParamRequirement::optional())
+        ParamRequirement::single() // 1 -> 1
+            .combine(ParamRequirement::optional()) // 1 -> 2
             .combine(ParamRequirement::exhaustive())
     }
 
@@ -240,8 +240,6 @@ impl From<super::Size> for JsSize {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use super::JsSize;
     use crate::{core::size::size, runtime::Runtime, scripting::Engine as ScriptEngine};
 
