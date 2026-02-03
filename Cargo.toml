@@ -11,6 +11,7 @@ documentation = "https://actiona.tools"
 license = "MIT"
 
 [workspace.dependencies]
+ab_glyph = "0.2.32"
 arboard = "3.6.1"
 arc-swap = "1.8.1"
 bimap = "0.6.3"
@@ -152,7 +153,6 @@ unicode-segmentation = "1.12.0"
 uuid = { version = "1.20.0", features = ["v4", "serde"] }
 versions = { version = "7.0.0", features = ["serde"] }
 wildmatch = "2.6.1"
-ab_glyph = "0.2.32"
 
 # Windows
 pe-parser = "0.7.0"
@@ -195,8 +195,8 @@ console-subscriber = "0.5.0"
 httptest = "0.16.4"
 libtest-mimic-collect = "0.3.3"
 rstest = "0.26.1"
-tracing-test = "0.2.5"
 serial_test = "3.3.1"
+tracing-test = "0.2.5"
 
 # Build dependencies
 built = "0.8.0"

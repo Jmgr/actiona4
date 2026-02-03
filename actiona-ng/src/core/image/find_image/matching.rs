@@ -1,8 +1,10 @@
 use color_eyre::{Result, eyre::ensure};
 use itertools::Itertools;
-use opencv::core::{CV_32FC1, Mat, Rect, no_array};
-use opencv::imgproc::{TM_CCOEFF_NORMED, match_template as cv_match_template};
-use opencv::prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual};
+use opencv::{
+    core::{CV_32FC1, Mat, Rect, no_array},
+    imgproc::{TM_CCOEFF_NORMED, match_template as cv_match_template},
+    prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual},
+};
 use rayon::prelude::*;
 use tracing::instrument;
 

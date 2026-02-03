@@ -44,11 +44,10 @@ pub(crate) fn secs_to_duration(secs: f64) -> Duration {
 
 #[cfg(test)]
 mod tests {
-    use super::secs_to_duration;
     use std::time::Duration;
 
-    use crate::core::js::duration::JsDuration;
-    use crate::runtime::Runtime;
+    use super::secs_to_duration;
+    use crate::{core::js::duration::JsDuration, runtime::Runtime};
 
     #[test]
     fn secs_to_duration_zero() {

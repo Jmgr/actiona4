@@ -16,8 +16,7 @@ use crate::{
     core::{
         ResultExt,
         js::classes::ValueClass,
-        point::js::JsPoint,
-        point::{point, try_point},
+        point::{js::JsPoint, point, try_point},
         size::{js::JsSize, size, try_size},
     },
 };

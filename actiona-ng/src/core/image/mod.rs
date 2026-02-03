@@ -24,14 +24,16 @@ use imageproc::{
 pub mod find_image;
 pub mod js;
 
-use crate::core::{
-    color::Color,
-    image::find_image::{Source, Template},
-    point::{Point, point},
-    rect::{Rect, rect},
-    size::size,
+use crate::{
+    core::{
+        color::Color,
+        image::find_image::{Source, Template},
+        point::{Point, point},
+        rect::{Rect, rect},
+        size::size,
+    },
+    types::{si32::Si32, su32::su32},
 };
-use crate::types::{si32::Si32, su32::su32};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FlipDirection {

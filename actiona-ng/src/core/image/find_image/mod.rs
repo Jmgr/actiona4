@@ -55,7 +55,7 @@ pub struct Template {
     pub mask: Option<Mat>,
 }
 
-#[derive(Debug, Clone, Copy, Constructor, PartialEq)]
+#[derive(Clone, Constructor, Copy, Debug, PartialEq)]
 pub struct Match {
     pub position: Point,
     pub rect: Rect,

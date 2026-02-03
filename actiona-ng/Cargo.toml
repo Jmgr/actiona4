@@ -29,6 +29,7 @@ ignored = ["built", "cfg_aliases", "rquickjs-serde"]
 
 [dependencies]
 macros = { path = "../macros" }
+ab_glyph.workspace = true
 
 arboard.workspace = true
 arc-swap.workspace = true
@@ -105,7 +106,6 @@ unicode-segmentation.workspace = true
 uuid.workspace = true
 versions.workspace = true
 wildmatch.workspace = true
-ab_glyph.workspace = true
 
 [build-dependencies]
 built.workspace = true
@@ -117,9 +117,9 @@ console-subscriber.workspace = true
 httptest.workspace = true
 libtest-mimic-collect.workspace = true
 rstest.workspace = true
+serial_test.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
-serial_test.workspace = true
 
 [[test]]
 name = "ui"
