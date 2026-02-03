@@ -35,14 +35,19 @@ impl<T> AsyncResource<T> {
     /// Returns an error if cancelled.
     pub async fn wait_get(&self) -> Result<Arc<T>> {
         loop {
+            // Register interest first so we can't miss the wakeup.
+            let notified = self.notify.notified();
+
             if let Some(v) = self.value.load_full() {
                 return Ok(v);
             }
-            cancel_on(&self.cancellation_token, self.notify.notified()).await?;
+
+            cancel_on(&self.cancellation_token, notified).await?;
         }
     }
 
     /// Waits until the resource has changed.
+    /// There is no guarantee that the value is different.
     /// Returns an error if cancelled.
     pub async fn changed(&self) -> Result<()> {
         Ok(cancel_on(&self.cancellation_token, self.notify.notified()).await?)

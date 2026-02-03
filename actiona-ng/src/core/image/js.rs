@@ -1,6 +1,7 @@
 use std::io;
 
 use image::{ImageReader, ImageResult};
+use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Result, TypedArray,
@@ -20,7 +21,7 @@ use crate::{
             Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
             TextVerticalAlign,
         },
-        js::classes::{ValueClass, register_enum},
+        js::classes::{HostClass, ValueClass, register_enum},
         point::js::{JsPoint, JsPointLike},
         rect::js::{JsRect, JsRectLike},
     },
@@ -361,6 +362,83 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
 }
 
 pub type JsFindImageOptions = super::find_image::FindImageTemplateOptions;
+
+/// A match returned by a find_image call.
+///
+/// @prop position: Point // the position on the source image where the target image was found
+/// @prop rect: Rect // the rectangle on the source image where the target image was found
+/// @prop score: number // the score for this match, goes from 0 (worst) to 1 (best)
+#[derive(Clone, Copy, Debug, JsLifetime, PartialEq)]
+#[rquickjs::class(rename = "Match")]
+pub struct JsMatch {
+    inner: super::find_image::Match,
+}
+
+impl HostClass<'_> for JsMatch {}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsMatch {
+    /// @skip
+    #[qjs(get)]
+    #[must_use]
+    pub fn position(&self) -> JsPoint {
+        self.inner.position.into()
+    }
+
+    /// @skip
+    #[qjs(get)]
+    #[must_use]
+    pub fn rect(&self) -> JsRect {
+        self.inner.rect.into()
+    }
+
+    /// @skip
+    #[qjs(get)]
+    #[must_use]
+    pub fn score(&self) -> f64 {
+        self.inner.score
+    }
+
+    /// Returns true if a Match equals another.
+    #[must_use]
+    pub fn equals(&self, other: Self) -> bool {
+        *self == other
+    }
+
+    /// Returns a string representation of this Match.
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        format!(
+            "({}, {}, {})",
+            self.inner.position, self.inner.rect, self.inner.score
+        )
+    }
+
+    /// Clones this Match.
+    #[qjs(rename = "clone")]
+    #[must_use]
+    pub const fn clone_js(&self) -> Self {
+        *self
+    }
+
+    /// @skip
+    #[qjs(skip)]
+    #[must_use]
+    pub const fn inner(&self) -> super::find_image::Match {
+        self.inner
+    }
+}
+
+impl<'js> Trace<'js> for JsMatch {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl From<super::find_image::Match> for JsMatch {
+    fn from(value: super::find_image::Match) -> Self {
+        Self { inner: value }
+    }
+}
 
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Image")]
@@ -932,16 +1010,44 @@ impl JsImage {
             .map(Into::into)
     }
 
-    ///TODO
+    /// Find an image inside this image.
     pub fn find_image(
-        &mut self,
-        _ctx: Ctx<'_>,
-        _image: &JsImage,
+        &self,
+        ctx: Ctx<'_>,
+        image: &JsImage,
         options: Opt<JsFindImageOptions>,
-    ) -> Result<()> {
-        let _options = options.0.unwrap_or_default();
+    ) -> Result<Option<JsMatch>> {
+        let options = options.0.unwrap_or_default();
+        let source = self.inner.to_source().into_js_result(&ctx)?;
+        let template = image.inner.to_template().into_js_result(&ctx)?;
 
-        Ok(())
+        let result = source
+            .find_template_one(&template, options)
+            .into_js_result(&ctx)?
+            .map(JsMatch::from);
+
+        Ok(result)
+    }
+
+    /// Find any occurence of an image inside this image.
+    pub fn find_image_all(
+        &self,
+        ctx: Ctx<'_>,
+        image: &JsImage,
+        options: Opt<JsFindImageOptions>,
+    ) -> Result<Vec<JsMatch>> {
+        let options = options.0.unwrap_or_default();
+        let source = self.inner.to_source().into_js_result(&ctx)?;
+        let template = image.inner.to_template().into_js_result(&ctx)?;
+
+        let result = source
+            .find_template(&template, options)
+            .into_js_result(&ctx)?
+            .into_iter()
+            .map(JsMatch::from)
+            .collect_vec();
+
+        Ok(result)
     }
 }
 
@@ -975,116 +1081,10 @@ impl<'js> Trace<'js> for JsImage {
 
 #[cfg(test)]
 mod tests {
-    use std::io::{BufReader, Cursor};
-
-    use image::{DynamicImage, ImageReader};
-    use opencv::{
-        Result,
-        core::{
-            CV_32FC1, Mat, MatExprTraitConst, MatTraitConst, NORM_MINMAX, Point, min_max_loc,
-            no_array, normalize,
-        },
-        imgproc::{self, COLOR_RGB2BGR, cvt_color},
-    };
-    use rstest::{fixture, rstest};
+    use rstest::rstest;
     use serial_test::serial;
-    use tracing_test::traced_test;
 
-    use crate::{
-        core::image::{Image, js::JsImage},
-        runtime::Runtime,
-    };
-
-    /// Convert `image::DynamicImage` to `opencv::core::Mat` in BGR format
-    fn dynamic_image_to_mat(img: &DynamicImage) -> Result<Mat> {
-        let rgb = img.to_rgb8();
-        let (_width, height) = rgb.dimensions();
-
-        let mat = Mat::from_slice(&rgb)?;
-        let mat = mat.reshape(3, height.try_into()?)?; // 3 channels (RGB)
-
-        let mut mat_bgr = Mat::default();
-
-        #[allow(clippy::redundant_closure_call)]
-        (|| {
-            opencv::opencv_has_inherent_feature_algorithm_hint! {
-                {
-                    cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
-                } else {
-                    cvt_color(&mat, &mut mat_bgr, COLOR_RGB2BGR, 0)
-                }
-            }
-        })()?;
-
-        Ok(mat_bgr)
-    }
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_() {
-        Runtime::test_with_script_engine(async |_script_engine| {
-            // Load images using image crate
-            let source_img = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/input.png")
-                .unwrap()
-                .decode()
-                .unwrap();
-            let template_img = ImageReader::open("/media/jmgr/Main/rust/test_ai_actiona/pear.png")
-                .unwrap()
-                .decode()
-                .unwrap();
-
-            let source = dynamic_image_to_mat(&source_img).unwrap();
-            let template = dynamic_image_to_mat(&template_img).unwrap();
-
-            // Create the result matrix
-            let result_cols = source.cols() - template.cols() + 1;
-            let result_rows = source.rows() - template.rows() + 1;
-            let mut result = Mat::zeros(result_rows, result_cols, CV_32FC1)
-                .unwrap()
-                .to_mat()
-                .unwrap();
-
-            imgproc::match_template(
-                &source,
-                &template,
-                &mut result,
-                imgproc::TM_CCOEFF_NORMED,
-                &no_array(),
-            )
-            .unwrap();
-
-            // Normalize result
-            let mut out_result = result.clone();
-            normalize(
-                &result,
-                &mut out_result,
-                0.0,
-                1.0,
-                NORM_MINMAX,
-                -1,
-                &no_array(),
-            )
-            .unwrap();
-
-            // Find the best match location
-            let mut min_val = 0.0;
-            let mut max_val = 0.0;
-            let mut min_loc = Point::default();
-            let mut max_loc = Point::default();
-            min_max_loc(
-                &out_result,
-                Some(&mut min_val),
-                Some(&mut max_val),
-                Some(&mut min_loc),
-                Some(&mut max_loc),
-                &no_array(),
-            )
-            .unwrap();
-
-            println!("{min_val} {max_val} {min_loc:?} {max_loc:?}");
-        });
-    }
+    use crate::{core::image::js::JsImage, runtime::Runtime};
 
     fn sanitize(s: &str) -> String {
         s.to_lowercase()

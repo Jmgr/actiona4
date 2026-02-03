@@ -20,13 +20,13 @@ use imageproc::{
     geometric_transformations::{self, rotate, rotate_about_center},
     rect::Rect as ImgRect,
 };
-use opencv::core::Mat;
 
 pub mod find_image;
 pub mod js;
 
 use crate::core::{
     color::Color,
+    image::find_image::{Source, Template},
     point::{Point, point},
     rect::{Rect, rect},
     size::size,
@@ -167,21 +167,27 @@ impl Default for DrawTextOptions {
     }
 }
 
-#[derive(Debug, Default)]
-struct MatCache(ArcSwapOption<Mat>);
+#[derive(Debug)]
+struct Cache<T>(ArcSwapOption<T>);
+
+impl<T> Default for Cache<T> {
+    fn default() -> Self {
+        Self(Default::default())
+    }
+}
 
 #[allow(dead_code)]
-impl MatCache {
+impl<T> Cache<T> {
     fn reset(&self) {
         self.0.store(None);
     }
 
-    fn get(&self) -> Option<Arc<Mat>> {
+    fn get(&self) -> Option<Arc<T>> {
         self.0.load_full()
     }
 
-    fn set(&self, mat: Arc<Mat>) {
-        self.0.store(Some(mat));
+    fn set(&self, value: Arc<T>) {
+        self.0.store(Some(value));
     }
 }
 
@@ -190,20 +196,16 @@ pub struct Image {
     inner: DynamicImage,
 
     #[deref(ignore)]
-    rgb_mat: MatCache,
+    source: Cache<Source>,
 
     #[deref(ignore)]
-    rgba_mat: MatCache,
-
-    #[deref(ignore)]
-    greyscale_mat: MatCache,
+    template: Cache<Template>,
 }
 
 impl DerefMut for Image {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.rgb_mat.reset();
-        self.rgba_mat.reset();
-        self.greyscale_mat.reset();
+        self.source.reset();
+        self.template.reset();
 
         &mut self.inner
     }
@@ -213,9 +215,8 @@ impl Clone for Image {
     fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
-            rgb_mat: Default::default(),
-            rgba_mat: Default::default(),
-            greyscale_mat: Default::default(),
+            source: Default::default(),
+            template: Default::default(),
         }
     }
 }
@@ -248,9 +249,8 @@ impl Image {
     pub fn from_dynamic_image(image: DynamicImage) -> Self {
         Self {
             inner: image,
-            rgb_mat: Default::default(),
-            rgba_mat: Default::default(),
-            greyscale_mat: Default::default(),
+            source: Default::default(),
+            template: Default::default(),
         }
     }
 
@@ -878,19 +878,15 @@ impl Image {
         color: Color,
         options: DrawTextOptions,
     ) -> Result<()> {
-        let font_size = options.font_size.max(1.0);
-        let scale = PxScale::from(font_size);
-        let lines: Vec<&str> = text.split('\n').collect();
-
+        let scale = PxScale::from(options.font_size.max(1.0));
         let scaled_font = font.as_scaled(scale);
-        let line_height = scaled_font.height().max(1.0);
-        let spacing_factor = if options.line_spacing <= 0.0 {
-            1.0
-        } else {
-            options.line_spacing
-        };
-        let line_step = (line_height * spacing_factor).max(1.0);
 
+        let line_height = scaled_font.height().max(1.0);
+        let spacing_factor = options.line_spacing.max(1.0);
+        let line_step = (line_height * spacing_factor).max(1.0);
+        let line_step_i32 = Self::clamp_f32_to_i32(line_step.round());
+
+        let lines: Vec<&str> = text.split('\n').collect();
         let line_widths: Vec<u32> = lines
             .iter()
             .map(|line| text_size(scale, font, line).0)
@@ -900,29 +896,24 @@ impl Image {
         let total_height = line_height + Self::u32_to_f32(extra_lines) * line_step;
         let total_height_i32 = Self::clamp_f32_to_i32(total_height.ceil());
 
-        let anchor_x: Si32 = position.x;
-        let anchor_y: Si32 = position.y;
+        let vertical_offset = match options.vertical_align {
+            TextVerticalAlign::Top => 0,
+            TextVerticalAlign::Middle => -(total_height_i32 / 2),
+            TextVerticalAlign::Bottom => -total_height_i32,
+        };
+        let mut current_y = position.y + vertical_offset;
 
-        let base_y = anchor_y
-            + match options.vertical_align {
-                TextVerticalAlign::Top => 0,
-                TextVerticalAlign::Middle => -(total_height_i32 / 2),
-                TextVerticalAlign::Bottom => -total_height_i32,
-            };
-
-        let mut current_y = base_y;
-        let line_step_i32 = Self::clamp_f32_to_i32(line_step.round());
         let color_pixel: image::Rgba<u8> = color.into();
         let canvas = image.ensure_rgba_mut();
 
-        for (line, width) in lines.iter().zip(line_widths.iter()) {
-            let width_i32: i32 = Si32::from(su32(*width)).into();
-            let line_x: Si32 = anchor_x
-                + match options.horizontal_align {
-                    TextHorizontalAlign::Left => 0,
-                    TextHorizontalAlign::Center => -(width_i32 / 2),
-                    TextHorizontalAlign::Right => -width_i32,
-                };
+        for (line, &width) in lines.iter().zip(&line_widths) {
+            let width_i32: i32 = Si32::from(su32(width)).into();
+            let horizontal_offset = match options.horizontal_align {
+                TextHorizontalAlign::Left => 0,
+                TextHorizontalAlign::Center => -(width_i32 / 2),
+                TextHorizontalAlign::Right => -width_i32,
+            };
+            let line_x = position.x + horizontal_offset;
 
             if !line.is_empty() {
                 draw_text_mut(

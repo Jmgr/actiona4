@@ -30,7 +30,7 @@ impl Screenshot {
         })
     }
 
-    pub async fn capture_rect(&mut self, rect: Rect) -> Result<Image> {
+    pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
         self.implementation.capture_rect(rect).await
     }
 

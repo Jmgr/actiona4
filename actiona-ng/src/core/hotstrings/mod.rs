@@ -1,16 +1,11 @@
-use std::{
-    collections::HashSet,
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
-    time::Instant,
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering},
 };
 
 use color_eyre::Result;
 use derive_where::derive_where;
 use enigo::{Direction, Key, Keyboard};
-use humantime::format_duration;
 use indexmap::IndexMap;
 use itertools::Itertools;
 use macros::FromJsObject;
@@ -18,7 +13,6 @@ use parking_lot::Mutex;
 use rquickjs::{AsyncContext, Coerced, async_with};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::info;
 use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
@@ -96,8 +90,6 @@ impl Hotstrings {
 
             let mut buffer = StringRingBuffer::default();
 
-            let trigger_characters = HashSet::from(['\n', '\r', ',', '.', ' ']); // TODO: add parameter
-
             loop {
                 select! {
                     _ = cancellation_token.cancelled() => { break; }
@@ -106,7 +98,7 @@ impl Hotstrings {
                             break;
                         };
 
-                        Self::on_text(text, &mut buffer, &trigger_characters, local_max_graphemes.clone(), local_hotstrings.clone(), local_runtime.clone()).await?;
+                        Self::on_text(text, &mut buffer, local_max_graphemes.clone(), local_hotstrings.clone(), local_runtime.clone()).await?;
                     },
                     key = keys_receiver.recv() => {
                         let Ok(key) = key else {
@@ -145,7 +137,6 @@ impl Hotstrings {
     async fn on_text(
         event: KeyboardTextEvent,
         buffer: &mut StringRingBuffer,
-        trigger_characters: &HashSet<char>,
         max_graphemes: Arc<AtomicUsize>,
         hotstrings: Arc<Mutex<IndexMap<String, (Replacement, HotstringOptions)>>>,
         runtime: Arc<Runtime>,
@@ -161,14 +152,6 @@ impl Hotstrings {
             buffer.clear();
             return Ok(());
         }
-
-        /*
-        if !trigger_characters.contains(&event.character) {
-            // Not a trigger character
-            buffer.add_char_and_set_max_graphemes(event.character, max_graphemes);
-            return Ok(());
-        }
-        */
 
         let (key, replacement, options) = {
             let hotstrings = hotstrings.lock();
@@ -189,8 +172,6 @@ impl Hotstrings {
             (key.clone(), replacement.clone(), *options)
         };
 
-        info!("replacement ongoing");
-
         enum ReplacementData {
             Text(String),
             Image(Image),
@@ -198,13 +179,10 @@ impl Hotstrings {
 
         let (backspaces, replacement_data) = match replacement {
             Replacement::Text(text) => {
-                info!("text");
                 let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
-                let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
+                let backspaces = key.graphemes(true).count() - grapheme_prefix_len;
                 let text = text.graphemes(true).collect_vec();
-                let mut suffix = text[grapheme_prefix_len..].concat();
-
-                //suffix.push(key_char); // Add the trigger character back
+                let suffix = text[grapheme_prefix_len..].concat();
 
                 (backspaces, ReplacementData::Text(suffix))
             }
@@ -212,7 +190,6 @@ impl Hotstrings {
                 (key.graphemes(true).count(), ReplacementData::Image(image))
             }
             Replacement::JsCallback((context, function_key)) => {
-                info!("JsCallback start");
                 let replacement_data = async_with!(context => |ctx| {
                     let user_data = ctx.user_data();
                     let callbacks = user_data.callbacks();
@@ -225,15 +202,13 @@ impl Hotstrings {
                 })
                 .await;
 
-                info!("JsCallback end");
-
                 match replacement_data {
                     ReplacementData::Text(text) => {
                         // TODO: remove copy paste
                         let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
                         let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
                         let text = text.graphemes(true).collect_vec();
-                        let mut suffix = text[grapheme_prefix_len..].concat();
+                        let suffix = text[grapheme_prefix_len..].concat();
 
                         (backspaces, ReplacementData::Text(suffix))
                     }
@@ -249,21 +224,10 @@ impl Hotstrings {
             let mut enigo = enigo.lock();
 
             if options.erase_key {
-                let start = Instant::now();
-                info!("backspaces");
-
                 for _ in 0..backspaces {
                     enigo.key(Key::Backspace, Direction::Click)?;
                 }
-
-                info!(
-                    "backspaces end: {}",
-                    format_duration(Instant::now() - start)
-                );
             }
-
-            let start = Instant::now();
-            info!("replacement");
 
             match replacement_data {
                 ReplacementData::Text(replacement) => {
@@ -317,11 +281,6 @@ impl Hotstrings {
                     }
                 }
             }
-
-            info!(
-                "replacement end: {}",
-                format_duration(Instant::now() - start)
-            );
         };
 
         // Clear the buffer to prevent firing again
@@ -378,14 +337,16 @@ struct StringRingBuffer {
 }
 
 impl StringRingBuffer {
-    pub fn new(max_graphemes: usize) -> Self {
+    #[cfg(test)]
+    fn new(max_graphemes: usize) -> Self {
         Self {
             buffer: String::default(),
             max_graphemes,
         }
     }
 
-    pub fn add_char(&mut self, ch: char) {
+    #[cfg(test)]
+    fn add_char(&mut self, ch: char) {
         self.buffer.push(ch);
         self.update();
     }
@@ -396,12 +357,14 @@ impl StringRingBuffer {
         self.update();
     }
 
-    pub fn add_str(&mut self, str: &str) {
+    #[cfg(test)]
+    fn add_str(&mut self, str: &str) {
         self.buffer.push_str(str);
         self.update();
     }
 
-    pub fn set_max_grapheme_count(&mut self, max_graphemes: usize) {
+    #[cfg(test)]
+    fn set_max_grapheme_count(&mut self, max_graphemes: usize) {
         self.max_graphemes = max_graphemes;
         self.update();
     }

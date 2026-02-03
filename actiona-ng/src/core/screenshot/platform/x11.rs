@@ -8,7 +8,7 @@ use opencv::{
     boxed_ref::BoxedRef,
     core::{CV_8UC1, CV_8UC3, CV_8UC4, Mat, MatTraitConst, Size as CvSize, Vector},
     imgcodecs::imwrite,
-    imgproc::{COLOR_BGRA2BGR, COLOR_BGRA2GRAY, cvt_color},
+    imgproc::{COLOR_BGRA2BGR, COLOR_BGRA2GRAY},
 };
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 use tokio::sync::Mutex;
@@ -164,18 +164,13 @@ impl Display {
 
     pub async fn capture_mat(&self, use_color: bool) -> Result<()> {
         self.capture_image(self.x11_connection.clone(), self.rect, use_color, |mat| {
-            imwrite(
-                "/home/jmgr/rust/actiona-ng/output.png",
-                &mat,
-                &Vector::new(),
-            )?;
+            imwrite("~/rust/actiona-ng/output.png", &mat, &Vector::new())?;
             Result::<()>::Ok(())
         })
         .await??;
         Ok(())
     }
 
-    #[allow(unsafe_code)]
     async fn capture_image<F, R>(
         &self,
         x11_connection: Arc<X11Connection>,
@@ -211,37 +206,16 @@ impl Display {
             &reply.data,
         )?;
 
-        if use_color {
-            let mut target_mat = self.rgb_mat_buffer.lock();
-
-            #[allow(clippy::redundant_closure_call)]
-            (|| {
-                opencv::opencv_has_inherent_feature_algorithm_hint! {
-                    {
-                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2BGR, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
-                    } else {
-                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2BGR, 0)
-                    }
-                }
-            })()?;
-
-            Ok(f(&*target_mat))
+        let (buffer, conversion_code) = if use_color {
+            (&self.rgb_mat_buffer, COLOR_BGRA2BGR)
         } else {
-            let mut target_mat = self.greyscale_mat_buffer.lock();
+            (&self.greyscale_mat_buffer, COLOR_BGRA2GRAY)
+        };
 
-            #[allow(clippy::redundant_closure_call)]
-            (|| {
-                opencv::opencv_has_inherent_feature_algorithm_hint! {
-                    {
-                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2GRAY, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
-                    } else {
-                        cvt_color(&mat, &mut *target_mat, COLOR_BGRA2GRAY, 0)
-                    }
-                }
-            })()?;
+        let mut target_mat = buffer.lock();
+        //TODO: convert_colors_into(&mat, &mut *target_mat, conversion_code)?;
 
-            Ok(f(&*target_mat))
-        }
+        Ok(f(&*target_mat))
     }
 }
 

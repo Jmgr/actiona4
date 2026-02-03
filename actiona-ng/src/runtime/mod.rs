@@ -8,6 +8,7 @@ use derive_more::Constructor;
 use derive_where::derive_where;
 use enigo::{Enigo, Settings};
 use macros::{FromSerde, IntoSerde};
+use opencv::core::set_num_threads;
 use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
@@ -19,7 +20,7 @@ use tauri::{
 };
 use tokio::{runtime::Handle, select, signal, sync::oneshot, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::{info, instrument, warn};
+use tracing::{error, info, instrument, warn};
 
 #[cfg(unix)]
 use crate::runtime::platform::x11::events::input::{
@@ -42,7 +43,7 @@ use crate::{
         file::js::JsFile,
         filesystem::js::JsFilesystem,
         hotstrings::js::JsHotstrings,
-        image::js::JsImage,
+        image::{find_image, js::JsImage},
         js::{
             abort_controller::{JsAbortController, JsAbortSignal},
             classes::{register_singleton_class, register_value_class},
@@ -197,6 +198,22 @@ fn new_enigo() -> Result<Arc<Mutex<Enigo>>> {
     Ok(Arc::new(Mutex::new(Enigo::new(&Settings::default())?)))
 }
 
+/// Disable OpenCV parallelism since we perform our own parallelism using rayon.
+fn setup_opencv_threading() -> Result<()> {
+    #[allow(clippy::redundant_closure_call)]
+    (|| {
+        opencv::opencv_branch_34! {
+            {
+                set_num_threads(0)
+            } else {
+                set_num_threads(1)
+            }
+        }
+    })()?;
+
+    Ok(())
+}
+
 impl Runtime {
     // TODO: make private
     #[instrument(name = "Runtime::new", skip_all)]
@@ -219,6 +236,14 @@ impl Runtime {
 
         #[cfg(windows)]
         let runtime = win::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
+
+        setup_opencv_threading()?;
+
+        task_tracker.spawn_blocking(|| {
+            if let Err(err) = find_image::warm_up() {
+                error!("Failed to warm up find_image: {}", err);
+            }
+        });
 
         let clipboard = Arc::new(Clipboard::new()?);
         let runtime = Arc::new(Self {

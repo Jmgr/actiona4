@@ -2,6 +2,7 @@ use std::fmt::Display;
 
 use color_eyre::{Report, Result, eyre::eyre};
 use derive_more::Constructor;
+use opencv::core::Rect as CvRect;
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, point};
@@ -134,6 +135,12 @@ impl Rect {
     #[must_use]
     pub fn surface(&self) -> u32 {
         (self.size.width * self.size.height).into()
+    }
+}
+
+impl From<CvRect> for Rect {
+    fn from(value: CvRect) -> Self {
+        Self::new(point(value.x, value.y), size(value.width, value.height))
     }
 }
 

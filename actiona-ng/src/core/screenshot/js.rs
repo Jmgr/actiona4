@@ -8,7 +8,10 @@ use tracing::instrument;
 
 use crate::{
     IntoJsResult,
-    core::{displays::Displays, js::classes::SingletonClass},
+    core::{
+        color::js::JsColor, displays::Displays, image::js::JsImage, js::classes::SingletonClass,
+        point::js::JsPointLike, rect::js::JsRectLike,
+    },
     runtime::Runtime,
 };
 
@@ -43,5 +46,27 @@ impl JsScreenshot {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsScreenshot {
-    // TODO
+    pub async fn capture_rect(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<JsImage> {
+        Ok(JsImage::new(
+            self.inner.capture_rect(rect.0).await.into_js_result(&ctx)?,
+        ))
+    }
+
+    pub async fn capture_display(&self, ctx: Ctx<'_>, display_id: u32) -> Result<JsImage> {
+        Ok(JsImage::new(
+            self.inner
+                .capture_display(display_id)
+                .await
+                .into_js_result(&ctx)?,
+        ))
+    }
+
+    pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
+        Ok(self
+            .inner
+            .capture_pixel(position.0)
+            .await
+            .into_js_result(&ctx)?
+            .into())
+    }
 }
