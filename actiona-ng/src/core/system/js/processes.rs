@@ -361,6 +361,7 @@ pub enum JsProcessStatus {
     Parked,
     LockBlocked,
     UninterruptibleDiskSleep,
+    Suspended,
     Unknown,
 }
 
@@ -379,6 +380,7 @@ impl From<Status> for JsProcessStatus {
             Status::Parked => Self::Parked,
             Status::LockBlocked => Self::LockBlocked,
             Status::UninterruptibleDiskSleep => Self::UninterruptibleDiskSleep,
+            Status::Suspended => Self::Suspended,
             Status::Unknown(_) => Self::Unknown,
         }
     }

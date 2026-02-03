@@ -99,6 +99,7 @@ pub enum Status {
     Parked,
     LockBlocked,
     UninterruptibleDiskSleep,
+    Suspended,
     Unknown(u32),
 }
 
@@ -118,6 +119,7 @@ impl From<sysinfo::ProcessStatus> for Status {
             sysinfo::ProcessStatus::Parked => Parked,
             sysinfo::ProcessStatus::LockBlocked => LockBlocked,
             sysinfo::ProcessStatus::UninterruptibleDiskSleep => UninterruptibleDiskSleep,
+            sysinfo::ProcessStatus::Suspended => Suspended,
             sysinfo::ProcessStatus::Unknown(status) => Unknown(status),
         }
     }

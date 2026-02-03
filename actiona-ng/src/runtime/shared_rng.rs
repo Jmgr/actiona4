@@ -2,13 +2,13 @@ use std::sync::Arc;
 
 use parking_lot::Mutex;
 use rand::{
-    Rng, RngCore,
+    Rng, RngCore, SeedableRng,
     distr::{
         Distribution, StandardUniform,
         uniform::{SampleRange, SampleUniform},
     },
 };
-use rand_chacha::{ChaCha8Rng, rand_core::SeedableRng};
+use rand_chacha::ChaCha8Rng;
 use tracing::instrument;
 
 #[derive(Clone, Debug)]
