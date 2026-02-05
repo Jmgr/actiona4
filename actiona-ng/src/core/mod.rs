@@ -1,7 +1,4 @@
 use rquickjs::{Ctx, Exception, Result, Value};
-use tokio::{select, sync::watch};
-
-use crate::{core::js::task::IsDone, runtime::WithUserData};
 
 pub mod app;
 pub mod audio;
@@ -52,37 +49,6 @@ pub fn check_min_arg_count(min: usize, ctx: &Ctx, args: &[Value<'_>]) -> Result<
     }
 
     Ok(())
-}
-
-#[must_use]
-pub fn convert_watch_receiver<'js, FromT, ToT>(
-    ctx: &Ctx<'js>,
-    mut from_receiver: watch::Receiver<FromT>,
-) -> watch::Receiver<ToT>
-where
-    ToT: Default + From<FromT> + Sync + Send + 'static,
-    FromT: IsDone + Clone + Sync + Send + 'static,
-{
-    let (new_sender, to_receiver) = watch::channel(ToT::default());
-    let token = ctx.user_data().cancellation_token();
-    ctx.user_data().task_tracker().spawn(async move {
-        loop {
-            select! {
-                _ = token.cancelled() => { break; },
-                _ = from_receiver.changed() => {
-                    let value = from_receiver.borrow_and_update().clone();
-                    let is_done = value.is_done();
-                    new_sender.send_replace(value.into());
-
-                    if is_done {
-                        break;
-                    }
-                },
-            }
-        }
-    });
-
-    to_receiver
 }
 
 #[cfg(test)]

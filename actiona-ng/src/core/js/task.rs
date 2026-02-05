@@ -98,10 +98,15 @@ pub trait IsDone {
     fn is_done(&self) -> bool;
 }
 
-// Small helper: make an async iterator over a watch::Receiver<P>
-fn make_progress_async_iter<'js, P>(ctx: Ctx<'js>, rx: watch::Receiver<P>) -> Result<Object<'js>>
+// Small helper: make an async iterator over a watch::Receiver<FromP>,
+// converting each value to P via From before exposing it to JS.
+fn make_progress_async_iter<'js, FromP, P>(
+    ctx: Ctx<'js>,
+    rx: watch::Receiver<FromP>,
+) -> Result<Object<'js>>
 where
-    P: IntoJs<'js> + Clone + IsDone + 'js,
+    P: IntoJs<'js> + Clone + IsDone + From<FromP> + 'js,
+    FromP: Clone + Send + Sync + 'static,
 {
     let iter = Object::new(ctx.clone())?;
     let rx = Arc::new(tokio::sync::Mutex::new(rx));
@@ -132,7 +137,7 @@ where
                     }
                     .into_js_result(&ctx)?;
 
-                    rx.borrow_and_update().clone()
+                    P::from(rx.borrow_and_update().clone())
                 };
 
                 if value.is_done() {
@@ -154,10 +159,10 @@ where
     Ok(iter)
 }
 
-pub(crate) fn progress_task_with_token<'js, R, Fut, F, T, P>(
+pub(crate) fn progress_task_with_token<'js, R, Fut, F, T, FromP, P>(
     ctx: Ctx<'js>,
     token: T,
-    progress: watch::Receiver<P>,
+    progress: watch::Receiver<FromP>,
     future: F,
 ) -> Result<Promise<'js>>
 where
@@ -165,13 +170,14 @@ where
     Fut: Future<Output = Result<R>> + 'js,
     R: IntoJs<'js> + 'js,
     T: IntoToken,
-    P: IntoJs<'js> + Clone + IsDone + 'js,
+    P: IntoJs<'js> + Clone + IsDone + From<FromP> + 'js,
+    FromP: Clone + Send + Sync + 'static,
 {
     let promise_obj = task_with_token_impl(ctx.clone(), token, future)?;
 
     // [Symbol.asyncIterator]() { return { next() { return Promise<progress> } } }
     let async_iterator = Function::new(ctx, move |ctx: Ctx<'js>| {
-        make_progress_async_iter(ctx, progress.clone())
+        make_progress_async_iter::<FromP, P>(ctx, progress.clone())
     })?;
 
     promise_obj.set(PredefinedAtom::SymbolAsyncIterator, async_iterator)?;
@@ -285,19 +291,24 @@ mod tests {
 
             let bar = ProgressBar::new(100);
 
-            progress_task_with_token(ctx, token, receiver, async move |_ctx, _token| {
-                has_started.store(true, Ordering::Relaxed);
+            progress_task_with_token::<_, _, _, _, _, ProgressValue>(
+                ctx,
+                token,
+                receiver,
+                async move |_ctx, _token| {
+                    has_started.store(true, Ordering::Relaxed);
 
-                for i in 1..=100 {
-                    sender.send_replace(i.into());
-                    bar.inc(1);
-                    sleep(Duration::from_millis(5)).await;
-                }
+                    for i in 1..=100 {
+                        sender.send_replace(i.into());
+                        bar.inc(1);
+                        sleep(Duration::from_millis(5)).await;
+                    }
 
-                bar.finish();
+                    bar.finish();
 
-                Result::<()>::Ok(())
-            })
+                    Result::<()>::Ok(())
+                },
+            )
         }
     }
 

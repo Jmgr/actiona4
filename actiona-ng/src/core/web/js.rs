@@ -16,7 +16,6 @@ use tokio_util::task::TaskTracker;
 use crate::{
     IntoJsResult,
     core::{
-        convert_watch_receiver,
         image::js::JsImage,
         js::{
             abort_controller::JsAbortSignal,
@@ -343,14 +342,11 @@ impl JsWeb {
         }
     }
 
-    fn make_progress_receiver<'js>(
-        ctx: &Ctx<'js>,
-        options: &mut WebOptions,
-    ) -> Result<watch::Receiver<JsWebProgress>> {
+    fn make_progress_receiver(options: &mut WebOptions) -> watch::Receiver<Progress> {
         let (progress_sender, progress_receiver) = watch::channel(Progress::Inactive);
         options.progress = Some(progress_sender);
 
-        Ok(convert_watch_receiver(ctx, progress_receiver))
+        progress_receiver
     }
 }
 
@@ -368,9 +364,9 @@ impl JsWeb {
         let local_inner = self.inner.clone();
         let options = options.0.unwrap_or_default();
         let mut local_options = options.clone().into_super(&ctx)?;
-        let progress_receiver = Self::make_progress_receiver(&ctx, &mut local_options)?;
+        let progress_receiver = Self::make_progress_receiver(&mut local_options);
 
-        progress_task_with_token(
+        progress_task_with_token::<_, _, _, _, _, JsWebProgress>(
             ctx,
             options.signal,
             progress_receiver,
@@ -396,9 +392,9 @@ impl JsWeb {
         let local_inner = self.inner.clone();
         let options = options.0.unwrap_or_default();
         let mut local_options = options.clone().into_super(&ctx)?;
-        let progress_receiver = Self::make_progress_receiver(&ctx, &mut local_options)?;
+        let progress_receiver = Self::make_progress_receiver(&mut local_options);
 
-        progress_task_with_token(
+        progress_task_with_token::<_, _, _, _, _, JsWebProgress>(
             ctx,
             options.signal,
             progress_receiver,
@@ -423,9 +419,9 @@ impl JsWeb {
         let local_inner = self.inner.clone();
         let options = options.0.unwrap_or_default();
         let mut local_options = options.clone().into_super(&ctx)?;
-        let progress_receiver = Self::make_progress_receiver(&ctx, &mut local_options)?;
+        let progress_receiver = Self::make_progress_receiver(&mut local_options);
 
-        progress_task_with_token(
+        progress_task_with_token::<_, _, _, _, _, JsWebProgress>(
             ctx,
             options.signal,
             progress_receiver,
@@ -453,9 +449,9 @@ impl JsWeb {
         let options = options.0.unwrap_or_default();
         let mut local_options = options.clone().into_super(&ctx)?;
         let directory = directory.as_deref().map(PathBuf::from);
-        let progress_receiver = Self::make_progress_receiver(&ctx, &mut local_options)?;
+        let progress_receiver = Self::make_progress_receiver(&mut local_options);
 
-        progress_task_with_token(
+        progress_task_with_token::<_, _, _, _, _, JsWebProgress>(
             ctx,
             options.signal,
             progress_receiver,

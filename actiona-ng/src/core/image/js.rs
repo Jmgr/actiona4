@@ -4,13 +4,14 @@ use image::{ImageReader, ImageResult};
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
-    Class, Ctx, Exception, JsLifetime, Result, TypedArray,
+    Class, Ctx, Exception, JsLifetime, Promise, Result, TypedArray,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::{Opt, This},
 };
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
+use tokio::sync::watch;
 
 use crate::{
     IntoJsResult,
@@ -20,9 +21,12 @@ use crate::{
             BlurOptions, DrawImageOptions, DrawTextOptions, DrawingOptions, FlipDirection,
             Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
             TextVerticalAlign,
-            find_image::{Source, Template},
+            find_image::{FindImageProgress, Source, Template},
         },
-        js::classes::{HostClass, ValueClass, register_enum},
+        js::{
+            classes::{HostClass, ValueClass, register_enum},
+            task::{IsDone, progress_task_with_token},
+        },
         point::js::{JsPoint, JsPointLike},
         rect::js::{JsRect, JsRectLike},
     },
@@ -442,6 +446,107 @@ impl From<super::find_image::Match> for JsMatch {
     }
 }
 
+/// Stages of a find image operation.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "FindImageStage")]
+pub enum JsFindImageStage {
+    Preparing,
+    Downscaling,
+    Matching,
+    Filtering,
+    ComputingResults,
+    Finished,
+}
+
+impl From<super::find_image::FindImageStage> for JsFindImageStage {
+    fn from(value: super::find_image::FindImageStage) -> Self {
+        use super::find_image::FindImageStage;
+        match value {
+            FindImageStage::Preparing => Self::Preparing,
+            FindImageStage::Downscaling => Self::Downscaling,
+            FindImageStage::Matching => Self::Matching,
+            FindImageStage::Filtering => Self::Filtering,
+            FindImageStage::ComputingResults => Self::ComputingResults,
+            FindImageStage::Finished => Self::Finished,
+        }
+    }
+}
+
+/// Progress of a find image operation.
+///
+/// @prop stage: FindImageStage // the current stage
+/// @prop percent: number // completion percentage (0-100)
+/// @prop finished: boolean // whether the operation has finished
+#[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq)]
+#[rquickjs::class(rename = "FindImageProgress")]
+pub struct JsFindImageProgress {
+    inner: super::find_image::FindImageProgress,
+}
+
+impl<'js> Trace<'js> for JsFindImageProgress {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl ValueClass<'_> for JsFindImageProgress {}
+
+impl IsDone for JsFindImageProgress {
+    fn is_done(&self) -> bool {
+        self.inner.stage.is_finished()
+    }
+}
+
+impl From<super::find_image::FindImageProgress> for JsFindImageProgress {
+    fn from(value: super::find_image::FindImageProgress) -> Self {
+        Self { inner: value }
+    }
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsFindImageProgress {
+    /// @constructor
+    /// @private
+    #[qjs(constructor)]
+    pub fn new() -> Result<Self> {
+        Ok(Self::default())
+    }
+
+    /// The current stage of the find image operation.
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn stage(&self) -> JsFindImageStage {
+        self.inner.stage.into()
+    }
+
+    /// Completion percentage (0-100).
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn percent(&self) -> u8 {
+        self.inner.percent
+    }
+
+    /// Whether the operation has finished.
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn finished(&self) -> bool {
+        self.inner.stage.is_finished()
+    }
+}
+
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Image")]
 pub struct JsImage {
@@ -469,6 +574,7 @@ impl<'js> ValueClass<'js> for JsImage {
         register_enum::<JsInterpolation>(ctx)?;
         register_enum::<JsTextHorizontalAlign>(ctx)?;
         register_enum::<JsTextVerticalAlign>(ctx)?;
+        register_enum::<JsFindImageStage>(ctx)?;
 
         Ok(())
     }
@@ -1013,54 +1119,72 @@ impl JsImage {
     }
 
     /// Find an image inside this image.
-    pub async fn find_image(
+    /// @returns ProgressTask<Match | undefined, FindImageProgress>
+    pub fn find_image<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         image: &JsImage,
         options: Opt<JsFindImageOptions>,
-    ) -> Result<Option<JsMatch>> {
+    ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
         let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
+        let (progress_sender, progress_receiver) = watch::channel(FindImageProgress::default());
 
-        let cancellation_token = ctx.user_data().cancellation_token();
-        let task_tracker = ctx.user_data().task_tracker();
+        progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
+            ctx,
+            None,
+            progress_receiver,
+            async move |ctx, token| {
+                let task_tracker = ctx.user_data().task_tracker();
 
-        let result = task_tracker
-            .spawn_blocking(move || source.find_template(&template, options, cancellation_token))
-            .await
-            .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
-            .into_js_result(&ctx)?;
+                let result = task_tracker
+                    .spawn_blocking(move || {
+                        source.find_template(&template, options, token, progress_sender)
+                    })
+                    .await
+                    .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
+                    .into_js_result(&ctx)?;
 
-        Ok(result.map(JsMatch::from))
+                Ok(result.map(JsMatch::from))
+            },
+        )
     }
 
     /// Find any occurence of an image inside this image.
-    pub async fn find_image_all(
+    /// @returns ProgressTask<Match[], FindImageProgress>
+    pub fn find_image_all<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         image: &JsImage,
         options: Opt<JsFindImageOptions>,
-    ) -> Result<Vec<JsMatch>> {
+    ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
         let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
+        let (progress_sender, progress_receiver) = watch::channel(FindImageProgress::default());
 
-        let cancellation_token = ctx.user_data().cancellation_token();
-        let task_tracker = ctx.user_data().task_tracker();
+        progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
+            ctx,
+            None,
+            progress_receiver,
+            async move |ctx, token| {
+                let task_tracker = ctx.user_data().task_tracker();
 
-        let result = task_tracker
-            .spawn_blocking(move || {
-                source.find_template_all(&template, options, cancellation_token)
-            })
-            .await
-            .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
-            .into_js_result(&ctx)?
-            .into_iter()
-            .map(JsMatch::from)
-            .collect_vec();
+                let result = task_tracker
+                    .spawn_blocking(move || {
+                        source.find_template_all(&template, options, token, progress_sender)
+                    })
+                    .await
+                    .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
+                    .into_js_result(&ctx)?
+                    .into_iter()
+                    .map(JsMatch::from)
+                    .collect_vec();
 
-        Ok(result)
+                Ok(result)
+            },
+        )
     }
 }
 
@@ -1212,6 +1336,107 @@ mod tests {
 
             script_engine
                 .with2(|ctx| output.save(ctx.clone(), format!("../tests/{output_filename}")))
+                .await
+                .unwrap();
+        })
+    }
+
+    #[test]
+    #[serial]
+    fn test_find_image() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let result = script_engine
+                .eval_async::<Vec<String>>(
+                    r#"
+                    const source = await Image.load("../tests/input.png");
+                    const template = await Image.load("../tests/pear.png");
+
+                    const task = source.findImage(template);
+
+                    // Collect progress updates from the async iterator.
+                    // watch channels coalesce values, so we may not see every
+                    // intermediate update — but we will always see the latest.
+                    const stages = [];
+                    for await (const progress of task) {
+                        stages.push(progress.stage);
+                    }
+
+                    const result = await task;
+
+                    if (!result) {
+                        throw new Error("Expected a match but got undefined");
+                    }
+
+                    // Verify that the progress iterator produced updates and
+                    // ended with the "Finished" stage.
+                    if (stages.length === 0) {
+                        throw new Error("Expected at least one progress update");
+                    }
+                    if (stages[stages.length - 1] !== FindImageStage.Finished) {
+                        throw new Error(`Expected last stage to be "Finished", got "${stages[stages.length - 1]}"`);
+                    }
+
+                    // Return the stages for assertion on the Rust side
+                    stages
+                    "#,
+                )
+                .await
+                .unwrap();
+
+            // We should have received at least one progress update
+            assert!(!result.is_empty());
+            assert_eq!(result.last().unwrap(), "Finished");
+
+            // All stages should be valid
+            let valid_stages = [
+                "Preparing",
+                "Downscaling",
+                "Matching",
+                "Filtering",
+                "ComputingResults",
+                "Finished",
+            ];
+            for stage in &result {
+                assert!(
+                    valid_stages.contains(&stage.as_str()),
+                    "unexpected stage: {stage}"
+                );
+            }
+        })
+    }
+
+    #[test]
+    #[serial]
+    fn test_find_image_all() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    const source = await Image.load("../tests/input.png");
+                    const template = await Image.load("../tests/pear.png");
+
+                    const task = source.findImageAll(template);
+
+                    let lastStage = "";
+                    let lastPercent = 0;
+                    for await (const progress of task) {
+                        lastStage = progress.stage;
+                        lastPercent = progress.percent;
+                    }
+
+                    const results = await task;
+
+                    if (results.length !== 2) {
+                        throw new Error(`Expected 2 matches, got ${results.length}`);
+                    }
+                    if (lastStage !== FindImageStage.Finished) {
+                        throw new Error(`Expected last stage "Finished", got "${lastStage}"`);
+                    }
+                    if (lastPercent !== 100) {
+                        throw new Error(`Expected last percent 100, got ${lastPercent}`);
+                    }
+                    "#,
+                )
                 .await
                 .unwrap();
         })
