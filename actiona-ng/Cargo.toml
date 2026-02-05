@@ -28,8 +28,8 @@ zbus.workspace = true
 ignored = ["built", "cfg_aliases", "rquickjs-serde"]
 
 [dependencies]
-macros = { path = "../macros" }
 ab_glyph.workspace = true
+macros = { path = "../macros" }
 
 arboard.workspace = true
 arc-swap.workspace = true

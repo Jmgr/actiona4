@@ -7,7 +7,7 @@ use opencv::core::{
 };
 use tracing::instrument;
 
-use crate::core::image::find_image::Match;
+use crate::core::image::find_image::{LabAMat, LabBMat, MaskMat, Match};
 
 /// Convert a match-score matrix into match locations.
 ///
@@ -128,18 +128,18 @@ fn non_maximum_suppression(input: &[Match], radius: i32) -> Vec<Match> {
 #[instrument(skip_all)]
 pub fn filter_results_by_color(
     result: &mut Mat,
-    source_a: &Mat,
-    source_b: &Mat,
-    template_a: &Mat,
-    template_b: &Mat,
-    template_mask: Option<&Mat>,
+    source_a: &LabAMat,
+    source_b: &LabBMat,
+    template_a: &LabAMat,
+    template_b: &LabBMat,
+    template_mask: Option<&MaskMat>,
     template_size: Size,
     match_threshold: f32,
 ) -> Result<()> {
     const CHROMA_RMS_THRESHOLD: f64 = 8.0;
 
     let valid_pixel_count = match template_mask {
-        Some(mask) => count_non_zero(mask)? as f64,
+        Some(mask) => count_non_zero(&mask.0)? as f64,
         None => (template_size.width * template_size.height) as f64,
     }
     .max(1.0);
@@ -155,11 +155,11 @@ pub fn filter_results_by_color(
             #[allow(clippy::as_conversions)]
             let col = col_idx as i32;
             let roi = Rect::new(col, row, template_size.width, template_size.height);
-            let source_a_roi = source_a.roi(roi)?;
-            let source_b_roi = source_b.roi(roi)?;
+            let source_a_roi = source_a.0.roi(roi)?;
+            let source_b_roi = source_b.0.roi(roi)?;
 
-            let rms_a = channel_rms(&source_a_roi, &template_a, template_mask, normalization)?;
-            let rms_b = channel_rms(&source_b_roi, &template_b, template_mask, normalization)?;
+            let rms_a = channel_rms(&source_a_roi, &template_a.0, template_mask, normalization)?;
+            let rms_b = channel_rms(&source_b_roi, &template_b.0, template_mask, normalization)?;
             let combined_rms = (rms_a * rms_a + rms_b * rms_b).sqrt();
 
             if combined_rms > CHROMA_RMS_THRESHOLD {
@@ -175,11 +175,11 @@ pub fn filter_results_by_color(
 fn channel_rms(
     source: &impl ToInputArray,
     template: &impl ToInputArray,
-    mask: Option<&Mat>,
+    mask: Option<&MaskMat>,
     normalization: f64,
 ) -> Result<f64> {
     let norm = if let Some(mask) = mask {
-        norm2(source, template, NORM_L2, mask)?
+        norm2(source, template, NORM_L2, &mask.0)?
     } else {
         norm2_def(source, template)?
     };

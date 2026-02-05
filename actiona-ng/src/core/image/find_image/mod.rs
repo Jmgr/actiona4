@@ -1,12 +1,15 @@
 use std::{borrow::Cow, sync::Arc};
 
-use color_eyre::Result;
+use color_eyre::{
+    Result,
+    eyre::{Error, eyre},
+};
 use derive_more::Constructor;
 use image::DynamicImage;
 use macros::FromJsObject;
 use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
-    imgproc::{COLOR_BGR2Lab, COLOR_RGB2BGR, COLOR_RGBA2BGR},
+    imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGB2BGR, COLOR_RGBA2BGR},
 };
 use tracing::instrument;
 
@@ -25,7 +28,7 @@ use crate::core::{
 };
 
 mod common;
-mod convert;
+pub mod convert;
 mod matching;
 mod pyramids;
 mod results;
@@ -37,11 +40,73 @@ pub fn warm_up() -> Result<()> {
     Ok(())
 }
 
+#[derive(Debug, Clone)]
+pub struct LabLightnessMat(Mat);
+
+#[derive(Debug)]
+pub struct LabAMat(Mat);
+
+#[derive(Debug)]
+pub struct LabBMat(Mat);
+
+#[derive(Debug)]
+pub struct BgrMat(Mat);
+
+impl TryFrom<&BgrMat> for LabImage {
+    type Error = Error;
+
+    fn try_from(value: &BgrMat) -> Result<Self, Self::Error> {
+        let lab = convert_colors(&value.0, COLOR_BGR2Lab)?;
+
+        let mut channels = Vector::new();
+        split(&lab, &mut channels)?;
+
+        Ok(LabImage {
+            lightness: LabLightnessMat(channels.get(0)?),
+            a: LabAMat(channels.get(1)?),
+            b: LabBMat(channels.get(2)?),
+        })
+    }
+}
+
+impl BgrMat {
+    pub fn from_bgra(data: &[u8], width: u32, height: u32) -> Result<Self> {
+        const BYTES_PER_PIXEL: usize = 4;
+
+        let needed = (width as usize)
+            .checked_mul(height as usize)
+            .and_then(|pixel_count| pixel_count.checked_mul(BYTES_PER_PIXEL))
+            .ok_or_else(|| eyre!("image dimensions overflow: {width}x{height}"))?;
+
+        if data.len() < needed {
+            return Err(eyre!(
+                "image data too small: expected {needed} bytes, got {}",
+                data.len()
+            ));
+        }
+
+        // Create a Mat view over the BGRA data
+        let bgra_mat = Mat::new_rows_cols_with_bytes::<opencv::core::Vec4b>(
+            height.try_into()?,
+            width.try_into()?,
+            &data[..needed],
+        )?;
+
+        // Convert BGRA to BGR
+        let bgr = convert_colors(&bgra_mat, COLOR_BGRA2BGR)?;
+
+        Ok(Self(bgr))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct MaskMat(Mat);
+
 #[derive(Debug)]
 pub struct LabImage {
-    pub lightness: Mat,
-    pub a: Mat,
-    pub b: Mat,
+    pub lightness: LabLightnessMat,
+    pub a: LabAMat,
+    pub b: LabBMat,
 }
 
 #[derive(Debug)]
@@ -49,10 +114,58 @@ pub struct Source {
     pub image: LabImage,
 }
 
+impl TryFrom<&Image> for Arc<Source> {
+    type Error = Error;
+
+    fn try_from(value: &Image) -> Result<Self, Self::Error> {
+        if let Some(source) = value.source.get() {
+            return Ok(source);
+        }
+
+        let (bgr, _) = value.to_bgr(false)?;
+        let source = Arc::new(Source {
+            image: LabImage::try_from(&bgr)?,
+        });
+
+        value.source.set(source.clone());
+
+        Ok(source)
+    }
+}
+
+impl Source {
+    pub fn from_bgra(data: &[u8], width: u32, height: u32) -> Result<Arc<Self>> {
+        let bgr = BgrMat::from_bgra(data, width, height)?;
+        let lab = LabImage::try_from(&bgr)?;
+
+        Ok(Arc::new(Source { image: lab }))
+    }
+}
+
 #[derive(Debug)]
 pub struct Template {
     pub image: LabImage,
-    pub mask: Option<Mat>,
+    pub mask: Option<MaskMat>,
+}
+
+impl TryFrom<&Image> for Arc<Template> {
+    type Error = Error;
+
+    fn try_from(value: &Image) -> Result<Self, Self::Error> {
+        if let Some(template) = value.template.get() {
+            return Ok(template);
+        }
+
+        let (bgr, mask) = value.to_bgr(true)?;
+        let template = Arc::new(Template {
+            image: LabImage::try_from(&bgr)?,
+            mask,
+        });
+
+        value.template.set(template.clone());
+
+        Ok(template)
+    }
 }
 
 #[derive(Clone, Constructor, Copy, Debug, PartialEq)]
@@ -62,80 +175,33 @@ pub struct Match {
     pub score: f64,
 }
 
-/// Converts a `DynamicImage` to BGR format, optionally extracting an alpha mask.
-fn image_to_bgr(image: &DynamicImage, extract_mask: bool) -> Result<(Mat, Option<Mat>)> {
-    match image {
-        DynamicImage::ImageRgba8(image) => {
-            let (_width, height) = image.dimensions();
-            let mat_boxed = Mat::from_slice(image.as_raw())?;
-            let mat = mat_boxed.reshape(4, height.try_into()?)?;
-
-            let mask = if extract_mask {
-                let mut alpha = Mat::default();
-                extract_channel(&mat, &mut alpha, 3)?;
-                Some(alpha)
-            } else {
-                None
-            };
-
-            Ok((convert_colors(&mat, COLOR_RGBA2BGR)?, mask))
-        }
-        image => {
-            let image = image.to_rgb8();
-            let (_width, height) = image.dimensions();
-            let mat_boxed = Mat::from_slice(image.as_raw())?;
-            let mat = mat_boxed.reshape(3, height.try_into()?)?;
-            Ok((convert_colors(&mat, COLOR_RGB2BGR)?, None))
-        }
-    }
-}
-
-/// Converts a BGR `Mat` to a `LabImage` by converting to Lab color space and splitting channels.
-fn bgr_to_lab(bgr: &Mat) -> Result<LabImage> {
-    let lab = convert_colors(bgr, COLOR_BGR2Lab)?;
-
-    let mut channels = Vector::new();
-    split(&lab, &mut channels)?;
-
-    Ok(LabImage {
-        lightness: channels.get(0)?,
-        a: channels.get(1)?,
-        b: channels.get(2)?,
-    })
-}
-
 impl Image {
-    #[instrument(skip_all)]
-    pub fn to_source(&self) -> Result<Arc<Source>> {
-        if let Some(source) = self.source.get() {
-            return Ok(source);
+    /// Converts an Image to the BGR format, optionally extracting an alpha mask.
+    pub fn to_bgr(&self, extract_mask: bool) -> Result<(BgrMat, Option<MaskMat>)> {
+        match &self.inner {
+            DynamicImage::ImageRgba8(image) => {
+                let (_width, height) = image.dimensions();
+                let mat_boxed = Mat::from_slice(image.as_raw())?;
+                let mat = mat_boxed.reshape(4, height.try_into()?)?;
+
+                let mask = if extract_mask {
+                    let mut alpha = Mat::default();
+                    extract_channel(&mat, &mut alpha, 3)?;
+                    Some(MaskMat(alpha))
+                } else {
+                    None
+                };
+
+                Ok((BgrMat(convert_colors(&mat, COLOR_RGBA2BGR)?), mask))
+            }
+            image => {
+                let image = image.to_rgb8();
+                let (_width, height) = image.dimensions();
+                let mat_boxed = Mat::from_slice(image.as_raw())?;
+                let mat = mat_boxed.reshape(3, height.try_into()?)?;
+                Ok((BgrMat(convert_colors(&mat, COLOR_RGB2BGR)?), None))
+            }
         }
-
-        let (bgr, _) = image_to_bgr(self.to_inner(), false)?;
-        let source = Arc::new(Source {
-            image: bgr_to_lab(&bgr)?,
-        });
-
-        self.source.set(source.clone());
-
-        Ok(source)
-    }
-
-    #[instrument(skip_all)]
-    pub fn to_template(&self) -> Result<Arc<Template>> {
-        if let Some(template) = self.template.get() {
-            return Ok(template);
-        }
-
-        let (bgr, mask) = image_to_bgr(self.to_inner(), true)?;
-        let template = Arc::new(Template {
-            image: bgr_to_lab(&bgr)?,
-            mask,
-        });
-
-        self.template.set(template.clone());
-
-        Ok(template)
     }
 }
 
@@ -178,6 +244,7 @@ impl Default for FindImageTemplateOptions {
 }
 
 impl Source {
+    // TODO: make this async?
     /// Find all occurrences of a template in this source image.
     #[instrument(skip_all)]
     pub fn find_template(
@@ -233,10 +300,10 @@ impl Source {
 
         // Resize the result if needed
         if options.downscale > 0 {
-            result = resize_result_to_size(&result, source_lightness.size()?)?;
+            result = resize_result_to_size(&result, source_lightness.0.size()?)?;
         }
 
-        let template_size = template.image.lightness.size()?;
+        let template_size = template.image.lightness.0.size()?;
         if options.use_colors {
             filter_results_by_color(
                 &mut result,
@@ -264,10 +331,15 @@ impl Source {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan};
 
     use crate::{
-        core::image::{Image, find_image::FindImageTemplateOptions},
+        core::image::{
+            Image,
+            find_image::{FindImageTemplateOptions, Source, Template},
+        },
         runtime::Runtime,
     };
 
@@ -281,11 +353,11 @@ mod tests {
         Runtime::test(async |_runtime| {
             let source = include_bytes!("../../../../../tests/input.png");
             let source = Image::from_bytes(source).unwrap();
-            let source = source.to_source().unwrap();
+            let source = Arc::<Source>::try_from(&source).unwrap();
 
             let template = include_bytes!("../../../../../tests/pear.png");
             let template = Image::from_bytes(template).unwrap();
-            let template = template.to_template().unwrap();
+            let template = Arc::<Template>::try_from(&template).unwrap();
 
             let result = source
                 .find_template(

@@ -7,6 +7,8 @@ use opencv::{
 };
 use tracing::instrument;
 
+use crate::core::image::find_image::{LabLightnessMat, MaskMat};
+
 /// Downscale inputs by the requested pyramid depth to speed up matching.
 ///
 /// Each level uses OpenCV's pyrDown (Gaussian blur + 2x downscale) so the
@@ -16,11 +18,15 @@ use tracing::instrument;
 /// without any processing.
 #[instrument(skip_all)]
 pub fn prepare_matching_inputs<'a>(
-    source_lightness: Cow<'a, Mat>,
-    template_lightness: Cow<'a, Mat>,
-    template_mask: Option<Cow<'a, Mat>>,
+    source_lightness: Cow<'a, LabLightnessMat>,
+    template_lightness: Cow<'a, LabLightnessMat>,
+    template_mask: Option<Cow<'a, MaskMat>>,
     downscale: u64,
-) -> Result<(Cow<'a, Mat>, Cow<'a, Mat>, Option<Cow<'a, Mat>>)> {
+) -> Result<(
+    Cow<'a, LabLightnessMat>,
+    Cow<'a, LabLightnessMat>,
+    Option<Cow<'a, MaskMat>>,
+)> {
     if downscale == 0 {
         return Ok((source_lightness, template_lightness, template_mask));
     }
@@ -30,10 +36,10 @@ pub fn prepare_matching_inputs<'a>(
     let mut current_mask = template_mask.map(Cow::into_owned);
 
     for _ in 0..downscale {
-        current_source = downscale_for_pyramid(&current_source)?;
-        current_template = downscale_for_pyramid(&current_template)?;
+        current_source = LabLightnessMat(downscale_for_pyramid(&current_source.0)?);
+        current_template = LabLightnessMat(downscale_for_pyramid(&current_template.0)?);
         if let Some(mask_mat) = current_mask.take() {
-            current_mask = Some(downscale_for_pyramid(&mask_mat)?);
+            current_mask = Some(MaskMat(downscale_for_pyramid(&mask_mat.0)?));
         }
     }
 

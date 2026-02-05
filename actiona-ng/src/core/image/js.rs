@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, sync::Arc};
 
 use image::{ImageReader, ImageResult};
 use itertools::Itertools;
@@ -20,6 +20,7 @@ use crate::{
             BlurOptions, DrawImageOptions, DrawTextOptions, DrawingOptions, FlipDirection,
             Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
             TextVerticalAlign,
+            find_image::{Source, Template},
         },
         js::classes::{HostClass, ValueClass, register_enum},
         point::js::{JsPoint, JsPointLike},
@@ -1018,8 +1019,8 @@ impl JsImage {
         options: Opt<JsFindImageOptions>,
     ) -> Result<Option<JsMatch>> {
         let options = options.0.unwrap_or_default();
-        let source = self.inner.to_source().into_js_result(&ctx)?;
-        let template = image.inner.to_template().into_js_result(&ctx)?;
+        let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
+        let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
 
         let result = source
             .find_template_one(&template, options)
@@ -1037,8 +1038,8 @@ impl JsImage {
         options: Opt<JsFindImageOptions>,
     ) -> Result<Vec<JsMatch>> {
         let options = options.0.unwrap_or_default();
-        let source = self.inner.to_source().into_js_result(&ctx)?;
-        let template = image.inner.to_template().into_js_result(&ctx)?;
+        let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
+        let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
 
         let result = source
             .find_template(&template, options)

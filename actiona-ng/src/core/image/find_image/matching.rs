@@ -8,30 +8,30 @@ use opencv::{
 use rayon::prelude::*;
 use tracing::instrument;
 
-use crate::core::image::find_image::common::ideal_thread_count;
+use crate::core::image::find_image::{LabLightnessMat, MaskMat, common::ideal_thread_count};
 
 /// Run a single tile's template match against a vertical slice of the source.
 fn match_tile(
-    source_lightness: &Mat,
-    template_lightness: &Mat,
-    template_mask: Option<&Mat>,
+    source_lightness: &LabLightnessMat,
+    template_lightness: &LabLightnessMat,
+    template_mask: Option<&MaskMat>,
     roi: Rect,
 ) -> Result<Mat> {
-    let source_roi = source_lightness.roi(roi)?;
+    let source_roi = source_lightness.0.roi(roi)?;
     let mut tile_result = Mat::default();
 
     if let Some(mask) = template_mask {
         cv_match_template(
             &source_roi,
-            &template_lightness,
+            &template_lightness.0,
             &mut tile_result,
             TM_CCOEFF_NORMED,
-            mask,
+            &mask.0,
         )?;
     } else {
         cv_match_template(
             &source_roi,
-            &template_lightness,
+            &template_lightness.0,
             &mut tile_result,
             TM_CCOEFF_NORMED,
             &no_array(),
@@ -48,18 +48,18 @@ fn match_tile(
 #[instrument(skip_all)]
 #[allow(unsafe_code)]
 pub fn match_template(
-    source_lightness: &Mat,
-    template_lightness: &Mat,
-    template_mask: Option<&Mat>,
+    source_lightness: &LabLightnessMat,
+    template_lightness: &LabLightnessMat,
+    template_mask: Option<&MaskMat>,
 ) -> Result<Mat> {
     ensure!(
-        source_lightness.rows() >= template_lightness.rows()
-            && source_lightness.cols() >= template_lightness.cols(),
+        source_lightness.0.rows() >= template_lightness.0.rows()
+            && source_lightness.0.cols() >= template_lightness.0.cols(),
         "template must fit inside source image"
     );
 
-    let source_size = source_lightness.size()?;
-    let template_size = template_lightness.size()?;
+    let source_size = source_lightness.0.size()?;
+    let template_size = template_lightness.0.size()?;
     let result_rows = source_size.height - template_size.height + 1;
     let result_cols = source_size.width - template_size.width + 1;
     let tile_count = ideal_thread_count().clamp(1, result_rows.max(1) as usize);
