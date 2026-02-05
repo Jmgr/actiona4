@@ -273,7 +273,7 @@ impl JsClipboardHtml {
 
 #[cfg(test)]
 mod tests {
-    use image::{DynamicImage, Rgba, RgbaImage};
+    use image::{Rgba, RgbaImage};
     use imageproc::drawing::Canvas;
     use tracing_test::traced_test;
 
@@ -311,10 +311,7 @@ mod tests {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
-                        .set(
-                            "image",
-                            JsImage::new(DynamicImage::ImageRgba8(local_image).into()),
-                        )
+                        .set("image", JsImage::new(local_image.into()))
                         .unwrap();
                 })
                 .await;
@@ -329,7 +326,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            assert_eq!(result.into_inner().to_rgba8().into_owned(), image);
+            assert_eq!(result.into_inner().into_rgba8(), image);
         });
     }
 

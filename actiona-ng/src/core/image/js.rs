@@ -750,7 +750,7 @@ impl JsImage {
     }
 
     /// Returns the value of a pixel.
-    pub fn get_pixel(&mut self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
+    pub fn get_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         self.inner
             .get_pixel_color(position.0)
             .into_js_result(&ctx)

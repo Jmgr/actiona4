@@ -528,7 +528,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            assert_eq!(result.into_inner().into_inner(), test_image.image);
+            assert_eq!(result.into_inner().into_rgba8(), test_image.image);
         });
     }
 

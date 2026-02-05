@@ -1,5 +1,5 @@
 use color_eyre::{Result, eyre::eyre};
-use image::{DynamicImage, RgbaImage};
+use image::RgbaImage;
 
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 
@@ -32,6 +32,6 @@ impl Image {
             c[3] = 255; // Set alpha to 255 (fully opaque)
         });
 
-        Ok(DynamicImage::ImageRgba8(image).into())
+        Ok(Image::from_rgba8(image))
     }
 }

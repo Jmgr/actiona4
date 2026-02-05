@@ -5,11 +5,10 @@ use color_eyre::{
     eyre::{Error, eyre},
 };
 use derive_more::Constructor;
-use image::DynamicImage;
 use macros::FromJsObject;
 use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
-    imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGB2BGR, COLOR_RGBA2BGR},
+    imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
 };
 use tracing::instrument;
 
@@ -178,30 +177,20 @@ pub struct Match {
 impl Image {
     /// Converts an Image to the BGR format, optionally extracting an alpha mask.
     pub fn to_bgr(&self, extract_mask: bool) -> Result<(BgrMat, Option<MaskMat>)> {
-        match &self.inner {
-            DynamicImage::ImageRgba8(image) => {
-                let (_width, height) = image.dimensions();
-                let mat_boxed = Mat::from_slice(image.as_raw())?;
-                let mat = mat_boxed.reshape(4, height.try_into()?)?;
+        let image = self.as_rgba8();
+        let height = image.height();
+        let mat_boxed = Mat::from_slice(image.as_raw())?;
+        let mat = mat_boxed.reshape(4, height.try_into()?)?;
 
-                let mask = if extract_mask {
-                    let mut alpha = Mat::default();
-                    extract_channel(&mat, &mut alpha, 3)?;
-                    Some(MaskMat(alpha))
-                } else {
-                    None
-                };
+        let mask = if extract_mask {
+            let mut alpha = Mat::default();
+            extract_channel(&mat, &mut alpha, 3)?;
+            Some(MaskMat(alpha))
+        } else {
+            None
+        };
 
-                Ok((BgrMat(convert_colors(&mat, COLOR_RGBA2BGR)?), mask))
-            }
-            image => {
-                let image = image.to_rgb8();
-                let (_width, height) = image.dimensions();
-                let mat_boxed = Mat::from_slice(image.as_raw())?;
-                let mat = mat_boxed.reshape(3, height.try_into()?)?;
-                Ok((BgrMat(convert_colors(&mat, COLOR_RGB2BGR)?), None))
-            }
-        }
+        Ok((BgrMat(convert_colors(&mat, COLOR_RGBA2BGR)?), mask))
     }
 }
 

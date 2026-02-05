@@ -3,10 +3,7 @@ use std::sync::Arc;
 use color_eyre::Result;
 
 use self::capture::capture_rect as capture_rect_raw;
-use super::{
-    DisplayCapture, ScreenshotImplBase, ScreenshotImplTrait,
-    convert::{bgra_to_rgba_image, bgra_to_source},
-};
+use super::{DisplayCapture, ScreenshotImplBase, ScreenshotImplTrait};
 use crate::{
     core::{
         color::Color,
@@ -47,14 +44,14 @@ impl ScreenshotImpl {
     /// Capture a rect directly to a Source for find_image.
     pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
         let data = capture_rect_raw(rect)?;
-        bgra_to_source(&data, rect.size.width.into(), rect.size.height.into())
+        Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
     }
 }
 
 impl ScreenshotImplTrait for ScreenshotImpl {
     async fn capture_rect(&self, rect: Rect) -> Result<Image> {
         let data = capture_rect_raw(rect)?;
-        bgra_to_rgba_image(&data, rect.size.width.into(), rect.size.height.into())
+        Image::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
     }
 
     async fn capture_display(&self, display_id: u32) -> Result<Image> {

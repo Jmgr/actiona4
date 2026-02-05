@@ -11,7 +11,7 @@ use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
 use color_eyre::{Report, eyre::eyre};
 use derive_more::Display;
-use image::{DynamicImage, RgbaImage};
+use image::RgbaImage;
 use itertools::Itertools;
 use macros::{FromSerde, IntoSerde};
 use parking_lot::Mutex;
@@ -188,7 +188,7 @@ impl Clipboard {
     }
 
     pub fn set_image(&self, image: Image, mode: Option<ClipboardMode>) -> Result<()> {
-        let image = image.to_rgba8().into_owned();
+        let image = image.into_rgba8();
         let (width, height) = image.dimensions();
         let bytes = Cow::Owned(image.into_raw());
 
@@ -217,7 +217,7 @@ impl Clipboard {
         )
         .ok_or(Error::ConversionFailure)?;
 
-        Ok(DynamicImage::ImageRgba8(img).into())
+        Ok(Image::from_rgba8(img))
     }
 
     pub fn set_file_list(

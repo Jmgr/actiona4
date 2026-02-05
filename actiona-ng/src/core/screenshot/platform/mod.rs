@@ -133,11 +133,7 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
             .capture_rect(rect(point(position.x, position.y), size(1, 1)))
             .await?;
 
-        Ok((*result
-            .as_rgba8()
-            .expect("image should be RGBA")
-            .get_pixel(0, 0))
-        .into())
+        Ok((*result.as_rgba8().get_pixel(0, 0)).into())
     }
 }
 

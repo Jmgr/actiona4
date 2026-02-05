@@ -674,7 +674,7 @@ mod helper {
     use imageproc::{drawing::draw_hollow_rect_mut, rect::Rect};
 
     pub struct TestImage {
-        pub image: DynamicImage,
+        pub image: RgbaImage,
         pub bytes: Vec<u8>,
     }
 
@@ -683,9 +683,8 @@ mod helper {
             let mut image = RgbaImage::from_pixel(2048, 2048, Rgba([255, 255, 255, 255]));
             let rect = Rect::at(5, 0).of_size(30, 35);
             draw_hollow_rect_mut(&mut image, rect, Rgba([255, 0, 0, 255]));
-            let image = DynamicImage::ImageRgba8(image);
             let mut image_bytes = Vec::new();
-            image
+            DynamicImage::ImageRgba8(image.clone())
                 .write_to(&mut Cursor::new(&mut image_bytes), ImageFormat::Png)
                 .unwrap();
 
@@ -760,7 +759,7 @@ mod tests {
                 )
                 .await
                 .unwrap()
-                .into_inner();
+                .into_rgba8();
 
             assert_eq!(result, test_image.image);
         });
