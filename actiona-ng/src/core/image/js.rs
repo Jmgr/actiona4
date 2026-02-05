@@ -27,6 +27,7 @@ use crate::{
         rect::js::{JsRect, JsRectLike},
     },
     error::CommonError,
+    runtime::WithUserData,
 };
 
 #[derive(
@@ -1012,7 +1013,7 @@ impl JsImage {
     }
 
     /// Find an image inside this image.
-    pub fn find_image(
+    pub async fn find_image(
         &self,
         ctx: Ctx<'_>,
         image: &JsImage,
@@ -1022,16 +1023,20 @@ impl JsImage {
         let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
         let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
 
-        let result = source
-            .find_template_one(&template, options)
-            .into_js_result(&ctx)?
-            .map(JsMatch::from);
+        let cancellation_token = ctx.user_data().cancellation_token();
+        let task_tracker = ctx.user_data().task_tracker();
 
-        Ok(result)
+        let result = task_tracker
+            .spawn_blocking(move || source.find_template(&template, options, cancellation_token))
+            .await
+            .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
+            .into_js_result(&ctx)?;
+
+        Ok(result.map(JsMatch::from))
     }
 
     /// Find any occurence of an image inside this image.
-    pub fn find_image_all(
+    pub async fn find_image_all(
         &self,
         ctx: Ctx<'_>,
         image: &JsImage,
@@ -1041,8 +1046,15 @@ impl JsImage {
         let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
         let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
 
-        let result = source
-            .find_template(&template, options)
+        let cancellation_token = ctx.user_data().cancellation_token();
+        let task_tracker = ctx.user_data().task_tracker();
+
+        let result = task_tracker
+            .spawn_blocking(move || {
+                source.find_template_all(&template, options, cancellation_token)
+            })
+            .await
+            .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
             .into_js_result(&ctx)?
             .into_iter()
             .map(JsMatch::from)

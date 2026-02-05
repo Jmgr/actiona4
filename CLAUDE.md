@@ -88,3 +88,23 @@ Platform-specific code is implemented in `platform` directories.
 - JavaScript methods use camelCase naming via `#[rquickjs::methods(rename_all = "camelCase")]`
 - Clippy lints: `#![warn(clippy::all, clippy::nursery)]` and `#![deny(unsafe_code)]`
 - Rust edition 2024 with stable toolchain (nightly only for rustfmt)
+
+## Code Changes
+
+When asked to add new methods or variants (e.g., `to_x` alongside `into_x`), ADD them as new methods. Do NOT replace or remove existing methods unless explicitly asked to remove them.
+
+## Refactoring Guidelines
+
+When refactoring code across multiple modules (e.g., x11/win), extract shared utility functions into a common module rather than copy-pasting between files. Always check for duplicated code before finishing a refactor.
+
+## Interaction Style
+
+When the user asks to 'discuss' or explore design tradeoffs, start with a focused design conversation. Do NOT begin by extensively exploring the codebase unless asked to. Ask clarifying questions about scope first.
+
+## Language & Framework Notes
+
+This is a Rust project using OpenCV bindings. When diagnosing compilation errors, consider Deref/DerefMut interactions, move semantics, and ownership carefully before suggesting fixes. Do not remove trait impls (like DerefMut) without explicit justification.
+
+## Dependencies
+
+When fixing dependency issues, prefer upgrading to the latest stable version before considering downgrades. Ask the user about upgrade vs downgrade strategy if unclear.

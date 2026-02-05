@@ -119,7 +119,7 @@ syn = "2.0.114"
 sys-locale = "0.3.2"
 sysinfo = "0.38.0"
 system_shutdown = { version = "4.1.0" }
-tauri = { version = "2.10.1", default-features = true, features = [
+tauri = { version = "2.10.2", default-features = true, features = [
     "wry",
     #"common-controls-v6", # breaks tests on Windows: TODO
     "x11",
@@ -128,7 +128,7 @@ tauri = { version = "2.10.1", default-features = true, features = [
 tauri-plugin-dialog = "2.6.0"
 tauri-runtime-wry = "2.10.0"
 thiserror = "2.0.18"
-time = { version = "0.3.46", features = ["serde"] }
+time = { version = "0.3.47", features = ["serde"] }
 tokio = { version = "1.49.0", features = [
     "rt-multi-thread",
     "signal",
@@ -201,7 +201,7 @@ tracing-test = "0.2.5"
 # Build dependencies
 built = "0.8.0"
 cfg_aliases = "0.2.1"
-tauri-build = "2.5.4"
+tauri-build = "2.5.5"
 
 [profile.release]
 strip = true

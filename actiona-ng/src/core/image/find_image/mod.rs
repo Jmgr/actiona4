@@ -10,20 +10,24 @@ use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
     imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
 };
+use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
-use crate::core::{
-    image::{
-        Image,
-        find_image::{
-            convert::convert_colors,
-            matching::match_template,
-            pyramids::{prepare_matching_inputs, resize_result_to_size},
-            results::{compute_results, filter_results_by_color},
+use crate::{
+    core::{
+        image::{
+            Image,
+            find_image::{
+                convert::convert_colors,
+                matching::match_template,
+                pyramids::{prepare_matching_inputs, resize_result_to_size},
+                results::{compute_results, filter_results_by_color},
+            },
         },
+        point::Point,
+        rect::Rect,
     },
-    point::Point,
-    rect::Rect,
+    error::CommonError,
 };
 
 mod common;
@@ -233,25 +237,26 @@ impl Default for FindImageTemplateOptions {
 }
 
 impl Source {
-    // TODO: make this async?
     /// Find all occurrences of a template in this source image.
+    #[instrument(skip_all)]
+    pub fn find_template_all(
+        &self,
+        template: &Template,
+        options: FindImageTemplateOptions,
+        cancellation_token: CancellationToken,
+    ) -> Result<Vec<Match>> {
+        self.find_template_impl(template, options, false, cancellation_token)
+    }
+
+    /// Find the best match of a template in this source image.
     #[instrument(skip_all)]
     pub fn find_template(
         &self,
         template: &Template,
         options: FindImageTemplateOptions,
-    ) -> Result<Vec<Match>> {
-        self.find_template_impl(template, options, false)
-    }
-
-    /// Find the best match of a template in this source image.
-    #[instrument(skip_all)]
-    pub fn find_template_one(
-        &self,
-        template: &Template,
-        options: FindImageTemplateOptions,
+        cancellation_token: CancellationToken,
     ) -> Result<Option<Match>> {
-        let matches = self.find_template_impl(template, options, true)?;
+        let matches = self.find_template_impl(template, options, true, cancellation_token)?;
         Ok(matches.into_iter().next())
     }
 
@@ -261,7 +266,13 @@ impl Source {
         template: &Template,
         options: FindImageTemplateOptions,
         search_one: bool,
+        cancellation_token: CancellationToken,
     ) -> Result<Vec<Match>> {
+        // Check cancellation at the start
+        if cancellation_token.is_cancelled() {
+            return Err(CommonError::Cancelled.into());
+        }
+
         let source_lightness = Cow::Borrowed(&self.image.lightness);
         let template_lightness = Cow::Borrowed(&template.image.lightness);
 
@@ -272,6 +283,11 @@ impl Source {
             None
         };
 
+        // Check before pyramid downscaling
+        if cancellation_token.is_cancelled() {
+            return Err(CommonError::Cancelled.into());
+        }
+
         // Reduce the size if needed
         let (source_lightness, template_lightness, template_mask) = prepare_matching_inputs(
             source_lightness,
@@ -280,16 +296,27 @@ impl Source {
             options.downscale,
         )?;
 
+        // Check before expensive template matching
+        if cancellation_token.is_cancelled() {
+            return Err(CommonError::Cancelled.into());
+        }
+
         // Apply template matching
         let mut result = match_template(
             source_lightness.as_ref(),
             template_lightness.as_ref(),
             template_mask.as_deref(),
+            cancellation_token.clone(),
         )?;
 
         // Resize the result if needed
         if options.downscale > 0 {
             result = resize_result_to_size(&result, source_lightness.0.size()?)?;
+        }
+
+        // Check before color filtering
+        if cancellation_token.is_cancelled() {
+            return Err(CommonError::Cancelled.into());
         }
 
         let template_size = template.image.lightness.0.size()?;
@@ -304,6 +331,11 @@ impl Source {
                 template_size,
                 options.match_threshold,
             )?;
+        }
+
+        // Final check before computing results
+        if cancellation_token.is_cancelled() {
+            return Err(CommonError::Cancelled.into());
         }
 
         let matches = compute_results(
@@ -339,7 +371,7 @@ mod tests {
             .with_span_events(FmtSpan::CLOSE)
             .try_init();
 
-        Runtime::test(async |_runtime| {
+        Runtime::test(async |runtime| {
             let source = include_bytes!("../../../../../tests/input.png");
             let source = Image::from_bytes(source).unwrap();
             let source = Arc::<Source>::try_from(&source).unwrap();
@@ -348,8 +380,10 @@ mod tests {
             let template = Image::from_bytes(template).unwrap();
             let template = Arc::<Template>::try_from(&template).unwrap();
 
+            let cancellation_token = runtime.cancellation_token();
+
             let result = source
-                .find_template(
+                .find_template_all(
                     &template,
                     FindImageTemplateOptions {
                         use_colors: true,
@@ -358,6 +392,7 @@ mod tests {
                         non_maximum_suppression_radius: Some(10),
                         downscale: 0,
                     },
+                    cancellation_token,
                 )
                 .unwrap();
 

@@ -6,9 +6,13 @@ use opencv::{
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual},
 };
 use rayon::prelude::*;
+use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
-use crate::core::image::find_image::{LabLightnessMat, MaskMat, common::ideal_thread_count};
+use crate::{
+    core::image::find_image::{LabLightnessMat, MaskMat, common::ideal_thread_count},
+    error::CommonError,
+};
 
 /// Run a single tile's template match against a vertical slice of the source.
 fn match_tile(
@@ -51,7 +55,12 @@ pub fn match_template(
     source_lightness: &LabLightnessMat,
     template_lightness: &LabLightnessMat,
     template_mask: Option<&MaskMat>,
+    cancellation_token: CancellationToken,
 ) -> Result<Mat> {
+    if cancellation_token.is_cancelled() {
+        return Err(CommonError::Cancelled.into());
+    }
+
     ensure!(
         source_lightness.0.rows() >= template_lightness.0.rows()
             && source_lightness.0.cols() >= template_lightness.0.cols(),
@@ -80,6 +89,10 @@ pub fn match_template(
     let mut tile_results = tile_ranges
         .into_par_iter()
         .map(|(start_row, roi)| {
+            if cancellation_token.is_cancelled() {
+                return Err(crate::error::CommonError::Cancelled.into());
+            }
+
             let tile_result =
                 match_tile(&source_lightness, &template_lightness, template_mask, roi)?;
             Ok::<_, color_eyre::eyre::Error>((start_row, tile_result))
