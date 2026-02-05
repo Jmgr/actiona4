@@ -1,3 +1,12 @@
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    },
+    thread,
+    time::Duration,
+};
+
 use color_eyre::{Result, eyre::ensure};
 use itertools::Itertools;
 use opencv::{
@@ -6,11 +15,14 @@ use opencv::{
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual},
 };
 use rayon::prelude::*;
+use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
 use crate::{
-    core::image::find_image::{LabLightnessMat, MaskMat, common::ideal_thread_count},
+    core::image::find_image::{
+        FindImageProgress, FindImageStage, LabLightnessMat, MaskMat, common::ideal_thread_count,
+    },
     error::CommonError,
 };
 
@@ -56,6 +68,7 @@ pub fn match_template(
     template_lightness: &LabLightnessMat,
     template_mask: Option<&MaskMat>,
     cancellation_token: CancellationToken,
+    progress: watch::Sender<FindImageProgress>,
 ) -> Result<Mat> {
     if cancellation_token.is_cancelled() {
         return Err(CommonError::Cancelled.into());
@@ -85,6 +98,9 @@ pub fn match_template(
         })
         .collect_vec();
 
+    let total_tiles = tile_ranges.len();
+    let completed_tiles = Arc::new(AtomicUsize::new(0));
+
     // Run template matching on each tile in parallel.
     let mut tile_results = tile_ranges
         .into_par_iter()
@@ -95,6 +111,16 @@ pub fn match_template(
 
             let tile_result =
                 match_tile(&source_lightness, &template_lightness, template_mask, roi)?;
+
+            // Update progress: matching phase is 20-70%, so 50% of total range
+            let completed = completed_tiles.fetch_add(1, Ordering::Relaxed) + 1;
+            let percent = 20 + ((completed * 50) / total_tiles);
+
+            progress.send_replace(FindImageProgress::new(
+                FindImageStage::Matching,
+                percent.min(70) as u8,
+            ));
+
             Ok::<_, color_eyre::eyre::Error>((start_row, tile_result))
         })
         .collect::<Result<Vec<_>>>()?;

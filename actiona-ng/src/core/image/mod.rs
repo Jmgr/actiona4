@@ -975,7 +975,6 @@ impl Image {
  2) search for multiple templates (in parallel), label them
  3) track an item (post 1.0)
  4) UI to test parameters and display results on screen (transparent target icon?)
- 5) find_image should probably run in a spawn_blocking
 */
 
 #[cfg(test)]

@@ -10,6 +10,8 @@ use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
     imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
 };
+use strum::EnumIs;
+use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
@@ -24,6 +26,7 @@ use crate::{
                 results::{compute_results, filter_results_by_color},
             },
         },
+        js::task::IsDone,
         point::Point,
         rect::Rect,
     },
@@ -198,6 +201,36 @@ impl Image {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, EnumIs, Eq, PartialEq)]
+pub enum FindImageStage {
+    #[default]
+    Preparing,
+    Downscaling,
+    Matching,
+    Filtering,
+    ComputingResults,
+    Finished,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct FindImageProgress {
+    pub stage: FindImageStage,
+    pub percent: u8,
+}
+
+impl FindImageProgress {
+    #[must_use]
+    pub const fn new(stage: FindImageStage, percent: u8) -> Self {
+        Self { stage, percent }
+    }
+}
+
+impl IsDone for FindImageProgress {
+    fn is_done(&self) -> bool {
+        self.stage.is_finished()
+    }
+}
+
 /// Find image template options
 /// @options
 #[derive(Clone, Debug, FromJsObject, PartialEq)]
@@ -244,8 +277,9 @@ impl Source {
         template: &Template,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
+        progress: watch::Sender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
-        self.find_template_impl(template, options, false, cancellation_token)
+        self.find_template_impl(template, options, false, cancellation_token, progress)
     }
 
     /// Find the best match of a template in this source image.
@@ -255,8 +289,10 @@ impl Source {
         template: &Template,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
+        progress: watch::Sender<FindImageProgress>,
     ) -> Result<Option<Match>> {
-        let matches = self.find_template_impl(template, options, true, cancellation_token)?;
+        let matches =
+            self.find_template_impl(template, options, true, cancellation_token, progress)?;
         Ok(matches.into_iter().next())
     }
 
@@ -267,6 +303,7 @@ impl Source {
         options: FindImageTemplateOptions,
         search_one: bool,
         cancellation_token: CancellationToken,
+        progress: watch::Sender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
         // Check cancellation at the start
         if cancellation_token.is_cancelled() {
@@ -288,6 +325,8 @@ impl Source {
             return Err(CommonError::Cancelled.into());
         }
 
+        progress.send_replace(FindImageProgress::new(FindImageStage::Downscaling, 10));
+
         // Reduce the size if needed
         let (source_lightness, template_lightness, template_mask) = prepare_matching_inputs(
             source_lightness,
@@ -301,12 +340,15 @@ impl Source {
             return Err(CommonError::Cancelled.into());
         }
 
+        progress.send_replace(FindImageProgress::new(FindImageStage::Matching, 20));
+
         // Apply template matching
         let mut result = match_template(
             source_lightness.as_ref(),
             template_lightness.as_ref(),
             template_mask.as_deref(),
             cancellation_token.clone(),
+            progress.clone(),
         )?;
 
         // Resize the result if needed
@@ -318,6 +360,8 @@ impl Source {
         if cancellation_token.is_cancelled() {
             return Err(CommonError::Cancelled.into());
         }
+
+        progress.send_replace(FindImageProgress::new(FindImageStage::Filtering, 70));
 
         let template_size = template.image.lightness.0.size()?;
         if options.use_colors {
@@ -338,6 +382,8 @@ impl Source {
             return Err(CommonError::Cancelled.into());
         }
 
+        progress.send_replace(FindImageProgress::new(FindImageStage::ComputingResults, 90));
+
         let matches = compute_results(
             &result,
             template_size,
@@ -345,6 +391,8 @@ impl Source {
             search_one,
             options.non_maximum_suppression_radius,
         )?;
+
+        progress.send_replace(FindImageProgress::new(FindImageStage::Finished, 100));
 
         Ok(matches)
     }
@@ -356,10 +404,12 @@ mod tests {
 
     use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan};
 
+    use tokio::sync::watch;
+
     use crate::{
         core::image::{
             Image,
-            find_image::{FindImageTemplateOptions, Source, Template},
+            find_image::{FindImageProgress, FindImageTemplateOptions, Source, Template},
         },
         runtime::Runtime,
     };
@@ -381,6 +431,7 @@ mod tests {
             let template = Arc::<Template>::try_from(&template).unwrap();
 
             let cancellation_token = runtime.cancellation_token();
+            let (progress_sender, _) = watch::channel(FindImageProgress::default());
 
             let result = source
                 .find_template_all(
@@ -393,6 +444,7 @@ mod tests {
                         downscale: 0,
                     },
                     cancellation_token,
+                    progress_sender,
                 )
                 .unwrap();
 
