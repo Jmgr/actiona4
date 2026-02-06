@@ -680,7 +680,7 @@ mod helper {
 
     impl Default for TestImage {
         fn default() -> Self {
-            let mut image = RgbaImage::from_pixel(2048, 2048, Rgba([255, 255, 255, 255]));
+            let mut image = RgbaImage::from_pixel(512, 512, Rgba([255, 255, 255, 255]));
             let rect = Rect::at(5, 0).of_size(30, 35);
             draw_hollow_rect_mut(&mut image, rect, Rgba([255, 0, 0, 255]));
             let mut image_bytes = Vec::new();
