@@ -1,10 +1,6 @@
-use std::{
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
-    thread,
-    time::Duration,
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering},
 };
 
 use color_eyre::{Result, eyre::ensure};

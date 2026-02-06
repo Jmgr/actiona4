@@ -7,6 +7,7 @@
 #![allow(clippy::significant_drop_tightening)]
 #![allow(clippy::future_not_send)]
 #![allow(clippy::too_many_arguments)]
+#![allow(rustdoc::invalid_html_tags)]
 
 use color_eyre::Result;
 use rquickjs::{Coerced, Ctx, Exception, Value};

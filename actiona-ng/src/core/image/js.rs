@@ -24,7 +24,7 @@ use crate::{
             find_image::{FindImageProgress, Source, Template},
         },
         js::{
-            classes::{HostClass, ValueClass, register_enum},
+            classes::{HostClass, ValueClass, register_enum, register_host_class},
             task::{IsDone, progress_task_with_token},
         },
         point::js::{JsPoint, JsPointLike},
@@ -485,10 +485,6 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 }
 
 /// Progress of a find image operation.
-///
-/// @prop stage: FindImageStage // the current stage
-/// @prop percent: number // completion percentage (0-100)
-/// @prop finished: boolean // whether the operation has finished
 #[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "FindImageProgress")]
 pub struct JsFindImageProgress {
@@ -499,7 +495,7 @@ impl<'js> Trace<'js> for JsFindImageProgress {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl ValueClass<'_> for JsFindImageProgress {}
+impl HostClass<'_> for JsFindImageProgress {}
 
 impl IsDone for JsFindImageProgress {
     fn is_done(&self) -> bool {
@@ -515,13 +511,6 @@ impl From<super::find_image::FindImageProgress> for JsFindImageProgress {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsFindImageProgress {
-    /// @constructor
-    /// @private
-    #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
-    }
-
     /// The current stage of the find image operation.
     /// @get
     #[qjs(get)]
@@ -575,6 +564,7 @@ impl<'js> ValueClass<'js> for JsImage {
         register_enum::<JsTextHorizontalAlign>(ctx)?;
         register_enum::<JsTextVerticalAlign>(ctx)?;
         register_enum::<JsFindImageStage>(ctx)?;
+        register_host_class::<JsFindImageProgress>(ctx)?;
 
         Ok(())
     }
@@ -1123,7 +1113,7 @@ impl JsImage {
     pub fn find_image<'js>(
         &self,
         ctx: Ctx<'js>,
-        image: &JsImage,
+        image: JsImage,
         options: Opt<JsFindImageOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
@@ -1156,7 +1146,7 @@ impl JsImage {
     pub fn find_image_all<'js>(
         &self,
         ctx: Ctx<'js>,
-        image: &JsImage,
+        image: JsImage,
         options: Opt<JsFindImageOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();

@@ -19,7 +19,10 @@ use crate::{
         image::js::JsImage,
         js::{
             abort_controller::JsAbortSignal,
-            classes::{SingletonClass, ValueClass, register_enum, register_value_class},
+            classes::{
+                HostClass, SingletonClass, ValueClass, register_enum, register_host_class,
+                register_value_class,
+            },
             duration::JsDuration,
             task::{IsDone, progress_task_with_token},
         },
@@ -243,7 +246,7 @@ pub struct JsWebProgress {
     finished: bool,
 }
 
-impl ValueClass<'_> for JsWebProgress {}
+impl HostClass<'_> for JsWebProgress {}
 
 impl IsDone for JsWebProgress {
     fn is_done(&self) -> bool {
@@ -287,13 +290,6 @@ impl From<Progress> for JsWebProgress {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsWebProgress {
-    /// @constructor
-    /// @private
-    #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
-    }
-
     #[qjs(get)]
     #[must_use]
     pub const fn total(&self) -> u64 {
@@ -323,6 +319,7 @@ pub struct JsWeb {
 impl SingletonClass<'_> for JsWeb {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         register_value_class::<JsMultipartForm>(ctx)?;
+        register_host_class::<JsWebProgress>(ctx)?;
         register_enum::<JsMethod>(ctx)?;
 
         Ok(())

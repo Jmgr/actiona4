@@ -22,7 +22,7 @@ use tokio_util::task::TaskTracker;
 use crate::{
     IntoJsResult,
     core::js::{
-        classes::ValueClass,
+        classes::HostClass,
         date::{date_from_system_time, system_time_from_date},
     },
     error::CommonError,
@@ -108,7 +108,7 @@ pub struct JsFile {
     inner: Option<OpenedFile>,
 }
 
-impl ValueClass<'_> for JsFile {}
+impl HostClass<'_> for JsFile {}
 
 impl JsFile {
     fn opened_file(&self, ctx: &Ctx<'_>) -> Result<&OpenedFile> {
@@ -131,8 +131,11 @@ impl JsFile {
     /// @constructor
     /// @private
     #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
+    pub fn new(ctx: Ctx<'_>) -> Result<Self> {
+        Err(Exception::throw_message(
+            &ctx,
+            "File cannot be instantiated directly, use File.open() instead",
+        ))
     }
 
     /// Opens a file.

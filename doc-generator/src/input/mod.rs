@@ -193,7 +193,7 @@ newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
 static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+) ?(.*)$"#).unwrap());
 static RETURNS_AND_TYPE_REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r#"^([\w\s\[\]<>,]+)$"#).unwrap());
+    Lazy::new(|| Regex::new(r#"^([\w\s\[\]<>,|]+)$"#).unwrap());
 static CONST_REGEX: Lazy<Regex> =
     Lazy::new(|| Regex::new(r#"^(?P<value>[\w]+)(?: // (?P<comment>.+))?$"#).unwrap());
 static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
@@ -832,9 +832,9 @@ mod tests {
     #[test]
     fn test_both() {
         let rustdoc = r#"Some comment
-        
+
         Another comment
-        
+
         @constructor
         @skip"#;
         let (comments, instructions, overloads) =

@@ -1,23 +1,24 @@
-use std::fmt::Debug;
-
-use rquickjs::{JsLifetime, Result, class::Trace};
+use rquickjs::{Ctx, JsLifetime, class::Trace};
 use tokio::fs;
 
-use crate::core::js::classes::ValueClass;
+use crate::core::js::classes::HostClass;
 
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Filesystem")]
 pub struct JsFilesystem {}
 
-impl ValueClass<'_> for JsFilesystem {}
+impl HostClass<'_> for JsFilesystem {}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsFilesystem {
     /// @constructor
     /// @private
     #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
+    pub fn new(ctx: Ctx<'_>) -> rquickjs::Result<Self> {
+        Err(rquickjs::Exception::throw_message(
+            &ctx,
+            "Filesystem cannot be instantiated directly",
+        ))
     }
 
     #[qjs(static)]

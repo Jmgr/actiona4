@@ -2,7 +2,10 @@ use rquickjs::{Ctx, JsLifetime, class::Trace};
 use tokio_util::sync::CancellationToken;
 
 use crate::{
-    core::js::{classes::ValueClass, task::IntoToken},
+    core::js::{
+        classes::{HostClass, ValueClass},
+        task::IntoToken,
+    },
     runtime::WithUserData,
 };
 
@@ -12,23 +15,10 @@ pub struct JsAbortSignal {
     token: CancellationToken,
 }
 
-impl<'js> ValueClass<'js> for JsAbortSignal {}
+impl<'js> HostClass<'js> for JsAbortSignal {}
 
 impl<'js> Trace<'js> for JsAbortSignal {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
-}
-
-#[rquickjs::methods]
-impl JsAbortSignal {
-    /// @constructor
-    /// @private
-    #[qjs(constructor)]
-    #[must_use]
-    pub fn new(ctx: Ctx<'_>) -> Self {
-        Self {
-            token: ctx.user_data().cancellation_token().child_token(),
-        }
-    }
 }
 
 impl JsAbortSignal {

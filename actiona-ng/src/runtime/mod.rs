@@ -46,7 +46,7 @@ use crate::{
         image::{find_image, js::JsImage},
         js::{
             abort_controller::{JsAbortController, JsAbortSignal},
-            classes::{register_singleton_class, register_value_class},
+            classes::{register_host_class, register_singleton_class, register_value_class},
             concurrency::JsConcurrency,
             global,
         },
@@ -347,18 +347,20 @@ impl Runtime {
         JsConcurrency::register(&ctx)?;
         global::register(&ctx)?;
 
+        // Host classes
+        register_host_class::<JsFile>(&ctx)?;
+        register_host_class::<JsDirectory>(&ctx)?;
+        register_host_class::<JsPath>(&ctx)?;
+        register_host_class::<JsFilesystem>(&ctx)?;
+        register_host_class::<JsAbortSignal>(&ctx)?;
+
         // Value classes
         register_value_class::<JsPoint>(&ctx)?;
         register_value_class::<JsSize>(&ctx)?;
         register_value_class::<JsRect>(&ctx)?;
         register_value_class::<JsColor>(&ctx)?;
         register_value_class::<JsImage>(&ctx)?;
-        register_value_class::<JsFile>(&ctx)?;
         register_value_class::<JsWildcard>(&ctx)?;
-        register_value_class::<JsDirectory>(&ctx)?;
-        register_value_class::<JsPath>(&ctx)?;
-        register_value_class::<JsFilesystem>(&ctx)?;
-        register_value_class::<JsAbortSignal>(&ctx)?;
         register_value_class::<JsAbortController>(&ctx)?;
 
         // Singletons

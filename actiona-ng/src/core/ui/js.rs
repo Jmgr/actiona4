@@ -7,7 +7,7 @@ use rquickjs::{
 use crate::{
     IntoJsResult,
     core::{
-        js::classes::{SingletonClass, ValueClass, register_enum, register_value_class},
+        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
         ui::{MessageBoxButtons, Ui},
     },
     runtime::WithUserData,
@@ -24,7 +24,7 @@ pub struct JsUi {}
 
 impl SingletonClass<'_> for JsUi {
     fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
-        register_value_class::<JsMessageBoxButtons>(ctx)?;
+        register_host_class::<JsMessageBoxButtons>(ctx)?;
         register_enum::<JsMessageBoxIcon>(ctx)?;
         register_enum::<JsMessageBoxResult>(ctx)?;
         Ok(())
@@ -68,7 +68,7 @@ impl<'js> Trace<'js> for JsMessageBoxButtons {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl ValueClass<'_> for JsMessageBoxButtons {}
+impl HostClass<'_> for JsMessageBoxButtons {}
 
 impl JsMessageBoxButtons {
     /// @skip
@@ -83,9 +83,11 @@ impl JsMessageBoxButtons {
     /// @constructor
     /// @private
     #[qjs(constructor)]
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(ctx: Ctx<'_>) -> Result<Self> {
+        Err(rquickjs::Exception::throw_message(
+            &ctx,
+            "MessageBoxButtons cannot be instantiated directly",
+        ))
     }
 
     #[qjs(static)]

@@ -4,7 +4,7 @@ use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, class::Trace, prelude::Opt};
 use tokio::fs::{self};
 
-use crate::core::js::classes::{ValueClass, register_value_class};
+use crate::core::js::classes::{HostClass, register_host_class};
 
 /// Directory entry
 #[derive(Clone, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
@@ -18,17 +18,10 @@ pub struct JsDirectoryEntry {
     size: u64,
 }
 
-impl ValueClass<'_> for JsDirectoryEntry {}
+impl HostClass<'_> for JsDirectoryEntry {}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDirectoryEntry {
-    /// @skip
-    #[qjs(constructor)]
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -118,10 +111,9 @@ impl Default for JsDirectoryListOptions {
 #[rquickjs::class(rename = "Directory")]
 pub struct JsDirectory {}
 
-impl ValueClass<'_> for JsDirectory {
-    // TODO: should this be a HostValue?
+impl HostClass<'_> for JsDirectory {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
-        register_value_class::<JsDirectoryEntry>(ctx)?;
+        register_host_class::<JsDirectoryEntry>(ctx)?;
 
         Ok(())
     }
@@ -132,8 +124,11 @@ impl JsDirectory {
     /// @constructor
     /// @private
     #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
+    pub fn new(ctx: Ctx<'_>) -> Result<Self> {
+        Err(rquickjs::Exception::throw_message(
+            &ctx,
+            "Directory cannot be instantiated directly",
+        ))
     }
 
     #[qjs(static)]

@@ -1,25 +1,25 @@
-use std::{
-    fmt::Debug,
-    path::{self, Path, PathBuf},
-};
+use std::path::{self, Path, PathBuf};
 
-use rquickjs::{JsLifetime, Result, class::Trace, prelude::Rest};
+use rquickjs::{Ctx, JsLifetime, class::Trace, prelude::Rest};
 
-use crate::core::js::classes::ValueClass;
+use crate::core::js::classes::HostClass;
 
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Path")]
 pub struct JsPath {}
 
-impl ValueClass<'_> for JsPath {}
+impl HostClass<'_> for JsPath {}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsPath {
     /// @constructor
     /// @private
     #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
+    pub fn new(ctx: Ctx<'_>) -> rquickjs::Result<Self> {
+        Err(rquickjs::Exception::throw_message(
+            &ctx,
+            "Path cannot be instantiated directly",
+        ))
     }
 
     /// @rest string
