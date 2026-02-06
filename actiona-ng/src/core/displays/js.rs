@@ -249,7 +249,10 @@ mod tests {
     #[traced_test]
     fn test_random_point() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let point: JsPoint = script_engine.eval("displays.randomPoint()").await.unwrap();
+            let point: JsPoint = script_engine
+                .eval_async("await displays.randomPoint()")
+                .await
+                .unwrap();
 
             println!("point: {}", point.inner());
         })

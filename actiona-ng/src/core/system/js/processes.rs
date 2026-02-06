@@ -396,7 +396,7 @@ mod tests {
             script_engine
                 .eval_async::<()>(
                     r#"
-                let p = await system.processes.processes();
+                let p = await system.processes.list();
                 for (const key in p) {
                 console.log(`${key}: ${p[key as keyof Process]}`);
                 }

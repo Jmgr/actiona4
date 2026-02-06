@@ -4,7 +4,7 @@ use derive_more::Display;
 use enigo::Key;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
-    Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Promise, Result, Value,
+    Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Object, Promise, Result, Value,
     class::{JsClass, Readable, Trace, Tracer},
     function::Constructor,
     prelude::Opt,
@@ -15,11 +15,7 @@ use tracing::instrument;
 
 use crate::{
     IntoJsResult,
-    core::js::{
-        abort_controller::JsAbortSignal,
-        classes::{SingletonClass, register_enum},
-        task::task_with_token,
-    },
+    core::js::{abort_controller::JsAbortSignal, classes::SingletonClass, task::task_with_token},
     runtime::Runtime,
 };
 
@@ -74,8 +70,17 @@ impl<'js> Trace<'js> for JsKeyboard {
 
 impl SingletonClass<'_> for JsKeyboard {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
-        register_enum::<JsStandardKey>(ctx)?;
+        // Register the Key class first, then add enum variants as static properties.
+        // Both JsKey and JsStandardKey use the name "Key", so we must define the class
+        // first and then set enum properties on its constructor object.
         Class::<JsKey>::define(&ctx.globals())?;
+
+        let key_obj: Object = ctx.globals().get("Key")?;
+        for v in <JsStandardKey as strum::IntoEnumIterator>::iter() {
+            let name = serde_plain::to_string(&v).unwrap();
+            key_obj.set(&name, name.clone())?;
+        }
+
         Ok(())
     }
 }
@@ -2235,7 +2240,7 @@ mod tests {
     fn test_standard_key() {
         Runtime::test_with_script_engine(async |script_engine| {
             let key = script_engine
-                .eval::<JsStandardKey>("StandardKey.Space")
+                .eval::<JsStandardKey>("Key.Space")
                 .await
                 .unwrap();
             assert_eq!(key, JsStandardKey::Space);
@@ -2256,10 +2261,7 @@ mod tests {
     #[traced_test]
     fn test_key() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let key = script_engine
-                .eval::<JsKey>("StandardKey.Space")
-                .await
-                .unwrap();
+            let key = script_engine.eval::<JsKey>("Key.Space").await.unwrap();
             assert_eq!(key, JsKey::Standard(JsStandardKey::Space));
 
             let key = script_engine.eval::<JsKey>(r#""Space""#).await.unwrap();

@@ -231,17 +231,3 @@ impl JsPlayingSound {
         })
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use tracing_test::traced_test;
-
-    use crate::runtime::Runtime;
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_set_text() {
-        Runtime::test_with_script_engine(|_script_engine| async move {});
-    }
-}

@@ -8,9 +8,7 @@ use derive_more::{Deref, From};
 use libwmctl::{ErrorWrapper, Position, Shape, active, windows};
 use x11rb::{
     connection::Connection,
-    protocol::xproto::{
-        AtomEnum, ChangeWindowAttributesAux, ClientMessageEvent, ConnectionExt, EventMask,
-    },
+    protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt, EventMask},
     rust_connection::RustConnection,
 };
 
@@ -267,6 +265,8 @@ impl X11WindowHandler {
         }
     }
 
+    // TODO: subscribe to a window, would be used in WaitForClosed for a window or something like that
+    /*
     async fn subscribe(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.get_handle(id)?.clone();
         let platform = self.runtime.platform();
@@ -284,6 +284,7 @@ impl X11WindowHandler {
 
         Ok(())
     }
+    */
 
     fn frame_extents(
         &self,
@@ -331,18 +332,18 @@ impl X11WindowHandler {
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use std::{thread::sleep, time::Duration};
 
     use super::*;
-    use crate::core::mouse::Mouse;
 
     #[test]
     #[ignore]
     fn test_active_window() {
         Runtime::test(async move |runtime| {
-            let mut handler = X11WindowHandler::new(runtime.clone());
+            //let mut handler = X11WindowHandler::new(runtime.clone());
             /*
             let result = handler
                 .all()
@@ -354,9 +355,9 @@ mod tests {
             let (window, _) = result.first().unwrap();
             handler.set_active(*window).unwrap();
             */
-            let window = handler.active_window().unwrap();
-            let mouse = Mouse::new(runtime).await.unwrap();
-            handler.subscribe(window).await.unwrap();
+            //let window = handler.active_window().unwrap();
+            //let mouse = Mouse::new(runtime).await.unwrap();
+            //handler.subscribe(window).await.unwrap();
             loop {
                 /*
                 let title = handler.title(window).unwrap();
@@ -374,3 +375,4 @@ mod tests {
         });
     }
 }
+*/

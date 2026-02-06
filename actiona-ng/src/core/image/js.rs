@@ -370,7 +370,7 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
 
 /// Find image template options
 /// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsFindImageOptions {
     /// Use color matching.
     /// @default `true`
@@ -395,6 +395,19 @@ pub struct JsFindImageOptions {
 
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
+}
+
+impl Default for JsFindImageOptions {
+    fn default() -> Self {
+        Self {
+            use_colors: true,
+            use_transparency: true,
+            match_threshold: 0.8,
+            non_maximum_suppression_radius: Some(10),
+            downscale: 0,
+            signal: None,
+        }
+    }
 }
 
 impl JsFindImageOptions {

@@ -293,6 +293,7 @@ mod tests {
     #[test]
     fn test_list() {
         Runtime::test_with_script_engine(|script_engine| async move {
+            let original_dir = env::current_dir().unwrap();
             env::set_current_dir(env::temp_dir()).unwrap();
             let parent_path = Path::new(".").join(random_name());
             let directory_path = parent_path.join("a");
@@ -342,6 +343,8 @@ mod tests {
                     }
                 ]
             );
+
+            env::set_current_dir(original_dir).unwrap();
         });
     }
 }

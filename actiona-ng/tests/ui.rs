@@ -1,16 +1,31 @@
-use std::{io::Cursor, time::Duration};
-
-use actiona_ng::{core::ui::js::JsMessageBoxResult, runtime::Runtime};
+use actiona_ng::runtime::Runtime;
 use askama::Template;
-use base64::Engine;
-use color_eyre::Result;
-use image::{DynamicImage, ImageFormat};
 use libtest_mimic_collect::libtest_mimic::Arguments;
-use tauri::{WebviewUrl, WebviewWindowBuilder};
-use tokio::time::sleep;
 
-#[macro_use]
 extern crate libtest_mimic_collect;
+
+macro_rules! ignored_ui_test {
+    ($name:ident, $body:expr) => {
+        fn $name() {
+            $body()
+        }
+
+        const _: () = {
+            #[libtest_mimic_collect::ctor]
+            fn __add_test() {
+                use libtest_mimic_collect::ConvertResult;
+
+                let trial =
+                    libtest_mimic_collect::libtest_mimic::Trial::test(stringify!($name), || {
+                        libtest_mimic_collect::TestCollection::convert_result($name())
+                    })
+                    .with_ignored_flag(true);
+
+                libtest_mimic_collect::TestCollection::add_test(trial);
+            }
+        };
+    };
+}
 
 #[derive(Template)]
 #[template(path = "image.html")]
@@ -20,12 +35,14 @@ struct ImagePage<'a> {
     data_url: &'a str,
 }
 
+/*
 fn dynamic_image_to_data_url(img: &DynamicImage) -> Result<String> {
     let mut buf = Vec::new();
     img.write_to(&mut Cursor::new(&mut buf), ImageFormat::Png)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&buf);
     Ok(format!("data:image/png;base64,{}", b64))
 }
+*/
 
 /*
 #[test]
@@ -74,16 +91,16 @@ fn test_success() {
     });
 }
     */
-#[test]
-#[ignore]
-fn test_success() {
+
+// Run with cargo test -p actiona-ng --test ui -- --ignored test_success
+ignored_ui_test!(test_success, || {
     Runtime::test_with_ui(|_, scripting_engine| async move {
         scripting_engine
             .eval_async::<()>(r#"sleep(100000)"#)
             .await
             .unwrap();
     });
-}
+});
 
 pub fn main() {
     let mut args = Arguments::from_args();
