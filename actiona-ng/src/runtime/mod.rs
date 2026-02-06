@@ -544,6 +544,16 @@ impl Runtime {
 
         let unhandled_exceptions = script_engine.idle().await;
 
+        // Remove userdata to break the reference cycle:
+        // ScriptEngine -> AsyncContext -> JsUserData -> ScriptEngine
+        script_engine
+            .with(|ctx| {
+                let _ = ctx.remove_userdata::<JsUserData>();
+            })
+            .await;
+        drop(script_engine);
+        drop(runtime);
+
         task_tracker.close();
         cancellation_token.cancel();
 
