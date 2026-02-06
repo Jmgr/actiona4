@@ -34,11 +34,9 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             enum_name.to_string()
         };
 
-        let variants = enum_
-            .variants
-            .iter()
-            // Get an item reference from an ID
-            .map(|id| items.get(*id))
+        let variants = items
+            .get_sorted(&enum_.variants)
+            .into_iter()
             // Select only Variants
             .filter_map(|item| match &item.inner {
                 ItemEnum::Variant(variant) => {

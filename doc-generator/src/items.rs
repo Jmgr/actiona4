@@ -3,6 +3,20 @@ use std::{collections::BTreeMap, rc::Rc, slice::Iter};
 use itertools::Itertools;
 use rustdoc_types::{Crate, Id, Item, ItemEnum};
 
+/// Compare two items by their source span (filename, then line, then column).
+/// Items without a span are sorted to the end.
+pub fn cmp_by_span(a: &Item, b: &Item) -> std::cmp::Ordering {
+    match (&a.span, &b.span) {
+        (Some(a_span), Some(b_span)) => a_span
+            .filename
+            .cmp(&b_span.filename)
+            .then(a_span.begin.cmp(&b_span.begin)),
+        (Some(_), None) => std::cmp::Ordering::Less,
+        (None, Some(_)) => std::cmp::Ordering::Greater,
+        (None, None) => std::cmp::Ordering::Equal,
+    }
+}
+
 pub struct Items {
     items: Rc<BTreeMap<Id, Item>>,
     js_items: Vec<Item>,
@@ -10,10 +24,10 @@ pub struct Items {
 
 impl Items {
     pub fn new(crate_: Crate) -> Self {
-        // Store the index into a BTree so we get all entries sorted by ID.
+        // Store the index into a BTree so we can look up items by ID.
         let items = Rc::new(BTreeMap::from_iter(crate_.index));
 
-        let js_items = items
+        let mut js_items: Vec<Item> = items
             .values()
             // From a js.rs file, or in a js directory
             .filter(|item| {
@@ -31,6 +45,9 @@ impl Items {
             .cloned()
             .collect_vec();
 
+        // Sort by source location so the output order matches the Rust source order.
+        js_items.sort_by(cmp_by_span);
+
         Self { items, js_items }
     }
 
@@ -38,6 +55,13 @@ impl Items {
         self.items
             .get(&id)
             .unwrap_or_else(|| panic!("failed to find item with id {id:?}"))
+    }
+
+    /// Resolve a list of IDs and return the items sorted by source span.
+    pub fn get_sorted(&self, ids: &[Id]) -> Vec<&Item> {
+        let mut items: Vec<&Item> = ids.iter().map(|id| self.get(*id)).collect();
+        items.sort_by(|a, b| cmp_by_span(a, b));
+        items
     }
 
     pub fn iter(&'_ self) -> Iter<'_, Item> {

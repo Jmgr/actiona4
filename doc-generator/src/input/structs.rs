@@ -40,10 +40,9 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
             .any(|instruction| instruction.is_property());
 
         if !has_properties {
-            let fields = fields
-                .iter()
-                // Get an item reference from an ID
-                .map(|id| items.get(*id))
+            let fields = items
+                .get_sorted(fields)
+                .into_iter()
                 // Select only Fields
                 .filter_map(|item| match &item.inner {
                     ItemEnum::StructField(field) => {
@@ -121,11 +120,9 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
 
         let mut properties = list_properties(items, struct_name, fields, struct_docs)?;
 
-        let impls = struct_
-            .impls
-            .iter()
-            // Get an item reference from an ID
-            .map(|id| items.get(*id))
+        let impls = items
+            .get_sorted(&struct_.impls)
+            .into_iter()
             // Select only Impls
             .filter_map(|item| match &item.inner {
                 ItemEnum::Impl(impl_) => Some(impl_),

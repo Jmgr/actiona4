@@ -46,22 +46,6 @@ declare function exit(): void;
 declare function formatFrequency(frequency: number): string;
 declare function formatPercent(percent: number, precision?: number): string;
 declare function formatBytes(bytes: number): string;
-/**
- * Stages of a find image operation.
- */
-declare enum FindImageStage {
-    Preparing,
-
-    Downscaling,
-
-    Matching,
-
-    Filtering,
-
-    ComputingResults,
-
-    Finished,
-}
 declare enum FlipDirection {
     Horizontal,
 
@@ -110,6 +94,22 @@ declare enum TextVerticalAlign {
     Middle,
 
     Bottom,
+}
+/**
+ * Stages of a find image operation.
+ */
+declare enum FindImageStage {
+    Preparing,
+
+    Downscaling,
+
+    Matching,
+
+    Filtering,
+
+    ComputingResults,
+
+    Finished,
 }
 /**
  * Direction
@@ -1935,8 +1935,6 @@ declare interface App {
     setCwd(cwd: string): void;
 }
 declare const app: App;
-declare interface AbortSignal {
-}
 /**
  * Play sound options
  */
@@ -2013,29 +2011,29 @@ declare interface PlayingSound {
 }
 declare interface Clipboard {
     /**
-     * Html operations
+     * Text operations
      */
-    readonly html: ClipboardHtml;
+    readonly text: ClipboardText;
     /**
      * Image operations
      */
     readonly image: ClipboardImage;
     /**
-     * Text operations
-     */
-    readonly text: ClipboardText;
-    /**
      * File list operations
      */
     readonly fileList: ClipboardFileList;
+    /**
+     * Html operations
+     */
+    readonly html: ClipboardHtml;
     clear(mode?: ClipboardMode): Promise<void>;
 }
 declare const clipboard: Clipboard;
 /**
- * ClipboardHtml
+ * ClipboardText
  */
-declare interface ClipboardHtml {
-    set(html: string, altText?: string, mode?: ClipboardMode): Promise<void>;
+declare interface ClipboardText {
+    set(text: string, mode?: ClipboardMode): Promise<void>;
     get(mode?: ClipboardMode): Promise<string>;
 }
 /**
@@ -2046,425 +2044,18 @@ declare interface ClipboardImage {
     get(mode?: ClipboardMode): Promise<Image>;
 }
 /**
- * ClipboardText
- */
-declare interface ClipboardText {
-    set(text: string, mode?: ClipboardMode): Promise<void>;
-    get(mode?: ClipboardMode): Promise<string>;
-}
-/**
  * ClipboardFileList
  */
 declare interface ClipboardFileList {
     set(fileList: string[], mode?: ClipboardMode): Promise<void>;
     get(mode?: ClipboardMode): Promise<string[]>;
 }
-declare class Image {
-    /**
-     * Returns a Rect representing this image.
-     */
-    readonly rect: Rect;
-    readonly width: number;
-    readonly height: number;
-    /**
-     * Creates a new empty image.
-     * 
-     * Example
-     * ```js
-     * let image = new Image(100, 100);
-     * ```
-     */
-    constructor(width: number, height: number);
-    static fromBytes(bytes: Uint8Array): Image;
-    save(path: string): void;
-    static load(path: string): Image;
-    equals(other: Image): boolean;
-    toString(): string;
-    clone(): Image;
-    /**
-     * Invert the colors of this image.
-     */
-    invertColors(): this;
-    /**
-     * Invert the colors of this image and returns a new image.
-     */
-    invertedColors(): Image;
-    /**
-     * Blur the image.
-     */
-    blur(options?: BlurOptions): this;
-    /**
-     * Blur the image and returns a new image.
-     */
-    blurred(options?: BlurOptions): Image;
-    /**
-     * Rotate the image.
-     */
-    rotate(angle: number, options?: RotationOptions): this;
-    /**
-     * Rotate the image and returns a new image.
-     */
-    rotated(angle: number, options?: RotationOptions): Image;
-    /**
-     * Flip the image.
-     */
-    flip(flipDirection: FlipDirection): this;
-    /**
-     * Flip the image and returns a new image.
-     */
-    flipped(flipDirection: FlipDirection): Image;
-    /**
-     * Hue rotate the image.
-     */
-    hueRotate(value: number): this;
-    /**
-     * Hue rotate the image and returns a new image.
-     */
-    withHueRotation(value: number): Image;
-    /**
-     * Transform this image into a grayscale.
-     */
-    grayscale(): this;
-    /**
-     * Returns a grayscale version of this image.
-     */
-    withGrayscale(): Image;
-    /**
-     * Crops this image.
-     */
-    crop(rect: RectLike): this;
-    /**
-     * Crops this image.
-     */
-    crop(x: number, y: number, width: number, height: number): this;
-    /**
-     * Returns a cropped version of this image.
-     */
-    cropped(rect: RectLike): Image;
-    /**
-     * Returns a cropped version of this image.
-     */
-    cropped(x: number, y: number, width: number, height: number): Image;
-    /**
-     * Resizes this image.
-     */
-    resize(width: number, height: number, options?: ResizeOptions): this;
-    /**
-     * Returns a resized version of this image.
-     */
-    resized(width: number, height: number, options?: ResizeOptions): Image;
-    /**
-     * Brightens or darkens the pixels of this image.
-     */
-    adjustBrightness(value: number): this;
-    /**
-     * Returns a brightened or darkened version of this image.
-     */
-    withAdjustedBrightness(value: number): Image;
-    /**
-     * Adjusts the contrast of this image.
-     */
-    adjustContrast(value: number): this;
-    /**
-     * Returns a new image with an adjusted contrast.
-     */
-    withAdjustedContrast(value: number): Image;
-    /**
-     * Fill this image with a color.
-     */
-    fill(color: ColorLike): this;
-    /**
-     * Fill this image with a color.
-     */
-    fill(r: number, g: number, b: number, a?: number): this;
-    /**
-     * Fill this image with a color.
-     */
-    filled(color: ColorLike): Image;
-    /**
-     * Fill this image with a color.
-     */
-    filled(r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Returns the value of a pixel.
-     */
-    getPixel(position: PointLike): Color;
-    /**
-     * Returns the value of a pixel.
-     */
-    getPixel(x: number, y: number): Color;
-    /**
-     * Returns the value of a pixel.
-     */
-    setPixel(position: PointLike, color: ColorLike): this;
-    /**
-     * Returns the value of a pixel.
-     */
-    setPixel(position: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Returns the value of a pixel.
-     */
-    setPixel(x: number, y: number, color: ColorLike): this;
-    /**
-     * Returns the value of a pixel.
-     */
-    setPixel(x: number, y: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Creates a new image from a part of this image.
-     */
-    copyRegion(rect: RectLike): Image;
-    /**
-     * Creates a new image from a part of this image.
-     */
-    copyRegion(x: number, y: number, width: number, height: number): Image;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(position: PointLike, color: ColorLike): this;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(position: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(x: number, y: number, color: ColorLike): this;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(x: number, y: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(position: PointLike, color: ColorLike): Image;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(position: PointLike, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(x: number, y: number, color: ColorLike): Image;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(x: number, y: number, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, end: PointLike, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, x: number, y: number, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x: number, y: number, end: PointLike, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, end: PointLike, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, x: number, y: number, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x: number, y: number, end: PointLike, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
-    /**
-     * Draw another image on this image.
-     */
-    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
-    /**
-     * Draw another image on this image.
-     */
-    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
-    /**
-     * Draw another image on a copy of this image.
-     */
-    withImage(position: PointLike, image: Image, options?: DrawImageOptions): Image;
-    /**
-     * Draw another image on a copy of this image.
-     */
-    withImage(x: number, y: number, image: Image, options?: DrawImageOptions): Image;
-    /**
-     * Find an image inside this image.
-     */
-    findImage(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
-    /**
-     * Find any occurence of an image inside this image.
-     */
-    findImageAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+/**
+ * ClipboardHtml
+ */
+declare interface ClipboardHtml {
+    set(html: string, altText?: string, mode?: ClipboardMode): Promise<void>;
+    get(mode?: ClipboardMode): Promise<string>;
 }
 /**
  * A Color.
@@ -3090,12 +2681,12 @@ declare const console: Console;
  * Directory entry
  */
 declare interface DirectoryEntry {
+    readonly path: string;
+    readonly fileName: string;
+    readonly isFile: boolean;
     readonly isDirectory: boolean;
     readonly isSymlink: boolean;
     readonly size: number;
-    readonly isFile: boolean;
-    readonly path: string;
-    readonly fileName: string;
 }
 /**
  * Directory options
@@ -3145,84 +2736,6 @@ declare interface Displays {
 }
 declare const displays: Displays;
 /**
- * A 2D Point.
- * 
- * 
- * ```js
- * let p = new Point(1, 2);
- * ```
- */
-declare class Point {
-    /**
-     * X coordinate
-     */
-    x: number;
-    /**
-     * Y coordinate
-     */
-    y: number;
-    /**
-     * Constructor with two numbers.
-     */
-    constructor(x: number, y: number);
-    /**
-     * Constructor with anything Point-like.
-     */
-    constructor(p: PointLike);
-    /**
-     * Length of this point.
-     */
-    length(): number;
-    /**
-     * Returns a random point around this point.
-     */
-    static randomInCircle(center: PointLike, radius: number): Point;
-    /**
-     * Returns a random point around this point.
-     */
-    static randomInCircle(x: number, y: number, radius: number): Point;
-    /**
-     * Calculates the distance between this point and another.
-     */
-    distanceTo(other: Point): number;
-    /**
-     * Returns a JSON representation of this Point.
-     */
-    toJson(): string;
-    /**
-     * Returns true if this Point is at the origin, (0, 0).
-     */
-    isOrigin(): boolean;
-    /**
-     * Computes the distance between two points.
-     */
-    static distance(a: Point, b: Point): number;
-    /**
-     * Returns true if a Point equals another.
-     */
-    equals(other: Point): boolean;
-    /**
-     * Adds two points and returns a new Point.
-     */
-    add(other: Point): Point;
-    /**
-     * Subtracts two points and returns a new Point.
-     */
-    subtract(other: Point): Point;
-    /**
-     * Scales this point by a factor and returns a new Point.
-     */
-    scaled(factor: number): Point;
-    /**
-     * Returns a string representation of this Point.
-     */
-    toString(): string;
-    /**
-     * Clones this Point.
-     */
-    clone(): Point;
-}
-/**
  * Display info
  */
 declare interface DisplayInfo {
@@ -3239,13 +2752,13 @@ declare interface DisplayInfo {
      */
     readonly friendlyName: string;
     /**
-     * Output device's pixel scale factor
+     * The display rectangle
      */
-    readonly scaleFactor: number;
+    readonly rect: Rect;
     /**
-     * Whether the screen is the main screen
+     * The display pixel width
      */
-    readonly isPrimary: boolean;
+    readonly widthMm: number;
     /**
      * The display pixel height
      */
@@ -3255,66 +2768,17 @@ declare interface DisplayInfo {
      */
     readonly rotation: number;
     /**
+     * Output device's pixel scale factor
+     */
+    readonly scaleFactor: number;
+    /**
      * The display refresh rate
      */
     readonly frequency: number;
     /**
-     * The display rectangle
+     * Whether the screen is the main screen
      */
-    readonly rect: Rect;
-    /**
-     * The display pixel width
-     */
-    readonly widthMm: number;
-}
-/**
- * A 2D Rectangle.
- * 
- * 
- * ```js
- * let r = new Rect(1, 2, 50, 100);
- * ```
- */
-declare class Rect {
-    /**
-     * X coordinate
-     */
-    x: number;
-    /**
-     * Y coordinate
-     */
-    y: number;
-    /**
-     * Width
-     */
-    width: number;
-    /**
-     * Height
-     */
-    height: number;
-    /**
-     * Top-left origin
-     */
-    topLeft: Point;
-    /**
-     * Size
-     */
-    size: Size;
-    /**
-     * Constructor with a position and a size.
-     */
-    constructor(x: number, y: number, width: number, height: number);
-    /**
-     * Constructor with anything Rect-like.
-     */
-    constructor(r: RectLike);
-    equals(other: Rect): boolean;
-    contains(point: Point): boolean;
-    toString(): string;
-    clone(): Rect;
-    intersects(other: Rect): boolean;
-    intersection(other: Rect): Rect | undefined;
-    union(other: Rect): Rect;
+    readonly isPrimary: boolean;
 }
 /**
  * File open options
@@ -3461,52 +2925,6 @@ declare interface Hotstrings {
 }
 declare const hotstrings: Hotstrings;
 /**
- * A match returned by a find_image call.
- */
-declare interface Match {
-    /**
-     * the position on the source image where the target image was found
-     */
-    position: Point;
-    /**
-     * the rectangle on the source image where the target image was found
-     */
-    rect: Rect;
-    /**
-     * the score for this match, goes from 0 (worst) to 1 (best)
-     */
-    score: number;
-    /**
-     * Returns true if a Match equals another.
-     */
-    equals(other: Match): boolean;
-    /**
-     * Returns a string representation of this Match.
-     */
-    toString(): string;
-    /**
-     * Clones this Match.
-     */
-    clone(): Match;
-}
-/**
- * Progress of a find image operation.
- */
-declare interface FindImageProgress {
-    /**
-     * Whether the operation has finished.
-     */
-    readonly finished: boolean;
-    /**
-     * Completion percentage (0-100).
-     */
-    readonly percent: number;
-    /**
-     * The current stage of the find image operation.
-     */
-    readonly stage: FindImageStage;
-}
-/**
  * Resize options
  */
 declare interface ResizeOptions {
@@ -3637,10 +3055,468 @@ declare interface FindImageOptions {
      */
     signal?: AbortSignal;
 }
+/**
+ * A match returned by a find_image call.
+ */
+declare interface Match {
+    /**
+     * the position on the source image where the target image was found
+     */
+    position: Point;
+    /**
+     * the rectangle on the source image where the target image was found
+     */
+    rect: Rect;
+    /**
+     * the score for this match, goes from 0 (worst) to 1 (best)
+     */
+    score: number;
+    /**
+     * Returns true if a Match equals another.
+     */
+    equals(other: Match): boolean;
+    /**
+     * Returns a string representation of this Match.
+     */
+    toString(): string;
+    /**
+     * Clones this Match.
+     */
+    clone(): Match;
+}
+/**
+ * Progress of a find image operation.
+ */
+declare interface FindImageProgress {
+    /**
+     * The current stage of the find image operation.
+     */
+    readonly stage: FindImageStage;
+    /**
+     * Completion percentage (0-100).
+     */
+    readonly percent: number;
+    /**
+     * Whether the operation has finished.
+     */
+    readonly finished: boolean;
+}
+declare class Image {
+    readonly width: number;
+    readonly height: number;
+    /**
+     * Returns a Rect representing this image.
+     */
+    readonly rect: Rect;
+    /**
+     * Creates a new empty image.
+     * 
+     * Example
+     * ```js
+     * let image = new Image(100, 100);
+     * ```
+     */
+    constructor(width: number, height: number);
+    static fromBytes(bytes: Uint8Array): Image;
+    save(path: string): void;
+    static load(path: string): Image;
+    equals(other: Image): boolean;
+    toString(): string;
+    clone(): Image;
+    /**
+     * Invert the colors of this image.
+     */
+    invertColors(): this;
+    /**
+     * Invert the colors of this image and returns a new image.
+     */
+    invertedColors(): Image;
+    /**
+     * Blur the image.
+     */
+    blur(options?: BlurOptions): this;
+    /**
+     * Blur the image and returns a new image.
+     */
+    blurred(options?: BlurOptions): Image;
+    /**
+     * Rotate the image.
+     */
+    rotate(angle: number, options?: RotationOptions): this;
+    /**
+     * Rotate the image and returns a new image.
+     */
+    rotated(angle: number, options?: RotationOptions): Image;
+    /**
+     * Flip the image.
+     */
+    flip(flipDirection: FlipDirection): this;
+    /**
+     * Flip the image and returns a new image.
+     */
+    flipped(flipDirection: FlipDirection): Image;
+    /**
+     * Hue rotate the image.
+     */
+    hueRotate(value: number): this;
+    /**
+     * Hue rotate the image and returns a new image.
+     */
+    withHueRotation(value: number): Image;
+    /**
+     * Transform this image into a grayscale.
+     */
+    grayscale(): this;
+    /**
+     * Returns a grayscale version of this image.
+     */
+    withGrayscale(): Image;
+    /**
+     * Crops this image.
+     */
+    crop(rect: RectLike): this;
+    /**
+     * Crops this image.
+     */
+    crop(x: number, y: number, width: number, height: number): this;
+    /**
+     * Returns a cropped version of this image.
+     */
+    cropped(rect: RectLike): Image;
+    /**
+     * Returns a cropped version of this image.
+     */
+    cropped(x: number, y: number, width: number, height: number): Image;
+    /**
+     * Resizes this image.
+     */
+    resize(width: number, height: number, options?: ResizeOptions): this;
+    /**
+     * Returns a resized version of this image.
+     */
+    resized(width: number, height: number, options?: ResizeOptions): Image;
+    /**
+     * Brightens or darkens the pixels of this image.
+     */
+    adjustBrightness(value: number): this;
+    /**
+     * Returns a brightened or darkened version of this image.
+     */
+    withAdjustedBrightness(value: number): Image;
+    /**
+     * Adjusts the contrast of this image.
+     */
+    adjustContrast(value: number): this;
+    /**
+     * Returns a new image with an adjusted contrast.
+     */
+    withAdjustedContrast(value: number): Image;
+    /**
+     * Fill this image with a color.
+     */
+    fill(color: ColorLike): this;
+    /**
+     * Fill this image with a color.
+     */
+    fill(r: number, g: number, b: number, a?: number): this;
+    /**
+     * Fill this image with a color.
+     */
+    filled(color: ColorLike): Image;
+    /**
+     * Fill this image with a color.
+     */
+    filled(r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Returns the value of a pixel.
+     */
+    getPixel(position: PointLike): Color;
+    /**
+     * Returns the value of a pixel.
+     */
+    getPixel(x: number, y: number): Color;
+    /**
+     * Returns the value of a pixel.
+     */
+    setPixel(position: PointLike, color: ColorLike): this;
+    /**
+     * Returns the value of a pixel.
+     */
+    setPixel(position: PointLike, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Returns the value of a pixel.
+     */
+    setPixel(x: number, y: number, color: ColorLike): this;
+    /**
+     * Returns the value of a pixel.
+     */
+    setPixel(x: number, y: number, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Creates a new image from a part of this image.
+     */
+    copyRegion(rect: RectLike): Image;
+    /**
+     * Creates a new image from a part of this image.
+     */
+    copyRegion(x: number, y: number, width: number, height: number): Image;
+    /**
+     * Draw a cross on this image.
+     */
+    drawCross(position: PointLike, color: ColorLike): this;
+    /**
+     * Draw a cross on this image.
+     */
+    drawCross(position: PointLike, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Draw a cross on this image.
+     */
+    drawCross(x: number, y: number, color: ColorLike): this;
+    /**
+     * Draw a cross on this image.
+     */
+    drawCross(x: number, y: number, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Draw a cross on a copy of this image.
+     */
+    withCross(position: PointLike, color: ColorLike): Image;
+    /**
+     * Draw a cross on a copy of this image.
+     */
+    withCross(position: PointLike, r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Draw a cross on a copy of this image.
+     */
+    withCross(x: number, y: number, color: ColorLike): Image;
+    /**
+     * Draw a cross on a copy of this image.
+     */
+    withCross(x: number, y: number, r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(start: PointLike, end: PointLike, color: ColorLike): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(start: PointLike, x: number, y: number, color: ColorLike): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(x: number, y: number, end: PointLike, color: ColorLike): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): this;
+    /**
+     * Draw a line on this image.
+     */
+    drawLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): this;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(start: PointLike, end: PointLike, color: ColorLike): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(start: PointLike, x: number, y: number, color: ColorLike): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(x: number, y: number, end: PointLike, color: ColorLike): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): Image;
+    /**
+     * Draw a line on a copy of this image.
+     */
+    withLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): Image;
+    /**
+     * Draw a circle on this image.
+     */
+    drawCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): this;
+    /**
+     * Draw a circle on this image.
+     */
+    drawCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    /**
+     * Draw a circle on this image.
+     */
+    drawCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): this;
+    /**
+     * Draw a circle on this image.
+     */
+    drawCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    /**
+     * Draw a circle on a copy of this image.
+     */
+    withCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): Image;
+    /**
+     * Draw a circle on a copy of this image.
+     */
+    withCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    /**
+     * Draw a circle on a copy of this image.
+     */
+    withCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): Image;
+    /**
+     * Draw a circle on a copy of this image.
+     */
+    withCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    /**
+     * Draw an ellipse on this image.
+     */
+    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
+    /**
+     * Draw an ellipse on this image.
+     */
+    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    /**
+     * Draw an ellipse on this image.
+     */
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
+    /**
+     * Draw an ellipse on this image.
+     */
+    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    /**
+     * Draw an ellipse on a copy of this image.
+     */
+    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
+    /**
+     * Draw an ellipse on a copy of this image.
+     */
+    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    /**
+     * Draw an ellipse on a copy of this image.
+     */
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
+    /**
+     * Draw an ellipse on a copy of this image.
+     */
+    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    /**
+     * Draw a rectangle on this image.
+     */
+    drawRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): this;
+    /**
+     * Draw a rectangle on this image.
+     */
+    drawRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    /**
+     * Draw a rectangle on this image.
+     */
+    drawRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): this;
+    /**
+     * Draw a rectangle on this image.
+     */
+    drawRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    /**
+     * Draw a rectangle on a copy of this image.
+     */
+    withRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): Image;
+    /**
+     * Draw a rectangle on a copy of this image.
+     */
+    withRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    /**
+     * Draw a rectangle on a copy of this image.
+     */
+    withRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): Image;
+    /**
+     * Draw a rectangle on a copy of this image.
+     */
+    withRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    /**
+     * Draw text on this image using the provided font.
+     */
+    drawText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
+    /**
+     * Draw text on this image using the provided font.
+     */
+    drawText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
+    /**
+     * Draw text on this image using the provided font.
+     */
+    drawText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
+    /**
+     * Draw text on this image using the provided font.
+     */
+    drawText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
+    /**
+     * Draw text on a copy of this image.
+     */
+    withText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
+    /**
+     * Draw text on a copy of this image.
+     */
+    withText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
+    /**
+     * Draw text on a copy of this image.
+     */
+    withText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
+    /**
+     * Draw text on a copy of this image.
+     */
+    withText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
+    /**
+     * Draw another image on this image.
+     */
+    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
+    /**
+     * Draw another image on this image.
+     */
+    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
+    /**
+     * Draw another image on a copy of this image.
+     */
+    withImage(position: PointLike, image: Image, options?: DrawImageOptions): Image;
+    /**
+     * Draw another image on a copy of this image.
+     */
+    withImage(x: number, y: number, image: Image, options?: DrawImageOptions): Image;
+    /**
+     * Find an image inside this image.
+     */
+    findImage(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    /**
+     * Find any occurence of an image inside this image.
+     */
+    findImageAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+}
+declare interface AbortSignal {
+}
 declare class AbortController {
     readonly signal: AbortSignal;
     constructor();
     abort(): void;
+}
+declare interface Concurrency {
+    race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
 }
 declare interface Keyboard {
     text(text: string): Promise<void>;
@@ -3650,6 +3526,20 @@ declare interface Keyboard {
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
 }
 declare const keyboard: Keyboard;
+/**
+ * Wait for keys options
+ */
+declare interface WaitForKeysOptions {
+    /**
+     * Wait for exactly these keys and no other
+     * @defaultValue `false`
+     */
+    exclusive?: boolean;
+    /**
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
 declare interface Mouse {
     /**
      * @platform does not work on Wayland
@@ -3673,6 +3563,147 @@ declare interface Mouse {
     release(button?: Button): Promise<void>;
 }
 declare const mouse: Mouse;
+/**
+ * Measure speed options
+ */
+declare interface MeasureSpeedOptions {
+    /**
+     * Duration in seconds
+     * @defaultValue `2`
+     */
+    duration?: number;
+    /**
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Button click options
+ */
+declare interface ClickOptions extends PressOptions {
+    /**
+     * @defaultValue `1`
+     */
+    amount?: number;
+    /**
+     * @defaultValue `0`
+     */
+    interval?: number;
+    /**
+     * @defaultValue `0`
+     */
+    duration?: number;
+    /**
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Button double click options
+ */
+declare interface DoubleClickOptions extends ClickOptions {
+    /**
+     * @defaultValue `0.25`
+     */
+    delay?: number;
+}
+declare class Wildcard {
+    /**
+     * Constructor.
+     */
+    constructor(pattern: string);
+}
+declare class Path {
+    private constructor();
+    static join(...args: string[]): string;
+    static filename(path: string): string;
+    static basename(path: string): string;
+    static parent(path: string): string;
+    static dirname(path: string): string;
+    static isAbsolute(path: string): boolean;
+    static isRelative(path: string): boolean;
+    static extension(path: string): string;
+    static extname(path: string): string;
+    static setExtension(path: string, extension: string): string;
+}
+/**
+ * A 2D Point.
+ * 
+ * 
+ * ```js
+ * let p = new Point(1, 2);
+ * ```
+ */
+declare class Point {
+    /**
+     * X coordinate
+     */
+    x: number;
+    /**
+     * Y coordinate
+     */
+    y: number;
+    /**
+     * Constructor with two numbers.
+     */
+    constructor(x: number, y: number);
+    /**
+     * Constructor with anything Point-like.
+     */
+    constructor(p: PointLike);
+    /**
+     * Length of this point.
+     */
+    length(): number;
+    /**
+     * Returns a random point around this point.
+     */
+    static randomInCircle(center: PointLike, radius: number): Point;
+    /**
+     * Returns a random point around this point.
+     */
+    static randomInCircle(x: number, y: number, radius: number): Point;
+    /**
+     * Calculates the distance between this point and another.
+     */
+    distanceTo(other: Point): number;
+    /**
+     * Returns a JSON representation of this Point.
+     */
+    toJson(): string;
+    /**
+     * Returns true if this Point is at the origin, (0, 0).
+     */
+    isOrigin(): boolean;
+    /**
+     * Computes the distance between two points.
+     */
+    static distance(a: Point, b: Point): number;
+    /**
+     * Returns true if a Point equals another.
+     */
+    equals(other: Point): boolean;
+    /**
+     * Adds two points and returns a new Point.
+     */
+    add(other: Point): Point;
+    /**
+     * Subtracts two points and returns a new Point.
+     */
+    subtract(other: Point): Point;
+    /**
+     * Scales this point by a factor and returns a new Point.
+     */
+    scaled(factor: number): Point;
+    /**
+     * Returns a string representation of this Point.
+     */
+    toString(): string;
+    /**
+     * Clones this Point.
+     */
+    clone(): Point;
+}
 declare interface Random {
     /**
      * Returns a number between 0 (inclusive) and 1 (exclusive)
@@ -3716,6 +3747,55 @@ declare interface Random {
     choice<T>(array: Array<T>, fallback?: T): T;
 }
 declare const random: Random;
+/**
+ * A 2D Rectangle.
+ * 
+ * 
+ * ```js
+ * let r = new Rect(1, 2, 50, 100);
+ * ```
+ */
+declare class Rect {
+    /**
+     * X coordinate
+     */
+    x: number;
+    /**
+     * Y coordinate
+     */
+    y: number;
+    /**
+     * Width
+     */
+    width: number;
+    /**
+     * Height
+     */
+    height: number;
+    /**
+     * Top-left origin
+     */
+    topLeft: Point;
+    /**
+     * Size
+     */
+    size: Size;
+    /**
+     * Constructor with a position and a size.
+     */
+    constructor(x: number, y: number, width: number, height: number);
+    /**
+     * Constructor with anything Rect-like.
+     */
+    constructor(r: RectLike);
+    equals(other: Rect): boolean;
+    contains(point: Point): boolean;
+    toString(): string;
+    clone(): Rect;
+    intersects(other: Rect): boolean;
+    intersection(other: Rect): Rect | undefined;
+    union(other: Rect): Rect;
+}
 declare interface Screenshot {
     captureRect(rect: RectLike): Promise<Image>;
     captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
@@ -3724,125 +3804,6 @@ declare interface Screenshot {
     capturePixel(x: number, y: number): Promise<Color>;
 }
 declare const screenshot: Screenshot;
-declare interface StandardPaths {
-    /**
-     * Music directory
-     */
-    readonly music?: string;
-    /**
-     * Config directory
-     */
-    readonly config?: string;
-    /**
-     * Public directory
-     */
-    readonly public?: string;
-    /**
-     * Downloads directory
-     */
-    readonly downloads?: string;
-    /**
-     * Pictures directory
-     */
-    readonly pictures?: string;
-    /**
-     * Videos directory
-     */
-    readonly videos?: string;
-    /**
-     * Documents directory
-     */
-    readonly documents?: string;
-    /**
-     * Home directory
-     */
-    readonly home?: string;
-    /**
-     * Cache directory
-     */
-    readonly cache?: string;
-    /**
-     * Local config directory
-     */
-    readonly localConfig?: string;
-    /**
-     * Desktop directory
-     */
-    readonly desktop?: string;
-    toString(): string;
-}
-declare const standard_paths: StandardPaths;
-/**
- * System
- */
-declare interface System {
-    /**
-     * Network information
-     */
-    readonly network: Network;
-    /**
-     * Hardware information
-     */
-    readonly hardware: Hardware;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
-     * Processes information
-     */
-    readonly processes: Processes;
-    /**
-     * Cpu information
-     */
-    readonly cpu: Cpu;
-    /**
-     * Storage information
-     */
-    readonly storage: Storage;
-    /**
-     * Memory information
-     */
-    readonly memory: Memory;
-    shutdown(force?: boolean): Promise<void>;
-    reboot(force?: boolean): Promise<void>;
-    logout(force?: boolean): Promise<void>;
-    hibernate(): Promise<void>;
-    sleep(): Promise<void>;
-    open(path: string, withApp?: string): Promise<void>;
-    openPath(path: string, withApp?: string): Promise<void>;
-}
-declare const system: System;
-declare class Ui {
-    private constructor();
-    static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
-}
-declare const ui: Ui;
-declare interface Web {
-    /**
-     * Downloads a binary file.
-     */
-    download(url: string, options?: WebOptions): ProgressTask<Uint8Array, WebProgress>;
-    /**
-     * Downloads a text file.
-     */
-    downloadText(url: string, options?: WebOptions): ProgressTask<string, WebProgress>;
-    /**
-     * Downloads an image.
-     */
-    downloadImage(url: string, options?: WebOptions): ProgressTask<Image, WebProgress>;
-    /**
-     * Downloads a file to a directory.
-     */
-    downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
-}
-declare const web: Web;
-declare class Wildcard {
-    /**
-     * Constructor.
-     */
-    constructor(pattern: string);
-}
 /**
  * A size.
  * 
@@ -3897,37 +3858,54 @@ declare class Size {
      */
     clone(): Size;
 }
-/**
- * Multipart form
- */
-declare class MultipartForm {
-    constructor();
+declare interface StandardPaths {
     /**
-     * Adds a text field.
+     * Home directory
      */
-    addText(name: string, value: string, filename?: string, mimetype?: string): void;
+    readonly home?: string;
     /**
-     * Adds a file field.
+     * Music directory
      */
-    addFile(name: string, path: string, filename?: string, mimetype?: string): void;
+    readonly music?: string;
     /**
-     * Adds a byte field.
+     * Desktop directory
      */
-    addBytes(name: string, bytes: Uint8Array, filename?: string, mimetype?: string): void;
+    readonly desktop?: string;
+    /**
+     * Documents directory
+     */
+    readonly documents?: string;
+    /**
+     * Downloads directory
+     */
+    readonly downloads?: string;
+    /**
+     * Pictures directory
+     */
+    readonly pictures?: string;
+    /**
+     * Public directory
+     */
+    readonly public?: string;
+    /**
+     * Videos directory
+     */
+    readonly videos?: string;
+    /**
+     * Cache directory
+     */
+    readonly cache?: string;
+    /**
+     * Config directory
+     */
+    readonly config?: string;
+    /**
+     * Local config directory
+     */
+    readonly localConfig?: string;
+    toString(): string;
 }
-declare class Path {
-    private constructor();
-    static join(...args: string[]): string;
-    static filename(path: string): string;
-    static basename(path: string): string;
-    static parent(path: string): string;
-    static dirname(path: string): string;
-    static isAbsolute(path: string): boolean;
-    static isRelative(path: string): boolean;
-    static extension(path: string): string;
-    static extname(path: string): string;
-    static setExtension(path: string, extension: string): string;
-}
+declare const standard_paths: StandardPaths;
 /**
  * Cpu
  */
@@ -3954,9 +3932,17 @@ declare interface Cpu {
  */
 declare interface Hardware {
     /**
-     * Motherboard
+     * Name
      */
-    readonly motherboard: Motherboard;
+    readonly name?: string;
+    /**
+     * Family
+     */
+    readonly family?: string;
+    /**
+     * Serial number
+     */
+    readonly serialNumber?: string;
     /**
      * Stock keeping unit
      */
@@ -3966,14 +3952,6 @@ declare interface Hardware {
      */
     readonly version?: string;
     /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Family
-     */
-    readonly family?: string;
-    /**
      * Uuid
      */
     readonly uuid?: string;
@@ -3982,20 +3960,30 @@ declare interface Hardware {
      */
     readonly vendorName?: string;
     /**
-     * Serial number
+     * Motherboard
      */
-    readonly serialNumber?: string;
+    readonly motherboard: Motherboard;
     /**
      * Hardware components
      */
     listComponents(options?: ListComponentsOptions): Promise<Component[]>;
     toString(): string;
 }
+/**
+ * List components options
+ */
+declare interface ListComponentsOptions {
+    /**
+     * Rescan
+     * @defaultValue `true`
+     */
+    rescan?: boolean;
+}
 declare interface Motherboard {
     /**
-     * Asset tag
+     * Name
      */
-    readonly assetTag?: string;
+    readonly name?: string;
     /**
      * Vendor name
      */
@@ -4005,13 +3993,13 @@ declare interface Motherboard {
      */
     readonly version?: string;
     /**
-     * Name
-     */
-    readonly name?: string;
-    /**
      * Serial number
      */
     readonly serialNumber?: string;
+    /**
+     * Asset tag
+     */
+    readonly assetTag?: string;
     toString(): string;
 }
 declare interface Component {
@@ -4019,6 +4007,10 @@ declare interface Component {
      * Label
      */
     readonly label: string;
+    /**
+     * ID
+     */
+    readonly id?: string;
     /**
      * Temperature
      */
@@ -4031,10 +4023,6 @@ declare interface Component {
      * Critical temperature
      */
     readonly criticalTemperature?: number;
-    /**
-     * ID
-     */
-    readonly id?: string;
     toString(): string;
 }
 /**
@@ -4058,21 +4046,21 @@ declare interface Memory {
 }
 declare interface MemoryUsage {
     /**
-     * Free
-     */
-    readonly free: number;
-    /**
-     * Total
-     */
-    readonly total: number;
-    /**
      * Used
      */
     readonly used: number;
     /**
+     * Free
+     */
+    readonly free: number;
+    /**
      * Available
      */
     readonly available: number;
+    /**
+     * Total
+     */
+    readonly total: number;
     toString(): string;
 }
 /**
@@ -4081,23 +4069,64 @@ declare interface MemoryUsage {
  */
 declare interface CGroupLimits {
     /**
-     * Free memory
-     */
-    readonly freeMemory: number;
-    /**
      * Total memory
      */
     readonly totalMemory: number;
     /**
-     * RSS
+     * Free memory
      */
-    readonly rss: number;
+    readonly freeMemory: number;
     /**
      * Free swap
      */
     readonly freeSwap: number;
+    /**
+     * RSS
+     */
+    readonly rss: number;
     toString(): string;
 }
+/**
+ * System
+ */
+declare interface System {
+    /**
+     * Cpu information
+     */
+    readonly cpu: Cpu;
+    /**
+     * Hardware information
+     */
+    readonly hardware: Hardware;
+    /**
+     * Memory information
+     */
+    readonly memory: Memory;
+    /**
+     * Network information
+     */
+    readonly network: Network;
+    /**
+     * Os information
+     */
+    readonly os: Os;
+    /**
+     * Processes information
+     */
+    readonly processes: Processes;
+    /**
+     * Storage information
+     */
+    readonly storage: Storage;
+    shutdown(force?: boolean): Promise<void>;
+    reboot(force?: boolean): Promise<void>;
+    logout(force?: boolean): Promise<void>;
+    hibernate(): Promise<void>;
+    sleep(): Promise<void>;
+    open(path: string, withApp?: string): Promise<void>;
+    openPath(path: string, withApp?: string): Promise<void>;
+}
+declare const system: System;
 /**
  * Network
  */
@@ -4112,42 +4141,52 @@ declare interface Network {
     listInterfaces(options?: ListInterfacesOptions): Promise<NetworkInterface[]>;
     toString(): string;
 }
+/**
+ * List network interfaces options
+ */
+declare interface ListInterfacesOptions {
+    /**
+     * Rescan
+     * @defaultValue `true`
+     */
+    rescan?: boolean;
+}
 declare interface NetworkInterface {
     /**
-     * Subnets
+     * Name
      */
-    readonly subnets: string[];
-    /**
-     * Outbound
-     */
-    readonly outbound: Traffic;
-    /**
-     * MAC address
-     */
-    readonly macAddress?: string;
-    /**
-     * MTU
-     */
-    readonly mtu: number;
+    readonly name: string;
     /**
      * Inbound
      */
     readonly inbound: Traffic;
     /**
-     * Name
+     * Outbound
      */
-    readonly name: string;
+    readonly outbound: Traffic;
+    /**
+     * MTU
+     */
+    readonly mtu: number;
+    /**
+     * MAC address
+     */
+    readonly macAddress?: string;
+    /**
+     * Subnets
+     */
+    readonly subnets: string[];
     toString(): string;
 }
 declare interface Counters {
     /**
-     * Packets
-     */
-    readonly packets: number;
-    /**
      * Data
      */
     readonly data: number;
+    /**
+     * Packets
+     */
+    readonly packets: number;
     /**
      * Errors
      */
@@ -4170,41 +4209,41 @@ declare interface Traffic {
  */
 declare interface Os {
     /**
-     * Boot time
-     */
-    readonly bootTime: Date;
-    /**
      * Name
      */
     readonly name?: string;
-    /**
-     * Distribution ID
-     */
-    readonly distributionId: string;
-    /**
-     * Uptime in seconds
-     */
-    readonly uptime: number;
-    /**
-     * Distribution ID like
-     */
-    readonly distributionIdLike: string[];
     /**
      * Kernel version
      */
     readonly kernelVersion?: string;
     /**
+     * Version
+     */
+    readonly version?: string;
+    /**
      * Long version
      */
     readonly longVersion?: string;
+    /**
+     * Distribution ID
+     */
+    readonly distributionId: string;
+    /**
+     * Distribution ID like
+     */
+    readonly distributionIdLike: string[];
     /**
      * Kernel long version
      */
     readonly kernelLongVersion: string;
     /**
-     * Version
+     * Uptime in seconds
      */
-    readonly version?: string;
+    readonly uptime: number;
+    /**
+     * Boot time
+     */
+    readonly bootTime: Date;
     /**
      * Open files limit
      */
@@ -4225,10 +4264,19 @@ declare interface User {
      */
     readonly name: string;
     /**
+     * ID
+     */
+    readonly id: string;
+    /**
      * Group ID
      * @platform does not work on Windows
      */
     readonly groupId?: number;
+    /**
+     * Group name
+     * @platform does not work on Windows
+     */
+    readonly groupName?: string;
     /**
      * Groups
      */
@@ -4237,15 +4285,6 @@ declare interface User {
      * Group names
      */
     readonly groupNames: string[];
-    /**
-     * ID
-     */
-    readonly id: string;
-    /**
-     * Group name
-     * @platform does not work on Windows
-     */
-    readonly groupName?: string;
     toString(): string;
 }
 declare interface Group {
@@ -4269,7 +4308,33 @@ declare interface Processes {
     list(options?: ListProcessesOptions): Promise<Process[]>;
     toString(): string;
 }
+/**
+ * List processes options
+ */
+declare interface ListProcessesOptions {
+    /**
+     * Rescan
+     * @defaultValue `true`
+     */
+    rescan?: boolean;
+}
 declare interface Process {
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * Cmd
+     */
+    readonly cmd: string[];
+    /**
+     * Exe
+     */
+    readonly exe?: string;
+    /**
+     * Pid
+     */
+    readonly pid: number;
     /**
      * Env
      */
@@ -4279,96 +4344,80 @@ declare interface Process {
      */
     readonly cwd?: string;
     /**
-     * Effective group ID
-     * @platform only works on Linux
+     * Root
      */
-    readonly effectiveGroupId?: number;
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: DiskUsage;
-    /**
-     * Session ID
-     */
-    readonly sessionId?: number;
-    /**
-     * Open files
-     */
-    readonly openFiles?: number;
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * CPU usage
-     */
-    readonly cpuUsage: number;
-    /**
-     * Exe
-     */
-    readonly exe?: string;
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * Run time in seconds
-     */
-    readonly runTime: number;
-    /**
-     * Group ID
-     * @platform only works on Linux
-     */
-    readonly groupId?: number;
-    /**
-     * User ID
-     */
-    readonly userId?: string;
-    /**
-     * Exists
-     */
-    readonly exists: boolean;
-    /**
-     * Accumulated CPU time in seconds
-     */
-    readonly accumulatedCpuTime: number;
+    readonly root?: string;
     /**
      * Memory
      */
     readonly memory: number;
     /**
+     * Virtual memory
+     */
+    readonly virtualMemory: number;
+    /**
+     * Parent
+     */
+    readonly parent?: number;
+    /**
      * Status
      */
     readonly status: ProcessStatus;
+    /**
+     * Start time
+     */
+    readonly startTime: Object;
+    /**
+     * Run time in seconds
+     */
+    readonly runTime: number;
+    /**
+     * CPU usage
+     */
+    readonly cpuUsage: number;
+    /**
+     * Accumulated CPU time in seconds
+     */
+    readonly accumulatedCpuTime: number;
+    /**
+     * Disk usage
+     */
+    readonly diskUsage: DiskUsage;
+    /**
+     * User ID
+     */
+    readonly userId?: string;
     /**
      * Effective user ID
      * @platform only works on Linux
      */
     readonly effectiveUserId?: string;
     /**
+     * Group ID
+     * @platform only works on Linux
+     */
+    readonly groupId?: number;
+    /**
+     * Effective group ID
+     * @platform only works on Linux
+     */
+    readonly effectiveGroupId?: number;
+    /**
+     * Session ID
+     */
+    readonly sessionId?: number;
+    /**
+     * Exists
+     */
+    readonly exists: boolean;
+    /**
+     * Open files
+     */
+    readonly openFiles?: number;
+    /**
      * Open files limit
      */
     readonly openFilesLimit?: number;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Start time
-     */
-    readonly startTime: Object;
-    /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Cmd
-     */
-    readonly cmd: string[];
-    /**
-     * Pid
-     */
-    readonly pid: number;
     toString(): string;
 }
 /**
@@ -4381,173 +4430,6 @@ declare interface Storage {
     listDisks(options?: ListDisksOptions): Promise<Disk[]>;
     toString(): string;
 }
-declare interface Disk {
-    /**
-     * Available space
-     */
-    readonly availableSpace: number;
-    /**
-     * Is removable
-     */
-    readonly isRemovable: boolean;
-    /**
-     * Total space
-     */
-    readonly totalSpace: number;
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
-    /**
-     * File system
-     */
-    readonly fileSystem?: string;
-    /**
-     * Usage
-     */
-    readonly usage: DiskUsage;
-    /**
-     * Mount point
-     */
-    readonly mountPoint: string;
-    toString(): string;
-}
-declare interface IoStats {
-    /**
-     * Delta
-     */
-    readonly delta: number;
-    /**
-     * Total
-     */
-    readonly total: number;
-    toString(): string;
-}
-declare interface DiskUsage {
-    /**
-     * Read
-     */
-    readonly read: IoStats;
-    /**
-     * Written
-     */
-    readonly written: IoStats;
-    toString(): string;
-}
-declare class MessageBoxButtons {
-    private constructor();
-    static ok(): MessageBoxButtons;
-    static okCustom(okLabel: string): MessageBoxButtons;
-    static okCancel(): MessageBoxButtons;
-    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
-    static yesNo(): MessageBoxButtons;
-    static yesNoCancel(): MessageBoxButtons;
-    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
-}
-declare interface WebProgress {
-    current(): number;
-    finished(): boolean;
-    total(): number;
-}
-declare interface Concurrency {
-    race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
-}
-/**
- * Wait for keys options
- */
-declare interface WaitForKeysOptions {
-    /**
-     * Wait for exactly these keys and no other
-     * @defaultValue `false`
-     */
-    exclusive?: boolean;
-    /**
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
-}
-/**
- * Measure speed options
- */
-declare interface MeasureSpeedOptions {
-    /**
-     * Duration in seconds
-     * @defaultValue `2`
-     */
-    duration?: number;
-    /**
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
-}
-/**
- * Button click options
- */
-declare interface ClickOptions extends PressOptions {
-    /**
-     * @defaultValue `1`
-     */
-    amount?: number;
-    /**
-     * @defaultValue `0`
-     */
-    interval?: number;
-    /**
-     * @defaultValue `0`
-     */
-    duration?: number;
-    /**
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
-}
-/**
- * Button double click options
- */
-declare interface DoubleClickOptions extends ClickOptions {
-    /**
-     * @defaultValue `0.25`
-     */
-    delay?: number;
-}
-/**
- * List components options
- */
-declare interface ListComponentsOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
-}
-/**
- * List network interfaces options
- */
-declare interface ListInterfacesOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
-}
-/**
- * List processes options
- */
-declare interface ListProcessesOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
-}
 /**
  * List disks options
  */
@@ -4557,6 +4439,67 @@ declare interface ListDisksOptions {
      * @defaultValue `true`
      */
     rescan?: boolean;
+}
+declare interface Disk {
+    /**
+     * Kind
+     */
+    readonly kind: DiskKind;
+    /**
+     * Name
+     */
+    readonly name?: string;
+    /**
+     * File system
+     */
+    readonly fileSystem?: string;
+    /**
+     * Mount point
+     */
+    readonly mountPoint: string;
+    /**
+     * Total space
+     */
+    readonly totalSpace: number;
+    /**
+     * Available space
+     */
+    readonly availableSpace: number;
+    /**
+     * Is removable
+     */
+    readonly isRemovable: boolean;
+    /**
+     * Is read-only
+     */
+    readonly isReadOnly: boolean;
+    /**
+     * Usage
+     */
+    readonly usage: DiskUsage;
+    toString(): string;
+}
+declare interface IoStats {
+    /**
+     * Total
+     */
+    readonly total: number;
+    /**
+     * Delta
+     */
+    readonly delta: number;
+    toString(): string;
+}
+declare interface DiskUsage {
+    /**
+     * Written
+     */
+    readonly written: IoStats;
+    /**
+     * Read
+     */
+    readonly read: IoStats;
+    toString(): string;
 }
 /**
  * Message box options
@@ -4578,6 +4521,39 @@ declare interface MessageBoxOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
+}
+declare class Ui {
+    private constructor();
+    static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
+}
+declare const ui: Ui;
+declare class MessageBoxButtons {
+    private constructor();
+    static ok(): MessageBoxButtons;
+    static okCustom(okLabel: string): MessageBoxButtons;
+    static okCancel(): MessageBoxButtons;
+    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
+    static yesNo(): MessageBoxButtons;
+    static yesNoCancel(): MessageBoxButtons;
+    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
+}
+/**
+ * Multipart form
+ */
+declare class MultipartForm {
+    constructor();
+    /**
+     * Adds a text field.
+     */
+    addText(name: string, value: string, filename?: string, mimetype?: string): void;
+    /**
+     * Adds a file field.
+     */
+    addFile(name: string, path: string, filename?: string, mimetype?: string): void;
+    /**
+     * Adds a byte field.
+     */
+    addBytes(name: string, bytes: Uint8Array, filename?: string, mimetype?: string): void;
 }
 /**
  * Web options
@@ -4631,6 +4607,30 @@ declare interface WebOptions {
      */
     multipart?: MultipartForm;
 }
+declare interface WebProgress {
+    total(): number;
+    current(): number;
+    finished(): boolean;
+}
+declare interface Web {
+    /**
+     * Downloads a binary file.
+     */
+    download(url: string, options?: WebOptions): ProgressTask<Uint8Array, WebProgress>;
+    /**
+     * Downloads a text file.
+     */
+    downloadText(url: string, options?: WebOptions): ProgressTask<string, WebProgress>;
+    /**
+     * Downloads an image.
+     */
+    downloadImage(url: string, options?: WebOptions): ProgressTask<Image, WebProgress>;
+    /**
+     * Downloads a file to a directory.
+     */
+    downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
+}
+declare const web: Web;
 /**
  * Hotstring options
  */

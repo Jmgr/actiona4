@@ -39,10 +39,9 @@ pub fn extract_functions(
     let mut methods = Vec::new();
     let mut properties = Vec::new();
 
-    let functions = function_ids
-        .iter()
-        // Get an item reference from an ID
-        .map(|id| items.get(*id))
+    let functions = items
+        .get_sorted(function_ids)
+        .into_iter()
         // Select only Functions
         .filter_map(|item| match &item.inner {
             ItemEnum::Function(function) => {
