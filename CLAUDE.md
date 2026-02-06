@@ -32,6 +32,9 @@ cargo make format
 
 # Lint
 cargo make lint
+
+# Regenerate the documentation => please run this after every JS API change, and check tests/src/index.d.ts for errors or inconsistencies
+./scripts/generate_doc.sh
 ```
 
 ## Architecture

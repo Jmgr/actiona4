@@ -1,7 +1,8 @@
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 
+use macros::FromJsObject;
 use rquickjs::{
-    JsLifetime, Result,
+    Ctx, JsLifetime, Promise, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -12,17 +13,65 @@ use crate::{
     IntoJsResult,
     core::{
         audio::{Audio, PlayingSound},
-        js::classes::{HostClass, SingletonClass, register_host_class},
+        js::{
+            abort_controller::JsAbortSignal,
+            classes::{HostClass, SingletonClass, register_host_class},
+            duration::JsDuration,
+            task::{task, task_with_token},
+        },
     },
 };
 
-pub type JsPlaySoundOptions = super::PlaySoundOptions;
+/// Play sound options
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsPlaySoundOptions {
+    /// Volume to play the sound at
+    /// @default `1.0`
+    pub volume: f32,
+
+    /// Speed to play the sound at
+    /// @default `1.0`
+    pub playback_rate: f32,
+
+    /// Should the sound start paused
+    /// @default `false`
+    pub paused: bool,
+
+    /// Should the sound loop
+    /// @default `false`
+    pub r#loop: bool,
+
+    /// Fade in duration
+    /// @default `0`
+    pub fade_in: Option<JsDuration>,
+
+    /// Fade out duration
+    /// @default `0`
+    pub fade_out: Option<JsDuration>,
+
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl JsPlaySoundOptions {
+    fn into_inner(self) -> super::PlaySoundOptions {
+        super::PlaySoundOptions {
+            volume: self.volume,
+            playback_rate: self.playback_rate,
+            paused: self.paused,
+            r#loop: self.r#loop,
+            fade_in: self.fade_in,
+            fade_out: self.fade_out,
+        }
+    }
+}
 
 /// @singleton
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "Audio")]
 pub struct JsAudio {
-    inner: Audio,
+    inner: Arc<Audio>,
 }
 
 impl<'js> Trace<'js> for JsAudio {
@@ -45,7 +94,7 @@ impl JsAudio {
         task_tracker: TaskTracker,
     ) -> color_eyre::Result<Self> {
         Ok(Self {
-            inner: Audio::new(cancellation_token, task_tracker)?,
+            inner: Arc::new(Audio::new(cancellation_token, task_tracker)?),
         })
     }
 }
@@ -58,26 +107,31 @@ impl JsAudio {
         path: String,
         options: Opt<JsPlaySoundOptions>,
     ) -> Result<JsPlayingSound> {
-        let options = options.unwrap_or_default();
+        let options = options.0.unwrap_or_default();
         let playing_sound = self
             .inner
-            .play_file(Path::new(&path), options)
+            .play_file(Path::new(&path), options.into_inner())
             .into_js_result(&ctx)?;
         Ok(JsPlayingSound::new(playing_sound))
     }
 
-    pub async fn play_file_and_wait(
+    /// @returns Task<void>
+    pub fn play_file_and_wait<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         path: String,
         options: Opt<JsPlaySoundOptions>,
-    ) -> Result<()> {
-        let options = options.unwrap_or_default();
-        self.inner
-            .play_file_and_wait(Path::new(&path), options)
-            .await
-            .into_js_result(&ctx)?;
-        Ok(())
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let local_audio = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            local_audio
+                .play_file_and_wait(Path::new(&path), options.into_inner(), token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 }
 
@@ -88,7 +142,7 @@ impl JsAudio {
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "PlayingSound")]
 pub struct JsPlayingSound {
-    inner: PlayingSound,
+    inner: Arc<PlayingSound>,
 }
 
 impl<'js> HostClass<'js> for JsPlayingSound {}
@@ -100,8 +154,10 @@ impl<'js> Trace<'js> for JsPlayingSound {
 impl JsPlayingSound {
     /// @skip
     #[must_use]
-    pub const fn new(inner: PlayingSound) -> Self {
-        Self { inner }
+    pub fn new(inner: PlayingSound) -> Self {
+        Self {
+            inner: Arc::new(inner),
+        }
     }
 }
 
@@ -162,12 +218,17 @@ impl JsPlayingSound {
         Some(duration.as_secs_f64())
     }
 
-    /// Promise allowing to wait until the sound has finished playing
+    /// Await to wait until the sound has finished playing
     /// @get
+    /// @returns Promise<void>
     #[qjs(get)]
-    #[must_use]
-    pub async fn finished(&self) {
-        self.inner.wait_finished().await;
+    pub fn finished<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
+        let local_sound = self.inner.clone();
+
+        task(ctx, async move |_ctx, token| {
+            local_sound.wait_finished(token).await;
+            Ok(())
+        })
     }
 }
 

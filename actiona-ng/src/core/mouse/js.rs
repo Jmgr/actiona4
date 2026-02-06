@@ -1,7 +1,8 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
+use macros::FromJsObject;
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Result,
+    Ctx, Exception, JsLifetime, Promise, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -12,9 +13,10 @@ use crate::{
     IntoJsResult,
     core::{
         js::{
+            abort_controller::JsAbortSignal,
             classes::{SingletonClass, register_enum},
-            duration::secs_to_duration,
-            task::task,
+            duration::{JsDuration, secs_to_duration},
+            task::{task, task_with_token},
         },
         point::js::{JsPoint, JsPointLike},
     },
@@ -67,8 +69,92 @@ impl JsMouse {
 
 pub type JsMoveOptions = super::MoveOptions;
 pub type JsPressOptions = super::PressOptions;
-pub type JsClickOptions = super::ClickOptions;
-pub type JsDoubleClickOptions = super::DoubleClickOptions;
+
+/// Measure speed options
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsMeasureSpeedOptions {
+    /// Duration in seconds
+    /// @default `2`
+    pub duration: Option<f64>,
+
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Button click options
+/// @extends PressOptions
+/// @options
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsClickOptions {
+    /// @skip
+    pub press: super::PressOptions,
+
+    /// @default `1`
+    pub amount: i32,
+
+    /// @default `0`
+    pub interval: JsDuration,
+
+    /// @default `0`
+    pub duration: JsDuration,
+
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl Default for JsClickOptions {
+    fn default() -> Self {
+        Self {
+            press: super::PressOptions::default(),
+            amount: 1,
+            interval: Duration::ZERO.into(),
+            duration: Duration::ZERO.into(),
+            signal: None,
+        }
+    }
+}
+
+impl JsClickOptions {
+    fn into_inner(self) -> super::ClickOptions {
+        super::ClickOptions {
+            press: self.press,
+            amount: self.amount,
+            interval: self.interval,
+            duration: self.duration,
+        }
+    }
+}
+
+/// Button double click options
+/// @extends ClickOptions
+/// @options
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsDoubleClickOptions {
+    /// @skip
+    pub click: JsClickOptions,
+
+    /// @default `0.25`
+    pub delay: JsDuration,
+}
+
+impl Default for JsDoubleClickOptions {
+    fn default() -> Self {
+        Self {
+            click: JsClickOptions::default(),
+            delay: Duration::from_millis(250).into(),
+        }
+    }
+}
+
+impl JsDoubleClickOptions {
+    fn into_inner(self) -> super::DoubleClickOptions {
+        super::DoubleClickOptions {
+            click: self.click.into_inner(),
+            delay: self.delay,
+        }
+    }
+}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsMouse {
@@ -88,12 +174,23 @@ impl JsMouse {
         Ok(self.inner.position().into_js_result(&ctx)?.into())
     }
 
-    pub async fn measure_speed(&self, ctx: Ctx<'_>, duration: Opt<f64>) -> Result<f64> {
-        let duration = secs_to_duration(duration.unwrap_or(2.));
-        self.inner
-            .measure_speed(duration)
-            .await
-            .into_js_result(&ctx)
+    /// @returns Task<number>
+    pub fn measure_speed<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<JsMeasureSpeedOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let duration = secs_to_duration(options.duration.unwrap_or(2.));
+        let local_mouse = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            local_mouse
+                .measure_speed(duration, token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 
     /// @returns Task<void>
@@ -131,22 +228,36 @@ impl JsMouse {
             .into_js_result(&ctx)
     }
 
-    pub async fn click(&self, ctx: Ctx<'_>, options: Opt<JsClickOptions>) -> Result<()> {
-        self.inner
-            .click(options.unwrap_or_default())
-            .await
-            .into_js_result(&ctx)
+    /// @returns Task<void>
+    pub fn click<'js>(&self, ctx: Ctx<'js>, options: Opt<JsClickOptions>) -> Result<Promise<'js>> {
+        let local_mouse = self.inner.clone();
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            local_mouse
+                .click(options.into_inner(), token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 
-    pub async fn double_click(
+    /// @returns Task<void>
+    pub fn double_click<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsDoubleClickOptions>,
-    ) -> Result<()> {
-        self.inner
-            .double_click(options.unwrap_or_default())
-            .await
-            .into_js_result(&ctx)
+    ) -> Result<Promise<'js>> {
+        let local_mouse = self.inner.clone();
+        let options = options.0.unwrap_or_default();
+        let signal = options.click.signal.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            local_mouse
+                .double_click(options.into_inner(), token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 
     pub async fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {

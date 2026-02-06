@@ -60,7 +60,7 @@ impl PlayingSound {
         self.duration
     }
 
-    pub async fn wait_finished(&self) {
+    pub async fn wait_finished(&self, cancellation_token: CancellationToken) {
         let sink = self.sink.clone();
 
         let handle = self.task_tracker.spawn_blocking(move || {
@@ -69,6 +69,7 @@ impl PlayingSound {
 
         select! {
             _ = self.cancellation_token.cancelled() => { self.sink.stop() },
+            _ = cancellation_token.cancelled() => { self.sink.stop() },
             _ = handle => {},
         }
     }
@@ -189,10 +190,15 @@ impl Audio {
         })
     }
 
-    pub async fn play_file_and_wait(&self, path: &Path, options: PlaySoundOptions) -> Result<()> {
+    pub async fn play_file_and_wait(
+        &self,
+        path: &Path,
+        options: PlaySoundOptions,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
         let playing_sound = self.play_file(path, options)?;
 
-        playing_sound.wait_finished().await;
+        playing_sound.wait_finished(cancellation_token).await;
 
         Ok(())
     }
@@ -203,6 +209,7 @@ mod tests {
     use std::{path::Path, sync::Arc, time::Duration};
 
     use tokio::time::sleep;
+    use tokio_util::sync::CancellationToken;
     use tracing_test::traced_test;
 
     use crate::{
@@ -229,7 +236,7 @@ mod tests {
                 sleep(Duration::from_secs(2)).await;
                 local_sound.stop();
             });
-            sound.wait_finished().await;
+            sound.wait_finished(CancellationToken::new()).await;
             //sleep(Duration::from_secs(10)).await;
         });
     }

@@ -24,6 +24,7 @@ use crate::{
             find_image::{FindImageProgress, Source, Template},
         },
         js::{
+            abort_controller::JsAbortSignal,
             classes::{HostClass, ValueClass, register_enum, register_host_class},
             task::{IsDone, progress_task_with_token},
         },
@@ -367,7 +368,46 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
     }
 }
 
-pub type JsFindImageOptions = super::find_image::FindImageTemplateOptions;
+/// Find image template options
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsFindImageOptions {
+    /// Use color matching.
+    /// @default `true`
+    pub use_colors: bool,
+
+    /// Use template transparency.
+    /// @default `true`
+    pub use_transparency: bool,
+
+    /// Matching threshold.
+    /// Values are between 0 (worst) to 1 (best).
+    /// @default `0.8`
+    pub match_threshold: f32,
+
+    /// Radius to consider proximity (in pixels).
+    /// @default `10`
+    pub non_maximum_suppression_radius: Option<i32>,
+
+    /// How many times should the source image and the template be downscaled?
+    /// @default `0`
+    pub downscale: u64,
+
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl JsFindImageOptions {
+    fn into_inner(self) -> super::find_image::FindImageTemplateOptions {
+        super::find_image::FindImageTemplateOptions {
+            use_colors: self.use_colors,
+            use_transparency: self.use_transparency,
+            match_threshold: self.match_threshold,
+            non_maximum_suppression_radius: self.non_maximum_suppression_radius,
+            downscale: self.downscale,
+        }
+    }
+}
 
 /// A match returned by a find_image call.
 ///
@@ -1117,20 +1157,26 @@ impl JsImage {
         options: Opt<JsFindImageOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
         let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
         let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
         let (progress_sender, progress_receiver) = watch::channel(FindImageProgress::default());
 
         progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
             ctx,
-            None,
+            signal,
             progress_receiver,
             async move |ctx, token| {
                 let task_tracker = ctx.user_data().task_tracker();
 
                 let result = task_tracker
                     .spawn_blocking(move || {
-                        source.find_template(&template, options, token, progress_sender)
+                        source.find_template(
+                            &template,
+                            options.into_inner(),
+                            token,
+                            progress_sender,
+                        )
                     })
                     .await
                     .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
@@ -1150,20 +1196,26 @@ impl JsImage {
         options: Opt<JsFindImageOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
         let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
         let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
         let (progress_sender, progress_receiver) = watch::channel(FindImageProgress::default());
 
         progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
             ctx,
-            None,
+            signal,
             progress_receiver,
             async move |ctx, token| {
                 let task_tracker = ctx.user_data().task_tracker();
 
                 let result = task_tracker
                     .spawn_blocking(move || {
-                        source.find_template_all(&template, options, token, progress_sender)
+                        source.find_template_all(
+                            &template,
+                            options.into_inner(),
+                            token,
+                            progress_sender,
+                        )
                     })
                     .await
                     .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?

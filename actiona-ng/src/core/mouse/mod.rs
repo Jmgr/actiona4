@@ -354,8 +354,12 @@ impl Mouse {
         Ok(point(pos.0, pos.1))
     }
 
-    #[instrument(skip(self), err, ret)]
-    pub async fn measure_speed(&self, duration: Duration) -> Result<f64> {
+    #[instrument(skip(self, cancellation_token), err, ret)]
+    pub async fn measure_speed(
+        &self,
+        duration: Duration,
+        cancellation_token: CancellationToken,
+    ) -> Result<f64> {
         let mut last_position = self.position()?;
         let mut last_time = Instant::now();
 
@@ -365,7 +369,10 @@ impl Mouse {
         let start_time = Instant::now();
 
         while start_time.elapsed() < duration {
-            sleep(Duration::from_millis(10)).await;
+            select! {
+                () = cancellation_token.cancelled() => { return Err(CommonError::Cancelled.into()) },
+                () = sleep(Duration::from_millis(10)) => {},
+            }
 
             let current_position = self.position()?;
             let current_time = Instant::now();
@@ -558,7 +565,11 @@ impl Default for ClickOptions {
 
 impl Mouse {
     #[instrument(skip(self), err, ret)]
-    pub async fn click(&self, options: ClickOptions) -> Result<()> {
+    pub async fn click(
+        &self,
+        options: ClickOptions,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
         use enigo::Mouse;
 
         let coordinate = if options.press.relative_position {
@@ -596,7 +607,14 @@ impl Mouse {
                         options.press.button
                     );
                 }
-                sleep(options.duration.0).await;
+                select! {
+                    () = cancellation_token.cancelled() => {
+                        // Release the button before cancelling
+                        let _ = action(enigo::Direction::Release);
+                        return Err(CommonError::Cancelled.into());
+                    },
+                    () = sleep(options.duration.0) => {},
+                }
                 action(enigo::Direction::Release)?;
             } else {
                 action(enigo::Direction::Click)?;
@@ -610,7 +628,10 @@ impl Mouse {
             }
 
             if !options.interval.0.is_zero() && i + 1 < options.amount {
-                sleep(options.interval.0).await;
+                select! {
+                    () = cancellation_token.cancelled() => { return Err(CommonError::Cancelled.into()) },
+                    () = sleep(options.interval.0) => {},
+                }
             }
         }
 
@@ -640,11 +661,19 @@ impl Default for DoubleClickOptions {
 }
 
 impl Mouse {
-    #[instrument(skip(self), err, ret)]
-    pub async fn double_click(&self, options: DoubleClickOptions) -> Result<()> {
-        self.click(options.click).await?;
-        sleep(options.delay.0).await;
-        self.click(options.click).await?;
+    #[instrument(skip(self, cancellation_token), err, ret)]
+    pub async fn double_click(
+        &self,
+        options: DoubleClickOptions,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
+        self.click(options.click, cancellation_token.clone())
+            .await?;
+        select! {
+            () = cancellation_token.cancelled() => { return Err(CommonError::Cancelled.into()) },
+            () = sleep(options.delay.0) => {},
+        }
+        self.click(options.click, cancellation_token).await?;
 
         Ok(())
     }

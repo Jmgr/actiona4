@@ -2,9 +2,9 @@ use std::{collections::HashSet, str::FromStr, sync::Arc};
 
 use derive_more::Display;
 use enigo::Key;
-use macros::{FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
-    Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Result, Value,
+    Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Promise, Result, Value,
     class::{JsClass, Readable, Trace, Tracer},
     function::Constructor,
     prelude::Opt,
@@ -15,8 +15,12 @@ use tracing::instrument;
 
 use crate::{
     IntoJsResult,
-    core::js::classes::{SingletonClass, register_enum},
-    runtime::{Runtime, WithUserData},
+    core::js::{
+        abort_controller::JsAbortSignal,
+        classes::{SingletonClass, register_enum},
+        task::task_with_token,
+    },
+    runtime::Runtime,
 };
 
 impl<'js> Trace<'js> for super::Keyboard {
@@ -58,10 +62,14 @@ impl From<JsDirection> for enigo::Direction {
 }
 
 /// @singleton
-#[derive(Debug, JsLifetime, Trace)]
+#[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Keyboard")]
 pub struct JsKeyboard {
-    inner: super::Keyboard,
+    inner: Arc<super::Keyboard>,
+}
+
+impl<'js> Trace<'js> for JsKeyboard {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl SingletonClass<'_> for JsKeyboard {
@@ -77,9 +85,21 @@ impl JsKeyboard {
     #[instrument(skip_all)]
     pub fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
         Ok(Self {
-            inner: super::Keyboard::new(runtime)?,
+            inner: Arc::new(super::Keyboard::new(runtime)?),
         })
     }
+}
+
+/// Wait for keys options
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsWaitForKeysOptions {
+    /// Wait for exactly these keys and no other
+    /// @default `false`
+    pub exclusive: bool,
+
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
@@ -126,15 +146,15 @@ impl JsKeyboard {
     }
 
     /// @param keys: (Key | string | number)[]
-    /// @param exclusive?: boolean
-    pub async fn wait_for_keys(
+    /// @returns Task<void>
+    pub fn wait_for_keys<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         keys: Vec<JsKey>,
-        exclusive: Opt<bool>,
-    ) -> Result<()> {
-        let exclusive = exclusive.0.unwrap_or_default();
-        let cancellation_token = ctx.user_data().cancellation_token();
+        options: Opt<JsWaitForKeysOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
         let keys = keys
             .into_iter()
             .map(|key| {
@@ -143,10 +163,14 @@ impl JsKeyboard {
                 })
             })
             .collect::<Result<HashSet<_>>>()?;
-        self.inner
-            .wait_for_keys(&keys, exclusive, cancellation_token)
-            .await
-            .into_js_result(&ctx)
+        let local_keyboard = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            local_keyboard
+                .wait_for_keys(&keys, options.exclusive, token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 }
 

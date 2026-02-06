@@ -1,5 +1,6 @@
+use macros::FromJsObject;
 use rquickjs::{
-    Ctx, JsLifetime, Result,
+    Ctx, JsLifetime, Promise, Result,
     class::{Trace, Tracer},
     prelude::Opt,
 };
@@ -7,7 +8,11 @@ use rquickjs::{
 use crate::{
     IntoJsResult,
     core::{
-        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
+        js::{
+            abort_controller::JsAbortSignal,
+            classes::{HostClass, SingletonClass, register_enum, register_host_class},
+            task::task_with_token,
+        },
         ui::{MessageBoxButtons, Ui},
     },
     runtime::WithUserData,
@@ -15,7 +20,33 @@ use crate::{
 
 pub type JsMessageBoxIcon = super::MessageBoxIcon;
 pub type JsMessageBoxResult = super::MessageBoxResult;
-pub type JsMessageBoxOptions = super::MessageBoxOptions;
+
+/// Message box options
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsMessageBoxOptions {
+    /// @default `undefined`
+    pub title: Option<String>,
+
+    /// @default `MessageBoxButtons.ok()`
+    pub buttons: Option<JsMessageBoxButtons>,
+
+    /// @default `MessageBoxIcon.Info`
+    pub icon: Option<super::MessageBoxIcon>,
+
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl JsMessageBoxOptions {
+    fn into_inner(self) -> super::MessageBoxOptions {
+        super::MessageBoxOptions {
+            title: self.title,
+            buttons: self.buttons,
+            icon: self.icon,
+        }
+    }
+}
 
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
@@ -44,17 +75,22 @@ impl JsUi {
         Ok(Self::default())
     }
 
+    /// @returns Task<MessageBoxResult>
     #[qjs(static)]
-    pub async fn message_box<'js>(
+    pub fn message_box<'js>(
         ctx: Ctx<'js>,
         text: String,
         options: Opt<JsMessageBoxOptions>,
-    ) -> Result<JsMessageBoxResult> {
+    ) -> Result<Promise<'js>> {
         let app_handle = ctx.user_data().app_handle();
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
 
-        Ui::message_box(app_handle, text, options.0)
-            .await
-            .into_js_result(&ctx)
+        task_with_token(ctx, signal, async move |ctx, _token| {
+            Ui::message_box(app_handle, text, Some(options.into_inner()))
+                .await
+                .into_js_result(&ctx)
+        })
     }
 }
 
