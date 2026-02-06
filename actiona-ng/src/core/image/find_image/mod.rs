@@ -181,6 +181,21 @@ pub struct Match {
     pub score: f64,
 }
 
+impl Match {
+    /// Returns a new Match with position and rect offset by the given origin point.
+    #[must_use]
+    pub fn offset(self, origin: Point) -> Self {
+        Self {
+            position: self.position + origin,
+            rect: Rect {
+                top_left: self.rect.top_left + origin,
+                ..self.rect
+            },
+            score: self.score,
+        }
+    }
+}
+
 impl Image {
     /// Converts an Image to the BGR format, optionally extracting an alpha mask.
     pub fn to_bgr(&self, extract_mask: bool) -> Result<(BgrMat, Option<MaskMat>)> {
@@ -203,6 +218,7 @@ impl Image {
 
 #[derive(Clone, Copy, Debug, Default, EnumIs, Eq, PartialEq)]
 pub enum FindImageStage {
+    Capturing,
     #[default]
     Preparing,
     Downscaling,

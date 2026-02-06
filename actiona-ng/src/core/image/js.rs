@@ -398,7 +398,7 @@ pub struct JsFindImageOptions {
 }
 
 impl JsFindImageOptions {
-    fn into_inner(self) -> super::find_image::FindImageTemplateOptions {
+    pub(crate) fn into_inner(self) -> super::find_image::FindImageTemplateOptions {
         super::find_image::FindImageTemplateOptions {
             use_colors: self.use_colors,
             use_transparency: self.use_transparency,
@@ -502,6 +502,7 @@ impl From<super::find_image::Match> for JsMatch {
 )]
 #[serde(rename = "FindImageStage")]
 pub enum JsFindImageStage {
+    Capturing,
     Preparing,
     Downscaling,
     Matching,
@@ -514,6 +515,7 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
     fn from(value: super::find_image::FindImageStage) -> Self {
         use super::find_image::FindImageStage;
         match value {
+            FindImageStage::Capturing => Self::Capturing,
             FindImageStage::Preparing => Self::Preparing,
             FindImageStage::Downscaling => Self::Downscaling,
             FindImageStage::Matching => Self::Matching,

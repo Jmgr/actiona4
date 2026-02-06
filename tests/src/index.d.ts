@@ -99,6 +99,8 @@ declare enum TextVerticalAlign {
  * Stages of a find image operation.
  */
 declare enum FindImageStage {
+    Capturing,
+
     Preparing,
 
     Downscaling,
@@ -3802,6 +3804,30 @@ declare interface Screenshot {
     captureDisplay(displayId: number): Promise<Image>;
     capturePixel(position: PointLike): Promise<Color>;
     capturePixel(x: number, y: number): Promise<Color>;
+    /**
+     * Find an image on a screen rectangle.
+     */
+    findImageOnRect(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    /**
+     * Find an image on a screen rectangle.
+     */
+    findImageOnRect(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    /**
+     * Find all occurrences of an image on a screen rectangle.
+     */
+    findImageOnRectAll(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    /**
+     * Find all occurrences of an image on a screen rectangle.
+     */
+    findImageOnRectAll(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    /**
+     * Find an image on a display.
+     */
+    findImageOnDisplay(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    /**
+     * Find all occurrences of an image on a display.
+     */
+    findImageOnDisplayAll(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
 }
 declare const screenshot: Screenshot;
 /**

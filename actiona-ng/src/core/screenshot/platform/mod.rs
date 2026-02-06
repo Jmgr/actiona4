@@ -5,12 +5,9 @@ use tracing::error;
 
 use crate::{
     core::{
-        color::Color,
         displays::Displays,
         image::{Image, find_image::Source},
-        point::{Point, point},
-        rect::{Rect, rect},
-        size::size,
+        rect::Rect,
     },
     runtime::{Runtime, async_resource::AsyncResource, events::DisplayInfo},
 };
@@ -117,28 +114,12 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
 
     /// Capture a display directly to a Source for find_image_on_screen.
     /// This avoids the intermediate RGBA conversion.
-    pub async fn capture_display_to_source(&self, display_id: u32) -> Result<Arc<Source>> {
+    /// Returns the Source and the display's rectangle (for coordinate offset).
+    pub async fn capture_display_to_source(&self, display_id: u32) -> Result<(Arc<Source>, Rect)> {
         let display = self.get_display(display_id).await?;
         let rect = display.rect();
         let data = display.capture_raw().await?;
-        Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
+        let source = Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())?;
+        Ok((source, rect))
     }
-
-    /// Capture a single pixel.
-    pub async fn capture_pixel(&self, position: Point) -> Result<Color>
-    where
-        Self: ScreenshotImplTrait,
-    {
-        let result = self
-            .capture_rect(rect(point(position.x, position.y), size(1, 1)))
-            .await?;
-
-        Ok((*result.as_rgba8().get_pixel(0, 0)).into())
-    }
-}
-
-pub trait ScreenshotImplTrait {
-    fn capture_rect(&self, rect: Rect) -> impl Future<Output = Result<Image>> + Send;
-    fn capture_display(&self, display_id: u32) -> impl Future<Output = Result<Image>> + Send;
-    fn capture_pixel(&self, position: Point) -> impl Future<Output = Result<Color>> + Send;
 }

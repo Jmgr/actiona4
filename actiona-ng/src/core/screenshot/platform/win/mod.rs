@@ -3,13 +3,14 @@ use std::sync::Arc;
 use color_eyre::Result;
 
 use self::capture::capture_rect as capture_rect_raw;
-use super::{DisplayCapture, ScreenshotImplBase, ScreenshotImplTrait};
+use super::{DisplayCapture, ScreenshotImplBase};
 use crate::{
     core::{
         color::Color,
         image::{Image, find_image::Source},
-        point::Point,
-        rect::Rect,
+        point::{Point, point},
+        rect::{Rect, rect},
+        size::size,
     },
     runtime::{Runtime, events::DisplayInfo},
 };
@@ -41,25 +42,21 @@ impl DisplayCapture for WindowsDisplay {
 pub type ScreenshotImpl = ScreenshotImplBase<WindowsDisplay>;
 
 impl ScreenshotImpl {
-    /// Capture a rect directly to a Source for find_image.
-    pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
-        let data = capture_rect_raw(rect)?;
-        Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
-    }
-}
-
-impl ScreenshotImplTrait for ScreenshotImpl {
-    async fn capture_rect(&self, rect: Rect) -> Result<Image> {
+    pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
         let data = capture_rect_raw(rect)?;
         Image::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
     }
 
-    async fn capture_display(&self, display_id: u32) -> Result<Image> {
-        ScreenshotImplBase::capture_display(self, display_id).await
+    pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
+        let data = capture_rect_raw(rect)?;
+        Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
     }
 
-    async fn capture_pixel(&self, position: Point) -> Result<Color> {
-        ScreenshotImplBase::capture_pixel(self, position).await
+    pub async fn capture_pixel(&self, position: Point) -> Result<Color> {
+        let image = self
+            .capture_rect(rect(point(position.x, position.y), size(1, 1)))
+            .await?;
+        Ok((*image.as_rgba8().get_pixel(0, 0)).into())
     }
 }
 
@@ -72,7 +69,7 @@ mod tests {
             displays::Displays,
             point::point,
             rect::rect,
-            screenshot::platform::{ScreenshotImplBase, ScreenshotImplTrait, win::WindowsDisplay},
+            screenshot::platform::{ScreenshotImplBase, win::WindowsDisplay},
             size::size,
         },
         runtime::Runtime,
@@ -96,7 +93,7 @@ mod tests {
             let _image = impl_.capture_display(display_id).await.unwrap();
 
             // Test capture to source
-            let _source = impl_.capture_display_to_source(display_id).await.unwrap();
+            let (_source, _rect) = impl_.capture_display_to_source(display_id).await.unwrap();
         });
     }
 
