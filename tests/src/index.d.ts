@@ -54,8 +54,33 @@ declare function sleep(ms: number): Task<void>;
  * ```
  */
 declare function exit(): void;
+/**
+ * Formats a frequency value in Hz using SI prefixes.
+ * 
+ * ```ts
+ * formatFrequency(40000);    // "40 kHz"
+ * formatFrequency(3400000);  // "3.4 MHz"
+ * ```
+ */
 declare function formatFrequency(frequency: number): string;
+/**
+ * Formats a percentage value and appends `%`.
+ * 
+ * ```ts
+ * formatPercent(50);          // "50%"
+ * formatPercent(50.005);      // "50.01%"
+ * formatPercent(12.3456, 1);  // "12.3%"
+ * ```
+ */
 declare function formatPercent(percent: number, precision?: number): string;
+/**
+ * Formats a byte size using human-readable units.
+ * 
+ * ```ts
+ * formatBytes(42000);        // "42 kB"
+ * formatBytes(1048576);      // "1.05 MB"
+ * ```
+ */
 declare function formatBytes(bytes: number): string;
 /**
  * Direction to flip an image.
@@ -1683,7 +1708,15 @@ declare enum KeyError {
     Unsupported,
 }
 /**
- * Process status
+ * Process status.
+ * 
+ * ```ts
+ * const processes = await system.processes.list();
+ * const process = processes[0];
+ * if (process && process.status === ProcessStatus.Run) {
+ * console.log("process is running");
+ * }
+ * ```
  */
 declare enum ProcessStatus {
     Idle,
@@ -1715,6 +1748,16 @@ declare enum ProcessStatus {
     Unknown,
 }
 /**
+ * Disk kind values.
+ * 
+ * ```ts
+ * const disks = await system.storage.listDisks();
+ * const disk = disks[0];
+ * if (disk && disk.kind === DiskKind.SSD) {
+ * console.log("SSD");
+ * }
+ * ```
+ * 
  * Disk kind
  */
 declare enum DiskKind {
@@ -3132,6 +3175,11 @@ declare interface DirectoryEntry {
 }
 /**
  * Options for `Directory.create()` and `Directory.remove()`.
+ * 
+ * ```ts
+ * await Directory.create("/tmp/a/b/c", { recursive: true });
+ * await Directory.remove("/tmp/a", { recursive: false });
+ * ```
  */
 declare interface DirectoryOptions {
     /**
@@ -3142,6 +3190,14 @@ declare interface DirectoryOptions {
 }
 /**
  * Options for `Directory.listEntries()`.
+ * 
+ * ```ts
+ * const entries = await Directory.listEntries("/tmp", {
+ * sort: false,
+ * absolutePath: false,
+ * fetchSize: true,
+ * });
+ * ```
  */
 declare interface DirectoryListOptions {
     /**
@@ -4580,7 +4636,7 @@ declare interface WaitForKeysOptions {
  * 
  * ```ts
  * // Right-click at a specific position
- * await mouse.click({ button: Button.Right, position: new Point(100, 200) });
+ * await mouse.click({ button: Button.Right, position: { x: 100, y: 200 } });
  * ```
  * 
  * ```ts
@@ -5480,7 +5536,15 @@ declare interface StandardPaths {
 }
 declare const standard_paths: StandardPaths;
 /**
- * Cpu
+ * CPU metrics and topology.
+ * 
+ * ```ts
+ * const globalUsage = await system.cpu.usage();
+ * const core0Usage = await system.cpu.coreUsage(0);
+ * const freqs = await system.cpu.frequencies();
+ * 
+ * console.log(system.cpu.logicalCoreCount, globalUsage, core0Usage, freqs[0]);
+ * ```
  */
 declare interface Cpu {
     /**
@@ -5501,7 +5565,15 @@ declare interface Cpu {
     toString(): string;
 }
 /**
- * Hardware
+ * Hardware information.
+ * 
+ * ```ts
+ * const hw = system.hardware;
+ * const board = hw.motherboard;
+ * const components = await hw.listComponents();
+ * 
+ * console.log(hw.vendorName, board.name, components.length);
+ * ```
  */
 declare interface Hardware {
     /**
@@ -5552,6 +5624,14 @@ declare interface ListComponentsOptions {
      */
     rescan?: boolean;
 }
+/**
+ * Motherboard details.
+ * 
+ * ```ts
+ * const board = system.hardware.motherboard;
+ * console.log(board.vendorName, board.name, board.version);
+ * ```
+ */
 declare interface Motherboard {
     /**
      * Name
@@ -5575,6 +5655,17 @@ declare interface Motherboard {
     readonly assetTag?: string;
     toString(): string;
 }
+/**
+ * A hardware component (for example a thermal sensor).
+ * 
+ * ```ts
+ * const components = await system.hardware.listComponents();
+ * const component = components[0];
+ * if (component) {
+ * console.log(component.label, component.temperature);
+ * }
+ * ```
+ */
 declare interface Component {
     /**
      * Label
@@ -5599,7 +5690,14 @@ declare interface Component {
     toString(): string;
 }
 /**
- * Memory
+ * Memory metrics.
+ * 
+ * ```ts
+ * const usage = await system.memory.usage();
+ * const swap = await system.memory.swapUsage();
+ * 
+ * console.log(formatBytes(usage.used), formatBytes(swap.used));
+ * ```
  */
 declare interface Memory {
     /**
@@ -5617,6 +5715,14 @@ declare interface Memory {
     swapUsage(): Promise<MemoryUsage>;
     toString(): string;
 }
+/**
+ * A memory usage snapshot.
+ * 
+ * ```ts
+ * const usage = await system.memory.usage();
+ * console.log(usage.used, usage.free, usage.available, usage.total);
+ * ```
+ */
 declare interface MemoryUsage {
     /**
      * Used
@@ -5637,6 +5743,15 @@ declare interface MemoryUsage {
     toString(): string;
 }
 /**
+ * CGroup memory and swap limits.
+ * 
+ * ```ts
+ * const limits = system.memory.cgroupLimits;
+ * if (limits) {
+ * console.log(limits.totalMemory, limits.freeMemory, limits.freeSwap);
+ * }
+ * ```
+ * 
  * CGroup limits
  * @platform only works on Linux
  */
@@ -5660,7 +5775,19 @@ declare interface CGroupLimits {
     toString(): string;
 }
 /**
- * System
+ * System information and power/session operations.
+ * 
+ * ```ts
+ * const cpuUsage = await system.cpu.usage();
+ * const memory = await system.memory.usage();
+ * 
+ * console.log(formatPercent(cpuUsage), formatBytes(memory.used));
+ * ```
+ * 
+ * ```ts
+ * const interfaces = await system.network.listInterfaces();
+ * console.log(`interfaces: ${interfaces.length}`);
+ * ```
  */
 declare interface System {
     /**
@@ -5701,7 +5828,13 @@ declare interface System {
 }
 declare const system: System;
 /**
- * Network
+ * Network information and interfaces.
+ * 
+ * ```ts
+ * console.log(system.network.hostname);
+ * const interfaces = await system.network.listInterfaces();
+ * console.log(interfaces.length);
+ * ```
  */
 declare interface Network {
     /**
@@ -5724,6 +5857,17 @@ declare interface ListInterfacesOptions {
      */
     rescan?: boolean;
 }
+/**
+ * A network interface.
+ * 
+ * ```ts
+ * const interfaces = await system.network.listInterfaces();
+ * const iface = interfaces[0];
+ * if (iface) {
+ * console.log(iface.name, iface.mtu, iface.macAddress);
+ * }
+ * ```
+ */
 declare interface NetworkInterface {
     /**
      * Name
@@ -5751,6 +5895,18 @@ declare interface NetworkInterface {
     readonly subnets: string[];
     toString(): string;
 }
+/**
+ * Byte/packet/error counters.
+ * 
+ * ```ts
+ * const interfaces = await system.network.listInterfaces();
+ * const iface = interfaces[0];
+ * if (iface) {
+ * const counters = iface.inbound.total;
+ * console.log(counters.data, counters.packets, counters.errors);
+ * }
+ * ```
+ */
 declare interface Counters {
     /**
      * Data
@@ -5766,6 +5922,17 @@ declare interface Counters {
     readonly errors: number;
     toString(): string;
 }
+/**
+ * Traffic statistics.
+ * 
+ * ```ts
+ * const interfaces = await system.network.listInterfaces();
+ * const iface = interfaces[0];
+ * if (iface) {
+ * console.log(iface.inbound.total.data, iface.inbound.delta.data);
+ * }
+ * ```
+ */
 declare interface Traffic {
     /**
      * Total
@@ -5778,7 +5945,15 @@ declare interface Traffic {
     toString(): string;
 }
 /**
- * Os
+ * OS-level information.
+ * 
+ * ```ts
+ * console.log(system.os.name, system.os.version, system.os.kernelVersion);
+ * 
+ * const users = await system.os.listUsers();
+ * const groups = await system.os.listGroups();
+ * console.log(users.length, groups.length);
+ * ```
  */
 declare interface Os {
     /**
@@ -5831,6 +6006,17 @@ declare interface Os {
     listGroups(): Promise<Group[]>;
     toString(): string;
 }
+/**
+ * A system user.
+ * 
+ * ```ts
+ * const users = await system.os.listUsers();
+ * const user = users[0];
+ * if (user) {
+ * console.log(user.id, user.name, user.groupName);
+ * }
+ * ```
+ */
 declare interface User {
     /**
      * Name
@@ -5860,6 +6046,17 @@ declare interface User {
     readonly groupNames: string[];
     toString(): string;
 }
+/**
+ * A system group.
+ * 
+ * ```ts
+ * const groups = await system.os.listGroups();
+ * const group = groups[0];
+ * if (group) {
+ * console.log(group.id, group.name);
+ * }
+ * ```
+ */
 declare interface Group {
     /**
      * Name
@@ -5872,7 +6069,12 @@ declare interface Group {
     toString(): string;
 }
 /**
- * Processes
+ * Process listing and inspection.
+ * 
+ * ```ts
+ * const processes = await system.processes.list();
+ * console.log(processes.length);
+ * ```
  */
 declare interface Processes {
     /**
@@ -5891,6 +6093,17 @@ declare interface ListProcessesOptions {
      */
     rescan?: boolean;
 }
+/**
+ * A running process.
+ * 
+ * ```ts
+ * const processes = await system.processes.list();
+ * const process = processes[0];
+ * if (process) {
+ * console.log(process.pid, process.name, process.status);
+ * }
+ * ```
+ */
 declare interface Process {
     /**
      * Name
@@ -5994,7 +6207,12 @@ declare interface Process {
     toString(): string;
 }
 /**
- * Storage
+ * Storage devices and disk usage information.
+ * 
+ * ```ts
+ * const disks = await system.storage.listDisks();
+ * console.log(disks.length);
+ * ```
  */
 declare interface Storage {
     /**
@@ -6013,6 +6231,17 @@ declare interface ListDisksOptions {
      */
     rescan?: boolean;
 }
+/**
+ * A disk device.
+ * 
+ * ```ts
+ * const disks = await system.storage.listDisks();
+ * const disk = disks[0];
+ * if (disk) {
+ * console.log(disk.name, disk.kind, disk.mountPoint);
+ * }
+ * ```
+ */
 declare interface Disk {
     /**
      * Kind
@@ -6052,6 +6281,17 @@ declare interface Disk {
     readonly usage: DiskUsage;
     toString(): string;
 }
+/**
+ * Disk I/O statistics (bytes).
+ * 
+ * ```ts
+ * const disks = await system.storage.listDisks();
+ * const disk = disks[0];
+ * if (disk) {
+ * console.log(disk.usage.read.total, disk.usage.written.delta);
+ * }
+ * ```
+ */
 declare interface IoStats {
     /**
      * Total
@@ -6063,6 +6303,17 @@ declare interface IoStats {
     readonly delta: number;
     toString(): string;
 }
+/**
+ * Read/write usage for a disk.
+ * 
+ * ```ts
+ * const disks = await system.storage.listDisks();
+ * const disk = disks[0];
+ * if (disk) {
+ * console.log(disk.usage.read.total, disk.usage.written.total);
+ * }
+ * ```
+ */
 declare interface DiskUsage {
     /**
      * Written
@@ -6076,6 +6327,14 @@ declare interface DiskUsage {
 }
 /**
  * Message box options.
+ * 
+ * ```ts
+ * await Ui.messageBox("Delete this file?", {
+ * title: "Confirm",
+ * buttons: MessageBoxButtons.yesNo(),
+ * icon: MessageBoxIcon.Warning,
+ * });
+ * ```
  */
 declare interface MessageBoxOptions {
     /**
@@ -6268,6 +6527,13 @@ declare interface WebOptions {
 }
 /**
  * Progress information for web downloads and uploads.
+ * 
+ * ```ts
+ * const task = web.download("https://example.com/file.bin");
+ * for await (const progress of task) {
+ * console.log(progress.current, progress.total, progress.finished);
+ * }
+ * ```
  */
 declare interface WebProgress {
     /**

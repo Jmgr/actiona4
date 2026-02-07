@@ -196,6 +196,12 @@ impl JsSystem {
     }
 }
 
+/// Formats a frequency value in Hz using SI prefixes.
+///
+/// ```ts
+/// formatFrequency(40000);    // "40 kHz"
+/// formatFrequency(3400000);  // "3.4 MHz"
+/// ```
 pub fn format_frequency(ctx: Ctx<'_>, frequency: u64) -> Result<String> {
     Ok(
         human_units::si::Frequency::try_with_si_prefix(frequency, Prefix::None)
@@ -204,6 +210,13 @@ pub fn format_frequency(ctx: Ctx<'_>, frequency: u64) -> Result<String> {
     )
 }
 
+/// Formats a percentage value and appends `%`.
+///
+/// ```ts
+/// formatPercent(50);          // "50%"
+/// formatPercent(50.005);      // "50.01%"
+/// formatPercent(12.3456, 1);  // "12.3%"
+/// ```
 pub fn format_percent(ctx: Ctx<'_>, percent: f64, precision: Opt<u32>) -> Result<String> {
     let precision = precision
         .0
@@ -219,6 +232,12 @@ pub fn format_percent(ctx: Ctx<'_>, percent: f64, precision: Opt<u32>) -> Result
     Ok(format!("{s}%"))
 }
 
+/// Formats a byte size using human-readable units.
+///
+/// ```ts
+/// formatBytes(42000);        // "42 kB"
+/// formatBytes(1048576);      // "1.05 MB"
+/// ```
 #[must_use]
 pub fn format_bytes(bytes: u64) -> String {
     bytes.format_size().to_string()

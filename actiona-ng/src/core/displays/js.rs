@@ -166,7 +166,7 @@ impl JsDisplays {
 /// ```ts
 /// const info = await displays.fromName("HDMI-1");
 /// if (info) {
-///     console.log(info.friendlyName, info.rect, info.frequency + "Hz");
+///     console.log(info.friendlyName, info.rect, formatFrequency(info.frequency));
 ///     console.log("Primary:", info.isPrimary);
 /// }
 /// ```

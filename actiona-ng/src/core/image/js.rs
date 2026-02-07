@@ -609,7 +609,7 @@ impl From<super::find_image::Match> for JsMatch {
 /// const task = source.findImage(template);
 /// for await (const progress of task) {
 ///   if (progress.stage === FindImageStage.Matching) {
-///     console.log(`Matching: ${progress.percent}%`);
+///     console.log(`Matching: ${formatPercent(progress.percent)}`);
 ///   }
 /// }
 /// ```
@@ -659,7 +659,7 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 /// ```ts
 /// const task = source.findImage(template);
 /// for await (const progress of task) {
-///   console.log(`${progress.stage}: ${progress.percent}%`);
+///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
 ///   if (progress.finished) break;
 /// }
 /// const result = await task;
@@ -1349,7 +1349,7 @@ impl JsImage {
     /// // Track progress while searching
     /// const task = source.findImage(template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -1406,7 +1406,7 @@ impl JsImage {
     /// // Track progress while searching
     /// const task = source.findImageAll(template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```

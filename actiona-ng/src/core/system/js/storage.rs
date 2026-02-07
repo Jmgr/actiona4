@@ -97,7 +97,13 @@ impl JsStorage {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk) {
-///   console.log(disk.name, disk.kind, disk.mountPoint);
+///   console.log(
+///     disk.name,
+///     disk.kind,
+///     disk.mountPoint,
+///     formatBytes(disk.totalSpace),
+///     formatBytes(disk.availableSpace),
+///   );
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -257,7 +263,10 @@ impl From<DiskKind> for JsDiskKind {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk) {
-///   console.log(disk.usage.read.total, disk.usage.written.delta);
+///   console.log(
+///     formatBytes(disk.usage.read.total),
+///     formatBytes(disk.usage.written.delta),
+///   );
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -309,7 +318,10 @@ impl JsIoStats {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk) {
-///   console.log(disk.usage.read.total, disk.usage.written.total);
+///   console.log(
+///     formatBytes(disk.usage.read.total),
+///     formatBytes(disk.usage.written.total),
+///   );
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]

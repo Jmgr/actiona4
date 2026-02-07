@@ -18,7 +18,12 @@ use crate::{
 /// const core0Usage = await system.cpu.coreUsage(0);
 /// const freqs = await system.cpu.frequencies();
 ///
-/// console.log(system.cpu.logicalCoreCount, globalUsage, core0Usage, freqs[0]);
+/// console.log(
+///   system.cpu.logicalCoreCount,
+///   formatPercent(globalUsage),
+///   formatPercent(core0Usage),
+///   formatFrequency(freqs[0]),
+/// );
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Cpu")]

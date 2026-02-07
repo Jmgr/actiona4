@@ -192,7 +192,7 @@ impl JsNetworkInterface {
 /// const iface = interfaces[0];
 /// if (iface) {
 ///   const counters = iface.inbound.total;
-///   console.log(counters.data, counters.packets, counters.errors);
+///   console.log(formatBytes(counters.data), counters.packets, counters.errors);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -252,7 +252,10 @@ impl JsCounters {
 /// const interfaces = await system.network.listInterfaces();
 /// const iface = interfaces[0];
 /// if (iface) {
-///   console.log(iface.inbound.total.data, iface.inbound.delta.data);
+///   console.log(
+///     formatBytes(iface.inbound.total.data),
+///     formatBytes(iface.inbound.delta.data),
+///   );
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]

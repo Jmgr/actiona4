@@ -120,7 +120,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -156,7 +156,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```
@@ -192,7 +192,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnDisplay(0, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -227,7 +227,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnDisplayAll(0, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```

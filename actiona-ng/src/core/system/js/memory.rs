@@ -84,7 +84,12 @@ impl JsMemory {
 ///
 /// ```ts
 /// const usage = await system.memory.usage();
-/// console.log(usage.used, usage.free, usage.available, usage.total);
+/// console.log(
+///   formatBytes(usage.used),
+///   formatBytes(usage.free),
+///   formatBytes(usage.available),
+///   formatBytes(usage.total),
+/// );
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "MemoryUsage")]
@@ -150,7 +155,11 @@ impl JsMemoryUsage {
 /// ```ts
 /// const limits = system.memory.cgroupLimits;
 /// if (limits) {
-///   console.log(limits.totalMemory, limits.freeMemory, limits.freeSwap);
+///   console.log(
+///     formatBytes(limits.totalMemory),
+///     formatBytes(limits.freeMemory),
+///     formatBytes(limits.freeSwap),
+///   );
 /// }
 /// ```
 ///
