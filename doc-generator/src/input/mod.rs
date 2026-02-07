@@ -9,7 +9,7 @@ use enums::process_enums;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use rustdoc_types::Crate;
+use rustdoc_types::{Crate, Item};
 use structs::process_structs;
 
 use crate::{
@@ -25,6 +25,14 @@ pub mod enums;
 pub mod functions;
 pub mod modules;
 pub mod structs;
+
+/// Metadata extracted from a rustdoc `Item` during filtering.
+pub struct ItemInfo<'a, T> {
+    pub name: &'a str,
+    pub docs: &'a Option<String>,
+    pub inner: &'a T,
+    pub item: &'a Item,
+}
 
 newtype!(pub Comments, Vec<String>);
 
@@ -191,6 +199,16 @@ impl Instructions {
     pub fn has_constructor_only(&self) -> bool {
         self.iter()
             .any(|instruction| instruction.is_constructor_only())
+    }
+
+    pub fn category(&self) -> Option<String> {
+        self.iter().find_map(|instruction| {
+            if let Instruction::Category(category) = instruction {
+                Some(category.clone())
+            } else {
+                None
+            }
+        })
     }
 }
 
@@ -476,6 +494,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Type(Type::Verbatim(type_.to_string()))
         }
 
+        // @category CategoryName
+        "category" => {
+            if parameters.is_empty() {
+                bail!("expected category name");
+            }
+
+            Instruction::Category(parameters.to_string())
+        }
+
         _ => bail!("unknown instruction {name}"),
     })
 }
@@ -526,6 +553,12 @@ const fn allowed_context_for_instruction(
         Getter => &[RustdocContext::Method],
         ReadonlyType => &[RustdocContext::Method],
         ConstructorOnly => &[RustdocContext::MethodOverload],
+        Category => &[
+            RustdocContext::Struct,
+            RustdocContext::StructAlias,
+            RustdocContext::Enum,
+            RustdocContext::Method,
+        ],
     }
 }
 

@@ -4,7 +4,7 @@ use log::warn;
 use rustdoc_types::{Id, ItemEnum, StructKind};
 
 use crate::{
-    input::{convert_type, functions::extract_functions, process_rustdoc},
+    input::{ItemInfo, convert_type, functions::extract_functions, process_rustdoc},
     items::Items,
     types::{Instruction, RustdocContext, Struct, Variable},
 };
@@ -22,7 +22,12 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         .iter()
         .filter(|item| item.links.is_empty()) // We use this to filter out generated structs
         .filter_map(|item| match &item.inner {
-            ItemEnum::Struct(struct_) => item.name.as_ref().map(|name| (name, &item.docs, struct_)),
+            ItemEnum::Struct(inner) => item.name.as_ref().map(|name| ItemInfo {
+                name,
+                docs: &item.docs,
+                inner,
+                item,
+            }),
             _ => None,
         });
 
@@ -88,14 +93,14 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         Ok(result)
     }
 
-    for (struct_name, struct_docs, struct_) in structs {
-        let StructKind::Plain { fields, .. } = &struct_.kind else {
-            warn!("Only plain structs are supported: {struct_name}");
+    for info in structs {
+        let StructKind::Plain { fields, .. } = &info.inner.kind else {
+            warn!("Only plain structs are supported: {}", info.name);
             continue;
         };
 
         let (struct_comments, struct_instructions, _) =
-            process_rustdoc(struct_docs.as_ref(), RustdocContext::Struct)?;
+            process_rustdoc(info.docs.as_ref(), RustdocContext::Struct)?;
         if struct_instructions.has_skip() {
             continue;
         }
@@ -118,11 +123,14 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let is_struct_generic = struct_instructions.is_generic();
         let extra_methods = struct_instructions.extra_methods();
         let verbatim = struct_instructions.verbatim();
+        let category = struct_instructions
+            .category()
+            .or_else(|| items.category_for_item(info.item));
 
-        let mut properties = list_properties(items, struct_name, fields, struct_docs)?;
+        let mut properties = list_properties(items, info.name, fields, info.docs)?;
 
         let impls = items
-            .get_sorted(&struct_.impls)
+            .get_sorted(&info.inner.impls)
             .into_iter()
             // Select only Impls
             .filter_map(|item| match &item.inner {
@@ -136,20 +144,21 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
 
         for impl_ in impls {
             let (mut impl_methods, mut extra_properties) =
-                extract_functions(items, &impl_.items, Some(struct_name))
-                    .wrap_err_with(|| struct_name.to_string())?;
+                extract_functions(items, &impl_.items, Some(info.name))
+                    .wrap_err_with(|| info.name.to_string())?;
             methods.append(&mut impl_methods);
             properties.append(&mut extra_properties);
         }
 
         // Remove "Js" prefix if present
-        let struct_name = struct_name.strip_prefix("Js").unwrap_or(struct_name);
+        let name = info.name.strip_prefix("Js").unwrap_or(info.name);
 
         result.push(Struct {
-            name: struct_name.to_string(),
+            name: name.to_string(),
             properties,
             methods,
             comments: struct_comments,
+            category,
             is_singleton,
             consts,
             is_options,

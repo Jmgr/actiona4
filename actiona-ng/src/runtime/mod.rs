@@ -138,6 +138,7 @@ impl JsUserData {
 }
 
 /// Should the script wait at the end of the execution?
+/// @category App
 /// @default `WaitAtEnd.Automatic`
 #[derive(
     Clone,

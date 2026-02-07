@@ -42,6 +42,7 @@ type SizeLike = Size | { width: number; height: number };
  * // Wait 1 second
  * await sleep(1000);
  * ```
+ * @category Core
  */
 declare function sleep(ms: number): Task<void>;
 /**
@@ -52,6 +53,7 @@ declare function sleep(ms: number): Task<void>;
  * exit();
  * }
  * ```
+ * @category Core
  */
 declare function exit(): void;
 /**
@@ -61,6 +63,7 @@ declare function exit(): void;
  * formatFrequency(40000);    // "40 kHz"
  * formatFrequency(3400000);  // "3.4 MHz"
  * ```
+ * @category System
  */
 declare function formatFrequency(frequency: number): string;
 /**
@@ -71,6 +74,7 @@ declare function formatFrequency(frequency: number): string;
  * formatPercent(50.005);      // "50.01%"
  * formatPercent(12.3456, 1);  // "12.3%"
  * ```
+ * @category System
  */
 declare function formatPercent(percent: number, precision?: number): string;
 /**
@@ -80,6 +84,7 @@ declare function formatPercent(percent: number, precision?: number): string;
  * formatBytes(42000);        // "42 kB"
  * formatBytes(1048576);      // "1.05 MB"
  * ```
+ * @category System
  */
 declare function formatBytes(bytes: number): string;
 /**
@@ -92,6 +97,7 @@ declare function formatBytes(bytes: number): string;
  * // Flip vertically
  * image.flip(FlipDirection.Vertical);
  * ```
+ * @category Image
  */
 declare enum FlipDirection {
     Horizontal,
@@ -108,6 +114,7 @@ declare enum FlipDirection {
  * // Use Lanczos3 for high-quality downscaling
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
  * ```
+ * @category Image
  */
 declare enum ResizeFilter {
     Nearest,
@@ -130,6 +137,7 @@ declare enum ResizeFilter {
  * // Smooth result (default)
  * image.rotate(45, { interpolation: Interpolation.Bilinear });
  * ```
+ * @category Image
  */
 declare enum Interpolation {
     Nearest,
@@ -146,6 +154,7 @@ declare enum Interpolation {
  * horizontalAlign: TextHorizontalAlign.Center
  * });
  * ```
+ * @category Image
  */
 declare enum TextHorizontalAlign {
     Left,
@@ -162,6 +171,7 @@ declare enum TextHorizontalAlign {
  * verticalAlign: TextVerticalAlign.Middle
  * });
  * ```
+ * @category Image
  */
 declare enum TextVerticalAlign {
     Top,
@@ -181,6 +191,7 @@ declare enum TextVerticalAlign {
  * }
  * }
  * ```
+ * @category Image
  */
 declare enum FindImageStage {
     Capturing,
@@ -209,6 +220,7 @@ declare enum FindImageStage {
  * // Press and release in one action
  * await keyboard.key(Key.Return, Direction.Click);
  * ```
+ * @category Keyboard
  */
 declare enum Direction {
     Press,
@@ -227,6 +239,7 @@ declare enum Direction {
  * await keyboard.key(Key.Return, Direction.Click);
  * await keyboard.key("a", Direction.Click);
  * ```
+ * @category Keyboard
  */
 declare enum Key {
     /**
@@ -1704,6 +1717,9 @@ declare enum Key {
      */
     Zoom,
 }
+/**
+ * @category Keyboard
+ */
 declare enum KeyError {
     Unsupported,
 }
@@ -1717,6 +1733,7 @@ declare enum KeyError {
  * console.log("process is running");
  * }
  * ```
+ * @category System
  */
 declare enum ProcessStatus {
     Idle,
@@ -1759,6 +1776,7 @@ declare enum ProcessStatus {
  * ```
  * 
  * Disk kind
+ * @category System
  */
 declare enum DiskKind {
     /**
@@ -1778,6 +1796,7 @@ declare enum DiskKind {
 }
 /**
  * Should the script wait at the end of the execution?
+ * @category App
  * @defaultValue `WaitAtEnd.Automatic`
  */
 declare enum WaitAtEnd {
@@ -1797,6 +1816,9 @@ declare enum WaitAtEnd {
      */
     No,
 }
+/**
+ * @category Clipboard
+ */
 declare enum ClipboardMode {
     Clipboard,
 
@@ -1812,6 +1834,7 @@ declare enum ClipboardMode {
  * await mouse.click({ button: Button.Right });
  * const pressed = await mouse.isPressed(Button.Left);
  * ```
+ * @category Mouse
  */
 declare enum Button {
     /**
@@ -1846,6 +1869,7 @@ declare enum Button {
  * await mouse.scroll(3, Axis.Vertical);
  * await mouse.scroll(-1, Axis.Horizontal);
  * ```
+ * @category Mouse
  */
 declare enum Axis {
     Horizontal,
@@ -1862,6 +1886,7 @@ declare enum Axis {
  * // Move with linear interpolation (no easing)
  * await mouse.move(100, 100, { tween: Tween.Linear });
  * ```
+ * @category Mouse
  */
 declare enum Tween {
     /**
@@ -2019,6 +2044,9 @@ declare enum Tween {
      */
     SineOut,
 }
+/**
+ * @category UI
+ */
 declare enum MessageBoxIcon {
     Info,
 
@@ -2026,6 +2054,9 @@ declare enum MessageBoxIcon {
 
     Error,
 }
+/**
+ * @category UI
+ */
 declare enum MessageBoxResult {
     Yes,
 
@@ -2037,6 +2068,7 @@ declare enum MessageBoxResult {
 }
 /**
  * HTTP request method.
+ * @category Web
  */
 declare enum Method {
     Get,
@@ -2076,6 +2108,7 @@ declare enum Method {
  * app.waitAtEnd = true;
  * app.waitAtEnd = WaitAtEnd.Automatic;
  * ```
+ * @category App
  */
 declare interface App {
     /**
@@ -2125,6 +2158,9 @@ declare interface App {
      */
     setCwd(cwd: string): void;
 }
+/**
+ * @category App
+ */
 declare const app: App;
 /**
  * Options for playing a sound file.
@@ -2140,6 +2176,7 @@ declare const app: App;
  * fadeIn: 2000,
  * });
  * ```
+ * @category Audio
  */
 declare interface PlaySoundOptions {
     /**
@@ -2173,6 +2210,7 @@ declare interface PlaySoundOptions {
      */
     fadeOut?: number;
     /**
+     * Abort signal to cancel the sound playback.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -2193,6 +2231,7 @@ declare interface PlaySoundOptions {
  * sound.resume();
  * sound.stop();
  * ```
+ * @category Audio
  */
 declare interface Audio {
     /**
@@ -2220,6 +2259,9 @@ declare interface Audio {
      */
     playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
 }
+/**
+ * @category Audio
+ */
 declare const audio: Audio;
 /**
  * A handle to an actively playing sound, allowing control over playback.
@@ -2233,6 +2275,7 @@ declare const audio: Audio;
  * sound.resume();
  * await sound.finished;  // wait until the sound ends
  * ```
+ * @category Audio
  */
 declare interface PlayingSound {
     /**
@@ -2303,6 +2346,7 @@ declare interface PlayingSound {
  * // On Linux, use the selection clipboard
  * await clipboard.text.set("selected", ClipboardMode.Selection);
  * ```
+ * @category Clipboard
  */
 declare interface Clipboard {
     /**
@@ -2333,6 +2377,9 @@ declare interface Clipboard {
      */
     clear(mode?: ClipboardMode): Promise<void>;
 }
+/**
+ * @category Clipboard
+ */
 declare const clipboard: Clipboard;
 /**
  * Provides text clipboard operations.
@@ -2341,6 +2388,7 @@ declare const clipboard: Clipboard;
  * await clipboard.text.set("Hello!");
  * const text = await clipboard.text.get();
  * ```
+ * @category Clipboard
  */
 declare interface ClipboardText {
     /**
@@ -2360,6 +2408,7 @@ declare interface ClipboardText {
  * await clipboard.image.set(img);
  * const clipped = await clipboard.image.get();
  * ```
+ * @category Clipboard
  */
 declare interface ClipboardImage {
     /**
@@ -2378,6 +2427,7 @@ declare interface ClipboardImage {
  * await clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
  * const files = await clipboard.fileList.get();
  * ```
+ * @category Clipboard
  */
 declare interface ClipboardFileList {
     /**
@@ -2401,6 +2451,7 @@ declare interface ClipboardFileList {
  * 
  * const html = await clipboard.html.get();
  * ```
+ * @category Clipboard
  */
 declare interface ClipboardHtml {
     /**
@@ -2446,6 +2497,7 @@ declare interface ClipboardHtml {
  * ```js
  * let c = new Color(128, 255, 255, 255);
  * ```
+ * @category Color
  */
 declare class Color {
     /**
@@ -3077,6 +3129,7 @@ declare class Color {
  * console.count("loop");
  * console.count("loop");
  * ```
+ * @category Console
  */
 declare interface Console {
     /**
@@ -3135,6 +3188,9 @@ declare interface Console {
      */
     count(label?: string): void;
 }
+/**
+ * @category Console
+ */
 declare const console: Console;
 /**
  * An entry returned by `Directory.listEntries()`, representing a file, directory,
@@ -3146,6 +3202,7 @@ declare const console: Console;
  * console.log(entry.fileName, entry.isFile, entry.size);
  * }
  * ```
+ * @category Directory
  */
 declare interface DirectoryEntry {
     /**
@@ -3180,6 +3237,7 @@ declare interface DirectoryEntry {
  * await Directory.create("/tmp/a/b/c", { recursive: true });
  * await Directory.remove("/tmp/a", { recursive: false });
  * ```
+ * @category Directory
  */
 declare interface DirectoryOptions {
     /**
@@ -3198,6 +3256,7 @@ declare interface DirectoryOptions {
  * fetchSize: true,
  * });
  * ```
+ * @category Directory
  */
 declare interface DirectoryListOptions {
     /**
@@ -3232,6 +3291,7 @@ declare interface DirectoryListOptions {
  * // Remove a directory tree
  * await Directory.remove("/tmp/my");
  * ```
+ * @category Directory
  */
 declare class Directory {
     private constructor();
@@ -3291,6 +3351,7 @@ declare class Directory {
  * const largest = await displays.largest();
  * const smallest = await displays.smallest();
  * ```
+ * @category Displays
  */
 declare interface Displays {
     /**
@@ -3326,6 +3387,9 @@ declare interface Displays {
      */
     largest(): Promise<Readonly<DisplayInfo | undefined>>;
 }
+/**
+ * @category Displays
+ */
 declare const displays: Displays;
 /**
  * Information about a connected display, including its name, geometry,
@@ -3338,6 +3402,7 @@ declare const displays: Displays;
  * console.log("Primary:", info.isPrimary);
  * }
  * ```
+ * @category Displays
  */
 declare interface DisplayInfo {
     /**
@@ -3400,6 +3465,7 @@ declare interface DisplayInfo {
  * append: true,
  * });
  * ```
+ * @category File
  */
 declare interface OpenOptions {
     /**
@@ -3462,6 +3528,7 @@ declare interface OpenOptions {
  * const exists = await File.exists("file.txt");
  * await File.remove("file.txt");
  * ```
+ * @category File
  */
 declare class File {
     /**
@@ -3667,6 +3734,7 @@ declare class File {
  * console.log("it's a directory");
  * }
  * ```
+ * @category Filesystem
  */
 declare class Filesystem {
     private constructor();
@@ -3706,6 +3774,7 @@ declare class Filesystem {
  * // Remove a hotstring
  * hotstrings.remove("btw");
  * ```
+ * @category Hotstrings
  */
 declare interface Hotstrings {
     /**
@@ -3724,6 +3793,9 @@ declare interface Hotstrings {
      */
     remove(source: string): void;
 }
+/**
+ * @category Hotstrings
+ */
 declare const hotstrings: Hotstrings;
 /**
  * Options for resizing an image.
@@ -3735,6 +3807,7 @@ declare const hotstrings: Hotstrings;
  * // Resize with a specific filter
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
  * ```
+ * @category Image
  */
 declare interface ResizeOptions {
     /**
@@ -3758,6 +3831,7 @@ declare interface ResizeOptions {
  * // Gaussian blur with custom sigma
  * image.blur({ sigma: 5.0 });
  * ```
+ * @category Image
  */
 declare interface BlurOptions {
     /**
@@ -3780,6 +3854,7 @@ declare interface BlurOptions {
  * sourceRect: new Rect(0, 0, 32, 32)
  * });
  * ```
+ * @category Image
  */
 declare interface DrawImageOptions {
     /**
@@ -3802,6 +3877,7 @@ declare interface DrawImageOptions {
  * // Rotate with a background color for exposed areas
  * image.rotate(30, { defaultColor: Color.White });
  * ```
+ * @category Image
  */
 declare interface RotationOptions {
     /**
@@ -3827,6 +3903,7 @@ declare interface RotationOptions {
  * // Draw a hollow circle (outline only)
  * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
  * ```
+ * @category Image
  */
 declare interface DrawingOptions {
     /**
@@ -3846,6 +3923,7 @@ declare interface DrawingOptions {
  * verticalAlign: TextVerticalAlign.Middle
  * });
  * ```
+ * @category Image
  */
 declare interface DrawTextOptions {
     /**
@@ -3880,6 +3958,7 @@ declare interface DrawTextOptions {
  * const controller = new AbortController();
  * const match = await source.findImage(template, { signal: controller.signal });
  * ```
+ * @category Image
  */
 declare interface FindImageOptions {
     /**
@@ -3909,6 +3988,7 @@ declare interface FindImageOptions {
      */
     downscale?: number;
     /**
+     * Abort signal to cancel the search.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -3925,6 +4005,7 @@ declare interface FindImageOptions {
  * console.log(`Bounding rect: ${match.rect}`);
  * }
  * ```
+ * @category Image
  */
 declare interface Match {
     /**
@@ -3965,6 +4046,7 @@ declare interface Match {
  * }
  * const result = await task;
  * ```
+ * @category Image
  */
 declare interface FindImageProgress {
     /**
@@ -4016,6 +4098,7 @@ declare interface FindImageProgress {
  * console.log(`Button found at ${match.position}`);
  * }
  * ```
+ * @category Image
  */
 declare class Image {
     readonly width: number;
@@ -4496,6 +4579,7 @@ declare class Image {
  * // Cancel from elsewhere:
  * controller.abort();
  * ```
+ * @category Core
  */
 declare interface AbortSignal {
 }
@@ -4515,6 +4599,7 @@ declare interface AbortSignal {
  * await sleep(5000);
  * controller.abort();
  * ```
+ * @category Core
  */
 declare class AbortController {
     readonly signal: AbortSignal;
@@ -4532,6 +4617,7 @@ declare class AbortController {
  * // Note that this is different from `Promises.race`, which doesn't cancel any promise.
  * const result = await Concurrency.race([sleep(100), sleep(1000)]);
  * ```
+ * @category Core
  */
 declare interface Concurrency {
     /**
@@ -4567,6 +4653,7 @@ declare interface Concurrency {
  * // Wait for a key combination
  * await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
  * ```
+ * @category Keyboard
  */
 declare interface Keyboard {
     /**
@@ -4605,6 +4692,9 @@ declare interface Keyboard {
      */
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
 }
+/**
+ * @category Keyboard
+ */
 declare const keyboard: Keyboard;
 /**
  * Options for waiting for key combinations.
@@ -4613,6 +4703,7 @@ declare const keyboard: Keyboard;
  * // Wait for exactly Ctrl+S and no other keys
  * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
  * ```
+ * @category Keyboard
  */
 declare interface WaitForKeysOptions {
     /**
@@ -4621,6 +4712,7 @@ declare interface WaitForKeysOptions {
      */
     exclusive?: boolean;
     /**
+     * Abort signal to cancel the wait.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -4646,6 +4738,7 @@ declare interface WaitForKeysOptions {
  * tween: Tween.BounceOut
  * });
  * ```
+ * @category Mouse
  */
 declare interface Mouse {
     /**
@@ -4707,6 +4800,9 @@ declare interface Mouse {
      */
     release(button?: Button): Promise<void>;
 }
+/**
+ * @category Mouse
+ */
 declare const mouse: Mouse;
 /**
  * Options for measuring mouse movement speed.
@@ -4714,6 +4810,7 @@ declare const mouse: Mouse;
  * ```ts
  * const speed = await mouse.measureSpeed({ duration: 3 });
  * ```
+ * @category Mouse
  */
 declare interface MeasureSpeedOptions {
     /**
@@ -4722,6 +4819,7 @@ declare interface MeasureSpeedOptions {
      */
     duration?: number;
     /**
+     * Abort signal to cancel the measurement.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -4733,21 +4831,26 @@ declare interface MeasureSpeedOptions {
  * // Click and hold for 0.5 seconds
  * await mouse.click({ duration: 0.5 });
  * ```
+ * @category Mouse
  */
 declare interface ClickOptions extends PressOptions {
     /**
+     * Number of times to click.
      * @defaultValue `1`
      */
     amount?: number;
     /**
+     * Delay between consecutive clicks, in seconds.
      * @defaultValue `0`
      */
     interval?: number;
     /**
+     * How long to hold each click, in seconds.
      * @defaultValue `0`
      */
     duration?: number;
     /**
+     * Abort signal to cancel the click.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -4758,9 +4861,11 @@ declare interface ClickOptions extends PressOptions {
  * ```ts
  * await mouse.doubleClick({ delay: 0.1 });
  * ```
+ * @category Mouse
  */
 declare interface DoubleClickOptions extends ClickOptions {
     /**
+     * Delay between the two clicks, in seconds.
      * @defaultValue `0.25`
      */
     delay?: number;
@@ -4778,6 +4883,7 @@ declare interface DoubleClickOptions extends ClickOptions {
  * // Used in APIs that accept a NameLike parameter
  * const pattern = new Wildcard("my_app*");
  * ```
+ * @category Name
  */
 declare class Wildcard {
     /**
@@ -4800,6 +4906,7 @@ declare class Wildcard {
  * const newPath = Path.setExtension("/tmp/data.csv", "json");
  * // "/tmp/data.json"
  * ```
+ * @category Path
  */
 declare class Path {
     private constructor();
@@ -4893,6 +5000,7 @@ declare class Path {
  * console.log(a.distanceTo(b)); // 5
  * console.log(a.add(b).toString()); // "(5, 8)"
  * ```
+ * @category Point
  */
 declare class Point {
     /**
@@ -5041,6 +5149,7 @@ declare class Point {
  * console.log(random.number()); // always the same value
  * random.resetSeed();
  * ```
+ * @category Random
  */
 declare interface Random {
     /**
@@ -5106,6 +5215,9 @@ declare interface Random {
      */
     choice<T>(array: Array<T>, fallback?: T): T;
 }
+/**
+ * @category Random
+ */
 declare const random: Random;
 /**
  * A 2D rectangle with position and size.
@@ -5123,6 +5235,7 @@ declare const random: Random;
  * console.log(a.intersects(b)); // true
  * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
  * ```
+ * @category Rect
  */
 declare class Rect {
     /**
@@ -5236,6 +5349,7 @@ declare class Rect {
  * const pixel = await screenshot.capturePixel(100, 100);
  * console.log(pixel.toString());
  * ```
+ * @category Screenshot
  */
 declare interface Screenshot {
     /**
@@ -5377,6 +5491,9 @@ declare interface Screenshot {
      */
     findImageOnDisplayAll(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
 }
+/**
+ * @category Screenshot
+ */
 declare const screenshot: Screenshot;
 /**
  * A 2D size with width and height.
@@ -5395,6 +5512,7 @@ declare const screenshot: Screenshot;
  * console.log(a.add(b).toString()); // "(15, 30)"
  * console.log(a.scale(2).toString()); // "(20, 40)"
  * ```
+ * @category Size
  */
 declare class Size {
     /**
@@ -5483,6 +5601,7 @@ declare class Size {
  * console.log(standardPaths.downloads);   // e.g. "/home/user/Downloads"
  * console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
  * ```
+ * @category StandardPaths
  */
 declare interface StandardPaths {
     /**
@@ -5534,6 +5653,9 @@ declare interface StandardPaths {
      */
     toString(): string;
 }
+/**
+ * @category StandardPaths
+ */
 declare const standard_paths: StandardPaths;
 /**
  * CPU metrics and topology.
@@ -5550,6 +5672,7 @@ declare const standard_paths: StandardPaths;
  * formatFrequency(freqs[0]),
  * );
  * ```
+ * @category System
  */
 declare interface Cpu {
     /**
@@ -5579,6 +5702,7 @@ declare interface Cpu {
  * 
  * console.log(hw.vendorName, board.name, components.length);
  * ```
+ * @category System
  */
 declare interface Hardware {
     /**
@@ -5621,6 +5745,7 @@ declare interface Hardware {
 }
 /**
  * List components options
+ * @category System
  */
 declare interface ListComponentsOptions {
     /**
@@ -5636,6 +5761,7 @@ declare interface ListComponentsOptions {
  * const board = system.hardware.motherboard;
  * console.log(board.vendorName, board.name, board.version);
  * ```
+ * @category System
  */
 declare interface Motherboard {
     /**
@@ -5670,6 +5796,7 @@ declare interface Motherboard {
  * console.log(component.label, component.temperature);
  * }
  * ```
+ * @category System
  */
 declare interface Component {
     /**
@@ -5703,6 +5830,7 @@ declare interface Component {
  * 
  * console.log(formatBytes(usage.used), formatBytes(swap.used));
  * ```
+ * @category System
  */
 declare interface Memory {
     /**
@@ -5732,6 +5860,7 @@ declare interface Memory {
  * formatBytes(usage.total),
  * );
  * ```
+ * @category System
  */
 declare interface MemoryUsage {
     /**
@@ -5767,6 +5896,7 @@ declare interface MemoryUsage {
  * ```
  * 
  * CGroup limits
+ * @category System
  * @platform only works on Linux
  */
 declare interface CGroupLimits {
@@ -5802,6 +5932,7 @@ declare interface CGroupLimits {
  * const interfaces = await system.network.listInterfaces();
  * console.log(`interfaces: ${interfaces.length}`);
  * ```
+ * @category System
  */
 declare interface System {
     /**
@@ -5840,6 +5971,9 @@ declare interface System {
     open(path: string, withApp?: string): Promise<void>;
     openPath(path: string, withApp?: string): Promise<void>;
 }
+/**
+ * @category System
+ */
 declare const system: System;
 /**
  * Network information and interfaces.
@@ -5849,6 +5983,7 @@ declare const system: System;
  * const interfaces = await system.network.listInterfaces();
  * console.log(interfaces.length);
  * ```
+ * @category System
  */
 declare interface Network {
     /**
@@ -5863,6 +5998,7 @@ declare interface Network {
 }
 /**
  * List network interfaces options
+ * @category System
  */
 declare interface ListInterfacesOptions {
     /**
@@ -5881,6 +6017,7 @@ declare interface ListInterfacesOptions {
  * console.log(iface.name, iface.mtu, iface.macAddress);
  * }
  * ```
+ * @category System
  */
 declare interface NetworkInterface {
     /**
@@ -5920,6 +6057,7 @@ declare interface NetworkInterface {
  * console.log(formatBytes(counters.data), counters.packets, counters.errors);
  * }
  * ```
+ * @category System
  */
 declare interface Counters {
     /**
@@ -5949,6 +6087,7 @@ declare interface Counters {
  * );
  * }
  * ```
+ * @category System
  */
 declare interface Traffic {
     /**
@@ -5971,6 +6110,7 @@ declare interface Traffic {
  * const groups = await system.os.listGroups();
  * console.log(users.length, groups.length);
  * ```
+ * @category System
  */
 declare interface Os {
     /**
@@ -6033,6 +6173,7 @@ declare interface Os {
  * console.log(user.id, user.name, user.groupName);
  * }
  * ```
+ * @category System
  */
 declare interface User {
     /**
@@ -6073,6 +6214,7 @@ declare interface User {
  * console.log(group.id, group.name);
  * }
  * ```
+ * @category System
  */
 declare interface Group {
     /**
@@ -6092,6 +6234,7 @@ declare interface Group {
  * const processes = await system.processes.list();
  * console.log(processes.length);
  * ```
+ * @category System
  */
 declare interface Processes {
     /**
@@ -6102,6 +6245,7 @@ declare interface Processes {
 }
 /**
  * List processes options
+ * @category System
  */
 declare interface ListProcessesOptions {
     /**
@@ -6120,6 +6264,7 @@ declare interface ListProcessesOptions {
  * console.log(process.pid, process.name, process.status);
  * }
  * ```
+ * @category System
  */
 declare interface Process {
     /**
@@ -6230,6 +6375,7 @@ declare interface Process {
  * const disks = await system.storage.listDisks();
  * console.log(disks.length);
  * ```
+ * @category System
  */
 declare interface Storage {
     /**
@@ -6240,6 +6386,7 @@ declare interface Storage {
 }
 /**
  * List disks options
+ * @category System
  */
 declare interface ListDisksOptions {
     /**
@@ -6264,6 +6411,7 @@ declare interface ListDisksOptions {
  * );
  * }
  * ```
+ * @category System
  */
 declare interface Disk {
     /**
@@ -6317,6 +6465,7 @@ declare interface Disk {
  * );
  * }
  * ```
+ * @category System
  */
 declare interface IoStats {
     /**
@@ -6342,6 +6491,7 @@ declare interface IoStats {
  * );
  * }
  * ```
+ * @category System
  */
 declare interface DiskUsage {
     /**
@@ -6364,21 +6514,26 @@ declare interface DiskUsage {
  * icon: MessageBoxIcon.Warning,
  * });
  * ```
+ * @category UI
  */
 declare interface MessageBoxOptions {
     /**
+     * Title displayed in the message box title bar.
      * @defaultValue `undefined`
      */
     title?: string;
     /**
+     * Buttons displayed in the message box.
      * @defaultValue `MessageBoxButtons.ok()`
      */
     buttons?: MessageBoxButtons;
     /**
+     * Icon displayed in the message box.
      * @defaultValue `MessageBoxIcon.Info`
      */
     icon?: MessageBoxIcon;
     /**
+     * Abort signal to cancel the message box.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -6403,6 +6558,7 @@ declare interface MessageBoxOptions {
  * console.log("Confirmed");
  * }
  * ```
+ * @category UI
  */
 declare class Ui {
     private constructor();
@@ -6415,6 +6571,9 @@ declare class Ui {
      */
     static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
 }
+/**
+ * @category UI
+ */
 declare const ui: Ui;
 /**
  * Button configurations for message boxes.
@@ -6426,6 +6585,7 @@ declare const ui: Ui;
  * const buttons2 = MessageBoxButtons.yesNoCancel();
  * const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
  * ```
+ * @category UI
  */
 declare class MessageBoxButtons {
     private constructor();
@@ -6470,6 +6630,7 @@ declare class MessageBoxButtons {
  * multipart: form,
  * });
  * ```
+ * @category Web
  */
 declare class MultipartForm {
     constructor();
@@ -6504,29 +6665,36 @@ declare class MultipartForm {
 }
 /**
  * Web request options.
+ * @category Web
  */
 declare interface WebOptions {
     /**
+     * Abort signal to cancel the request.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
     /**
+     * User name for HTTP basic authentication.
      * @defaultValue `undefined`
      */
     userName?: string;
     /**
+     * Password for HTTP basic authentication.
      * @defaultValue `undefined`
      */
     password?: string;
     /**
+     * Additional HTTP headers to send with the request.
      * @defaultValue `undefined`
      */
     headers?: Record<string, string | undefined>;
     /**
+     * HTTP method to use for the request.
      * @defaultValue `Method.Get`
      */
     method?: Method;
     /**
+     * Request timeout duration.
      * @defaultValue `undefined`
      */
     timeout?: number;
@@ -6567,6 +6735,7 @@ declare interface WebOptions {
  * );
  * }
  * ```
+ * @category Web
  */
 declare interface WebProgress {
     /**
@@ -6595,6 +6764,7 @@ declare interface WebProgress {
  * const image = await web.downloadImage("https://example.com/photo.png");
  * console.log(image.size().toString());
  * ```
+ * @category Web
  */
 declare interface Web {
     /**
@@ -6662,6 +6832,9 @@ declare interface Web {
      */
     downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
 }
+/**
+ * @category Web
+ */
 declare const web: Web;
 /**
  * Manages desktop windows: enumerate, focus, move, resize, and close windows.
@@ -6690,6 +6863,7 @@ declare const web: Web;
  * }
  * }
  * ```
+ * @category Windows
  */
 declare interface Windows {
     /**
@@ -6711,6 +6885,9 @@ declare interface Windows {
      */
     activeWindow(): Promise<Readonly<WindowHandle>>;
 }
+/**
+ * @category Windows
+ */
 declare const windows: Windows;
 /**
  * A handle to a specific desktop window.
@@ -6724,6 +6901,7 @@ declare const windows: Windows;
  * console.log(await win.isVisible());
  * console.log(await win.rect());
  * ```
+ * @category Windows
  */
 declare interface WindowHandle {
     /**
@@ -6868,6 +7046,7 @@ declare interface WindowHandle {
 }
 /**
  * Hotstring options
+ * @category Hotstrings
  */
 declare interface HotstringOptions {
     /**
@@ -6897,25 +7076,31 @@ declare interface HotstringOptions {
  * targetRandomness: 5
  * });
  * ```
+ * @category Mouse
  */
 declare interface MoveOptions {
     /**
+     * Movement speed in pixels per second.
      * @defaultValue `2000`
      */
     speed?: number;
     /**
+     * Easing function used for the movement.
      * @defaultValue `Tween.SineOut`
      */
     tween?: Tween;
     /**
+     * Scale of the Perlin noise applied to the movement path.
      * @defaultValue `50`
      */
     perlinScale?: number;
     /**
+     * Amplitude of the Perlin noise applied to the movement path.
      * @defaultValue `5`
      */
     perlinAmplitude?: number;
     /**
+     * Random offset applied to the target position, in pixels.
      * @defaultValue `0`
      */
     targetRandomness?: number;
@@ -6935,17 +7120,21 @@ declare interface MoveOptions {
  * // Press at coordinates using PointLike shorthand
  * await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
  * ```
+ * @category Mouse
  */
 declare interface PressOptions {
     /**
+     * Mouse button to press.
      * @defaultValue `Button.Left`
      */
     button?: Button;
     /**
+     * Position to move the cursor to before pressing.
      * @defaultValue `undefined`
      */
     position?: Point;
     /**
+     * Whether the position is relative to the current cursor position.
      * @defaultValue `false`
      */
     relativePosition?: boolean;

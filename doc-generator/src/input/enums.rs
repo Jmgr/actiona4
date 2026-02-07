@@ -3,7 +3,7 @@ use convert_case::{Case, Casing};
 use log::warn;
 use rustdoc_types::{ItemEnum, VariantKind};
 
-use super::process_rustdoc;
+use super::{ItemInfo, process_rustdoc};
 use crate::{
     items::Items,
     types::{Enum, EnumVariant, RustdocContext},
@@ -16,13 +16,18 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
         .iter()
         // Select only Enums
         .filter_map(|item| match &item.inner {
-            ItemEnum::Enum(enum_) => item.name.as_ref().map(|name| (name, &item.docs, enum_)),
+            ItemEnum::Enum(inner) => item.name.as_ref().map(|name| ItemInfo {
+                name,
+                docs: &item.docs,
+                inner,
+                item,
+            }),
             _ => None,
         });
 
-    for (enum_name, enum_docs, enum_) in enums {
+    for info in enums {
         let (comments, enum_instructions, _) =
-            process_rustdoc(enum_docs.as_ref(), RustdocContext::Enum)?;
+            process_rustdoc(info.docs.as_ref(), RustdocContext::Enum)?;
 
         if enum_instructions.has_skip() {
             continue;
@@ -31,11 +36,11 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
         let enum_name = if let Some(new_name) = enum_instructions.rename() {
             new_name
         } else {
-            enum_name.to_string()
+            info.name.to_string()
         };
 
         let variants = items
-            .get_sorted(&enum_.variants)
+            .get_sorted(&info.inner.variants)
             .into_iter()
             // Select only Variants
             .filter_map(|item| match &item.inner {
@@ -73,6 +78,9 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
         }
 
         let verbatim = enum_instructions.verbatim();
+        let category = enum_instructions
+            .category()
+            .or_else(|| items.category_for_item(info.item));
 
         // Remove "Js" prefix if present
         let enum_name = enum_name.strip_prefix("Js").unwrap_or(&enum_name);
@@ -83,6 +91,7 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             name: enum_name.to_string(),
             variants: result_variants,
             comments,
+            category,
             platforms: enum_instructions.platforms(),
             verbatim,
             default_value,

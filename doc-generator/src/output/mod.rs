@@ -28,6 +28,20 @@ fn write_comments<W: Write>(comments: &[String], prefix: &str, file: &mut W) -> 
     Ok(())
 }
 
+fn add_category_comment(comments: &mut Vec<String>, category: Option<&str>) {
+    let Some(category) = category else {
+        return;
+    };
+
+    let has_category = comments
+        .iter()
+        .any(|comment| comment.trim_start().starts_with("@category"));
+
+    if !has_category {
+        comments.push(format!("@category {category}"));
+    }
+}
+
 impl Type {
     pub fn to_string(&self, context: Context) -> Result<String> {
         Ok(match self {
@@ -229,6 +243,7 @@ impl File {
 
         for enum_ in self.enums.iter() {
             let mut comments = enum_.comments.clone();
+            add_category_comment(&mut comments, enum_.category.as_deref());
 
             if let Some(default) = &enum_.default_value {
                 comments.push(format!("@defaultValue {default}"));
@@ -270,6 +285,7 @@ impl File {
 
         for struct_ in self.structs.iter() {
             let mut comments = struct_.comments.clone();
+            add_category_comment(&mut comments, struct_.category.as_deref());
 
             if !struct_.platforms.is_empty() {
                 comments.push(format!("@platform {}", struct_.platforms));
@@ -364,6 +380,10 @@ impl File {
                 writeln!(output_file, "}}")?;
 
                 if struct_.is_singleton {
+                    let mut comments = Vec::new();
+                    add_category_comment(&mut comments, struct_.category.as_deref());
+                    write_comments(&comments, "", &mut output_file)?;
+
                     writeln!(
                         output_file,
                         "declare const {}: {};",
@@ -430,6 +450,11 @@ fn output_methods(
             }
 
             let mut comments = overload.comments.clone();
+            // Struct methods inherit category from their parent struct/interface,
+            // so only free functions need per-overload category tags.
+            if is_free_function {
+                add_category_comment(&mut comments, method.category.as_deref());
+            }
 
             if !overload.platforms.is_empty() {
                 comments.push(format!("@platform {}", overload.platforms));

@@ -8,7 +8,7 @@ use log::error;
 use rustdoc_types::{Id, ItemEnum};
 
 use crate::{
-    input::{convert_type, process_rustdoc},
+    input::{ItemInfo, convert_type, process_rustdoc},
     items::Items,
     types::{Instruction, Method, MethodOverload, RustdocContext, Type, Variable},
 };
@@ -44,25 +44,25 @@ pub fn extract_functions(
         .into_iter()
         // Select only Functions
         .filter_map(|item| match &item.inner {
-            ItemEnum::Function(function) => {
-                item.name.as_ref().map(|name| (name, &item.docs, function))
-            }
+            ItemEnum::Function(inner) => item.name.as_ref().map(|name| ItemInfo {
+                name,
+                docs: &item.docs,
+                inner,
+                item,
+            }),
             _ => None,
-        })
-        // Convert the function names into CamelCase and remove _js suffix
-        .map(|(name, docs, function)| {
-            (
-                name.strip_suffix("_js")
-                    .unwrap_or(name)
-                    .to_case(Case::Camel),
-                docs,
-                function,
-            )
         });
 
-    'func: for (mut function_name, function_docs, function) in functions {
+    'func: for info in functions {
+        // Convert the function name into camelCase and remove _js suffix
+        let mut function_name = info
+            .name
+            .strip_suffix("_js")
+            .unwrap_or(info.name)
+            .to_case(Case::Camel);
+
         let (comments, instructions, overload_instructions) =
-            process_rustdoc(function_docs.as_ref(), RustdocContext::Method)?;
+            process_rustdoc(info.docs.as_ref(), RustdocContext::Method)?;
 
         if instructions.has_skip() {
             continue;
@@ -92,7 +92,7 @@ pub fn extract_functions(
 
             let mut parameters = Vec::new();
 
-            for (parameter_name, parameter_type) in &function.sig.inputs {
+            for (parameter_name, parameter_type) in &info.inner.sig.inputs {
                 let parameter_type = convert_type(parameter_type, struct_name)
                     .wrap_err_with(|| function_name.clone());
                 match parameter_type {
@@ -134,7 +134,8 @@ pub fn extract_functions(
             let return_ = if let Some(return_) = return_ {
                 return_
             } else {
-                let return_ = function
+                let return_ = info
+                    .inner
                     .sig
                     .output
                     .as_ref()
@@ -171,7 +172,7 @@ pub fn extract_functions(
                         .to_string(),
                 )
             } else {
-                function
+                info.inner
                     .sig
                     .output
                     .as_ref()
@@ -240,18 +241,27 @@ pub fn extract_functions(
                 is_readonly_type: instructions.has_readonly_type(),
                 default_value: None,
                 platforms: instructions.platforms(),
-                is_promise: function.header.is_async,
+                is_promise: info.inner.header.is_async,
             });
             continue;
         }
 
+        let category = if struct_name.is_none() {
+            instructions
+                .category()
+                .or_else(|| items.category_for_item(info.item))
+        } else {
+            None
+        };
+
         methods.push(Method {
             name: function_name.clone(),
+            category,
             overloads,
             is_constructor,
             is_private,
             is_static,
-            is_async: function.header.is_async,
+            is_async: info.inner.header.is_async,
             is_generic,
         });
     }

@@ -30,6 +30,7 @@ pub type JsMessageBoxResult = super::MessageBoxResult;
 ///   icon: MessageBoxIcon.Warning,
 /// });
 /// ```
+/// @category UI
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsMessageBoxOptions {
@@ -80,6 +81,7 @@ impl JsMessageBoxOptions {
 /// }
 /// ```
 ///
+/// @category UI
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Ui")]
@@ -141,6 +143,7 @@ impl JsUi {
 /// const buttons2 = MessageBoxButtons.yesNoCancel();
 /// const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
 /// ```
+/// @category UI
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "MessageBoxButtons")]
 pub struct JsMessageBoxButtons {

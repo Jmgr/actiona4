@@ -1,5 +1,6 @@
-use std::{collections::BTreeMap, rc::Rc, slice::Iter};
+use std::{collections::BTreeMap, path::Path, rc::Rc, slice::Iter};
 
+use convert_case::{Case, Casing};
 use itertools::Itertools;
 use rustdoc_types::{Crate, Id, Item, ItemEnum};
 
@@ -68,6 +69,37 @@ impl Items {
         self.js_items.iter()
     }
 
+    pub fn category_for_item(&self, item: &Item) -> Option<String> {
+        item.span
+            .as_ref()
+            .and_then(|span| Self::category_from_filename(span.filename.as_path()))
+    }
+
+    fn category_from_filename(path: &Path) -> Option<String> {
+        let segments = path
+            .components()
+            .filter_map(|component| component.as_os_str().to_str())
+            .collect_vec();
+
+        if let Some(core_index) = segments.iter().position(|segment| *segment == "core") {
+            if let Some(core_child) = segments.get(core_index + 1) {
+                if *core_child == "js" {
+                    return Some("Core".to_string());
+                }
+
+                return Some(core_child.to_case(Case::Pascal));
+            }
+        }
+
+        if let Some(src_index) = segments.iter().position(|segment| *segment == "src") {
+            if let Some(src_child) = segments.get(src_index + 1) {
+                return Some(src_child.to_case(Case::Pascal));
+            }
+        }
+
+        None
+    }
+
     pub fn aliases(&self) -> Self {
         let js_items = self
             .js_items
@@ -92,5 +124,41 @@ impl Items {
             items: self.items.clone(),
             js_items,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use super::Items;
+
+    #[test]
+    fn test_category_from_filename() {
+        assert_eq!(
+            Items::category_from_filename(Path::new("src/core/mouse/js.rs")),
+            Some("Mouse".to_string())
+        );
+        assert_eq!(
+            Items::category_from_filename(Path::new("src/core/js/mod.rs")),
+            Some("Core".to_string())
+        );
+        assert_eq!(
+            Items::category_from_filename(Path::new("src/core/ui/js.rs")),
+            Some("Ui".to_string())
+        );
+        assert_eq!(
+            Items::category_from_filename(Path::new("src/core/standardpaths/js.rs")),
+            Some("Standardpaths".to_string())
+        );
+        assert_eq!(
+            Items::category_from_filename(Path::new("src/core/js/abort_controller.rs")),
+            Some("Core".to_string())
+        );
+        assert_eq!(
+            Items::category_from_filename(Path::new("src/something/mod.rs")),
+            Some("Something".to_string())
+        );
+        assert_eq!(Items::category_from_filename(Path::new("lib.rs")), None);
     }
 }

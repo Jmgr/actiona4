@@ -334,8 +334,14 @@ pub async fn repl(script_engine: Engine) -> Result<()> {
                     })
                     .await;
 
-                if let Some(value) = value? {
-                    println!("{value}");
+                match value {
+                    Ok(Some(value)) => {
+                        println!("{value}");
+                    }
+                    Ok(None) => {}
+                    Err(err) => {
+                        eprintln!("{err}");
+                    }
                 }
             }
             Err(ReadlineError::Interrupted) => {

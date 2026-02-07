@@ -18,6 +18,7 @@ pub struct Enum {
     pub name: String,
     pub variants: Vec<EnumVariant>,
     pub comments: Comments,
+    pub category: Option<String>,
     pub platforms: Platforms,
     pub verbatim: Vec<String>,
     pub default_value: Option<String>,
@@ -93,6 +94,7 @@ pub struct Variable {
 #[derive(Clone, Debug, Default)]
 pub struct Method {
     pub name: String,
+    pub category: Option<String>,
     pub overloads: Vec<MethodOverload>,
     pub is_constructor: bool,
     pub is_private: bool,
@@ -129,6 +131,7 @@ pub struct Struct {
     pub properties: Vec<Variable>,
     pub methods: Vec<Method>,
     pub comments: Comments,
+    pub category: Option<String>,
     pub is_singleton: bool,
     pub consts: Vec<Const>,
     pub is_options: bool,
@@ -294,6 +297,7 @@ pub enum Instruction {
     Getter,
     ReadonlyType,
     ConstructorOnly,
+    Category(String),
 }
 
 pub fn strip_modules(name: &str) -> &str {

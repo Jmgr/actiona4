@@ -16,6 +16,7 @@ use crate::core::{js::classes::SingletonClass, standardpaths::StandardPaths};
 /// console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
 /// ```
 ///
+/// @category StandardPaths
 /// @singleton
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "StandardPaths")]
