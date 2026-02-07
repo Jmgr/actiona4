@@ -22,6 +22,14 @@ pub type JsMessageBoxIcon = super::MessageBoxIcon;
 pub type JsMessageBoxResult = super::MessageBoxResult;
 
 /// Message box options.
+///
+/// ```ts
+/// await Ui.messageBox("Delete this file?", {
+///   title: "Confirm",
+///   buttons: MessageBoxButtons.yesNo(),
+///   icon: MessageBoxIcon.Warning,
+/// });
+/// ```
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsMessageBoxOptions {

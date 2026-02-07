@@ -12,7 +12,13 @@ use crate::{
     },
 };
 
-/// Network
+/// Network information and interfaces.
+///
+/// ```ts
+/// console.log(system.network.hostname);
+/// const interfaces = await system.network.listInterfaces();
+/// console.log(interfaces.length);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Network")]
 pub struct JsNetwork {
@@ -88,7 +94,15 @@ impl JsNetwork {
     }
 }
 
-// Network interface
+/// A network interface.
+///
+/// ```ts
+/// const interfaces = await system.network.listInterfaces();
+/// const iface = interfaces[0];
+/// if (iface) {
+///   console.log(iface.name, iface.mtu, iface.macAddress);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "NetworkInterface")]
 pub struct JsNetworkInterface {
@@ -171,7 +185,16 @@ impl JsNetworkInterface {
     }
 }
 
-// Counters
+/// Byte/packet/error counters.
+///
+/// ```ts
+/// const interfaces = await system.network.listInterfaces();
+/// const iface = interfaces[0];
+/// if (iface) {
+///   const counters = iface.inbound.total;
+///   console.log(counters.data, counters.packets, counters.errors);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Counters")]
 pub struct JsCounters {
@@ -223,7 +246,15 @@ impl JsCounters {
     }
 }
 
-// Traffic
+/// Traffic statistics.
+///
+/// ```ts
+/// const interfaces = await system.network.listInterfaces();
+/// const iface = interfaces[0];
+/// if (iface) {
+///   console.log(iface.inbound.total.data, iface.inbound.delta.data);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Traffic")]
 pub struct JsTraffic {

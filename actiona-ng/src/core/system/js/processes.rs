@@ -21,7 +21,12 @@ use crate::{
     },
 };
 
-/// Processes
+/// Process listing and inspection.
+///
+/// ```ts
+/// const processes = await system.processes.list();
+/// console.log(processes.length);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Processes")]
 pub struct JsProcesses {
@@ -88,7 +93,15 @@ impl JsProcesses {
     }
 }
 
-// Process
+/// A running process.
+///
+/// ```ts
+/// const processes = await system.processes.list();
+/// const process = processes[0];
+/// if (process) {
+///   console.log(process.pid, process.name, process.status);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Process")]
 pub struct JsProcess {
@@ -333,7 +346,15 @@ impl JsProcess {
     }
 }
 
-/// Process status
+/// Process status.
+///
+/// ```ts
+/// const processes = await system.processes.list();
+/// const process = processes[0];
+/// if (process && process.status === ProcessStatus.Run) {
+///   console.log("process is running");
+/// }
+/// ```
 #[derive(
     Clone,
     Copy,

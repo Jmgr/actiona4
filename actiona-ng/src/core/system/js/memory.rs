@@ -10,7 +10,14 @@ use crate::{
     },
 };
 
-/// Memory
+/// Memory metrics.
+///
+/// ```ts
+/// const usage = await system.memory.usage();
+/// const swap = await system.memory.swapUsage();
+///
+/// console.log(formatBytes(usage.used), formatBytes(swap.used));
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Memory")]
 pub struct JsMemory {
@@ -73,7 +80,12 @@ impl JsMemory {
     }
 }
 
-// Memory usage
+/// A memory usage snapshot.
+///
+/// ```ts
+/// const usage = await system.memory.usage();
+/// console.log(usage.used, usage.free, usage.available, usage.total);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "MemoryUsage")]
 pub struct JsMemoryUsage {
@@ -133,6 +145,15 @@ impl JsMemoryUsage {
     }
 }
 
+/// CGroup memory and swap limits.
+///
+/// ```ts
+/// const limits = system.memory.cgroupLimits;
+/// if (limits) {
+///   console.log(limits.totalMemory, limits.freeMemory, limits.freeSwap);
+/// }
+/// ```
+///
 /// CGroup limits
 /// @platforms =linux
 #[derive(Debug, JsLifetime)]

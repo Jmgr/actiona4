@@ -47,7 +47,7 @@ pub type JsTween = super::Tween;
 ///
 /// ```ts
 /// // Right-click at a specific position
-/// await mouse.click({ button: Button.Right, position: new Point(100, 200) });
+/// await mouse.click({ button: Button.Right, position: { x: 100, y: 200 } });
 /// ```
 ///
 /// ```ts

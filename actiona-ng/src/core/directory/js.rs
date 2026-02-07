@@ -80,6 +80,11 @@ impl JsDirectoryEntry {
 }
 
 /// Options for `Directory.create()` and `Directory.remove()`.
+///
+/// ```ts
+/// await Directory.create("/tmp/a/b/c", { recursive: true });
+/// await Directory.remove("/tmp/a", { recursive: false });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryOptions {
@@ -95,6 +100,14 @@ impl Default for JsDirectoryOptions {
 }
 
 /// Options for `Directory.listEntries()`.
+///
+/// ```ts
+/// const entries = await Directory.listEntries("/tmp", {
+///   sort: false,
+///   absolutePath: false,
+///   fetchSize: true,
+/// });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryListOptions {

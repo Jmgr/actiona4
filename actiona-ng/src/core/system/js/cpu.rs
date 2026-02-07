@@ -11,7 +11,15 @@ use crate::{
     },
 };
 
-/// Cpu
+/// CPU metrics and topology.
+///
+/// ```ts
+/// const globalUsage = await system.cpu.usage();
+/// const core0Usage = await system.cpu.coreUsage(0);
+/// const freqs = await system.cpu.frequencies();
+///
+/// console.log(system.cpu.logicalCoreCount, globalUsage, core0Usage, freqs[0]);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Cpu")]
 pub struct JsCpu {

@@ -19,7 +19,12 @@ use crate::{
     },
 };
 
-/// Storage
+/// Storage devices and disk usage information.
+///
+/// ```ts
+/// const disks = await system.storage.listDisks();
+/// console.log(disks.length);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Storage")]
 pub struct JsStorage {
@@ -86,7 +91,15 @@ impl JsStorage {
     }
 }
 
-// Disk
+/// A disk device.
+///
+/// ```ts
+/// const disks = await system.storage.listDisks();
+/// const disk = disks[0];
+/// if (disk) {
+///   console.log(disk.name, disk.kind, disk.mountPoint);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Disk")]
 pub struct JsDisk {
@@ -192,6 +205,16 @@ impl JsDisk {
     }
 }
 
+/// Disk kind values.
+///
+/// ```ts
+/// const disks = await system.storage.listDisks();
+/// const disk = disks[0];
+/// if (disk && disk.kind === DiskKind.SSD) {
+///   console.log("SSD");
+/// }
+/// ```
+///
 /// Disk kind
 #[derive(
     Clone,
@@ -228,7 +251,15 @@ impl From<DiskKind> for JsDiskKind {
     }
 }
 
-// I/O stats
+/// Disk I/O statistics (bytes).
+///
+/// ```ts
+/// const disks = await system.storage.listDisks();
+/// const disk = disks[0];
+/// if (disk) {
+///   console.log(disk.usage.read.total, disk.usage.written.delta);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "IoStats")]
 pub struct JsIoStats {
@@ -272,7 +303,15 @@ impl JsIoStats {
     }
 }
 
-// Disk usage
+/// Read/write usage for a disk.
+///
+/// ```ts
+/// const disks = await system.storage.listDisks();
+/// const disk = disks[0];
+/// if (disk) {
+///   console.log(disk.usage.read.total, disk.usage.written.total);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "DiskUsage")]
 pub struct JsDiskUsage {

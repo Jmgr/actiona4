@@ -15,7 +15,15 @@ use crate::{
     types::display::{DisplayFields, display_list},
 };
 
-/// Os
+/// OS-level information.
+///
+/// ```ts
+/// console.log(system.os.name, system.os.version, system.os.kernelVersion);
+///
+/// const users = await system.os.listUsers();
+/// const groups = await system.os.listGroups();
+/// console.log(users.length, groups.length);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Os")]
 pub struct JsOs {
@@ -173,7 +181,15 @@ impl JsOs {
     }
 }
 
-// User
+/// A system user.
+///
+/// ```ts
+/// const users = await system.os.listUsers();
+/// const user = users[0];
+/// if (user) {
+///   console.log(user.id, user.name, user.groupName);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "User")]
 pub struct JsUser {
@@ -272,7 +288,15 @@ impl JsUser {
     }
 }
 
-// Group
+/// A system group.
+///
+/// ```ts
+/// const groups = await system.os.listGroups();
+/// const group = groups[0];
+/// if (group) {
+///   console.log(group.id, group.name);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Group")]
 pub struct JsGroup {

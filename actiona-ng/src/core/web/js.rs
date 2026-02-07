@@ -265,6 +265,13 @@ impl JsWebOptions {
 }
 
 /// Progress information for web downloads and uploads.
+///
+/// ```ts
+/// const task = web.download("https://example.com/file.bin");
+/// for await (const progress of task) {
+///   console.log(progress.current, progress.total, progress.finished);
+/// }
+/// ```
 #[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class(rename = "WebProgress")]
 pub struct JsWebProgress {

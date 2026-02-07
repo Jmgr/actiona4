@@ -31,7 +31,19 @@ pub mod os;
 pub mod processes;
 pub mod storage;
 
-/// System
+/// System information and power/session operations.
+///
+/// ```ts
+/// const cpuUsage = await system.cpu.usage();
+/// const memory = await system.memory.usage();
+///
+/// console.log(formatPercent(cpuUsage), formatBytes(memory.used));
+/// ```
+///
+/// ```ts
+/// const interfaces = await system.network.listInterfaces();
+/// console.log(`interfaces: ${interfaces.length}`);
+/// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "System")]

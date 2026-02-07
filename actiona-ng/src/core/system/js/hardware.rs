@@ -12,7 +12,15 @@ use crate::{
     },
 };
 
-/// Hardware
+/// Hardware information.
+///
+/// ```ts
+/// const hw = system.hardware;
+/// const board = hw.motherboard;
+/// const components = await hw.listComponents();
+///
+/// console.log(hw.vendorName, board.name, components.length);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Hardware")]
 pub struct JsHardware {
@@ -146,7 +154,12 @@ impl JsHardware {
     }
 }
 
-// Motherboard
+/// Motherboard details.
+///
+/// ```ts
+/// const board = system.hardware.motherboard;
+/// console.log(board.vendorName, board.name, board.version);
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Motherboard")]
 pub struct JsMotherboard {
@@ -214,7 +227,15 @@ impl JsMotherboard {
     }
 }
 
-// Component
+/// A hardware component (for example a thermal sensor).
+///
+/// ```ts
+/// const components = await system.hardware.listComponents();
+/// const component = components[0];
+/// if (component) {
+///   console.log(component.label, component.temperature);
+/// }
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Component")]
 pub struct JsComponent {
