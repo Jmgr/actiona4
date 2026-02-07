@@ -37,6 +37,26 @@ pub type JsButton = super::Button;
 pub type JsAxis = super::Axis;
 pub type JsTween = super::Tween;
 
+/// Controls mouse input: movement, clicking, scrolling, and position queries.
+///
+/// ```ts
+/// // Move and click
+/// await mouse.move(new Point(500, 300));
+/// await mouse.click();
+/// ```
+///
+/// ```ts
+/// // Right-click at a specific position
+/// await mouse.click({ button: Button.Right, position: new Point(100, 200) });
+/// ```
+///
+/// ```ts
+/// // Smooth movement with custom tween
+/// await mouse.move(new Point(800, 600), {
+///   speed: 1500,
+///   tween: Tween.BounceOut
+/// });
+/// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Mouse")]
@@ -70,7 +90,11 @@ impl JsMouse {
 pub type JsMoveOptions = super::MoveOptions;
 pub type JsPressOptions = super::PressOptions;
 
-/// Measure speed options
+/// Options for measuring mouse movement speed.
+///
+/// ```ts
+/// const speed = await mouse.measureSpeed({ duration: 3 });
+/// ```
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsMeasureSpeedOptions {
@@ -82,7 +106,12 @@ pub struct JsMeasureSpeedOptions {
     pub signal: Option<JsAbortSignal>,
 }
 
-/// Button click options
+/// Options for clicking a mouse button.
+///
+/// ```ts
+/// // Click and hold for 0.5 seconds
+/// await mouse.click({ duration: 0.5 });
+/// ```
 /// @extends PressOptions
 /// @options
 #[derive(Clone, Debug, FromJsObject)]
@@ -126,7 +155,11 @@ impl JsClickOptions {
     }
 }
 
-/// Button double click options
+/// Options for double-clicking a mouse button.
+///
+/// ```ts
+/// await mouse.doubleClick({ delay: 0.1 });
+/// ```
 /// @extends ClickOptions
 /// @options
 #[derive(Clone, Debug, FromJsObject)]
@@ -158,22 +191,26 @@ impl JsDoubleClickOptions {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsMouse {
+    /// Returns whether a mouse button is currently pressed.
     /// @platforms -wayland
     pub async fn is_pressed(&self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
         self.inner.is_pressed(button).await.into_js_result(&ctx)
     }
 
+    /// Scrolls the mouse wheel by the given amount.
     pub async fn scroll(&self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
             .into_js_result(&ctx)
     }
 
+    /// Returns the current mouse cursor position.
     /// @platforms -wayland
     pub async fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position().into_js_result(&ctx)?.into())
     }
 
+    /// Measures the mouse movement speed over a duration (in pixels per second).
     /// @returns Task<number>
     pub fn measure_speed<'js>(
         &self,
@@ -193,6 +230,7 @@ impl JsMouse {
         })
     }
 
+    /// Moves the mouse cursor smoothly to the given position.
     /// @returns Task<void>
     #[qjs(rename = "move")]
     pub fn r#move<'js>(
@@ -216,18 +254,21 @@ impl JsMouse {
         })
     }
 
+    /// Sets the mouse cursor position instantly (absolute coordinates).
     pub async fn set_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
             .into_js_result(&ctx)
     }
 
+    /// Moves the mouse cursor by the given offset (relative coordinates).
     pub async fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
             .into_js_result(&ctx)
     }
 
+    /// Clicks a mouse button.
     /// @returns Task<void>
     pub fn click<'js>(&self, ctx: Ctx<'js>, options: Opt<JsClickOptions>) -> Result<Promise<'js>> {
         let local_mouse = self.inner.clone();
@@ -242,6 +283,7 @@ impl JsMouse {
         })
     }
 
+    /// Double-clicks a mouse button.
     /// @returns Task<void>
     pub fn double_click<'js>(
         &self,
@@ -260,12 +302,14 @@ impl JsMouse {
         })
     }
 
+    /// Presses and holds a mouse button.
     pub async fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
         self.inner
             .press(options.unwrap_or_default())
             .into_js_result(&ctx)
     }
 
+    /// Releases a mouse button.
     pub async fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))

@@ -33,6 +33,33 @@ impl Debug for Clipboard {
 pub type JsClipboardMode = super::ClipboardMode;
 
 // TODO: add waitForChanged
+/// The global clipboard singleton for reading and writing clipboard content.
+///
+/// Supports text, images, file lists, and HTML content. Each content type
+/// is accessed through a dedicated sub-object.
+///
+/// ```ts
+/// // Copy and paste text
+/// await clipboard.text.set("Hello, world!");
+/// const text = await clipboard.text.get();
+///
+/// // Copy and paste an image
+/// const img = display.screenshot();
+/// await clipboard.image.set(img);
+///
+/// // Work with file lists
+/// await clipboard.fileList.set(["/path/to/file.txt"]);
+///
+/// // HTML content with alt text fallback
+/// await clipboard.html.set("<b>bold</b>", "bold");
+///
+/// // Clear the clipboard
+/// await clipboard.clear();
+///
+/// // On Linux, use the selection clipboard
+/// await clipboard.text.set("selected", ClipboardMode.Selection);
+/// ```
+///
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Clipboard")]
@@ -82,7 +109,7 @@ impl JsClipboard {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboard {
-    /// Text operations
+    /// Sub-object for text clipboard operations.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -90,7 +117,7 @@ impl JsClipboard {
         self.text.clone()
     }
 
-    /// Image operations
+    /// Sub-object for image clipboard operations.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -98,7 +125,7 @@ impl JsClipboard {
         self.image.clone()
     }
 
-    /// File list operations
+    /// Sub-object for file list clipboard operations.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -106,7 +133,7 @@ impl JsClipboard {
         self.file_list.clone()
     }
 
-    /// Html operations
+    /// Sub-object for HTML clipboard operations.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -114,12 +141,25 @@ impl JsClipboard {
         self.html.clone()
     }
 
+    /// Clears the clipboard contents.
+    ///
+    /// ```ts
+    /// await clipboard.clear();
+    ///
+    /// // On Linux, clear the selection clipboard
+    /// await clipboard.clear(ClipboardMode.Selection);
+    /// ```
     pub async fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
         self.inner.clear(*mode).into_js_result(&ctx)
     }
 }
 
-/// ClipboardText
+/// Provides text clipboard operations.
+///
+/// ```ts
+/// await clipboard.text.set("Hello!");
+/// const text = await clipboard.text.get();
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardText")]
 pub struct JsClipboardText {
@@ -142,16 +182,24 @@ impl JsClipboardText {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboardText {
+    /// Sets the clipboard text content.
     pub async fn set(&self, ctx: Ctx<'_>, text: String, mode: Opt<JsClipboardMode>) -> Result<()> {
         self.inner.set_text(text, *mode).into_js_result(&ctx)
     }
 
+    /// Gets the clipboard text content.
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_text(*mode).into_js_result(&ctx)
     }
 }
 
-/// ClipboardImage
+/// Provides image clipboard operations.
+///
+/// ```ts
+/// const img = display.screenshot();
+/// await clipboard.image.set(img);
+/// const clipped = await clipboard.image.get();
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardImage")]
 pub struct JsClipboardImage {
@@ -174,6 +222,7 @@ impl JsClipboardImage {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboardImage {
+    /// Sets the clipboard image content.
     pub async fn set(
         &self,
         ctx: Ctx<'_>,
@@ -185,6 +234,7 @@ impl JsClipboardImage {
             .into_js_result(&ctx)
     }
 
+    /// Gets the clipboard image content.
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<JsImage> {
         let image = self.inner.get_image(*mode).into_js_result(&ctx)?;
 
@@ -192,7 +242,12 @@ impl JsClipboardImage {
     }
 }
 
-/// ClipboardFileList
+/// Provides file list clipboard operations.
+///
+/// ```ts
+/// await clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
+/// const files = await clipboard.fileList.get();
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardFileList")]
 pub struct JsClipboardFileList {
@@ -215,6 +270,7 @@ impl JsClipboardFileList {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboardFileList {
+    /// Sets the clipboard file list content.
     pub async fn set(
         &self,
         ctx: Ctx<'_>,
@@ -226,12 +282,23 @@ impl JsClipboardFileList {
             .into_js_result(&ctx)
     }
 
+    /// Gets the clipboard file list content.
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
     }
 }
 
-/// ClipboardHtml
+/// Provides HTML clipboard operations.
+///
+/// ```ts
+/// // Set HTML with a plain-text fallback
+/// await clipboard.html.set("<b>bold</b>", "bold");
+///
+/// // Set HTML without a fallback
+/// await clipboard.html.set("<em>italic</em>");
+///
+/// const html = await clipboard.html.get();
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardHtml")]
 pub struct JsClipboardHtml {
@@ -254,6 +321,7 @@ impl JsClipboardHtml {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboardHtml {
+    /// Sets the clipboard HTML content, with an optional plain-text alternative.
     pub async fn set(
         &self,
         ctx: Ctx<'_>,
@@ -266,6 +334,7 @@ impl JsClipboardHtml {
             .into_js_result(&ctx)
     }
 
+    /// Gets the clipboard HTML content.
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_html(*mode).into_js_result(&ctx)
     }

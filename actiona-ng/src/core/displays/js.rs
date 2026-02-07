@@ -21,6 +21,24 @@ impl<T> IntoJsResult<T> for super::Result<T> {
     }
 }
 
+/// The global displays singleton for querying connected monitors and screens.
+///
+/// ```ts
+/// // Get a random point across all displays
+/// const point = await displays.randomPoint();
+///
+/// // Find which display contains a point
+/// const info = await displays.fromPoint(new Point(100, 200));
+/// if (info) console.log(info.name, info.rect);
+///
+/// // Find a display by friendly name
+/// const monitor = await displays.fromName("HDMI-1");
+///
+/// // Get the largest or smallest display
+/// const largest = await displays.largest();
+/// const smallest = await displays.smallest();
+/// ```
+///
 /// @singleton
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "Displays")]
@@ -44,6 +62,7 @@ impl JsDisplays {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDisplays {
+    /// Returns a random point within the bounds of all connected displays.
     pub async fn random_point(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self
             .inner
@@ -53,6 +72,7 @@ impl JsDisplays {
             .into())
     }
 
+    /// Returns the display that contains the given point, or `undefined` if none.
     pub async fn from_point(
         &self,
         ctx: Ctx<'_>,
@@ -66,6 +86,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into()))
     }
 
+    /// Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
     pub async fn from_name<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -84,6 +105,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into()))
     }
 
+    /// Finds a display by its device name, or `undefined` if not found.
     pub async fn from_device_name<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -102,6 +124,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into()))
     }
 
+    /// Finds a display by its unique numeric ID, or `undefined` if not found.
     pub async fn from_id<'js>(&self, ctx: Ctx<'js>, id: u32) -> Result<Option<JsDisplayInfo>> {
         let displays_infos = self
             .inner
@@ -116,6 +139,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into()))
     }
 
+    /// Returns the smallest display by area, or `undefined` if no displays are connected.
     pub async fn smallest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
         Ok(self
             .inner
@@ -125,6 +149,7 @@ impl JsDisplays {
             .map(|display_info| display_info.into()))
     }
 
+    /// Returns the largest display by area, or `undefined` if no displays are connected.
     pub async fn largest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
         Ok(self
             .inner
@@ -135,7 +160,16 @@ impl JsDisplays {
     }
 }
 
-/// Display info
+/// Information about a connected display, including its name, geometry,
+/// rotation, scale factor, and refresh rate.
+///
+/// ```ts
+/// const info = await displays.fromName("HDMI-1");
+/// if (info) {
+///     console.log(info.friendlyName, info.rect, info.frequency + "Hz");
+///     console.log("Primary:", info.isPrimary);
+/// }
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "DisplayInfo")]
 pub struct JsDisplayInfo {
@@ -156,7 +190,7 @@ impl From<runtime::events::DisplayInfo> for JsDisplayInfo {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDisplayInfo {
-    /// Unique identifier associated with the display
+    /// Unique numeric identifier for this display.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -164,7 +198,7 @@ impl JsDisplayInfo {
         self.inner.id
     }
 
-    /// The display name
+    /// The display device name (e.g. `"DP-1"`).
     /// @get
     #[qjs(get)]
     #[allow(clippy::missing_const_for_fn)]
@@ -173,7 +207,7 @@ impl JsDisplayInfo {
         &self.inner.name
     }
 
-    /// The display friendly name
+    /// The display friendly name (e.g. `"HDMI-1"`).
     /// @get
     #[qjs(get)]
     #[allow(clippy::missing_const_for_fn)]
@@ -182,7 +216,7 @@ impl JsDisplayInfo {
         &self.inner.friendly_name
     }
 
-    /// The display rectangle
+    /// The display rectangle (position and size in pixels).
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -190,7 +224,7 @@ impl JsDisplayInfo {
         self.inner.rect.into()
     }
 
-    /// The display pixel width
+    /// The physical width of the display in millimeters.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -198,7 +232,7 @@ impl JsDisplayInfo {
         self.inner.width_mm
     }
 
-    /// The display pixel height
+    /// The physical height of the display in millimeters.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -206,7 +240,7 @@ impl JsDisplayInfo {
         self.inner.height_mm
     }
 
-    /// The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+    /// The display rotation in clock-wise degrees (0, 90, 180, or 270).
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -214,7 +248,7 @@ impl JsDisplayInfo {
         self.inner.rotation
     }
 
-    /// Output device's pixel scale factor
+    /// The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -222,7 +256,7 @@ impl JsDisplayInfo {
         self.inner.scale_factor
     }
 
-    /// The display refresh rate
+    /// The display refresh rate in Hz.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -230,7 +264,7 @@ impl JsDisplayInfo {
         self.inner.frequency
     }
 
-    /// Whether the screen is the main screen
+    /// Whether this is the primary (main) display.
     /// @get
     #[qjs(get)]
     #[must_use]

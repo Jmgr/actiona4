@@ -22,7 +22,20 @@ use crate::{
     },
 };
 
-/// Play sound options
+/// Options for playing a sound file.
+///
+/// ```ts
+/// // Play with default options
+/// audio.playFile("sound.wav");
+///
+/// // Play at half volume, looping, with a fade in
+/// audio.playFile("music.mp3", {
+///     volume: 0.5,
+///     loop: true,
+///     fadeIn: 2000,
+/// });
+/// ```
+///
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsPlaySoundOptions {
@@ -67,6 +80,22 @@ impl JsPlaySoundOptions {
     }
 }
 
+/// The global audio singleton for playing sound files.
+///
+/// ```ts
+/// // Play a sound and forget about it
+/// audio.playFile("notification.wav");
+///
+/// // Play a sound and wait for it to finish
+/// await audio.playFileAndWait("alert.wav");
+///
+/// // Play with options and control playback
+/// const sound = audio.playFile("music.mp3", { volume: 0.8, loop: true });
+/// sound.pause();
+/// sound.resume();
+/// sound.stop();
+/// ```
+///
 /// @singleton
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "Audio")]
@@ -101,6 +130,12 @@ impl JsAudio {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsAudio {
+    /// Plays a sound file and returns a `PlayingSound` handle for controlling playback.
+    ///
+    /// ```ts
+    /// const sound = audio.playFile("music.mp3");
+    /// sound.volume = 0.5;
+    /// ```
     pub fn play_file(
         &self,
         ctx: Ctx<'_>,
@@ -115,6 +150,19 @@ impl JsAudio {
         Ok(JsPlayingSound::new(playing_sound))
     }
 
+    /// Plays a sound file and waits for it to finish.
+    ///
+    /// ```ts
+    /// await audio.playFileAndWait("alert.wav");
+    ///
+    /// // With a fade out and abort signal
+    /// const controller = new AbortController();
+    /// await audio.playFileAndWait("long-track.mp3", {
+    ///     fadeOut: 1000,
+    ///     signal: controller.signal,
+    /// });
+    /// ```
+    ///
     /// @returns Task<void>
     pub fn play_file_and_wait<'js>(
         &self,
@@ -135,7 +183,17 @@ impl JsAudio {
     }
 }
 
-/// PlayingSound
+/// A handle to an actively playing sound, allowing control over playback.
+///
+/// ```ts
+/// const sound = audio.playFile("music.mp3");
+/// console.log(sound.duration);  // duration in seconds
+/// sound.volume = 0.5;
+/// sound.playbackRate = 1.5;
+/// sound.pause();
+/// sound.resume();
+/// await sound.finished;  // wait until the sound ends
+/// ```
 ///
 /// @prop volume: number = `1` // Sound volume
 /// @prop playbackRate: number = `1` // Sound playing speed
@@ -163,7 +221,7 @@ impl JsPlayingSound {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsPlayingSound {
-    /// Is the sound paused
+    /// Whether the sound is currently paused.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -171,14 +229,17 @@ impl JsPlayingSound {
         self.inner.is_paused()
     }
 
+    /// Pauses the sound. Use `resume()` to continue playback.
     pub fn pause(&self) {
         self.inner.pause();
     }
 
+    /// Resumes a paused sound.
     pub fn resume(&self) {
         self.inner.resume();
     }
 
+    /// Stops the sound permanently.
     pub fn stop(&self) {
         self.inner.stop();
     }
@@ -209,7 +270,7 @@ impl JsPlayingSound {
         self.inner.set_playback_rate(playback_rate);
     }
 
-    /// The duration of the sound in seconds
+    /// The total duration of the sound in seconds, or `undefined` if unknown.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -218,7 +279,14 @@ impl JsPlayingSound {
         Some(duration.as_secs_f64())
     }
 
-    /// Await to wait until the sound has finished playing
+    /// A promise that resolves when the sound has finished playing.
+    ///
+    /// ```ts
+    /// const sound = audio.playFile("music.mp3");
+    /// await sound.finished;
+    /// console.log("Sound finished!");
+    /// ```
+    ///
     /// @get
     /// @returns Promise<void>
     #[qjs(get)]

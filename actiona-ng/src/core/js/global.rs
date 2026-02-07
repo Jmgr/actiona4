@@ -6,7 +6,12 @@ use tracing::instrument;
 
 use crate::{IntoJsResult, core::js::task::task, error::CommonError, runtime::WithUserData};
 
-/// Pauses the execution.
+/// Pauses the execution for the given number of milliseconds.
+///
+/// ```ts
+/// // Wait 1 second
+/// await sleep(1000);
+/// ```
 /// @returns Task<void>
 pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<Promise<'js>> {
     task(ctx, async move |ctx, token| {
@@ -17,7 +22,13 @@ pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<Promise<'js>> {
     })
 }
 
-/// Stops the execution.
+/// Stops the script execution immediately.
+///
+/// ```ts
+/// if (errorCondition) {
+///   exit();
+/// }
+/// ```
 pub fn exit<'js>(ctx: Ctx<'js>) {
     let token = ctx.user_data().cancellation_token();
 

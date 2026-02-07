@@ -48,6 +48,15 @@ use crate::{
     PartialEq,
     Serialize,
 )]
+/// Direction to flip an image.
+///
+/// ```ts
+/// // Flip horizontally (mirror)
+/// image.flip(FlipDirection.Horizontal);
+///
+/// // Flip vertically
+/// image.flip(FlipDirection.Vertical);
+/// ```
 #[serde(rename = "FlipDirection")]
 pub enum JsFlipDirection {
     Horizontal,
@@ -63,7 +72,15 @@ impl From<JsFlipDirection> for FlipDirection {
     }
 }
 
-/// Resize filters
+/// Resize filter algorithms.
+///
+/// ```ts
+/// // Use nearest-neighbor for pixel art (no smoothing)
+/// image.resize(64, 64, { filter: ResizeFilter.Nearest });
+///
+/// // Use Lanczos3 for high-quality downscaling
+/// image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -98,7 +115,15 @@ impl From<JsResizeFilter> for ResizeFilter {
     }
 }
 
-/// Interpolation algorithms used for rotations
+/// Interpolation algorithms used for image rotations.
+///
+/// ```ts
+/// // Fast but lower quality
+/// image.rotate(45, { interpolation: Interpolation.Nearest });
+///
+/// // Smooth result (default)
+/// image.rotate(45, { interpolation: Interpolation.Bilinear });
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -129,7 +154,15 @@ impl From<JsInterpolation> for Interpolation {
     }
 }
 
-/// Resize options
+/// Options for resizing an image.
+///
+/// ```ts
+/// // Resize while preserving aspect ratio
+/// image.resize(200, 150, { keepAspectRatio: true });
+///
+/// // Resize with a specific filter
+/// image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsResizeOptions {
@@ -160,7 +193,15 @@ impl From<JsResizeOptions> for ResizeOptions {
     }
 }
 
-/// Blur options
+/// Options for blurring an image.
+///
+/// ```ts
+/// // Fast blur
+/// image.blur({ fast: true });
+///
+/// // Gaussian blur with custom sigma
+/// image.blur({ sigma: 5.0 });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsBlurOptions {
@@ -191,7 +232,14 @@ impl From<JsBlurOptions> for BlurOptions {
     }
 }
 
-/// Draw image options
+/// Options for drawing an image onto another image.
+///
+/// ```ts
+/// // Draw only a portion of the source image
+/// canvas.drawImage(new Point(0, 0), sprite, {
+///   sourceRect: new Rect(0, 0, 32, 32)
+/// });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
 pub struct JsDrawImageOptions {
@@ -209,7 +257,15 @@ impl From<JsDrawImageOptions> for DrawImageOptions {
     }
 }
 
-/// Rotation options
+/// Options for rotating an image.
+///
+/// ```ts
+/// // Rotate around a custom center point
+/// image.rotate(45, { center: new Point(10, 10) });
+///
+/// // Rotate with a background color for exposed areas
+/// image.rotate(30, { defaultColor: Color.White });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsRotationOptions {
@@ -246,7 +302,12 @@ impl From<JsRotationOptions> for RotationOptions {
     }
 }
 
-/// Drawing options
+/// Options for drawing shapes on an image.
+///
+/// ```ts
+/// // Draw a hollow circle (outline only)
+/// image.drawCircle(new Point(50, 50), 20, Color.Red, { hollow: true });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
 pub struct JsDrawingOptions {
@@ -264,6 +325,12 @@ impl From<JsDrawingOptions> for DrawingOptions {
 }
 
 /// Horizontal alignment for text drawing.
+///
+/// ```ts
+/// image.drawText(new Point(100, 50), "Centered", fontPath, Color.Black, {
+///   horizontalAlign: TextHorizontalAlign.Center
+/// });
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -295,6 +362,12 @@ impl From<JsTextHorizontalAlign> for TextHorizontalAlign {
 }
 
 /// Vertical alignment for text drawing.
+///
+/// ```ts
+/// image.drawText(new Point(50, 100), "Middle", fontPath, Color.Black, {
+///   verticalAlign: TextVerticalAlign.Middle
+/// });
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -325,7 +398,16 @@ impl From<JsTextVerticalAlign> for TextVerticalAlign {
     }
 }
 
-/// Text drawing options.
+/// Options for drawing text on an image.
+///
+/// ```ts
+/// // Draw large, centered text
+/// image.drawText(new Point(100, 50), "Hello", fontPath, Color.White, {
+///   fontSize: 32,
+///   horizontalAlign: TextHorizontalAlign.Center,
+///   verticalAlign: TextVerticalAlign.Middle
+/// });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDrawTextOptions {
@@ -368,7 +450,16 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
     }
 }
 
-/// Find image template options
+/// Options for finding an image within another image.
+///
+/// ```ts
+/// // Find with stricter matching
+/// const match = await source.findImage(template, { matchThreshold: 0.95 });
+///
+/// // Find with abort support
+/// const controller = new AbortController();
+/// const match = await source.findImage(template, { signal: controller.signal });
+/// ```
 /// @options
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsFindImageOptions {
@@ -422,7 +513,17 @@ impl JsFindImageOptions {
     }
 }
 
-/// A match returned by a find_image call.
+/// A match returned by a findImage or findImageAll call.
+///
+/// ```ts
+/// const source = await Image.load("screenshot.png");
+/// const template = await Image.load("button.png");
+/// const match = await source.findImage(template);
+/// if (match) {
+///   console.log(`Found at ${match.position} with score ${match.score}`);
+///   console.log(`Bounding rect: ${match.rect}`);
+/// }
+/// ```
 ///
 /// @prop position: Point // the position on the source image where the target image was found
 /// @prop rect: Rect // the rectangle on the source image where the target image was found
@@ -500,6 +601,15 @@ impl From<super::find_image::Match> for JsMatch {
 }
 
 /// Stages of a find image operation.
+///
+/// ```ts
+/// const task = source.findImage(template);
+/// for await (const progress of task) {
+///   if (progress.stage === FindImageStage.Matching) {
+///     console.log(`Matching: ${progress.percent}%`);
+///   }
+/// }
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -540,6 +650,17 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 }
 
 /// Progress of a find image operation.
+///
+/// Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
+///
+/// ```ts
+/// const task = source.findImage(template);
+/// for await (const progress of task) {
+///   console.log(`${progress.stage}: ${progress.percent}%`);
+///   if (progress.finished) break;
+/// }
+/// const result = await task;
+/// ```
 #[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "FindImageProgress")]
 pub struct JsFindImageProgress {
@@ -591,6 +712,41 @@ impl JsFindImageProgress {
     }
 }
 
+/// An image that can be loaded, created, manipulated, and saved.
+///
+/// Provides methods for image processing (blur, rotate, resize, color adjustments),
+/// drawing primitives (lines, circles, rectangles, text), and template matching (findImage).
+///
+/// Most mutating methods return `this` for chaining. Each also has an immutable variant
+/// that returns a new `Image` (e.g., `blur()` vs `blurred()`).
+///
+/// ```ts
+/// // Create, manipulate, and save
+/// let image = new Image(200, 100);
+/// image.fill(Color.White)
+///      .drawCircle(new Point(100, 50), 30, Color.Red)
+///      .drawText(new Point(10, 10), "Hello", "/path/to/font.ttf", Color.Black);
+/// await image.save("output.png");
+/// ```
+///
+/// ```ts
+/// // Load, transform, and save
+/// let photo = await Image.load("photo.png");
+/// photo.resize(800, 600, { keepAspectRatio: true })
+///      .adjustBrightness(10)
+///      .adjustContrast(5);
+/// await photo.save("photo_edited.png");
+/// ```
+///
+/// ```ts
+/// // Find an image within another
+/// const screen = await Image.load("screenshot.png");
+/// const button = await Image.load("button.png");
+/// const match = await screen.findImage(button, { matchThreshold: 0.9 });
+/// if (match) {
+///   console.log(`Button found at ${match.position}`);
+/// }
+/// ```
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Image")]
 pub struct JsImage {
@@ -650,6 +806,12 @@ impl JsImage {
         }
     }
 
+    /// Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
+    ///
+    /// ```ts
+    /// const bytes = await file.readAll();
+    /// const image = Image.fromBytes(bytes);
+    /// ```
     #[qjs(static)]
     pub fn from_bytes(ctx: Ctx<'_>, bytes: TypedArray<'_, u8>) -> Result<Self> {
         let bytes = bytes
@@ -662,11 +824,13 @@ impl JsImage {
         })
     }
 
+    /// Saves this image to a file. The format is inferred from the file extension.
     // TODO: make this async
     pub fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
         self.inner.save(path).into_js_result(&ctx)
     }
 
+    /// Loads an image from a file. The format is guessed from the file contents.
     // TODO: make this async
     #[qjs(static)]
     pub fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
@@ -694,17 +858,20 @@ impl JsImage {
         self.inner.height()
     }
 
+    /// Returns true if this image equals another (same dimensions and pixel data).
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
+    /// Returns a string representation of this image (width, height).
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
         format!("({}, {})", self.width(), self.height())
     }
 
+    /// Clones this image.
     #[qjs(rename = "clone")]
     #[must_use]
     pub fn clone_js(&self) -> Self {
@@ -895,7 +1062,7 @@ impl JsImage {
         this.0
     }
 
-    /// Fill this image with a color.
+    /// Returns a copy of this image filled with a color.
     #[must_use]
     pub fn filled(&self, color: JsColorLike) -> Self {
         self.inner.filled(color.0).into()
@@ -909,7 +1076,7 @@ impl JsImage {
             .map(Into::into)
     }
 
-    /// Returns the value of a pixel.
+    /// Sets the color of a pixel.
     pub fn set_pixel<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
@@ -1163,7 +1330,26 @@ impl JsImage {
             .map(Into::into)
     }
 
-    /// Find an image inside this image.
+    /// Finds the best match of an image inside this image.
+    ///
+    /// Returns a `ProgressTask` that can be awaited for the result and iterated
+    /// for progress updates. Returns `undefined` if no match is found.
+    ///
+    /// ```ts
+    /// const match = await source.findImage(template);
+    /// if (match) {
+    ///   console.log(`Found at ${match.position} with score ${match.score}`);
+    /// }
+    /// ```
+    ///
+    /// ```ts
+    /// // Track progress while searching
+    /// const task = source.findImage(template);
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    /// }
+    /// const match = await task;
+    /// ```
     /// @returns ProgressTask<Match | undefined, FindImageProgress>
     pub fn find_image<'js>(
         &self,
@@ -1202,7 +1388,25 @@ impl JsImage {
         )
     }
 
-    /// Find any occurence of an image inside this image.
+    /// Finds all occurrences of an image inside this image.
+    ///
+    /// Returns a `ProgressTask` that can be awaited for an array of matches.
+    ///
+    /// ```ts
+    /// const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
+    /// for (const match of matches) {
+    ///   console.log(`Found at ${match.position}`);
+    /// }
+    /// ```
+    ///
+    /// ```ts
+    /// // Track progress while searching
+    /// const task = source.findImageAll(template);
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    /// }
+    /// const matches = await task;
+    /// ```
     /// @returns ProgressTask<Match[], FindImageProgress>
     pub fn find_image_all<'js>(
         &self,

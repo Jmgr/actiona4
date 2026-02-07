@@ -41,7 +41,25 @@ impl PartialEq for OpenedFile {
     }
 }
 
-/// File open options
+/// Options for `File.open()`.
+///
+/// ```ts
+/// // Read-only (default)
+/// const file = await File.open("data.txt");
+///
+/// // Create a new file for writing
+/// const file = await File.open("out.txt", {
+///     write: true,
+///     createNew: true,
+/// });
+///
+/// // Append to an existing file
+/// const file = await File.open("log.txt", {
+///     write: true,
+///     append: true,
+/// });
+/// ```
+///
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsOpenOptions {
@@ -101,7 +119,29 @@ impl From<JsOpenOptions> for fs::OpenOptions {
     }
 }
 
-/// File represents a file handle.
+/// A file handle for reading and writing. Also provides static utility methods
+/// for common file operations without needing to open a handle.
+///
+/// ```ts
+/// // Read a file in one shot (static)
+/// const text = await File.readText("config.json");
+///
+/// // Write a file in one shot (static)
+/// await File.writeText("output.txt", "Hello!");
+///
+/// // Open, read/write, then close
+/// const file = await File.open("data.bin", { read: true, write: true, create: true });
+/// await file.writeBytes(new Uint8Array([1, 2, 3]));
+/// await file.rewind();
+/// const bytes = await file.readBytes();
+/// await file.close();
+///
+/// // File utilities
+/// await File.copy("src.txt", "dst.txt");
+/// await File.rename("old.txt", "new.txt");
+/// const exists = await File.exists("file.txt");
+/// await File.remove("file.txt");
+/// ```
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "File")]
 pub struct JsFile {
@@ -191,6 +231,8 @@ impl JsFile {
         self.inner = None;
     }
 
+    /// Writes bytes to this file handle.
+    ///
     /// @rename writeBytes
     ///
     /// @param bytes: Uint8Array
@@ -214,6 +256,8 @@ impl JsFile {
         Ok(())
     }
 
+    /// Writes bytes to a file at the given path (static).
+    ///
     /// @static
     ///
     /// @param path: string
@@ -232,6 +276,8 @@ impl JsFile {
         Ok(())
     }
 
+    /// Writes text to this file handle.
+    ///
     /// @rename writeText
     ///
     /// @param text: string
@@ -251,6 +297,12 @@ impl JsFile {
         Ok(())
     }
 
+    /// Writes text to a file at the given path (static).
+    ///
+    /// ```ts
+    /// await File.writeText("hello.txt", "Hello, world!");
+    /// ```
+    ///
     /// @static
     ///
     /// @param path: string
@@ -264,6 +316,9 @@ impl JsFile {
         Ok(())
     }
 
+    /// Reads bytes from this file handle. If `amount` is given, reads exactly that many bytes;
+    /// otherwise reads until EOF.
+    ///
     /// @rename readBytes
     ///
     /// @param amount?: number
@@ -310,6 +365,7 @@ impl JsFile {
         TypedArray::new(ctx, result)
     }
 
+    /// Reads bytes from a file at the given path (static).
     #[qjs(static)]
     pub async fn read_bytes(
         ctx: Ctx<'_>,
@@ -335,6 +391,8 @@ impl JsFile {
         TypedArray::new(ctx, result)
     }
 
+    /// Reads the entire file as a UTF-8 string from this file handle.
+    ///
     /// @rename readText
     #[qjs(rename = "readText")]
     pub async fn read_text_instance(&mut self, ctx: Ctx<'_>) -> Result<String> {
@@ -354,6 +412,11 @@ impl JsFile {
         Ok(result)
     }
 
+    /// Reads the entire file as a UTF-8 string (static).
+    ///
+    /// ```ts
+    /// const text = await File.readText("config.json");
+    /// ```
     #[qjs(static)]
     pub async fn read_text(ctx: Ctx<'_>, path: String) -> Result<String> {
         fs::read_to_string(path)
@@ -361,6 +424,7 @@ impl JsFile {
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error reading file: {err}")))
     }
 
+    /// Returns the file size in bytes.
     #[qjs(rename = "size")]
     pub async fn size(&mut self, ctx: Ctx<'_>) -> Result<u64> {
         let opened_file = self.opened_file(&ctx)?;
@@ -368,12 +432,14 @@ impl JsFile {
         Ok(opened_file.file.lock().await.metadata().await?.len())
     }
 
+    /// Truncates or extends the file to the given size in bytes.
     pub async fn set_size(&self, ctx: Ctx<'_>, size: u64) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
 
         Ok(opened_file.file.lock().await.set_len(size).await?)
     }
 
+    /// Returns whether the file is read-only.
     pub async fn readonly(&self, ctx: Ctx<'_>) -> Result<bool> {
         let opened_file = self.opened_file(&ctx)?;
 
@@ -387,6 +453,7 @@ impl JsFile {
             .readonly())
     }
 
+    /// Sets whether the file is read-only.
     pub async fn set_readonly(&self, ctx: Ctx<'_>, readonly: bool) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
 
@@ -401,6 +468,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
     /// @platforms -windows
     pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
         #[cfg(unix)]
@@ -450,6 +518,7 @@ impl JsFile {
         }
     }
 
+    /// Returns the last modification time of the file.
     /// @returns Date
     pub async fn modified_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
@@ -476,6 +545,7 @@ impl JsFile {
             .unwrap()
     }
 
+    /// Sets the last modification time of the file.
     /// @param date: Date
     pub async fn set_modified_time<'js>(&self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file(&ctx)?;
@@ -491,6 +561,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Returns the last access time of the file.
     /// @returns Date
     pub async fn accessed_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
@@ -499,6 +570,7 @@ impl JsFile {
         date_from_system_time(&ctx, &modified)
     }
 
+    /// Sets the last access time of the file.
     /// @param date: Date
     pub async fn set_accessed_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
@@ -514,6 +586,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Returns the creation time of the file.
     /// @returns Date
     pub async fn creation_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let opened_file = self.opened_file(&ctx)?;
@@ -522,6 +595,7 @@ impl JsFile {
         date_from_system_time(&ctx, &modified)
     }
 
+    /// Sets the creation time of the file. No-op on Linux.
     /// @param date: Date
     /// @platforms -linux
     pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
@@ -549,12 +623,14 @@ impl JsFile {
         }
     }
 
+    /// Returns the current read/write position in the file.
     pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<u64> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
         Ok(opened_file.file.lock().await.stream_position().await?)
     }
 
+    /// Seeks to an absolute position in the file.
     pub async fn set_position(&mut self, ctx: Ctx<'_>, position: u64) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
@@ -568,6 +644,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Seeks relative to the current position (can be negative).
     pub async fn set_relative_position(&mut self, ctx: Ctx<'_>, offset: i64) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
@@ -581,6 +658,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Rewinds the file position to the beginning.
     pub async fn rewind(&mut self, ctx: Ctx<'_>) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
 
@@ -598,6 +676,13 @@ impl JsFile {
         Ok(opened_file.path.to_string())
     }
 
+    /// Returns `true` if a file exists at the given path.
+    ///
+    /// ```ts
+    /// if (await File.exists("config.json")) {
+    ///     const text = await File.readText("config.json");
+    /// }
+    /// ```
     #[qjs(static)]
     pub async fn exists(path: String) -> Result<bool> {
         let result = fs::try_exists(path).await?;
@@ -615,6 +700,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Copies a file from `source` to `destination`.
     #[qjs(static)]
     pub async fn copy(source: String, destination: String) -> Result<()> {
         fs::copy(source, destination).await?;
@@ -622,6 +708,7 @@ impl JsFile {
         Ok(())
     }
 
+    /// Renames (moves) a file from `source` to `destination`. Works across filesystems.
     #[qjs(static)]
     pub async fn rename(source: String, destination: String) -> Result<()> {
         match fs::rename(&source, &destination).await {
@@ -635,22 +722,26 @@ impl JsFile {
         }
     }
 
+    /// Alias for `rename`.
     #[qjs(static)]
     pub async fn r#move(source: String, destination: String) -> Result<()> {
         Self::rename(source, destination).await
     }
 
+    /// Returns a clone of this file handle. Both handles share the same underlying file.
     #[qjs(rename = "clone")]
     #[must_use]
     pub fn clone_js(&self) -> Self {
         self.clone()
     }
 
+    /// Returns `true` if both handles refer to the same file path.
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         self.inner == other.inner
     }
 
+    /// Returns a string representation of the file handle.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

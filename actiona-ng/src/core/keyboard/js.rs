@@ -23,7 +23,17 @@ impl<'js> Trace<'js> for super::Keyboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-/// Direction
+/// Direction for key press/release actions.
+///
+/// ```ts
+/// // Press and hold a key
+/// await keyboard.key(Key.Shift, Direction.Press);
+/// // Release it
+/// await keyboard.key(Key.Shift, Direction.Release);
+///
+/// // Press and release in one action
+/// await keyboard.key(Key.Return, Direction.Click);
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -57,6 +67,24 @@ impl From<JsDirection> for enigo::Direction {
     }
 }
 
+/// Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
+///
+/// ```ts
+/// // Type text
+/// await keyboard.text("Hello, world!");
+/// ```
+///
+/// ```ts
+/// // Press a key combination (Ctrl+C)
+/// await keyboard.key(Key.Control, Direction.Press);
+/// await keyboard.key("c", Direction.Click);
+/// await keyboard.key(Key.Control, Direction.Release);
+/// ```
+///
+/// ```ts
+/// // Wait for a key combination
+/// await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
+/// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Keyboard")]
@@ -95,7 +123,12 @@ impl JsKeyboard {
     }
 }
 
-/// Wait for keys options
+/// Options for waiting for key combinations.
+///
+/// ```ts
+/// // Wait for exactly Ctrl+S and no other keys
+/// await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
+/// ```
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsWaitForKeysOptions {
@@ -109,12 +142,16 @@ pub struct JsWaitForKeysOptions {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsKeyboard {
+    /// Types the given text string using simulated key events.
     pub async fn text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
         self.inner.text(&text).into_js_result(&ctx)?;
 
         Ok(())
     }
 
+    /// Presses, releases, or clicks a key.
+    ///
+    /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
     /// @param direction: Direction
     pub async fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
@@ -130,6 +167,7 @@ impl JsKeyboard {
         Ok(())
     }
 
+    /// Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
     pub async fn raw(&self, ctx: Ctx<'_>, keycode: u16, direction: JsDirection) -> Result<()> {
         self.inner
             .raw(keycode, direction.into())
@@ -138,6 +176,7 @@ impl JsKeyboard {
         Ok(())
     }
 
+    /// Returns whether a key is currently pressed.
     /// @param key: Key | string | number
     pub async fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = key.try_into().map_err(|_| {
@@ -150,6 +189,20 @@ impl JsKeyboard {
         self.inner.is_key_pressed(key).await.into_js_result(&ctx)
     }
 
+    /// Waits until the specified keys are all pressed simultaneously.
+    ///
+    /// ```ts
+    /// await keyboard.waitForKeys([Key.Control, "s"]);
+    /// ```
+    ///
+    /// ```ts
+    /// // Wait for exactly these keys and no others, with abort support
+    /// const controller = new AbortController();
+    /// await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
+    ///   exclusive: true,
+    ///   signal: controller.signal
+    /// });
+    /// ```
     /// @param keys: (Key | string | number)[]
     /// @returns Task<void>
     pub fn wait_for_keys<'js>(
@@ -194,6 +247,15 @@ impl JsKeyboard {
     PartialEq,
     Serialize,
 )]
+/// Standard keyboard keys.
+///
+/// Use as constants on the `Key` class. You can also pass a single character string
+/// or a raw keycode number wherever a `Key` is expected.
+///
+/// ```ts
+/// await keyboard.key(Key.Return, Direction.Click);
+/// await keyboard.key("a", Direction.Click);
+/// ```
 #[serde(rename = "Key")]
 /// @rename Key
 pub enum JsStandardKey {

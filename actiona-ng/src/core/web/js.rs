@@ -351,6 +351,17 @@ impl JsWeb {
 impl JsWeb {
     /// Downloads a binary file.
     ///
+    /// ```ts
+    /// const bytes = await web.download("https://example.com/file.bin");
+    /// ```
+    ///
+    /// ```ts
+    /// const task = web.download("https://example.com/file.bin");
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.current}/${progress.total} bytes`);
+    /// }
+    /// const bytes = await task;
+    /// ```
     /// @returns ProgressTask<Uint8Array, WebProgress>
     pub fn download<'js>(
         &self,
@@ -379,6 +390,17 @@ impl JsWeb {
 
     /// Downloads a text file.
     ///
+    /// ```ts
+    /// const text = await web.downloadText("https://example.com/data.json");
+    /// ```
+    ///
+    /// ```ts
+    /// const task = web.downloadText("https://example.com/data.json");
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.current}/${progress.total} bytes`);
+    /// }
+    /// const text = await task;
+    /// ```
     /// @returns ProgressTask<string, WebProgress>
     pub fn download_text<'js>(
         &self,
@@ -406,6 +428,17 @@ impl JsWeb {
 
     /// Downloads an image.
     ///
+    /// ```ts
+    /// const image = await web.downloadImage("https://example.com/photo.png");
+    /// ```
+    ///
+    /// ```ts
+    /// const task = web.downloadImage("https://example.com/photo.png");
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.current}/${progress.total} bytes`);
+    /// }
+    /// const image = await task;
+    /// ```
     /// @returns ProgressTask<Image, WebProgress>
     pub fn download_image<'js>(
         &self,
@@ -434,6 +467,17 @@ impl JsWeb {
 
     /// Downloads a file to a directory.
     ///
+    /// ```ts
+    /// const filePath = await web.downloadFile("https://example.com/file.zip");
+    /// ```
+    ///
+    /// ```ts
+    /// const task = web.downloadFile("https://example.com/file.zip", "/tmp");
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.current}/${progress.total} bytes`);
+    /// }
+    /// const filePath = await task;
+    /// ```
     /// @returns ProgressTask<string, WebProgress>
     pub fn download_file<'js>(
         &self,

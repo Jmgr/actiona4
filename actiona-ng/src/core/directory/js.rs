@@ -6,7 +6,15 @@ use tokio::fs::{self};
 
 use crate::core::js::classes::{HostClass, register_host_class};
 
-/// Directory entry
+/// An entry returned by `Directory.listEntries()`, representing a file, directory,
+/// or symlink within a directory.
+///
+/// ```ts
+/// const entries = await Directory.listEntries("/home/user");
+/// for (const entry of entries) {
+///     console.log(entry.fileName, entry.isFile, entry.size);
+/// }
+/// ```
 #[derive(Clone, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class(rename = "DirectoryEntry")]
 pub struct JsDirectoryEntry {
@@ -22,6 +30,7 @@ impl HostClass<'_> for JsDirectoryEntry {}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDirectoryEntry {
+    /// The full path to the entry.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -29,6 +38,7 @@ impl JsDirectoryEntry {
         &self.path
     }
 
+    /// The file name (last component of the path).
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -36,6 +46,7 @@ impl JsDirectoryEntry {
         &self.file_name
     }
 
+    /// Whether this entry is a regular file.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -43,6 +54,7 @@ impl JsDirectoryEntry {
         self.is_file
     }
 
+    /// Whether this entry is a directory.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -50,6 +62,7 @@ impl JsDirectoryEntry {
         self.is_directory
     }
 
+    /// Whether this entry is a symbolic link.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -57,6 +70,7 @@ impl JsDirectoryEntry {
         self.is_symlink
     }
 
+    /// The size of the entry in bytes.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -65,7 +79,7 @@ impl JsDirectoryEntry {
     }
 }
 
-/// Directory options
+/// Options for `Directory.create()` and `Directory.remove()`.
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryOptions {
@@ -80,7 +94,7 @@ impl Default for JsDirectoryOptions {
     }
 }
 
-/// Directory list options
+/// Options for `Directory.listEntries()`.
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryListOptions {
@@ -107,6 +121,21 @@ impl Default for JsDirectoryListOptions {
     }
 }
 
+/// Provides static methods for creating, removing, and listing directories.
+///
+/// ```ts
+/// // Create a directory (recursively by default)
+/// await Directory.create("/tmp/my/nested/dir");
+///
+/// // List entries in a directory
+/// const entries = await Directory.listEntries("/tmp/my/nested/dir");
+/// for (const entry of entries) {
+///     console.log(entry.fileName, entry.isFile ? "file" : "dir");
+/// }
+///
+/// // Remove a directory tree
+/// await Directory.remove("/tmp/my");
+/// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Directory")]
 pub struct JsDirectory {}
@@ -131,6 +160,15 @@ impl JsDirectory {
         ))
     }
 
+    /// Creates a directory at the given path. By default, creates parent directories
+    /// recursively.
+    ///
+    /// ```ts
+    /// await Directory.create("/tmp/a/b/c");
+    ///
+    /// // Non-recursive: fails if parent doesn't exist
+    /// await Directory.create("/tmp/a/b/c", { recursive: false });
+    /// ```
     #[qjs(static)]
     pub async fn create(path: String, options: Opt<JsDirectoryOptions>) -> Result<()> {
         let options = options.unwrap_or_default();
@@ -144,6 +182,14 @@ impl JsDirectory {
         Ok(())
     }
 
+    /// Removes a directory. By default, removes all contents recursively.
+    ///
+    /// ```ts
+    /// await Directory.remove("/tmp/my/dir");
+    ///
+    /// // Non-recursive: fails if the directory is not empty
+    /// await Directory.remove("/tmp/my/dir", { recursive: false });
+    /// ```
     #[qjs(static)]
     pub async fn remove(path: String, options: Opt<JsDirectoryOptions>) -> Result<()> {
         let options = options.unwrap_or_default();
@@ -157,6 +203,17 @@ impl JsDirectory {
         Ok(())
     }
 
+    /// Lists all entries in a directory, returning an array of `DirectoryEntry`.
+    ///
+    /// ```ts
+    /// // List with defaults (sorted, absolute paths, sizes fetched)
+    /// const entries = await Directory.listEntries("/home/user/docs");
+    ///
+    /// // Skip size fetching for faster listing
+    /// const entries = await Directory.listEntries("/home/user/docs", {
+    ///     fetchSize: false,
+    /// });
+    /// ```
     #[qjs(static)]
     pub async fn list_entries(
         path: String,

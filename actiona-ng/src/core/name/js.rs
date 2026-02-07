@@ -12,6 +12,18 @@ use wildmatch::WildMatch;
 
 use crate::core::{ResultExt, js::classes::ValueClass};
 
+/// A wildcard pattern for matching strings.
+///
+/// Supports `*` (match any sequence) and `?` (match any single character).
+///
+/// ```ts
+/// const pattern = new Wildcard("*.txt");
+/// ```
+///
+/// ```ts
+/// // Used in APIs that accept a NameLike parameter
+/// const pattern = new Wildcard("my_app*");
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "Wildcard")]
 pub struct JsWildcard {

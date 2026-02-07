@@ -15,6 +15,25 @@ use crate::{
 
 pub type JsHotstringOptions = super::HotstringOptions;
 
+/// The global hotstrings singleton for registering text-replacement triggers.
+///
+/// When the user types a registered source string, it is automatically replaced
+/// with the specified replacement (text, callback, or image).
+///
+/// ```ts
+/// // Simple text replacement
+/// hotstrings.add("btw", "by the way");
+///
+/// // Dynamic replacement via callback
+/// hotstrings.add("time", () => new Date().toLocaleTimeString());
+///
+/// // Async callback
+/// hotstrings.add("uuid", async () => crypto.randomUUID());
+///
+/// // Remove a hotstring
+/// hotstrings.remove("btw");
+/// ```
+///
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Hotstrings")]
@@ -44,6 +63,15 @@ impl JsHotstrings {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsHotstrings {
+    /// Registers a hotstring. When the user types `source`, it is replaced with `replacement`.
+    ///
+    /// The replacement can be a string, an `Image`, or a callback returning either.
+    ///
+    /// ```ts
+    /// // With options: don't erase the typed key
+    /// hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
+    /// ```
+    ///
     /// @param source: string
     /// @param replacement: string | (() => string | Promise<string>) | Image | (() => Image | Promise<Image>)
     /// @param options?: HotstringOptions
@@ -75,6 +103,7 @@ impl JsHotstrings {
         Ok(())
     }
 
+    /// Removes a previously registered hotstring.
     pub fn remove(&self, source: String) {
         self.inner.remove(&source);
     }

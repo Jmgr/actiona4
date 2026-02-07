@@ -8,6 +8,12 @@ use tracing::instrument;
 
 use crate::core::js::task::task;
 
+/// Utilities for concurrent operations.
+///
+/// ```ts
+/// // Race two promises, resolving with whichever finishes first
+/// const result = await Concurrency.race([sleep(100), sleep(1000)]);
+/// ```
 // TODO: test
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class]
@@ -22,6 +28,16 @@ impl JsConcurrency {
         Self {}
     }
 
+    /// Races multiple promises, returning the result of the first one to settle.
+    /// Losing promises with a `cancel` method will be cancelled automatically.
+    ///
+    /// ```ts
+    /// // Use race to implement a timeout
+    /// const result = await Concurrency.race([
+    ///   fetchData(),
+    ///   sleep(5000).then(() => { throw new Error("Timeout"); })
+    /// ]);
+    /// ```
     /// @generic
     /// @param promises: Iterable<T|PromiseLike<T>>
     /// @returns Task<Awaited<T>>

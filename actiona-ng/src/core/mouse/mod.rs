@@ -81,6 +81,11 @@ pub enum MouseError {
 pub type Result<T> = std::result::Result<T, MouseError>;
 
 /// Mouse button.
+///
+/// ```ts
+/// await mouse.click({ button: Button.Right });
+/// const pressed = await mouse.isPressed(Button.Left);
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -140,6 +145,12 @@ impl From<Button> for enigo::Button {
     PartialEq,
     Serialize,
 )]
+/// Scroll axis direction.
+///
+/// ```ts
+/// await mouse.scroll(3, Axis.Vertical);
+/// await mouse.scroll(-1, Axis.Horizontal);
+/// ```
 pub enum Axis {
     Horizontal,
     Vertical,
@@ -156,7 +167,15 @@ impl From<Axis> for enigo::Axis {
     }
 }
 
-/// Tweening functions for smooth movement.
+/// Tweening functions for smooth mouse movement.
+///
+/// ```ts
+/// // Move with a bounce effect
+/// await mouse.move(new Point(500, 300), { tween: Tween.BounceOut });
+///
+/// // Move with linear interpolation (no easing)
+/// await mouse.move(new Point(100, 100), { tween: Tween.Linear });
+/// ```
 #[derive(
     Clone,
     Copy,
@@ -397,7 +416,15 @@ impl Mouse {
     }
 }
 
-/// Move options
+/// Options for smooth mouse movement.
+///
+/// ```ts
+/// await mouse.move(new Point(500, 300), {
+///   speed: 1000,
+///   tween: Tween.SineOut,
+///   targetRandomness: 5
+/// });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct MoveOptions {
@@ -534,7 +561,12 @@ impl Mouse {
     }
 }
 
-/// Button click options
+/// Options for clicking a mouse button.
+///
+/// ```ts
+/// // Right-click 3 times with 100ms interval
+/// await mouse.click({ button: Button.Right, amount: 3, interval: 0.1 });
+/// ```
 /// @extends PressOptions
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
@@ -639,7 +671,12 @@ impl Mouse {
     }
 }
 
-/// Button double click options
+/// Options for double-clicking a mouse button.
+///
+/// ```ts
+/// // Double-click with a custom delay between clicks
+/// await mouse.doubleClick({ delay: 0.1 });
+/// ```
 /// @extends ClickOptions
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
@@ -679,7 +716,12 @@ impl Mouse {
     }
 }
 
-/// Button press options
+/// Options for pressing (and holding) a mouse button.
+///
+/// ```ts
+/// // Press the right button at a specific position
+/// await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+/// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PressOptions {

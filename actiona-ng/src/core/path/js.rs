@@ -4,6 +4,20 @@ use rquickjs::{Ctx, JsLifetime, class::Trace, prelude::Rest};
 
 use crate::core::js::classes::HostClass;
 
+/// Utilities for manipulating file paths. All methods are static.
+///
+/// ```ts
+/// const full = Path.join("/home/user", "documents", "file.txt");
+/// const dir = Path.parent(full);   // "/home/user/documents"
+/// const name = Path.filename(full); // "file.txt"
+/// const ext = Path.extension(full); // "txt"
+/// ```
+///
+/// ```ts
+/// // Change a file's extension
+/// const newPath = Path.setExtension("/tmp/data.csv", "json");
+/// // "/tmp/data.json"
+/// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Path")]
 pub struct JsPath {}
@@ -22,6 +36,11 @@ impl JsPath {
         ))
     }
 
+    /// Joins path segments into a single path.
+    ///
+    /// ```ts
+    /// Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
+    /// ```
     /// @rest string
     #[qjs(static)]
     #[must_use]
@@ -33,6 +52,11 @@ impl JsPath {
         path.to_string_lossy().into_owned()
     }
 
+    /// Returns the file name component of a path.
+    ///
+    /// ```ts
+    /// Path.filename("/home/user/file.txt"); // "file.txt"
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn filename(path: String) -> String {
@@ -42,12 +66,18 @@ impl JsPath {
             .unwrap_or_default()
     }
 
+    /// Alias for `filename`.
     #[qjs(static)]
     #[must_use]
     pub fn basename(path: String) -> String {
         Self::filename(path)
     }
 
+    /// Returns the parent directory of a path.
+    ///
+    /// ```ts
+    /// Path.parent("/home/user/file.txt"); // "/home/user"
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn parent(path: String) -> String {
@@ -57,24 +87,43 @@ impl JsPath {
             .unwrap_or_default()
     }
 
+    /// Alias for `parent`.
     #[qjs(static)]
     #[must_use]
     pub fn dirname(path: String) -> String {
         Self::parent(path)
     }
 
+    /// Returns whether the path is absolute.
+    ///
+    /// ```ts
+    /// Path.isAbsolute("/home/user"); // true
+    /// Path.isAbsolute("relative/path"); // false
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn is_absolute(path: String) -> bool {
         Path::new(&path).is_absolute()
     }
 
+    /// Returns whether the path is relative.
+    ///
+    /// ```ts
+    /// Path.isRelative("relative/path"); // true
+    /// Path.isRelative("/absolute/path"); // false
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn is_relative(path: String) -> bool {
         Path::new(&path).is_relative()
     }
 
+    /// Returns the file extension of a path (without the leading dot).
+    ///
+    /// ```ts
+    /// Path.extension("/home/user/file.txt"); // "txt"
+    /// Path.extension("/home/user/file"); // ""
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn extension(path: String) -> String {
@@ -84,12 +133,19 @@ impl JsPath {
             .unwrap_or_default()
     }
 
+    /// Alias for `extension`.
     #[qjs(static)]
     #[must_use]
     pub fn extname(path: String) -> String {
         Self::extension(path)
     }
 
+    /// Returns the path with a different extension. Returns an empty string on failure.
+    ///
+    /// ```ts
+    /// Path.setExtension("/tmp/data.csv", "json"); // "/tmp/data.json"
+    /// Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
+    /// ```
     #[qjs(static)]
     pub fn set_extension(path: String, extension: String) -> String {
         // Avoid a panic if `extension` contains a separator

@@ -12,6 +12,26 @@ use rquickjs::{
 
 use crate::core::js::classes::SingletonClass;
 
+/// The global console singleton for printing output and basic debugging.
+///
+/// ```ts
+/// // Print values
+/// console.log("hello", 42, { key: "value" });
+///
+/// // Warnings and errors are styled
+/// console.warn("this is a warning");
+/// console.error("something went wrong");
+///
+/// // Measure elapsed time
+/// console.time("fetch");
+/// // ... do work ...
+/// console.timeEnd("fetch"); // prints "fetch: 1s 234ms - timer ended"
+///
+/// // Count how many times a label is hit
+/// console.count("loop");
+/// console.count("loop");
+/// ```
+///
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Console")]
@@ -110,48 +130,67 @@ const DEFAULT_LABEL: &str = "default";
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsConsole {
+    /// Prints values without a trailing newline.
     /// @rest
     pub fn print<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         print!("{}", Self::args_to_string(&ctx, data));
     }
 
+    /// Prints values followed by a newline.
     /// @rest
     pub fn print_ln<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         println!("{}", Self::args_to_string(&ctx, data));
     }
 
+    /// Logs values to stdout. Alias for `printLn`.
     /// @rest
     pub fn log<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         println!("{}", Self::args_to_string(&ctx, data));
     }
 
+    /// Logs informational values. Alias for `log`.
     /// @rest
     pub fn info<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         println!("{}", Self::args_to_string(&ctx, data));
     }
 
+    /// Logs a warning in yellow.
     /// @rest
     pub fn warn<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         let yellow = Style::new().yellow();
         println!("{}", yellow.apply_to(Self::args_to_string(&ctx, data)));
     }
 
+    /// Logs an error in bold red.
     /// @rest
     pub fn error<'js>(&self, ctx: Ctx<'js>, data: Rest<Value<'js>>) {
         let red = Style::new().red().bold();
         println!("{}", red.apply_to(Self::args_to_string(&ctx, data)));
     }
 
+    /// Clears the terminal screen.
     pub fn clear(&self) {
         let term = Term::stdout();
         term.clear_screen().unwrap();
     }
 
+    /// Starts a timer with the given label (defaults to `"default"`).
+    ///
+    /// ```ts
+    /// console.time("myTimer");
+    /// ```
     pub fn time(&mut self, label: Opt<String>) {
         let name = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
         self.timers.insert(name, Instant::now());
     }
 
+    /// Stops a timer and prints the elapsed time.
+    ///
+    /// ```ts
+    /// console.time("myTimer");
+    /// // ... do work ...
+    /// console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
+    /// ```
     pub fn time_end(&mut self, ctx: Ctx<'_>, label: Opt<String>) -> Result<()> {
         let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
         if let Some(timer_start) = self.timers.remove(&label) {
@@ -169,6 +208,12 @@ impl JsConsole {
         Ok(())
     }
 
+    /// Increments and prints a counter for the given label (defaults to `"default"`).
+    ///
+    /// ```ts
+    /// console.count("loop"); // prints "loop: 1"
+    /// console.count("loop"); // prints "loop: 2"
+    /// ```
     pub fn count(&mut self, label: Opt<String>) {
         let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
         let value = self.counters.entry(label.clone()).or_default();

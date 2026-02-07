@@ -36,23 +36,53 @@ type RectLike = Rect | { x: number; y: number; width: number; height: number };
  */
 type SizeLike = Size | { width: number; height: number };
 /**
- * Pauses the execution.
+ * Pauses the execution for the given number of milliseconds.
+ * 
+ * ```ts
+ * // Wait 1 second
+ * await sleep(1000);
+ * ```
  */
 declare function sleep(ms: number): Task<void>;
 /**
- * Stops the execution.
+ * Stops the script execution immediately.
+ * 
+ * ```ts
+ * if (errorCondition) {
+ * exit();
+ * }
+ * ```
  */
 declare function exit(): void;
 declare function formatFrequency(frequency: number): string;
 declare function formatPercent(percent: number, precision?: number): string;
 declare function formatBytes(bytes: number): string;
+/**
+ * Direction to flip an image.
+ * 
+ * ```ts
+ * // Flip horizontally (mirror)
+ * image.flip(FlipDirection.Horizontal);
+ * 
+ * // Flip vertically
+ * image.flip(FlipDirection.Vertical);
+ * ```
+ */
 declare enum FlipDirection {
     Horizontal,
 
     Vertical,
 }
 /**
- * Resize filters
+ * Resize filter algorithms.
+ * 
+ * ```ts
+ * // Use nearest-neighbor for pixel art (no smoothing)
+ * image.resize(64, 64, { filter: ResizeFilter.Nearest });
+ * 
+ * // Use Lanczos3 for high-quality downscaling
+ * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
+ * ```
  */
 declare enum ResizeFilter {
     Nearest,
@@ -66,7 +96,15 @@ declare enum ResizeFilter {
     Lanczos3,
 }
 /**
- * Interpolation algorithms used for rotations
+ * Interpolation algorithms used for image rotations.
+ * 
+ * ```ts
+ * // Fast but lower quality
+ * image.rotate(45, { interpolation: Interpolation.Nearest });
+ * 
+ * // Smooth result (default)
+ * image.rotate(45, { interpolation: Interpolation.Bilinear });
+ * ```
  */
 declare enum Interpolation {
     Nearest,
@@ -77,6 +115,12 @@ declare enum Interpolation {
 }
 /**
  * Horizontal alignment for text drawing.
+ * 
+ * ```ts
+ * image.drawText(new Point(100, 50), "Centered", fontPath, Color.Black, {
+ * horizontalAlign: TextHorizontalAlign.Center
+ * });
+ * ```
  */
 declare enum TextHorizontalAlign {
     Left,
@@ -87,6 +131,12 @@ declare enum TextHorizontalAlign {
 }
 /**
  * Vertical alignment for text drawing.
+ * 
+ * ```ts
+ * image.drawText(new Point(50, 100), "Middle", fontPath, Color.Black, {
+ * verticalAlign: TextVerticalAlign.Middle
+ * });
+ * ```
  */
 declare enum TextVerticalAlign {
     Top,
@@ -97,6 +147,15 @@ declare enum TextVerticalAlign {
 }
 /**
  * Stages of a find image operation.
+ * 
+ * ```ts
+ * const task = source.findImage(template);
+ * for await (const progress of task) {
+ * if (progress.stage === FindImageStage.Matching) {
+ * console.log(`Matching: ${progress.percent}%`);
+ * }
+ * }
+ * ```
  */
 declare enum FindImageStage {
     Capturing,
@@ -114,7 +173,17 @@ declare enum FindImageStage {
     Finished,
 }
 /**
- * Direction
+ * Direction for key press/release actions.
+ * 
+ * ```ts
+ * // Press and hold a key
+ * await keyboard.key(Key.Shift, Direction.Press);
+ * // Release it
+ * await keyboard.key(Key.Shift, Direction.Release);
+ * 
+ * // Press and release in one action
+ * await keyboard.key(Key.Return, Direction.Click);
+ * ```
  */
 declare enum Direction {
     Press,
@@ -123,6 +192,17 @@ declare enum Direction {
 
     Click,
 }
+/**
+ * Standard keyboard keys.
+ * 
+ * Use as constants on the `Key` class. You can also pass a single character string
+ * or a raw keycode number wherever a `Key` is expected.
+ * 
+ * ```ts
+ * await keyboard.key(Key.Return, Direction.Click);
+ * await keyboard.key("a", Direction.Click);
+ * ```
+ */
 declare enum Key {
     /**
      * Top-row digit '0' key (not numpad)
@@ -1684,6 +1764,11 @@ declare enum ClipboardMode {
 }
 /**
  * Mouse button.
+ * 
+ * ```ts
+ * await mouse.click({ button: Button.Right });
+ * const pressed = await mouse.isPressed(Button.Left);
+ * ```
  */
 declare enum Button {
     /**
@@ -1711,13 +1796,29 @@ declare enum Button {
      */
     Forward,
 }
+/**
+ * Scroll axis direction.
+ * 
+ * ```ts
+ * await mouse.scroll(3, Axis.Vertical);
+ * await mouse.scroll(-1, Axis.Horizontal);
+ * ```
+ */
 declare enum Axis {
     Horizontal,
 
     Vertical,
 }
 /**
- * Tweening functions for smooth movement.
+ * Tweening functions for smooth mouse movement.
+ * 
+ * ```ts
+ * // Move with a bounce effect
+ * await mouse.move(new Point(500, 300), { tween: Tween.BounceOut });
+ * 
+ * // Move with linear interpolation (no easing)
+ * await mouse.move(new Point(100, 100), { tween: Tween.Linear });
+ * ```
  */
 declare enum Tween {
     /**
@@ -1910,35 +2011,89 @@ declare enum Method {
 
     Trace,
 }
+/**
+ * The global application singleton, providing access to environment information
+ * and execution settings.
+ * 
+ * ```ts
+ * // Get the current version
+ * console.log(app.version);
+ * 
+ * // Read environment variables
+ * const home = app.env["HOME"];
+ * 
+ * // Change working directory
+ * app.setCwd("/tmp");
+ * console.log(app.cwd);
+ * 
+ * // Control whether the script waits at the end
+ * app.waitAtEnd = true;
+ * app.waitAtEnd = WaitAtEnd.Automatic;
+ * ```
+ */
 declare interface App {
     /**
      * Should the app wait at the end of execution
      */
     waitAtEnd: WaitAtEnd | boolean;
     /**
-     * Version of Actiona-cli
+     * The version of Actiona-cli.
+     * 
+     * ```ts
+     * console.log(app.version); // e.g. "0.1.0"
+     * ```
      */
     readonly version: string;
     /**
-     * All environment variables
+     * All environment variables as a key-value map.
+     * 
+     * ```ts
+     * const env = app.env;
+     * console.log(env["HOME"]);
+     * console.log(env["PATH"]);
+     * ```
      */
     readonly env: Record<string, string>;
     /**
-     * Current working directory
+     * The current working directory.
+     * 
+     * ```ts
+     * console.log(app.cwd); // e.g. "/home/user/project"
+     * ```
      */
     readonly cwd: string;
     /**
-     * Executable path
+     * The path to the running executable.
+     * 
+     * ```ts
+     * console.log(app.executablePath); // e.g. "/usr/bin/actiona-ng-cli"
+     * ```
      */
     readonly executablePath: string;
     /**
-     * Sets the current working directory
+     * Sets the current working directory.
+     * 
+     * ```ts
+     * app.setCwd("/tmp");
+     * ```
      */
     setCwd(cwd: string): void;
 }
 declare const app: App;
 /**
- * Play sound options
+ * Options for playing a sound file.
+ * 
+ * ```ts
+ * // Play with default options
+ * audio.playFile("sound.wav");
+ * 
+ * // Play at half volume, looping, with a fade in
+ * audio.playFile("music.mp3", {
+ * volume: 0.5,
+ * loop: true,
+ * fadeIn: 2000,
+ * });
+ * ```
  */
 declare interface PlaySoundOptions {
     /**
@@ -1976,13 +2131,62 @@ declare interface PlaySoundOptions {
      */
     signal?: AbortSignal;
 }
+/**
+ * The global audio singleton for playing sound files.
+ * 
+ * ```ts
+ * // Play a sound and forget about it
+ * audio.playFile("notification.wav");
+ * 
+ * // Play a sound and wait for it to finish
+ * await audio.playFileAndWait("alert.wav");
+ * 
+ * // Play with options and control playback
+ * const sound = audio.playFile("music.mp3", { volume: 0.8, loop: true });
+ * sound.pause();
+ * sound.resume();
+ * sound.stop();
+ * ```
+ */
 declare interface Audio {
+    /**
+     * Plays a sound file and returns a `PlayingSound` handle for controlling playback.
+     * 
+     * ```ts
+     * const sound = audio.playFile("music.mp3");
+     * sound.volume = 0.5;
+     * ```
+     */
     playFile(path: string, options?: PlaySoundOptions): PlayingSound;
+    /**
+     * Plays a sound file and waits for it to finish.
+     * 
+     * ```ts
+     * await audio.playFileAndWait("alert.wav");
+     * 
+     * // With a fade out and abort signal
+     * const controller = new AbortController();
+     * await audio.playFileAndWait("long-track.mp3", {
+     * fadeOut: 1000,
+     * signal: controller.signal,
+     * });
+     * ```
+     */
     playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
 }
 declare const audio: Audio;
 /**
- * PlayingSound
+ * A handle to an actively playing sound, allowing control over playback.
+ * 
+ * ```ts
+ * const sound = audio.playFile("music.mp3");
+ * console.log(sound.duration);  // duration in seconds
+ * sound.volume = 0.5;
+ * sound.playbackRate = 1.5;
+ * sound.pause();
+ * sound.resume();
+ * await sound.finished;  // wait until the sound ends
+ * ```
  */
 declare interface PlayingSound {
     /**
@@ -1996,71 +2200,199 @@ declare interface PlayingSound {
      */
     playbackRate: number;
     /**
-     * Is the sound paused
+     * Whether the sound is currently paused.
      */
     readonly paused: boolean;
     /**
-     * The duration of the sound in seconds
+     * The total duration of the sound in seconds, or `undefined` if unknown.
      */
     readonly duration?: number;
     /**
-     * Await to wait until the sound has finished playing
+     * A promise that resolves when the sound has finished playing.
+     * 
+     * ```ts
+     * const sound = audio.playFile("music.mp3");
+     * await sound.finished;
+     * console.log("Sound finished!");
+     * ```
      */
     readonly finished: Promise<void>;
+    /**
+     * Pauses the sound. Use `resume()` to continue playback.
+     */
     pause(): void;
+    /**
+     * Resumes a paused sound.
+     */
     resume(): void;
+    /**
+     * Stops the sound permanently.
+     */
     stop(): void;
 }
+/**
+ * The global clipboard singleton for reading and writing clipboard content.
+ * 
+ * Supports text, images, file lists, and HTML content. Each content type
+ * is accessed through a dedicated sub-object.
+ * 
+ * ```ts
+ * // Copy and paste text
+ * await clipboard.text.set("Hello, world!");
+ * const text = await clipboard.text.get();
+ * 
+ * // Copy and paste an image
+ * const img = display.screenshot();
+ * await clipboard.image.set(img);
+ * 
+ * // Work with file lists
+ * await clipboard.fileList.set(["/path/to/file.txt"]);
+ * 
+ * // HTML content with alt text fallback
+ * await clipboard.html.set("<b>bold</b>", "bold");
+ * 
+ * // Clear the clipboard
+ * await clipboard.clear();
+ * 
+ * // On Linux, use the selection clipboard
+ * await clipboard.text.set("selected", ClipboardMode.Selection);
+ * ```
+ */
 declare interface Clipboard {
     /**
-     * Text operations
+     * Sub-object for text clipboard operations.
      */
     readonly text: ClipboardText;
     /**
-     * Image operations
+     * Sub-object for image clipboard operations.
      */
     readonly image: ClipboardImage;
     /**
-     * File list operations
+     * Sub-object for file list clipboard operations.
      */
     readonly fileList: ClipboardFileList;
     /**
-     * Html operations
+     * Sub-object for HTML clipboard operations.
      */
     readonly html: ClipboardHtml;
+    /**
+     * Clears the clipboard contents.
+     * 
+     * ```ts
+     * await clipboard.clear();
+     * 
+     * // On Linux, clear the selection clipboard
+     * await clipboard.clear(ClipboardMode.Selection);
+     * ```
+     */
     clear(mode?: ClipboardMode): Promise<void>;
 }
 declare const clipboard: Clipboard;
 /**
- * ClipboardText
+ * Provides text clipboard operations.
+ * 
+ * ```ts
+ * await clipboard.text.set("Hello!");
+ * const text = await clipboard.text.get();
+ * ```
  */
 declare interface ClipboardText {
+    /**
+     * Sets the clipboard text content.
+     */
     set(text: string, mode?: ClipboardMode): Promise<void>;
+    /**
+     * Gets the clipboard text content.
+     */
     get(mode?: ClipboardMode): Promise<string>;
 }
 /**
- * ClipboardImage
+ * Provides image clipboard operations.
+ * 
+ * ```ts
+ * const img = display.screenshot();
+ * await clipboard.image.set(img);
+ * const clipped = await clipboard.image.get();
+ * ```
  */
 declare interface ClipboardImage {
+    /**
+     * Sets the clipboard image content.
+     */
     set(image: Image, mode?: ClipboardMode): Promise<void>;
+    /**
+     * Gets the clipboard image content.
+     */
     get(mode?: ClipboardMode): Promise<Image>;
 }
 /**
- * ClipboardFileList
+ * Provides file list clipboard operations.
+ * 
+ * ```ts
+ * await clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
+ * const files = await clipboard.fileList.get();
+ * ```
  */
 declare interface ClipboardFileList {
+    /**
+     * Sets the clipboard file list content.
+     */
     set(fileList: string[], mode?: ClipboardMode): Promise<void>;
+    /**
+     * Gets the clipboard file list content.
+     */
     get(mode?: ClipboardMode): Promise<string[]>;
 }
 /**
- * ClipboardHtml
+ * Provides HTML clipboard operations.
+ * 
+ * ```ts
+ * // Set HTML with a plain-text fallback
+ * await clipboard.html.set("<b>bold</b>", "bold");
+ * 
+ * // Set HTML without a fallback
+ * await clipboard.html.set("<em>italic</em>");
+ * 
+ * const html = await clipboard.html.get();
+ * ```
  */
 declare interface ClipboardHtml {
+    /**
+     * Sets the clipboard HTML content, with an optional plain-text alternative.
+     */
     set(html: string, altText?: string, mode?: ClipboardMode): Promise<void>;
+    /**
+     * Gets the clipboard HTML content.
+     */
     get(mode?: ClipboardMode): Promise<string>;
 }
 /**
- * A Color.
+ * An RGBA color with 8-bit channels.
+ * 
+ * Can be constructed from individual r/g/b/a values, or by using one of the
+ * many named color constants (CSS colors).
+ * 
+ * ```ts
+ * // Create from RGB (alpha defaults to 255)
+ * const red = new Color(255, 0, 0);
+ * 
+ * // Create from RGBA
+ * const semiTransparent = new Color(255, 0, 0, 128);
+ * 
+ * // Use a named constant
+ * const blue = Color.Blue;
+ * 
+ * // Read and modify channels
+ * const c = new Color(10, 20, 30);
+ * c.r = 100;
+ * console.log(c.toString()); // "(100, 20, 30, 255)"
+ * 
+ * // Compare colors
+ * Color.Red.equals(new Color(255, 0, 0)); // true
+ * 
+ * // Clone a color
+ * const copy = Color.Red.clone();
+ * ```
  * 
  * 
  * 
@@ -2662,36 +2994,141 @@ declare class Color {
      * Constructor with anything Color-like.
      */
     constructor(c: ColorLike);
+    /**
+     * Returns `true` if both colors have the same r, g, b, and a values.
+     * 
+     * ```ts
+     * Color.Red.equals(new Color(255, 0, 0)); // true
+     * ```
+     */
     equals(other: Color): boolean;
+    /**
+     * Returns a string representation of the color: `"(r, g, b, a)"`.
+     */
     toString(): string;
+    /**
+     * Returns a copy of this color.
+     */
     clone(): Color;
 }
+/**
+ * The global console singleton for printing output and basic debugging.
+ * 
+ * ```ts
+ * // Print values
+ * console.log("hello", 42, { key: "value" });
+ * 
+ * // Warnings and errors are styled
+ * console.warn("this is a warning");
+ * console.error("something went wrong");
+ * 
+ * // Measure elapsed time
+ * console.time("fetch");
+ * // ... do work ...
+ * console.timeEnd("fetch"); // prints "fetch: 1s 234ms - timer ended"
+ * 
+ * // Count how many times a label is hit
+ * console.count("loop");
+ * console.count("loop");
+ * ```
+ */
 declare interface Console {
+    /**
+     * Prints values without a trailing newline.
+     */
     print(...args: unknown[]): void;
+    /**
+     * Prints values followed by a newline.
+     */
     printLn(...args: unknown[]): void;
+    /**
+     * Logs values to stdout. Alias for `printLn`.
+     */
     log(...args: unknown[]): void;
+    /**
+     * Logs informational values. Alias for `log`.
+     */
     info(...args: unknown[]): void;
+    /**
+     * Logs a warning in yellow.
+     */
     warn(...args: unknown[]): void;
+    /**
+     * Logs an error in bold red.
+     */
     error(...args: unknown[]): void;
+    /**
+     * Clears the terminal screen.
+     */
     clear(): void;
+    /**
+     * Starts a timer with the given label (defaults to `"default"`).
+     * 
+     * ```ts
+     * console.time("myTimer");
+     * ```
+     */
     time(label?: string): void;
+    /**
+     * Stops a timer and prints the elapsed time.
+     * 
+     * ```ts
+     * console.time("myTimer");
+     * // ... do work ...
+     * console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
+     * ```
+     */
     timeEnd(label?: string): void;
+    /**
+     * Increments and prints a counter for the given label (defaults to `"default"`).
+     * 
+     * ```ts
+     * console.count("loop"); // prints "loop: 1"
+     * console.count("loop"); // prints "loop: 2"
+     * ```
+     */
     count(label?: string): void;
 }
 declare const console: Console;
 /**
- * Directory entry
+ * An entry returned by `Directory.listEntries()`, representing a file, directory,
+ * or symlink within a directory.
+ * 
+ * ```ts
+ * const entries = await Directory.listEntries("/home/user");
+ * for (const entry of entries) {
+ * console.log(entry.fileName, entry.isFile, entry.size);
+ * }
+ * ```
  */
 declare interface DirectoryEntry {
+    /**
+     * The full path to the entry.
+     */
     readonly path: string;
+    /**
+     * The file name (last component of the path).
+     */
     readonly fileName: string;
+    /**
+     * Whether this entry is a regular file.
+     */
     readonly isFile: boolean;
+    /**
+     * Whether this entry is a directory.
+     */
     readonly isDirectory: boolean;
+    /**
+     * Whether this entry is a symbolic link.
+     */
     readonly isSymlink: boolean;
+    /**
+     * The size of the entry in bytes.
+     */
     readonly size: number;
 }
 /**
- * Directory options
+ * Options for `Directory.create()` and `Directory.remove()`.
  */
 declare interface DirectoryOptions {
     /**
@@ -2701,7 +3138,7 @@ declare interface DirectoryOptions {
     recursive?: boolean;
 }
 /**
- * Directory list options
+ * Options for `Directory.listEntries()`.
  */
 declare interface DirectoryListOptions {
     /**
@@ -2720,70 +3157,190 @@ declare interface DirectoryListOptions {
      */
     fetchSize?: boolean;
 }
+/**
+ * Provides static methods for creating, removing, and listing directories.
+ * 
+ * ```ts
+ * // Create a directory (recursively by default)
+ * await Directory.create("/tmp/my/nested/dir");
+ * 
+ * // List entries in a directory
+ * const entries = await Directory.listEntries("/tmp/my/nested/dir");
+ * for (const entry of entries) {
+ * console.log(entry.fileName, entry.isFile ? "file" : "dir");
+ * }
+ * 
+ * // Remove a directory tree
+ * await Directory.remove("/tmp/my");
+ * ```
+ */
 declare class Directory {
     private constructor();
+    /**
+     * Creates a directory at the given path. By default, creates parent directories
+     * recursively.
+     * 
+     * ```ts
+     * await Directory.create("/tmp/a/b/c");
+     * 
+     * // Non-recursive: fails if parent doesn't exist
+     * await Directory.create("/tmp/a/b/c", { recursive: false });
+     * ```
+     */
     static create(path: string, options?: DirectoryOptions): Promise<void>;
+    /**
+     * Removes a directory. By default, removes all contents recursively.
+     * 
+     * ```ts
+     * await Directory.remove("/tmp/my/dir");
+     * 
+     * // Non-recursive: fails if the directory is not empty
+     * await Directory.remove("/tmp/my/dir", { recursive: false });
+     * ```
+     */
     static remove(path: string, options?: DirectoryOptions): Promise<void>;
+    /**
+     * Lists all entries in a directory, returning an array of `DirectoryEntry`.
+     * 
+     * ```ts
+     * // List with defaults (sorted, absolute paths, sizes fetched)
+     * const entries = await Directory.listEntries("/home/user/docs");
+     * 
+     * // Skip size fetching for faster listing
+     * const entries = await Directory.listEntries("/home/user/docs", {
+     * fetchSize: false,
+     * });
+     * ```
+     */
     static listEntries(path: string, options?: DirectoryListOptions): Promise<DirectoryEntry[]>;
 }
+/**
+ * The global displays singleton for querying connected monitors and screens.
+ * 
+ * ```ts
+ * // Get a random point across all displays
+ * const point = await displays.randomPoint();
+ * 
+ * // Find which display contains a point
+ * const info = await displays.fromPoint(new Point(100, 200));
+ * if (info) console.log(info.name, info.rect);
+ * 
+ * // Find a display by friendly name
+ * const monitor = await displays.fromName("HDMI-1");
+ * 
+ * // Get the largest or smallest display
+ * const largest = await displays.largest();
+ * const smallest = await displays.smallest();
+ * ```
+ */
 declare interface Displays {
+    /**
+     * Returns a random point within the bounds of all connected displays.
+     */
     randomPoint(): Promise<Point>;
+    /**
+     * Returns the display that contains the given point, or `undefined` if none.
+     */
     fromPoint(point: PointLike): Promise<DisplayInfo | undefined>;
+    /**
+     * Returns the display that contains the given point, or `undefined` if none.
+     */
     fromPoint(x: number, y: number): Promise<DisplayInfo | undefined>;
+    /**
+     * Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
+     */
     fromName(name: NameLike): Promise<DisplayInfo | undefined>;
+    /**
+     * Finds a display by its device name, or `undefined` if not found.
+     */
     fromDeviceName(name: NameLike): Promise<DisplayInfo | undefined>;
+    /**
+     * Finds a display by its unique numeric ID, or `undefined` if not found.
+     */
     fromId(id: number): Promise<DisplayInfo | undefined>;
+    /**
+     * Returns the smallest display by area, or `undefined` if no displays are connected.
+     */
     smallest(): Promise<DisplayInfo | undefined>;
+    /**
+     * Returns the largest display by area, or `undefined` if no displays are connected.
+     */
     largest(): Promise<DisplayInfo | undefined>;
 }
 declare const displays: Displays;
 /**
- * Display info
+ * Information about a connected display, including its name, geometry,
+ * rotation, scale factor, and refresh rate.
+ * 
+ * ```ts
+ * const info = await displays.fromName("HDMI-1");
+ * if (info) {
+ * console.log(info.friendlyName, info.rect, info.frequency + "Hz");
+ * console.log("Primary:", info.isPrimary);
+ * }
+ * ```
  */
 declare interface DisplayInfo {
     /**
-     * Unique identifier associated with the display
+     * Unique numeric identifier for this display.
      */
     readonly id: number;
     /**
-     * The display name
+     * The display device name (e.g. `"DP-1"`).
      */
     readonly name: string;
     /**
-     * The display friendly name
+     * The display friendly name (e.g. `"HDMI-1"`).
      */
     readonly friendlyName: string;
     /**
-     * The display rectangle
+     * The display rectangle (position and size in pixels).
      */
     readonly rect: Rect;
     /**
-     * The display pixel width
+     * The physical width of the display in millimeters.
      */
     readonly widthMm: number;
     /**
-     * The display pixel height
+     * The physical height of the display in millimeters.
      */
     readonly heightMm: number;
     /**
-     * The display rotation: can be 0, 90, 180, 270 and represents the screen rotation in clock-wise degrees
+     * The display rotation in clock-wise degrees (0, 90, 180, or 270).
      */
     readonly rotation: number;
     /**
-     * Output device's pixel scale factor
+     * The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
      */
     readonly scaleFactor: number;
     /**
-     * The display refresh rate
+     * The display refresh rate in Hz.
      */
     readonly frequency: number;
     /**
-     * Whether the screen is the main screen
+     * Whether this is the primary (main) display.
      */
     readonly isPrimary: boolean;
 }
 /**
- * File open options
+ * Options for `File.open()`.
+ * 
+ * ```ts
+ * // Read-only (default)
+ * const file = await File.open("data.txt");
+ * 
+ * // Create a new file for writing
+ * const file = await File.open("out.txt", {
+ * write: true,
+ * createNew: true,
+ * });
+ * 
+ * // Append to an existing file
+ * const file = await File.open("log.txt", {
+ * write: true,
+ * append: true,
+ * });
+ * ```
  */
 declare interface OpenOptions {
     /**
@@ -2823,7 +3380,29 @@ declare interface OpenOptions {
     createNew?: boolean;
 }
 /**
- * File represents a file handle.
+ * A file handle for reading and writing. Also provides static utility methods
+ * for common file operations without needing to open a handle.
+ * 
+ * ```ts
+ * // Read a file in one shot (static)
+ * const text = await File.readText("config.json");
+ * 
+ * // Write a file in one shot (static)
+ * await File.writeText("output.txt", "Hello!");
+ * 
+ * // Open, read/write, then close
+ * const file = await File.open("data.bin", { read: true, write: true, create: true });
+ * await file.writeBytes(new Uint8Array([1, 2, 3]));
+ * await file.rewind();
+ * const bytes = await file.readBytes();
+ * await file.close();
+ * 
+ * // File utilities
+ * await File.copy("src.txt", "dst.txt");
+ * await File.rename("old.txt", "new.txt");
+ * const exists = await File.exists("file.txt");
+ * await File.remove("file.txt");
+ * ```
  */
 declare class File {
     /**
@@ -2865,19 +3444,65 @@ declare class File {
      * This can happen if you cloned() this File.
      */
     close(): void;
+    /**
+     * Writes bytes to this file handle.
+     */
     writeBytes(bytes: Uint8Array): Promise<void>;
+    /**
+     * Writes bytes to a file at the given path (static).
+     */
     static writeBytes(path: string, bytes: Uint8Array): Promise<void>;
+    /**
+     * Writes text to this file handle.
+     */
     writeText(text: string): Promise<void>;
+    /**
+     * Writes text to a file at the given path (static).
+     * 
+     * ```ts
+     * await File.writeText("hello.txt", "Hello, world!");
+     * ```
+     */
     static writeText(path: string, text: string): Promise<void>;
+    /**
+     * Reads bytes from this file handle. If `amount` is given, reads exactly that many bytes;
+     * otherwise reads until EOF.
+     */
     readBytes(amount?: number): Promise<Uint8Array>;
+    /**
+     * Reads bytes from a file at the given path (static).
+     */
     static readBytes(path: string, amount?: number): Promise<Uint8Array>;
+    /**
+     * Reads the entire file as a UTF-8 string from this file handle.
+     */
     readText(): Promise<string>;
+    /**
+     * Reads the entire file as a UTF-8 string (static).
+     * 
+     * ```ts
+     * const text = await File.readText("config.json");
+     * ```
+     */
     static readText(path: string): Promise<string>;
+    /**
+     * Returns the file size in bytes.
+     */
     size(): Promise<number>;
+    /**
+     * Truncates or extends the file to the given size in bytes.
+     */
     setSize(size: number): Promise<void>;
+    /**
+     * Returns whether the file is read-only.
+     */
     readonly(): Promise<boolean>;
+    /**
+     * Sets whether the file is read-only.
+     */
     setReadonly(readonly: boolean): Promise<void>;
     /**
+     * Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
      * @platform does not work on Windows
      */
     mode(): Promise<number>;
@@ -2887,19 +3512,56 @@ declare class File {
      * @platform does not work on Windows
      */
     setMode(mode: number): Promise<void>;
+    /**
+     * Returns the last modification time of the file.
+     */
     modifiedTime(): Promise<Date>;
+    /**
+     * Sets the last modification time of the file.
+     */
     setModifiedTime(date: Date): Promise<void>;
+    /**
+     * Returns the last access time of the file.
+     */
     accessedTime(): Promise<Date>;
+    /**
+     * Sets the last access time of the file.
+     */
     setAccessedTime(date: Date): Promise<void>;
+    /**
+     * Returns the creation time of the file.
+     */
     creationTime(): Promise<Date>;
     /**
+     * Sets the creation time of the file. No-op on Linux.
      * @platform does not work on Linux
      */
     setCreationTime(date: Date): Promise<void>;
+    /**
+     * Returns the current read/write position in the file.
+     */
     position(): Promise<number>;
+    /**
+     * Seeks to an absolute position in the file.
+     */
     setPosition(position: number): Promise<void>;
+    /**
+     * Seeks relative to the current position (can be negative).
+     */
     setRelativePosition(offset: number): Promise<void>;
+    /**
+     * Rewinds the file position to the beginning.
+     */
     rewind(): Promise<void>;
+    /**
+     * Returns `true` if a file exists at the given path.
+     * 
+     * ```ts
+     * if (await File.exists("config.json")) {
+     * const text = await File.readText("config.json");
+     * }
+     * ```
+     */
     static exists(path: string): Promise<boolean>;
     /**
      * Removes a file from the filesystem.
@@ -2907,27 +3569,113 @@ declare class File {
      * Note that there is no guarantee that the file is immediately deleted (e.g. depending on platform, other open file descriptors may prevent immediate removal).
      */
     static remove(path: string): Promise<void>;
+    /**
+     * Copies a file from `source` to `destination`.
+     */
     static copy(source: string, destination: string): Promise<void>;
+    /**
+     * Renames (moves) a file from `source` to `destination`. Works across filesystems.
+     */
     static rename(source: string, destination: string): Promise<void>;
+    /**
+     * Alias for `rename`.
+     */
     static move(source: string, destination: string): Promise<void>;
+    /**
+     * Returns a clone of this file handle. Both handles share the same underlying file.
+     */
     clone(): File;
+    /**
+     * Returns `true` if both handles refer to the same file path.
+     */
     equals(other: File): boolean;
+    /**
+     * Returns a string representation of the file handle.
+     */
     toString(): string;
 }
+/**
+ * Provides static methods for querying filesystem path types.
+ * 
+ * ```ts
+ * if (await Filesystem.exists("/tmp/myfile.txt")) {
+ * console.log("exists!");
+ * }
+ * 
+ * if (await Filesystem.isFile("/tmp/myfile.txt")) {
+ * console.log("it's a file");
+ * } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
+ * console.log("it's a directory");
+ * }
+ * ```
+ */
 declare class Filesystem {
     private constructor();
+    /**
+     * Returns `true` if a path exists on the filesystem.
+     */
     static exists(path: string): Promise<boolean>;
+    /**
+     * Returns `true` if the path points to a regular file.
+     */
     static isFile(path: string): Promise<boolean>;
+    /**
+     * Returns `true` if the path points to a directory.
+     */
     static isDirectory(path: string): Promise<boolean>;
+    /**
+     * Returns `true` if the path points to a symbolic link.
+     */
     static isSymlink(path: string): Promise<boolean>;
 }
+/**
+ * The global hotstrings singleton for registering text-replacement triggers.
+ * 
+ * When the user types a registered source string, it is automatically replaced
+ * with the specified replacement (text, callback, or image).
+ * 
+ * ```ts
+ * // Simple text replacement
+ * hotstrings.add("btw", "by the way");
+ * 
+ * // Dynamic replacement via callback
+ * hotstrings.add("time", () => new Date().toLocaleTimeString());
+ * 
+ * // Async callback
+ * hotstrings.add("uuid", async () => crypto.randomUUID());
+ * 
+ * // Remove a hotstring
+ * hotstrings.remove("btw");
+ * ```
+ */
 declare interface Hotstrings {
+    /**
+     * Registers a hotstring. When the user types `source`, it is replaced with `replacement`.
+     * 
+     * The replacement can be a string, an `Image`, or a callback returning either.
+     * 
+     * ```ts
+     * // With options: don't erase the typed key
+     * hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
+     * ```
+     */
     add(source: string, replacement: string | (() => string | Promise<string>) | Image | (() => Image | Promise<Image>), options?: HotstringOptions): void;
+    /**
+     * Removes a previously registered hotstring.
+     */
     remove(source: string): void;
 }
 declare const hotstrings: Hotstrings;
 /**
- * Resize options
+ * Options for resizing an image.
+ * 
+ * ```ts
+ * // Resize while preserving aspect ratio
+ * image.resize(200, 150, { keepAspectRatio: true });
+ * 
+ * // Resize with a specific filter
+ * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
+ * ```
  */
 declare interface ResizeOptions {
     /**
@@ -2942,7 +3690,15 @@ declare interface ResizeOptions {
     filter?: ResizeFilter;
 }
 /**
- * Blur options
+ * Options for blurring an image.
+ * 
+ * ```ts
+ * // Fast blur
+ * image.blur({ fast: true });
+ * 
+ * // Gaussian blur with custom sigma
+ * image.blur({ sigma: 5.0 });
+ * ```
  */
 declare interface BlurOptions {
     /**
@@ -2957,7 +3713,14 @@ declare interface BlurOptions {
     sigma?: number;
 }
 /**
- * Draw image options
+ * Options for drawing an image onto another image.
+ * 
+ * ```ts
+ * // Draw only a portion of the source image
+ * canvas.drawImage(new Point(0, 0), sprite, {
+ * sourceRect: new Rect(0, 0, 32, 32)
+ * });
+ * ```
  */
 declare interface DrawImageOptions {
     /**
@@ -2968,7 +3731,15 @@ declare interface DrawImageOptions {
     sourceRect?: Rect;
 }
 /**
- * Rotation options
+ * Options for rotating an image.
+ * 
+ * ```ts
+ * // Rotate around a custom center point
+ * image.rotate(45, { center: new Point(10, 10) });
+ * 
+ * // Rotate with a background color for exposed areas
+ * image.rotate(30, { defaultColor: Color.White });
+ * ```
  */
 declare interface RotationOptions {
     /**
@@ -2988,7 +3759,12 @@ declare interface RotationOptions {
     defaultColor?: Color;
 }
 /**
- * Drawing options
+ * Options for drawing shapes on an image.
+ * 
+ * ```ts
+ * // Draw a hollow circle (outline only)
+ * image.drawCircle(new Point(50, 50), 20, Color.Red, { hollow: true });
+ * ```
  */
 declare interface DrawingOptions {
     /**
@@ -2998,7 +3774,16 @@ declare interface DrawingOptions {
     hollow?: boolean;
 }
 /**
- * Text drawing options.
+ * Options for drawing text on an image.
+ * 
+ * ```ts
+ * // Draw large, centered text
+ * image.drawText(new Point(100, 50), "Hello", fontPath, Color.White, {
+ * fontSize: 32,
+ * horizontalAlign: TextHorizontalAlign.Center,
+ * verticalAlign: TextVerticalAlign.Middle
+ * });
+ * ```
  */
 declare interface DrawTextOptions {
     /**
@@ -3023,7 +3808,16 @@ declare interface DrawTextOptions {
     verticalAlign?: TextVerticalAlign;
 }
 /**
- * Find image template options
+ * Options for finding an image within another image.
+ * 
+ * ```ts
+ * // Find with stricter matching
+ * const match = await source.findImage(template, { matchThreshold: 0.95 });
+ * 
+ * // Find with abort support
+ * const controller = new AbortController();
+ * const match = await source.findImage(template, { signal: controller.signal });
+ * ```
  */
 declare interface FindImageOptions {
     /**
@@ -3058,7 +3852,17 @@ declare interface FindImageOptions {
     signal?: AbortSignal;
 }
 /**
- * A match returned by a find_image call.
+ * A match returned by a findImage or findImageAll call.
+ * 
+ * ```ts
+ * const source = await Image.load("screenshot.png");
+ * const template = await Image.load("button.png");
+ * const match = await source.findImage(template);
+ * if (match) {
+ * console.log(`Found at ${match.position} with score ${match.score}`);
+ * console.log(`Bounding rect: ${match.rect}`);
+ * }
+ * ```
  */
 declare interface Match {
     /**
@@ -3088,6 +3892,17 @@ declare interface Match {
 }
 /**
  * Progress of a find image operation.
+ * 
+ * Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
+ * 
+ * ```ts
+ * const task = source.findImage(template);
+ * for await (const progress of task) {
+ * console.log(`${progress.stage}: ${progress.percent}%`);
+ * if (progress.finished) break;
+ * }
+ * const result = await task;
+ * ```
  */
 declare interface FindImageProgress {
     /**
@@ -3103,6 +3918,43 @@ declare interface FindImageProgress {
      */
     readonly finished: boolean;
 }
+/**
+ * An image that can be loaded, created, manipulated, and saved.
+ * 
+ * Provides methods for image processing (blur, rotate, resize, color adjustments),
+ * drawing primitives (lines, circles, rectangles, text), and template matching (findImage).
+ * 
+ * Most mutating methods return `this` for chaining. Each also has an immutable variant
+ * that returns a new `Image` (e.g., `blur()` vs `blurred()`).
+ * 
+ * ```ts
+ * // Create, manipulate, and save
+ * let image = new Image(200, 100);
+ * image.fill(Color.White)
+ * .drawCircle(new Point(100, 50), 30, Color.Red)
+ * .drawText(new Point(10, 10), "Hello", "/path/to/font.ttf", Color.Black);
+ * await image.save("output.png");
+ * ```
+ * 
+ * ```ts
+ * // Load, transform, and save
+ * let photo = await Image.load("photo.png");
+ * photo.resize(800, 600, { keepAspectRatio: true })
+ * .adjustBrightness(10)
+ * .adjustContrast(5);
+ * await photo.save("photo_edited.png");
+ * ```
+ * 
+ * ```ts
+ * // Find an image within another
+ * const screen = await Image.load("screenshot.png");
+ * const button = await Image.load("button.png");
+ * const match = await screen.findImage(button, { matchThreshold: 0.9 });
+ * if (match) {
+ * console.log(`Button found at ${match.position}`);
+ * }
+ * ```
+ */
 declare class Image {
     readonly width: number;
     readonly height: number;
@@ -3119,11 +3971,34 @@ declare class Image {
      * ```
      */
     constructor(width: number, height: number);
+    /**
+     * Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
+     * 
+     * ```ts
+     * const bytes = await file.readAll();
+     * const image = Image.fromBytes(bytes);
+     * ```
+     */
     static fromBytes(bytes: Uint8Array): Image;
+    /**
+     * Saves this image to a file. The format is inferred from the file extension.
+     */
     save(path: string): void;
+    /**
+     * Loads an image from a file. The format is guessed from the file contents.
+     */
     static load(path: string): Image;
+    /**
+     * Returns true if this image equals another (same dimensions and pixel data).
+     */
     equals(other: Image): boolean;
+    /**
+     * Returns a string representation of this image (width, height).
+     */
     toString(): string;
+    /**
+     * Clones this image.
+     */
     clone(): Image;
     /**
      * Invert the colors of this image.
@@ -3222,11 +4097,11 @@ declare class Image {
      */
     fill(r: number, g: number, b: number, a?: number): this;
     /**
-     * Fill this image with a color.
+     * Returns a copy of this image filled with a color.
      */
     filled(color: ColorLike): Image;
     /**
-     * Fill this image with a color.
+     * Returns a copy of this image filled with a color.
      */
     filled(r: number, g: number, b: number, a?: number): Image;
     /**
@@ -3238,19 +4113,19 @@ declare class Image {
      */
     getPixel(x: number, y: number): Color;
     /**
-     * Returns the value of a pixel.
+     * Sets the color of a pixel.
      */
     setPixel(position: PointLike, color: ColorLike): this;
     /**
-     * Returns the value of a pixel.
+     * Sets the color of a pixel.
      */
     setPixel(position: PointLike, r: number, g: number, b: number, a?: number): this;
     /**
-     * Returns the value of a pixel.
+     * Sets the color of a pixel.
      */
     setPixel(x: number, y: number, color: ColorLike): this;
     /**
-     * Returns the value of a pixel.
+     * Sets the color of a pixel.
      */
     setPixel(x: number, y: number, r: number, g: number, b: number, a?: number): this;
     /**
@@ -3502,34 +4377,179 @@ declare class Image {
      */
     withImage(x: number, y: number, image: Image, options?: DrawImageOptions): Image;
     /**
-     * Find an image inside this image.
+     * Finds the best match of an image inside this image.
+     * 
+     * Returns a `ProgressTask` that can be awaited for the result and iterated
+     * for progress updates. Returns `undefined` if no match is found.
+     * 
+     * ```ts
+     * const match = await source.findImage(template);
+     * if (match) {
+     * console.log(`Found at ${match.position} with score ${match.score}`);
+     * }
+     * ```
+     * 
+     * ```ts
+     * // Track progress while searching
+     * const task = source.findImage(template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const match = await task;
+     * ```
      */
     findImage(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
-     * Find any occurence of an image inside this image.
+     * Finds all occurrences of an image inside this image.
+     * 
+     * Returns a `ProgressTask` that can be awaited for an array of matches.
+     * 
+     * ```ts
+     * const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
+     * for (const match of matches) {
+     * console.log(`Found at ${match.position}`);
+     * }
+     * ```
+     * 
+     * ```ts
+     * // Track progress while searching
+     * const task = source.findImageAll(template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const matches = await task;
+     * ```
      */
     findImageAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
 }
+/**
+ * A signal that can be used to abort asynchronous operations.
+ * 
+ * Obtained from an `AbortController` via the `signal` property. Pass it
+ * to cancellable operations (e.g., `findImage`) in their options.
+ * 
+ * ```ts
+ * const controller = new AbortController();
+ * const task = source.findImage(template, { signal: controller.signal });
+ * // Cancel from elsewhere:
+ * controller.abort();
+ * ```
+ */
 declare interface AbortSignal {
 }
+/**
+ * Controls cancellation of asynchronous operations.
+ * 
+ * Create an `AbortController`, pass its `signal` to a cancellable operation,
+ * and call `abort()` to cancel it.
+ * 
+ * ```ts
+ * const controller = new AbortController();
+ * 
+ * // Start a long-running operation
+ * const task = source.findImage(template, { signal: controller.signal });
+ * 
+ * // Cancel after 5 seconds
+ * await sleep(5000);
+ * controller.abort();
+ * ```
+ */
 declare class AbortController {
     readonly signal: AbortSignal;
     constructor();
+    /**
+     * Signals cancellation to all operations using this controller's signal.
+     */
     abort(): void;
 }
+/**
+ * Utilities for concurrent operations.
+ * 
+ * ```ts
+ * // Race two promises, resolving with whichever finishes first
+ * const result = await Concurrency.race([sleep(100), sleep(1000)]);
+ * ```
+ */
 declare interface Concurrency {
+    /**
+     * Races multiple promises, returning the result of the first one to settle.
+     * Losing promises with a `cancel` method will be cancelled automatically.
+     * 
+     * ```ts
+     * // Use race to implement a timeout
+     * const result = await Concurrency.race([
+     * fetchData(),
+     * sleep(5000).then(() => { throw new Error("Timeout"); })
+     * ]);
+     * ```
+     */
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
 }
+/**
+ * Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
+ * 
+ * ```ts
+ * // Type text
+ * await keyboard.text("Hello, world!");
+ * ```
+ * 
+ * ```ts
+ * // Press a key combination (Ctrl+C)
+ * await keyboard.key(Key.Control, Direction.Press);
+ * await keyboard.key("c", Direction.Click);
+ * await keyboard.key(Key.Control, Direction.Release);
+ * ```
+ * 
+ * ```ts
+ * // Wait for a key combination
+ * await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
+ * ```
+ */
 declare interface Keyboard {
+    /**
+     * Types the given text string using simulated key events.
+     */
     text(text: string): Promise<void>;
+    /**
+     * Presses, releases, or clicks a key.
+     * 
+     * Accepts a `Key` constant, a single character string, or a raw keycode number.
+     */
     key(key: Key | string | number, direction: Direction): Promise<void>;
+    /**
+     * Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
+     */
     raw(keycode: number, direction: Direction): Promise<void>;
+    /**
+     * Returns whether a key is currently pressed.
+     */
     isKeyPressed(key: Key | string | number): Promise<boolean>;
+    /**
+     * Waits until the specified keys are all pressed simultaneously.
+     * 
+     * ```ts
+     * await keyboard.waitForKeys([Key.Control, "s"]);
+     * ```
+     * 
+     * ```ts
+     * // Wait for exactly these keys and no others, with abort support
+     * const controller = new AbortController();
+     * await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
+     * exclusive: true,
+     * signal: controller.signal
+     * });
+     * ```
+     */
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
 }
 declare const keyboard: Keyboard;
 /**
- * Wait for keys options
+ * Options for waiting for key combinations.
+ * 
+ * ```ts
+ * // Wait for exactly Ctrl+S and no other keys
+ * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
+ * ```
  */
 declare interface WaitForKeysOptions {
     /**
@@ -3542,31 +4562,95 @@ declare interface WaitForKeysOptions {
      */
     signal?: AbortSignal;
 }
+/**
+ * Controls mouse input: movement, clicking, scrolling, and position queries.
+ * 
+ * ```ts
+ * // Move and click
+ * await mouse.move(new Point(500, 300));
+ * await mouse.click();
+ * ```
+ * 
+ * ```ts
+ * // Right-click at a specific position
+ * await mouse.click({ button: Button.Right, position: new Point(100, 200) });
+ * ```
+ * 
+ * ```ts
+ * // Smooth movement with custom tween
+ * await mouse.move(new Point(800, 600), {
+ * speed: 1500,
+ * tween: Tween.BounceOut
+ * });
+ * ```
+ */
 declare interface Mouse {
     /**
+     * Returns whether a mouse button is currently pressed.
      * @platform does not work on Wayland
      */
     isPressed(button: Button): Promise<boolean>;
+    /**
+     * Scrolls the mouse wheel by the given amount.
+     */
     scroll(length: number, axis?: Axis): Promise<void>;
     /**
+     * Returns the current mouse cursor position.
      * @platform does not work on Wayland
      */
     position(): Promise<Point>;
+    /**
+     * Measures the mouse movement speed over a duration (in pixels per second).
+     */
     measureSpeed(options?: MeasureSpeedOptions): Task<number>;
+    /**
+     * Moves the mouse cursor smoothly to the given position.
+     */
     move(point: PointLike, options?: MoveOptions): Task<void>;
+    /**
+     * Moves the mouse cursor smoothly to the given position.
+     */
     move(x: number, y: number, options?: MoveOptions): Task<void>;
+    /**
+     * Sets the mouse cursor position instantly (absolute coordinates).
+     */
     setPosition(point: PointLike): Promise<void>;
+    /**
+     * Sets the mouse cursor position instantly (absolute coordinates).
+     */
     setPosition(x: number, y: number): Promise<void>;
+    /**
+     * Moves the mouse cursor by the given offset (relative coordinates).
+     */
     setRelativePosition(point: PointLike): Promise<void>;
+    /**
+     * Moves the mouse cursor by the given offset (relative coordinates).
+     */
     setRelativePosition(x: number, y: number): Promise<void>;
+    /**
+     * Clicks a mouse button.
+     */
     click(options?: ClickOptions): Task<void>;
+    /**
+     * Double-clicks a mouse button.
+     */
     doubleClick(options?: DoubleClickOptions): Task<void>;
+    /**
+     * Presses and holds a mouse button.
+     */
     press(options?: PressOptions): Promise<void>;
+    /**
+     * Releases a mouse button.
+     */
     release(button?: Button): Promise<void>;
 }
 declare const mouse: Mouse;
 /**
- * Measure speed options
+ * Options for measuring mouse movement speed.
+ * 
+ * ```ts
+ * const speed = await mouse.measureSpeed({ duration: 3 });
+ * ```
  */
 declare interface MeasureSpeedOptions {
     /**
@@ -3580,7 +4664,12 @@ declare interface MeasureSpeedOptions {
     signal?: AbortSignal;
 }
 /**
- * Button click options
+ * Options for clicking a mouse button.
+ * 
+ * ```ts
+ * // Click and hold for 0.5 seconds
+ * await mouse.click({ duration: 0.5 });
+ * ```
  */
 declare interface ClickOptions extends PressOptions {
     /**
@@ -3601,7 +4690,11 @@ declare interface ClickOptions extends PressOptions {
     signal?: AbortSignal;
 }
 /**
- * Button double click options
+ * Options for double-clicking a mouse button.
+ * 
+ * ```ts
+ * await mouse.doubleClick({ delay: 0.1 });
+ * ```
  */
 declare interface DoubleClickOptions extends ClickOptions {
     /**
@@ -3609,23 +4702,115 @@ declare interface DoubleClickOptions extends ClickOptions {
      */
     delay?: number;
 }
+/**
+ * A wildcard pattern for matching strings.
+ * 
+ * Supports `*` (match any sequence) and `?` (match any single character).
+ * 
+ * ```ts
+ * const pattern = new Wildcard("*.txt");
+ * ```
+ * 
+ * ```ts
+ * // Used in APIs that accept a NameLike parameter
+ * const pattern = new Wildcard("my_app*");
+ * ```
+ */
 declare class Wildcard {
     /**
      * Constructor.
      */
     constructor(pattern: string);
 }
+/**
+ * Utilities for manipulating file paths. All methods are static.
+ * 
+ * ```ts
+ * const full = Path.join("/home/user", "documents", "file.txt");
+ * const dir = Path.parent(full);   // "/home/user/documents"
+ * const name = Path.filename(full); // "file.txt"
+ * const ext = Path.extension(full); // "txt"
+ * ```
+ * 
+ * ```ts
+ * // Change a file's extension
+ * const newPath = Path.setExtension("/tmp/data.csv", "json");
+ * // "/tmp/data.json"
+ * ```
+ */
 declare class Path {
     private constructor();
+    /**
+     * Joins path segments into a single path.
+     * 
+     * ```ts
+     * Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
+     * ```
+     */
     static join(...args: string[]): string;
+    /**
+     * Returns the file name component of a path.
+     * 
+     * ```ts
+     * Path.filename("/home/user/file.txt"); // "file.txt"
+     * ```
+     */
     static filename(path: string): string;
+    /**
+     * Alias for `filename`.
+     */
     static basename(path: string): string;
+    /**
+     * Returns the parent directory of a path.
+     * 
+     * ```ts
+     * Path.parent("/home/user/file.txt"); // "/home/user"
+     * ```
+     */
     static parent(path: string): string;
+    /**
+     * Alias for `parent`.
+     */
     static dirname(path: string): string;
+    /**
+     * Returns whether the path is absolute.
+     * 
+     * ```ts
+     * Path.isAbsolute("/home/user"); // true
+     * Path.isAbsolute("relative/path"); // false
+     * ```
+     */
     static isAbsolute(path: string): boolean;
+    /**
+     * Returns whether the path is relative.
+     * 
+     * ```ts
+     * Path.isRelative("relative/path"); // true
+     * Path.isRelative("/absolute/path"); // false
+     * ```
+     */
     static isRelative(path: string): boolean;
+    /**
+     * Returns the file extension of a path (without the leading dot).
+     * 
+     * ```ts
+     * Path.extension("/home/user/file.txt"); // "txt"
+     * Path.extension("/home/user/file"); // ""
+     * ```
+     */
     static extension(path: string): string;
+    /**
+     * Alias for `extension`.
+     */
     static extname(path: string): string;
+    /**
+     * Returns the path with a different extension. Returns an empty string on failure.
+     * 
+     * ```ts
+     * Path.setExtension("/tmp/data.csv", "json"); // "/tmp/data.json"
+     * Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
+     * ```
+     */
     static setExtension(path: string, extension: string): string;
 }
 /**
@@ -3805,27 +4990,99 @@ declare interface Screenshot {
     capturePixel(position: PointLike): Promise<Color>;
     capturePixel(x: number, y: number): Promise<Color>;
     /**
-     * Find an image on a screen rectangle.
+     * Finds the best match of an image on a screen rectangle.
+     * 
+     * ```ts
+     * const match = await screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * ```
+     * 
+     * ```ts
+     * const task = screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const match = await task;
+     * ```
      */
     findImageOnRect(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
-     * Find an image on a screen rectangle.
+     * Finds the best match of an image on a screen rectangle.
+     * 
+     * ```ts
+     * const match = await screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * ```
+     * 
+     * ```ts
+     * const task = screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const match = await task;
+     * ```
      */
     findImageOnRect(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
-     * Find all occurrences of an image on a screen rectangle.
+     * Finds all occurrences of an image on a screen rectangle.
+     * 
+     * ```ts
+     * const matches = await screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * ```
+     * 
+     * ```ts
+     * const task = screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const matches = await task;
+     * ```
      */
     findImageOnRectAll(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
     /**
-     * Find all occurrences of an image on a screen rectangle.
+     * Finds all occurrences of an image on a screen rectangle.
+     * 
+     * ```ts
+     * const matches = await screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * ```
+     * 
+     * ```ts
+     * const task = screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const matches = await task;
+     * ```
      */
     findImageOnRectAll(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
     /**
-     * Find an image on a display.
+     * Finds the best match of an image on a display.
+     * 
+     * ```ts
+     * const match = await screenshot.findImageOnDisplay(0, template);
+     * ```
+     * 
+     * ```ts
+     * const task = screenshot.findImageOnDisplay(0, template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const match = await task;
+     * ```
      */
     findImageOnDisplay(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
-     * Find all occurrences of an image on a display.
+     * Finds all occurrences of an image on a display.
+     * 
+     * ```ts
+     * const matches = await screenshot.findImageOnDisplayAll(0, template);
+     * ```
+     * 
+     * ```ts
+     * const task = screenshot.findImageOnDisplayAll(0, template);
+     * for await (const progress of task) {
+     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * }
+     * const matches = await task;
+     * ```
      */
     findImageOnDisplayAll(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
 }
@@ -4641,18 +5898,66 @@ declare interface WebProgress {
 declare interface Web {
     /**
      * Downloads a binary file.
+     * 
+     * ```ts
+     * const bytes = await web.download("https://example.com/file.bin");
+     * ```
+     * 
+     * ```ts
+     * const task = web.download("https://example.com/file.bin");
+     * for await (const progress of task) {
+     * console.log(`${progress.current}/${progress.total} bytes`);
+     * }
+     * const bytes = await task;
+     * ```
      */
     download(url: string, options?: WebOptions): ProgressTask<Uint8Array, WebProgress>;
     /**
      * Downloads a text file.
+     * 
+     * ```ts
+     * const text = await web.downloadText("https://example.com/data.json");
+     * ```
+     * 
+     * ```ts
+     * const task = web.downloadText("https://example.com/data.json");
+     * for await (const progress of task) {
+     * console.log(`${progress.current}/${progress.total} bytes`);
+     * }
+     * const text = await task;
+     * ```
      */
     downloadText(url: string, options?: WebOptions): ProgressTask<string, WebProgress>;
     /**
      * Downloads an image.
+     * 
+     * ```ts
+     * const image = await web.downloadImage("https://example.com/photo.png");
+     * ```
+     * 
+     * ```ts
+     * const task = web.downloadImage("https://example.com/photo.png");
+     * for await (const progress of task) {
+     * console.log(`${progress.current}/${progress.total} bytes`);
+     * }
+     * const image = await task;
+     * ```
      */
     downloadImage(url: string, options?: WebOptions): ProgressTask<Image, WebProgress>;
     /**
      * Downloads a file to a directory.
+     * 
+     * ```ts
+     * const filePath = await web.downloadFile("https://example.com/file.zip");
+     * ```
+     * 
+     * ```ts
+     * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
+     * for await (const progress of task) {
+     * console.log(`${progress.current}/${progress.total} bytes`);
+     * }
+     * const filePath = await task;
+     * ```
      */
     downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
 }
@@ -4679,7 +5984,15 @@ declare interface HotstringOptions {
     saveRestoreClipboard?: boolean;
 }
 /**
- * Move options
+ * Options for smooth mouse movement.
+ * 
+ * ```ts
+ * await mouse.move(new Point(500, 300), {
+ * speed: 1000,
+ * tween: Tween.SineOut,
+ * targetRandomness: 5
+ * });
+ * ```
  */
 declare interface MoveOptions {
     /**
@@ -4709,7 +6022,12 @@ declare interface MoveOptions {
     interval?: number;
 }
 /**
- * Button press options
+ * Options for pressing (and holding) a mouse button.
+ * 
+ * ```ts
+ * // Press the right button at a specific position
+ * await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+ * ```
  */
 declare interface PressOptions {
     /**

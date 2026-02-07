@@ -80,7 +80,19 @@ impl JsScreenshot {
             .into())
     }
 
-    /// Find an image on a screen rectangle.
+    /// Finds the best match of an image on a screen rectangle.
+    ///
+    /// ```ts
+    /// const match = await screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+    /// ```
+    ///
+    /// ```ts
+    /// const task = screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    /// }
+    /// const match = await task;
+    /// ```
     /// @returns ProgressTask<Match | undefined, FindImageProgress>
     pub fn find_image_on_rect<'js>(
         &self,
@@ -104,7 +116,19 @@ impl JsScreenshot {
         )
     }
 
-    /// Find all occurrences of an image on a screen rectangle.
+    /// Finds all occurrences of an image on a screen rectangle.
+    ///
+    /// ```ts
+    /// const matches = await screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+    /// ```
+    ///
+    /// ```ts
+    /// const task = screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    /// }
+    /// const matches = await task;
+    /// ```
     /// @returns ProgressTask<Match[], FindImageProgress>
     pub fn find_image_on_rect_all<'js>(
         &self,
@@ -128,7 +152,19 @@ impl JsScreenshot {
         )
     }
 
-    /// Find an image on a display.
+    /// Finds the best match of an image on a display.
+    ///
+    /// ```ts
+    /// const match = await screenshot.findImageOnDisplay(0, template);
+    /// ```
+    ///
+    /// ```ts
+    /// const task = screenshot.findImageOnDisplay(0, template);
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    /// }
+    /// const match = await task;
+    /// ```
     /// @returns ProgressTask<Match | undefined, FindImageProgress>
     pub fn find_image_on_display<'js>(
         &self,
@@ -151,7 +187,19 @@ impl JsScreenshot {
         )
     }
 
-    /// Find all occurrences of an image on a display.
+    /// Finds all occurrences of an image on a display.
+    ///
+    /// ```ts
+    /// const matches = await screenshot.findImageOnDisplayAll(0, template);
+    /// ```
+    ///
+    /// ```ts
+    /// const task = screenshot.findImageOnDisplayAll(0, template);
+    /// for await (const progress of task) {
+    ///   console.log(`${progress.stage}: ${progress.percent}%`);
+    /// }
+    /// const matches = await task;
+    /// ```
     /// @returns ProgressTask<Match[], FindImageProgress>
     pub fn find_image_on_display_all<'js>(
         &self,

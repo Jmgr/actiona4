@@ -9,6 +9,17 @@ use crate::{
     runtime::WithUserData,
 };
 
+/// A signal that can be used to abort asynchronous operations.
+///
+/// Obtained from an `AbortController` via the `signal` property. Pass it
+/// to cancellable operations (e.g., `findImage`) in their options.
+///
+/// ```ts
+/// const controller = new AbortController();
+/// const task = source.findImage(template, { signal: controller.signal });
+/// // Cancel from elsewhere:
+/// controller.abort();
+/// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "AbortSignal")]
 pub struct JsAbortSignal {
@@ -35,6 +46,21 @@ impl IntoToken for Option<JsAbortSignal> {
     }
 }
 
+/// Controls cancellation of asynchronous operations.
+///
+/// Create an `AbortController`, pass its `signal` to a cancellable operation,
+/// and call `abort()` to cancel it.
+///
+/// ```ts
+/// const controller = new AbortController();
+///
+/// // Start a long-running operation
+/// const task = source.findImage(template, { signal: controller.signal });
+///
+/// // Cancel after 5 seconds
+/// await sleep(5000);
+/// controller.abort();
+/// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "AbortController")]
 pub struct JsAbortController {
@@ -58,6 +84,7 @@ impl JsAbortController {
         }
     }
 
+    /// Signals cancellation to all operations using this controller's signal.
     pub fn abort(&self) {
         self.token.cancel();
     }

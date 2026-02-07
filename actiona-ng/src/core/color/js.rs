@@ -62,7 +62,32 @@ impl<'js> FromParam<'js> for JsColorLike {
     }
 }
 
-/// A Color.
+/// An RGBA color with 8-bit channels.
+///
+/// Can be constructed from individual r/g/b/a values, or by using one of the
+/// many named color constants (CSS colors).
+///
+/// ```ts
+/// // Create from RGB (alpha defaults to 255)
+/// const red = new Color(255, 0, 0);
+///
+/// // Create from RGBA
+/// const semiTransparent = new Color(255, 0, 0, 128);
+///
+/// // Use a named constant
+/// const blue = Color.Blue;
+///
+/// // Read and modify channels
+/// const c = new Color(10, 20, 30);
+/// c.r = 100;
+/// console.log(c.toString()); // "(100, 20, 30, 255)"
+///
+/// // Compare colors
+/// Color.Red.equals(new Color(255, 0, 0)); // true
+///
+/// // Clone a color
+/// const copy = Color.Red.clone();
+/// ```
 ///
 /// @prop r: number // Red (should be between 0-255)
 /// @prop g: number // Green (should be between 0-255)
@@ -469,11 +494,17 @@ impl JsColor {
         self.inner.0[3] = a;
     }
 
+    /// Returns `true` if both colors have the same r, g, b, and a values.
+    ///
+    /// ```ts
+    /// Color.Red.equals(new Color(255, 0, 0)); // true
+    /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
+    /// Returns a string representation of the color: `"(r, g, b, a)"`.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -486,6 +517,7 @@ impl JsColor {
         )
     }
 
+    /// Returns a copy of this color.
     #[qjs(rename = "clone")]
     #[must_use]
     pub const fn clone_js(&self) -> Self {

@@ -3,6 +3,19 @@ use tokio::fs;
 
 use crate::core::js::classes::HostClass;
 
+/// Provides static methods for querying filesystem path types.
+///
+/// ```ts
+/// if (await Filesystem.exists("/tmp/myfile.txt")) {
+///     console.log("exists!");
+/// }
+///
+/// if (await Filesystem.isFile("/tmp/myfile.txt")) {
+///     console.log("it's a file");
+/// } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
+///     console.log("it's a directory");
+/// }
+/// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Filesystem")]
 pub struct JsFilesystem {}
@@ -21,11 +34,13 @@ impl JsFilesystem {
         ))
     }
 
+    /// Returns `true` if a path exists on the filesystem.
     #[qjs(static)]
     pub async fn exists(path: String) -> bool {
         fs::try_exists(path).await.unwrap_or_default()
     }
 
+    /// Returns `true` if the path points to a regular file.
     #[qjs(static)]
     pub async fn is_file(path: String) -> bool {
         fs::metadata(path)
@@ -33,6 +48,7 @@ impl JsFilesystem {
             .is_ok_and(|metadata| metadata.is_file())
     }
 
+    /// Returns `true` if the path points to a directory.
     #[qjs(static)]
     pub async fn is_directory(path: String) -> bool {
         fs::metadata(path)
@@ -40,6 +56,7 @@ impl JsFilesystem {
             .is_ok_and(|metadata| metadata.is_dir())
     }
 
+    /// Returns `true` if the path points to a symbolic link.
     #[qjs(static)]
     pub async fn is_symlink(path: String) -> bool {
         fs::metadata(path)

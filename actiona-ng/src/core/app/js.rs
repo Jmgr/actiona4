@@ -17,6 +17,25 @@ use crate::{
 
 pub type JsWaitAtEnd = WaitAtEnd;
 
+/// The global application singleton, providing access to environment information
+/// and execution settings.
+///
+/// ```ts
+/// // Get the current version
+/// console.log(app.version);
+///
+/// // Read environment variables
+/// const home = app.env["HOME"];
+///
+/// // Change working directory
+/// app.setCwd("/tmp");
+/// console.log(app.cwd);
+///
+/// // Control whether the script waits at the end
+/// app.waitAtEnd = true;
+/// app.waitAtEnd = WaitAtEnd.Automatic;
+/// ```
+///
 /// @singleton
 /// @prop waitAtEnd: WaitAtEnd | boolean // Should the app wait at the end of execution
 #[derive(Debug, JsLifetime)]
@@ -79,7 +98,12 @@ impl JsApp {
         Ok(())
     }
 
-    /// Version of Actiona-cli
+    /// The version of Actiona-cli.
+    ///
+    /// ```ts
+    /// console.log(app.version); // e.g. "0.1.0"
+    /// ```
+    ///
     /// @get
     #[must_use]
     #[qjs(get)]
@@ -87,7 +111,14 @@ impl JsApp {
         built_info::PKG_VERSION
     }
 
-    /// All environment variables
+    /// All environment variables as a key-value map.
+    ///
+    /// ```ts
+    /// const env = app.env;
+    /// console.log(env["HOME"]);
+    /// console.log(env["PATH"]);
+    /// ```
+    ///
     /// @get
     // TODO: add @readonly that wraps the TS result with Readonly<T>
     #[must_use]
@@ -96,7 +127,12 @@ impl JsApp {
         App::env_vars()
     }
 
-    /// Current working directory
+    /// The current working directory.
+    ///
+    /// ```ts
+    /// console.log(app.cwd); // e.g. "/home/user/project"
+    /// ```
+    ///
     /// @get
     #[qjs(get)]
     pub fn cwd(&self, ctx: Ctx<'_>) -> Result<String> {
@@ -105,13 +141,22 @@ impl JsApp {
             .into_js_result(&ctx)
     }
 
-    /// Sets the current working directory
+    /// Sets the current working directory.
+    ///
+    /// ```ts
+    /// app.setCwd("/tmp");
+    /// ```
     pub fn set_cwd(&self, ctx: Ctx<'_>, cwd: String) -> Result<()> {
         std::env::set_current_dir(&cwd).into_js_result(&ctx)?;
         Ok(())
     }
 
-    /// Executable path
+    /// The path to the running executable.
+    ///
+    /// ```ts
+    /// console.log(app.executablePath); // e.g. "/usr/bin/actiona-ng-cli"
+    /// ```
+    ///
     /// @get
     #[qjs(get)]
     pub fn executable_path(&self, ctx: Ctx<'_>) -> Result<String> {
