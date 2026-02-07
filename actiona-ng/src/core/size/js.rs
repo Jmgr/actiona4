@@ -4,7 +4,7 @@
 //! @verbatim type SizeLike = Size | { width: number; height: number };
 
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Result, Value,
+    JsLifetime, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
@@ -98,59 +98,8 @@ impl JsSize {
     /// Constructor with anything Size-like.
     /// @param s: SizeLike
     #[qjs(constructor)]
-    pub fn new<'js>(ctx: Ctx<'js>, args: Rest<Value<'js>>) -> Result<Self> {
-        let (size, _) = Self::from_args(&ctx, &args.0)?;
-        Ok(size)
-    }
-
-    /// Constructs a Size from an argument slice.
-    /// Accepted forms:
-    /// new Size(other_size)
-    /// new Size({width: 0, height: 1})
-    /// new Size(0, 1)
-    ///
-    /// @skip
-    #[qjs(skip)]
-    pub fn from_args<'a, 'js>(
-        // TODO: remove?
-        ctx: &Ctx<'js>,
-        args: &'a [Value<'js>],
-    ) -> Result<(Self, &'a [Value<'js>])> {
-        // Get the mandatory first argument
-        let (first_arg, rest) = args
-            .split_first()
-            .or_throw_message(ctx, "Expected at least one argument")?;
-
-        // If the first argument is a number, expect a second argument to also be a number
-        if let Some(first_arg) = first_arg.as_number() {
-            let (second_arg, rest) = rest
-                .split_first()
-                .or_throw_message(ctx, "Expected second argument")?;
-            let second_arg = second_arg
-                .as_number()
-                .or_throw_message(ctx, "Expected second argument to be a number")?;
-
-            let size = try_size(first_arg, second_arg).into_js_result(ctx)?;
-
-            return Ok((size.into(), rest));
-        }
-
-        // If it's a Size then get a copy
-        if let Ok(other_size) = first_arg.get::<JsSize>() {
-            return Ok((other_size, rest));
-        }
-
-        // If it's an object, then get its width and height properties
-        if let Some(first_arg) = first_arg.as_object() {
-            let width: f64 = first_arg.get("width")?;
-            let height: f64 = first_arg.get("height")?;
-
-            let size = try_size(width, height).into_js_result(ctx)?;
-
-            return Ok((size.into(), rest));
-        }
-
-        Err(Exception::throw_message(ctx, "Invalid Size argument"))
+    pub fn new(size: JsSizeLike) -> Self {
+        size.0.into()
     }
 
     /// @skip

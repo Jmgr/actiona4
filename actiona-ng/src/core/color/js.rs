@@ -5,11 +5,10 @@
 
 use image::Rgba;
 use rquickjs::{
-    Ctx, JsLifetime, Object, Result, Value,
+    JsLifetime, Object, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
-    prelude::*,
 };
 
 use crate::core::{ResultExt, js::classes::ValueClass};
@@ -432,14 +431,8 @@ impl JsColor {
     /// Constructor with anything Color-like.
     /// @param c: ColorLike
     #[qjs(constructor)]
-    pub fn new_js(_ctx: Ctx<'_>, _args: Rest<Value<'_>>) -> Result<Self> {
-        // TODO: could use ColorLike here
-
-        //let (point, _) = Self::from_args(&ctx, &args.0)?;
-        //Ok(point)
-        Ok(JsColor {
-            inner: Rgba([0, 0, 0, 0]).into(), // TMP // TODO
-        })
+    pub fn new_js(color: JsColorLike) -> Self {
+        color.0.into()
     }
 
     /// @skip
@@ -557,16 +550,163 @@ impl<'js> Trace<'js> for JsColor {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
+    use image::Rgba;
 
-    use crate::{core::color::js::JsColor, runtime::Runtime};
+    use super::JsColor;
+    use crate::{core::color::Color, runtime::Runtime};
 
     #[test]
-    #[traced_test]
-    fn test_button() {
+    fn test_color_constants() {
         Runtime::test_with_script_engine(async |script_engine| {
             let color = script_engine.eval::<JsColor>("Color.Red").await.unwrap();
-            println!("Red: {color:?}");
+            assert_eq!(color, JsColor::new(255, 0, 0, 255));
+
+            let color = script_engine
+                .eval::<JsColor>("Color.Transparent")
+                .await
+                .unwrap();
+            assert_eq!(color, JsColor::new(0, 0, 0, 0));
+        });
+    }
+
+    #[test]
+    fn test_color_alias_constants() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            let result = script_engine
+                .eval::<bool>("Color.Aqua.equals(Color.Cyan)")
+                .await
+                .unwrap();
+            assert!(result);
+
+            let result = script_engine
+                .eval::<bool>("Color.Fuchsia.equals(Color.Magenta)")
+                .await
+                .unwrap();
+            assert!(result);
+        });
+    }
+
+    #[test]
+    fn test_color_constructor_overloads() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            let color = script_engine
+                .eval::<JsColor>("new Color(1, 2, 3)")
+                .await
+                .unwrap();
+            assert_eq!(color, JsColor::new(1, 2, 3, 255));
+
+            let color = script_engine
+                .eval::<JsColor>("new Color(4, 5, 6, 7)")
+                .await
+                .unwrap();
+            assert_eq!(color, JsColor::new(4, 5, 6, 7));
+
+            let color = script_engine
+                .eval::<JsColor>("new Color({r: 8, g: 9, b: 10})")
+                .await
+                .unwrap();
+            assert_eq!(color, JsColor::new(8, 9, 10, 255));
+
+            let color = script_engine
+                .eval::<JsColor>("new Color(Color.Red)")
+                .await
+                .unwrap();
+            assert_eq!(color, JsColor::new(255, 0, 0, 255));
+        });
+    }
+
+    #[test]
+    fn test_color_js_attributes_and_methods() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval::<()>(
+                    r#"
+                    let c = Color.Red.clone();
+                    c.g = 10;
+                    c.b = 11;
+                    c.a = 12;
+                "#,
+                )
+                .await
+                .unwrap();
+
+            let result = script_engine.eval::<u8>("c.r").await.unwrap();
+            assert_eq!(result, 255);
+
+            let result = script_engine.eval::<u8>("c.g").await.unwrap();
+            assert_eq!(result, 10);
+
+            let result = script_engine.eval::<u8>("c.b").await.unwrap();
+            assert_eq!(result, 11);
+
+            let result = script_engine.eval::<u8>("c.a").await.unwrap();
+            assert_eq!(result, 12);
+
+            let result = script_engine
+                .eval::<bool>("c.equals(Color.Red)")
+                .await
+                .unwrap();
+            assert!(!result);
+
+            let result = script_engine.eval::<String>("c.toString()").await.unwrap();
+            assert_eq!(result, "(255, 10, 11, 12)");
+
+            let result = script_engine
+                .eval::<bool>("c.clone().equals(c)")
+                .await
+                .unwrap();
+            assert!(result);
+        });
+    }
+
+    #[test]
+    fn test_color_rust_methods() {
+        let mut color = JsColor::new(1, 2, 3, 4);
+
+        assert_eq!(color.get_r(), 1);
+        assert_eq!(color.get_g(), 2);
+        assert_eq!(color.get_b(), 3);
+        assert_eq!(color.get_a(), 4);
+
+        color.set_r(5);
+        color.set_g(6);
+        color.set_b(7);
+        color.set_a(8);
+
+        assert!(color.equals(JsColor::new(5, 6, 7, 8)));
+        assert_eq!(color.to_string_js(), "(5, 6, 7, 8)");
+        assert_eq!(color.clone_js(), color);
+    }
+
+    #[test]
+    fn test_color_conversions() {
+        let color = Color::new(9, 8, 7, 6);
+        let js_color = JsColor::from(color);
+        assert_eq!(js_color, JsColor::new(9, 8, 7, 6));
+        assert_eq!(Color::from(js_color), color);
+
+        let rgba = Rgba([10, 20, 30, 40]);
+        let js_color = JsColor::from(rgba);
+        assert_eq!(Rgba::<u8>::from(js_color), rgba);
+        assert_eq!(Color::from(js_color), Color::new(10, 20, 30, 40));
+    }
+
+    #[test]
+    fn test_color_clone_is_not_strictly_equal_in_js() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval::<()>("let c = Color.Red.clone()")
+                .await
+                .unwrap();
+
+            let result = script_engine
+                .eval::<bool>("c.equals(Color.Red)")
+                .await
+                .unwrap();
+            assert!(result);
+
+            let result = script_engine.eval::<bool>("c == Color.Red").await.unwrap();
+            assert!(!result);
         });
     }
 }

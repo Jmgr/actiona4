@@ -4,11 +4,10 @@
 //! @verbatim type PointLike = Point | { x: number; y: number };
 
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Result, Value,
+    Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
-    prelude::*,
 };
 
 use crate::{
@@ -99,59 +98,8 @@ impl JsPoint {
     /// Constructor with anything Point-like.
     /// @param p: PointLike
     #[qjs(constructor)]
-    pub fn new<'js>(ctx: Ctx<'js>, args: Rest<Value<'js>>) -> Result<Self> {
-        let (point, _) = Self::from_args(&ctx, &args.0)?;
-        Ok(point)
-    }
-
-    /// Constructs a Point from an argument slice.
-    /// Accepted forms:
-    /// new Point(other_point)
-    /// new Point({x: 0, y: 1})
-    /// new Point(0, 1)
-    ///
-    /// @skip
-    #[qjs(skip)]
-    pub fn from_args<'a, 'js>(
-        // TODO: remove?
-        ctx: &Ctx<'js>,
-        args: &'a [Value<'js>],
-    ) -> Result<(Self, &'a [Value<'js>])> {
-        // Get the mandatory first argument
-        let (first_arg, rest) = args
-            .split_first()
-            .or_throw_message(ctx, "Expected at least one argument")?;
-
-        // If the first argument is a number, expect a second argument to also be a number
-        if let Some(first_arg) = first_arg.as_number() {
-            let (second_arg, rest) = rest
-                .split_first()
-                .or_throw_message(ctx, "Expected second argument")?;
-            let second_arg = second_arg
-                .as_number()
-                .or_throw_message(ctx, "Expected second argument to be a number")?;
-
-            let point = try_point(first_arg, second_arg).into_js_result(ctx)?;
-
-            return Ok((point.into(), rest));
-        }
-
-        // If it's a Point then get a copy
-        if let Ok(other_point) = first_arg.get::<JsPoint>() {
-            return Ok((other_point, rest));
-        }
-
-        // If it's an object, then get its x and y properties
-        if let Some(first_arg) = first_arg.as_object() {
-            let x: f64 = first_arg.get("x")?;
-            let y: f64 = first_arg.get("y")?;
-
-            let point = try_point(x, y).into_js_result(ctx)?;
-
-            return Ok((point.into(), rest));
-        }
-
-        Err(Exception::throw_message(ctx, "Invalid Point argument"))
+    pub fn new(point: JsPointLike) -> Self {
+        point.0.into()
     }
 
     /// @skip
