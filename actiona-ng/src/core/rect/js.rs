@@ -75,7 +75,21 @@ impl<'js> FromParam<'js> for JsRectLike {
 }
 
 // TODO: property for point + size
-/// A 2D Rectangle.
+/// A 2D rectangle with position and size.
+///
+/// Rects can be constructed from four numbers, an object with `x`/`y`/`width`/`height`, or another Rect.
+///
+/// ```ts
+/// const r1 = new Rect(0, 0, 100, 50);
+/// const r2 = new Rect({ x: 0, y: 0, width: 100, height: 50 });
+/// ```
+///
+/// ```ts
+/// const a = new Rect(0, 0, 100, 100);
+/// const b = new Rect(50, 50, 100, 100);
+/// console.log(a.intersects(b)); // true
+/// const inter = a.intersection(b); // Rect(50, 50, 50, 50)
+/// ```
 ///
 /// @prop x: number // X coordinate
 /// @prop y: number // Y coordinate
@@ -83,10 +97,6 @@ impl<'js> FromParam<'js> for JsRectLike {
 /// @prop height: number // Height
 /// @prop topLeft: Point // Top-left origin
 /// @prop size: Size // Size
-///
-/// ```js
-/// let r = new Rect(1, 2, 50, 100);
-/// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Rect")]
 pub struct JsRect {
@@ -204,16 +214,31 @@ impl JsRect {
         self.inner.size = size.into();
     }
 
+    /// Returns true if this Rect equals another.
+    ///
+    /// ```ts
+    /// const a = new Rect(0, 0, 10, 10);
+    /// const b = new Rect(0, 0, 10, 10);
+    /// console.log(a.equals(b)); // true
+    /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
+    /// Returns true if this Rect contains the given point.
+    ///
+    /// ```ts
+    /// const r = new Rect(0, 0, 100, 100);
+    /// console.log(r.contains(new Point(50, 50))); // true
+    /// console.log(r.contains(new Point(150, 50))); // false
+    /// ```
     #[must_use]
     pub fn contains(&self, point: JsPoint) -> bool {
         self.inner.contains(point.into())
     }
 
+    /// Returns a string representation of this Rect.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -226,17 +251,37 @@ impl JsRect {
         )
     }
 
+    /// Clones this Rect.
+    ///
+    /// ```ts
+    /// const original = new Rect(0, 0, 100, 100);
+    /// const copy = original.clone();
+    /// ```
     #[qjs(rename = "clone")]
     #[must_use]
     pub const fn clone_js(&self) -> Self {
         *self
     }
 
+    /// Returns true if this Rect intersects with another.
+    ///
+    /// ```ts
+    /// const a = new Rect(0, 0, 100, 100);
+    /// const b = new Rect(50, 50, 100, 100);
+    /// console.log(a.intersects(b)); // true
+    /// ```
     #[must_use]
     pub fn intersects(&self, other: Self) -> bool {
         self.inner.intersects(other.into())
     }
 
+    /// Returns the intersection of two Rects, or undefined if they don't overlap.
+    ///
+    /// ```ts
+    /// const a = new Rect(0, 0, 100, 100);
+    /// const b = new Rect(50, 50, 100, 100);
+    /// const inter = a.intersection(b); // Rect(50, 50, 50, 50)
+    /// ```
     #[must_use]
     pub fn intersection(&self, other: Self) -> Option<Self> {
         self.inner
@@ -244,6 +289,13 @@ impl JsRect {
             .map(|result| result.into())
     }
 
+    /// Returns the smallest Rect containing both this and another Rect.
+    ///
+    /// ```ts
+    /// const a = new Rect(0, 0, 50, 50);
+    /// const b = new Rect(25, 25, 50, 50);
+    /// const u = a.union(b); // Rect(0, 0, 75, 75)
+    /// ```
     #[must_use]
     pub fn union(&self, other: Self) -> Self {
         self.inner.union(other.into()).into()

@@ -55,6 +55,7 @@ pub mod js;
     PartialEq,
     Serialize,
 )]
+/// HTTP request method.
 pub enum Method {
     #[default]
     Get,

@@ -1992,6 +1992,9 @@ declare enum MessageBoxResult {
 
     Cancel,
 }
+/**
+ * HTTP request method.
+ */
 declare enum Method {
     Get,
 
@@ -4814,11 +4817,21 @@ declare class Path {
     static setExtension(path: string, extension: string): string;
 }
 /**
- * A 2D Point.
+ * A 2D point with integer coordinates.
  * 
+ * Points can be constructed from two numbers, an object with `x`/`y`, or another Point.
  * 
- * ```js
- * let p = new Point(1, 2);
+ * ```ts
+ * const p1 = new Point(10, 20);
+ * const p2 = new Point({ x: 10, y: 20 });
+ * const p3 = new Point(p1);
+ * ```
+ * 
+ * ```ts
+ * const a = new Point(1, 2);
+ * const b = new Point(4, 6);
+ * console.log(a.distanceTo(b)); // 5
+ * console.log(a.add(b).toString()); // "(5, 8)"
  * ```
  */
 declare class Point {
@@ -4839,47 +4852,102 @@ declare class Point {
      */
     constructor(p: PointLike);
     /**
-     * Length of this point.
+     * Length of this point (distance from origin).
+     * 
+     * ```ts
+     * const p = new Point(3, 4);
+     * console.log(p.length()); // 5
+     * ```
      */
     length(): number;
     /**
-     * Returns a random point around this point.
+     * Returns a random point within a circle of the given radius around a center point.
+     * 
+     * ```ts
+     * const p = Point.randomInCircle(new Point(100, 100), 50);
+     * ```
      */
     static randomInCircle(center: PointLike, radius: number): Point;
     /**
-     * Returns a random point around this point.
+     * Returns a random point within a circle of the given radius around a center point.
+     * 
+     * ```ts
+     * const p = Point.randomInCircle(new Point(100, 100), 50);
+     * ```
      */
     static randomInCircle(x: number, y: number, radius: number): Point;
     /**
      * Calculates the distance between this point and another.
+     * 
+     * ```ts
+     * const a = new Point(0, 0);
+     * const b = new Point(3, 4);
+     * console.log(a.distanceTo(b)); // 5
+     * ```
      */
     distanceTo(other: Point): number;
     /**
      * Returns a JSON representation of this Point.
+     * 
+     * ```ts
+     * const p = new Point(1, 2);
+     * console.log(p.toJson()); // '{"x":1,"y":2}'
+     * ```
      */
     toJson(): string;
     /**
      * Returns true if this Point is at the origin, (0, 0).
+     * 
+     * ```ts
+     * console.log(new Point(0, 0).isOrigin()); // true
+     * console.log(new Point(1, 0).isOrigin()); // false
+     * ```
      */
     isOrigin(): boolean;
     /**
      * Computes the distance between two points.
+     * 
+     * ```ts
+     * const d = Point.distance(new Point(0, 0), new Point(3, 4));
+     * console.log(d); // 5
+     * ```
      */
     static distance(a: Point, b: Point): number;
     /**
      * Returns true if a Point equals another.
+     * 
+     * ```ts
+     * const a = new Point(1, 2);
+     * const b = new Point(1, 2);
+     * console.log(a.equals(b)); // true
+     * ```
      */
     equals(other: Point): boolean;
     /**
      * Adds two points and returns a new Point.
+     * 
+     * ```ts
+     * const sum = new Point(1, 2).add(new Point(3, 4));
+     * console.log(sum.toString()); // "(4, 6)"
+     * ```
      */
     add(other: Point): Point;
     /**
      * Subtracts two points and returns a new Point.
+     * 
+     * ```ts
+     * const diff = new Point(5, 7).subtract(new Point(2, 3));
+     * console.log(diff.toString()); // "(3, 4)"
+     * ```
      */
     subtract(other: Point): Point;
     /**
      * Scales this point by a factor and returns a new Point.
+     * 
+     * ```ts
+     * const p = new Point(3, 4).scaled(2);
+     * console.log(p.toString()); // "(6, 8)"
+     * ```
      */
     scaled(factor: number): Point;
     /**
@@ -4888,9 +4956,32 @@ declare class Point {
     toString(): string;
     /**
      * Clones this Point.
+     * 
+     * ```ts
+     * const original = new Point(1, 2);
+     * const copy = original.clone();
+     * ```
      */
     clone(): Point;
 }
+/**
+ * Random number generator.
+ * 
+ * Provides methods for generating random numbers, integers, positions, and choices.
+ * The generator is deterministic when seeded.
+ * 
+ * ```ts
+ * const n = random.number(); // 0..1
+ * const i = random.integer(1, 10); // 1..10
+ * const item = random.choice(["a", "b", "c"]);
+ * ```
+ * 
+ * ```ts
+ * random.setSeed(42);
+ * console.log(random.number()); // always the same value
+ * random.resetSeed();
+ * ```
+ */
 declare interface Random {
     /**
      * Returns a number between 0 (inclusive) and 1 (exclusive)
@@ -4917,29 +5008,60 @@ declare interface Random {
      * This seed is used for all random number generation. Since the random number generator is
      * deterministic that means that setting it to a particular number will always generate the same
      * random numbers.
+     * 
+     * ```ts
+     * random.setSeed(42);
+     * ```
      */
     setSeed(seed: number): void;
     /**
      * Resets the seed to be a random one.
+     * 
+     * ```ts
+     * random.resetSeed();
+     * ```
      */
     resetSeed(): void;
     /**
      * Returns a random position on any display.
+     * 
+     * ```ts
+     * const pos = await random.position();
+     * console.log(pos.toString());
+     * ```
      */
     position(): Promise<Point>;
     /**
      * Chooses one random entry in an array.
      * A fallback can be provided, in case the array is empty.
+     * 
+     * ```ts
+     * const item = random.choice(["apple", "banana", "cherry"]);
+     * ```
+     * 
+     * ```ts
+     * const item = random.choice([], "default");
+     * console.log(item); // "default"
+     * ```
      */
     choice<T>(array: Array<T>, fallback?: T): T;
 }
 declare const random: Random;
 /**
- * A 2D Rectangle.
+ * A 2D rectangle with position and size.
  * 
+ * Rects can be constructed from four numbers, an object with `x`/`y`/`width`/`height`, or another Rect.
  * 
- * ```js
- * let r = new Rect(1, 2, 50, 100);
+ * ```ts
+ * const r1 = new Rect(0, 0, 100, 50);
+ * const r2 = new Rect({ x: 0, y: 0, width: 100, height: 50 });
+ * ```
+ * 
+ * ```ts
+ * const a = new Rect(0, 0, 100, 100);
+ * const b = new Rect(50, 50, 100, 100);
+ * console.log(a.intersects(b)); // true
+ * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
  * ```
  */
 declare class Rect {
@@ -4975,19 +5097,128 @@ declare class Rect {
      * Constructor with anything Rect-like.
      */
     constructor(r: RectLike);
+    /**
+     * Returns true if this Rect equals another.
+     * 
+     * ```ts
+     * const a = new Rect(0, 0, 10, 10);
+     * const b = new Rect(0, 0, 10, 10);
+     * console.log(a.equals(b)); // true
+     * ```
+     */
     equals(other: Rect): boolean;
+    /**
+     * Returns true if this Rect contains the given point.
+     * 
+     * ```ts
+     * const r = new Rect(0, 0, 100, 100);
+     * console.log(r.contains(new Point(50, 50))); // true
+     * console.log(r.contains(new Point(150, 50))); // false
+     * ```
+     */
     contains(point: Point): boolean;
+    /**
+     * Returns a string representation of this Rect.
+     */
     toString(): string;
+    /**
+     * Clones this Rect.
+     * 
+     * ```ts
+     * const original = new Rect(0, 0, 100, 100);
+     * const copy = original.clone();
+     * ```
+     */
     clone(): Rect;
+    /**
+     * Returns true if this Rect intersects with another.
+     * 
+     * ```ts
+     * const a = new Rect(0, 0, 100, 100);
+     * const b = new Rect(50, 50, 100, 100);
+     * console.log(a.intersects(b)); // true
+     * ```
+     */
     intersects(other: Rect): boolean;
+    /**
+     * Returns the intersection of two Rects, or undefined if they don't overlap.
+     * 
+     * ```ts
+     * const a = new Rect(0, 0, 100, 100);
+     * const b = new Rect(50, 50, 100, 100);
+     * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
+     * ```
+     */
     intersection(other: Rect): Rect | undefined;
+    /**
+     * Returns the smallest Rect containing both this and another Rect.
+     * 
+     * ```ts
+     * const a = new Rect(0, 0, 50, 50);
+     * const b = new Rect(25, 25, 50, 50);
+     * const u = a.union(b); // Rect(0, 0, 75, 75)
+     * ```
+     */
     union(other: Rect): Rect;
 }
+/**
+ * Screenshot capture and image search.
+ * 
+ * Provides methods to capture screen regions, displays, and individual pixels,
+ * as well as finding images on screen.
+ * 
+ * ```ts
+ * const image = await screenshot.captureDisplay(0);
+ * console.log(image.size().toString());
+ * ```
+ * 
+ * ```ts
+ * const pixel = await screenshot.capturePixel(new Point(100, 100));
+ * console.log(pixel.toString());
+ * ```
+ */
 declare interface Screenshot {
+    /**
+     * Captures a screenshot of a screen rectangle.
+     * 
+     * ```ts
+     * const image = await screenshot.captureRect(new Rect(0, 0, 1920, 1080));
+     * ```
+     */
     captureRect(rect: RectLike): Promise<Image>;
+    /**
+     * Captures a screenshot of a screen rectangle.
+     * 
+     * ```ts
+     * const image = await screenshot.captureRect(new Rect(0, 0, 1920, 1080));
+     * ```
+     */
     captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
+    /**
+     * Captures a screenshot of an entire display.
+     * 
+     * ```ts
+     * const image = await screenshot.captureDisplay(0);
+     * ```
+     */
     captureDisplay(displayId: number): Promise<Image>;
+    /**
+     * Captures the color of a single pixel on screen.
+     * 
+     * ```ts
+     * const color = await screenshot.capturePixel(new Point(100, 200));
+     * console.log(color.toString());
+     * ```
+     */
     capturePixel(position: PointLike): Promise<Color>;
+    /**
+     * Captures the color of a single pixel on screen.
+     * 
+     * ```ts
+     * const color = await screenshot.capturePixel(new Point(100, 200));
+     * console.log(color.toString());
+     * ```
+     */
     capturePixel(x: number, y: number): Promise<Color>;
     /**
      * Finds the best match of an image on a screen rectangle.
@@ -5088,11 +5319,21 @@ declare interface Screenshot {
 }
 declare const screenshot: Screenshot;
 /**
- * A size.
+ * A 2D size with width and height.
  * 
+ * Sizes can be constructed from two numbers, an object with `width`/`height`, or another Size.
  * 
- * ```js
- * let p = new Size(1, 2);
+ * ```ts
+ * const s1 = new Size(100, 50);
+ * const s2 = new Size({ width: 100, height: 50 });
+ * const s3 = new Size(s1);
+ * ```
+ * 
+ * ```ts
+ * const a = new Size(10, 20);
+ * const b = new Size(5, 10);
+ * console.log(a.add(b).toString()); // "(15, 30)"
+ * console.log(a.scale(2).toString()); // "(20, 40)"
  * ```
  */
 declare class Size {
@@ -5114,22 +5355,48 @@ declare class Size {
     constructor(s: SizeLike);
     /**
      * Returns a JSON representation of this Size.
+     * 
+     * ```ts
+     * const s = new Size(100, 50);
+     * console.log(s.toJson()); // '{"width":100,"height":50}'
+     * ```
      */
     toJson(): string;
     /**
      * Returns true if a Size equals another.
+     * 
+     * ```ts
+     * const a = new Size(10, 20);
+     * const b = new Size(10, 20);
+     * console.log(a.equals(b)); // true
+     * ```
      */
     equals(other: Size): boolean;
     /**
      * Adds two sizes and returns a new Size.
+     * 
+     * ```ts
+     * const sum = new Size(10, 20).add(new Size(5, 10));
+     * console.log(sum.toString()); // "(15, 30)"
+     * ```
      */
     add(other: Size): Size;
     /**
      * Subtracts two sizes and returns a new Size.
+     * 
+     * ```ts
+     * const diff = new Size(100, 50).subtract(new Size(30, 20));
+     * console.log(diff.toString()); // "(70, 30)"
+     * ```
      */
     subtract(other: Size): Size;
     /**
      * Scales this size by a factor and returns a new Size.
+     * 
+     * ```ts
+     * const s = new Size(10, 20).scale(3);
+     * console.log(s.toString()); // "(30, 60)"
+     * ```
      */
     scale(factor: number): Size;
     /**
@@ -5138,9 +5405,25 @@ declare class Size {
     toString(): string;
     /**
      * Clones this Size.
+     * 
+     * ```ts
+     * const original = new Size(100, 50);
+     * const copy = original.clone();
+     * ```
      */
     clone(): Size;
 }
+/**
+ * Platform-specific standard directory paths.
+ * 
+ * All properties return the path as a string, or undefined if unavailable.
+ * 
+ * ```ts
+ * console.log(standardPaths.home);       // e.g. "/home/user"
+ * console.log(standardPaths.downloads);   // e.g. "/home/user/Downloads"
+ * console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
+ * ```
+ */
 declare interface StandardPaths {
     /**
      * Home directory
@@ -5186,6 +5469,9 @@ declare interface StandardPaths {
      * Local config directory
      */
     readonly localConfig?: string;
+    /**
+     * Returns a string representation of all standard paths.
+     */
     toString(): string;
 }
 declare const standard_paths: StandardPaths;
@@ -5785,7 +6071,7 @@ declare interface DiskUsage {
     toString(): string;
 }
 /**
- * Message box options
+ * Message box options.
  */
 declare interface MessageBoxOptions {
     /**
@@ -5805,41 +6091,127 @@ declare interface MessageBoxOptions {
      */
     signal?: AbortSignal;
 }
+/**
+ * User interface utilities.
+ * 
+ * Provides methods for displaying message boxes and other UI elements.
+ * Only available when running with the Tauri UI.
+ * 
+ * ```ts
+ * const result = await Ui.messageBox("Hello, world!");
+ * ```
+ * 
+ * ```ts
+ * const result = await Ui.messageBox("Delete this file?", {
+ * title: "Confirm",
+ * buttons: MessageBoxButtons.yesNo(),
+ * icon: MessageBoxIcon.Warning,
+ * });
+ * if (result === MessageBoxResult.Yes) {
+ * console.log("Confirmed");
+ * }
+ * ```
+ */
 declare class Ui {
     private constructor();
+    /**
+     * Displays a message box and returns the user's response.
+     * 
+     * ```ts
+     * const result = await Ui.messageBox("Operation complete");
+     * ```
+     */
     static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
 }
 declare const ui: Ui;
+/**
+ * Button configurations for message boxes.
+ * 
+ * Use the static factory methods to create button sets.
+ * 
+ * ```ts
+ * const buttons = MessageBoxButtons.ok();
+ * const buttons2 = MessageBoxButtons.yesNoCancel();
+ * const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
+ * ```
+ */
 declare class MessageBoxButtons {
     private constructor();
+    /**
+     * Creates an OK button.
+     */
     static ok(): MessageBoxButtons;
+    /**
+     * Creates an OK button with a custom label.
+     */
     static okCustom(okLabel: string): MessageBoxButtons;
+    /**
+     * Creates OK and Cancel buttons.
+     */
     static okCancel(): MessageBoxButtons;
+    /**
+     * Creates OK and Cancel buttons with custom labels.
+     */
     static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
+    /**
+     * Creates Yes and No buttons.
+     */
     static yesNo(): MessageBoxButtons;
+    /**
+     * Creates Yes, No, and Cancel buttons.
+     */
     static yesNoCancel(): MessageBoxButtons;
+    /**
+     * Creates Yes, No, and Cancel buttons with custom labels.
+     */
     static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
 }
 /**
- * Multipart form
+ * Multipart form for uploading files and data.
+ * 
+ * ```ts
+ * const form = new MultipartForm();
+ * form.addText("title", "My Upload");
+ * form.addFile("file", "/path/to/file.txt");
+ * const result = await web.downloadText("https://example.com/upload", {
+ * method: Method.Post,
+ * multipart: form,
+ * });
+ * ```
  */
 declare class MultipartForm {
     constructor();
     /**
      * Adds a text field.
+     * 
+     * ```ts
+     * const form = new MultipartForm();
+     * form.addText("username", "john");
+     * ```
      */
     addText(name: string, value: string, filename?: string, mimetype?: string): void;
     /**
      * Adds a file field.
+     * 
+     * ```ts
+     * const form = new MultipartForm();
+     * form.addFile("document", "/path/to/report.pdf");
+     * ```
      */
     addFile(name: string, path: string, filename?: string, mimetype?: string): void;
     /**
      * Adds a byte field.
+     * 
+     * ```ts
+     * const form = new MultipartForm();
+     * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+     * form.addBytes("data", bytes, "hello.bin");
+     * ```
      */
     addBytes(name: string, bytes: Uint8Array, filename?: string, mimetype?: string): void;
 }
 /**
- * Web options
+ * Web request options.
  */
 declare interface WebOptions {
     /**
@@ -5890,11 +6262,37 @@ declare interface WebOptions {
      */
     multipart?: MultipartForm;
 }
+/**
+ * Progress information for web downloads and uploads.
+ */
 declare interface WebProgress {
-    total(): number;
-    current(): number;
-    finished(): boolean;
+    /**
+     * Total bytes expected (0 if unknown).
+     */
+    readonly total: number;
+    /**
+     * Bytes transferred so far.
+     */
+    readonly current: number;
+    /**
+     * Whether the transfer is complete.
+     */
+    readonly finished: boolean;
 }
+/**
+ * HTTP client for downloading files, text, images, and binary data.
+ * 
+ * Supports progress tracking, authentication, custom headers, and multipart uploads.
+ * 
+ * ```ts
+ * const text = await web.downloadText("https://example.com/data.json");
+ * ```
+ * 
+ * ```ts
+ * const image = await web.downloadImage("https://example.com/photo.png");
+ * console.log(image.size().toString());
+ * ```
+ */
 declare interface Web {
     /**
      * Downloads a binary file.
@@ -5962,6 +6360,205 @@ declare interface Web {
     downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
 }
 declare const web: Web;
+/**
+ * Manages desktop windows: enumerate, focus, move, resize, and close windows.
+ * 
+ * ```ts
+ * // Get all windows
+ * const allWindows = await windows.all();
+ * for (const win of allWindows) {
+ * console.log(await win.title());
+ * }
+ * ```
+ * 
+ * ```ts
+ * // Get the active window and move it
+ * const win = await windows.activeWindow();
+ * await win.setPosition(new Point(100, 100));
+ * await win.setSize(800, 600);
+ * ```
+ * 
+ * ```ts
+ * // Find and close a window by title
+ * const allWindows = await windows.all();
+ * for (const win of allWindows) {
+ * if ((await win.title()).includes("Notepad")) {
+ * await win.close();
+ * }
+ * }
+ * ```
+ */
+declare interface Windows {
+    /**
+     * Returns all currently open windows.
+     * 
+     * ```ts
+     * const allWindows = await windows.all();
+     * console.log(`Found ${allWindows.length} windows`);
+     * ```
+     */
+    all(): Promise<WindowHandle[]>;
+    /**
+     * Returns the currently active (focused) window.
+     * 
+     * ```ts
+     * const win = await windows.activeWindow();
+     * console.log(await win.title());
+     * ```
+     */
+    activeWindow(): Promise<WindowHandle>;
+}
+declare const windows: Windows;
+/**
+ * A handle to a specific desktop window.
+ * 
+ * Obtained from `windows.all()` or `windows.activeWindow()`.
+ * Provides methods to query and manipulate the window.
+ * 
+ * ```ts
+ * const win = await windows.activeWindow();
+ * console.log(await win.title());
+ * console.log(await win.isVisible());
+ * console.log(await win.rect());
+ * ```
+ */
+declare interface WindowHandle {
+    /**
+     * Returns whether this window is visible.
+     * 
+     * ```ts
+     * const visible = await win.isVisible();
+     * ```
+     */
+    isVisible(): Promise<boolean>;
+    /**
+     * Returns the window title.
+     * 
+     * ```ts
+     * const title = await win.title();
+     * ```
+     */
+    title(): Promise<string>;
+    /**
+     * Returns the window class name.
+     * 
+     * ```ts
+     * const className = await win.className();
+     * ```
+     */
+    className(): Promise<string>;
+    /**
+     * Closes this window.
+     * 
+     * ```ts
+     * await win.close();
+     * ```
+     */
+    close(): Promise<void>;
+    /**
+     * Returns the process ID of the window's owning process.
+     * 
+     * ```ts
+     * const pid = await win.processId();
+     * ```
+     */
+    processId(): Promise<number>;
+    /**
+     * Returns the window's bounding rectangle.
+     * 
+     * ```ts
+     * const r = await win.rect();
+     * console.log(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
+     * ```
+     */
+    rect(): Promise<Rect>;
+    /**
+     * Makes this window the active (focused) window.
+     * 
+     * ```ts
+     * await win.setActive();
+     * ```
+     */
+    setActive(): Promise<void>;
+    /**
+     * Minimizes this window.
+     * 
+     * ```ts
+     * await win.minimize();
+     * ```
+     */
+    minimize(): Promise<void>;
+    /**
+     * Maximizes this window.
+     * 
+     * ```ts
+     * await win.maximize();
+     * ```
+     */
+    maximize(): Promise<void>;
+    /**
+     * Sets the window position.
+     * 
+     * ```ts
+     * await win.setPosition(new Point(100, 200));
+     * await win.setPosition(100, 200);
+     * ```
+     */
+    setPosition(position: PointLike): Promise<void>;
+    /**
+     * Sets the window position.
+     * 
+     * ```ts
+     * await win.setPosition(new Point(100, 200));
+     * await win.setPosition(100, 200);
+     * ```
+     */
+    setPosition(x: number, y: number): Promise<void>;
+    /**
+     * Returns the window position.
+     * 
+     * ```ts
+     * const pos = await win.position();
+     * console.log(`${pos.x}, ${pos.y}`);
+     * ```
+     */
+    position(): Promise<Point>;
+    /**
+     * Sets the window size.
+     * 
+     * ```ts
+     * await win.setSize(new Size(800, 600));
+     * await win.setSize(800, 600);
+     * ```
+     */
+    setSize(size: SizeLike): Promise<void>;
+    /**
+     * Sets the window size.
+     * 
+     * ```ts
+     * await win.setSize(new Size(800, 600));
+     * await win.setSize(800, 600);
+     * ```
+     */
+    setSize(width: number, height: number): Promise<void>;
+    /**
+     * Returns the window size.
+     * 
+     * ```ts
+     * const s = await win.size();
+     * console.log(`${s.width}x${s.height}`);
+     * ```
+     */
+    size(): Promise<Size>;
+    /**
+     * Returns whether this window is the active (focused) window.
+     * 
+     * ```ts
+     * const active = await win.isActive();
+     * ```
+     */
+    isActive(): Promise<boolean>;
+}
 /**
  * Hotstring options
  */

@@ -56,14 +56,25 @@ impl<'js> FromParam<'js> for JsPointLike {
     }
 }
 
-/// A 2D Point.
+/// A 2D point with integer coordinates.
+///
+/// Points can be constructed from two numbers, an object with `x`/`y`, or another Point.
+///
+/// ```ts
+/// const p1 = new Point(10, 20);
+/// const p2 = new Point({ x: 10, y: 20 });
+/// const p3 = new Point(p1);
+/// ```
+///
+/// ```ts
+/// const a = new Point(1, 2);
+/// const b = new Point(4, 6);
+/// console.log(a.distanceTo(b)); // 5
+/// console.log(a.add(b).toString()); // "(5, 8)"
+/// ```
 ///
 /// @prop x: number // X coordinate
 /// @prop y: number // Y coordinate
-///
-/// ```js
-/// let p = new Point(1, 2);
-/// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Point")]
 pub struct JsPoint {
@@ -169,13 +180,22 @@ impl JsPoint {
         self.inner.y = y.into();
     }
 
-    /// Length of this point.
+    /// Length of this point (distance from origin).
+    ///
+    /// ```ts
+    /// const p = new Point(3, 4);
+    /// console.log(p.length()); // 5
+    /// ```
     #[must_use]
     pub fn length(&self) -> f64 {
         self.inner.length()
     }
 
-    /// Returns a random point around this point.
+    /// Returns a random point within a circle of the given radius around a center point.
+    ///
+    /// ```ts
+    /// const p = Point.randomInCircle(new Point(100, 100), 50);
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Self {
@@ -187,24 +207,45 @@ impl JsPoint {
     }
 
     /// Calculates the distance between this point and another.
+    ///
+    /// ```ts
+    /// const a = new Point(0, 0);
+    /// const b = new Point(3, 4);
+    /// console.log(a.distanceTo(b)); // 5
+    /// ```
     #[must_use]
     pub fn distance_to(&self, other: Self) -> f64 {
         self.inner.distance_to(other.into())
     }
 
     /// Returns a JSON representation of this Point.
+    ///
+    /// ```ts
+    /// const p = new Point(1, 2);
+    /// console.log(p.toJson()); // '{"x":1,"y":2}'
+    /// ```
     #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(&self.inner).unwrap()
     }
 
     /// Returns true if this Point is at the origin, (0, 0).
+    ///
+    /// ```ts
+    /// console.log(new Point(0, 0).isOrigin()); // true
+    /// console.log(new Point(1, 0).isOrigin()); // false
+    /// ```
     #[must_use]
     pub fn is_origin(&self) -> bool {
         self.inner.is_origin()
     }
 
     /// Computes the distance between two points.
+    ///
+    /// ```ts
+    /// const d = Point.distance(new Point(0, 0), new Point(3, 4));
+    /// console.log(d); // 5
+    /// ```
     #[qjs(static)]
     #[must_use]
     pub fn distance(a: Self, b: Self) -> f64 {
@@ -212,24 +253,45 @@ impl JsPoint {
     }
 
     /// Returns true if a Point equals another.
+    ///
+    /// ```ts
+    /// const a = new Point(1, 2);
+    /// const b = new Point(1, 2);
+    /// console.log(a.equals(b)); // true
+    /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
     /// Adds two points and returns a new Point.
+    ///
+    /// ```ts
+    /// const sum = new Point(1, 2).add(new Point(3, 4));
+    /// console.log(sum.toString()); // "(4, 6)"
+    /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
         (self.inner + other.inner).into()
     }
 
     /// Subtracts two points and returns a new Point.
+    ///
+    /// ```ts
+    /// const diff = new Point(5, 7).subtract(new Point(2, 3));
+    /// console.log(diff.toString()); // "(3, 4)"
+    /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
         (self.inner - other.inner).into()
     }
 
     /// Scales this point by a factor and returns a new Point.
+    ///
+    /// ```ts
+    /// const p = new Point(3, 4).scaled(2);
+    /// console.log(p.toString()); // "(6, 8)"
+    /// ```
     pub fn scaled(&self, factor: f64) -> Result<Self> {
         let result = self.inner.scaled(factor).unwrap(); // TODO
         Ok(result.into())
@@ -243,6 +305,11 @@ impl JsPoint {
     }
 
     /// Clones this Point.
+    ///
+    /// ```ts
+    /// const original = new Point(1, 2);
+    /// const copy = original.clone();
+    /// ```
     #[qjs(rename = "clone")]
     #[must_use]
     pub const fn clone_js(&self) -> Self {

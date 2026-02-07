@@ -63,6 +63,7 @@ use crate::{
         system::js::JsSystem,
         ui::js::JsUi,
         web::js::JsWeb,
+        windows::js::JsWindows,
     },
     runtime::{events::Guard, shared_rng::SharedRng},
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
@@ -275,6 +276,7 @@ impl Runtime {
         );
         let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
         let standard_paths = JsStandardPaths::default();
+        let windows = JsWindows::new(runtime.clone());
 
         let script_engine = ScriptEngine::new().await?;
 
@@ -313,6 +315,7 @@ impl Runtime {
                     hotstrings,
                     audio,
                     standard_paths,
+                    windows,
                 )
                 .map_err(|_| {
                     let caught_error = ctx.catch();
@@ -342,6 +345,7 @@ impl Runtime {
         hotstrings: JsHotstrings,
         audio: JsAudio,
         standard_paths: JsStandardPaths,
+        windows: JsWindows,
     ) -> rquickjs::Result<()> {
         // Tools
         JsConcurrency::register(&ctx)?;
@@ -378,6 +382,7 @@ impl Runtime {
         register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
         register_singleton_class::<JsAudio>(&ctx, audio)?;
         register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
+        register_singleton_class::<JsWindows>(&ctx, windows)?;
 
         Ok(())
     }

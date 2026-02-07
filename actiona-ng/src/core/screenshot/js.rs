@@ -35,6 +35,21 @@ impl<'js> Trace<'js> for super::Screenshot {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
+/// Screenshot capture and image search.
+///
+/// Provides methods to capture screen regions, displays, and individual pixels,
+/// as well as finding images on screen.
+///
+/// ```ts
+/// const image = await screenshot.captureDisplay(0);
+/// console.log(image.size().toString());
+/// ```
+///
+/// ```ts
+/// const pixel = await screenshot.capturePixel(new Point(100, 100));
+/// console.log(pixel.toString());
+/// ```
+///
 /// @singleton
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "Screenshot")]
@@ -56,12 +71,22 @@ impl JsScreenshot {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsScreenshot {
+    /// Captures a screenshot of a screen rectangle.
+    ///
+    /// ```ts
+    /// const image = await screenshot.captureRect(new Rect(0, 0, 1920, 1080));
+    /// ```
     pub async fn capture_rect(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner.capture_rect(rect.0).await.into_js_result(&ctx)?,
         ))
     }
 
+    /// Captures a screenshot of an entire display.
+    ///
+    /// ```ts
+    /// const image = await screenshot.captureDisplay(0);
+    /// ```
     pub async fn capture_display(&self, ctx: Ctx<'_>, display_id: u32) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner
@@ -71,6 +96,12 @@ impl JsScreenshot {
         ))
     }
 
+    /// Captures the color of a single pixel on screen.
+    ///
+    /// ```ts
+    /// const color = await screenshot.capturePixel(new Point(100, 200));
+    /// console.log(color.toString());
+    /// ```
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         Ok(self
             .inner

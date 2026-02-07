@@ -55,14 +55,25 @@ impl<'js> FromParam<'js> for JsSizeLike {
     }
 }
 
-/// A size.
+/// A 2D size with width and height.
+///
+/// Sizes can be constructed from two numbers, an object with `width`/`height`, or another Size.
+///
+/// ```ts
+/// const s1 = new Size(100, 50);
+/// const s2 = new Size({ width: 100, height: 50 });
+/// const s3 = new Size(s1);
+/// ```
+///
+/// ```ts
+/// const a = new Size(10, 20);
+/// const b = new Size(5, 10);
+/// console.log(a.add(b).toString()); // "(15, 30)"
+/// console.log(a.scale(2).toString()); // "(20, 40)"
+/// ```
 ///
 /// @prop width: number // width
 /// @prop height: number // height
-///
-/// ```js
-/// let p = new Size(1, 2);
-/// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[rquickjs::class(rename = "Size")]
 pub struct JsSize {
@@ -169,30 +180,56 @@ impl JsSize {
     }
 
     /// Returns a JSON representation of this Size.
+    ///
+    /// ```ts
+    /// const s = new Size(100, 50);
+    /// console.log(s.toJson()); // '{"width":100,"height":50}'
+    /// ```
     #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(&self.inner).unwrap()
     }
 
     /// Returns true if a Size equals another.
+    ///
+    /// ```ts
+    /// const a = new Size(10, 20);
+    /// const b = new Size(10, 20);
+    /// console.log(a.equals(b)); // true
+    /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
         *self == other
     }
 
     /// Adds two sizes and returns a new Size.
+    ///
+    /// ```ts
+    /// const sum = new Size(10, 20).add(new Size(5, 10));
+    /// console.log(sum.toString()); // "(15, 30)"
+    /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
         (self.inner + other.inner).into()
     }
 
     /// Subtracts two sizes and returns a new Size.
+    ///
+    /// ```ts
+    /// const diff = new Size(100, 50).subtract(new Size(30, 20));
+    /// console.log(diff.toString()); // "(70, 30)"
+    /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
         (self.inner - other.inner).into()
     }
 
     /// Scales this size by a factor and returns a new Size.
+    ///
+    /// ```ts
+    /// const s = new Size(10, 20).scale(3);
+    /// console.log(s.toString()); // "(30, 60)"
+    /// ```
     pub fn scale<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
         self.inner
             .scaled(factor)
@@ -208,6 +245,11 @@ impl JsSize {
     }
 
     /// Clones this Size.
+    ///
+    /// ```ts
+    /// const original = new Size(100, 50);
+    /// const copy = original.clone();
+    /// ```
     #[qjs(rename = "clone")]
     #[must_use]
     pub const fn clone_js(&self) -> Self {

@@ -21,7 +21,7 @@ use crate::{
 pub type JsMessageBoxIcon = super::MessageBoxIcon;
 pub type JsMessageBoxResult = super::MessageBoxResult;
 
-/// Message box options
+/// Message box options.
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsMessageBoxOptions {
@@ -48,6 +48,26 @@ impl JsMessageBoxOptions {
     }
 }
 
+/// User interface utilities.
+///
+/// Provides methods for displaying message boxes and other UI elements.
+/// Only available when running with the Tauri UI.
+///
+/// ```ts
+/// const result = await Ui.messageBox("Hello, world!");
+/// ```
+///
+/// ```ts
+/// const result = await Ui.messageBox("Delete this file?", {
+///   title: "Confirm",
+///   buttons: MessageBoxButtons.yesNo(),
+///   icon: MessageBoxIcon.Warning,
+/// });
+/// if (result === MessageBoxResult.Yes) {
+///   console.log("Confirmed");
+/// }
+/// ```
+///
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Ui")]
@@ -75,6 +95,12 @@ impl JsUi {
         Ok(Self::default())
     }
 
+    /// Displays a message box and returns the user's response.
+    ///
+    /// ```ts
+    /// const result = await Ui.messageBox("Operation complete");
+    /// ```
+    ///
     /// @returns Task<MessageBoxResult>
     #[qjs(static)]
     pub fn message_box<'js>(
@@ -94,6 +120,15 @@ impl JsUi {
     }
 }
 
+/// Button configurations for message boxes.
+///
+/// Use the static factory methods to create button sets.
+///
+/// ```ts
+/// const buttons = MessageBoxButtons.ok();
+/// const buttons2 = MessageBoxButtons.yesNoCancel();
+/// const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
+/// ```
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "MessageBoxButtons")]
 pub struct JsMessageBoxButtons {
@@ -126,6 +161,7 @@ impl JsMessageBoxButtons {
         ))
     }
 
+    /// Creates an OK button.
     #[qjs(static)]
     #[must_use]
     pub const fn ok() -> Self {
@@ -134,6 +170,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Creates an OK button with a custom label.
     #[qjs(static)]
     #[must_use]
     pub const fn ok_custom(ok_label: String) -> Self {
@@ -142,6 +179,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Creates OK and Cancel buttons.
     #[qjs(static)]
     #[must_use]
     pub const fn ok_cancel() -> Self {
@@ -150,6 +188,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Creates OK and Cancel buttons with custom labels.
     #[qjs(static)]
     #[must_use]
     pub const fn ok_cancel_custom(ok_label: String, cancel_label: String) -> Self {
@@ -158,6 +197,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Creates Yes and No buttons.
     #[qjs(static)]
     #[must_use]
     pub const fn yes_no() -> Self {
@@ -166,6 +206,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Creates Yes, No, and Cancel buttons.
     #[qjs(static)]
     #[must_use]
     pub const fn yes_no_cancel() -> Self {
@@ -174,6 +215,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Creates Yes, No, and Cancel buttons with custom labels.
     #[qjs(static)]
     #[must_use]
     pub const fn yes_no_cancel_custom(

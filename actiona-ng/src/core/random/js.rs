@@ -12,6 +12,23 @@ use crate::{
     runtime::WithUserData,
 };
 
+/// Random number generator.
+///
+/// Provides methods for generating random numbers, integers, positions, and choices.
+/// The generator is deterministic when seeded.
+///
+/// ```ts
+/// const n = random.number(); // 0..1
+/// const i = random.integer(1, 10); // 1..10
+/// const item = random.choice(["a", "b", "c"]);
+/// ```
+///
+/// ```ts
+/// random.setSeed(42);
+/// console.log(random.number()); // always the same value
+/// random.resetSeed();
+/// ```
+///
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "Random")]
@@ -25,6 +42,14 @@ impl<'js> SingletonClass<'js> for JsRandom {}
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsRandom {
+    /// Returns a random floating-point number.
+    ///
+    /// ```ts
+    /// const a = random.number();        // 0..1
+    /// const b = random.number(10);      // 0..10
+    /// const c = random.number(5, 10);   // 5..10
+    /// ```
+    ///
     /// @overload
     /// Returns a number between 0 (inclusive) and 1 (exclusive)
     ///
@@ -57,6 +82,13 @@ impl JsRandom {
         })
     }
 
+    /// Returns a random integer.
+    ///
+    /// ```ts
+    /// const a = random.integer(10);     // 0..10
+    /// const b = random.integer(5, 10);  // 5..10
+    /// ```
+    ///
     /// @overload
     /// Returns an integer between 0 (inclusive) and max (inclusive)
     /// @param max: number
@@ -100,16 +132,29 @@ impl JsRandom {
     /// This seed is used for all random number generation. Since the random number generator is
     /// deterministic that means that setting it to a particular number will always generate the same
     /// random numbers.
+    ///
+    /// ```ts
+    /// random.setSeed(42);
+    /// ```
     pub fn set_seed(&self, ctx: Ctx<'_>, seed: u64) {
         ctx.user_data().rng().set_seed(seed);
     }
 
     /// Resets the seed to be a random one.
+    ///
+    /// ```ts
+    /// random.resetSeed();
+    /// ```
     pub fn reset_seed(&self, ctx: Ctx<'_>) {
         ctx.user_data().rng().reset_seed();
     }
 
     /// Returns a random position on any display.
+    ///
+    /// ```ts
+    /// const pos = await random.position();
+    /// console.log(pos.toString());
+    /// ```
     pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
         let user_data = ctx.user_data();
 
@@ -124,6 +169,15 @@ impl JsRandom {
 
     /// Chooses one random entry in an array.
     /// A fallback can be provided, in case the array is empty.
+    ///
+    /// ```ts
+    /// const item = random.choice(["apple", "banana", "cherry"]);
+    /// ```
+    ///
+    /// ```ts
+    /// const item = random.choice([], "default");
+    /// console.log(item); // "default"
+    /// ```
     ///
     /// @generic
     /// @param array: Array<T>

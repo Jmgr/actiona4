@@ -33,7 +33,17 @@ use crate::{
 
 pub type JsMethod = super::Method;
 
-/// Multipart form
+/// Multipart form for uploading files and data.
+///
+/// ```ts
+/// const form = new MultipartForm();
+/// form.addText("title", "My Upload");
+/// form.addFile("file", "/path/to/file.txt");
+/// const result = await web.downloadText("https://example.com/upload", {
+///   method: Method.Post,
+///   multipart: form,
+/// });
+/// ```
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "MultipartForm")]
 pub struct JsMultipartForm {
@@ -69,6 +79,11 @@ impl JsMultipartForm {
     }
 
     /// Adds a text field.
+    ///
+    /// ```ts
+    /// const form = new MultipartForm();
+    /// form.addText("username", "john");
+    /// ```
     pub fn add_text(
         &mut self,
         ctx: Ctx<'_>,
@@ -88,6 +103,11 @@ impl JsMultipartForm {
     }
 
     /// Adds a file field.
+    ///
+    /// ```ts
+    /// const form = new MultipartForm();
+    /// form.addFile("document", "/path/to/report.pdf");
+    /// ```
     pub fn add_file(
         &mut self,
         ctx: Ctx<'_>,
@@ -113,6 +133,12 @@ impl JsMultipartForm {
     }
 
     /// Adds a byte field.
+    ///
+    /// ```ts
+    /// const form = new MultipartForm();
+    /// const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+    /// form.addBytes("data", bytes, "hello.bin");
+    /// ```
     pub fn add_bytes<'js>(
         &mut self,
         ctx: Ctx<'js>,
@@ -136,7 +162,7 @@ impl JsMultipartForm {
     }
 }
 
-/// Web options
+/// Web request options.
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsWebOptions {
@@ -238,6 +264,7 @@ impl JsWebOptions {
     }
 }
 
+/// Progress information for web downloads and uploads.
 #[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
 #[rquickjs::class(rename = "WebProgress")]
 pub struct JsWebProgress {
@@ -290,18 +317,24 @@ impl From<Progress> for JsWebProgress {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsWebProgress {
+    /// Total bytes expected (0 if unknown).
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn total(&self) -> u64 {
         self.total
     }
 
+    /// Bytes transferred so far.
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn current(&self) -> u64 {
         self.current
     }
 
+    /// Whether the transfer is complete.
+    /// @get
     #[qjs(get)]
     #[must_use]
     pub const fn finished(&self) -> bool {
@@ -309,6 +342,19 @@ impl JsWebProgress {
     }
 }
 
+/// HTTP client for downloading files, text, images, and binary data.
+///
+/// Supports progress tracking, authentication, custom headers, and multipart uploads.
+///
+/// ```ts
+/// const text = await web.downloadText("https://example.com/data.json");
+/// ```
+///
+/// ```ts
+/// const image = await web.downloadImage("https://example.com/photo.png");
+/// console.log(image.size().toString());
+/// ```
+///
 /// @singleton
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "Web")]

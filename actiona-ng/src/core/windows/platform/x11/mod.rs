@@ -4,6 +4,8 @@ use std::{
     sync::Arc,
 };
 
+use parking_lot::Mutex;
+
 use derive_more::{Deref, From};
 use libwmctl::{ErrorWrapper, Position, Shape, active, windows};
 use x11rb::{
@@ -53,7 +55,7 @@ impl Hash for WindowHandle {
 
 #[derive(Debug)]
 pub struct X11WindowHandler {
-    inner: Registry<WindowHandle>,
+    inner: Mutex<Registry<WindowHandle>>,
     runtime: Arc<Runtime>,
 }
 
@@ -77,14 +79,17 @@ impl From<x11rb::rust_connection::ReplyError> for Error {
 
 impl WindowsHandler for X11WindowHandler {
     // tested
-    fn all(&mut self) -> Result<Vec<WindowId>> {
+    fn all(&self) -> Result<Vec<WindowId>> {
         let windows = windows(false)?;
 
-        Ok(self.inner.update(windows.into_iter().map(WindowHandle)))
+        Ok(self
+            .inner
+            .lock()
+            .update(windows.into_iter().map(WindowHandle)))
     }
 
     fn is_visible(&self, id: WindowId) -> Result<bool> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let state = handle.mapped()?;
 
         use libwmctl::MapState::*;
@@ -96,18 +101,18 @@ impl WindowsHandler for X11WindowHandler {
 
     // tested
     fn title(&self, id: WindowId) -> Result<String> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         Ok(handle.name()?)
     }
 
     fn classname(&self, id: WindowId) -> Result<String> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         Ok(handle.class()?)
     }
 
     // TODO: untested
     fn close(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
         let x11_connection = platform.x11_connection();
         let connection = x11_connection.sync_connection();
@@ -128,13 +133,13 @@ impl WindowsHandler for X11WindowHandler {
     }
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         Ok(handle.pid()? as u32)
     }
 
     // tested
     fn rect(&self, id: WindowId) -> Result<Rect> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
         let x11_connection = platform.x11_connection();
         let connection = x11_connection.sync_connection();
@@ -143,7 +148,7 @@ impl WindowsHandler for X11WindowHandler {
         let coordinates = connection
             .translate_coordinates(handle.id, geometry.root, 0, 0)?
             .reply()?;
-        let extents = self.frame_extents(connection, handle)?.unwrap_or_default();
+        let extents = self.frame_extents(connection, &handle)?.unwrap_or_default();
 
         Ok(rect(
             try_point(
@@ -159,7 +164,7 @@ impl WindowsHandler for X11WindowHandler {
 
     // tested
     fn set_active(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
         let x11_connection = platform.x11_connection();
         let connection = x11_connection.sync_connection();
@@ -183,7 +188,7 @@ impl WindowsHandler for X11WindowHandler {
 
     // TODO: untested
     fn minimize(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
         let x11_connection = platform.x11_connection();
         let connection = x11_connection.sync_connection();
@@ -196,13 +201,13 @@ impl WindowsHandler for X11WindowHandler {
 
     // TODO: untested
     fn maximize(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         handle.maximize()?;
         Ok(())
     }
 
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
-        let handle = self.inner.get_handle(id)?.clone();
+        let handle = self.inner.lock().get_handle(id)?.clone();
         <libwmctl::Window as Clone>::clone(&handle)
             .pos(Position::Static(position.x.into(), position.y.into()))
             .place()?;
@@ -215,7 +220,7 @@ impl WindowsHandler for X11WindowHandler {
     }
 
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
-        let handle = self.inner.get_handle(id)?.clone();
+        let handle = self.inner.lock().get_handle(id)?.clone();
         <libwmctl::Window as Clone>::clone(&handle)
             .shape(Shape::Static(size.width.into(), size.height.into()))
             .place()?;
@@ -231,20 +236,14 @@ impl WindowsHandler for X11WindowHandler {
         let window = WindowHandle(active());
         let res = window.state()?; // TMP
         println!("{res:?}");
-        let handle = self.inner.get_handle(id)?;
-        Ok(window == *handle) // TODO: return an error if the window doesn't exist anymore
+        let handle = self.inner.lock().get_handle(id)?.clone();
+        Ok(window == handle) // TODO: return an error if the window doesn't exist anymore
     }
 
     // tested
-    fn active_window(&mut self) -> Result<WindowId> {
+    fn active_window(&self) -> Result<WindowId> {
         let window = WindowHandle(active());
-        Ok(if let Some(id) = self.inner.get_id(&window) {
-            id
-        } else {
-            let id = self.inner.next_id.next();
-            self.inner.map.insert(id, window);
-            id
-        })
+        Ok(self.inner.lock().get_or_insert(window))
     }
 }
 
@@ -260,7 +259,7 @@ impl X11WindowHandler {
     #[must_use]
     pub fn new(runtime: Arc<Runtime>) -> Self {
         Self {
-            inner: Registry::default(),
+            inner: Mutex::new(Registry::default()),
             runtime,
         }
     }

@@ -5,6 +5,8 @@ use std::{
     hash::{Hash, Hasher},
 };
 
+use parking_lot::Mutex;
+
 use derive_more::Deref;
 use windows::Win32::{
     Foundation::{HWND, LPARAM, RECT, WPARAM},
@@ -45,9 +47,17 @@ impl Hash for WindowHandle {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct WindowsWindowHandler {
-    inner: Registry<WindowHandle>,
+    inner: Mutex<Registry<WindowHandle>>,
+}
+
+impl Default for WindowsWindowHandler {
+    fn default() -> Self {
+        Self {
+            inner: Mutex::new(Registry::default()),
+        }
+    }
 }
 
 impl From<windows_result::Error> for Error {
@@ -67,7 +77,7 @@ unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
 }
 
 impl WindowsHandler for WindowsWindowHandler {
-    fn all(&mut self) -> Result<Vec<WindowId>> {
+    fn all(&self) -> Result<Vec<WindowId>> {
         let mut result = Vec::new();
         let result_ptr = &mut result as *mut Vec<HWND>;
         unsafe {
@@ -86,25 +96,26 @@ impl WindowsHandler for WindowsWindowHandler {
 
         Ok(self
             .inner
+            .lock()
             .update(result.into_iter().map(|window| WindowHandle(window))))
     }
 
     fn is_visible(&self, id: WindowId) -> Result<bool> {
-        let handle = self.inner.get_handle(id)?;
-        Ok(unsafe { IsWindowVisible(**handle).as_bool() })
+        let handle = self.inner.lock().get_handle(id)?.clone();
+        Ok(unsafe { IsWindowVisible(*handle).as_bool() })
     }
 
     fn title(&self, id: WindowId) -> Result<String> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
-        let len = unsafe { GetWindowTextLengthW(**handle) };
+        let len = unsafe { GetWindowTextLengthW(*handle) };
         if len == 0 {
             return Ok(String::new());
         }
 
         let mut buffer = vec![0; (len + 1) as usize];
 
-        let len = unsafe { GetWindowTextW(**handle, &mut buffer) };
+        let len = unsafe { GetWindowTextW(*handle, &mut buffer) };
         if len == 0 {
             return Ok(String::new());
         }
@@ -113,10 +124,10 @@ impl WindowsHandler for WindowsWindowHandler {
     }
 
     fn classname(&self, id: WindowId) -> Result<String> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
         let mut buffer = [0; 255];
-        let len = unsafe { GetClassNameW(**handle, &mut buffer) };
+        let len = unsafe { GetClassNameW(*handle, &mut buffer) };
         if len == 0 {
             return Ok(String::new());
         }
@@ -126,29 +137,29 @@ impl WindowsHandler for WindowsWindowHandler {
 
     // TODO: untested
     fn close(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
-        unsafe { SendNotifyMessageW(**handle, WM_CLOSE, WPARAM::default(), LPARAM::default())? };
+        unsafe { SendNotifyMessageW(*handle, WM_CLOSE, WPARAM::default(), LPARAM::default())? };
 
         Ok(())
     }
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let mut process_id = 0;
 
-        unsafe { GetWindowThreadProcessId(**handle, Some(&mut process_id)) };
+        unsafe { GetWindowThreadProcessId(*handle, Some(&mut process_id)) };
 
         Ok(process_id as u32)
     }
 
     // TODO: untested
     fn rect(&self, id: WindowId) -> Result<Rect> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let mut win_rect = RECT::default();
 
         unsafe {
-            if !GetWindowRect(**handle, &mut win_rect).as_bool() {
+            if !GetWindowRect(*handle, &mut win_rect).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
             }
         }
@@ -164,10 +175,10 @@ impl WindowsHandler for WindowsWindowHandler {
 
     // TODO: untested
     fn set_active(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
         unsafe {
-            if !SetForegroundWindow(**handle).as_bool() {
+            if !SetForegroundWindow(*handle).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
             }
         }
@@ -177,10 +188,10 @@ impl WindowsHandler for WindowsWindowHandler {
 
     // TODO: untested
     fn minimize(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
         unsafe {
-            if !ShowWindow(**handle, SW_MINIMIZE).as_bool() {
+            if !ShowWindow(*handle, SW_MINIMIZE).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
             }
         }
@@ -190,10 +201,10 @@ impl WindowsHandler for WindowsWindowHandler {
 
     // TODO: untested
     fn maximize(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
         unsafe {
-            if !ShowWindow(**handle, SW_MAXIMIZE).as_bool() {
+            if !ShowWindow(*handle, SW_MAXIMIZE).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
             }
         }
@@ -202,11 +213,11 @@ impl WindowsHandler for WindowsWindowHandler {
     }
 
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
         unsafe {
             SetWindowPos(
-                **handle,
+                *handle,
                 None,
                 position.x.into(),
                 position.y.into(),
@@ -225,11 +236,11 @@ impl WindowsHandler for WindowsWindowHandler {
 
     // TODO: untested
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
 
         unsafe {
             SetWindowPos(
-                **handle,
+                *handle,
                 None,
                 0,
                 0,
@@ -249,32 +260,25 @@ impl WindowsHandler for WindowsWindowHandler {
 
     // TODO: untested
     fn is_active(&self, id: WindowId) -> Result<bool> {
-        let handle = self.inner.get_handle(id)?;
+        let handle = self.inner.lock().get_handle(id)?.clone();
         let foreground = unsafe { GetForegroundWindow() };
 
         if foreground.0 == 0 {
             return Ok(false);
         }
 
-        Ok(foreground == **handle)
+        Ok(foreground == *handle)
     }
 
     // TODO: untested
-    fn active_window(&mut self) -> Result<WindowId> {
+    fn active_window(&self) -> Result<WindowId> {
         let foreground = unsafe { GetForegroundWindow() };
         if foreground.0 == 0 {
             return Err(Error::NotFound);
         }
 
         let window = WindowHandle(foreground);
-        if let Some(id) = self.inner.get_id(&window) {
-            return Ok(id);
-        }
-
-        let id = self.inner.next_id.next();
-        self.inner.map.insert(id, window);
-
-        Ok(id)
+        Ok(self.inner.lock().get_or_insert(window))
     }
 }
 
@@ -284,7 +288,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_subsystem() {
-        let mut handler = WindowsWindowHandler::default();
+        let handler = WindowsWindowHandler::default();
         println!(
             "{:?}",
             handler

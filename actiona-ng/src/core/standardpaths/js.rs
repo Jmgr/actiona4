@@ -6,6 +6,16 @@ use rquickjs::{
 
 use crate::core::{js::classes::SingletonClass, standardpaths::StandardPaths};
 
+/// Platform-specific standard directory paths.
+///
+/// All properties return the path as a string, or undefined if unavailable.
+///
+/// ```ts
+/// console.log(standardPaths.home);       // e.g. "/home/user"
+/// console.log(standardPaths.downloads);   // e.g. "/home/user/Downloads"
+/// console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
+/// ```
+///
 /// @singleton
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[rquickjs::class(rename = "StandardPaths")]
@@ -112,6 +122,7 @@ impl JsStandardPaths {
             .map(|path| path.to_string())
     }
 
+    /// Returns a string representation of all standard paths.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

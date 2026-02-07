@@ -36,7 +36,7 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait WindowsHandler {
-    fn all(&mut self) -> Result<Vec<WindowId>>;
+    fn all(&self) -> Result<Vec<WindowId>>;
     fn is_visible(&self, id: WindowId) -> Result<bool>;
     fn title(&self, id: WindowId) -> Result<String>;
     fn classname(&self, id: WindowId) -> Result<String>;
@@ -51,7 +51,7 @@ pub trait WindowsHandler {
     fn set_size(&self, id: WindowId, size: Size) -> Result<()>;
     fn size(&self, id: WindowId) -> Result<Size>;
     fn is_active(&self, id: WindowId) -> Result<bool>;
-    fn active_window(&mut self) -> Result<WindowId>;
+    fn active_window(&self) -> Result<WindowId>;
 }
 
 #[derive(Debug)]
@@ -100,6 +100,16 @@ impl<H: Clone + Eq + Hash> Registry<H> {
 
     pub fn get_id(&self, handle: &H) -> Option<WindowId> {
         self.map.get_by_right(handle).copied()
+    }
+
+    pub fn get_or_insert(&mut self, handle: H) -> WindowId {
+        if let Some(id) = self.map.get_by_right(&handle).copied() {
+            id
+        } else {
+            let id = self.next_id.next();
+            self.map.insert(id, handle);
+            id
+        }
     }
 
     #[must_use]
