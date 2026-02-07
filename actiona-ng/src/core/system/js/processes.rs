@@ -70,6 +70,7 @@ impl Default for ListProcessesOptions {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsProcesses {
     /// Lists all processes
+    /// @readonly
     pub async fn list<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -137,6 +138,7 @@ impl JsProcess {
 
     /// Cmd
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn cmd(&self) -> &[String] {
@@ -164,6 +166,7 @@ impl JsProcess {
 
     /// Env
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn env(&self) -> &[String] {
@@ -257,6 +260,7 @@ impl JsProcess {
 
     /// Disk usage
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn disk_usage(&self) -> JsDiskUsage {

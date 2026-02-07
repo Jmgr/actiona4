@@ -1097,6 +1097,7 @@ impl JsImage {
 
     /// Returns a Rect representing this image.
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn rect(&self) -> JsRect {

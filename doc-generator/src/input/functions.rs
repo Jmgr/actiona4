@@ -84,6 +84,7 @@ pub fn extract_functions(
         }
 
         let mut overloads = Vec::new();
+        let is_readonly_type = instructions.has_readonly_type();
 
         // No @param instructions
         if !has_parameters {
@@ -152,6 +153,7 @@ pub fn extract_functions(
             overloads.push(MethodOverload {
                 parameters,
                 return_,
+                is_readonly_type,
                 comments: comments.clone(),
                 rest_params,
                 platforms: instructions.platforms(),
@@ -194,6 +196,7 @@ pub fn extract_functions(
                 overloads.push(MethodOverload {
                     parameters,
                     return_: return_.unwrap_or(default_result.clone()),
+                    is_readonly_type,
                     comments: comments.clone(),
                     rest_params: rest_params.clone(),
                     platforms: instructions.platforms(),
@@ -218,6 +221,7 @@ pub fn extract_functions(
                 overloads.push(MethodOverload {
                     parameters,
                     return_: return_.unwrap_or(default_result.clone()),
+                    is_readonly_type,
                     comments: comments.clone(),
                     rest_params,
                     platforms: instructions.platforms(),

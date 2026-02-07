@@ -2091,7 +2091,7 @@ declare interface App {
      */
     readonly version: string;
     /**
-     * All environment variables as a key-value map.
+     * All environment variables as a readonly key-value map.
      * 
      * ```ts
      * const env = app.env;
@@ -2387,7 +2387,7 @@ declare interface ClipboardFileList {
     /**
      * Gets the clipboard file list content.
      */
-    get(mode?: ClipboardMode): Promise<string[]>;
+    get(mode?: ClipboardMode): Promise<Readonly<string[]>>;
 }
 /**
  * Provides HTML clipboard operations.
@@ -3271,7 +3271,7 @@ declare class Directory {
      * });
      * ```
      */
-    static listEntries(path: string, options?: DirectoryListOptions): Promise<DirectoryEntry[]>;
+    static listEntries(path: string, options?: DirectoryListOptions): Promise<Readonly<DirectoryEntry[]>>;
 }
 /**
  * The global displays singleton for querying connected monitors and screens.
@@ -3296,35 +3296,35 @@ declare interface Displays {
     /**
      * Returns a random point within the bounds of all connected displays.
      */
-    randomPoint(): Promise<Point>;
+    randomPoint(): Promise<Readonly<Point>>;
     /**
      * Returns the display that contains the given point, or `undefined` if none.
      */
-    fromPoint(point: PointLike): Promise<DisplayInfo | undefined>;
+    fromPoint(point: PointLike): Promise<Readonly<DisplayInfo | undefined>>;
     /**
      * Returns the display that contains the given point, or `undefined` if none.
      */
-    fromPoint(x: number, y: number): Promise<DisplayInfo | undefined>;
+    fromPoint(x: number, y: number): Promise<Readonly<DisplayInfo | undefined>>;
     /**
      * Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
      */
-    fromName(name: NameLike): Promise<DisplayInfo | undefined>;
+    fromName(name: NameLike): Promise<Readonly<DisplayInfo | undefined>>;
     /**
      * Finds a display by its device name, or `undefined` if not found.
      */
-    fromDeviceName(name: NameLike): Promise<DisplayInfo | undefined>;
+    fromDeviceName(name: NameLike): Promise<Readonly<DisplayInfo | undefined>>;
     /**
      * Finds a display by its unique numeric ID, or `undefined` if not found.
      */
-    fromId(id: number): Promise<DisplayInfo | undefined>;
+    fromId(id: number): Promise<Readonly<DisplayInfo | undefined>>;
     /**
      * Returns the smallest display by area, or `undefined` if no displays are connected.
      */
-    smallest(): Promise<DisplayInfo | undefined>;
+    smallest(): Promise<Readonly<DisplayInfo | undefined>>;
     /**
      * Returns the largest display by area, or `undefined` if no displays are connected.
      */
-    largest(): Promise<DisplayInfo | undefined>;
+    largest(): Promise<Readonly<DisplayInfo | undefined>>;
 }
 declare const displays: Displays;
 /**
@@ -3355,7 +3355,7 @@ declare interface DisplayInfo {
     /**
      * The display rectangle (position and size in pixels).
      */
-    readonly rect: Rect;
+    readonly rect: Readonly<Rect>;
     /**
      * The physical width of the display in millimeters.
      */
@@ -4023,7 +4023,7 @@ declare class Image {
     /**
      * Returns a Rect representing this image.
      */
-    readonly rect: Rect;
+    readonly rect: Readonly<Rect>;
     /**
      * Creates a new empty image.
      * 
@@ -4661,7 +4661,7 @@ declare interface Mouse {
      * Returns the current mouse cursor position.
      * @platform does not work on Wayland
      */
-    position(): Promise<Point>;
+    position(): Promise<Readonly<Point>>;
     /**
      * Measures the mouse movement speed over a duration (in pixels per second).
      */
@@ -5090,7 +5090,7 @@ declare interface Random {
      * console.log(pos.toString());
      * ```
      */
-    position(): Promise<Point>;
+    position(): Promise<Readonly<Point>>;
     /**
      * Chooses one random entry in an array.
      * A fallback can be provided, in case the array is empty.
@@ -5566,7 +5566,7 @@ declare interface Cpu {
     readonly architecture: string;
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
-    frequencies(): Promise<number[]>;
+    frequencies(): Promise<Readonly<number[]>>;
     toString(): string;
 }
 /**
@@ -5612,11 +5612,11 @@ declare interface Hardware {
     /**
      * Motherboard
      */
-    readonly motherboard: Motherboard;
+    readonly motherboard: Readonly<Motherboard>;
     /**
      * Hardware components
      */
-    listComponents(options?: ListComponentsOptions): Promise<Component[]>;
+    listComponents(options?: ListComponentsOptions): Promise<Readonly<Component[]>>;
     toString(): string;
 }
 /**
@@ -5858,7 +5858,7 @@ declare interface Network {
     /**
      * Interfaces
      */
-    listInterfaces(options?: ListInterfacesOptions): Promise<NetworkInterface[]>;
+    listInterfaces(options?: ListInterfacesOptions): Promise<Readonly<NetworkInterface[]>>;
     toString(): string;
 }
 /**
@@ -5890,11 +5890,11 @@ declare interface NetworkInterface {
     /**
      * Inbound
      */
-    readonly inbound: Traffic;
+    readonly inbound: Readonly<Traffic>;
     /**
      * Outbound
      */
-    readonly outbound: Traffic;
+    readonly outbound: Readonly<Traffic>;
     /**
      * MTU
      */
@@ -5906,7 +5906,7 @@ declare interface NetworkInterface {
     /**
      * Subnets
      */
-    readonly subnets: string[];
+    readonly subnets: Readonly<string[]>;
     toString(): string;
 }
 /**
@@ -5954,11 +5954,11 @@ declare interface Traffic {
     /**
      * Total
      */
-    readonly total: Counters;
+    readonly total: Readonly<Counters>;
     /**
      * Delta
      */
-    readonly delta: Counters;
+    readonly delta: Readonly<Counters>;
     toString(): string;
 }
 /**
@@ -5996,7 +5996,7 @@ declare interface Os {
     /**
      * Distribution ID like
      */
-    readonly distributionIdLike: string[];
+    readonly distributionIdLike: Readonly<string[]>;
     /**
      * Kernel long version
      */
@@ -6016,11 +6016,11 @@ declare interface Os {
     /**
      * Users
      */
-    listUsers(): Promise<User[]>;
+    listUsers(): Promise<Readonly<User[]>>;
     /**
      * Groups
      */
-    listGroups(): Promise<Group[]>;
+    listGroups(): Promise<Readonly<Group[]>>;
     toString(): string;
 }
 /**
@@ -6056,11 +6056,11 @@ declare interface User {
     /**
      * Groups
      */
-    readonly groups: number[];
+    readonly groups: Readonly<number[]>;
     /**
      * Group names
      */
-    readonly groupNames: string[];
+    readonly groupNames: Readonly<string[]>;
     toString(): string;
 }
 /**
@@ -6097,7 +6097,7 @@ declare interface Processes {
     /**
      * Lists all processes
      */
-    list(options?: ListProcessesOptions): Promise<Process[]>;
+    list(options?: ListProcessesOptions): Promise<Readonly<Process[]>>;
     toString(): string;
 }
 /**
@@ -6129,7 +6129,7 @@ declare interface Process {
     /**
      * Cmd
      */
-    readonly cmd: string[];
+    readonly cmd: Readonly<string[]>;
     /**
      * Exe
      */
@@ -6141,7 +6141,7 @@ declare interface Process {
     /**
      * Env
      */
-    readonly env: string[];
+    readonly env: Readonly<string[]>;
     /**
      * Cwd
      */
@@ -6185,7 +6185,7 @@ declare interface Process {
     /**
      * Disk usage
      */
-    readonly diskUsage: DiskUsage;
+    readonly diskUsage: Readonly<DiskUsage>;
     /**
      * User ID
      */
@@ -6235,7 +6235,7 @@ declare interface Storage {
     /**
      * Disks
      */
-    listDisks(options?: ListDisksOptions): Promise<Disk[]>;
+    listDisks(options?: ListDisksOptions): Promise<Readonly<Disk[]>>;
     toString(): string;
 }
 /**
@@ -6301,7 +6301,7 @@ declare interface Disk {
     /**
      * Usage
      */
-    readonly usage: DiskUsage;
+    readonly usage: Readonly<DiskUsage>;
     toString(): string;
 }
 /**
@@ -6347,11 +6347,11 @@ declare interface DiskUsage {
     /**
      * Written
      */
-    readonly written: IoStats;
+    readonly written: Readonly<IoStats>;
     /**
      * Read
      */
-    readonly read: IoStats;
+    readonly read: Readonly<IoStats>;
     toString(): string;
 }
 /**
@@ -6700,7 +6700,7 @@ declare interface Windows {
      * console.log(`Found ${allWindows.length} windows`);
      * ```
      */
-    all(): Promise<WindowHandle[]>;
+    all(): Promise<Readonly<WindowHandle[]>>;
     /**
      * Returns the currently active (focused) window.
      * 
@@ -6709,7 +6709,7 @@ declare interface Windows {
      * console.log(await win.title());
      * ```
      */
-    activeWindow(): Promise<WindowHandle>;
+    activeWindow(): Promise<Readonly<WindowHandle>>;
 }
 declare const windows: Windows;
 /**
@@ -6774,7 +6774,7 @@ declare interface WindowHandle {
      * console.log(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
      * ```
      */
-    rect(): Promise<Rect>;
+    rect(): Promise<Readonly<Rect>>;
     /**
      * Makes this window the active (focused) window.
      * 
@@ -6827,7 +6827,7 @@ declare interface WindowHandle {
      * console.log(`${pos.x}, ${pos.y}`);
      * ```
      */
-    position(): Promise<Point>;
+    position(): Promise<Readonly<Point>>;
     /**
      * Sets the window size.
      * 
@@ -6856,7 +6856,7 @@ declare interface WindowHandle {
      * console.log(`${s.width}x${s.height}`);
      * ```
      */
-    size(): Promise<Size>;
+    size(): Promise<Readonly<Size>>;
     /**
      * Returns whether this window is the active (focused) window.
      * 

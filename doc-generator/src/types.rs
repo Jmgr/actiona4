@@ -110,6 +110,7 @@ pub struct RestParams {
 pub struct MethodOverload {
     pub parameters: Vec<Variable>,
     pub return_: Type,
+    pub is_readonly_type: bool,
     pub comments: Comments,
     pub rest_params: Option<RestParams>,
     pub platforms: Platforms,

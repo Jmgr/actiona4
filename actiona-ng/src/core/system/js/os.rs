@@ -94,6 +94,7 @@ impl JsOs {
 
     /// Distribution ID like
     /// @get
+    /// @readonly
     #[must_use]
     #[qjs(get)]
     pub fn distribution_id_like(&self) -> &[String] {
@@ -136,6 +137,7 @@ impl JsOs {
     }
 
     /// Users
+    /// @readonly
     pub async fn list_users<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsUser>> {
         let groups = self.inner.refresh_groups().await.into_js_result(&ctx)?;
 
@@ -163,6 +165,7 @@ impl JsOs {
     }
 
     /// Groups
+    /// @readonly
     pub async fn list_groups<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsGroup>> {
         Ok(self
             .inner
@@ -261,6 +264,7 @@ impl JsUser {
 
     /// Groups
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn groups(&self) -> &[u32] {
@@ -269,6 +273,7 @@ impl JsUser {
 
     /// Group names
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn group_names(&self) -> &[String] {

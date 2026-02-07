@@ -206,6 +206,7 @@ impl JsMouse {
 
     /// Returns the current mouse cursor position.
     /// @platforms -wayland
+    /// @readonly
     pub async fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position().into_js_result(&ctx)?.into())
     }

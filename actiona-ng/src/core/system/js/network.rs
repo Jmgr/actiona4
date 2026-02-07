@@ -71,6 +71,7 @@ impl JsNetwork {
     }
 
     /// Interfaces
+    /// @readonly
     pub async fn list_interfaces<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -136,6 +137,7 @@ impl JsNetworkInterface {
 
     /// Inbound
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn inbound(&self) -> JsTraffic {
@@ -144,6 +146,7 @@ impl JsNetworkInterface {
 
     /// Outbound
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn outbound(&self) -> JsTraffic {
@@ -168,6 +171,7 @@ impl JsNetworkInterface {
 
     /// Subnets
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn subnets(&self) -> Vec<String> {
@@ -285,6 +289,7 @@ impl From<Traffic> for JsTraffic {
 impl JsTraffic {
     /// Total
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn total(&self) -> JsCounters {
@@ -293,6 +298,7 @@ impl JsTraffic {
 
     /// Delta
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn delta(&self) -> JsCounters {

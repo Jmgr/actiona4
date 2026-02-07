@@ -155,6 +155,7 @@ impl JsRandom {
     /// const pos = await random.position();
     /// console.log(pos.toString());
     /// ```
+    /// @readonly
     pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
         let user_data = ctx.user_data();
 

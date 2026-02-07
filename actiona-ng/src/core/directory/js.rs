@@ -227,6 +227,7 @@ impl JsDirectory {
     ///     fetchSize: false,
     /// });
     /// ```
+    /// @readonly
     #[qjs(static)]
     pub async fn list_entries(
         path: String,

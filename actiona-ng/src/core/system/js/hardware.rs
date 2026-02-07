@@ -125,6 +125,7 @@ impl JsHardware {
 
     /// Motherboard
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn motherboard(&self) -> JsMotherboard {
@@ -132,6 +133,7 @@ impl JsHardware {
     }
 
     /// Hardware components
+    /// @readonly
     pub async fn list_components<'js>(
         &self,
         ctx: Ctx<'js>,

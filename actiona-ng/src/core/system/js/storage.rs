@@ -68,6 +68,7 @@ impl Default for ListDisksOptions {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsStorage {
     /// Disks
+    /// @readonly
     pub async fn list_disks<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -198,6 +199,7 @@ impl JsDisk {
 
     /// Usage
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn usage(&self) -> JsDiskUsage {
@@ -351,6 +353,7 @@ impl From<DiskUsage> for JsDiskUsage {
 impl JsDiskUsage {
     /// Written
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn written(&self) -> JsIoStats {
@@ -359,6 +362,7 @@ impl JsDiskUsage {
 
     /// Read
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn read(&self) -> JsIoStats {

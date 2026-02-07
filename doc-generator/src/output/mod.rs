@@ -444,6 +444,10 @@ fn output_methods(
             } else {
                 let mut return_ = overload.return_.to_string(Context::ReturnValue)?;
 
+                if overload.is_readonly_type {
+                    return_ = format!("Readonly<{return_}>");
+                }
+
                 if method.is_async {
                     return_ = format!("Promise<{return_}>");
                 }
@@ -515,6 +519,7 @@ mod tests {
                             },
                         ],
                         return_: Type::Verbatim("Foo".to_string()),
+                        is_readonly_type: false,
                         rest_params: None,
                         platforms: Default::default(),
                         constructor_only: false,
@@ -532,6 +537,7 @@ mod tests {
                             is_promise: false,
                         }],
                         return_: Type::Verbatim("Foo".to_string()),
+                        is_readonly_type: false,
                         rest_params: None,
                         platforms: Default::default(),
                         constructor_only: false,
@@ -560,6 +566,7 @@ mod tests {
                         is_promise: false,
                     }],
                     return_: Type::Verbatim("Bar".to_string()),
+                    is_readonly_type: false,
                     rest_params: None,
                     platforms: Default::default(),
                     constructor_only: false,

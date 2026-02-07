@@ -87,6 +87,7 @@ impl JsWindows {
     /// const allWindows = await windows.all();
     /// console.log(`Found ${allWindows.length} windows`);
     /// ```
+    /// @readonly
     pub async fn all(&self, ctx: Ctx<'_>) -> Result<Vec<JsWindowHandle>> {
         let ids = self.inner.all().into_js_result(&ctx)?;
 
@@ -105,6 +106,7 @@ impl JsWindows {
     /// const win = await windows.activeWindow();
     /// console.log(await win.title());
     /// ```
+    /// @readonly
     pub async fn active_window(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
         let id = self.inner.active_window().into_js_result(&ctx)?;
 
@@ -192,6 +194,7 @@ impl JsWindowHandle {
     /// const r = await win.rect();
     /// console.log(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
     /// ```
+    /// @readonly
     pub async fn rect(&self, ctx: Ctx<'_>) -> Result<JsRect> {
         Ok(self.inner.rect(self.id).into_js_result(&ctx)?.into())
     }
@@ -242,6 +245,7 @@ impl JsWindowHandle {
     /// const pos = await win.position();
     /// console.log(`${pos.x}, ${pos.y}`);
     /// ```
+    /// @readonly
     pub async fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position(self.id).into_js_result(&ctx)?.into())
     }
@@ -263,6 +267,7 @@ impl JsWindowHandle {
     /// const s = await win.size();
     /// console.log(`${s.width}x${s.height}`);
     /// ```
+    /// @readonly
     pub async fn size(&self, ctx: Ctx<'_>) -> Result<JsSize> {
         Ok(self.inner.size(self.id).into_js_result(&ctx)?.into())
     }

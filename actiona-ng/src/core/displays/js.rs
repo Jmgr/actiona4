@@ -63,6 +63,7 @@ impl JsDisplays {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsDisplays {
     /// Returns a random point within the bounds of all connected displays.
+    /// @readonly
     pub async fn random_point(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self
             .inner
@@ -73,6 +74,7 @@ impl JsDisplays {
     }
 
     /// Returns the display that contains the given point, or `undefined` if none.
+    /// @readonly
     pub async fn from_point(
         &self,
         ctx: Ctx<'_>,
@@ -87,6 +89,7 @@ impl JsDisplays {
     }
 
     /// Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
+    /// @readonly
     pub async fn from_name<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -106,6 +109,7 @@ impl JsDisplays {
     }
 
     /// Finds a display by its device name, or `undefined` if not found.
+    /// @readonly
     pub async fn from_device_name<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -125,6 +129,7 @@ impl JsDisplays {
     }
 
     /// Finds a display by its unique numeric ID, or `undefined` if not found.
+    /// @readonly
     pub async fn from_id<'js>(&self, ctx: Ctx<'js>, id: u32) -> Result<Option<JsDisplayInfo>> {
         let displays_infos = self
             .inner
@@ -140,6 +145,7 @@ impl JsDisplays {
     }
 
     /// Returns the smallest display by area, or `undefined` if no displays are connected.
+    /// @readonly
     pub async fn smallest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
         Ok(self
             .inner
@@ -150,6 +156,7 @@ impl JsDisplays {
     }
 
     /// Returns the largest display by area, or `undefined` if no displays are connected.
+    /// @readonly
     pub async fn largest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
         Ok(self
             .inner
@@ -218,6 +225,7 @@ impl JsDisplayInfo {
 
     /// The display rectangle (position and size in pixels).
     /// @get
+    /// @readonly
     #[qjs(get)]
     #[must_use]
     pub fn rect(&self) -> JsRect {
