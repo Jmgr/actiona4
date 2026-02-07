@@ -46,7 +46,7 @@ pub fn warm_up() -> Result<()> {
     Ok(())
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct LabLightnessMat(Mat);
 
 #[derive(Debug)]
@@ -67,7 +67,7 @@ impl TryFrom<&BgrMat> for LabImage {
         let mut channels = Vector::new();
         split(&lab, &mut channels)?;
 
-        Ok(LabImage {
+        Ok(Self {
             lightness: LabLightnessMat(channels.get(0)?),
             a: LabAMat(channels.get(1)?),
             b: LabBMat(channels.get(2)?),
@@ -105,7 +105,7 @@ impl BgrMat {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct MaskMat(Mat);
 
 #[derive(Debug)]
@@ -129,7 +129,7 @@ impl TryFrom<&Image> for Arc<Source> {
         }
 
         let (bgr, _) = value.to_bgr(false)?;
-        let source = Arc::new(Source {
+        let source = Self::new(Source {
             image: LabImage::try_from(&bgr)?,
         });
 
@@ -144,7 +144,7 @@ impl Source {
         let bgr = BgrMat::from_bgra(data, width, height)?;
         let lab = LabImage::try_from(&bgr)?;
 
-        Ok(Arc::new(Source { image: lab }))
+        Ok(Arc::new(Self { image: lab }))
     }
 }
 
@@ -163,7 +163,7 @@ impl TryFrom<&Image> for Arc<Template> {
         }
 
         let (bgr, mask) = value.to_bgr(true)?;
-        let template = Arc::new(Template {
+        let template = Self::new(Template {
             image: LabImage::try_from(&bgr)?,
             mask,
         });
@@ -418,9 +418,8 @@ impl Source {
 mod tests {
     use std::sync::Arc;
 
-    use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan};
-
     use tokio::sync::watch;
+    use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan};
 
     use crate::{
         core::image::{

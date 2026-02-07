@@ -175,7 +175,7 @@ impl<'js> Trace<'js> for JsClipboardText {
 impl JsClipboardText {
     /// @skip
     #[must_use]
-    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
         Self { inner: clipboard }
     }
 }
@@ -215,7 +215,7 @@ impl<'js> Trace<'js> for JsClipboardImage {
 impl JsClipboardImage {
     /// @skip
     #[must_use]
-    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
         Self { inner: clipboard }
     }
 }
@@ -263,7 +263,7 @@ impl<'js> Trace<'js> for JsClipboardFileList {
 impl JsClipboardFileList {
     /// @skip
     #[must_use]
-    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
         Self { inner: clipboard }
     }
 }
@@ -314,7 +314,7 @@ impl<'js> Trace<'js> for JsClipboardHtml {
 impl JsClipboardHtml {
     /// @skip
     #[must_use]
-    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
         Self { inner: clipboard }
     }
 }

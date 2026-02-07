@@ -114,7 +114,7 @@ fn non_maximum_suppression(input: &[Match], radius: i32) -> Vec<Match> {
                 continue 'candidates;
             }
         }
-        filtered.push(candidate.clone());
+        filtered.push(*candidate);
     }
 
     filtered
@@ -160,7 +160,7 @@ pub fn filter_results_by_color(
 
             let rms_a = channel_rms(&source_a_roi, &template_a.0, template_mask, normalization)?;
             let rms_b = channel_rms(&source_b_roi, &template_b.0, template_mask, normalization)?;
-            let combined_rms = (rms_a * rms_a + rms_b * rms_b).sqrt();
+            let combined_rms = rms_a.hypot(rms_b);
 
             if combined_rms > CHROMA_RMS_THRESHOLD {
                 *value = 0.0;

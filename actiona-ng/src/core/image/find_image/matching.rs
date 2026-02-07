@@ -105,8 +105,7 @@ pub fn match_template(
                 return Err(crate::error::CommonError::Cancelled.into());
             }
 
-            let tile_result =
-                match_tile(&source_lightness, &template_lightness, template_mask, roi)?;
+            let tile_result = match_tile(source_lightness, template_lightness, template_mask, roi)?;
 
             // Update progress: matching phase is 20-70%, so 50% of total range
             let completed = completed_tiles.fetch_add(1, Ordering::Relaxed) + 1;

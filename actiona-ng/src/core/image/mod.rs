@@ -899,7 +899,7 @@ impl Image {
         let lines: Vec<&str> = text.split('\n').collect();
         let line_widths: Vec<u32> = lines
             .iter()
-            .map(|line: &&str| text_size(scale, font, *line).0)
+            .map(|line: &&str| text_size(scale, font, line).0)
             .collect();
 
         let extra_lines = u32::try_from(lines.len().saturating_sub(1)).unwrap_or(u32::MAX);
@@ -1091,7 +1091,7 @@ mod tests {
         let _source = Arc::<Source>::try_from(&img).unwrap();
         assert!(img.source.get().is_some());
 
-        let cloned = img.clone();
+        let cloned = img;
         assert!(cloned.source.get().is_none());
     }
 

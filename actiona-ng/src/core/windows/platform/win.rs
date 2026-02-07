@@ -5,9 +5,8 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use parking_lot::Mutex;
-
 use derive_more::Deref;
+use parking_lot::Mutex;
 use windows::Win32::{
     Foundation::{HWND, LPARAM, RECT, WPARAM},
     System::StationsAndDesktops::{

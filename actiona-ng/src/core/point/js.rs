@@ -98,6 +98,7 @@ impl JsPoint {
     /// Constructor with anything Point-like.
     /// @param p: PointLike
     #[qjs(constructor)]
+    #[must_use]
     pub fn new(point: JsPointLike) -> Self {
         point.0.into()
     }

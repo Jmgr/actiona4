@@ -558,7 +558,7 @@ impl JsMatch {
     /// @skip
     #[qjs(get)]
     #[must_use]
-    pub fn score(&self) -> f64 {
+    pub const fn score(&self) -> f64 {
         self.inner.score
     }
 
@@ -710,7 +710,7 @@ impl JsFindImageProgress {
     /// @get
     #[qjs(get)]
     #[must_use]
-    pub fn finished(&self) -> bool {
+    pub const fn finished(&self) -> bool {
         self.inner.stage.is_finished()
     }
 }

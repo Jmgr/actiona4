@@ -431,6 +431,7 @@ impl JsColor {
     /// Constructor with anything Color-like.
     /// @param c: ColorLike
     #[qjs(constructor)]
+    #[must_use]
     pub fn new_js(color: JsColorLike) -> Self {
         color.0.into()
     }

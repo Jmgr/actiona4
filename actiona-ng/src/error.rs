@@ -15,7 +15,8 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn is_cancelled(&self) -> bool {
+    #[must_use]
+    pub const fn is_cancelled(&self) -> bool {
         if let Self::CommonError(err) = self {
             return err.is_cancelled();
         }

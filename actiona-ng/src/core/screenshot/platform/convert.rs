@@ -1,6 +1,5 @@
 use color_eyre::{Result, eyre::eyre};
 use image::RgbaImage;
-
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 
 use crate::core::image::Image;
@@ -32,6 +31,6 @@ impl Image {
             c[3] = 255; // Set alpha to 255 (fully opaque)
         });
 
-        Ok(Image::from_rgba8(image))
+        Ok(Self::from_rgba8(image))
     }
 }

@@ -22,14 +22,10 @@ impl<'js> FromJs<'js> for JsDuration {
     fn from_js(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
         Ok(Self(if let Some(value) = value.as_string() {
             let value = value.to_string()?;
-            let duration = parse_duration(&value).map_err(|err| {
-                Exception::throw_message(
-                    &ctx,
-                    &format!("Failed to parse duration '{value}': {err}"),
-                )
-            })?;
 
-            duration
+            parse_duration(&value).map_err(|err| {
+                Exception::throw_message(ctx, &format!("Failed to parse duration '{value}': {err}"))
+            })?
         } else {
             let secs = f64::from_js(ctx, value)?;
 

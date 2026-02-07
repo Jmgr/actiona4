@@ -98,6 +98,7 @@ impl JsSize {
     /// Constructor with anything Size-like.
     /// @param s: SizeLike
     #[qjs(constructor)]
+    #[must_use]
     pub fn new(size: JsSizeLike) -> Self {
         size.0.into()
     }

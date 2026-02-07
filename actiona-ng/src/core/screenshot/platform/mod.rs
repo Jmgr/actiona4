@@ -100,7 +100,7 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
     }
 
     /// Get the runtime.
-    pub fn runtime(&self) -> &Arc<Runtime> {
+    pub const fn runtime(&self) -> &Arc<Runtime> {
         &self.runtime
     }
 

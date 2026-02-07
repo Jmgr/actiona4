@@ -4,10 +4,9 @@ use std::{
     sync::Arc,
 };
 
-use parking_lot::Mutex;
-
 use derive_more::{Deref, From};
 use libwmctl::{ErrorWrapper, Position, Shape, active, windows};
+use parking_lot::Mutex;
 use x11rb::{
     connection::Connection,
     protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt, EventMask},
