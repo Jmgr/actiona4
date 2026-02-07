@@ -177,7 +177,7 @@ declare enum TextVerticalAlign {
  * const task = source.findImage(template);
  * for await (const progress of task) {
  * if (progress.stage === FindImageStage.Matching) {
- * console.log(`Matching: ${progress.percent}%`);
+ * console.log(`Matching: ${formatPercent(progress.percent)}`);
  * }
  * }
  * ```
@@ -2099,7 +2099,7 @@ declare interface App {
      * console.log(env["PATH"]);
      * ```
      */
-    readonly env: Record<string, string>;
+    readonly env: Readonly<Record<string, string>>;
     /**
      * The current working directory.
      * 
@@ -3334,7 +3334,7 @@ declare const displays: Displays;
  * ```ts
  * const info = await displays.fromName("HDMI-1");
  * if (info) {
- * console.log(info.friendlyName, info.rect, info.frequency + "Hz");
+ * console.log(info.friendlyName, info.rect, formatFrequency(info.frequency));
  * console.log("Primary:", info.isPrimary);
  * }
  * ```
@@ -3960,7 +3960,7 @@ declare interface Match {
  * ```ts
  * const task = source.findImage(template);
  * for await (const progress of task) {
- * console.log(`${progress.stage}: ${progress.percent}%`);
+ * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
  * if (progress.finished) break;
  * }
  * const result = await task;
@@ -4045,11 +4045,11 @@ declare class Image {
     /**
      * Saves this image to a file. The format is inferred from the file extension.
      */
-    save(path: string): void;
+    save(path: string): Promise<void>;
     /**
      * Loads an image from a file. The format is guessed from the file contents.
      */
-    static load(path: string): Image;
+    static load(path: string): Promise<Image>;
     /**
      * Returns true if this image equals another (same dimensions and pixel data).
      */
@@ -4455,7 +4455,7 @@ declare class Image {
      * // Track progress while searching
      * const task = source.findImage(template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -4477,7 +4477,7 @@ declare class Image {
      * // Track progress while searching
      * const task = source.findImageAll(template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5290,7 +5290,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -5306,7 +5306,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -5322,7 +5322,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5338,7 +5338,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5354,7 +5354,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnDisplay(0, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -5370,7 +5370,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnDisplayAll(0, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${progress.percent}%`);
+     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5543,7 +5543,12 @@ declare const standard_paths: StandardPaths;
  * const core0Usage = await system.cpu.coreUsage(0);
  * const freqs = await system.cpu.frequencies();
  * 
- * console.log(system.cpu.logicalCoreCount, globalUsage, core0Usage, freqs[0]);
+ * console.log(
+ * system.cpu.logicalCoreCount,
+ * formatPercent(globalUsage),
+ * formatPercent(core0Usage),
+ * formatFrequency(freqs[0]),
+ * );
  * ```
  */
 declare interface Cpu {
@@ -5720,7 +5725,12 @@ declare interface Memory {
  * 
  * ```ts
  * const usage = await system.memory.usage();
- * console.log(usage.used, usage.free, usage.available, usage.total);
+ * console.log(
+ * formatBytes(usage.used),
+ * formatBytes(usage.free),
+ * formatBytes(usage.available),
+ * formatBytes(usage.total),
+ * );
  * ```
  */
 declare interface MemoryUsage {
@@ -5748,7 +5758,11 @@ declare interface MemoryUsage {
  * ```ts
  * const limits = system.memory.cgroupLimits;
  * if (limits) {
- * console.log(limits.totalMemory, limits.freeMemory, limits.freeSwap);
+ * console.log(
+ * formatBytes(limits.totalMemory),
+ * formatBytes(limits.freeMemory),
+ * formatBytes(limits.freeSwap),
+ * );
  * }
  * ```
  * 
@@ -5903,7 +5917,7 @@ declare interface NetworkInterface {
  * const iface = interfaces[0];
  * if (iface) {
  * const counters = iface.inbound.total;
- * console.log(counters.data, counters.packets, counters.errors);
+ * console.log(formatBytes(counters.data), counters.packets, counters.errors);
  * }
  * ```
  */
@@ -5929,7 +5943,10 @@ declare interface Counters {
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
  * if (iface) {
- * console.log(iface.inbound.total.data, iface.inbound.delta.data);
+ * console.log(
+ * formatBytes(iface.inbound.total.data),
+ * formatBytes(iface.inbound.delta.data),
+ * );
  * }
  * ```
  */
@@ -6238,7 +6255,13 @@ declare interface ListDisksOptions {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * console.log(disk.name, disk.kind, disk.mountPoint);
+ * console.log(
+ * disk.name,
+ * disk.kind,
+ * disk.mountPoint,
+ * formatBytes(disk.totalSpace),
+ * formatBytes(disk.availableSpace),
+ * );
  * }
  * ```
  */
@@ -6288,7 +6311,10 @@ declare interface Disk {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * console.log(disk.usage.read.total, disk.usage.written.delta);
+ * console.log(
+ * formatBytes(disk.usage.read.total),
+ * formatBytes(disk.usage.written.delta),
+ * );
  * }
  * ```
  */
@@ -6310,7 +6336,10 @@ declare interface IoStats {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * console.log(disk.usage.read.total, disk.usage.written.total);
+ * console.log(
+ * formatBytes(disk.usage.read.total),
+ * formatBytes(disk.usage.written.total),
+ * );
  * }
  * ```
  */
@@ -6531,7 +6560,11 @@ declare interface WebOptions {
  * ```ts
  * const task = web.download("https://example.com/file.bin");
  * for await (const progress of task) {
- * console.log(progress.current, progress.total, progress.finished);
+ * console.log(
+ * formatBytes(progress.current),
+ * formatBytes(progress.total),
+ * progress.finished,
+ * );
  * }
  * ```
  */
@@ -6574,7 +6607,7 @@ declare interface Web {
      * ```ts
      * const task = web.download("https://example.com/file.bin");
      * for await (const progress of task) {
-     * console.log(`${progress.current}/${progress.total} bytes`);
+     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const bytes = await task;
      * ```
@@ -6590,7 +6623,7 @@ declare interface Web {
      * ```ts
      * const task = web.downloadText("https://example.com/data.json");
      * for await (const progress of task) {
-     * console.log(`${progress.current}/${progress.total} bytes`);
+     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const text = await task;
      * ```
@@ -6606,7 +6639,7 @@ declare interface Web {
      * ```ts
      * const task = web.downloadImage("https://example.com/photo.png");
      * for await (const progress of task) {
-     * console.log(`${progress.current}/${progress.total} bytes`);
+     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const image = await task;
      * ```
@@ -6622,7 +6655,7 @@ declare interface Web {
      * ```ts
      * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
      * for await (const progress of task) {
-     * console.log(`${progress.current}/${progress.total} bytes`);
+     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const filePath = await task;
      * ```

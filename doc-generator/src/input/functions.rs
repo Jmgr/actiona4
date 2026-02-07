@@ -118,6 +118,7 @@ pub fn extract_functions(
                             type_: parameter_type,
                             comments: Default::default(), // TODO
                             is_readonly: false,
+                            is_readonly_type: false,
                             default_value: None,
                             platforms: instructions.platforms(),
                             is_promise: false,
@@ -232,6 +233,7 @@ pub fn extract_functions(
                 type_: overloads[0].return_.clone(),
                 comments,
                 is_readonly: true,
+                is_readonly_type: instructions.has_readonly_type(),
                 default_value: None,
                 platforms: instructions.platforms(),
                 is_promise: function.header.is_async,

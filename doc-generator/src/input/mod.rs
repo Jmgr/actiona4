@@ -183,6 +183,11 @@ impl Instructions {
         self.iter().any(|instruction| instruction.is_getter())
     }
 
+    pub fn has_readonly_type(&self) -> bool {
+        self.iter()
+            .any(|instruction| instruction.is_readonly_type())
+    }
+
     pub fn has_constructor_only(&self) -> bool {
         self.iter()
             .any(|instruction| instruction.is_constructor_only())
@@ -270,6 +275,7 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
         type_: Type::Verbatim(type_),
         comments: comments.into(),
         is_readonly,
+        is_readonly_type: false,
         default_value: default,
         platforms: Default::default(),
         is_promise: false,
@@ -396,6 +402,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Getter
         }
 
+        // @readonly
+        "readonly" => {
+            if !parameters.is_empty() {
+                bail!("unexpected parameters");
+            }
+
+            Instruction::ReadonlyType
+        }
+
         // @constructorOnly
         "constructorOnly" => {
             if !parameters.is_empty() {
@@ -509,6 +524,7 @@ const fn allowed_context_for_instruction(
             RustdocContext::Enum,
         ],
         Getter => &[RustdocContext::Method],
+        ReadonlyType => &[RustdocContext::Method],
         ConstructorOnly => &[RustdocContext::MethodOverload],
     }
 }
@@ -887,6 +903,7 @@ mod tests {
                             type_: Type::Verbatim("number".to_string()),
                             comments: Comments(vec!["X coordinate".to_string()]),
                             is_readonly: false,
+                            is_readonly_type: false,
                             default_value: None,
                             platforms: instructions.platforms(),
                             is_promise: false,
@@ -896,6 +913,7 @@ mod tests {
                             type_: Type::Verbatim("number".to_string()),
                             comments: Comments(vec!["Y coordinate".to_string()]),
                             is_readonly: false,
+                            is_readonly_type: false,
                             default_value: Some("42".to_string()),
                             platforms: instructions.platforms(),
                             is_promise: false,
@@ -913,6 +931,7 @@ mod tests {
                                 "Object containing the x and y coordinates".to_string()
                             ]),
                             is_readonly: false,
+                            is_readonly_type: false,
                             default_value: None,
                             platforms: instructions.platforms(),
                             is_promise: false,
@@ -928,6 +947,7 @@ mod tests {
                             type_: Type::Verbatim("Point".to_string()),
                             comments: Comments(vec!["Other point".to_string()]),
                             is_readonly: false,
+                            is_readonly_type: false,
                             default_value: None,
                             platforms: instructions.platforms(),
                             is_promise: false,

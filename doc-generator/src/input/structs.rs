@@ -71,6 +71,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                     type_,
                     comments,
                     is_readonly: false,
+                    is_readonly_type: false,
                     default_value,
                     platforms: instructions.platforms(),
                     is_promise: false,

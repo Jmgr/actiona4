@@ -329,6 +329,10 @@ impl File {
 
                     let mut type_ = property.type_.to_string(Context::Property)?;
 
+                    if property.is_readonly_type {
+                        type_ = format!("Readonly<{type_}>");
+                    }
+
                     if property.is_promise {
                         type_ = format!("Promise<{type_}>");
                     }
@@ -494,6 +498,7 @@ mod tests {
                                 type_: Type::Number,
                                 comments: Comments::default(),
                                 is_readonly: false,
+                                is_readonly_type: false,
                                 default_value: None,
                                 platforms: Default::default(),
                                 is_promise: false,
@@ -503,6 +508,7 @@ mod tests {
                                 type_: Type::String,
                                 comments: Comments::default(),
                                 is_readonly: false,
+                                is_readonly_type: false,
                                 default_value: None,
                                 platforms: Default::default(),
                                 is_promise: false,
@@ -520,6 +526,7 @@ mod tests {
                             type_: Type::Verbatim("Foo".to_string()),
                             comments: Comments::default(),
                             is_readonly: false,
+                            is_readonly_type: false,
                             default_value: None,
                             platforms: Default::default(),
                             is_promise: false,
@@ -547,6 +554,7 @@ mod tests {
                         type_: Type::Verbatim("Foo".to_string()),
                         comments: Comments::default(),
                         is_readonly: false,
+                        is_readonly_type: false,
                         default_value: None,
                         platforms: Default::default(),
                         is_promise: false,

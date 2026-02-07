@@ -84,6 +84,7 @@ pub struct Variable {
     pub type_: Type,
     pub comments: Comments,
     pub is_readonly: bool,
+    pub is_readonly_type: bool,
     pub default_value: Option<String>,
     pub platforms: Platforms,
     pub is_promise: bool,
@@ -290,6 +291,7 @@ pub enum Instruction {
     Type(Type),
     Verbatim(String),
     Getter,
+    ReadonlyType,
     ConstructorOnly,
 }
 

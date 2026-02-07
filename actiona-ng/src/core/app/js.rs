@@ -111,7 +111,7 @@ impl JsApp {
         built_info::PKG_VERSION
     }
 
-    /// All environment variables as a key-value map.
+    /// All environment variables as a readonly key-value map.
     ///
     /// ```ts
     /// const env = app.env;
@@ -120,7 +120,7 @@ impl JsApp {
     /// ```
     ///
     /// @get
-    // TODO: add @readonly that wraps the TS result with Readonly<T>
+    /// @readonly
     #[must_use]
     #[qjs(get)]
     pub fn env(&self) -> BTreeMap<String, String> {
