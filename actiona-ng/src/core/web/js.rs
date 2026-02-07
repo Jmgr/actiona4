@@ -73,7 +73,6 @@ impl JsMultipartForm {
 impl JsMultipartForm {
     /// @constructor
     #[qjs(constructor)]
-    #[must_use]
     pub fn new() -> Result<Self> {
         Ok(Self::default())
     }
@@ -306,6 +305,7 @@ impl From<Progress> for JsWebProgress {
                 finished: false,
             },
             Progress::Downloading { current, total } => {
+                #[allow(clippy::option_if_let_else)]
                 let (total, finished) = match total {
                     Some(total) => (total, current >= total),
                     None => (0, false),

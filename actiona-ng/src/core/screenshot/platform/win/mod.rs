@@ -117,7 +117,10 @@ mod tests {
 
             println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
 
-            image.save("C:/Users/jmgr/Pictures/test_win.bmp").unwrap();
+            image
+                .save("C:/Users/jmgr/Pictures/test_win.bmp")
+                .await
+                .unwrap();
         });
     }
 }

@@ -1,6 +1,6 @@
 use std::{io, sync::Arc};
 
-use image::{ImageReader, ImageResult};
+use image::ImageResult;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
@@ -828,23 +828,16 @@ impl JsImage {
     }
 
     /// Saves this image to a file. The format is inferred from the file extension.
-    // TODO: make this async
-    pub fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
-        self.inner.save(path).into_js_result(&ctx)
+    pub async fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
+        self.inner.save(path).await.into_js_result(&ctx)
     }
 
     /// Loads an image from a file. The format is guessed from the file contents.
-    // TODO: make this async
     #[qjs(static)]
-    pub fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
-        let image = ImageReader::open(path)
-            .into_js_result(&ctx)?
-            .with_guessed_format()
-            .into_js_result(&ctx)?
-            .decode()
-            .into_js_result(&ctx)?;
+    pub async fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
+        let image = super::Image::load(path).await.into_js_result(&ctx)?;
 
-        Ok(super::Image::from_dynamic_image(image).into())
+        Ok(image.into())
     }
 
     /// @get
@@ -1485,7 +1478,7 @@ mod tests {
     use rstest::rstest;
     use serial_test::serial;
 
-    use crate::{core::image::js::JsImage, runtime::Runtime};
+    use crate::runtime::Runtime;
 
     fn sanitize(s: &str) -> String {
         s.to_lowercase()
@@ -1579,27 +1572,6 @@ mod tests {
             let file_name = sanitize(&operation);
             script_engine
                 .eval_async::<()>(&format!(r#"await input.save("test-data/{file_name}.png")"#))
-                .await
-                .unwrap();
-        })
-    }
-
-    #[rstest]
-    #[case("rotate(90)", "rotate.png")]
-    fn test_all(#[case] operation: String, #[case] output_filename: String) {
-        Runtime::test_with_script_engine(async move |script_engine| {
-            script_engine
-                .eval_async::<()>(r#"var input = await Image.load("../tests/pear.png")"#)
-                .await
-                .unwrap();
-
-            let output = script_engine
-                .eval::<JsImage>(&format!("input.{operation}"))
-                .await
-                .unwrap();
-
-            script_engine
-                .with2(|ctx| output.save(ctx.clone(), format!("../tests/{output_filename}")))
                 .await
                 .unwrap();
         })

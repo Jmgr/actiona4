@@ -16,6 +16,7 @@ use crate::core::image::find_image::{LabLightnessMat, MaskMat};
 ///
 /// When `downscale == 0`, returns borrowed references to the inputs
 /// without any processing.
+#[allow(clippy::type_complexity)]
 #[instrument(skip_all)]
 pub fn prepare_matching_inputs<'a>(
     source_lightness: Cow<'a, LabLightnessMat>,

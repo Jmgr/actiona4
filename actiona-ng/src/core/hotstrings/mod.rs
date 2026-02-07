@@ -194,6 +194,7 @@ impl Hotstrings {
                     let user_data = ctx.user_data();
                     let callbacks = user_data.callbacks();
                     let result = callbacks.call(&ctx, function_key, Vec::new()).await.unwrap();
+                    #[allow(clippy::option_if_let_else)]
                     if let Ok(image) = result.get::<JsImage>() {
                         ReplacementData::Image(image.into_inner())
                     } else {

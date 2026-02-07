@@ -1,11 +1,11 @@
-use std::{fs, io::Cursor, ops::DerefMut, path::Path, sync::Arc};
+use std::{io::Cursor, ops::DerefMut, path::Path, sync::Arc};
 
 use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
 use arc_swap::ArcSwapOption;
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Deref;
 use image::{
-    DynamicImage, GrayImage, ImageReader, RgbImage, RgbaImage,
+    DynamicImage, GrayImage, ImageFormat, ImageReader, RgbImage, RgbaImage,
     imageops::{self, FilterType},
 };
 use imageproc::{
@@ -19,6 +19,7 @@ use imageproc::{
     geometric_transformations::{self, rotate, rotate_about_center},
     rect::Rect as ImgRect,
 };
+use tokio::fs;
 
 pub mod find_image;
 pub mod js;
@@ -300,11 +301,24 @@ impl Image {
         self.inner = image;
     }
 
+    /// Load an image from a file path.
+    pub async fn load(path: impl AsRef<Path>) -> Result<Self> {
+        let bytes = fs::read(path).await?;
+
+        Self::from_bytes(&bytes)
+    }
+
     /// Save the image to a file path.
-    pub fn save(&self, path: impl AsRef<Path>) -> Result<()> {
-        DynamicImage::ImageRgba8(self.inner.clone())
-            .save(path)
-            .map_err(Into::into)
+    pub async fn save(&self, path: impl AsRef<Path>) -> Result<()> {
+        let path = path.as_ref();
+        let format = ImageFormat::from_path(path)?;
+        let mut writer = Cursor::new(Vec::new());
+
+        DynamicImage::ImageRgba8(self.inner.clone()).write_to(&mut writer, format)?;
+
+        fs::write(path, writer.into_inner()).await?;
+
+        Ok(())
     }
 }
 
@@ -872,8 +886,9 @@ impl Image {
         Ok(())
     }
 
+    // TODO: expose a JsFont
     fn load_font(font_path: &str) -> Result<FontArc> {
-        let data = fs::read(font_path)
+        let data = std::fs::read(font_path)
             .map_err(|err| eyre!("Unable to read font \"{font_path}\": {err}"))?;
 
         FontArc::try_from_vec(data)
