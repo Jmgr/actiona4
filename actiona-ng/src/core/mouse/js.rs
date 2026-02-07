@@ -41,7 +41,7 @@ pub type JsTween = super::Tween;
 ///
 /// ```ts
 /// // Move and click
-/// await mouse.move(new Point(500, 300));
+/// await mouse.move(500, 300);
 /// await mouse.click();
 /// ```
 ///
@@ -52,7 +52,7 @@ pub type JsTween = super::Tween;
 ///
 /// ```ts
 /// // Smooth movement with custom tween
-/// await mouse.move(new Point(800, 600), {
+/// await mouse.move(800, 600, {
 ///   speed: 1500,
 ///   tween: Tween.BounceOut
 /// });

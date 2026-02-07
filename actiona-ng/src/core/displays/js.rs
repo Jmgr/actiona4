@@ -28,7 +28,7 @@ impl<T> IntoJsResult<T> for super::Result<T> {
 /// const point = await displays.randomPoint();
 ///
 /// // Find which display contains a point
-/// const info = await displays.fromPoint(new Point(100, 200));
+/// const info = await displays.fromPoint(100, 200);
 /// if (info) console.log(info.name, info.rect);
 ///
 /// // Find a display by friendly name

@@ -194,7 +194,7 @@ impl JsPoint {
     /// Returns a random point within a circle of the given radius around a center point.
     ///
     /// ```ts
-    /// const p = Point.randomInCircle(new Point(100, 100), 50);
+    /// const p = Point.randomInCircle(100, 100, 50);
     /// ```
     #[qjs(static)]
     #[must_use]

@@ -230,7 +230,7 @@ impl JsRect {
     ///
     /// ```ts
     /// const r = new Rect(0, 0, 100, 100);
-    /// console.log(r.contains(new Point(50, 50))); // true
+    /// console.log(r.contains(new Point(50, 50)));  // true
     /// console.log(r.contains(new Point(150, 50))); // false
     /// ```
     #[must_use]

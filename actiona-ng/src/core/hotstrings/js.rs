@@ -28,7 +28,7 @@ pub type JsHotstringOptions = super::HotstringOptions;
 /// hotstrings.add("time", () => new Date().toLocaleTimeString());
 ///
 /// // Async callback
-/// hotstrings.add("uuid", async () => crypto.randomUUID());
+/// hotstrings.add("rand", async () => "" + random.integer(0, 99999));
 ///
 /// // Remove a hotstring
 /// hotstrings.remove("btw");

@@ -117,7 +117,7 @@ declare enum Interpolation {
  * Horizontal alignment for text drawing.
  * 
  * ```ts
- * image.drawText(new Point(100, 50), "Centered", fontPath, Color.Black, {
+ * image.drawText(100, 50, "Centered", fontPath, Color.Black, {
  * horizontalAlign: TextHorizontalAlign.Center
  * });
  * ```
@@ -133,7 +133,7 @@ declare enum TextHorizontalAlign {
  * Vertical alignment for text drawing.
  * 
  * ```ts
- * image.drawText(new Point(50, 100), "Middle", fontPath, Color.Black, {
+ * image.drawText(50, 100, "Middle", fontPath, Color.Black, {
  * verticalAlign: TextVerticalAlign.Middle
  * });
  * ```
@@ -1814,10 +1814,10 @@ declare enum Axis {
  * 
  * ```ts
  * // Move with a bounce effect
- * await mouse.move(new Point(500, 300), { tween: Tween.BounceOut });
+ * await mouse.move(500, 300, { tween: Tween.BounceOut });
  * 
  * // Move with linear interpolation (no easing)
- * await mouse.move(new Point(100, 100), { tween: Tween.Linear });
+ * await mouse.move(100, 100, { tween: Tween.Linear });
  * ```
  */
 declare enum Tween {
@@ -3225,7 +3225,7 @@ declare class Directory {
  * const point = await displays.randomPoint();
  * 
  * // Find which display contains a point
- * const info = await displays.fromPoint(new Point(100, 200));
+ * const info = await displays.fromPoint(100, 200);
  * if (info) console.log(info.name, info.rect);
  * 
  * // Find a display by friendly name
@@ -3645,7 +3645,7 @@ declare class Filesystem {
  * hotstrings.add("time", () => new Date().toLocaleTimeString());
  * 
  * // Async callback
- * hotstrings.add("uuid", async () => crypto.randomUUID());
+ * hotstrings.add("rand", async () => "" + random.integer(0, 99999));
  * 
  * // Remove a hotstring
  * hotstrings.remove("btw");
@@ -3720,7 +3720,7 @@ declare interface BlurOptions {
  * 
  * ```ts
  * // Draw only a portion of the source image
- * canvas.drawImage(new Point(0, 0), sprite, {
+ * canvas.drawImage(0, 0, sprite, {
  * sourceRect: new Rect(0, 0, 32, 32)
  * });
  * ```
@@ -3739,6 +3739,9 @@ declare interface DrawImageOptions {
  * ```ts
  * // Rotate around a custom center point
  * image.rotate(45, { center: new Point(10, 10) });
+ * 
+ * // You can also use a plain object for the center
+ * image.rotate(45, { center: {x: 10, y: 10} });
  * 
  * // Rotate with a background color for exposed areas
  * image.rotate(30, { defaultColor: Color.White });
@@ -3766,7 +3769,7 @@ declare interface RotationOptions {
  * 
  * ```ts
  * // Draw a hollow circle (outline only)
- * image.drawCircle(new Point(50, 50), 20, Color.Red, { hollow: true });
+ * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
  * ```
  */
 declare interface DrawingOptions {
@@ -3781,7 +3784,7 @@ declare interface DrawingOptions {
  * 
  * ```ts
  * // Draw large, centered text
- * image.drawText(new Point(100, 50), "Hello", fontPath, Color.White, {
+ * image.drawText(100, 50, "Hello", fontPath, Color.White, {
  * fontSize: 32,
  * horizontalAlign: TextHorizontalAlign.Center,
  * verticalAlign: TextVerticalAlign.Middle
@@ -3934,8 +3937,8 @@ declare interface FindImageProgress {
  * // Create, manipulate, and save
  * let image = new Image(200, 100);
  * image.fill(Color.White)
- * .drawCircle(new Point(100, 50), 30, Color.Red)
- * .drawText(new Point(10, 10), "Hello", "/path/to/font.ttf", Color.Black);
+ * .drawCircle(100, 50, 30, Color.Red)
+ * .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
  * await image.save("output.png");
  * ```
  * 
@@ -4469,14 +4472,15 @@ declare class AbortController {
  * Utilities for concurrent operations.
  * 
  * ```ts
- * // Race two promises, resolving with whichever finishes first
+ * // Race two promises, resolving with whichever finishes first, cancelling the other.
+ * // Note that this is different from `Promises.race`, which doesn't cancel any promise.
  * const result = await Concurrency.race([sleep(100), sleep(1000)]);
  * ```
  */
 declare interface Concurrency {
     /**
      * Races multiple promises, returning the result of the first one to settle.
-     * Losing promises with a `cancel` method will be cancelled automatically.
+     * Losing tasks will be cancelled automatically.
      * 
      * ```ts
      * // Use race to implement a timeout
@@ -4570,7 +4574,7 @@ declare interface WaitForKeysOptions {
  * 
  * ```ts
  * // Move and click
- * await mouse.move(new Point(500, 300));
+ * await mouse.move(500, 300);
  * await mouse.click();
  * ```
  * 
@@ -4581,7 +4585,7 @@ declare interface WaitForKeysOptions {
  * 
  * ```ts
  * // Smooth movement with custom tween
- * await mouse.move(new Point(800, 600), {
+ * await mouse.move(800, 600, {
  * speed: 1500,
  * tween: Tween.BounceOut
  * });
@@ -4864,7 +4868,7 @@ declare class Point {
      * Returns a random point within a circle of the given radius around a center point.
      * 
      * ```ts
-     * const p = Point.randomInCircle(new Point(100, 100), 50);
+     * const p = Point.randomInCircle(100, 100, 50);
      * ```
      */
     static randomInCircle(center: PointLike, radius: number): Point;
@@ -4872,7 +4876,7 @@ declare class Point {
      * Returns a random point within a circle of the given radius around a center point.
      * 
      * ```ts
-     * const p = Point.randomInCircle(new Point(100, 100), 50);
+     * const p = Point.randomInCircle(100, 100, 50);
      * ```
      */
     static randomInCircle(x: number, y: number, radius: number): Point;
@@ -5112,7 +5116,7 @@ declare class Rect {
      * 
      * ```ts
      * const r = new Rect(0, 0, 100, 100);
-     * console.log(r.contains(new Point(50, 50))); // true
+     * console.log(r.contains(new Point(50, 50)));  // true
      * console.log(r.contains(new Point(150, 50))); // false
      * ```
      */
@@ -5173,7 +5177,7 @@ declare class Rect {
  * ```
  * 
  * ```ts
- * const pixel = await screenshot.capturePixel(new Point(100, 100));
+ * const pixel = await screenshot.capturePixel(100, 100);
  * console.log(pixel.toString());
  * ```
  */
@@ -5182,7 +5186,7 @@ declare interface Screenshot {
      * Captures a screenshot of a screen rectangle.
      * 
      * ```ts
-     * const image = await screenshot.captureRect(new Rect(0, 0, 1920, 1080));
+     * const image = await screenshot.captureRect(0, 0, 1920, 1080);
      * ```
      */
     captureRect(rect: RectLike): Promise<Image>;
@@ -5190,7 +5194,7 @@ declare interface Screenshot {
      * Captures a screenshot of a screen rectangle.
      * 
      * ```ts
-     * const image = await screenshot.captureRect(new Rect(0, 0, 1920, 1080));
+     * const image = await screenshot.captureRect(0, 0, 1920, 1080);
      * ```
      */
     captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
@@ -5206,7 +5210,7 @@ declare interface Screenshot {
      * Captures the color of a single pixel on screen.
      * 
      * ```ts
-     * const color = await screenshot.capturePixel(new Point(100, 200));
+     * const color = await screenshot.capturePixel(100, 200);
      * console.log(color.toString());
      * ```
      */
@@ -5215,7 +5219,7 @@ declare interface Screenshot {
      * Captures the color of a single pixel on screen.
      * 
      * ```ts
-     * const color = await screenshot.capturePixel(new Point(100, 200));
+     * const color = await screenshot.capturePixel(100, 200);
      * console.log(color.toString());
      * ```
      */
@@ -5224,11 +5228,11 @@ declare interface Screenshot {
      * Finds the best match of an image on a screen rectangle.
      * 
      * ```ts
-     * const match = await screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
      * console.log(`${progress.stage}: ${progress.percent}%`);
      * }
@@ -5240,11 +5244,11 @@ declare interface Screenshot {
      * Finds the best match of an image on a screen rectangle.
      * 
      * ```ts
-     * const match = await screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+     * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
      * console.log(`${progress.stage}: ${progress.percent}%`);
      * }
@@ -5256,11 +5260,11 @@ declare interface Screenshot {
      * Finds all occurrences of an image on a screen rectangle.
      * 
      * ```ts
-     * const matches = await screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
      * console.log(`${progress.stage}: ${progress.percent}%`);
      * }
@@ -5272,11 +5276,11 @@ declare interface Screenshot {
      * Finds all occurrences of an image on a screen rectangle.
      * 
      * ```ts
-     * const matches = await screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+     * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
      * console.log(`${progress.stage}: ${progress.percent}%`);
      * }
@@ -6374,7 +6378,7 @@ declare const web: Web;
  * ```ts
  * // Get the active window and move it
  * const win = await windows.activeWindow();
- * await win.setPosition(new Point(100, 100));
+ * await win.setPosition(100, 100);
  * await win.setSize(800, 600);
  * ```
  * 
@@ -6500,8 +6504,9 @@ declare interface WindowHandle {
      * Sets the window position.
      * 
      * ```ts
-     * await win.setPosition(new Point(100, 200));
      * await win.setPosition(100, 200);
+     * await win.setPosition(new Point(100, 200));
+     * await win.setPosition({x: 100, y: 200});
      * ```
      */
     setPosition(position: PointLike): Promise<void>;
@@ -6509,8 +6514,9 @@ declare interface WindowHandle {
      * Sets the window position.
      * 
      * ```ts
-     * await win.setPosition(new Point(100, 200));
      * await win.setPosition(100, 200);
+     * await win.setPosition(new Point(100, 200));
+     * await win.setPosition({x: 100, y: 200});
      * ```
      */
     setPosition(x: number, y: number): Promise<void>;
@@ -6527,8 +6533,9 @@ declare interface WindowHandle {
      * Sets the window size.
      * 
      * ```ts
-     * await win.setSize(new Size(800, 600));
      * await win.setSize(800, 600);
+     * await win.setSize(new Size(800, 600));
+     * await win.setSize({width: 800, height: 600});
      * ```
      */
     setSize(size: SizeLike): Promise<void>;
@@ -6536,8 +6543,9 @@ declare interface WindowHandle {
      * Sets the window size.
      * 
      * ```ts
-     * await win.setSize(new Size(800, 600));
      * await win.setSize(800, 600);
+     * await win.setSize(new Size(800, 600));
+     * await win.setSize({width: 800, height: 600});
      * ```
      */
     setSize(width: number, height: number): Promise<void>;
@@ -6584,7 +6592,7 @@ declare interface HotstringOptions {
  * Options for smooth mouse movement.
  * 
  * ```ts
- * await mouse.move(new Point(500, 300), {
+ * await mouse.move(500, 300, {
  * speed: 1000,
  * tween: Tween.SineOut,
  * targetRandomness: 5
@@ -6624,6 +6632,9 @@ declare interface MoveOptions {
  * ```ts
  * // Press the right button at a specific position
  * await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+ * 
+ * // Press at coordinates using PointLike shorthand
+ * await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
  * ```
  */
 declare interface PressOptions {

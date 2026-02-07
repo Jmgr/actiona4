@@ -36,7 +36,7 @@ impl<T> IntoJsResult<T> for super::Result<T> {
 /// ```ts
 /// // Get the active window and move it
 /// const win = await windows.activeWindow();
-/// await win.setPosition(new Point(100, 100));
+/// await win.setPosition(100, 100);
 /// await win.setSize(800, 600);
 /// ```
 ///
@@ -226,8 +226,9 @@ impl JsWindowHandle {
     /// Sets the window position.
     ///
     /// ```ts
-    /// await win.setPosition(new Point(100, 200));
     /// await win.setPosition(100, 200);
+    /// await win.setPosition(new Point(100, 200));
+    /// await win.setPosition({x: 100, y: 200});
     /// ```
     pub async fn set_position(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<()> {
         self.inner
@@ -248,8 +249,9 @@ impl JsWindowHandle {
     /// Sets the window size.
     ///
     /// ```ts
-    /// await win.setSize(new Size(800, 600));
     /// await win.setSize(800, 600);
+    /// await win.setSize(new Size(800, 600));
+    /// await win.setSize({width: 800, height: 600});
     /// ```
     pub async fn set_size(&self, ctx: Ctx<'_>, size: JsSizeLike) -> Result<()> {
         self.inner.set_size(self.id, size.0).into_js_result(&ctx)

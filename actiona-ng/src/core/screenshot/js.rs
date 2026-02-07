@@ -46,7 +46,7 @@ impl<'js> Trace<'js> for super::Screenshot {
 /// ```
 ///
 /// ```ts
-/// const pixel = await screenshot.capturePixel(new Point(100, 100));
+/// const pixel = await screenshot.capturePixel(100, 100);
 /// console.log(pixel.toString());
 /// ```
 ///
@@ -74,7 +74,7 @@ impl JsScreenshot {
     /// Captures a screenshot of a screen rectangle.
     ///
     /// ```ts
-    /// const image = await screenshot.captureRect(new Rect(0, 0, 1920, 1080));
+    /// const image = await screenshot.captureRect(0, 0, 1920, 1080);
     /// ```
     pub async fn capture_rect(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<JsImage> {
         Ok(JsImage::new(
@@ -99,7 +99,7 @@ impl JsScreenshot {
     /// Captures the color of a single pixel on screen.
     ///
     /// ```ts
-    /// const color = await screenshot.capturePixel(new Point(100, 200));
+    /// const color = await screenshot.capturePixel(100, 200);
     /// console.log(color.toString());
     /// ```
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
@@ -114,11 +114,11 @@ impl JsScreenshot {
     /// Finds the best match of an image on a screen rectangle.
     ///
     /// ```ts
-    /// const match = await screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+    /// const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
     /// ```
     ///
     /// ```ts
-    /// const task = screenshot.findImageOnRect(new Rect(0, 0, 1920, 1080), template);
+    /// const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
     /// for await (const progress of task) {
     ///   console.log(`${progress.stage}: ${progress.percent}%`);
     /// }
@@ -150,11 +150,11 @@ impl JsScreenshot {
     /// Finds all occurrences of an image on a screen rectangle.
     ///
     /// ```ts
-    /// const matches = await screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+    /// const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
     /// ```
     ///
     /// ```ts
-    /// const task = screenshot.findImageOnRectAll(new Rect(0, 0, 1920, 1080), template);
+    /// const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
     /// for await (const progress of task) {
     ///   console.log(`${progress.stage}: ${progress.percent}%`);
     /// }

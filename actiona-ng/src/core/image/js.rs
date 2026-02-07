@@ -236,7 +236,7 @@ impl From<JsBlurOptions> for BlurOptions {
 ///
 /// ```ts
 /// // Draw only a portion of the source image
-/// canvas.drawImage(new Point(0, 0), sprite, {
+/// canvas.drawImage(0, 0, sprite, {
 ///   sourceRect: new Rect(0, 0, 32, 32)
 /// });
 /// ```
@@ -262,6 +262,9 @@ impl From<JsDrawImageOptions> for DrawImageOptions {
 /// ```ts
 /// // Rotate around a custom center point
 /// image.rotate(45, { center: new Point(10, 10) });
+///
+/// // You can also use a plain object for the center
+/// image.rotate(45, { center: {x: 10, y: 10} });
 ///
 /// // Rotate with a background color for exposed areas
 /// image.rotate(30, { defaultColor: Color.White });
@@ -306,7 +309,7 @@ impl From<JsRotationOptions> for RotationOptions {
 ///
 /// ```ts
 /// // Draw a hollow circle (outline only)
-/// image.drawCircle(new Point(50, 50), 20, Color.Red, { hollow: true });
+/// image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
 /// ```
 /// @options
 #[derive(Clone, Copy, Debug, Default, FromJsObject)]
@@ -327,7 +330,7 @@ impl From<JsDrawingOptions> for DrawingOptions {
 /// Horizontal alignment for text drawing.
 ///
 /// ```ts
-/// image.drawText(new Point(100, 50), "Centered", fontPath, Color.Black, {
+/// image.drawText(100, 50, "Centered", fontPath, Color.Black, {
 ///   horizontalAlign: TextHorizontalAlign.Center
 /// });
 /// ```
@@ -364,7 +367,7 @@ impl From<JsTextHorizontalAlign> for TextHorizontalAlign {
 /// Vertical alignment for text drawing.
 ///
 /// ```ts
-/// image.drawText(new Point(50, 100), "Middle", fontPath, Color.Black, {
+/// image.drawText(50, 100, "Middle", fontPath, Color.Black, {
 ///   verticalAlign: TextVerticalAlign.Middle
 /// });
 /// ```
@@ -402,7 +405,7 @@ impl From<JsTextVerticalAlign> for TextVerticalAlign {
 ///
 /// ```ts
 /// // Draw large, centered text
-/// image.drawText(new Point(100, 50), "Hello", fontPath, Color.White, {
+/// image.drawText(100, 50, "Hello", fontPath, Color.White, {
 ///   fontSize: 32,
 ///   horizontalAlign: TextHorizontalAlign.Center,
 ///   verticalAlign: TextVerticalAlign.Middle
@@ -724,8 +727,8 @@ impl JsFindImageProgress {
 /// // Create, manipulate, and save
 /// let image = new Image(200, 100);
 /// image.fill(Color.White)
-///      .drawCircle(new Point(100, 50), 30, Color.Red)
-///      .drawText(new Point(10, 10), "Hello", "/path/to/font.ttf", Color.Black);
+///      .drawCircle(100, 50, 30, Color.Red)
+///      .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
 /// await image.save("output.png");
 /// ```
 ///

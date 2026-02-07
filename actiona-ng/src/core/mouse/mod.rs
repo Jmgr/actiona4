@@ -171,10 +171,10 @@ impl From<Axis> for enigo::Axis {
 ///
 /// ```ts
 /// // Move with a bounce effect
-/// await mouse.move(new Point(500, 300), { tween: Tween.BounceOut });
+/// await mouse.move(500, 300, { tween: Tween.BounceOut });
 ///
 /// // Move with linear interpolation (no easing)
-/// await mouse.move(new Point(100, 100), { tween: Tween.Linear });
+/// await mouse.move(100, 100, { tween: Tween.Linear });
 /// ```
 #[derive(
     Clone,
@@ -419,7 +419,7 @@ impl Mouse {
 /// Options for smooth mouse movement.
 ///
 /// ```ts
-/// await mouse.move(new Point(500, 300), {
+/// await mouse.move(500, 300, {
 ///   speed: 1000,
 ///   tween: Tween.SineOut,
 ///   targetRandomness: 5
@@ -721,6 +721,9 @@ impl Mouse {
 /// ```ts
 /// // Press the right button at a specific position
 /// await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+///
+/// // Press at coordinates using PointLike shorthand
+/// await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
 /// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]

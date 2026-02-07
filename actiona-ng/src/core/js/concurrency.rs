@@ -11,7 +11,8 @@ use crate::core::js::task::task;
 /// Utilities for concurrent operations.
 ///
 /// ```ts
-/// // Race two promises, resolving with whichever finishes first
+/// // Race two promises, resolving with whichever finishes first, cancelling the other.
+/// // Note that this is different from `Promises.race`, which doesn't cancel any promise.
 /// const result = await Concurrency.race([sleep(100), sleep(1000)]);
 /// ```
 // TODO: test
@@ -29,7 +30,7 @@ impl JsConcurrency {
     }
 
     /// Races multiple promises, returning the result of the first one to settle.
-    /// Losing promises with a `cancel` method will be cancelled automatically.
+    /// Losing tasks will be cancelled automatically.
     ///
     /// ```ts
     /// // Use race to implement a timeout
