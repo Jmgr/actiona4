@@ -62,6 +62,21 @@ impl From<Su32> for i64 {
     }
 }
 
+impl From<u8> for Su32 {
+    fn from(value: u8) -> Self {
+        Self::new(value.into())
+    }
+}
+
+impl From<Su32> for u8 {
+    #[allow(clippy::as_conversions)]
+    fn from(value: Su32) -> Self {
+        let value = value.into_inner().clamp(Self::MIN.into(), Self::MAX.into());
+
+        value as Self
+    }
+}
+
 impl From<u16> for Su32 {
     fn from(value: u16) -> Self {
         Self::new(value.into())
@@ -132,11 +147,11 @@ impl TryFrom<Su32> for NonZeroU32 {
     }
 }
 
-impl TryFrom<Su32> for usize {
-    type Error = Report;
-
-    fn try_from(value: Su32) -> Result<Self, Self::Error> {
-        Ok(Self::try_from(value.into_inner())?)
+impl From<Su32> for usize {
+    #[allow(clippy::as_conversions)]
+    fn from(value: Su32) -> Self {
+        // u32 always fits in usize (Rust guarantees usize >= 32 bits)
+        value.into_inner() as Self
     }
 }
 
@@ -144,7 +159,7 @@ impl TryFrom<Su32> for NonZeroUsize {
     type Error = Report;
 
     fn try_from(value: Su32) -> Result<Self, Self::Error> {
-        Self::new(value.try_into()?).ok_or_eyre("non-zero number expected")
+        Self::new(value.into()).ok_or_eyre("non-zero number expected")
     }
 }
 
@@ -349,16 +364,15 @@ mod tests {
         assert_eq!(1, got.unwrap().get());
     }
 
-    // ------------------------ TryFrom<Su32> -> usize -------------------------
-    // Use small values to stay portable across targets.
+    // ------------------------ From<Su32> -> usize -----------------------------
 
     #[rstest]
     #[case::zero(su32(0), 0usize)]
     #[case::small(su32(123), 123usize)]
-    fn try_into_usize_ok(#[case] src: Su32, #[case] want: usize) {
-        let got = <usize as TryFrom<Su32>>::try_from(src);
-        assert!(got.is_ok());
-        assert_eq!(want, got.unwrap());
+    #[case::max(su32(u32::MAX), u32::MAX as usize)]
+    fn into_usize(#[case] src: Su32, #[case] want: usize) {
+        let got: usize = src.into();
+        assert_eq!(want, got);
     }
 
     // ------------------------ TryFrom<Su32> -> NonZeroUsize ------------------

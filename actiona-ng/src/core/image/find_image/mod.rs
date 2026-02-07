@@ -31,6 +31,7 @@ use crate::{
         rect::Rect,
     },
     error::CommonError,
+    types::su32::Su32,
 };
 
 mod common;
@@ -79,8 +80,8 @@ impl BgrMat {
     pub fn from_bgra(data: &[u8], width: u32, height: u32) -> Result<Self> {
         const BYTES_PER_PIXEL: usize = 4;
 
-        let needed = (width as usize)
-            .checked_mul(height as usize)
+        let needed = usize::from(Su32::from(width))
+            .checked_mul(Su32::from(height).into())
             .and_then(|pixel_count| pixel_count.checked_mul(BYTES_PER_PIXEL))
             .ok_or_else(|| eyre!("image dimensions overflow: {width}x{height}"))?;
 

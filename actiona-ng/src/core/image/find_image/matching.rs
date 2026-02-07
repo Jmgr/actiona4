@@ -20,6 +20,7 @@ use crate::{
         FindImageProgress, FindImageStage, LabLightnessMat, MaskMat, common::ideal_thread_count,
     },
     error::CommonError,
+    types::su32::Su32,
 };
 
 /// Run a single tile's template match against a vertical slice of the source.
@@ -80,7 +81,7 @@ pub fn match_template(
     let template_size = template_lightness.0.size()?;
     let result_rows = source_size.height - template_size.height + 1;
     let result_cols = source_size.width - template_size.width + 1;
-    let tile_count = ideal_thread_count().clamp(1, result_rows.max(1) as usize);
+    let tile_count = ideal_thread_count().clamp(1, Su32::from(result_rows.max(1)).into());
 
     // Build tile ranges and compute the source ROI each tile needs.
     let tile_ranges = build_tiles(result_rows, tile_count)
@@ -113,7 +114,7 @@ pub fn match_template(
 
             progress.send_replace(FindImageProgress::new(
                 FindImageStage::Matching,
-                percent.min(70) as u8,
+                Su32::from(percent.min(70)).into(),
             ));
 
             Ok::<_, color_eyre::eyre::Error>((start_row, tile_result))
@@ -142,15 +143,18 @@ pub fn match_template(
 #[instrument(skip_all)]
 fn build_tiles(total_rows: i32, desired_tiles: usize) -> Vec<(i32, i32)> {
     let total_rows = total_rows.max(1);
-    let tile_count = desired_tiles.clamp(1, total_rows as usize);
-    let base = total_rows / tile_count as i32;
-    let remainder = total_rows % tile_count as i32;
+    let total_rows_usize: usize = Su32::from(total_rows).into();
+    let tile_count = desired_tiles.clamp(1, total_rows_usize);
+    let tile_count_i32: i32 = Su32::from(tile_count).into();
+    let base = total_rows / tile_count_i32;
+    let remainder = total_rows % tile_count_i32;
+    let remainder_usize: usize = Su32::from(remainder).into();
     let mut tiles = Vec::with_capacity(tile_count);
     let mut start = 0;
 
     for idx in 0..tile_count {
         let mut height = base;
-        if idx < remainder as usize {
+        if idx < remainder_usize {
             height += 1;
         }
         let end = (start + height).min(total_rows);

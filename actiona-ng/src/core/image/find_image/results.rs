@@ -7,7 +7,10 @@ use opencv::core::{
 };
 use tracing::instrument;
 
-use crate::core::image::find_image::{LabAMat, LabBMat, MaskMat, Match};
+use crate::{
+    core::image::find_image::{LabAMat, LabBMat, MaskMat, Match},
+    types::si32::Si32,
+};
 
 /// Convert a match-score matrix into match locations.
 ///
@@ -68,8 +71,7 @@ pub fn compute_results(
         // Fast path: scan the raw (row-major) float buffer without per-pixel FFI calls.
         let values = match_template_result.data_typed::<f32>()?;
         for (idx, &match_score) in values.iter().enumerate() {
-            #[allow(clippy::as_conversions)]
-            let idx = idx as i32;
+            let idx: i32 = Si32::from(idx).into();
             let row = idx / cols;
             let col = idx - row * cols;
             push_match(row, col, match_score);
@@ -79,8 +81,7 @@ pub fn compute_results(
         for row in 0..rows {
             let row_values = match_template_result.at_row::<f32>(row)?;
             for (col, &match_score) in row_values.iter().enumerate() {
-                #[allow(clippy::as_conversions)]
-                let col = col as i32;
+                let col: i32 = Si32::from(col).into();
                 push_match(row, col, match_score);
             }
         }
@@ -139,8 +140,8 @@ pub fn filter_results_by_color(
     const CHROMA_RMS_THRESHOLD: f64 = 8.0;
 
     let valid_pixel_count = match template_mask {
-        Some(mask) => count_non_zero(&mask.0)? as f64,
-        None => (template_size.width * template_size.height) as f64,
+        Some(mask) => f64::from(count_non_zero(&mask.0)?),
+        None => f64::from(template_size.width * template_size.height),
     }
     .max(1.0);
     let normalization = valid_pixel_count.sqrt();
@@ -152,8 +153,7 @@ pub fn filter_results_by_color(
             if *value < match_threshold {
                 continue;
             }
-            #[allow(clippy::as_conversions)]
-            let col = col_idx as i32;
+            let col: i32 = Si32::from(col_idx).into();
             let roi = Rect::new(col, row, template_size.width, template_size.height);
             let source_a_roi = source_a.0.roi(roi)?;
             let source_b_roi = source_b.0.roi(roi)?;

@@ -1106,7 +1106,8 @@ mod tests {
         let _source = Arc::<Source>::try_from(&img).unwrap();
         assert!(img.source.get().is_some());
 
-        let cloned = img;
+        #[allow(clippy::redundant_clone)]
+        let cloned = img.clone();
         assert!(cloned.source.get().is_none());
     }
 

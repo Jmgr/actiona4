@@ -133,7 +133,7 @@ impl WindowsHandler for X11WindowHandler {
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
         let handle = self.inner.lock().get_handle(id)?.clone();
-        Ok(handle.pid()? as u32)
+        Ok(Su32::from(handle.pid()?).into())
     }
 
     // tested
