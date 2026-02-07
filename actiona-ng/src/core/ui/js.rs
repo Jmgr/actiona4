@@ -33,15 +33,19 @@ pub type JsMessageBoxResult = super::MessageBoxResult;
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsMessageBoxOptions {
+    /// Title displayed in the message box title bar.
     /// @default `undefined`
     pub title: Option<String>,
 
+    /// Buttons displayed in the message box.
     /// @default `MessageBoxButtons.ok()`
     pub buttons: Option<JsMessageBoxButtons>,
 
+    /// Icon displayed in the message box.
     /// @default `MessageBoxIcon.Info`
     pub icon: Option<super::MessageBoxIcon>,
 
+    /// Abort signal to cancel the message box.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }

@@ -136,6 +136,7 @@ pub struct JsWaitForKeysOptions {
     /// @default `false`
     pub exclusive: bool,
 
+    /// Abort signal to cancel the wait.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }

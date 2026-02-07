@@ -55,7 +55,7 @@ impl Type {
             }
             Type::Array(type_) => format!("{}[]", type_.to_string(context)?),
             Type::Record(key_type, value_type) => format!(
-                "Record<{}, {}>",
+                "Record<{}, {} | undefined>",
                 key_type.to_string(context)?,
                 value_type.to_string(context)?
             ),
@@ -330,7 +330,11 @@ impl File {
                     let mut type_ = property.type_.to_string(Context::Property)?;
 
                     if property.is_readonly_type {
-                        type_ = format!("Readonly<{type_}>");
+                        if property.type_.is_array() {
+                            type_ = format!("readonly {type_}");
+                        } else {
+                            type_ = format!("Readonly<{type_}>");
+                        }
                     }
 
                     if property.is_promise {
@@ -445,7 +449,11 @@ fn output_methods(
                 let mut return_ = overload.return_.to_string(Context::ReturnValue)?;
 
                 if overload.is_readonly_type {
-                    return_ = format!("Readonly<{return_}>");
+                    if overload.return_.is_array() {
+                        return_ = format!("readonly {return_}");
+                    } else {
+                        return_ = format!("Readonly<{return_}>");
+                    }
                 }
 
                 if method.is_async {

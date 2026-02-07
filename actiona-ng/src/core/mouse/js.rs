@@ -102,6 +102,7 @@ pub struct JsMeasureSpeedOptions {
     /// @default `2`
     pub duration: Option<f64>,
 
+    /// Abort signal to cancel the measurement.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
@@ -119,15 +120,19 @@ pub struct JsClickOptions {
     /// @skip
     pub press: super::PressOptions,
 
+    /// Number of times to click.
     /// @default `1`
     pub amount: i32,
 
+    /// Delay between consecutive clicks, in seconds.
     /// @default `0`
     pub interval: JsDuration,
 
+    /// How long to hold each click, in seconds.
     /// @default `0`
     pub duration: JsDuration,
 
+    /// Abort signal to cancel the click.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
@@ -167,6 +172,7 @@ pub struct JsDoubleClickOptions {
     /// @skip
     pub click: JsClickOptions,
 
+    /// Delay between the two clicks, in seconds.
     /// @default `0.25`
     pub delay: JsDuration,
 }

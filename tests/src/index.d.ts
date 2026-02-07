@@ -2099,7 +2099,7 @@ declare interface App {
      * console.log(env["PATH"]);
      * ```
      */
-    readonly env: Readonly<Record<string, string>>;
+    readonly env: Readonly<Record<string, string | undefined>>;
     /**
      * The current working directory.
      * 
@@ -2387,7 +2387,7 @@ declare interface ClipboardFileList {
     /**
      * Gets the clipboard file list content.
      */
-    get(mode?: ClipboardMode): Promise<Readonly<string[]>>;
+    get(mode?: ClipboardMode): Promise<readonly string[]>;
 }
 /**
  * Provides HTML clipboard operations.
@@ -3271,7 +3271,7 @@ declare class Directory {
      * });
      * ```
      */
-    static listEntries(path: string, options?: DirectoryListOptions): Promise<Readonly<DirectoryEntry[]>>;
+    static listEntries(path: string, options?: DirectoryListOptions): Promise<readonly DirectoryEntry[]>;
 }
 /**
  * The global displays singleton for querying connected monitors and screens.
@@ -5566,7 +5566,7 @@ declare interface Cpu {
     readonly architecture: string;
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
-    frequencies(): Promise<Readonly<number[]>>;
+    frequencies(): Promise<readonly number[]>;
     toString(): string;
 }
 /**
@@ -5616,7 +5616,7 @@ declare interface Hardware {
     /**
      * Hardware components
      */
-    listComponents(options?: ListComponentsOptions): Promise<Readonly<Component[]>>;
+    listComponents(options?: ListComponentsOptions): Promise<readonly Component[]>;
     toString(): string;
 }
 /**
@@ -5858,7 +5858,7 @@ declare interface Network {
     /**
      * Interfaces
      */
-    listInterfaces(options?: ListInterfacesOptions): Promise<Readonly<NetworkInterface[]>>;
+    listInterfaces(options?: ListInterfacesOptions): Promise<readonly NetworkInterface[]>;
     toString(): string;
 }
 /**
@@ -5906,7 +5906,7 @@ declare interface NetworkInterface {
     /**
      * Subnets
      */
-    readonly subnets: Readonly<string[]>;
+    readonly subnets: readonly string[];
     toString(): string;
 }
 /**
@@ -5996,7 +5996,7 @@ declare interface Os {
     /**
      * Distribution ID like
      */
-    readonly distributionIdLike: Readonly<string[]>;
+    readonly distributionIdLike: readonly string[];
     /**
      * Kernel long version
      */
@@ -6016,11 +6016,11 @@ declare interface Os {
     /**
      * Users
      */
-    listUsers(): Promise<Readonly<User[]>>;
+    listUsers(): Promise<readonly User[]>;
     /**
      * Groups
      */
-    listGroups(): Promise<Readonly<Group[]>>;
+    listGroups(): Promise<readonly Group[]>;
     toString(): string;
 }
 /**
@@ -6056,11 +6056,11 @@ declare interface User {
     /**
      * Groups
      */
-    readonly groups: Readonly<number[]>;
+    readonly groups: readonly number[];
     /**
      * Group names
      */
-    readonly groupNames: Readonly<string[]>;
+    readonly groupNames: readonly string[];
     toString(): string;
 }
 /**
@@ -6097,7 +6097,7 @@ declare interface Processes {
     /**
      * Lists all processes
      */
-    list(options?: ListProcessesOptions): Promise<Readonly<Process[]>>;
+    list(options?: ListProcessesOptions): Promise<readonly Process[]>;
     toString(): string;
 }
 /**
@@ -6129,7 +6129,7 @@ declare interface Process {
     /**
      * Cmd
      */
-    readonly cmd: Readonly<string[]>;
+    readonly cmd: readonly string[];
     /**
      * Exe
      */
@@ -6141,7 +6141,7 @@ declare interface Process {
     /**
      * Env
      */
-    readonly env: Readonly<string[]>;
+    readonly env: readonly string[];
     /**
      * Cwd
      */
@@ -6235,7 +6235,7 @@ declare interface Storage {
     /**
      * Disks
      */
-    listDisks(options?: ListDisksOptions): Promise<Readonly<Disk[]>>;
+    listDisks(options?: ListDisksOptions): Promise<readonly Disk[]>;
     toString(): string;
 }
 /**
@@ -6521,7 +6521,7 @@ declare interface WebOptions {
     /**
      * @defaultValue `undefined`
      */
-    headers?: Record<string, string>;
+    headers?: Record<string, string | undefined>;
     /**
      * @defaultValue `Method.Get`
      */
@@ -6541,12 +6541,12 @@ declare interface WebOptions {
      * Sets content-type to "application/x-www-form-urlencoded".
      * @defaultValue `undefined`
      */
-    form?: Record<string, string>;
+    form?: Record<string, string | undefined>;
     /**
      * Additional query parameters.
      * @defaultValue `undefined`
      */
-    query?: Record<string, string>;
+    query?: Record<string, string | undefined>;
     /**
      * Form multipart data.
      * Sets content-type and content-length appropriately.
@@ -6700,7 +6700,7 @@ declare interface Windows {
      * console.log(`Found ${allWindows.length} windows`);
      * ```
      */
-    all(): Promise<Readonly<WindowHandle[]>>;
+    all(): Promise<readonly WindowHandle[]>;
     /**
      * Returns the currently active (focused) window.
      * 

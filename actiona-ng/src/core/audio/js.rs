@@ -63,6 +63,7 @@ pub struct JsPlaySoundOptions {
     /// @default `0`
     pub fade_out: Option<JsDuration>,
 
+    /// Abort signal to cancel the sound playback.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }

@@ -97,12 +97,15 @@ impl From<tauri_plugin_dialog::MessageDialogResult> for MessageBoxResult {
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct MessageBoxOptions {
+    /// Title displayed in the message box title bar.
     /// @default `undefined`
     pub title: Option<String>,
 
+    /// Buttons displayed in the message box.
     /// @default `MessageBoxButtons.ok()`
     pub buttons: Option<JsMessageBoxButtons>,
 
+    /// Icon displayed in the message box.
     /// @default `MessageBoxIcon.Info`
     pub icon: Option<MessageBoxIcon>,
 }

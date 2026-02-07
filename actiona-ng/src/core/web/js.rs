@@ -165,21 +165,27 @@ impl JsMultipartForm {
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsWebOptions {
+    /// Abort signal to cancel the request.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 
+    /// User name for HTTP basic authentication.
     /// @default `undefined`
     pub user_name: Option<String>,
 
+    /// Password for HTTP basic authentication.
     /// @default `undefined`
     pub password: Option<String>,
 
+    /// Additional HTTP headers to send with the request.
     /// @default `undefined`
     pub headers: Option<IndexMap<String, String>>,
 
+    /// HTTP method to use for the request.
     /// @default `Method.Get`
     pub method: JsMethod,
 
+    /// Request timeout duration.
     /// @default `undefined`
     pub timeout: Option<JsDuration>,
 

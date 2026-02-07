@@ -487,6 +487,7 @@ pub struct JsFindImageOptions {
     /// @default `0`
     pub downscale: u64,
 
+    /// Abort signal to cancel the search.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
