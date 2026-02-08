@@ -99,11 +99,6 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
             .ok_or_else(|| eyre!("unknown display id: {display_id}"))
     }
 
-    /// Get the runtime.
-    pub const fn runtime(&self) -> &Arc<Runtime> {
-        &self.runtime
-    }
-
     /// Capture a display and return an Image.
     pub async fn capture_display(&self, display_id: u32) -> Result<Image> {
         let display = self.get_display(display_id).await?;

@@ -488,7 +488,7 @@ impl JsFile {
         #[cfg(windows)]
         {
             _ = ctx;
-            return Ok(0);
+            Ok(0)
         }
     }
 
@@ -514,7 +514,7 @@ impl JsFile {
         {
             _ = ctx;
             _ = mode;
-            return Ok(());
+            Ok(())
         }
     }
 
@@ -613,7 +613,7 @@ impl JsFile {
             let opened_file = self.opened_file(&ctx.clone())?;
 
             Self::set_times(
-                &opened_file,
+                opened_file,
                 FileTimes::new().set_created(system_time),
                 task_tracker,
             )

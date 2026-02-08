@@ -7,7 +7,7 @@ use windows::Win32::Graphics::Gdi::{
     SelectObject,
 };
 
-use crate::core::rect::Rect;
+use crate::{core::rect::Rect, types::su32::Su32};
 
 /// Captures a screen region using BitBlt and returns raw BGRA pixel data.
 #[allow(unsafe_code)]
@@ -39,7 +39,7 @@ pub fn capture_rect(rect: Rect) -> Result<Vec<u8>> {
 
     let mut bitmap_info = BITMAPINFO {
         bmiHeader: BITMAPINFOHEADER {
-            biSize: size_of::<BITMAPINFOHEADER>() as u32,
+            biSize: Su32::from(size_of::<BITMAPINFOHEADER>()).into(),
             biWidth: width,
             biHeight: -height, // Top-down bitmap
             biPlanes: 1,
@@ -59,8 +59,11 @@ pub fn capture_rect(rect: Rect) -> Result<Vec<u8>> {
         }],
     };
 
-    let buffer_size = (width as usize) * (height as usize) * 4;
+    let buffer_size: usize = Su32::from(width).into();
+    let buffer_size = buffer_size * usize::from(Su32::from(height)) * 4;
     let mut data = vec![0u8; buffer_size];
+
+    #[allow(clippy::as_conversions)] // pointer cast
     let data_ptr = data.as_mut_ptr() as *mut c_void;
 
     unsafe {
@@ -68,7 +71,8 @@ pub fn capture_rect(rect: Rect) -> Result<Vec<u8>> {
             hdc_mem,
             hbm,
             0,
-            height as u32,
+            u32::from(Su32::from(height)),
+            #[allow(clippy::as_conversions)] // pointer cast
             Some(data_ptr as *mut _),
             &mut bitmap_info,
             DIB_RGB_COLORS,

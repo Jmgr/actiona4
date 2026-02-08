@@ -1,8 +1,10 @@
 use std::num::{NonZeroI32, NonZeroU32};
 
+#[cfg(unix)]
+use color_eyre::eyre::eyre;
 use color_eyre::{
     Report, Result,
-    eyre::{OptionExt, bail, eyre},
+    eyre::{OptionExt, bail},
 };
 use derive_more::{Constructor, Display, From, Into};
 

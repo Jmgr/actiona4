@@ -223,7 +223,7 @@ impl Runtime {
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
         app_handle: Option<AppHandle>,
-        options: RuntimeOptions,
+        #[cfg_attr(not(unix), allow(unused))] options: RuntimeOptions,
     ) -> Result<(Arc<Self>, ScriptEngine)> {
         let displays = Displays::new(cancellation_token.clone(), task_tracker.clone())?;
 
@@ -237,7 +237,12 @@ impl Runtime {
         .await?;
 
         #[cfg(windows)]
-        let runtime = win::Runtime::new(cancellation_token.clone(), task_tracker.clone()).await?;
+        let runtime = win::Runtime::new(
+            cancellation_token.clone(),
+            task_tracker.clone(),
+            displays.clone(),
+        )
+        .await?;
 
         setup_opencv_threading()?;
 

@@ -187,7 +187,7 @@ fn history_file_path() -> Option<PathBuf> {
     #[cfg(target_os = "linux")]
     let dir = base.state_dir()?; // usually ~/.local/state
     #[cfg(not(target_os = "linux"))]
-    let dir = base.data_local_dir()?; // fallback ~/.local/share or similar
+    let dir = base.data_local_dir(); // fallback ~/.local/share or similar
 
     Some(dir.join("actiona-ng").join(HISTORY_FILENAME))
 }

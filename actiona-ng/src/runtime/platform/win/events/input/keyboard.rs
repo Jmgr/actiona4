@@ -3,7 +3,7 @@
 use std::{
     collections::HashSet,
     sync::{
-        Arc, Weak,
+        Arc, Mutex, Weak,
         atomic::{AtomicUsize, Ordering},
     },
 };

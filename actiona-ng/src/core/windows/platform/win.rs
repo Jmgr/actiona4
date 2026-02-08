@@ -14,9 +14,9 @@ use windows::Win32::{
     },
     UI::WindowsAndMessaging::{
         GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
-        GetWindowThreadProcessId, IsWindowVisible, SET_WINDOW_POS_FLAGS, SW_MAXIMIZE, SW_MINIMIZE,
-        SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SendNotifyMessageW,
-        SetForegroundWindow, SetWindowPos, ShowWindow, WM_CLOSE,
+        GetWindowThreadProcessId, IsWindowVisible, SW_MAXIMIZE, SW_MINIMIZE, SWP_NOACTIVATE,
+        SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SendNotifyMessageW, SetForegroundWindow,
+        SetWindowPos, ShowWindow, WM_CLOSE,
     },
 };
 use windows_result::BOOL;
@@ -29,6 +29,7 @@ use crate::{
         windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
     },
     platform::win::safe_handle::SafeDesktopHandle,
+    types::su32::Su32,
 };
 
 #[derive(Clone, Deref, Eq, PartialEq)]
@@ -42,9 +43,14 @@ impl Debug for WindowHandle {
 
 impl Hash for WindowHandle {
     fn hash<H: Hasher>(&self, state: &mut H) {
+        #[allow(clippy::as_conversions)] // pointer-to-integer for hashing
         (self.0.0 as usize).hash(state);
     }
 }
+
+// SAFETY: HWND is an opaque handle (integer-like) safe to send/share across threads on Windows.
+unsafe impl Send for WindowHandle {}
+unsafe impl Sync for WindowHandle {}
 
 #[derive(Debug)]
 pub struct WindowsWindowHandler {
@@ -65,6 +71,7 @@ impl From<windows_result::Error> for Error {
     }
 }
 
+#[allow(clippy::as_conversions)] // pointer casts required by Windows callback API
 unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     let vec_ptr = lparam.0 as *mut Vec<HWND>;
     unsafe {
@@ -76,6 +83,7 @@ unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
 }
 
 impl WindowsHandler for WindowsWindowHandler {
+    #[allow(clippy::as_conversions)] // pointer casts required by Windows EnumDesktopWindows API
     fn all(&self) -> Result<Vec<WindowId>> {
         let mut result = Vec::new();
         let result_ptr = &mut result as *mut Vec<HWND>;
@@ -96,7 +104,7 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(self
             .inner
             .lock()
-            .update(result.into_iter().map(|window| WindowHandle(window))))
+            .update(result.into_iter().map(WindowHandle)))
     }
 
     fn is_visible(&self, id: WindowId) -> Result<bool> {
@@ -112,14 +120,16 @@ impl WindowsHandler for WindowsWindowHandler {
             return Ok(String::new());
         }
 
-        let mut buffer = vec![0; (len + 1) as usize];
+        let mut buffer = vec![0; usize::from(Su32::from(len + 1))];
 
         let len = unsafe { GetWindowTextW(*handle, &mut buffer) };
         if len == 0 {
             return Ok(String::new());
         }
 
-        Ok(String::from_utf16_lossy(&buffer[..len as usize]))
+        Ok(String::from_utf16_lossy(
+            &buffer[..usize::from(Su32::from(len))],
+        ))
     }
 
     fn classname(&self, id: WindowId) -> Result<String> {
@@ -131,7 +141,9 @@ impl WindowsHandler for WindowsWindowHandler {
             return Ok(String::new());
         }
 
-        Ok(String::from_utf16_lossy(&buffer[..len as usize]))
+        Ok(String::from_utf16_lossy(
+            &buffer[..usize::from(Su32::from(len))],
+        ))
     }
 
     // TODO: untested
@@ -149,7 +161,7 @@ impl WindowsHandler for WindowsWindowHandler {
 
         unsafe { GetWindowThreadProcessId(*handle, Some(&mut process_id)) };
 
-        Ok(process_id as u32)
+        Ok(process_id)
     }
 
     // TODO: untested
@@ -158,9 +170,7 @@ impl WindowsHandler for WindowsWindowHandler {
         let mut win_rect = RECT::default();
 
         unsafe {
-            if !GetWindowRect(*handle, &mut win_rect).as_bool() {
-                return Err(windows_result::Error::from_thread().into());
-            }
+            GetWindowRect(*handle, &mut win_rect)?;
         }
 
         let width = (win_rect.right - win_rect.left).max(0);
@@ -262,7 +272,7 @@ impl WindowsHandler for WindowsWindowHandler {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let foreground = unsafe { GetForegroundWindow() };
 
-        if foreground.0 == 0 {
+        if foreground.0.is_null() {
             return Ok(false);
         }
 
@@ -272,7 +282,7 @@ impl WindowsHandler for WindowsWindowHandler {
     // TODO: untested
     fn active_window(&self) -> Result<WindowId> {
         let foreground = unsafe { GetForegroundWindow() };
-        if foreground.0 == 0 {
+        if foreground.0.is_null() {
             return Err(Error::NotFound);
         }
 

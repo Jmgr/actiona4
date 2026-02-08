@@ -1,4 +1,4 @@
-#![allow(unsafe_code)]
+#![allow(unsafe_code, dead_code)]
 
 use std::path::Path;
 
@@ -19,7 +19,7 @@ use windows::{
     core::{BOOL, Error},
 };
 
-use crate::platform::win::safe_handle::SafeDesktopHandle;
+use crate::{platform::win::safe_handle::SafeDesktopHandle, types::su32::Su32};
 
 #[derive(Debug)]
 pub enum ProcessType {
@@ -52,6 +52,7 @@ pub async fn find_process_type(path: &Path) -> Result<Option<ProcessType>> {
     })
 }
 
+#[allow(clippy::as_conversions)] // pointer casts required by Windows callback API
 unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     let vec_ptr = lparam.0 as *mut Vec<HWND>;
     unsafe {
@@ -62,6 +63,7 @@ unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     true.into()
 }
 
+#[allow(clippy::as_conversions)] // pointer casts required by Windows EnumDesktopWindows API
 pub fn all_windows() -> Result<Vec<HWND>> {
     let mut result = Vec::new();
     let result_ptr = &mut result as *mut Vec<HWND>;
@@ -103,14 +105,14 @@ pub fn window_title(hwnd: HWND) -> String {
         return String::new();
     }
 
-    let mut buffer = vec![0; (len + 1) as usize];
+    let mut buffer = vec![0; usize::from(Su32::from(len + 1))];
 
     let len = unsafe { GetWindowTextW(hwnd, &mut buffer) };
     if len == 0 {
         return String::new();
     }
 
-    String::from_utf16_lossy(&buffer[..len as usize])
+    String::from_utf16_lossy(&buffer[..usize::from(Su32::from(len))])
 }
 
 pub fn window_classname(hwnd: HWND) -> Result<String> {
@@ -119,7 +121,9 @@ pub fn window_classname(hwnd: HWND) -> Result<String> {
     if len == 0 {
         return Err(Error::from_thread().into());
     }
-    Ok(String::from_utf16_lossy(&buffer[..len as usize]))
+    Ok(String::from_utf16_lossy(
+        &buffer[..usize::from(Su32::from(len))],
+    ))
 }
 
 pub fn is_window_visible(hwnd: &HWND) -> bool {
@@ -151,7 +155,7 @@ mod tests {
             .into_iter()
             .filter(is_window_visible)
             .map(|hwnd| (hwnd, window_title(hwnd)))
-            .filter(|(hwnd, title)| title.contains("Notepad"))
+            .filter(|(_hwnd, title)| title.contains("Notepad"))
             .map(|(hwnd, _)| send_close_message_to_window(hwnd))
             //.map(window_title)
             .collect::<Result<Vec<_>>>()

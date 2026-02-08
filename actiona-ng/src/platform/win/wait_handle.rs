@@ -1,4 +1,4 @@
-#![allow(unsafe_code)]
+#![allow(unsafe_code, dead_code, clippy::non_send_fields_in_send_ty)]
 
 use std::{
     io,
@@ -37,13 +37,13 @@ impl Drop for Waiting {
     }
 }
 
-pub(crate) struct WaitHandle {
+pub struct WaitHandle {
     handle: HANDLE,
     waiting: Option<Waiting>,
 }
 
 impl WaitHandle {
-    pub fn new(handle: HANDLE) -> Self {
+    pub const fn new(handle: HANDLE) -> Self {
         Self {
             handle,
             waiting: None,
@@ -83,6 +83,7 @@ impl Future for WaitHandle {
                     &mut wait_object,
                     inner.handle,
                     Some(callback),
+                    #[allow(clippy::as_conversions)] // pointer cast
                     Some(tx_ptr as *mut _),
                     INFINITE,
                     WT_EXECUTEINWAITTHREAD | WT_EXECUTEONLYONCE,
@@ -101,6 +102,7 @@ impl Future for WaitHandle {
     }
 }
 
+#[allow(clippy::as_conversions)] // pointer cast required by Windows callback API
 unsafe extern "system" fn callback(ptr: *mut std::ffi::c_void, _timer_fired: bool) {
     let complete = unsafe { &mut *(ptr as *mut Option<oneshot::Sender<()>>) };
     _ = complete.take().unwrap().send(());

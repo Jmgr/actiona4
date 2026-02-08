@@ -1,4 +1,4 @@
-#![allow(unsafe_code)]
+#![allow(unsafe_code, dead_code)]
 
 use std::fmt;
 
@@ -24,7 +24,7 @@ pub struct Safe<H: Handle> {
 }
 
 impl<H: Handle> Safe<H> {
-    pub fn new(raw: H::Raw) -> Self {
+    pub const fn new(raw: H::Raw) -> Self {
         Self { raw }
     }
 
@@ -36,13 +36,13 @@ impl<H: Handle> Safe<H> {
         }
     }
 
-    pub fn leak(self) -> H::Raw {
+    pub const fn leak(self) -> H::Raw {
         let raw = self.raw;
         std::mem::forget(self);
         raw
     }
 
-    pub fn as_raw(&self) -> H::Raw {
+    pub const fn as_raw(&self) -> H::Raw {
         self.raw
     }
 }

@@ -33,6 +33,7 @@ use crate::{
 
 static MOUSE_INPUT_DISPATCHER: OnceCell<Weak<MouseInputDispatcher>> = OnceCell::new();
 
+#[allow(clippy::as_conversions)] // bit extraction: mask guarantees value fits in u16
 const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
     ((mouse_data >> 16) & 0xFFFF) as u16
 }
@@ -145,7 +146,7 @@ impl Topic for MouseButtonsTopic {
 
     async fn on_stop(&self) -> Result<()> {
         if let Some(dispatcher) = self.dispatcher.upgrade() {
-            dispatcher.on_stop().await;
+            dispatcher.on_stop().await?;
         }
         Ok(())
     }
@@ -175,6 +176,7 @@ impl Topic for MouseMoveTopic {
     }
 }
 
+#[allow(clippy::as_conversions)] // pointer/integer casts required by Windows hook callback
 unsafe extern "system" fn low_level_mouse_proc(
     n_code: i32,
     w_param: WPARAM,

@@ -11,14 +11,15 @@ fn ensure_notification_registration() {
 
     use windows::{
         Win32::{
+            Foundation::PROPERTYKEY,
             System::Com::{
                 CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED, CoCreateInstance, CoInitializeEx,
-                CoUninitialize, IPersistFile,
+                CoUninitialize, IPersistFile, STGM,
             },
             UI::Shell::{
                 IShellLinkW,
                 PropertiesSystem::{
-                    GPS_READWRITE, IPropertyStore, PROPERTYKEY, PSGetPropertyKeyFromName,
+                    GPS_READWRITE, IPropertyStore, PSGetPropertyKeyFromName,
                     SHGetPropertyStoreFromParsingName,
                 },
                 ShellLink,
@@ -52,7 +53,7 @@ fn ensure_notification_registration() {
         // Quick check: if shortcut exists and points to the current executable, skip
         if shortcut_path.exists() {
             unsafe {
-                CoInitializeEx(None, COINIT_APARTMENTTHREADED).ok();
+                CoInitializeEx(None, COINIT_APARTMENTTHREADED).ok()?;
 
                 let shell_link: IShellLinkW =
                     CoCreateInstance(&ShellLink, None, CLSCTX_INPROC_SERVER)?;
@@ -61,7 +62,7 @@ fn ensure_notification_registration() {
 
                 let shortcut_hstring = HSTRING::from(shortcut_path.to_str().unwrap_or_default());
 
-                if persist_file.Load(&shortcut_hstring, 0).is_ok() {
+                if persist_file.Load(&shortcut_hstring, STGM(0)).is_ok() {
                     let mut target_buf = [0u16; 260];
                     if shell_link
                         .GetPath(&mut target_buf, std::ptr::null_mut(), 0)
@@ -84,7 +85,9 @@ fn ensure_notification_registration() {
         fs::create_dir_all(&start_menu).context("creating Start Menu directory")?;
 
         unsafe {
-            CoInitializeEx(None, COINIT_APARTMENTTHREADED).context("COM initialization")?;
+            CoInitializeEx(None, COINIT_APARTMENTTHREADED)
+                .ok()
+                .context("COM initialization")?;
 
             let shell_link: IShellLinkW = CoCreateInstance(&ShellLink, None, CLSCTX_INPROC_SERVER)
                 .context("creating ShellLink")?;
@@ -111,11 +114,11 @@ fn ensure_notification_registration() {
                 .context("saving shortcut")?;
 
             // Set the AUMID property on the shortcut
-            let mut store: Option<IPropertyStore> = None;
-            SHGetPropertyStoreFromParsingName(&shortcut_hstring, None, GPS_READWRITE, &mut store)
-                .context("getting property store")?;
+            let store: IPropertyStore =
+                SHGetPropertyStoreFromParsingName(&shortcut_hstring, None, GPS_READWRITE)
+                    .context("getting property store")?;
 
-            if let Some(store) = store {
+            {
                 use windows::Win32::System::Com::StructuredStorage::PROPVARIANT;
 
                 let pk_aumid = {
@@ -125,7 +128,7 @@ fn ensure_notification_registration() {
                     pk
                 };
 
-                let aumid_variant = PROPVARIANT::from(HSTRING::from(AUMID));
+                let aumid_variant = PROPVARIANT::from(AUMID);
                 store
                     .SetValue(&pk_aumid, &aumid_variant)
                     .context("setting AUMID")?;

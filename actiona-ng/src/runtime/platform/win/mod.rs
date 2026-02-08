@@ -7,12 +7,9 @@ use std::{
 
 use color_eyre::Result;
 use once_cell::sync::OnceCell;
-use tokio::{
-    select,
-    sync::{broadcast, oneshot},
-};
+use tokio::{select, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::error;
+use tracing::{error, instrument};
 use windows::{
     Win32::{
         Foundation::{HWND, LPARAM, LRESULT, WPARAM},
@@ -28,10 +25,11 @@ use windows::{
 };
 
 use crate::{
+    core::displays::Displays,
     error::CommonError,
     platform::win::safe_handle::SafeWindowHandle,
     runtime::{
-        events::{DisplayInfoVec, Guard, TopicWrapper},
+        events::Guard,
         platform::win::events::input::{
             keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
             mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},

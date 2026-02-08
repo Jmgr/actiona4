@@ -5,7 +5,7 @@ use std::{
 };
 
 #[cfg(windows)]
-use color_eyre::eyre;
+use color_eyre::eyre::eyre;
 use color_eyre::{Report, Result};
 use derive_more::Display;
 use derive_where::derive_where;

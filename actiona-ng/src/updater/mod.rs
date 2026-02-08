@@ -3,7 +3,10 @@ use std::sync::Arc;
 use color_eyre::Result;
 use indexmap::IndexMap;
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+#[cfg(not(windows))]
+use serde::Serialize;
+#[cfg(not(windows))]
 use strum::Display;
 use sys_locale::get_locale;
 use sysinfo::System;
@@ -180,10 +183,14 @@ impl Updater {
         let display = LinuxDisplay::detect();
 
         #[cfg(windows)]
-        let display = None;
+        let display: Option<String> = None;
 
         let os_version = System::os_version();
+
+        #[cfg(not(windows))]
         let os_display = display.map(|display| display.to_string());
+        #[cfg(windows)]
+        let os_display = display;
 
         let mut params = IndexMap::new();
 

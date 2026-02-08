@@ -21,11 +21,11 @@ pub struct MouseImpl {
 impl Button {
     fn into_vkey(self) -> i32 {
         match self {
-            Button::Left => VK_LBUTTON,
-            Button::Middle => VK_MBUTTON,
-            Button::Right => VK_RBUTTON,
-            Button::Back => VK_XBUTTON1,
-            Button::Forward => VK_XBUTTON2,
+            Self::Left => VK_LBUTTON,
+            Self::Middle => VK_MBUTTON,
+            Self::Right => VK_RBUTTON,
+            Self::Back => VK_XBUTTON1,
+            Self::Forward => VK_XBUTTON2,
         }
         .0
         .into()
@@ -41,6 +41,7 @@ impl MouseImpl {
 #[allow(unsafe_code)]
 impl MouseImplTrait for MouseImpl {
     async fn is_button_pressed(&self, button: Button) -> Result<bool> {
+        #[allow(clippy::as_conversions)] // i16 → u16 bitwise check, not a numeric conversion
         Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000u16 != 0 })
     }
 
@@ -64,14 +65,12 @@ impl MouseImplTrait for MouseImpl {
                 break;
             };
 
-            let button_result = match conditions.button {
-                None => true,
-                Some(button) => button == event.button,
-            };
-            let direction_result = match conditions.direction {
-                None => true,
-                Some(direction) => direction == event.direction,
-            };
+            let button_result = conditions
+                .button
+                .is_none_or(|button| button == event.button);
+            let direction_result = conditions
+                .direction
+                .is_none_or(|direction| direction == event.direction);
 
             if button_result && direction_result {
                 return Ok(event);
