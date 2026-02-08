@@ -44,12 +44,12 @@ tracing-subscriber.workspace = true
 two-face.workspace = true
 versions.workspace = true
 
-[dev-dependencies]
-tempfile.workspace = true
-
 [build-dependencies]
 built.workspace = true
 cfg_aliases.workspace = true
 clap = { workspace = true, features = ["env"] }
 clap_complete.workspace = true
 tauri-build.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

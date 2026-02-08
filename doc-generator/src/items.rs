@@ -81,21 +81,19 @@ impl Items {
             .filter_map(|component| component.as_os_str().to_str())
             .collect_vec();
 
-        if let Some(core_index) = segments.iter().position(|segment| *segment == "core") {
-            if let Some(core_child) = segments.get(core_index + 1) {
+        if let Some(core_index) = segments.iter().position(|segment| *segment == "core")
+            && let Some(core_child) = segments.get(core_index + 1) {
                 if *core_child == "js" {
                     return Some("Core".to_string());
                 }
 
                 return Some(core_child.to_case(Case::Pascal));
             }
-        }
 
-        if let Some(src_index) = segments.iter().position(|segment| *segment == "src") {
-            if let Some(src_child) = segments.get(src_index + 1) {
+        if let Some(src_index) = segments.iter().position(|segment| *segment == "src")
+            && let Some(src_child) = segments.get(src_index + 1) {
                 return Some(src_child.to_case(Case::Pascal));
             }
-        }
 
         None
     }

@@ -10,17 +10,19 @@ fn ensure_notification_registration() {
     use std::{fs, path::PathBuf};
 
     use windows::{
-        Win32::System::Com::{
-            CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED, CoCreateInstance, CoInitializeEx,
-            CoUninitialize, IPersistFile,
-        },
-        Win32::UI::Shell::{
-            IShellLinkW,
-            PropertiesSystem::{
-                GPS_READWRITE, IPropertyStore, PROPERTYKEY, PSGetPropertyKeyFromName,
-                SHGetPropertyStoreFromParsingName,
+        Win32::{
+            System::Com::{
+                CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED, CoCreateInstance, CoInitializeEx,
+                CoUninitialize, IPersistFile,
             },
-            ShellLink,
+            UI::Shell::{
+                IShellLinkW,
+                PropertiesSystem::{
+                    GPS_READWRITE, IPropertyStore, PROPERTYKEY, PSGetPropertyKeyFromName,
+                    SHGetPropertyStoreFromParsingName,
+                },
+                ShellLink,
+            },
         },
         core::{HSTRING, Interface},
     };
