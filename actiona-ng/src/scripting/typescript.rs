@@ -14,15 +14,16 @@ use swc_ecma_transforms_typescript::strip;
 pub(crate) struct TsToJs {
     js_code: String,
     sourcemap: swc_sourcemap::SourceMap,
+    filename: String,
 }
 
 impl TsToJs {
-    pub fn new(code: &str) -> Result<Self> {
+    pub fn new(code: &str, filename: &str) -> Result<Self> {
         let cm = Lrc::new(SourceMap::new(FilePathMapping::empty()));
         let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
 
         let fm = cm.new_source_file(
-            Lrc::new(FileName::Custom("file.ts".to_string())),
+            Lrc::new(FileName::Custom(filename.to_string())),
             code.to_string(),
         );
 
@@ -90,12 +91,26 @@ impl TsToJs {
         Ok(Self {
             js_code: code,
             sourcemap: srcmap,
+            filename: filename.to_string(),
         })
+    }
+
+    /// Creates a passthrough entry for plain JS files (no transpilation, no sourcemap).
+    pub fn passthrough(code: &str, filename: &str) -> Self {
+        Self {
+            js_code: code.to_string(),
+            sourcemap: swc_sourcemap::SourceMap::new(None, vec![], vec![], vec![], None),
+            filename: filename.to_string(),
+        }
     }
 
     #[allow(clippy::missing_const_for_fn)]
     pub fn code(&self) -> &str {
         &self.js_code
+    }
+
+    pub fn filename(&self) -> &str {
+        &self.filename
     }
 
     /// Looks up the original TypeScript location for a given JavaScript line and column.

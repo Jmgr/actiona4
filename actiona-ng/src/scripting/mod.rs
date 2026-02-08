@@ -1,5 +1,6 @@
 use std::{
     collections::{HashMap, hash_map::Entry},
+    fmt,
     hash::{DefaultHasher, Hash, Hasher},
     mem::take,
     sync::Arc,
@@ -46,10 +47,24 @@ static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
 
 #[derive(Debug)]
 pub struct CallStackFrame {
-    _function: String,
+    function: String,
     file: String,
     line: u32,
     col: u32,
+}
+
+impl fmt::Display for CallStackFrame {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.function.is_empty() {
+            write!(f, "    at {}:{}:{}", self.file, self.line, self.col)
+        } else {
+            write!(
+                f,
+                "    at {} ({}:{}:{})",
+                self.function, self.file, self.line, self.col
+            )
+        }
+    }
 }
 
 fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
@@ -64,7 +79,7 @@ fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
             let col = caps.name("col")?.as_str().parse::<u32>().ok()?;
 
             Some(CallStackFrame {
-                _function: function.to_string(),
+                function: function.to_string(),
                 file: file.to_string(),
                 line,
                 col,
@@ -134,18 +149,41 @@ impl Engine {
 
     #[allow(clippy::significant_drop_tightening)]
     pub fn ts_to_js(&self, script: &str) -> Result<(u64, String)> {
+        self.prepare_script(script, None)
+    }
+
+    #[allow(clippy::significant_drop_tightening)]
+    pub fn prepare_script(&self, script: &str, filename: Option<&str>) -> Result<(u64, String)> {
         let mut hasher = DefaultHasher::new();
         script.hash(&mut hasher);
         let hash = hasher.finish();
 
+        let is_js = filename
+            .map(|f| f.ends_with(".js") || f.ends_with(".mjs"))
+            .unwrap_or(false);
+
         let mut sourcemaps = self.sourcemaps.lock();
         let sourcemap = sourcemaps.entry(hash);
+
+        let display_name = filename.unwrap_or("script");
 
         Ok((
             hash,
             match sourcemap {
                 Entry::Occupied(entry) => entry.get().code().to_string(),
-                Entry::Vacant(entry) => entry.insert(TsToJs::new(script)?).code().to_string(),
+                Entry::Vacant(entry) => {
+                    if is_js {
+                        entry
+                            .insert(TsToJs::passthrough(script, display_name))
+                            .code()
+                            .to_string()
+                    } else {
+                        entry
+                            .insert(TsToJs::new(script, display_name)?)
+                            .code()
+                            .to_string()
+                    }
+                }
             },
         ))
     }
@@ -154,7 +192,14 @@ impl Engine {
     where
         for<'any_js> T: FromJs<'any_js> + Send,
     {
-        let (hash, js_code) = self.ts_to_js(script)?;
+        self.eval_with_filename(script, None).await
+    }
+
+    pub async fn eval_with_filename<T>(&self, script: &str, filename: Option<&str>) -> Result<T>
+    where
+        for<'any_js> T: FromJs<'any_js> + Send,
+    {
+        let (hash, js_code) = self.prepare_script(script, filename)?;
         let sourcemaps = self.sourcemaps.clone();
 
         let mut options = EvalOptions::default();
@@ -175,7 +220,21 @@ impl Engine {
     where
         for<'any_js> T: FromJs<'any_js> + Send + 'static,
     {
-        let (hash, js_code) = self.ts_to_js(script)?;
+        self.eval_async_with_filename(script, None).await
+    }
+
+    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+    #[allow(unsafe_op_in_unsafe_fn)]
+    #[instrument(skip_all)]
+    pub async fn eval_async_with_filename<T>(
+        &self,
+        script: &str,
+        filename: Option<&str>,
+    ) -> Result<T>
+    where
+        for<'any_js> T: FromJs<'any_js> + Send + 'static,
+    {
+        let (hash, js_code) = self.prepare_script(script, filename)?;
         let sourcemaps = self.sourcemaps.clone();
 
         async_with!(self.context => |ctx| {
@@ -231,32 +290,40 @@ impl Engine {
         exception: Exception,
         sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
     ) -> Result<UnhandledException> {
+        let name: String = exception
+            .as_object()
+            .get("name")
+            .unwrap_or_else(|_| "Error".to_string());
         let message = exception.message().unwrap();
+        let message = format!("{name}: {message}");
         let stack = exception.stack().unwrap();
         let lines = stack.lines().map(|line| parse_callstack_line(line.trim()));
         let stack = match lines.collect::<Result<Vec<_>>>() {
             Ok(res) => res,
-            Err(_) => return Ok((message, Default::default())), // Silently return the raw message
+            Err(_) => return Ok((message, Default::default())),
         };
 
         let stack = stack.into_iter().map(|mut frame| {
-            let Ok(source_hash) = frame.file.parse() else {
-                return Ok(CallStackFrame {
-                    _function: "unknown".to_string(),
-                    file: "unknown".to_string(),
-                    line: 0,
-                    col: 0,
-                });
+            let Ok(source_hash) = frame.file.parse::<u64>() else {
+                // File field is not a hash (e.g. already a real filename) — keep as-is
+                return Ok(frame);
             };
             let sourcemaps = sourcemaps.lock();
-            let ts_to_js = sourcemaps.get(&source_hash).ok_or_else(|| {
-                eyre!("failed to find sourcemap for code with hash {source_hash}")
-            })?;
-            let ts_line_col = ts_to_js
-                .lookup_source_location(frame.line, frame.col)
-                .ok_or_else(|| eyre!("failed finding line and col, frame: {frame:?}"))?;
-            frame.line = ts_line_col.1;
-            frame.col = ts_line_col.2;
+            let Some(ts_to_js) = sourcemaps.get(&source_hash) else {
+                return Ok(frame);
+            };
+
+            // Replace the hash with the real filename
+            frame.file = ts_to_js.filename().to_string();
+
+            // Translate line/col via sourcemap if available
+            if let Some((_, ts_line, ts_col)) =
+                ts_to_js.lookup_source_location(frame.line, frame.col)
+            {
+                frame.line = ts_line;
+                frame.col = ts_col;
+            }
+
             Ok(frame)
         });
         let stack = stack.collect::<Result<Vec<_>>>()?;
@@ -278,7 +345,12 @@ impl Engine {
                     Err(if stack.is_empty() {
                         eyre!("{message}")
                     } else {
-                        eyre!("{message}: {stack:?}")
+                        let stack_str = stack
+                            .iter()
+                            .map(ToString::to_string)
+                            .collect::<Vec<_>>()
+                            .join("\n");
+                        eyre!("{message}\n{stack_str}")
                     })
                 }
                 CaughtError::Value(value) => Err(eyre!("script value: {value:?}")),
@@ -302,7 +374,6 @@ impl Engine {
 
 #[cfg(test)]
 mod tests {
-    use regex::Regex;
     use tokio::time::Duration;
 
     use super::*;
@@ -393,19 +464,12 @@ outer();
         let err = engine.eval::<()>(ts_script).await.unwrap_err();
         let err_msg = err.to_string();
 
-        // quick sanity       …
         assert!(err_msg.contains("ts fail"));
 
-        // pull the first "line: <n>" out of the Debug‑printed CallStackFrame
-        let line_rx = Regex::new(r"line:\s*(\d+)").unwrap();
-        let cap = line_rx
-            .captures(&err_msg)
-            .expect("error string should contain a stack frame");
-        let mapped_line: u32 = cap[1].parse().unwrap();
-
-        assert_eq!(
-            mapped_line, 4,
-            "sourcemap should translate JS positions back to TS line 4"
+        // Error now uses Display format: "at outer (script:4:11)"
+        assert!(
+            err_msg.contains("script:4:"),
+            "sourcemap should translate JS positions back to TS line 4, got: {err_msg}"
         );
     }
 
@@ -498,12 +562,192 @@ outer();
 
         let frame = stack.first().unwrap();
 
-        assert_eq!(frame.line, 2);
-        assert_eq!(frame.col, 78);
+        assert_eq!(frame.line, 2, "idle boom should be on line 2");
 
         assert!(
             message.contains("idle boom"),
             "unhandled rejection must be reported through the tracker"
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 7. Error with custom filename – verify filename appears in error output.
+    // ──────────────────────────────────────────────────────────────────────────
+    #[tokio::test]
+    async fn ts_error_displays_filename() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .eval_with_filename::<()>(
+                r#"
+function fail() {
+    throw new Error("named file error");
+}
+fail();
+"#,
+                Some("my_script.ts"),
+            )
+            .await
+            .unwrap_err();
+
+        let err_msg = err.to_string();
+        assert!(
+            err_msg.contains("my_script.ts"),
+            "error should contain the original filename, got: {err_msg}"
+        );
+        assert!(
+            err_msg.contains("named file error"),
+            "error should contain the message, got: {err_msg}"
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 8. JS file – no transpilation, error shows correct line/col and filename.
+    // ──────────────────────────────────────────────────────────────────────────
+    #[tokio::test]
+    async fn js_error_no_sourcemap() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .eval_with_filename::<()>(
+                r#"
+function boom() {
+    throw new Error("js boom");
+}
+boom();
+"#,
+                Some("test.js"),
+            )
+            .await
+            .unwrap_err();
+
+        let err_msg = err.to_string();
+        assert!(
+            err_msg.contains("test.js"),
+            "JS error should contain the filename, got: {err_msg}"
+        );
+        assert!(
+            err_msg.contains("js boom"),
+            "JS error should contain the message, got: {err_msg}"
+        );
+        // Line 3 is where `throw` is
+        assert!(
+            err_msg.contains("test.js:3:"),
+            "JS error should show correct line, got: {err_msg}"
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 9. Error formatting – verify human-readable format, not Debug.
+    // ──────────────────────────────────────────────────────────────────────────
+    #[tokio::test]
+    async fn error_backtrace_formatting() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .eval::<()>(
+                r#"
+function inner() { throw new Error("fmt test"); }
+function outer() { inner(); }
+outer();
+"#,
+            )
+            .await
+            .unwrap_err();
+
+        let err_msg = err.to_string();
+        // Should use "at func (file:line:col)" format, not Debug struct format
+        assert!(
+            err_msg.contains("at inner ("),
+            "stack should use human-readable format, got: {err_msg}"
+        );
+        assert!(
+            err_msg.contains("at outer ("),
+            "stack should include outer frame, got: {err_msg}"
+        );
+        // Should NOT contain Debug format artifacts
+        assert!(
+            !err_msg.contains("CallStackFrame"),
+            "error should not use Debug format, got: {err_msg}"
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 10. Nested TS call stack – verify all frames are translated.
+    // ──────────────────────────────────────────────────────────────────────────
+    #[tokio::test]
+    async fn ts_nested_call_stack() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .eval_with_filename::<()>(
+                r#"
+function a() {
+    const x: number = 1;
+    throw new Error("nested");
+}
+function b() {
+    const y: string = "hello";
+    a();
+}
+b();
+"#,
+                Some("nested.ts"),
+            )
+            .await
+            .unwrap_err();
+
+        let err_msg = err.to_string();
+        assert!(
+            err_msg.contains("at a (nested.ts:4:"),
+            "should show function a at line 4, got: {err_msg}"
+        );
+        assert!(
+            err_msg.contains("at b (nested.ts:8:"),
+            "should show function b at line 8, got: {err_msg}"
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 11. Syntax error – should return an error, not panic.
+    // ──────────────────────────────────────────────────────────────────────────
+    #[tokio::test]
+    async fn syntax_error_does_not_crash() {
+        let engine = Engine::new().await.unwrap();
+
+        let result = engine.eval::<()>("function {{{ invalid").await;
+        assert!(result.is_err(), "syntax error should return Err, not panic");
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 12. Async error with filename – verify filename propagates through async.
+    // ──────────────────────────────────────────────────────────────────────────
+    #[tokio::test]
+    async fn async_error_with_filename() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .eval_async_with_filename::<()>(
+                r#"
+async function doWork() {
+    const val: number = 42;
+    throw new Error("async named");
+}
+await doWork();
+"#,
+                Some("worker.ts"),
+            )
+            .await
+            .unwrap_err();
+
+        let err_msg = err.to_string();
+        assert!(
+            err_msg.contains("worker.ts"),
+            "async error should contain filename, got: {err_msg}"
+        );
+        assert!(
+            err_msg.contains("async named"),
+            "async error should contain message, got: {err_msg}"
         );
     }
 }

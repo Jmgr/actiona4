@@ -114,12 +114,20 @@ fn main() -> Result<()> {
                         .await
                         .context("reading input file")?;
 
-                    script_engine.eval_async::<()>(&script).await?;
+                    let filename = filepath.to_string_lossy();
+                    if let Err(err) = script_engine
+                        .eval_async_with_filename::<()>(&script, Some(&filename))
+                        .await
+                    {
+                        eprintln!("Error: {err}");
+                    }
                 }
                 Commands::Eval { code } => {
                     let code = code.join("\n");
 
-                    script_engine.eval_async::<()>(&code).await?;
+                    if let Err(err) = script_engine.eval_async::<()>(&code).await {
+                        eprintln!("Error: {err}");
+                    }
                 }
                 Commands::Repl => {
                     runtime.set_wait_at_end(WaitAtEnd::No);
