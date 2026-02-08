@@ -1,7 +1,5 @@
 # Enumeration: FlipDirection
 
-Defined in: [index.d.ts:102](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L102)
-
 Direction to flip an image.
 
 ```ts
@@ -16,14 +14,10 @@ image.flip(FlipDirection.Vertical);
 
 ### Horizontal
 
-> **Horizontal**: `number`
-
-Defined in: [index.d.ts:103](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L103)
+> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Vertical
 
-> **Vertical**: `number`
-
-Defined in: [index.d.ts:105](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L105)
+> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

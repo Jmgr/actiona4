@@ -1,8 +1,6 @@
 # Function: formatBytes()
 
-> **formatBytes**(`bytes`): `string`
-
-Defined in: [index.d.ts:89](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L89)
+> **formatBytes**(`bytes`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Formats a byte size using human-readable units.
 
@@ -15,8 +13,8 @@ formatBytes(1048576);      // "1.05 MB"
 
 ### bytes
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ## Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

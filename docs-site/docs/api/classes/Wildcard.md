@@ -1,7 +1,5 @@
 # Class: Wildcard
 
-Defined in: [index.d.ts:4888](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4888)
-
 A wildcard pattern for matching strings.
 
 Supports `*` (match any sequence) and `?` (match any single character).
@@ -21,15 +19,13 @@ const pattern = new Wildcard("my_app*");
 
 > **new Wildcard**(`pattern`): `Wildcard`
 
-Defined in: [index.d.ts:4892](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4892)
-
 Constructor.
 
 #### Parameters
 
 ##### pattern
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 

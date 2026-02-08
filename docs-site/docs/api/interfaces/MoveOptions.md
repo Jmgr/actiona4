@@ -1,7 +1,5 @@
 # Interface: MoveOptions
 
-Defined in: [index.d.ts:7081](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7081)
-
 Options for smooth mouse movement.
 
 ```ts
@@ -16,9 +14,7 @@ targetRandomness: 5
 
 ### interval?
 
-> `optional` **interval**: `number`
-
-Defined in: [index.d.ts:7111](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7111)
+> `optional` **interval**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Interval in seconds
 
@@ -30,9 +26,7 @@ Interval in seconds
 
 ### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: `number`
-
-Defined in: [index.d.ts:7101](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7101)
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -44,9 +38,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ### perlinScale?
 
-> `optional` **perlinScale**: `number`
-
-Defined in: [index.d.ts:7096](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7096)
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -58,9 +50,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ### speed?
 
-> `optional` **speed**: `number`
-
-Defined in: [index.d.ts:7086](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7086)
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -72,9 +62,7 @@ Movement speed in pixels per second.
 
 ### targetRandomness?
 
-> `optional` **targetRandomness**: `number`
-
-Defined in: [index.d.ts:7106](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7106)
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -87,8 +75,6 @@ Random offset applied to the target position, in pixels.
 ### tween?
 
 > `optional` **tween**: [`Tween`](../enumerations/Tween.md)
-
-Defined in: [index.d.ts:7091](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7091)
 
 Easing function used for the movement.
 

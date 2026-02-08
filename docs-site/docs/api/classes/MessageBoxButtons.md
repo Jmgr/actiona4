@@ -1,7 +1,5 @@
 # Class: MessageBoxButtons
 
-Defined in: [index.d.ts:6590](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6590)
-
 Button configurations for message boxes.
 
 Use the static factory methods to create button sets.
@@ -18,8 +16,6 @@ const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
 
 > `static` **ok**(): `MessageBoxButtons`
 
-Defined in: [index.d.ts:6595](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6595)
-
 Creates an OK button.
 
 #### Returns
@@ -31,8 +27,6 @@ Creates an OK button.
 ### okCancel()
 
 > `static` **okCancel**(): `MessageBoxButtons`
-
-Defined in: [index.d.ts:6603](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6603)
 
 Creates OK and Cancel buttons.
 
@@ -46,19 +40,17 @@ Creates OK and Cancel buttons.
 
 > `static` **okCancelCustom**(`okLabel`, `cancelLabel`): `MessageBoxButtons`
 
-Defined in: [index.d.ts:6607](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6607)
-
 Creates OK and Cancel buttons with custom labels.
 
 #### Parameters
 
 ##### okLabel
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### cancelLabel
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
@@ -70,15 +62,13 @@ Creates OK and Cancel buttons with custom labels.
 
 > `static` **okCustom**(`okLabel`): `MessageBoxButtons`
 
-Defined in: [index.d.ts:6599](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6599)
-
 Creates an OK button with a custom label.
 
 #### Parameters
 
 ##### okLabel
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
@@ -89,8 +79,6 @@ Creates an OK button with a custom label.
 ### yesNo()
 
 > `static` **yesNo**(): `MessageBoxButtons`
-
-Defined in: [index.d.ts:6611](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6611)
 
 Creates Yes and No buttons.
 
@@ -104,8 +92,6 @@ Creates Yes and No buttons.
 
 > `static` **yesNoCancel**(): `MessageBoxButtons`
 
-Defined in: [index.d.ts:6615](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6615)
-
 Creates Yes, No, and Cancel buttons.
 
 #### Returns
@@ -118,23 +104,21 @@ Creates Yes, No, and Cancel buttons.
 
 > `static` **yesNoCancelCustom**(`yesLabel`, `noLabel`, `cancelLabel`): `MessageBoxButtons`
 
-Defined in: [index.d.ts:6619](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6619)
-
 Creates Yes, No, and Cancel buttons with custom labels.
 
 #### Parameters
 
 ##### yesLabel
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### noLabel
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### cancelLabel
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 

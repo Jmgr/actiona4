@@ -1,7 +1,5 @@
 # Interface: DisplayInfo
 
-Defined in: [index.d.ts:3407](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3407)
-
 Information about a connected display, including its name, geometry,
 rotation, scale factor, and refresh rate.
 
@@ -17,9 +15,7 @@ console.log("Primary:", info.isPrimary);
 
 ### frequency
 
-> `readonly` **frequency**: `number`
-
-Defined in: [index.d.ts:3443](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3443)
+> `readonly` **frequency**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The display refresh rate in Hz.
 
@@ -27,9 +23,7 @@ The display refresh rate in Hz.
 
 ### friendlyName
 
-> `readonly` **friendlyName**: `string`
-
-Defined in: [index.d.ts:3419](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3419)
+> `readonly` **friendlyName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The display friendly name (e.g. `"HDMI-1"`).
 
@@ -37,9 +31,7 @@ The display friendly name (e.g. `"HDMI-1"`).
 
 ### heightMm
 
-> `readonly` **heightMm**: `number`
-
-Defined in: [index.d.ts:3431](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3431)
+> `readonly` **heightMm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The physical height of the display in millimeters.
 
@@ -47,9 +39,7 @@ The physical height of the display in millimeters.
 
 ### id
 
-> `readonly` **id**: `number`
-
-Defined in: [index.d.ts:3411](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3411)
+> `readonly` **id**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Unique numeric identifier for this display.
 
@@ -57,9 +47,7 @@ Unique numeric identifier for this display.
 
 ### isPrimary
 
-> `readonly` **isPrimary**: `boolean`
-
-Defined in: [index.d.ts:3447](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3447)
+> `readonly` **isPrimary**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether this is the primary (main) display.
 
@@ -67,9 +55,7 @@ Whether this is the primary (main) display.
 
 ### name
 
-> `readonly` **name**: `string`
-
-Defined in: [index.d.ts:3415](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3415)
+> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The display device name (e.g. `"DP-1"`).
 
@@ -77,9 +63,7 @@ The display device name (e.g. `"DP-1"`).
 
 ### rect
 
-> `readonly` **rect**: `Readonly`\<[`Rect`](../classes/Rect.md)\>
-
-Defined in: [index.d.ts:3423](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3423)
+> `readonly` **rect**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](../classes/Rect.md)\>
 
 The display rectangle (position and size in pixels).
 
@@ -87,9 +71,7 @@ The display rectangle (position and size in pixels).
 
 ### rotation
 
-> `readonly` **rotation**: `number`
-
-Defined in: [index.d.ts:3435](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3435)
+> `readonly` **rotation**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The display rotation in clock-wise degrees (0, 90, 180, or 270).
 
@@ -97,9 +79,7 @@ The display rotation in clock-wise degrees (0, 90, 180, or 270).
 
 ### scaleFactor
 
-> `readonly` **scaleFactor**: `number`
-
-Defined in: [index.d.ts:3439](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3439)
+> `readonly` **scaleFactor**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
 
@@ -107,8 +87,6 @@ The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
 
 ### widthMm
 
-> `readonly` **widthMm**: `number`
-
-Defined in: [index.d.ts:3427](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3427)
+> `readonly` **widthMm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The physical width of the display in millimeters.

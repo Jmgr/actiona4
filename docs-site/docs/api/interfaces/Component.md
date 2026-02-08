@@ -1,7 +1,5 @@
 # Interface: Component
 
-Defined in: [index.d.ts:5801](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5801)
-
 A hardware component (for example a thermal sensor).
 
 ```ts
@@ -16,9 +14,7 @@ console.log(component.label, component.temperature);
 
 ### criticalTemperature?
 
-> `readonly` `optional` **criticalTemperature**: `number`
-
-Defined in: [index.d.ts:5821](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5821)
+> `readonly` `optional` **criticalTemperature**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Critical temperature
 
@@ -26,9 +22,7 @@ Critical temperature
 
 ### id?
 
-> `readonly` `optional` **id**: `string`
-
-Defined in: [index.d.ts:5809](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5809)
+> `readonly` `optional` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ID
 
@@ -36,9 +30,7 @@ ID
 
 ### label
 
-> `readonly` **label**: `string`
-
-Defined in: [index.d.ts:5805](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5805)
+> `readonly` **label**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Label
 
@@ -46,9 +38,7 @@ Label
 
 ### maxTemperature?
 
-> `readonly` `optional` **maxTemperature**: `number`
-
-Defined in: [index.d.ts:5817](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5817)
+> `readonly` `optional` **maxTemperature**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Maximum temperature
 
@@ -56,9 +46,7 @@ Maximum temperature
 
 ### temperature?
 
-> `readonly` `optional` **temperature**: `number`
-
-Defined in: [index.d.ts:5813](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5813)
+> `readonly` `optional` **temperature**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Temperature
 
@@ -66,10 +54,8 @@ Temperature
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5822](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5822)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

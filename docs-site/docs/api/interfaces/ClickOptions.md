@@ -1,7 +1,5 @@
 # Interface: ClickOptions
 
-Defined in: [index.d.ts:4836](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4836)
-
 Options for clicking a mouse button.
 
 ```ts
@@ -21,9 +19,7 @@ await mouse.click({ duration: 0.5 });
 
 ### amount?
 
-> `optional` **amount**: `number`
-
-Defined in: [index.d.ts:4841](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4841)
+> `optional` **amount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Number of times to click.
 
@@ -36,8 +32,6 @@ Number of times to click.
 ### button?
 
 > `optional` **button**: [`Button`](../enumerations/Button.md)
-
-Defined in: [index.d.ts:7130](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7130)
 
 Mouse button to press.
 
@@ -53,9 +47,7 @@ Mouse button to press.
 
 ### duration?
 
-> `optional` **duration**: `number`
-
-Defined in: [index.d.ts:4851](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4851)
+> `optional` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How long to hold each click, in seconds.
 
@@ -67,9 +59,7 @@ How long to hold each click, in seconds.
 
 ### interval?
 
-> `optional` **interval**: `number`
-
-Defined in: [index.d.ts:4846](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4846)
+> `optional` **interval**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Delay between consecutive clicks, in seconds.
 
@@ -83,13 +73,11 @@ Delay between consecutive clicks, in seconds.
 
 > `optional` **position**: [`Point`](../classes/Point.md)
 
-Defined in: [index.d.ts:7135](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7135)
-
 Position to move the cursor to before pressing.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 #### Inherited from
 
@@ -99,9 +87,7 @@ Position to move the cursor to before pressing.
 
 ### relativePosition?
 
-> `optional` **relativePosition**: `boolean`
-
-Defined in: [index.d.ts:7140](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7140)
+> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 
@@ -119,10 +105,8 @@ Whether the position is relative to the current cursor position.
 
 > `optional` **signal**: [`AbortSignal`](AbortSignal.md)
 
-Defined in: [index.d.ts:4856](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4856)
-
 Abort signal to cancel the click.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

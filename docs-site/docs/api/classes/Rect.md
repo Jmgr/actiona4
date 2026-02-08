@@ -1,7 +1,5 @@
 # Class: Rect
 
-Defined in: [index.d.ts:5240](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5240)
-
 A 2D rectangle with position and size.
 
 Rects can be constructed from four numbers, an object with `x`/`y`/`width`/`height`, or another Rect.
@@ -24,27 +22,25 @@ const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 
 > **new Rect**(`x`, `y`, `width`, `height`): `Rect`
 
-Defined in: [index.d.ts:5268](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5268)
-
 Constructor with a position and a size.
 
 #### Parameters
 
 ##### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -53,8 +49,6 @@ Constructor with a position and a size.
 ### Constructor
 
 > **new Rect**(`r`): `Rect`
-
-Defined in: [index.d.ts:5272](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5272)
 
 Constructor with anything Rect-like.
 
@@ -72,9 +66,7 @@ Constructor with anything Rect-like.
 
 ### height
 
-> **height**: `number`
-
-Defined in: [index.d.ts:5256](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5256)
+> **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Height
 
@@ -84,8 +76,6 @@ Height
 
 > **size**: [`Size`](Size.md)
 
-Defined in: [index.d.ts:5264](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5264)
-
 Size
 
 ***
@@ -94,17 +84,13 @@ Size
 
 > **topLeft**: [`Point`](Point.md)
 
-Defined in: [index.d.ts:5260](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5260)
-
 Top-left origin
 
 ***
 
 ### width
 
-> **width**: `number`
-
-Defined in: [index.d.ts:5252](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5252)
+> **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Width
 
@@ -112,9 +98,7 @@ Width
 
 ### x
 
-> **x**: `number`
-
-Defined in: [index.d.ts:5244](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5244)
+> **x**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 X coordinate
 
@@ -122,9 +106,7 @@ X coordinate
 
 ### y
 
-> **y**: `number`
-
-Defined in: [index.d.ts:5248](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5248)
+> **y**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Y coordinate
 
@@ -133,8 +115,6 @@ Y coordinate
 ### clone()
 
 > **clone**(): `Rect`
-
-Defined in: [index.d.ts:5305](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5305)
 
 Clones this Rect.
 
@@ -151,9 +131,7 @@ const copy = original.clone();
 
 ### contains()
 
-> **contains**(`point`): `boolean`
-
-Defined in: [index.d.ts:5292](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5292)
+> **contains**(`point`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Rect contains the given point.
 
@@ -171,15 +149,13 @@ console.log(r.contains(new Point(150, 50))); // false
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### equals()
 
-> **equals**(`other`): `boolean`
-
-Defined in: [index.d.ts:5282](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5282)
+> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Rect equals another.
 
@@ -197,15 +173,13 @@ console.log(a.equals(b)); // true
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### intersection()
 
-> **intersection**(`other`): `Rect` \| `undefined`
-
-Defined in: [index.d.ts:5325](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5325)
+> **intersection**(`other`): `Rect` \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 Returns the intersection of two Rects, or undefined if they don't overlap.
 
@@ -223,15 +197,13 @@ const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 
 #### Returns
 
-`Rect` \| `undefined`
+`Rect` \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### intersects()
 
-> **intersects**(`other`): `boolean`
-
-Defined in: [index.d.ts:5315](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5315)
+> **intersects**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Rect intersects with another.
 
@@ -249,29 +221,25 @@ console.log(a.intersects(b)); // true
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5296](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5296)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of this Rect.
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### union()
 
 > **union**(`other`): `Rect`
-
-Defined in: [index.d.ts:5335](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5335)
 
 Returns the smallest Rect containing both this and another Rect.
 

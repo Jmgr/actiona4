@@ -1,7 +1,5 @@
 # Class: AbortController
 
-Defined in: [index.d.ts:4604](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4604)
-
 Controls cancellation of asynchronous operations.
 
 Create an `AbortController`, pass its `signal` to a cancellable operation,
@@ -24,8 +22,6 @@ controller.abort();
 
 > **new AbortController**(): `AbortController`
 
-Defined in: [index.d.ts:4606](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4606)
-
 #### Returns
 
 `AbortController`
@@ -36,18 +32,14 @@ Defined in: [index.d.ts:4606](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f
 
 > `readonly` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
 
-Defined in: [index.d.ts:4605](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4605)
-
 ## Methods
 
 ### abort()
 
-> **abort**(): `void`
-
-Defined in: [index.d.ts:4610](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4610)
+> **abort**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Signals cancellation to all operations using this controller's signal.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

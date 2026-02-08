@@ -1,7 +1,5 @@
 # Interface: Keyboard
 
-Defined in: [index.d.ts:4658](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4658)
-
 Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
 
 ```ts
@@ -25,9 +23,7 @@ await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
 
 ### isKeyPressed()
 
-> **isKeyPressed**(`key`): `Promise`\<`boolean`\>
-
-Defined in: [index.d.ts:4676](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4676)
+> **isKeyPressed**(`key`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 Returns whether a key is currently pressed.
 
@@ -35,19 +31,17 @@ Returns whether a key is currently pressed.
 
 ##### key
 
-`string` | `number` | [`Key`](../enumerations/Key.md)
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
 
 #### Returns
 
-`Promise`\<`boolean`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 ***
 
 ### key()
 
-> **key**(`key`, `direction`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4668](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4668)
+> **key**(`key`, `direction`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Presses, releases, or clicks a key.
 
@@ -57,7 +51,7 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 ##### key
 
-`string` | `number` | [`Key`](../enumerations/Key.md)
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
 
 ##### direction
 
@@ -65,15 +59,13 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### raw()
 
-> **raw**(`keycode`, `direction`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4672](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4672)
+> **raw**(`keycode`, `direction`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
@@ -81,7 +73,7 @@ Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
 ##### keycode
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### direction
 
@@ -89,15 +81,13 @@ Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### text()
 
-> **text**(`text`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4662](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4662)
+> **text**(`text`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Types the given text string using simulated key events.
 
@@ -105,19 +95,17 @@ Types the given text string using simulated key events.
 
 ##### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### waitForKeys()
 
-> **waitForKeys**(`keys`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:4693](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4693)
+> **waitForKeys**(`keys`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Waits until the specified keys are all pressed simultaneously.
 
@@ -138,8 +126,8 @@ signal: controller.signal
 
 ##### keys
 
-(`string` \| `number` \| [`Key`](../enumerations/Key.md))[]
+([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[]
 
 #### Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

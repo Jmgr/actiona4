@@ -1,7 +1,5 @@
 # Interface: FindImageOptions
 
-Defined in: [index.d.ts:3963](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3963)
-
 Options for finding an image within another image.
 
 ```ts
@@ -17,9 +15,7 @@ const match = await source.findImage(template, { signal: controller.signal });
 
 ### downscale?
 
-> `optional` **downscale**: `number`
-
-Defined in: [index.d.ts:3989](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3989)
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How many times should the source image and the template be downscaled?
 
@@ -31,9 +27,7 @@ How many times should the source image and the template be downscaled?
 
 ### matchThreshold?
 
-> `optional` **matchThreshold**: `number`
-
-Defined in: [index.d.ts:3979](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3979)
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Matching threshold.
 Values are between 0 (worst) to 1 (best).
@@ -46,9 +40,7 @@ Values are between 0 (worst) to 1 (best).
 
 ### nonMaximumSuppressionRadius?
 
-> `optional` **nonMaximumSuppressionRadius**: `number`
-
-Defined in: [index.d.ts:3984](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3984)
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Radius to consider proximity (in pixels).
 
@@ -62,21 +54,17 @@ Radius to consider proximity (in pixels).
 
 > `optional` **signal**: [`AbortSignal`](AbortSignal.md)
 
-Defined in: [index.d.ts:3994](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3994)
-
 Abort signal to cancel the search.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### useColors?
 
-> `optional` **useColors**: `boolean`
-
-Defined in: [index.d.ts:3968](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3968)
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
 
@@ -88,9 +76,7 @@ Use color matching.
 
 ### useTransparency?
 
-> `optional` **useTransparency**: `boolean`
-
-Defined in: [index.d.ts:3973](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3973)
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use template transparency.
 

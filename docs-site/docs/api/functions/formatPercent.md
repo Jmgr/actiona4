@@ -1,8 +1,6 @@
 # Function: formatPercent()
 
-> **formatPercent**(`percent`, `precision?`): `string`
-
-Defined in: [index.d.ts:79](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L79)
+> **formatPercent**(`percent`, `precision?`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Formats a percentage value and appends `%`.
 
@@ -16,12 +14,12 @@ formatPercent(12.3456, 1);  // "12.3%"
 
 ### percent
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ### precision?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ## Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

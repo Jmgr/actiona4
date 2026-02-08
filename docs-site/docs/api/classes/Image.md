@@ -1,7 +1,5 @@
 # Class: Image
 
-Defined in: [index.d.ts:4103](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4103)
-
 An image that can be loaded, created, manipulated, and saved.
 
 Provides methods for image processing (blur, rotate, resize, color adjustments),
@@ -44,8 +42,6 @@ console.log(`Button found at ${match.position}`);
 
 > **new Image**(`width`, `height`): `Image`
 
-Defined in: [index.d.ts:4118](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4118)
-
 Creates a new empty image.
 
 Example
@@ -57,11 +53,11 @@ let image = new Image(100, 100);
 
 ##### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -71,17 +67,13 @@ let image = new Image(100, 100);
 
 ### height
 
-> `readonly` **height**: `number`
-
-Defined in: [index.d.ts:4105](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4105)
+> `readonly` **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### rect
 
-> `readonly` **rect**: `Readonly`\<[`Rect`](Rect.md)\>
-
-Defined in: [index.d.ts:4109](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4109)
+> `readonly` **rect**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](Rect.md)\>
 
 Returns a Rect representing this image.
 
@@ -89,9 +81,7 @@ Returns a Rect representing this image.
 
 ### width
 
-> `readonly` **width**: `number`
-
-Defined in: [index.d.ts:4104](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4104)
+> `readonly` **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ## Methods
 
@@ -99,15 +89,13 @@ Defined in: [index.d.ts:4104](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f
 
 > **adjustBrightness**(`value`): `this`
 
-Defined in: [index.d.ts:4223](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4223)
-
 Brightens or darkens the pixels of this image.
 
 #### Parameters
 
 ##### value
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -119,15 +107,13 @@ Brightens or darkens the pixels of this image.
 
 > **adjustContrast**(`value`): `this`
 
-Defined in: [index.d.ts:4231](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4231)
-
 Adjusts the contrast of this image.
 
 #### Parameters
 
 ##### value
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -138,8 +124,6 @@ Adjusts the contrast of this image.
 ### blur()
 
 > **blur**(`options?`): `this`
-
-Defined in: [index.d.ts:4159](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4159)
 
 Blur the image.
 
@@ -159,8 +143,6 @@ Blur the image.
 
 > **blurred**(`options?`): `Image`
 
-Defined in: [index.d.ts:4163](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4163)
-
 Blur the image and returns a new image.
 
 #### Parameters
@@ -179,8 +161,6 @@ Blur the image and returns a new image.
 
 > **clone**(): `Image`
 
-Defined in: [index.d.ts:4147](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4147)
-
 Clones this image.
 
 #### Returns
@@ -194,8 +174,6 @@ Clones this image.
 #### Call Signature
 
 > **copyRegion**(`rect`): `Image`
-
-Defined in: [index.d.ts:4279](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4279)
 
 Creates a new image from a part of this image.
 
@@ -213,27 +191,25 @@ Creates a new image from a part of this image.
 
 > **copyRegion**(`x`, `y`, `width`, `height`): `Image`
 
-Defined in: [index.d.ts:4283](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4283)
-
 Creates a new image from a part of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -246,8 +222,6 @@ Creates a new image from a part of this image.
 #### Call Signature
 
 > **crop**(`rect`): `this`
-
-Defined in: [index.d.ts:4199](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4199)
 
 Crops this image.
 
@@ -265,27 +239,25 @@ Crops this image.
 
 > **crop**(`x`, `y`, `width`, `height`): `this`
 
-Defined in: [index.d.ts:4203](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4203)
-
 Crops this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -298,8 +270,6 @@ Crops this image.
 #### Call Signature
 
 > **cropped**(`rect`): `Image`
-
-Defined in: [index.d.ts:4207](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4207)
 
 Returns a cropped version of this image.
 
@@ -317,27 +287,25 @@ Returns a cropped version of this image.
 
 > **cropped**(`x`, `y`, `width`, `height`): `Image`
 
-Defined in: [index.d.ts:4211](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4211)
-
 Returns a cropped version of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -351,8 +319,6 @@ Returns a cropped version of this image.
 
 > **drawCircle**(`center`, `radius`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4383](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4383)
-
 Draw a circle on this image.
 
 ##### Parameters
@@ -363,7 +329,7 @@ Draw a circle on this image.
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -381,8 +347,6 @@ Draw a circle on this image.
 
 > **drawCircle**(`center`, `radius`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4387](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4387)
-
 Draw a circle on this image.
 
 ##### Parameters
@@ -393,23 +357,23 @@ Draw a circle on this image.
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -423,23 +387,21 @@ Draw a circle on this image.
 
 > **drawCircle**(`x`, `y`, `radius`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4391](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4391)
-
 Draw a circle on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -457,39 +419,37 @@ Draw a circle on this image.
 
 > **drawCircle**(`x`, `y`, `radius`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4395](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4395)
-
 Draw a circle on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -506,8 +466,6 @@ Draw a circle on this image.
 #### Call Signature
 
 > **drawCross**(`position`, `color`): `this`
-
-Defined in: [index.d.ts:4287](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4287)
 
 Draw a cross on this image.
 
@@ -529,8 +487,6 @@ Draw a cross on this image.
 
 > **drawCross**(`position`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4291](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4291)
-
 Draw a cross on this image.
 
 ##### Parameters
@@ -541,19 +497,19 @@ Draw a cross on this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -563,19 +519,17 @@ Draw a cross on this image.
 
 > **drawCross**(`x`, `y`, `color`): `this`
 
-Defined in: [index.d.ts:4295](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4295)
-
 Draw a cross on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -589,35 +543,33 @@ Draw a cross on this image.
 
 > **drawCross**(`x`, `y`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4299](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4299)
-
 Draw a cross on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -631,8 +583,6 @@ Draw a cross on this image.
 
 > **drawEllipse**(`center`, `widthRadius`, `heightRadius`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4415](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4415)
-
 Draw an ellipse on this image.
 
 ##### Parameters
@@ -643,11 +593,11 @@ Draw an ellipse on this image.
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -665,8 +615,6 @@ Draw an ellipse on this image.
 
 > **drawEllipse**(`center`, `widthRadius`, `heightRadius`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4419](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4419)
-
 Draw an ellipse on this image.
 
 ##### Parameters
@@ -677,27 +625,27 @@ Draw an ellipse on this image.
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -711,27 +659,25 @@ Draw an ellipse on this image.
 
 > **drawEllipse**(`x`, `y`, `widthRadius`, `heightRadius`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4423](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4423)
-
 Draw an ellipse on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -749,43 +695,41 @@ Draw an ellipse on this image.
 
 > **drawEllipse**(`x`, `y`, `widthRadius`, `heightRadius`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4427](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4427)
-
 Draw an ellipse on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -802,8 +746,6 @@ Draw an ellipse on this image.
 #### Call Signature
 
 > **drawImage**(`position`, `image`, `options?`): `this`
-
-Defined in: [index.d.ts:4511](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4511)
 
 Draw another image on this image.
 
@@ -829,19 +771,17 @@ Draw another image on this image.
 
 > **drawImage**(`x`, `y`, `image`, `options?`): `this`
 
-Defined in: [index.d.ts:4515](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4515)
-
 Draw another image on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### image
 
@@ -862,8 +802,6 @@ Draw another image on this image.
 #### Call Signature
 
 > **drawLine**(`start`, `end`, `color`): `this`
-
-Defined in: [index.d.ts:4319](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4319)
 
 Draw a line on this image.
 
@@ -889,8 +827,6 @@ Draw a line on this image.
 
 > **drawLine**(`start`, `end`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4323](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4323)
-
 Draw a line on this image.
 
 ##### Parameters
@@ -905,19 +841,19 @@ Draw a line on this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -926,8 +862,6 @@ Draw a line on this image.
 #### Call Signature
 
 > **drawLine**(`start`, `x`, `y`, `color`): `this`
-
-Defined in: [index.d.ts:4327](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4327)
 
 Draw a line on this image.
 
@@ -939,11 +873,11 @@ Draw a line on this image.
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -957,8 +891,6 @@ Draw a line on this image.
 
 > **drawLine**(`start`, `x`, `y`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4331](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4331)
-
 Draw a line on this image.
 
 ##### Parameters
@@ -969,27 +901,27 @@ Draw a line on this image.
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -999,19 +931,17 @@ Draw a line on this image.
 
 > **drawLine**(`x`, `y`, `end`, `color`): `this`
 
-Defined in: [index.d.ts:4335](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4335)
-
 Draw a line on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### end
 
@@ -1029,19 +959,17 @@ Draw a line on this image.
 
 > **drawLine**(`x`, `y`, `end`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4339](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4339)
-
 Draw a line on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### end
 
@@ -1049,19 +977,19 @@ Draw a line on this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -1071,27 +999,25 @@ Draw a line on this image.
 
 > **drawLine**(`x1`, `y1`, `x2`, `y2`, `color`): `this`
 
-Defined in: [index.d.ts:4343](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4343)
-
 Draw a line on this image.
 
 ##### Parameters
 
 ###### x1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### x2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -1105,43 +1031,41 @@ Draw a line on this image.
 
 > **drawLine**(`x1`, `y1`, `x2`, `y2`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4347](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4347)
-
 Draw a line on this image.
 
 ##### Parameters
 
 ###### x1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### x2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -1154,8 +1078,6 @@ Draw a line on this image.
 #### Call Signature
 
 > **drawRectangle**(`rect`, `color`, `options?`): `this`
-
-Defined in: [index.d.ts:4447](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4447)
 
 Draw a rectangle on this image.
 
@@ -1181,8 +1103,6 @@ Draw a rectangle on this image.
 
 > **drawRectangle**(`rect`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4451](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4451)
-
 Draw a rectangle on this image.
 
 ##### Parameters
@@ -1193,19 +1113,19 @@ Draw a rectangle on this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -1219,27 +1139,25 @@ Draw a rectangle on this image.
 
 > **drawRectangle**(`x`, `y`, `width`, `height`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4455](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4455)
-
 Draw a rectangle on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -1257,43 +1175,41 @@ Draw a rectangle on this image.
 
 > **drawRectangle**(`x`, `y`, `width`, `height`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4459](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4459)
-
 Draw a rectangle on this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -1311,8 +1227,6 @@ Draw a rectangle on this image.
 
 > **drawText**(`position`, `text`, `fontPath`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4479](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4479)
-
 Draw text on this image using the provided font.
 
 ##### Parameters
@@ -1323,11 +1237,11 @@ Draw text on this image using the provided font.
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### color
 
@@ -1345,8 +1259,6 @@ Draw text on this image using the provided font.
 
 > **drawText**(`position`, `text`, `fontPath`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4483](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4483)
-
 Draw text on this image using the provided font.
 
 ##### Parameters
@@ -1357,27 +1269,27 @@ Draw text on this image using the provided font.
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -1391,27 +1303,25 @@ Draw text on this image using the provided font.
 
 > **drawText**(`x`, `y`, `text`, `fontPath`, `color`, `options?`): `this`
 
-Defined in: [index.d.ts:4487](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4487)
-
 Draw text on this image using the provided font.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### color
 
@@ -1429,43 +1339,41 @@ Draw text on this image using the provided font.
 
 > **drawText**(`x`, `y`, `text`, `fontPath`, `r`, `g`, `b`, `a?`, `options?`): `this`
 
-Defined in: [index.d.ts:4491](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4491)
-
 Draw text on this image using the provided font.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -1479,9 +1387,7 @@ Draw text on this image using the provided font.
 
 ### equals()
 
-> **equals**(`other`): `boolean`
-
-Defined in: [index.d.ts:4139](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4139)
+> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this image equals another (same dimensions and pixel data).
 
@@ -1493,7 +1399,7 @@ Returns true if this image equals another (same dimensions and pixel data).
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
@@ -1502,8 +1408,6 @@ Returns true if this image equals another (same dimensions and pixel data).
 #### Call Signature
 
 > **fill**(`color`): `this`
-
-Defined in: [index.d.ts:4239](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4239)
 
 Fill this image with a color.
 
@@ -1521,27 +1425,25 @@ Fill this image with a color.
 
 > **fill**(`r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4243](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4243)
-
 Fill this image with a color.
 
 ##### Parameters
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -1554,8 +1456,6 @@ Fill this image with a color.
 #### Call Signature
 
 > **filled**(`color`): `Image`
-
-Defined in: [index.d.ts:4247](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4247)
 
 Returns a copy of this image filled with a color.
 
@@ -1573,27 +1473,25 @@ Returns a copy of this image filled with a color.
 
 > **filled**(`r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4251](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4251)
-
 Returns a copy of this image filled with a color.
 
 ##### Parameters
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -1603,14 +1501,12 @@ Returns a copy of this image filled with a color.
 
 ### findImage()
 
-> **findImage**(`image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| `undefined`, [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-Defined in: [index.d.ts:4546](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4546)
+> **findImage**(`image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
 Finds the best match of an image inside this image.
 
 Returns a `ProgressTask` that can be awaited for the result and iterated
-for progress updates. Returns `undefined` if no match is found.
+for progress updates. Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
 
 ```ts
 const match = await source.findImage(template);
@@ -1640,15 +1536,13 @@ const match = await task;
 
 #### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| `undefined`, [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
 ***
 
 ### findImageAll()
 
 > **findImageAll**(`image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-Defined in: [index.d.ts:4568](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4568)
 
 Finds all occurrences of an image inside this image.
 
@@ -1690,8 +1584,6 @@ const matches = await task;
 
 > **flip**(`flipDirection`): `this`
 
-Defined in: [index.d.ts:4175](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4175)
-
 Flip the image.
 
 #### Parameters
@@ -1709,8 +1601,6 @@ Flip the image.
 ### flipped()
 
 > **flipped**(`flipDirection`): `Image`
-
-Defined in: [index.d.ts:4179](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4179)
 
 Flip the image and returns a new image.
 
@@ -1732,8 +1622,6 @@ Flip the image and returns a new image.
 
 > **getPixel**(`position`): [`Color`](Color.md)
 
-Defined in: [index.d.ts:4255](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4255)
-
 Returns the value of a pixel.
 
 ##### Parameters
@@ -1750,19 +1638,17 @@ Returns the value of a pixel.
 
 > **getPixel**(`x`, `y`): [`Color`](Color.md)
 
-Defined in: [index.d.ts:4259](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4259)
-
 Returns the value of a pixel.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -1773,8 +1659,6 @@ Returns the value of a pixel.
 ### grayscale()
 
 > **grayscale**(): `this`
-
-Defined in: [index.d.ts:4191](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4191)
 
 Transform this image into a grayscale.
 
@@ -1788,15 +1672,13 @@ Transform this image into a grayscale.
 
 > **hueRotate**(`value`): `this`
 
-Defined in: [index.d.ts:4183](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4183)
-
 Hue rotate the image.
 
 #### Parameters
 
 ##### value
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -1807,8 +1689,6 @@ Hue rotate the image.
 ### invertColors()
 
 > **invertColors**(): `this`
-
-Defined in: [index.d.ts:4151](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4151)
 
 Invert the colors of this image.
 
@@ -1822,8 +1702,6 @@ Invert the colors of this image.
 
 > **invertedColors**(): `Image`
 
-Defined in: [index.d.ts:4155](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4155)
-
 Invert the colors of this image and returns a new image.
 
 #### Returns
@@ -1836,19 +1714,17 @@ Invert the colors of this image and returns a new image.
 
 > **resize**(`width`, `height`, `options?`): `this`
 
-Defined in: [index.d.ts:4215](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4215)
-
 Resizes this image.
 
 #### Parameters
 
 ##### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### options?
 
@@ -1864,19 +1740,17 @@ Resizes this image.
 
 > **resized**(`width`, `height`, `options?`): `Image`
 
-Defined in: [index.d.ts:4219](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4219)
-
 Returns a resized version of this image.
 
 #### Parameters
 
 ##### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### options?
 
@@ -1892,15 +1766,13 @@ Returns a resized version of this image.
 
 > **rotate**(`angle`, `options?`): `this`
 
-Defined in: [index.d.ts:4167](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4167)
-
 Rotate the image.
 
 #### Parameters
 
 ##### angle
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### options?
 
@@ -1916,15 +1788,13 @@ Rotate the image.
 
 > **rotated**(`angle`, `options?`): `Image`
 
-Defined in: [index.d.ts:4171](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4171)
-
 Rotate the image and returns a new image.
 
 #### Parameters
 
 ##### angle
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### options?
 
@@ -1938,9 +1808,7 @@ Rotate the image and returns a new image.
 
 ### save()
 
-> **save**(`path`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4131](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4131)
+> **save**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Saves this image to a file. The format is inferred from the file extension.
 
@@ -1948,11 +1816,11 @@ Saves this image to a file. The format is inferred from the file extension.
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
@@ -1961,8 +1829,6 @@ Saves this image to a file. The format is inferred from the file extension.
 #### Call Signature
 
 > **setPixel**(`position`, `color`): `this`
-
-Defined in: [index.d.ts:4263](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4263)
 
 Sets the color of a pixel.
 
@@ -1984,8 +1850,6 @@ Sets the color of a pixel.
 
 > **setPixel**(`position`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4267](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4267)
-
 Sets the color of a pixel.
 
 ##### Parameters
@@ -1996,19 +1860,19 @@ Sets the color of a pixel.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2018,19 +1882,17 @@ Sets the color of a pixel.
 
 > **setPixel**(`x`, `y`, `color`): `this`
 
-Defined in: [index.d.ts:4271](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4271)
-
 Sets the color of a pixel.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2044,35 +1906,33 @@ Sets the color of a pixel.
 
 > **setPixel**(`x`, `y`, `r`, `g`, `b`, `a?`): `this`
 
-Defined in: [index.d.ts:4275](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4275)
-
 Sets the color of a pixel.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2082,15 +1942,13 @@ Sets the color of a pixel.
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:4143](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4143)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of this image (width, height).
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
@@ -2098,15 +1956,13 @@ Returns a string representation of this image (width, height).
 
 > **withAdjustedBrightness**(`value`): `Image`
 
-Defined in: [index.d.ts:4227](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4227)
-
 Returns a brightened or darkened version of this image.
 
 #### Parameters
 
 ##### value
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -2118,15 +1974,13 @@ Returns a brightened or darkened version of this image.
 
 > **withAdjustedContrast**(`value`): `Image`
 
-Defined in: [index.d.ts:4235](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4235)
-
 Returns a new image with an adjusted contrast.
 
 #### Parameters
 
 ##### value
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -2140,8 +1994,6 @@ Returns a new image with an adjusted contrast.
 
 > **withCircle**(`center`, `radius`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4399](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4399)
-
 Draw a circle on a copy of this image.
 
 ##### Parameters
@@ -2152,7 +2004,7 @@ Draw a circle on a copy of this image.
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2170,8 +2022,6 @@ Draw a circle on a copy of this image.
 
 > **withCircle**(`center`, `radius`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4403](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4403)
-
 Draw a circle on a copy of this image.
 
 ##### Parameters
@@ -2182,23 +2032,23 @@ Draw a circle on a copy of this image.
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -2212,23 +2062,21 @@ Draw a circle on a copy of this image.
 
 > **withCircle**(`x`, `y`, `radius`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4407](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4407)
-
 Draw a circle on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2246,39 +2094,37 @@ Draw a circle on a copy of this image.
 
 > **withCircle**(`x`, `y`, `radius`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4411](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4411)
-
 Draw a circle on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -2295,8 +2141,6 @@ Draw a circle on a copy of this image.
 #### Call Signature
 
 > **withCross**(`position`, `color`): `Image`
-
-Defined in: [index.d.ts:4303](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4303)
 
 Draw a cross on a copy of this image.
 
@@ -2318,8 +2162,6 @@ Draw a cross on a copy of this image.
 
 > **withCross**(`position`, `r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4307](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4307)
-
 Draw a cross on a copy of this image.
 
 ##### Parameters
@@ -2330,19 +2172,19 @@ Draw a cross on a copy of this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2352,19 +2194,17 @@ Draw a cross on a copy of this image.
 
 > **withCross**(`x`, `y`, `color`): `Image`
 
-Defined in: [index.d.ts:4311](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4311)
-
 Draw a cross on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2378,35 +2218,33 @@ Draw a cross on a copy of this image.
 
 > **withCross**(`x`, `y`, `r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4315](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4315)
-
 Draw a cross on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2420,8 +2258,6 @@ Draw a cross on a copy of this image.
 
 > **withEllipse**(`center`, `widthRadius`, `heightRadius`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4431](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4431)
-
 Draw an ellipse on a copy of this image.
 
 ##### Parameters
@@ -2432,11 +2268,11 @@ Draw an ellipse on a copy of this image.
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2454,8 +2290,6 @@ Draw an ellipse on a copy of this image.
 
 > **withEllipse**(`center`, `widthRadius`, `heightRadius`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4435](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4435)
-
 Draw an ellipse on a copy of this image.
 
 ##### Parameters
@@ -2466,27 +2300,27 @@ Draw an ellipse on a copy of this image.
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -2500,27 +2334,25 @@ Draw an ellipse on a copy of this image.
 
 > **withEllipse**(`x`, `y`, `widthRadius`, `heightRadius`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4439](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4439)
-
 Draw an ellipse on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2538,43 +2370,41 @@ Draw an ellipse on a copy of this image.
 
 > **withEllipse**(`x`, `y`, `widthRadius`, `heightRadius`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4443](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4443)
-
 Draw an ellipse on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### widthRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### heightRadius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -2590,8 +2420,6 @@ Draw an ellipse on a copy of this image.
 
 > **withGrayscale**(): `Image`
 
-Defined in: [index.d.ts:4195](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4195)
-
 Returns a grayscale version of this image.
 
 #### Returns
@@ -2604,15 +2432,13 @@ Returns a grayscale version of this image.
 
 > **withHueRotation**(`value`): `Image`
 
-Defined in: [index.d.ts:4187](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4187)
-
 Hue rotate the image and returns a new image.
 
 #### Parameters
 
 ##### value
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -2625,8 +2451,6 @@ Hue rotate the image and returns a new image.
 #### Call Signature
 
 > **withImage**(`position`, `image`, `options?`): `Image`
-
-Defined in: [index.d.ts:4519](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4519)
 
 Draw another image on a copy of this image.
 
@@ -2652,19 +2476,17 @@ Draw another image on a copy of this image.
 
 > **withImage**(`x`, `y`, `image`, `options?`): `Image`
 
-Defined in: [index.d.ts:4523](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4523)
-
 Draw another image on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### image
 
@@ -2685,8 +2507,6 @@ Draw another image on a copy of this image.
 #### Call Signature
 
 > **withLine**(`start`, `end`, `color`): `Image`
-
-Defined in: [index.d.ts:4351](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4351)
 
 Draw a line on a copy of this image.
 
@@ -2712,8 +2532,6 @@ Draw a line on a copy of this image.
 
 > **withLine**(`start`, `end`, `r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4355](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4355)
-
 Draw a line on a copy of this image.
 
 ##### Parameters
@@ -2728,19 +2546,19 @@ Draw a line on a copy of this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2749,8 +2567,6 @@ Draw a line on a copy of this image.
 #### Call Signature
 
 > **withLine**(`start`, `x`, `y`, `color`): `Image`
-
-Defined in: [index.d.ts:4359](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4359)
 
 Draw a line on a copy of this image.
 
@@ -2762,11 +2578,11 @@ Draw a line on a copy of this image.
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2780,8 +2596,6 @@ Draw a line on a copy of this image.
 
 > **withLine**(`start`, `x`, `y`, `r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4363](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4363)
-
 Draw a line on a copy of this image.
 
 ##### Parameters
@@ -2792,27 +2606,27 @@ Draw a line on a copy of this image.
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2822,19 +2636,17 @@ Draw a line on a copy of this image.
 
 > **withLine**(`x`, `y`, `end`, `color`): `Image`
 
-Defined in: [index.d.ts:4367](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4367)
-
 Draw a line on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### end
 
@@ -2852,19 +2664,17 @@ Draw a line on a copy of this image.
 
 > **withLine**(`x`, `y`, `end`, `r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4371](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4371)
-
 Draw a line on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### end
 
@@ -2872,19 +2682,19 @@ Draw a line on a copy of this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2894,27 +2704,25 @@ Draw a line on a copy of this image.
 
 > **withLine**(`x1`, `y1`, `x2`, `y2`, `color`): `Image`
 
-Defined in: [index.d.ts:4375](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4375)
-
 Draw a line on a copy of this image.
 
 ##### Parameters
 
 ###### x1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### x2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -2928,43 +2736,41 @@ Draw a line on a copy of this image.
 
 > **withLine**(`x1`, `y1`, `x2`, `y2`, `r`, `g`, `b`, `a?`): `Image`
 
-Defined in: [index.d.ts:4379](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4379)
-
 Draw a line on a copy of this image.
 
 ##### Parameters
 
 ###### x1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y1
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### x2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y2
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -2977,8 +2783,6 @@ Draw a line on a copy of this image.
 #### Call Signature
 
 > **withRectangle**(`rect`, `color`, `options?`): `Image`
-
-Defined in: [index.d.ts:4463](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4463)
 
 Draw a rectangle on a copy of this image.
 
@@ -3004,8 +2808,6 @@ Draw a rectangle on a copy of this image.
 
 > **withRectangle**(`rect`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4467](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4467)
-
 Draw a rectangle on a copy of this image.
 
 ##### Parameters
@@ -3016,19 +2818,19 @@ Draw a rectangle on a copy of this image.
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -3042,27 +2844,25 @@ Draw a rectangle on a copy of this image.
 
 > **withRectangle**(`x`, `y`, `width`, `height`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4471](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4471)
-
 Draw a rectangle on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### color
 
@@ -3080,43 +2880,41 @@ Draw a rectangle on a copy of this image.
 
 > **withRectangle**(`x`, `y`, `width`, `height`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4475](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4475)
-
 Draw a rectangle on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -3134,8 +2932,6 @@ Draw a rectangle on a copy of this image.
 
 > **withText**(`position`, `text`, `fontPath`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4495](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4495)
-
 Draw text on a copy of this image.
 
 ##### Parameters
@@ -3146,11 +2942,11 @@ Draw text on a copy of this image.
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### color
 
@@ -3168,8 +2964,6 @@ Draw text on a copy of this image.
 
 > **withText**(`position`, `text`, `fontPath`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4499](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4499)
-
 Draw text on a copy of this image.
 
 ##### Parameters
@@ -3180,27 +2974,27 @@ Draw text on a copy of this image.
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -3214,27 +3008,25 @@ Draw text on a copy of this image.
 
 > **withText**(`x`, `y`, `text`, `fontPath`, `color`, `options?`): `Image`
 
-Defined in: [index.d.ts:4503](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4503)
-
 Draw text on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### color
 
@@ -3252,43 +3044,41 @@ Draw text on a copy of this image.
 
 > **withText**(`x`, `y`, `text`, `fontPath`, `r`, `g`, `b`, `a?`, `options?`): `Image`
 
-Defined in: [index.d.ts:4507](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4507)
-
 Draw text on a copy of this image.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### fontPath
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ###### r
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### g
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### b
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### a?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -3304,8 +3094,6 @@ Draw text on a copy of this image.
 
 > `static` **fromBytes**(`bytes`): `Image`
 
-Defined in: [index.d.ts:4127](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4127)
-
 Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
 
 ```ts
@@ -3317,7 +3105,7 @@ const image = Image.fromBytes(bytes);
 
 ##### bytes
 
-`Uint8Array`
+[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 #### Returns
 
@@ -3327,9 +3115,7 @@ const image = Image.fromBytes(bytes);
 
 ### load()
 
-> `static` **load**(`path`): `Promise`\<`Image`\>
-
-Defined in: [index.d.ts:4135](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4135)
+> `static` **load**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Image`\>
 
 Loads an image from a file. The format is guessed from the file contents.
 
@@ -3337,8 +3123,8 @@ Loads an image from a file. The format is guessed from the file contents.
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`Image`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Image`\>

@@ -1,7 +1,5 @@
 # Interface: ClipboardHtml
 
-Defined in: [index.d.ts:2456](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2456)
-
 Provides HTML clipboard operations.
 
 ```ts
@@ -18,9 +16,7 @@ const html = await clipboard.html.get();
 
 ### get()
 
-> **get**(`mode?`): `Promise`\<`string`\>
-
-Defined in: [index.d.ts:2464](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2464)
+> **get**(`mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 Gets the clipboard HTML content.
 
@@ -32,15 +28,13 @@ Gets the clipboard HTML content.
 
 #### Returns
 
-`Promise`\<`string`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 ***
 
 ### set()
 
-> **set**(`html`, `altText?`, `mode?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:2460](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2460)
+> **set**(`html`, `altText?`, `mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the clipboard HTML content, with an optional plain-text alternative.
 
@@ -48,11 +42,11 @@ Sets the clipboard HTML content, with an optional plain-text alternative.
 
 ##### html
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### altText?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### mode?
 
@@ -60,4 +54,4 @@ Sets the clipboard HTML content, with an optional plain-text alternative.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

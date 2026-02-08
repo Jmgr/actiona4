@@ -1,7 +1,5 @@
 # Interface: MessageBoxOptions
 
-Defined in: [index.d.ts:6519](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6519)
-
 Message box options.
 
 ```ts
@@ -18,8 +16,6 @@ icon: MessageBoxIcon.Warning,
 
 > `optional` **buttons**: [`MessageBoxButtons`](../classes/MessageBoxButtons.md)
 
-Defined in: [index.d.ts:6529](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6529)
-
 Buttons displayed in the message box.
 
 #### Default Value
@@ -31,8 +27,6 @@ Buttons displayed in the message box.
 ### icon?
 
 > `optional` **icon**: [`MessageBoxIcon`](../enumerations/MessageBoxIcon.md)
-
-Defined in: [index.d.ts:6534](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6534)
 
 Icon displayed in the message box.
 
@@ -46,24 +40,20 @@ Icon displayed in the message box.
 
 > `optional` **signal**: [`AbortSignal`](AbortSignal.md)
 
-Defined in: [index.d.ts:6539](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6539)
-
 Abort signal to cancel the message box.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### title?
 
-> `optional` **title**: `string`
-
-Defined in: [index.d.ts:6524](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6524)
+> `optional` **title**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title displayed in the message box title bar.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

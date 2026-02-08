@@ -1,7 +1,5 @@
 # Interface: Clipboard
 
-Defined in: [index.d.ts:2351](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2351)
-
 The global clipboard singleton for reading and writing clipboard content.
 
 Supports text, images, file lists, and HTML content. Each content type
@@ -35,8 +33,6 @@ await clipboard.text.set("selected", ClipboardMode.Selection);
 
 > `readonly` **fileList**: [`ClipboardFileList`](ClipboardFileList.md)
 
-Defined in: [index.d.ts:2363](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2363)
-
 Sub-object for file list clipboard operations.
 
 ***
@@ -44,8 +40,6 @@ Sub-object for file list clipboard operations.
 ### html
 
 > `readonly` **html**: [`ClipboardHtml`](ClipboardHtml.md)
-
-Defined in: [index.d.ts:2367](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2367)
 
 Sub-object for HTML clipboard operations.
 
@@ -55,8 +49,6 @@ Sub-object for HTML clipboard operations.
 
 > `readonly` **image**: [`ClipboardImage`](ClipboardImage.md)
 
-Defined in: [index.d.ts:2359](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2359)
-
 Sub-object for image clipboard operations.
 
 ***
@@ -65,17 +57,13 @@ Sub-object for image clipboard operations.
 
 > `readonly` **text**: [`ClipboardText`](ClipboardText.md)
 
-Defined in: [index.d.ts:2355](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2355)
-
 Sub-object for text clipboard operations.
 
 ## Methods
 
 ### clear()
 
-> **clear**(`mode?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:2378](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2378)
+> **clear**(`mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Clears the clipboard contents.
 
@@ -94,4 +82,4 @@ await clipboard.clear(ClipboardMode.Selection);
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

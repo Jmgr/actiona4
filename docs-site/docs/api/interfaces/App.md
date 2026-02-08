@@ -1,7 +1,5 @@
 # Interface: App
 
-Defined in: [index.d.ts:2113](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2113)
-
 The global application singleton, providing access to environment information
 and execution settings.
 
@@ -25,9 +23,7 @@ app.waitAtEnd = WaitAtEnd.Automatic;
 
 ### cwd
 
-> `readonly` **cwd**: `string`
-
-Defined in: [index.d.ts:2143](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2143)
+> `readonly` **cwd**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The current working directory.
 
@@ -39,9 +35,7 @@ console.log(app.cwd); // e.g. "/home/user/project"
 
 ### env
 
-> `readonly` **env**: `Readonly`\<`Record`\<`string`, `string` \| `undefined`\>\>
-
-Defined in: [index.d.ts:2135](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2135)
+> `readonly` **env**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 All environment variables as a readonly key-value map.
 
@@ -55,9 +49,7 @@ console.log(env["PATH"]);
 
 ### executablePath
 
-> `readonly` **executablePath**: `string`
-
-Defined in: [index.d.ts:2151](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2151)
+> `readonly` **executablePath**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The path to the running executable.
 
@@ -69,9 +61,7 @@ console.log(app.executablePath); // e.g. "/usr/bin/actiona-ng-cli"
 
 ### version
 
-> `readonly` **version**: `string`
-
-Defined in: [index.d.ts:2125](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2125)
+> `readonly` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The version of Actiona-cli.
 
@@ -83,9 +73,7 @@ console.log(app.version); // e.g. "0.1.0"
 
 ### waitAtEnd
 
-> **waitAtEnd**: `boolean` \| [`WaitAtEnd`](../enumerations/WaitAtEnd.md)
-
-Defined in: [index.d.ts:2117](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2117)
+> **waitAtEnd**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean) \| [`WaitAtEnd`](../enumerations/WaitAtEnd.md)
 
 Should the app wait at the end of execution
 
@@ -93,9 +81,7 @@ Should the app wait at the end of execution
 
 ### setCwd()
 
-> **setCwd**(`cwd`): `void`
-
-Defined in: [index.d.ts:2159](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2159)
+> **setCwd**(`cwd`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the current working directory.
 
@@ -107,8 +93,8 @@ app.setCwd("/tmp");
 
 ##### cwd
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

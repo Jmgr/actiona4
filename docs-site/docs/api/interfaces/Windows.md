@@ -1,7 +1,5 @@
 # Interface: Windows
 
-Defined in: [index.d.ts:6868](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6868)
-
 Manages desktop windows: enumerate, focus, move, resize, and close windows.
 
 ```ts
@@ -33,9 +31,7 @@ await win.close();
 
 ### activeWindow()
 
-> **activeWindow**(): `Promise`\<`Readonly`\<[`WindowHandle`](WindowHandle.md)\>\>
-
-Defined in: [index.d.ts:6886](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6886)
+> **activeWindow**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>\>
 
 Returns the currently active (focused) window.
 
@@ -46,15 +42,13 @@ console.log(await win.title());
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`WindowHandle`](WindowHandle.md)\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>\>
 
 ***
 
 ### all()
 
-> **all**(): `Promise`\<readonly [`WindowHandle`](WindowHandle.md)[]\>
-
-Defined in: [index.d.ts:6877](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6877)
+> **all**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
 
 Returns all currently open windows.
 
@@ -65,4 +59,4 @@ console.log(`Found ${allWindows.length} windows`);
 
 #### Returns
 
-`Promise`\<readonly [`WindowHandle`](WindowHandle.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>

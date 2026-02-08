@@ -1,7 +1,5 @@
 # Enumeration: TextVerticalAlign
 
-Defined in: [index.d.ts:176](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L176)
-
 Vertical alignment for text drawing.
 
 ```ts
@@ -14,22 +12,16 @@ verticalAlign: TextVerticalAlign.Middle
 
 ### Bottom
 
-> **Bottom**: `number`
-
-Defined in: [index.d.ts:181](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L181)
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Middle
 
-> **Middle**: `number`
-
-Defined in: [index.d.ts:179](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L179)
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Top
 
-> **Top**: `number`
-
-Defined in: [index.d.ts:177](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L177)
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

@@ -1,7 +1,5 @@
 # Interface: Counters
 
-Defined in: [index.d.ts:6062](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6062)
-
 Byte/packet/error counters.
 
 ```ts
@@ -17,9 +15,7 @@ console.log(formatBytes(counters.data), counters.packets, counters.errors);
 
 ### data
 
-> `readonly` **data**: `number`
-
-Defined in: [index.d.ts:6066](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6066)
+> `readonly` **data**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Data
 
@@ -27,9 +23,7 @@ Data
 
 ### errors
 
-> `readonly` **errors**: `number`
-
-Defined in: [index.d.ts:6074](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6074)
+> `readonly` **errors**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Errors
 
@@ -37,9 +31,7 @@ Errors
 
 ### packets
 
-> `readonly` **packets**: `number`
-
-Defined in: [index.d.ts:6070](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6070)
+> `readonly` **packets**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Packets
 
@@ -47,10 +39,8 @@ Packets
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6075](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6075)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

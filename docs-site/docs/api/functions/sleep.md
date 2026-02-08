@@ -1,8 +1,6 @@
 # Function: sleep()
 
-> **sleep**(`ms`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:47](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L47)
+> **sleep**(`ms`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Pauses the execution for the given number of milliseconds.
 
@@ -15,8 +13,8 @@ await sleep(1000);
 
 ### ms
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ## Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

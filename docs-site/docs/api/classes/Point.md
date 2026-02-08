@@ -1,7 +1,5 @@
 # Class: Point
 
-Defined in: [index.d.ts:5005](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5005)
-
 A 2D point with integer coordinates.
 
 Points can be constructed from two numbers, an object with `x`/`y`, or another Point.
@@ -25,19 +23,17 @@ console.log(a.add(b).toString()); // "(5, 8)"
 
 > **new Point**(`x`, `y`): `Point`
 
-Defined in: [index.d.ts:5017](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5017)
-
 Constructor with two numbers.
 
 #### Parameters
 
 ##### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -46,8 +42,6 @@ Constructor with two numbers.
 ### Constructor
 
 > **new Point**(`p`): `Point`
-
-Defined in: [index.d.ts:5021](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5021)
 
 Constructor with anything Point-like.
 
@@ -65,9 +59,7 @@ Constructor with anything Point-like.
 
 ### x
 
-> **x**: `number`
-
-Defined in: [index.d.ts:5009](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5009)
+> **x**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 X coordinate
 
@@ -75,9 +67,7 @@ X coordinate
 
 ### y
 
-> **y**: `number`
-
-Defined in: [index.d.ts:5013](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5013)
+> **y**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Y coordinate
 
@@ -86,8 +76,6 @@ Y coordinate
 ### add()
 
 > **add**(`other`): `Point`
-
-Defined in: [index.d.ts:5102](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5102)
 
 Adds two points and returns a new Point.
 
@@ -112,8 +100,6 @@ console.log(sum.toString()); // "(4, 6)"
 
 > **clone**(): `Point`
 
-Defined in: [index.d.ts:5133](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5133)
-
 Clones this Point.
 
 ```ts
@@ -129,9 +115,7 @@ const copy = original.clone();
 
 ### distanceTo()
 
-> **distanceTo**(`other`): `number`
-
-Defined in: [index.d.ts:5056](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5056)
+> **distanceTo**(`other`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Calculates the distance between this point and another.
 
@@ -149,15 +133,13 @@ console.log(a.distanceTo(b)); // 5
 
 #### Returns
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### equals()
 
-> **equals**(`other`): `boolean`
-
-Defined in: [index.d.ts:5093](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5093)
+> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if a Point equals another.
 
@@ -175,15 +157,13 @@ console.log(a.equals(b)); // true
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### isOrigin()
 
-> **isOrigin**(): `boolean`
-
-Defined in: [index.d.ts:5074](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5074)
+> **isOrigin**(): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Point is at the origin, (0, 0).
 
@@ -194,15 +174,13 @@ console.log(new Point(1, 0).isOrigin()); // false
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### length()
 
-> **length**(): `number`
-
-Defined in: [index.d.ts:5030](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5030)
+> **length**(): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Length of this point (distance from origin).
 
@@ -213,15 +191,13 @@ console.log(p.length()); // 5
 
 #### Returns
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### scaled()
 
 > **scaled**(`factor`): `Point`
-
-Defined in: [index.d.ts:5120](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5120)
 
 Scales this point by a factor and returns a new Point.
 
@@ -234,7 +210,7 @@ console.log(p.toString()); // "(6, 8)"
 
 ##### factor
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -245,8 +221,6 @@ console.log(p.toString()); // "(6, 8)"
 ### subtract()
 
 > **subtract**(`other`): `Point`
-
-Defined in: [index.d.ts:5111](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5111)
 
 Subtracts two points and returns a new Point.
 
@@ -269,9 +243,7 @@ console.log(diff.toString()); // "(3, 4)"
 
 ### toJson()
 
-> **toJson**(): `string`
-
-Defined in: [index.d.ts:5065](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5065)
+> **toJson**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a JSON representation of this Point.
 
@@ -282,29 +254,25 @@ console.log(p.toJson()); // '{"x":1,"y":2}'
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5124](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5124)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of this Point.
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### distance()
 
-> `static` **distance**(`a`, `b`): `number`
-
-Defined in: [index.d.ts:5083](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5083)
+> `static` **distance**(`a`, `b`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Computes the distance between two points.
 
@@ -325,7 +293,7 @@ console.log(d); // 5
 
 #### Returns
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
@@ -334,8 +302,6 @@ console.log(d); // 5
 #### Call Signature
 
 > `static` **randomInCircle**(`center`, `radius`): `Point`
-
-Defined in: [index.d.ts:5038](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5038)
 
 Returns a random point within a circle of the given radius around a center point.
 
@@ -351,7 +317,7 @@ const p = Point.randomInCircle(100, 100, 50);
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
@@ -360,8 +326,6 @@ const p = Point.randomInCircle(100, 100, 50);
 #### Call Signature
 
 > `static` **randomInCircle**(`x`, `y`, `radius`): `Point`
-
-Defined in: [index.d.ts:5046](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5046)
 
 Returns a random point within a circle of the given radius around a center point.
 
@@ -373,15 +337,15 @@ const p = Point.randomInCircle(100, 100, 50);
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### radius
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 

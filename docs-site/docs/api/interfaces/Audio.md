@@ -1,7 +1,5 @@
 # Interface: Audio
 
-Defined in: [index.d.ts:2236](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2236)
-
 The global audio singleton for playing sound files.
 
 ```ts
@@ -24,8 +22,6 @@ sound.stop();
 
 > **playFile**(`path`, `options?`): [`PlayingSound`](PlayingSound.md)
 
-Defined in: [index.d.ts:2245](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2245)
-
 Plays a sound file and returns a `PlayingSound` handle for controlling playback.
 
 ```ts
@@ -37,7 +33,7 @@ sound.volume = 0.5;
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -51,9 +47,7 @@ sound.volume = 0.5;
 
 ### playFileAndWait()
 
-> **playFileAndWait**(`path`, `options?`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:2260](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2260)
+> **playFileAndWait**(`path`, `options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Plays a sound file and waits for it to finish.
 
@@ -72,7 +66,7 @@ signal: controller.signal,
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -80,4 +74,4 @@ signal: controller.signal,
 
 #### Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

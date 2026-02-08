@@ -1,7 +1,5 @@
 # Interface: Match
 
-Defined in: [index.d.ts:4010](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4010)
-
 A match returned by a findImage or findImageAll call.
 
 ```ts
@@ -20,8 +18,6 @@ console.log(`Bounding rect: ${match.rect}`);
 
 > **position**: [`Point`](../classes/Point.md)
 
-Defined in: [index.d.ts:4014](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4014)
-
 the position on the source image where the target image was found
 
 ***
@@ -30,17 +26,13 @@ the position on the source image where the target image was found
 
 > **rect**: [`Rect`](../classes/Rect.md)
 
-Defined in: [index.d.ts:4018](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4018)
-
 the rectangle on the source image where the target image was found
 
 ***
 
 ### score
 
-> **score**: `number`
-
-Defined in: [index.d.ts:4022](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4022)
+> **score**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 the score for this match, goes from 0 (worst) to 1 (best)
 
@@ -49,8 +41,6 @@ the score for this match, goes from 0 (worst) to 1 (best)
 ### clone()
 
 > **clone**(): `Match`
-
-Defined in: [index.d.ts:4034](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4034)
 
 Clones this Match.
 
@@ -62,9 +52,7 @@ Clones this Match.
 
 ### equals()
 
-> **equals**(`other`): `boolean`
-
-Defined in: [index.d.ts:4026](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4026)
+> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if a Match equals another.
 
@@ -76,18 +64,16 @@ Returns true if a Match equals another.
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:4030](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4030)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of this Match.
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

@@ -1,7 +1,5 @@
 # Interface: Displays
 
-Defined in: [index.d.ts:3356](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3356)
-
 The global displays singleton for querying connected monitors and screens.
 
 ```ts
@@ -24,11 +22,9 @@ const smallest = await displays.smallest();
 
 ### fromDeviceName()
 
-> **fromDeviceName**(`name`): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **fromDeviceName**(`name`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3376](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3376)
-
-Finds a display by its device name, or `undefined` if not found.
+Finds a display by its device name, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
 
 #### Parameters
 
@@ -38,37 +34,33 @@ Finds a display by its device name, or `undefined` if not found.
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 ***
 
 ### fromId()
 
-> **fromId**(`id`): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **fromId**(`id`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3380](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3380)
-
-Finds a display by its unique numeric ID, or `undefined` if not found.
+Finds a display by its unique numeric ID, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
 
 #### Parameters
 
 ##### id
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 ***
 
 ### fromName()
 
-> **fromName**(`name`): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **fromName**(`name`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3372](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3372)
-
-Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
+Finds a display by its friendly name (e.g. `"HDMI-1"`), or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
 
 #### Parameters
 
@@ -78,7 +70,7 @@ Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not fo
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 ***
 
@@ -86,11 +78,9 @@ Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not fo
 
 #### Call Signature
 
-> **fromPoint**(`point`): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **fromPoint**(`point`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3364](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3364)
-
-Returns the display that contains the given point, or `undefined` if none.
+Returns the display that contains the given point, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if none.
 
 ##### Parameters
 
@@ -100,68 +90,60 @@ Returns the display that contains the given point, or `undefined` if none.
 
 ##### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 #### Call Signature
 
-> **fromPoint**(`x`, `y`): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **fromPoint**(`x`, `y`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3368](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3368)
-
-Returns the display that contains the given point, or `undefined` if none.
+Returns the display that contains the given point, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if none.
 
 ##### Parameters
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 ***
 
 ### largest()
 
-> **largest**(): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **largest**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3388](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3388)
-
-Returns the largest display by area, or `undefined` if no displays are connected.
+Returns the largest display by area, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no displays are connected.
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
 ***
 
 ### randomPoint()
 
-> **randomPoint**(): `Promise`\<`Readonly`\<[`Point`](../classes/Point.md)\>\>
-
-Defined in: [index.d.ts:3360](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3360)
+> **randomPoint**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
 Returns a random point within the bounds of all connected displays.
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`Point`](../classes/Point.md)\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
 ***
 
 ### smallest()
 
-> **smallest**(): `Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+> **smallest**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
 
-Defined in: [index.d.ts:3384](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3384)
-
-Returns the smallest display by area, or `undefined` if no displays are connected.
+Returns the smallest display by area, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no displays are connected.
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`DisplayInfo`](DisplayInfo.md) \| `undefined`\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>

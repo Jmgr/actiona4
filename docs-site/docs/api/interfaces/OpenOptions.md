@@ -1,7 +1,5 @@
 # Interface: OpenOptions
 
-Defined in: [index.d.ts:3470](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3470)
-
 Options for `File.open()`.
 
 ```ts
@@ -25,9 +23,7 @@ append: true,
 
 ### append?
 
-> `optional` **append**: `boolean`
-
-Defined in: [index.d.ts:3486](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3486)
+> `optional` **append**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: open the file in append mode.
 Note that setting this to `true` implies setting `write` to `true`.
@@ -40,9 +36,7 @@ Note that setting this to `true` implies setting `write` to `true`.
 
 ### create?
 
-> `optional` **create**: `boolean`
-
-Defined in: [index.d.ts:3498](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3498)
+> `optional` **create**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: create a new file if it doesn't exist.
 Note that this only works if `write` or `append` are set to `true`.
@@ -55,9 +49,7 @@ Note that this only works if `write` or `append` are set to `true`.
 
 ### createNew?
 
-> `optional` **createNew**: `boolean`
-
-Defined in: [index.d.ts:3505](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3505)
+> `optional` **createNew**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: always create a new file, even if one already exists.
 Note that this only works if `write` or `append` are set to `true`.
@@ -71,9 +63,7 @@ Note that `create` and `truncate` are ignored if this is set to `true`.
 
 ### read?
 
-> `optional` **read**: `boolean`
-
-Defined in: [index.d.ts:3475](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3475)
+> `optional` **read**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the file be opened with read access?
 
@@ -85,9 +75,7 @@ Should the file be opened with read access?
 
 ### truncate?
 
-> `optional` **truncate**: `boolean`
-
-Defined in: [index.d.ts:3492](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3492)
+> `optional` **truncate**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: truncate (remove all contents of) the file.
 Note that this only works if `write` is `true`.
@@ -100,9 +88,7 @@ Note that this only works if `write` is `true`.
 
 ### write?
 
-> `optional` **write**: `boolean`
-
-Defined in: [index.d.ts:3480](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3480)
+> `optional` **write**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the file be opened with write access?
 

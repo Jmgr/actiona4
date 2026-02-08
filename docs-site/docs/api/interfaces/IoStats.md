@@ -1,7 +1,5 @@
 # Interface: IoStats
 
-Defined in: [index.d.ts:6470](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6470)
-
 Disk I/O statistics (bytes).
 
 ```ts
@@ -19,9 +17,7 @@ formatBytes(disk.usage.written.delta),
 
 ### delta
 
-> `readonly` **delta**: `number`
-
-Defined in: [index.d.ts:6478](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6478)
+> `readonly` **delta**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Delta
 
@@ -29,9 +25,7 @@ Delta
 
 ### total
 
-> `readonly` **total**: `number`
-
-Defined in: [index.d.ts:6474](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6474)
+> `readonly` **total**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Total
 
@@ -39,10 +33,8 @@ Total
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6479](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6479)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

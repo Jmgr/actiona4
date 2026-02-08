@@ -1,7 +1,5 @@
 # Interface: Processes
 
-Defined in: [index.d.ts:6239](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6239)
-
 Process listing and inspection.
 
 ```ts
@@ -13,9 +11,7 @@ console.log(processes.length);
 
 ### list()
 
-> **list**(`options?`): `Promise`\<readonly [`Process`](Process.md)[]\>
-
-Defined in: [index.d.ts:6243](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6243)
+> **list**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Process`](Process.md)[]\>
 
 Lists all processes
 
@@ -27,16 +23,14 @@ Lists all processes
 
 #### Returns
 
-`Promise`\<readonly [`Process`](Process.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Process`](Process.md)[]\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6244](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6244)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

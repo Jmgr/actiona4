@@ -1,60 +1,50 @@
 # Interface: WebOptions
 
-Defined in: [index.d.ts:6670](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6670)
-
 Web request options.
 
 ## Properties
 
 ### contentType?
 
-> `optional` **contentType**: `string`
-
-Defined in: [index.d.ts:6706](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6706)
+> `optional` **contentType**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Sets the content-type header.
 Overrides any content-type set by other fields.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### form?
 
-> `optional` **form**: `Record`\<`string`, `string` \| `undefined`\>
-
-Defined in: [index.d.ts:6712](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6712)
+> `optional` **form**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Form data as strings.
 Sets content-type to "application/x-www-form-urlencoded".
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### headers?
 
-> `optional` **headers**: `Record`\<`string`, `string` \| `undefined`\>
-
-Defined in: [index.d.ts:6690](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6690)
+> `optional` **headers**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional HTTP headers to send with the request.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### method?
 
 > `optional` **method**: [`Method`](../enumerations/Method.md)
-
-Defined in: [index.d.ts:6695](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6695)
 
 HTTP method to use for the request.
 
@@ -68,42 +58,36 @@ HTTP method to use for the request.
 
 > `optional` **multipart**: [`MultipartForm`](../classes/MultipartForm.md)
 
-Defined in: [index.d.ts:6723](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6723)
-
 Form multipart data.
 Sets content-type and content-length appropriately.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### password?
 
-> `optional` **password**: `string`
-
-Defined in: [index.d.ts:6685](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6685)
+> `optional` **password**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Password for HTTP basic authentication.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### query?
 
-> `optional` **query**: `Record`\<`string`, `string` \| `undefined`\>
-
-Defined in: [index.d.ts:6717](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6717)
+> `optional` **query**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional query parameters.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
@@ -111,38 +95,32 @@ Additional query parameters.
 
 > `optional` **signal**: [`AbortSignal`](AbortSignal.md)
 
-Defined in: [index.d.ts:6675](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6675)
-
 Abort signal to cancel the request.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### timeout?
 
-> `optional` **timeout**: `number`
-
-Defined in: [index.d.ts:6700](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6700)
+> `optional` **timeout**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Request timeout duration.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### userName?
 
-> `optional` **userName**: `string`
-
-Defined in: [index.d.ts:6680](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6680)
+> `optional` **userName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User name for HTTP basic authentication.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

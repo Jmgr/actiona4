@@ -1,7 +1,5 @@
 # Class: File
 
-Defined in: [index.d.ts:3533](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3533)
-
 A file handle for reading and writing. Also provides static utility methods
 for common file operations without needing to open a handle.
 
@@ -30,9 +28,7 @@ await File.remove("file.txt");
 
 ### path
 
-> `readonly` **path**: `string`
-
-Defined in: [index.d.ts:3537](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3537)
+> `readonly` **path**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The file path
 
@@ -40,23 +36,19 @@ The file path
 
 ### accessedTime()
 
-> **accessedTime**(): `Promise`\<`Date`\>
-
-Defined in: [index.d.ts:3652](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3652)
+> **accessedTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 Returns the last access time of the file.
 
 #### Returns
 
-`Promise`\<`Date`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 ***
 
 ### clone()
 
 > **clone**(): `File`
-
-Defined in: [index.d.ts:3713](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3713)
 
 Returns a clone of this file handle. Both handles share the same underlying file.
 
@@ -68,9 +60,7 @@ Returns a clone of this file handle. Both handles share the same underlying file
 
 ### close()
 
-> **close**(): `void`
-
-Defined in: [index.d.ts:3572](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3572)
+> **close**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Closes this file handle.
 Please note that the actual file might not be closed until all other handles to it are also closed.
@@ -78,29 +68,25 @@ This can happen if you cloned() this File.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### creationTime()
 
-> **creationTime**(): `Promise`\<`Date`\>
-
-Defined in: [index.d.ts:3660](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3660)
+> **creationTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 Returns the creation time of the file.
 
 #### Returns
 
-`Promise`\<`Date`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 ***
 
 ### equals()
 
-> **equals**(`other`): `boolean`
-
-Defined in: [index.d.ts:3717](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3717)
+> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns `true` if both handles refer to the same file path.
 
@@ -112,35 +98,31 @@ Returns `true` if both handles refer to the same file path.
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### isOpen()
 
-> **isOpen**(): `boolean`
-
-Defined in: [index.d.ts:3566](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3566)
+> **isOpen**(): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if the file is open.
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### mode()
 
-> **mode**(): `Promise`\<`number`\>
-
-Defined in: [index.d.ts:3634](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3634)
+> **mode**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
 
 #### Returns
 
-`Promise`\<`number`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 #### Platform
 
@@ -150,37 +132,31 @@ does not work on Windows
 
 ### modifiedTime()
 
-> **modifiedTime**(): `Promise`\<`Date`\>
-
-Defined in: [index.d.ts:3644](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3644)
+> **modifiedTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 Returns the last modification time of the file.
 
 #### Returns
 
-`Promise`\<`Date`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 ***
 
 ### position()
 
-> **position**(): `Promise`\<`number`\>
-
-Defined in: [index.d.ts:3669](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3669)
+> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Returns the current read/write position in the file.
 
 #### Returns
 
-`Promise`\<`number`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 ***
 
 ### readBytes()
 
-> **readBytes**(`amount?`): `Promise`\<`Uint8Array`\>
-
-Defined in: [index.d.ts:3597](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3597)
+> **readBytes**(`amount?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
 
 Reads bytes from this file handle. If `amount` is given, reads exactly that many bytes;
 otherwise reads until EOF.
@@ -189,61 +165,53 @@ otherwise reads until EOF.
 
 ##### amount?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`Uint8Array`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
 
 ***
 
 ### readonly()
 
-> **readonly**(): `Promise`\<`boolean`\>
-
-Defined in: [index.d.ts:3625](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3625)
+> **readonly**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 Returns whether the file is read-only.
 
 #### Returns
 
-`Promise`\<`boolean`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 ***
 
 ### readText()
 
-> **readText**(): `Promise`\<`string`\>
-
-Defined in: [index.d.ts:3605](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3605)
+> **readText**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 Reads the entire file as a UTF-8 string from this file handle.
 
 #### Returns
 
-`Promise`\<`string`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 ***
 
 ### rewind()
 
-> **rewind**(): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3681](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3681)
+> **rewind**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Rewinds the file position to the beginning.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### setAccessedTime()
 
-> **setAccessedTime**(`date`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3656](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3656)
+> **setAccessedTime**(`date`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the last access time of the file.
 
@@ -251,19 +219,17 @@ Sets the last access time of the file.
 
 ##### date
 
-`Date`
+[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### setCreationTime()
 
-> **setCreationTime**(`date`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3665](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3665)
+> **setCreationTime**(`date`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the creation time of the file. No-op on Linux.
 
@@ -271,11 +237,11 @@ Sets the creation time of the file. No-op on Linux.
 
 ##### date
 
-`Date`
+[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 #### Platform
 
@@ -285,9 +251,7 @@ does not work on Linux
 
 ### setMode()
 
-> **setMode**(`mode`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3640](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3640)
+> **setMode**(`mode`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the file mode.
 You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
@@ -296,11 +260,11 @@ You should use the octal notation to specify the mode: `await file.setMode(0o445
 
 ##### mode
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 #### Platform
 
@@ -310,9 +274,7 @@ does not work on Windows
 
 ### setModifiedTime()
 
-> **setModifiedTime**(`date`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3648](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3648)
+> **setModifiedTime**(`date`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the last modification time of the file.
 
@@ -320,19 +282,17 @@ Sets the last modification time of the file.
 
 ##### date
 
-`Date`
+[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### setPosition()
 
-> **setPosition**(`position`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3673](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3673)
+> **setPosition**(`position`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Seeks to an absolute position in the file.
 
@@ -340,19 +300,17 @@ Seeks to an absolute position in the file.
 
 ##### position
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### setReadonly()
 
-> **setReadonly**(`readonly`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3629](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3629)
+> **setReadonly**(`readonly`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets whether the file is read-only.
 
@@ -360,19 +318,17 @@ Sets whether the file is read-only.
 
 ##### readonly
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### setRelativePosition()
 
-> **setRelativePosition**(`offset`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3677](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3677)
+> **setRelativePosition**(`offset`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Seeks relative to the current position (can be negative).
 
@@ -380,19 +336,17 @@ Seeks relative to the current position (can be negative).
 
 ##### offset
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### setSize()
 
-> **setSize**(`size`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3621](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3621)
+> **setSize**(`size`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Truncates or extends the file to the given size in bytes.
 
@@ -400,47 +354,41 @@ Truncates or extends the file to the given size in bytes.
 
 ##### size
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### size()
 
-> **size**(): `Promise`\<`number`\>
-
-Defined in: [index.d.ts:3617](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3617)
+> **size**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Returns the file size in bytes.
 
 #### Returns
 
-`Promise`\<`number`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:3721](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3721)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of the file handle.
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### writeBytes()
 
-> **writeBytes**(`bytes`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3576](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3576)
+> **writeBytes**(`bytes`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes bytes to this file handle.
 
@@ -448,19 +396,17 @@ Writes bytes to this file handle.
 
 ##### bytes
 
-`Uint8Array`
+[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### writeText()
 
-> **writeText**(`text`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3584](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3584)
+> **writeText**(`text`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes text to this file handle.
 
@@ -468,19 +414,17 @@ Writes text to this file handle.
 
 ##### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### copy()
 
-> `static` **copy**(`source`, `destination`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3701](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3701)
+> `static` **copy**(`source`, `destination`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Copies a file from `source` to `destination`.
 
@@ -488,23 +432,21 @@ Copies a file from `source` to `destination`.
 
 ##### source
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### destination
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### exists()
 
-> `static` **exists**(`path`): `Promise`\<`boolean`\>
-
-Defined in: [index.d.ts:3691](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3691)
+> `static` **exists**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 Returns `true` if a file exists at the given path.
 
@@ -518,19 +460,17 @@ const text = await File.readText("config.json");
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`boolean`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 ***
 
 ### move()
 
-> `static` **move**(`source`, `destination`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3709](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3709)
+> `static` **move**(`source`, `destination`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Alias for `rename`.
 
@@ -538,23 +478,21 @@ Alias for `rename`.
 
 ##### source
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### destination
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### open()
 
-> `static` **open**(`path`, `options?`): `Promise`\<`File`\>
-
-Defined in: [index.d.ts:3562](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3562)
+> `static` **open**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`File`\>
 
 Opens a file.
 
@@ -582,7 +520,7 @@ append: true,
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -590,15 +528,13 @@ append: true,
 
 #### Returns
 
-`Promise`\<`File`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`File`\>
 
 ***
 
 ### readBytes()
 
-> `static` **readBytes**(`path`, `amount?`): `Promise`\<`Uint8Array`\>
-
-Defined in: [index.d.ts:3601](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3601)
+> `static` **readBytes**(`path`, `amount?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
 
 Reads bytes from a file at the given path (static).
 
@@ -606,23 +542,21 @@ Reads bytes from a file at the given path (static).
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### amount?
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`Uint8Array`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
 
 ***
 
 ### readText()
 
-> `static` **readText**(`path`): `Promise`\<`string`\>
-
-Defined in: [index.d.ts:3613](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3613)
+> `static` **readText**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 Reads the entire file as a UTF-8 string (static).
 
@@ -634,19 +568,17 @@ const text = await File.readText("config.json");
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`string`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 ***
 
 ### remove()
 
-> `static` **remove**(`path`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3697](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3697)
+> `static` **remove**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Removes a file from the filesystem.
 
@@ -656,19 +588,17 @@ Note that there is no guarantee that the file is immediately deleted (e.g. depen
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### rename()
 
-> `static` **rename**(`source`, `destination`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3705](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3705)
+> `static` **rename**(`source`, `destination`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Renames (moves) a file from `source` to `destination`. Works across filesystems.
 
@@ -676,23 +606,21 @@ Renames (moves) a file from `source` to `destination`. Works across filesystems.
 
 ##### source
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### destination
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### writeBytes()
 
-> `static` **writeBytes**(`path`, `bytes`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3580](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3580)
+> `static` **writeBytes**(`path`, `bytes`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes bytes to a file at the given path (static).
 
@@ -700,23 +628,21 @@ Writes bytes to a file at the given path (static).
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### bytes
 
-`Uint8Array`
+[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### writeText()
 
-> `static` **writeText**(`path`, `text`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3592](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3592)
+> `static` **writeText**(`path`, `text`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes text to a file at the given path (static).
 
@@ -728,12 +654,12 @@ await File.writeText("hello.txt", "Hello, world!");
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

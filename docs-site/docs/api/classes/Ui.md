@@ -1,7 +1,5 @@
 # Class: Ui
 
-Defined in: [index.d.ts:6563](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6563)
-
 User interface utilities.
 
 Provides methods for displaying message boxes and other UI elements.
@@ -28,8 +26,6 @@ console.log("Confirmed");
 
 > `static` **messageBox**(`text`, `options?`): [`Task`](../type-aliases/Task.md)\<[`MessageBoxResult`](../enumerations/MessageBoxResult.md)\>
 
-Defined in: [index.d.ts:6572](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6572)
-
 Displays a message box and returns the user's response.
 
 ```ts
@@ -40,7 +36,7 @@ const result = await Ui.messageBox("Operation complete");
 
 ##### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 

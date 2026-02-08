@@ -1,7 +1,5 @@
 # Interface: Group
 
-Defined in: [index.d.ts:6219](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6219)
-
 A system group.
 
 ```ts
@@ -16,9 +14,7 @@ console.log(group.id, group.name);
 
 ### id
 
-> `readonly` **id**: `number`
-
-Defined in: [index.d.ts:6227](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6227)
+> `readonly` **id**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ID
 
@@ -26,9 +22,7 @@ ID
 
 ### name
 
-> `readonly` **name**: `string`
-
-Defined in: [index.d.ts:6223](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6223)
+> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -36,10 +30,8 @@ Name
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6228](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6228)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

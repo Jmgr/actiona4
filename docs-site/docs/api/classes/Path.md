@@ -1,7 +1,5 @@
 # Class: Path
 
-Defined in: [index.d.ts:4911](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4911)
-
 Utilities for manipulating file paths. All methods are static.
 
 ```ts
@@ -21,9 +19,7 @@ const newPath = Path.setExtension("/tmp/data.csv", "json");
 
 ### basename()
 
-> `static` **basename**(`path`): `string`
-
-Defined in: [index.d.ts:4932](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4932)
+> `static` **basename**(`path`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Alias for `filename`.
 
@@ -31,19 +27,17 @@ Alias for `filename`.
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### dirname()
 
-> `static` **dirname**(`path`): `string`
-
-Defined in: [index.d.ts:4944](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4944)
+> `static` **dirname**(`path`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Alias for `parent`.
 
@@ -51,19 +45,17 @@ Alias for `parent`.
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### extension()
 
-> `static` **extension**(`path`): `string`
-
-Defined in: [index.d.ts:4971](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4971)
+> `static` **extension**(`path`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns the file extension of a path (without the leading dot).
 
@@ -76,19 +68,17 @@ Path.extension("/home/user/file"); // ""
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### extname()
 
-> `static` **extname**(`path`): `string`
-
-Defined in: [index.d.ts:4975](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4975)
+> `static` **extname**(`path`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Alias for `extension`.
 
@@ -96,19 +86,17 @@ Alias for `extension`.
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### filename()
 
-> `static` **filename**(`path`): `string`
-
-Defined in: [index.d.ts:4928](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4928)
+> `static` **filename**(`path`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns the file name component of a path.
 
@@ -120,19 +108,17 @@ Path.filename("/home/user/file.txt"); // "file.txt"
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### isAbsolute()
 
-> `static` **isAbsolute**(`path`): `boolean`
-
-Defined in: [index.d.ts:4953](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4953)
+> `static` **isAbsolute**(`path`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns whether the path is absolute.
 
@@ -145,19 +131,17 @@ Path.isAbsolute("relative/path"); // false
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### isRelative()
 
-> `static` **isRelative**(`path`): `boolean`
-
-Defined in: [index.d.ts:4962](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4962)
+> `static` **isRelative**(`path`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns whether the path is relative.
 
@@ -170,19 +154,17 @@ Path.isRelative("/absolute/path"); // false
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### join()
 
-> `static` **join**(...`args`): `string`
-
-Defined in: [index.d.ts:4920](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4920)
+> `static` **join**(...`args`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Joins path segments into a single path.
 
@@ -194,19 +176,17 @@ Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
 
 ##### args
 
-...`string`[]
+...[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### parent()
 
-> `static` **parent**(`path`): `string`
-
-Defined in: [index.d.ts:4940](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4940)
+> `static` **parent**(`path`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns the parent directory of a path.
 
@@ -218,19 +198,17 @@ Path.parent("/home/user/file.txt"); // "/home/user"
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### setExtension()
 
-> `static` **setExtension**(`path`, `extension`): `string`
-
-Defined in: [index.d.ts:4984](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4984)
+> `static` **setExtension**(`path`, `extension`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns the path with a different extension. Returns an empty string on failure.
 
@@ -243,12 +221,12 @@ Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### extension
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

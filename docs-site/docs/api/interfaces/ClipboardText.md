@@ -1,7 +1,5 @@
 # Interface: ClipboardText
 
-Defined in: [index.d.ts:2393](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2393)
-
 Provides text clipboard operations.
 
 ```ts
@@ -13,9 +11,7 @@ const text = await clipboard.text.get();
 
 ### get()
 
-> **get**(`mode?`): `Promise`\<`string`\>
-
-Defined in: [index.d.ts:2401](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2401)
+> **get**(`mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 Gets the clipboard text content.
 
@@ -27,15 +23,13 @@ Gets the clipboard text content.
 
 #### Returns
 
-`Promise`\<`string`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 ***
 
 ### set()
 
-> **set**(`text`, `mode?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:2397](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2397)
+> **set**(`text`, `mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the clipboard text content.
 
@@ -43,7 +37,7 @@ Sets the clipboard text content.
 
 ##### text
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### mode?
 
@@ -51,4 +45,4 @@ Sets the clipboard text content.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

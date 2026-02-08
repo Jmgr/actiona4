@@ -1,7 +1,5 @@
 # Enumeration: TextHorizontalAlign
 
-Defined in: [index.d.ts:159](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L159)
-
 Horizontal alignment for text drawing.
 
 ```ts
@@ -14,22 +12,16 @@ horizontalAlign: TextHorizontalAlign.Center
 
 ### Center
 
-> **Center**: `number`
-
-Defined in: [index.d.ts:162](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L162)
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Left
 
-> **Left**: `number`
-
-Defined in: [index.d.ts:160](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L160)
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Right
 
-> **Right**: `number`
-
-Defined in: [index.d.ts:164](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L164)
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

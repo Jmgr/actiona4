@@ -1,7 +1,5 @@
 # Interface: Mouse
 
-Defined in: [index.d.ts:4743](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4743)
-
 Controls mouse input: movement, clicking, scrolling, and position queries.
 
 ```ts
@@ -27,9 +25,7 @@ tween: Tween.BounceOut
 
 ### click()
 
-> **click**(`options?`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:4789](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4789)
+> **click**(`options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Clicks a mouse button.
 
@@ -41,15 +37,13 @@ Clicks a mouse button.
 
 #### Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### doubleClick()
 
-> **doubleClick**(`options?`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:4793](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4793)
+> **doubleClick**(`options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Double-clicks a mouse button.
 
@@ -61,15 +55,13 @@ Double-clicks a mouse button.
 
 #### Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### isPressed()
 
-> **isPressed**(`button`): `Promise`\<`boolean`\>
-
-Defined in: [index.d.ts:4748](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4748)
+> **isPressed**(`button`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 Returns whether a mouse button is currently pressed.
 
@@ -81,7 +73,7 @@ Returns whether a mouse button is currently pressed.
 
 #### Returns
 
-`Promise`\<`boolean`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 #### Platform
 
@@ -91,9 +83,7 @@ does not work on Wayland
 
 ### measureSpeed()
 
-> **measureSpeed**(`options?`): [`Task`](../type-aliases/Task.md)\<`number`\>
-
-Defined in: [index.d.ts:4761](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4761)
+> **measureSpeed**(`options?`): [`Task`](../type-aliases/Task.md)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Measures the mouse movement speed over a duration (in pixels per second).
 
@@ -105,7 +95,7 @@ Measures the mouse movement speed over a duration (in pixels per second).
 
 #### Returns
 
-[`Task`](../type-aliases/Task.md)\<`number`\>
+[`Task`](../type-aliases/Task.md)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 ***
 
@@ -113,9 +103,7 @@ Measures the mouse movement speed over a duration (in pixels per second).
 
 #### Call Signature
 
-> **move**(`point`, `options?`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:4765](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4765)
+> **move**(`point`, `options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor smoothly to the given position.
 
@@ -131,13 +119,11 @@ Moves the mouse cursor smoothly to the given position.
 
 ##### Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 #### Call Signature
 
-> **move**(`x`, `y`, `options?`): [`Task`](../type-aliases/Task.md)\<`void`\>
-
-Defined in: [index.d.ts:4769](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4769)
+> **move**(`x`, `y`, `options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor smoothly to the given position.
 
@@ -145,11 +131,11 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### options?
 
@@ -157,21 +143,19 @@ Moves the mouse cursor smoothly to the given position.
 
 ##### Returns
 
-[`Task`](../type-aliases/Task.md)\<`void`\>
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### position()
 
-> **position**(): `Promise`\<`Readonly`\<[`Point`](../classes/Point.md)\>\>
-
-Defined in: [index.d.ts:4757](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4757)
+> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
 Returns the current mouse cursor position.
 
 #### Returns
 
-`Promise`\<`Readonly`\<[`Point`](../classes/Point.md)\>\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
 #### Platform
 
@@ -181,9 +165,7 @@ does not work on Wayland
 
 ### press()
 
-> **press**(`options?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4797](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4797)
+> **press**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Presses and holds a mouse button.
 
@@ -195,15 +177,13 @@ Presses and holds a mouse button.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### release()
 
-> **release**(`button?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4801](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4801)
+> **release**(`button?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Releases a mouse button.
 
@@ -215,15 +195,13 @@ Releases a mouse button.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### scroll()
 
-> **scroll**(`length`, `axis?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4752](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4752)
+> **scroll**(`length`, `axis?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Scrolls the mouse wheel by the given amount.
 
@@ -231,7 +209,7 @@ Scrolls the mouse wheel by the given amount.
 
 ##### length
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### axis?
 
@@ -239,7 +217,7 @@ Scrolls the mouse wheel by the given amount.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
@@ -247,9 +225,7 @@ Scrolls the mouse wheel by the given amount.
 
 #### Call Signature
 
-> **setPosition**(`point`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4773](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4773)
+> **setPosition**(`point`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the mouse cursor position instantly (absolute coordinates).
 
@@ -261,13 +237,11 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 ##### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 #### Call Signature
 
-> **setPosition**(`x`, `y`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4777](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4777)
+> **setPosition**(`x`, `y`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the mouse cursor position instantly (absolute coordinates).
 
@@ -275,15 +249,15 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
@@ -291,9 +265,7 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 #### Call Signature
 
-> **setRelativePosition**(`point`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4781](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4781)
+> **setRelativePosition**(`point`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor by the given offset (relative coordinates).
 
@@ -305,13 +277,11 @@ Moves the mouse cursor by the given offset (relative coordinates).
 
 ##### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 #### Call Signature
 
-> **setRelativePosition**(`x`, `y`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:4785](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L4785)
+> **setRelativePosition**(`x`, `y`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor by the given offset (relative coordinates).
 
@@ -319,12 +289,12 @@ Moves the mouse cursor by the given offset (relative coordinates).
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

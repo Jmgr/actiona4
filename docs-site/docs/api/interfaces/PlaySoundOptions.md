@@ -1,7 +1,5 @@
 # Interface: PlaySoundOptions
 
-Defined in: [index.d.ts:2181](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2181)
-
 Options for playing a sound file.
 
 ```ts
@@ -20,9 +18,7 @@ fadeIn: 2000,
 
 ### fadeIn?
 
-> `optional` **fadeIn**: `number`
-
-Defined in: [index.d.ts:2206](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2206)
+> `optional` **fadeIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Fade in duration
 
@@ -34,9 +30,7 @@ Fade in duration
 
 ### fadeOut?
 
-> `optional` **fadeOut**: `number`
-
-Defined in: [index.d.ts:2211](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2211)
+> `optional` **fadeOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Fade out duration
 
@@ -48,9 +42,7 @@ Fade out duration
 
 ### loop?
 
-> `optional` **loop**: `boolean`
-
-Defined in: [index.d.ts:2201](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2201)
+> `optional` **loop**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the sound loop
 
@@ -62,9 +54,7 @@ Should the sound loop
 
 ### paused?
 
-> `optional` **paused**: `boolean`
-
-Defined in: [index.d.ts:2196](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2196)
+> `optional` **paused**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the sound start paused
 
@@ -76,9 +66,7 @@ Should the sound start paused
 
 ### playbackRate?
 
-> `optional` **playbackRate**: `number`
-
-Defined in: [index.d.ts:2191](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2191)
+> `optional` **playbackRate**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Speed to play the sound at
 
@@ -92,21 +80,17 @@ Speed to play the sound at
 
 > `optional` **signal**: [`AbortSignal`](AbortSignal.md)
 
-Defined in: [index.d.ts:2216](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2216)
-
 Abort signal to cancel the sound playback.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### volume?
 
-> `optional` **volume**: `number`
-
-Defined in: [index.d.ts:2186](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2186)
+> `optional` **volume**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume to play the sound at
 

@@ -1,8 +1,6 @@
 # Function: exit()
 
-> **exit**(): `void`
-
-Defined in: [index.d.ts:58](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L58)
+> **exit**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Stops the script execution immediately.
 
@@ -14,4 +12,4 @@ exit();
 
 ## Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

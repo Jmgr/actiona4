@@ -1,7 +1,5 @@
 # Interface: CGroupLimits
 
-Defined in: [index.d.ts:5902](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5902)
-
 CGroup memory and swap limits.
 
 ```ts
@@ -25,9 +23,7 @@ only works on Linux
 
 ### freeMemory
 
-> `readonly` **freeMemory**: `number`
-
-Defined in: [index.d.ts:5910](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5910)
+> `readonly` **freeMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Free memory
 
@@ -35,9 +31,7 @@ Free memory
 
 ### freeSwap
 
-> `readonly` **freeSwap**: `number`
-
-Defined in: [index.d.ts:5914](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5914)
+> `readonly` **freeSwap**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Free swap
 
@@ -45,9 +39,7 @@ Free swap
 
 ### rss
 
-> `readonly` **rss**: `number`
-
-Defined in: [index.d.ts:5918](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5918)
+> `readonly` **rss**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 RSS
 
@@ -55,9 +47,7 @@ RSS
 
 ### totalMemory
 
-> `readonly` **totalMemory**: `number`
-
-Defined in: [index.d.ts:5906](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5906)
+> `readonly` **totalMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Total memory
 
@@ -65,10 +55,8 @@ Total memory
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5919](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5919)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

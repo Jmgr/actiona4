@@ -1,7 +1,5 @@
 # Type Alias: PointLike
 
-> **PointLike** = [`Point`](../classes/Point.md) \| \{ `x`: `number`; `y`: `number`; \}
-
-Defined in: [index.d.ts:29](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L29)
+> **PointLike** = [`Point`](../classes/Point.md) \| \{ `x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); \}
 
 PointLike

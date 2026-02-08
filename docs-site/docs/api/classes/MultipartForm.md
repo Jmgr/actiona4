@@ -1,7 +1,5 @@
 # Class: MultipartForm
 
-Defined in: [index.d.ts:6635](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6635)
-
 Multipart form for uploading files and data.
 
 ```ts
@@ -20,8 +18,6 @@ multipart: form,
 
 > **new MultipartForm**(): `MultipartForm`
 
-Defined in: [index.d.ts:6636](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6636)
-
 #### Returns
 
 `MultipartForm`
@@ -30,9 +26,7 @@ Defined in: [index.d.ts:6636](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f
 
 ### addBytes()
 
-> **addBytes**(`name`, `bytes`, `filename?`, `mimetype?`): `void`
-
-Defined in: [index.d.ts:6664](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6664)
+> **addBytes**(`name`, `bytes`, `filename?`, `mimetype?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Adds a byte field.
 
@@ -46,31 +40,29 @@ form.addBytes("data", bytes, "hello.bin");
 
 ##### name
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### bytes
 
-`Uint8Array`
+[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 ##### filename?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### mimetype?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### addFile()
 
-> **addFile**(`name`, `path`, `filename?`, `mimetype?`): `void`
-
-Defined in: [index.d.ts:6654](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6654)
+> **addFile**(`name`, `path`, `filename?`, `mimetype?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Adds a file field.
 
@@ -83,31 +75,29 @@ form.addFile("document", "/path/to/report.pdf");
 
 ##### name
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### filename?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### mimetype?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### addText()
 
-> **addText**(`name`, `value`, `filename?`, `mimetype?`): `void`
-
-Defined in: [index.d.ts:6645](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6645)
+> **addText**(`name`, `value`, `filename?`, `mimetype?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Adds a text field.
 
@@ -120,20 +110,20 @@ form.addText("username", "john");
 
 ##### name
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### value
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### filename?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### mimetype?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

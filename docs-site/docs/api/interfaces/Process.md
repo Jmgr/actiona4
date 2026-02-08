@@ -1,7 +1,5 @@
 # Interface: Process
 
-Defined in: [index.d.ts:6269](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6269)
-
 A running process.
 
 ```ts
@@ -16,9 +14,7 @@ console.log(process.pid, process.name, process.status);
 
 ### accumulatedCpuTime
 
-> `readonly` **accumulatedCpuTime**: `number`
-
-Defined in: [index.d.ts:6329](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6329)
+> `readonly` **accumulatedCpuTime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Accumulated CPU time in seconds
 
@@ -26,9 +22,7 @@ Accumulated CPU time in seconds
 
 ### cmd
 
-> `readonly` **cmd**: readonly `string`[]
-
-Defined in: [index.d.ts:6277](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6277)
+> `readonly` **cmd**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Cmd
 
@@ -36,9 +30,7 @@ Cmd
 
 ### cpuUsage
 
-> `readonly` **cpuUsage**: `number`
-
-Defined in: [index.d.ts:6325](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6325)
+> `readonly` **cpuUsage**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 CPU usage
 
@@ -46,9 +38,7 @@ CPU usage
 
 ### cwd?
 
-> `readonly` `optional` **cwd**: `string`
-
-Defined in: [index.d.ts:6293](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6293)
+> `readonly` `optional` **cwd**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Cwd
 
@@ -56,9 +46,7 @@ Cwd
 
 ### diskUsage
 
-> `readonly` **diskUsage**: `Readonly`\<[`DiskUsage`](DiskUsage.md)\>
-
-Defined in: [index.d.ts:6333](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6333)
+> `readonly` **diskUsage**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DiskUsage`](DiskUsage.md)\>
 
 Disk usage
 
@@ -66,9 +54,7 @@ Disk usage
 
 ### effectiveGroupId?
 
-> `readonly` `optional` **effectiveGroupId**: `number`
-
-Defined in: [index.d.ts:6352](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6352)
+> `readonly` `optional` **effectiveGroupId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Effective group ID
 
@@ -80,9 +66,7 @@ only works on Linux
 
 ### effectiveUserId?
 
-> `readonly` `optional` **effectiveUserId**: `string`
-
-Defined in: [index.d.ts:6342](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6342)
+> `readonly` `optional` **effectiveUserId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Effective user ID
 
@@ -94,9 +78,7 @@ only works on Linux
 
 ### env
 
-> `readonly` **env**: readonly `string`[]
-
-Defined in: [index.d.ts:6289](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6289)
+> `readonly` **env**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Env
 
@@ -104,9 +86,7 @@ Env
 
 ### exe?
 
-> `readonly` `optional` **exe**: `string`
-
-Defined in: [index.d.ts:6281](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6281)
+> `readonly` `optional` **exe**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Exe
 
@@ -114,9 +94,7 @@ Exe
 
 ### exists
 
-> `readonly` **exists**: `boolean`
-
-Defined in: [index.d.ts:6360](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6360)
+> `readonly` **exists**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Exists
 
@@ -124,9 +102,7 @@ Exists
 
 ### groupId?
 
-> `readonly` `optional` **groupId**: `number`
-
-Defined in: [index.d.ts:6347](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6347)
+> `readonly` `optional` **groupId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Group ID
 
@@ -138,9 +114,7 @@ only works on Linux
 
 ### memory
 
-> `readonly` **memory**: `number`
-
-Defined in: [index.d.ts:6301](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6301)
+> `readonly` **memory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Memory
 
@@ -148,9 +122,7 @@ Memory
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
-
-Defined in: [index.d.ts:6273](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6273)
+> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -158,9 +130,7 @@ Name
 
 ### openFiles?
 
-> `readonly` `optional` **openFiles**: `number`
-
-Defined in: [index.d.ts:6364](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6364)
+> `readonly` `optional` **openFiles**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Open files
 
@@ -168,9 +138,7 @@ Open files
 
 ### openFilesLimit?
 
-> `readonly` `optional` **openFilesLimit**: `number`
-
-Defined in: [index.d.ts:6368](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6368)
+> `readonly` `optional` **openFilesLimit**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Open files limit
 
@@ -178,9 +146,7 @@ Open files limit
 
 ### parent?
 
-> `readonly` `optional` **parent**: `number`
-
-Defined in: [index.d.ts:6309](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6309)
+> `readonly` `optional` **parent**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Parent
 
@@ -188,9 +154,7 @@ Parent
 
 ### pid
 
-> `readonly` **pid**: `number`
-
-Defined in: [index.d.ts:6285](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6285)
+> `readonly` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Pid
 
@@ -198,9 +162,7 @@ Pid
 
 ### root?
 
-> `readonly` `optional` **root**: `string`
-
-Defined in: [index.d.ts:6297](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6297)
+> `readonly` `optional` **root**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Root
 
@@ -208,9 +170,7 @@ Root
 
 ### runTime
 
-> `readonly` **runTime**: `number`
-
-Defined in: [index.d.ts:6321](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6321)
+> `readonly` **runTime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Run time in seconds
 
@@ -218,9 +178,7 @@ Run time in seconds
 
 ### sessionId?
 
-> `readonly` `optional` **sessionId**: `number`
-
-Defined in: [index.d.ts:6356](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6356)
+> `readonly` `optional` **sessionId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Session ID
 
@@ -228,9 +186,7 @@ Session ID
 
 ### startTime
 
-> `readonly` **startTime**: `Object`
-
-Defined in: [index.d.ts:6317](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6317)
+> `readonly` **startTime**: [`Object`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 Start time
 
@@ -240,17 +196,13 @@ Start time
 
 > `readonly` **status**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
 
-Defined in: [index.d.ts:6313](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6313)
-
 Status
 
 ***
 
 ### userId?
 
-> `readonly` `optional` **userId**: `string`
-
-Defined in: [index.d.ts:6337](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6337)
+> `readonly` `optional` **userId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User ID
 
@@ -258,9 +210,7 @@ User ID
 
 ### virtualMemory
 
-> `readonly` **virtualMemory**: `number`
-
-Defined in: [index.d.ts:6305](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6305)
+> `readonly` **virtualMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Virtual memory
 
@@ -268,10 +218,8 @@ Virtual memory
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6369](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6369)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

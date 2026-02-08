@@ -1,8 +1,6 @@
 # Type Alias: ProgressTask\<Result, Progress\>
 
-> **ProgressTask**\<`Result`, `Progress`\> = [`Task`](Task.md)\<`Result`\> & `object`
-
-Defined in: [index.d.ts:19](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L19)
+> **ProgressTask**\<`Result`, `Progress`\> = [`Task`](Task.md)\<`Result`\> & [`object`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 ProgressTask: task with progress.
 
@@ -10,11 +8,11 @@ ProgressTask: task with progress.
 
 ### \[asyncIterator\]()
 
-> **\[asyncIterator\]**(): `AsyncIterator`\<`Progress`\>
+> **\[asyncIterator\]**(): [`AsyncIterator`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)\<`Progress`\>
 
 #### Returns
 
-`AsyncIterator`\<`Progress`\>
+[`AsyncIterator`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)\<`Progress`\>
 
 ## Type Parameters
 

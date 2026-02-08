@@ -1,7 +1,5 @@
 # Interface: PressOptions
 
-Defined in: [index.d.ts:7125](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7125)
-
 Options for pressing (and holding) a mouse button.
 
 ```ts
@@ -22,8 +20,6 @@ await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
 
 > `optional` **button**: [`Button`](../enumerations/Button.md)
 
-Defined in: [index.d.ts:7130](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7130)
-
 Mouse button to press.
 
 #### Default Value
@@ -36,21 +32,17 @@ Mouse button to press.
 
 > `optional` **position**: [`Point`](../classes/Point.md)
 
-Defined in: [index.d.ts:7135](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7135)
-
 Position to move the cursor to before pressing.
 
 #### Default Value
 
-`undefined`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
 ### relativePosition?
 
-> `optional` **relativePosition**: `boolean`
-
-Defined in: [index.d.ts:7140](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L7140)
+> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 

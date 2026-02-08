@@ -1,7 +1,5 @@
 # Interface: Storage
 
-Defined in: [index.d.ts:6380](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6380)
-
 Storage devices and disk usage information.
 
 ```ts
@@ -13,9 +11,7 @@ console.log(disks.length);
 
 ### listDisks()
 
-> **listDisks**(`options?`): `Promise`\<readonly [`Disk`](Disk.md)[]\>
-
-Defined in: [index.d.ts:6384](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6384)
+> **listDisks**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Disk`](Disk.md)[]\>
 
 Disks
 
@@ -27,16 +23,14 @@ Disks
 
 #### Returns
 
-`Promise`\<readonly [`Disk`](Disk.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Disk`](Disk.md)[]\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6385](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6385)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

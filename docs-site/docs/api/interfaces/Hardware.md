@@ -1,7 +1,5 @@
 # Interface: Hardware
 
-Defined in: [index.d.ts:5707](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5707)
-
 Hardware information.
 
 ```ts
@@ -16,9 +14,7 @@ console.log(hw.vendorName, board.name, components.length);
 
 ### family?
 
-> `readonly` `optional` **family**: `string`
-
-Defined in: [index.d.ts:5715](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5715)
+> `readonly` `optional` **family**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Family
 
@@ -26,9 +22,7 @@ Family
 
 ### motherboard
 
-> `readonly` **motherboard**: `Readonly`\<[`Motherboard`](Motherboard.md)\>
-
-Defined in: [index.d.ts:5739](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5739)
+> `readonly` **motherboard**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Motherboard`](Motherboard.md)\>
 
 Motherboard
 
@@ -36,9 +30,7 @@ Motherboard
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
-
-Defined in: [index.d.ts:5711](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5711)
+> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -46,9 +38,7 @@ Name
 
 ### serialNumber?
 
-> `readonly` `optional` **serialNumber**: `string`
-
-Defined in: [index.d.ts:5719](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5719)
+> `readonly` `optional` **serialNumber**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Serial number
 
@@ -56,9 +46,7 @@ Serial number
 
 ### stockKeepingUnit?
 
-> `readonly` `optional` **stockKeepingUnit**: `string`
-
-Defined in: [index.d.ts:5723](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5723)
+> `readonly` `optional` **stockKeepingUnit**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Stock keeping unit
 
@@ -66,9 +54,7 @@ Stock keeping unit
 
 ### uuid?
 
-> `readonly` `optional` **uuid**: `string`
-
-Defined in: [index.d.ts:5731](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5731)
+> `readonly` `optional` **uuid**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Uuid
 
@@ -76,9 +62,7 @@ Uuid
 
 ### vendorName?
 
-> `readonly` `optional` **vendorName**: `string`
-
-Defined in: [index.d.ts:5735](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5735)
+> `readonly` `optional` **vendorName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Vendor name
 
@@ -86,9 +70,7 @@ Vendor name
 
 ### version?
 
-> `readonly` `optional` **version**: `string`
-
-Defined in: [index.d.ts:5727](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5727)
+> `readonly` `optional` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Version
 
@@ -96,9 +78,7 @@ Version
 
 ### listComponents()
 
-> **listComponents**(`options?`): `Promise`\<readonly [`Component`](Component.md)[]\>
-
-Defined in: [index.d.ts:5743](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5743)
+> **listComponents**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Component`](Component.md)[]\>
 
 Hardware components
 
@@ -110,16 +90,14 @@ Hardware components
 
 #### Returns
 
-`Promise`\<readonly [`Component`](Component.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Component`](Component.md)[]\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5744](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5744)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

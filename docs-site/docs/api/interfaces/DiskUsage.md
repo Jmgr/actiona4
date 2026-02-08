@@ -1,7 +1,5 @@
 # Interface: DiskUsage
 
-Defined in: [index.d.ts:6496](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6496)
-
 Read/write usage for a disk.
 
 ```ts
@@ -19,9 +17,7 @@ formatBytes(disk.usage.written.total),
 
 ### read
 
-> `readonly` **read**: `Readonly`\<[`IoStats`](IoStats.md)\>
-
-Defined in: [index.d.ts:6504](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6504)
+> `readonly` **read**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`IoStats`](IoStats.md)\>
 
 Read
 
@@ -29,9 +25,7 @@ Read
 
 ### written
 
-> `readonly` **written**: `Readonly`\<[`IoStats`](IoStats.md)\>
-
-Defined in: [index.d.ts:6500](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6500)
+> `readonly` **written**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`IoStats`](IoStats.md)\>
 
 Written
 
@@ -39,10 +33,8 @@ Written
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6505](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6505)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

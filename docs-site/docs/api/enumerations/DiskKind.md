@@ -1,7 +1,5 @@
 # Enumeration: DiskKind
 
-Defined in: [index.d.ts:1781](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1781)
-
 Disk kind values.
 
 ```ts
@@ -18,9 +16,7 @@ Disk kind
 
 ### Hdd
 
-> **Hdd**: `number`
-
-Defined in: [index.d.ts:1785](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1785)
+> **Hdd**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hard disk drive
 
@@ -28,9 +24,7 @@ Hard disk drive
 
 ### Ssd
 
-> **Ssd**: `number`
-
-Defined in: [index.d.ts:1790](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1790)
+> **Ssd**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Solid-state drive
 
@@ -38,8 +32,6 @@ Solid-state drive
 
 ### Unknown
 
-> **Unknown**: `number`
-
-Defined in: [index.d.ts:1795](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1795)
+> **Unknown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Unknown drive kind

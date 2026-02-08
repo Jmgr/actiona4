@@ -1,7 +1,5 @@
 # Interface: Os
 
-Defined in: [index.d.ts:6115](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6115)
-
 OS-level information.
 
 ```ts
@@ -16,9 +14,7 @@ console.log(users.length, groups.length);
 
 ### bootTime
 
-> `readonly` **bootTime**: `Date`
-
-Defined in: [index.d.ts:6151](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6151)
+> `readonly` **bootTime**: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
 Boot time
 
@@ -26,9 +22,7 @@ Boot time
 
 ### distributionId
 
-> `readonly` **distributionId**: `string`
-
-Defined in: [index.d.ts:6135](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6135)
+> `readonly` **distributionId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Distribution ID
 
@@ -36,9 +30,7 @@ Distribution ID
 
 ### distributionIdLike
 
-> `readonly` **distributionIdLike**: readonly `string`[]
-
-Defined in: [index.d.ts:6139](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6139)
+> `readonly` **distributionIdLike**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Distribution ID like
 
@@ -46,9 +38,7 @@ Distribution ID like
 
 ### kernelLongVersion
 
-> `readonly` **kernelLongVersion**: `string`
-
-Defined in: [index.d.ts:6143](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6143)
+> `readonly` **kernelLongVersion**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Kernel long version
 
@@ -56,9 +46,7 @@ Kernel long version
 
 ### kernelVersion?
 
-> `readonly` `optional` **kernelVersion**: `string`
-
-Defined in: [index.d.ts:6123](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6123)
+> `readonly` `optional` **kernelVersion**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Kernel version
 
@@ -66,9 +54,7 @@ Kernel version
 
 ### longVersion?
 
-> `readonly` `optional` **longVersion**: `string`
-
-Defined in: [index.d.ts:6131](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6131)
+> `readonly` `optional` **longVersion**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Long version
 
@@ -76,9 +62,7 @@ Long version
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
-
-Defined in: [index.d.ts:6119](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6119)
+> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -86,9 +70,7 @@ Name
 
 ### openFilesLimit?
 
-> `readonly` `optional` **openFilesLimit**: `number`
-
-Defined in: [index.d.ts:6155](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6155)
+> `readonly` `optional` **openFilesLimit**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Open files limit
 
@@ -96,9 +78,7 @@ Open files limit
 
 ### uptime
 
-> `readonly` **uptime**: `number`
-
-Defined in: [index.d.ts:6147](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6147)
+> `readonly` **uptime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Uptime in seconds
 
@@ -106,9 +86,7 @@ Uptime in seconds
 
 ### version?
 
-> `readonly` `optional` **version**: `string`
-
-Defined in: [index.d.ts:6127](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6127)
+> `readonly` `optional` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Version
 
@@ -116,38 +94,32 @@ Version
 
 ### listGroups()
 
-> **listGroups**(): `Promise`\<readonly [`Group`](Group.md)[]\>
-
-Defined in: [index.d.ts:6163](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6163)
+> **listGroups**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
 
 Groups
 
 #### Returns
 
-`Promise`\<readonly [`Group`](Group.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
 
 ***
 
 ### listUsers()
 
-> **listUsers**(): `Promise`\<readonly [`User`](User.md)[]\>
-
-Defined in: [index.d.ts:6159](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6159)
+> **listUsers**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`User`](User.md)[]\>
 
 Users
 
 #### Returns
 
-`Promise`\<readonly [`User`](User.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`User`](User.md)[]\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6164](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6164)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

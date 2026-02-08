@@ -1,7 +1,5 @@
 # Interface: Network
 
-Defined in: [index.d.ts:5988](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5988)
-
 Network information and interfaces.
 
 ```ts
@@ -14,9 +12,7 @@ console.log(interfaces.length);
 
 ### hostname?
 
-> `readonly` `optional` **hostname**: `string`
-
-Defined in: [index.d.ts:5992](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5992)
+> `readonly` `optional` **hostname**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Host name
 
@@ -24,9 +20,7 @@ Host name
 
 ### listInterfaces()
 
-> **listInterfaces**(`options?`): `Promise`\<readonly [`NetworkInterface`](NetworkInterface.md)[]\>
-
-Defined in: [index.d.ts:5996](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5996)
+> **listInterfaces**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`NetworkInterface`](NetworkInterface.md)[]\>
 
 Interfaces
 
@@ -38,16 +32,14 @@ Interfaces
 
 #### Returns
 
-`Promise`\<readonly [`NetworkInterface`](NetworkInterface.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`NetworkInterface`](NetworkInterface.md)[]\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5997](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5997)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

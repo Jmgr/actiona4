@@ -1,7 +1,5 @@
 # Class: Directory
 
-Defined in: [index.d.ts:3296](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3296)
-
 Provides static methods for creating, removing, and listing directories.
 
 ```ts
@@ -22,9 +20,7 @@ await Directory.remove("/tmp/my");
 
 ### create()
 
-> `static` **create**(`path`, `options?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3309](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3309)
+> `static` **create**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Creates a directory at the given path. By default, creates parent directories
 recursively.
@@ -40,7 +36,7 @@ await Directory.create("/tmp/a/b/c", { recursive: false });
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -48,15 +44,13 @@ await Directory.create("/tmp/a/b/c", { recursive: false });
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
 ### listEntries()
 
-> `static` **listEntries**(`path`, `options?`): `Promise`\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
-
-Defined in: [index.d.ts:3334](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3334)
+> `static` **listEntries**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
 
 Lists all entries in a directory, returning an array of `DirectoryEntry`.
 
@@ -74,7 +68,7 @@ fetchSize: false,
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -82,15 +76,13 @@ fetchSize: false,
 
 #### Returns
 
-`Promise`\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
 
 ***
 
 ### remove()
 
-> `static` **remove**(`path`, `options?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:3320](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3320)
+> `static` **remove**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Removes a directory. By default, removes all contents recursively.
 
@@ -105,7 +97,7 @@ await Directory.remove("/tmp/my/dir", { recursive: false });
 
 ##### path
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -113,4 +105,4 @@ await Directory.remove("/tmp/my/dir", { recursive: false });
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

@@ -1,7 +1,5 @@
 # Interface: Web
 
-Defined in: [index.d.ts:6769](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6769)
-
 HTTP client for downloading files, text, images, and binary data.
 
 Supports progress tracking, authentication, custom headers, and multipart uploads.
@@ -19,9 +17,7 @@ console.log(image.size().toString());
 
 ### download()
 
-> **download**(`url`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<`Uint8Array`, [`WebProgress`](WebProgress.md)\>
-
-Defined in: [index.d.ts:6785](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6785)
+> **download**(`url`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array), [`WebProgress`](WebProgress.md)\>
 
 Downloads a binary file.
 
@@ -41,7 +37,7 @@ const bytes = await task;
 
 ##### url
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -49,15 +45,13 @@ const bytes = await task;
 
 #### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<`Uint8Array`, [`WebProgress`](WebProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array), [`WebProgress`](WebProgress.md)\>
 
 ***
 
 ### downloadFile()
 
-> **downloadFile**(`url`, `directory?`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<`string`, [`WebProgress`](WebProgress.md)\>
-
-Defined in: [index.d.ts:6833](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6833)
+> **downloadFile**(`url`, `directory?`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
 
 Downloads a file to a directory.
 
@@ -77,11 +71,11 @@ const filePath = await task;
 
 ##### url
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### directory?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -89,15 +83,13 @@ const filePath = await task;
 
 #### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<`string`, [`WebProgress`](WebProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
 
 ***
 
 ### downloadImage()
 
 > **downloadImage**(`url`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Image`](../classes/Image.md), [`WebProgress`](WebProgress.md)\>
-
-Defined in: [index.d.ts:6817](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6817)
 
 Downloads an image.
 
@@ -117,7 +109,7 @@ const image = await task;
 
 ##### url
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -131,9 +123,7 @@ const image = await task;
 
 ### downloadText()
 
-> **downloadText**(`url`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<`string`, [`WebProgress`](WebProgress.md)\>
-
-Defined in: [index.d.ts:6801](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6801)
+> **downloadText**(`url`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
 
 Downloads a text file.
 
@@ -153,7 +143,7 @@ const text = await task;
 
 ##### url
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### options?
 
@@ -161,4 +151,4 @@ const text = await task;
 
 #### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<`string`, [`WebProgress`](WebProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>

@@ -1,7 +1,5 @@
 # Enumeration: Direction
 
-Defined in: [index.d.ts:225](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L225)
-
 Direction for key press/release actions.
 
 ```ts
@@ -18,22 +16,16 @@ await keyboard.key(Key.Return, Direction.Click);
 
 ### Click
 
-> **Click**: `number`
-
-Defined in: [index.d.ts:230](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L230)
+> **Click**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Press
 
-> **Press**: `number`
-
-Defined in: [index.d.ts:226](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L226)
+> **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Release
 
-> **Release**: `number`
-
-Defined in: [index.d.ts:228](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L228)
+> **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

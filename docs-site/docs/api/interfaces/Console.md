@@ -1,7 +1,5 @@
 # Interface: Console
 
-Defined in: [index.d.ts:3134](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3134)
-
 The global console singleton for printing output and basic debugging.
 
 ```ts
@@ -26,23 +24,19 @@ console.count("loop");
 
 ### clear()
 
-> **clear**(): `void`
-
-Defined in: [index.d.ts:3162](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3162)
+> **clear**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Clears the terminal screen.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### count()
 
-> **count**(`label?`): `void`
-
-Defined in: [index.d.ts:3189](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3189)
+> **count**(`label?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Increments and prints a counter for the given label (defaults to `"default"`).
 
@@ -55,19 +49,17 @@ console.count("loop"); // prints "loop: 2"
 
 ##### label?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### error()
 
-> **error**(...`args`): `void`
-
-Defined in: [index.d.ts:3158](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3158)
+> **error**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs an error in bold red.
 
@@ -79,15 +71,13 @@ Logs an error in bold red.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### info()
 
-> **info**(...`args`): `void`
-
-Defined in: [index.d.ts:3150](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3150)
+> **info**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs informational values. Alias for `log`.
 
@@ -99,15 +89,13 @@ Logs informational values. Alias for `log`.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### log()
 
-> **log**(...`args`): `void`
-
-Defined in: [index.d.ts:3146](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3146)
+> **log**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs values to stdout. Alias for `printLn`.
 
@@ -119,15 +107,13 @@ Logs values to stdout. Alias for `printLn`.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### print()
 
-> **print**(...`args`): `void`
-
-Defined in: [index.d.ts:3138](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3138)
+> **print**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Prints values without a trailing newline.
 
@@ -139,15 +125,13 @@ Prints values without a trailing newline.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### printLn()
 
-> **printLn**(...`args`): `void`
-
-Defined in: [index.d.ts:3142](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3142)
+> **printLn**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Prints values followed by a newline.
 
@@ -159,15 +143,13 @@ Prints values followed by a newline.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### time()
 
-> **time**(`label?`): `void`
-
-Defined in: [index.d.ts:3170](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3170)
+> **time**(`label?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Starts a timer with the given label (defaults to `"default"`).
 
@@ -179,19 +161,17 @@ console.time("myTimer");
 
 ##### label?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### timeEnd()
 
-> **timeEnd**(`label?`): `void`
-
-Defined in: [index.d.ts:3180](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3180)
+> **timeEnd**(`label?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Stops a timer and prints the elapsed time.
 
@@ -205,19 +185,17 @@ console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
 
 ##### label?
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### warn()
 
-> **warn**(...`args`): `void`
-
-Defined in: [index.d.ts:3154](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3154)
+> **warn**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs a warning in yellow.
 
@@ -229,4 +207,4 @@ Logs a warning in yellow.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

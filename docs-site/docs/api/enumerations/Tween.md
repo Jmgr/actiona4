@@ -1,7 +1,5 @@
 # Enumeration: Tween
 
-Defined in: [index.d.ts:1891](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1891)
-
 Tweening functions for smooth mouse movement.
 
 ```ts
@@ -16,9 +14,7 @@ await mouse.move(100, 100, { tween: Tween.Linear });
 
 ### BackIn
 
-> **BackIn**: `number`
-
-Defined in: [index.d.ts:1895](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1895)
+> **BackIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly, then accelerates with an overshoot.
 
@@ -26,9 +22,7 @@ Starts slowly, then accelerates with an overshoot.
 
 ### BackInOut
 
-> **BackInOut**: `number`
-
-Defined in: [index.d.ts:1900](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1900)
+> **BackInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends with an overshoot, accelerating in between.
 
@@ -36,9 +30,7 @@ Starts and ends with an overshoot, accelerating in between.
 
 ### BackOut
 
-> **BackOut**: `number`
-
-Defined in: [index.d.ts:1905](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1905)
+> **BackOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts quickly, then decelerates with an overshoot.
 
@@ -46,9 +38,7 @@ Starts quickly, then decelerates with an overshoot.
 
 ### BounceIn
 
-> **BounceIn**: `number`
-
-Defined in: [index.d.ts:1910](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1910)
+> **BounceIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts by bouncing off the start point.
 
@@ -56,9 +46,7 @@ Starts by bouncing off the start point.
 
 ### BounceInOut
 
-> **BounceInOut**: `number`
-
-Defined in: [index.d.ts:1915](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1915)
+> **BounceInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Bounces at both the start and end points.
 
@@ -66,9 +54,7 @@ Bounces at both the start and end points.
 
 ### BounceOut
 
-> **BounceOut**: `number`
-
-Defined in: [index.d.ts:1920](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1920)
+> **BounceOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends with a bounce effect.
 
@@ -76,9 +62,7 @@ Ends with a bounce effect.
 
 ### CircIn
 
-> **CircIn**: `number`
-
-Defined in: [index.d.ts:1925](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1925)
+> **CircIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates in a circular motion.
 
@@ -86,9 +70,7 @@ Starts slowly and accelerates in a circular motion.
 
 ### CircInOut
 
-> **CircInOut**: `number`
-
-Defined in: [index.d.ts:1930](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1930)
+> **CircInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a circular motion.
 
@@ -96,9 +78,7 @@ Starts and ends slowly with a circular motion.
 
 ### CircOut
 
-> **CircOut**: `number`
-
-Defined in: [index.d.ts:1935](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1935)
+> **CircOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a circular motion.
 
@@ -106,9 +86,7 @@ Ends slowly with a circular motion.
 
 ### CubicIn
 
-> **CubicIn**: `number`
-
-Defined in: [index.d.ts:1940](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1940)
+> **CubicIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates cubically.
 
@@ -116,9 +94,7 @@ Starts slowly and accelerates cubically.
 
 ### CubicInOut
 
-> **CubicInOut**: `number`
-
-Defined in: [index.d.ts:1945](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1945)
+> **CubicInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a cubic acceleration.
 
@@ -126,9 +102,7 @@ Starts and ends slowly with a cubic acceleration.
 
 ### CubicOut
 
-> **CubicOut**: `number`
-
-Defined in: [index.d.ts:1950](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1950)
+> **CubicOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a cubic deceleration.
 
@@ -136,9 +110,7 @@ Ends slowly with a cubic deceleration.
 
 ### ElasticIn
 
-> **ElasticIn**: `number`
-
-Defined in: [index.d.ts:1955](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1955)
+> **ElasticIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts with an elastic effect, overshooting the target.
 
@@ -146,9 +118,7 @@ Starts with an elastic effect, overshooting the target.
 
 ### ElasticInOut
 
-> **ElasticInOut**: `number`
-
-Defined in: [index.d.ts:1960](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1960)
+> **ElasticInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends with an elastic effect.
 
@@ -156,9 +126,7 @@ Starts and ends with an elastic effect.
 
 ### ElasticOut
 
-> **ElasticOut**: `number`
-
-Defined in: [index.d.ts:1965](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1965)
+> **ElasticOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends with an elastic effect, overshooting the target.
 
@@ -166,9 +134,7 @@ Ends with an elastic effect, overshooting the target.
 
 ### ExpoIn
 
-> **ExpoIn**: `number`
-
-Defined in: [index.d.ts:1970](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1970)
+> **ExpoIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates exponentially.
 
@@ -176,9 +142,7 @@ Starts slowly and accelerates exponentially.
 
 ### ExpoInOut
 
-> **ExpoInOut**: `number`
-
-Defined in: [index.d.ts:1975](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1975)
+> **ExpoInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with an exponential acceleration.
 
@@ -186,9 +150,7 @@ Starts and ends slowly with an exponential acceleration.
 
 ### ExpoOut
 
-> **ExpoOut**: `number`
-
-Defined in: [index.d.ts:1980](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1980)
+> **ExpoOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with an exponential deceleration.
 
@@ -196,9 +158,7 @@ Ends slowly with an exponential deceleration.
 
 ### Linear
 
-> **Linear**: `number`
-
-Defined in: [index.d.ts:1985](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1985)
+> **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 A linear tween with no acceleration or deceleration.
 
@@ -206,9 +166,7 @@ A linear tween with no acceleration or deceleration.
 
 ### QuadIn
 
-> **QuadIn**: `number`
-
-Defined in: [index.d.ts:1990](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1990)
+> **QuadIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates quadratically.
 
@@ -216,9 +174,7 @@ Starts slowly and accelerates quadratically.
 
 ### QuadInOut
 
-> **QuadInOut**: `number`
-
-Defined in: [index.d.ts:1995](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1995)
+> **QuadInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a quadratic acceleration.
 
@@ -226,9 +182,7 @@ Starts and ends slowly with a quadratic acceleration.
 
 ### QuadOut
 
-> **QuadOut**: `number`
-
-Defined in: [index.d.ts:2000](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2000)
+> **QuadOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a quadratic deceleration.
 
@@ -236,9 +190,7 @@ Ends slowly with a quadratic deceleration.
 
 ### QuartIn
 
-> **QuartIn**: `number`
-
-Defined in: [index.d.ts:2005](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2005)
+> **QuartIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates quartically.
 
@@ -246,9 +198,7 @@ Starts slowly and accelerates quartically.
 
 ### QuartInOut
 
-> **QuartInOut**: `number`
-
-Defined in: [index.d.ts:2010](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2010)
+> **QuartInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a quartic acceleration.
 
@@ -256,9 +206,7 @@ Starts and ends slowly with a quartic acceleration.
 
 ### QuartOut
 
-> **QuartOut**: `number`
-
-Defined in: [index.d.ts:2015](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2015)
+> **QuartOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a quartic deceleration.
 
@@ -266,9 +214,7 @@ Ends slowly with a quartic deceleration.
 
 ### QuintIn
 
-> **QuintIn**: `number`
-
-Defined in: [index.d.ts:2020](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2020)
+> **QuintIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates quintically.
 
@@ -276,9 +222,7 @@ Starts slowly and accelerates quintically.
 
 ### QuintInOut
 
-> **QuintInOut**: `number`
-
-Defined in: [index.d.ts:2025](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2025)
+> **QuintInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a quintic acceleration.
 
@@ -286,9 +230,7 @@ Starts and ends slowly with a quintic acceleration.
 
 ### QuintOut
 
-> **QuintOut**: `number`
-
-Defined in: [index.d.ts:2030](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2030)
+> **QuintOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a quintic deceleration.
 
@@ -296,9 +238,7 @@ Ends slowly with a quintic deceleration.
 
 ### SineIn
 
-> **SineIn**: `number`
-
-Defined in: [index.d.ts:2035](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2035)
+> **SineIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates sinusoidally.
 
@@ -306,9 +246,7 @@ Starts slowly and accelerates sinusoidally.
 
 ### SineInOut
 
-> **SineInOut**: `number`
-
-Defined in: [index.d.ts:2040](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2040)
+> **SineInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a sinusoidal acceleration.
 
@@ -316,8 +254,6 @@ Starts and ends slowly with a sinusoidal acceleration.
 
 ### SineOut
 
-> **SineOut**: `number`
-
-Defined in: [index.d.ts:2045](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2045)
+> **SineOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a sinusoidal deceleration.

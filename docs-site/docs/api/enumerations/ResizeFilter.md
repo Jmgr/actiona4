@@ -1,7 +1,5 @@
 # Enumeration: ResizeFilter
 
-Defined in: [index.d.ts:119](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L119)
-
 Resize filter algorithms.
 
 ```ts
@@ -16,38 +14,28 @@ image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
 
 ### Cubic
 
-> **Cubic**: `number`
-
-Defined in: [index.d.ts:124](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L124)
+> **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Gaussian
 
-> **Gaussian**: `number`
-
-Defined in: [index.d.ts:126](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L126)
+> **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Lanczos3
 
-> **Lanczos3**: `number`
-
-Defined in: [index.d.ts:128](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L128)
+> **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Linear
 
-> **Linear**: `number`
-
-Defined in: [index.d.ts:122](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L122)
+> **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Nearest
 
-> **Nearest**: `number`
-
-Defined in: [index.d.ts:120](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L120)
+> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

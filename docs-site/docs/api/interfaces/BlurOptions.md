@@ -1,7 +1,5 @@
 # Interface: BlurOptions
 
-Defined in: [index.d.ts:3836](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3836)
-
 Options for blurring an image.
 
 ```ts
@@ -16,9 +14,7 @@ image.blur({ sigma: 5.0 });
 
 ### fast?
 
-> `optional` **fast**: `boolean`
-
-Defined in: [index.d.ts:3841](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3841)
+> `optional` **fast**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Perform a fast, lower quality blur
 
@@ -30,9 +26,7 @@ Perform a fast, lower quality blur
 
 ### sigma?
 
-> `optional` **sigma**: `number`
-
-Defined in: [index.d.ts:3846](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3846)
+> `optional` **sigma**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Standard deviation of the (approximated) Gaussian
 

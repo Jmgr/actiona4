@@ -1,7 +1,5 @@
 # Enumeration: Axis
 
-Defined in: [index.d.ts:1874](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1874)
-
 Scroll axis direction.
 
 ```ts
@@ -13,14 +11,10 @@ await mouse.scroll(-1, Axis.Horizontal);
 
 ### Horizontal
 
-> **Horizontal**: `number`
-
-Defined in: [index.d.ts:1875](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1875)
+> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### Vertical
 
-> **Vertical**: `number`
-
-Defined in: [index.d.ts:1877](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1877)
+> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

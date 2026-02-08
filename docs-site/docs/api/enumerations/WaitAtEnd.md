@@ -1,7 +1,5 @@
 # Enumeration: WaitAtEnd
 
-Defined in: [index.d.ts:1802](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1802)
-
 Should the script wait at the end of the execution?
 
 ## Default Value
@@ -12,9 +10,7 @@ Should the script wait at the end of the execution?
 
 ### Automatic
 
-> **Automatic**: `number`
-
-Defined in: [index.d.ts:1807](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1807)
+> **Automatic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Automatically decide if the script should wait.
 Setting hotstrings will have the script wait.
@@ -23,9 +19,7 @@ Setting hotstrings will have the script wait.
 
 ### No
 
-> **No**: `number`
-
-Defined in: [index.d.ts:1817](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1817)
+> **No**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Never wait.
 
@@ -33,8 +27,6 @@ Never wait.
 
 ### Yes
 
-> **Yes**: `number`
-
-Defined in: [index.d.ts:1812](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1812)
+> **Yes**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Always wait.

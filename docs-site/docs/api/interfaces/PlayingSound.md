@@ -1,7 +1,5 @@
 # Interface: PlayingSound
 
-Defined in: [index.d.ts:2280](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2280)
-
 A handle to an actively playing sound, allowing control over playback.
 
 ```ts
@@ -18,19 +16,15 @@ await sound.finished;  // wait until the sound ends
 
 ### duration?
 
-> `readonly` `optional` **duration**: `number`
+> `readonly` `optional` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Defined in: [index.d.ts:2298](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2298)
-
-The total duration of the sound in seconds, or `undefined` if unknown.
+The total duration of the sound in seconds, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if unknown.
 
 ***
 
 ### finished
 
-> `readonly` **finished**: `Promise`\<`void`\>
-
-Defined in: [index.d.ts:2308](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2308)
+> `readonly` **finished**: [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 A promise that resolves when the sound has finished playing.
 
@@ -44,9 +38,7 @@ console.log("Sound finished!");
 
 ### paused
 
-> `readonly` **paused**: `boolean`
-
-Defined in: [index.d.ts:2294](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2294)
+> `readonly` **paused**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the sound is currently paused.
 
@@ -54,9 +46,7 @@ Whether the sound is currently paused.
 
 ### playbackRate
 
-> **playbackRate**: `number`
-
-Defined in: [index.d.ts:2290](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2290)
+> **playbackRate**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Sound playing speed
 
@@ -68,9 +58,7 @@ Sound playing speed
 
 ### volume
 
-> **volume**: `number`
-
-Defined in: [index.d.ts:2285](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2285)
+> **volume**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Sound volume
 
@@ -82,40 +70,34 @@ Sound volume
 
 ### pause()
 
-> **pause**(): `void`
-
-Defined in: [index.d.ts:2312](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2312)
+> **pause**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Pauses the sound. Use `resume()` to continue playback.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### resume()
 
-> **resume**(): `void`
-
-Defined in: [index.d.ts:2316](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2316)
+> **resume**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Resumes a paused sound.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### stop()
 
-> **stop**(): `void`
-
-Defined in: [index.d.ts:2320](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2320)
+> **stop**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Stops the sound permanently.
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

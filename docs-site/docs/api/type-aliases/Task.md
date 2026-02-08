@@ -1,8 +1,6 @@
 # Type Alias: Task\<Result\>
 
-> **Task**\<`Result`\> = `Promise`\<`Result`\> & `object`
-
-Defined in: [index.d.ts:12](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L12)
+> **Task**\<`Result`\> = [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Result`\> & [`object`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 Task: cancellable promise.
 
@@ -10,11 +8,11 @@ Task: cancellable promise.
 
 ### cancel()
 
-> **cancel**(): `void`
+> **cancel**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ## Type Parameters
 

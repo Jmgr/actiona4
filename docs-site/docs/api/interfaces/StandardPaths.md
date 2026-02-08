@@ -1,7 +1,5 @@
 # Interface: StandardPaths
 
-Defined in: [index.d.ts:5606](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5606)
-
 Platform-specific standard directory paths.
 
 All properties return the path as a string, or undefined if unavailable.
@@ -16,9 +14,7 @@ console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
 
 ### cache?
 
-> `readonly` `optional` **cache**: `string`
-
-Defined in: [index.d.ts:5642](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5642)
+> `readonly` `optional` **cache**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Cache directory
 
@@ -26,9 +22,7 @@ Cache directory
 
 ### config?
 
-> `readonly` `optional` **config**: `string`
-
-Defined in: [index.d.ts:5646](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5646)
+> `readonly` `optional` **config**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Config directory
 
@@ -36,9 +30,7 @@ Config directory
 
 ### desktop?
 
-> `readonly` `optional` **desktop**: `string`
-
-Defined in: [index.d.ts:5618](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5618)
+> `readonly` `optional` **desktop**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Desktop directory
 
@@ -46,9 +38,7 @@ Desktop directory
 
 ### documents?
 
-> `readonly` `optional` **documents**: `string`
-
-Defined in: [index.d.ts:5622](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5622)
+> `readonly` `optional` **documents**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Documents directory
 
@@ -56,9 +46,7 @@ Documents directory
 
 ### downloads?
 
-> `readonly` `optional` **downloads**: `string`
-
-Defined in: [index.d.ts:5626](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5626)
+> `readonly` `optional` **downloads**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Downloads directory
 
@@ -66,9 +54,7 @@ Downloads directory
 
 ### home?
 
-> `readonly` `optional` **home**: `string`
-
-Defined in: [index.d.ts:5610](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5610)
+> `readonly` `optional` **home**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Home directory
 
@@ -76,9 +62,7 @@ Home directory
 
 ### localConfig?
 
-> `readonly` `optional` **localConfig**: `string`
-
-Defined in: [index.d.ts:5650](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5650)
+> `readonly` `optional` **localConfig**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Local config directory
 
@@ -86,9 +70,7 @@ Local config directory
 
 ### music?
 
-> `readonly` `optional` **music**: `string`
-
-Defined in: [index.d.ts:5614](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5614)
+> `readonly` `optional` **music**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Music directory
 
@@ -96,9 +78,7 @@ Music directory
 
 ### pictures?
 
-> `readonly` `optional` **pictures**: `string`
-
-Defined in: [index.d.ts:5630](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5630)
+> `readonly` `optional` **pictures**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Pictures directory
 
@@ -106,9 +86,7 @@ Pictures directory
 
 ### public?
 
-> `readonly` `optional` **public**: `string`
-
-Defined in: [index.d.ts:5634](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5634)
+> `readonly` `optional` **public**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Public directory
 
@@ -116,9 +94,7 @@ Public directory
 
 ### videos?
 
-> `readonly` `optional` **videos**: `string`
-
-Defined in: [index.d.ts:5638](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5638)
+> `readonly` `optional` **videos**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Videos directory
 
@@ -126,12 +102,10 @@ Videos directory
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5654](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5654)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of all standard paths.
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

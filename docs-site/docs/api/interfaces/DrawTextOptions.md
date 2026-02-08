@@ -1,7 +1,5 @@
 # Interface: DrawTextOptions
 
-Defined in: [index.d.ts:3928](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3928)
-
 Options for drawing text on an image.
 
 ```ts
@@ -17,9 +15,7 @@ verticalAlign: TextVerticalAlign.Middle
 
 ### fontSize?
 
-> `optional` **fontSize**: `number`
-
-Defined in: [index.d.ts:3933](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3933)
+> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -33,8 +29,6 @@ Font size in pixels.
 
 > `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
-Defined in: [index.d.ts:3943](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3943)
-
 Horizontal alignment relative to the provided position.
 
 #### Default Value
@@ -45,9 +39,7 @@ Horizontal alignment relative to the provided position.
 
 ### lineSpacing?
 
-> `optional` **lineSpacing**: `number`
-
-Defined in: [index.d.ts:3938](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3938)
+> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -60,8 +52,6 @@ Multiplier applied to the default line height when rendering multi-line text.
 ### verticalAlign?
 
 > `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
-
-Defined in: [index.d.ts:3948](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3948)
 
 Vertical alignment relative to the provided position.
 

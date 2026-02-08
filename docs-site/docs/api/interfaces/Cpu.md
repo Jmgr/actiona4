@@ -1,7 +1,5 @@
 # Interface: Cpu
 
-Defined in: [index.d.ts:5677](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5677)
-
 CPU metrics and topology.
 
 ```ts
@@ -21,9 +19,7 @@ formatFrequency(freqs[0]),
 
 ### architecture
 
-> `readonly` **architecture**: `string`
-
-Defined in: [index.d.ts:5689](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5689)
+> `readonly` **architecture**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Architecture
 
@@ -31,9 +27,7 @@ Architecture
 
 ### logicalCoreCount
 
-> `readonly` **logicalCoreCount**: `number`
-
-Defined in: [index.d.ts:5681](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5681)
+> `readonly` **logicalCoreCount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Logical core count
 
@@ -41,9 +35,7 @@ Logical core count
 
 ### physicalCoreCount?
 
-> `readonly` `optional` **physicalCoreCount**: `number`
-
-Defined in: [index.d.ts:5685](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5685)
+> `readonly` `optional` **physicalCoreCount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Physical core count
 
@@ -51,52 +43,44 @@ Physical core count
 
 ### coreUsage()
 
-> **coreUsage**(`logicalCoreIndex`): `Promise`\<`number`\>
-
-Defined in: [index.d.ts:5691](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5691)
+> **coreUsage**(`logicalCoreIndex`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 #### Parameters
 
 ##### logicalCoreIndex
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<`number`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 ***
 
 ### frequencies()
 
-> **frequencies**(): `Promise`\<readonly `number`[]\>
-
-Defined in: [index.d.ts:5692](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5692)
+> **frequencies**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)[]\>
 
 #### Returns
 
-`Promise`\<readonly `number`[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)[]\>
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5693](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5693)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### usage()
 
-> **usage**(): `Promise`\<`number`\>
-
-Defined in: [index.d.ts:5690](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5690)
+> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 #### Returns
 
-`Promise`\<`number`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>

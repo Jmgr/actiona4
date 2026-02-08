@@ -5,8 +5,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: "My Site",
-  tagline: "Dinosaurs are cool",
+  title: "Actiona-ng",
+  tagline: "Desktop automation since 2005",
   favicon: "img/favicon.ico",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -22,8 +22,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "Jmgr/actiona-ng", // Usually your GitHub org/user name.
+  projectName: "actiona-ng", // Usually your repo name.
 
   onBrokenLinks: "throw",
 
@@ -71,6 +71,10 @@ const config: Config = {
     [
       "docusaurus-plugin-typedoc",
       {
+        plugin: [
+          "typedoc-plugin-mdn-links",
+          "./plugins/typedoc-plugin-intrinsic-links.mjs",
+        ],
         entryPoints: ["../tests/src/index.d.ts"],
         tsconfig: "../tests/tsconfig.json",
         out: "docs/api",
@@ -80,6 +84,7 @@ const config: Config = {
         suppressCommentWarningsInDeclarationFiles: true,
         defaultCategory: "Misc",
         categorizeByGroup: false,
+        disableSources: true,
         navigation: {
           includeCategories: true,
           includeGroups: false,
@@ -101,9 +106,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: "My Site",
+      title: "Actiona NG",
       logo: {
-        alt: "My Site Logo",
+        alt: "Actiona logo",
         src: "img/logo.svg",
       },
       items: [
@@ -137,34 +142,13 @@ const config: Config = {
           title: "Community",
           items: [
             {
-              label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
-            },
-            {
               label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
-            },
-            {
-              label: "X",
-              href: "https://x.com/docusaurus",
-            },
-          ],
-        },
-        {
-          title: "More",
-          items: [
-            {
-              label: "Blog",
-              to: "/blog",
-            },
-            {
-              label: "GitHub",
-              href: "https://github.com/facebook/docusaurus",
+              href: "https://discord.gg/ubTjJu3dVZ",
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Jonathan Mercier-Ganady. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

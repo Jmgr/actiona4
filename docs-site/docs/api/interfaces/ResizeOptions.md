@@ -1,7 +1,5 @@
 # Interface: ResizeOptions
 
-Defined in: [index.d.ts:3812](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3812)
-
 Options for resizing an image.
 
 ```ts
@@ -18,8 +16,6 @@ image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true })
 
 > `optional` **filter**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
 
-Defined in: [index.d.ts:3822](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3822)
-
 What filter to use
 
 #### Default Value
@@ -30,9 +26,7 @@ What filter to use
 
 ### keepAspectRatio?
 
-> `optional` **keepAspectRatio**: `boolean`
-
-Defined in: [index.d.ts:3817](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3817)
+> `optional` **keepAspectRatio**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the aspect ratio be kept?
 

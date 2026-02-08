@@ -1,7 +1,5 @@
 # Interface: ClipboardFileList
 
-Defined in: [index.d.ts:2432](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2432)
-
 Provides file list clipboard operations.
 
 ```ts
@@ -13,9 +11,7 @@ const files = await clipboard.fileList.get();
 
 ### get()
 
-> **get**(`mode?`): `Promise`\<readonly `string`[]\>
-
-Defined in: [index.d.ts:2440](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2440)
+> **get**(`mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]\>
 
 Gets the clipboard file list content.
 
@@ -27,15 +23,13 @@ Gets the clipboard file list content.
 
 #### Returns
 
-`Promise`\<readonly `string`[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]\>
 
 ***
 
 ### set()
 
-> **set**(`fileList`, `mode?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:2436](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2436)
+> **set**(`fileList`, `mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the clipboard file list content.
 
@@ -43,7 +37,7 @@ Sets the clipboard file list content.
 
 ##### fileList
 
-`string`[]
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 ##### mode?
 
@@ -51,4 +45,4 @@ Sets the clipboard file list content.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

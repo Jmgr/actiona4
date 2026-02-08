@@ -1,7 +1,5 @@
 # Interface: Screenshot
 
-Defined in: [index.d.ts:5354](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5354)
-
 Screenshot capture and image search.
 
 Provides methods to capture screen regions, displays, and individual pixels,
@@ -21,9 +19,7 @@ console.log(pixel.toString());
 
 ### captureDisplay()
 
-> **captureDisplay**(`displayId`): `Promise`\<[`Image`](../classes/Image.md)\>
-
-Defined in: [index.d.ts:5378](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5378)
+> **captureDisplay**(`displayId`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Captures a screenshot of an entire display.
 
@@ -35,11 +31,11 @@ const image = await screenshot.captureDisplay(0);
 
 ##### displayId
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-`Promise`\<[`Image`](../classes/Image.md)\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 ***
 
@@ -47,9 +43,7 @@ const image = await screenshot.captureDisplay(0);
 
 #### Call Signature
 
-> **capturePixel**(`position`): `Promise`\<[`Color`](../classes/Color.md)\>
-
-Defined in: [index.d.ts:5387](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5387)
+> **capturePixel**(`position`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
 Captures the color of a single pixel on screen.
 
@@ -66,13 +60,11 @@ console.log(color.toString());
 
 ##### Returns
 
-`Promise`\<[`Color`](../classes/Color.md)\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
 #### Call Signature
 
-> **capturePixel**(`x`, `y`): `Promise`\<[`Color`](../classes/Color.md)\>
-
-Defined in: [index.d.ts:5396](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5396)
+> **capturePixel**(`x`, `y`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
 Captures the color of a single pixel on screen.
 
@@ -85,15 +77,15 @@ console.log(color.toString());
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
-`Promise`\<[`Color`](../classes/Color.md)\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
 ***
 
@@ -101,9 +93,7 @@ console.log(color.toString());
 
 #### Call Signature
 
-> **captureRect**(`rect`): `Promise`\<[`Image`](../classes/Image.md)\>
-
-Defined in: [index.d.ts:5362](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5362)
+> **captureRect**(`rect`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Captures a screenshot of a screen rectangle.
 
@@ -119,13 +109,11 @@ const image = await screenshot.captureRect(0, 0, 1920, 1080);
 
 ##### Returns
 
-`Promise`\<[`Image`](../classes/Image.md)\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 #### Call Signature
 
-> **captureRect**(`x`, `y`, `width`, `height`): `Promise`\<[`Image`](../classes/Image.md)\>
-
-Defined in: [index.d.ts:5370](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5370)
+> **captureRect**(`x`, `y`, `width`, `height`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Captures a screenshot of a screen rectangle.
 
@@ -137,31 +125,29 @@ const image = await screenshot.captureRect(0, 0, 1920, 1080);
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
-`Promise`\<[`Image`](../classes/Image.md)\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 ***
 
 ### findImageOnDisplay()
 
-> **findImageOnDisplay**(`displayId`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| `undefined`, [`FindImageProgress`](FindImageProgress.md)\>
-
-Defined in: [index.d.ts:5476](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5476)
+> **findImageOnDisplay**(`displayId`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image on a display.
 
@@ -181,7 +167,7 @@ const match = await task;
 
 ##### displayId
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### image
 
@@ -193,15 +179,13 @@ const match = await task;
 
 #### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| `undefined`, [`FindImageProgress`](FindImageProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 ***
 
 ### findImageOnDisplayAll()
 
 > **findImageOnDisplayAll**(`displayId`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
-
-Defined in: [index.d.ts:5492](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5492)
 
 Finds all occurrences of an image on a display.
 
@@ -221,7 +205,7 @@ const matches = await task;
 
 ##### displayId
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### image
 
@@ -241,9 +225,7 @@ const matches = await task;
 
 #### Call Signature
 
-> **findImageOnRect**(`rect`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| `undefined`, [`FindImageProgress`](FindImageProgress.md)\>
-
-Defined in: [index.d.ts:5412](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5412)
+> **findImageOnRect**(`rect`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image on a screen rectangle.
 
@@ -275,13 +257,11 @@ const match = await task;
 
 ##### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| `undefined`, [`FindImageProgress`](FindImageProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 #### Call Signature
 
-> **findImageOnRect**(`x`, `y`, `width`, `height`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| `undefined`, [`FindImageProgress`](FindImageProgress.md)\>
-
-Defined in: [index.d.ts:5428](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5428)
+> **findImageOnRect**(`x`, `y`, `width`, `height`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image on a screen rectangle.
 
@@ -301,19 +281,19 @@ const match = await task;
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### image
 
@@ -325,7 +305,7 @@ const match = await task;
 
 ##### Returns
 
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| `undefined`, [`FindImageProgress`](FindImageProgress.md)\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 ***
 
@@ -334,8 +314,6 @@ const match = await task;
 #### Call Signature
 
 > **findImageOnRectAll**(`rect`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
-
-Defined in: [index.d.ts:5444](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5444)
 
 Finds all occurrences of an image on a screen rectangle.
 
@@ -373,8 +351,6 @@ const matches = await task;
 
 > **findImageOnRectAll**(`x`, `y`, `width`, `height`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
 
-Defined in: [index.d.ts:5460](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5460)
-
 Finds all occurrences of an image on a screen rectangle.
 
 ```ts
@@ -393,19 +369,19 @@ const matches = await task;
 
 ###### x
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### y
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### image
 

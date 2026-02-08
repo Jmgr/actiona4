@@ -1,7 +1,5 @@
 # Interface: Motherboard
 
-Defined in: [index.d.ts:5766](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5766)
-
 Motherboard details.
 
 ```ts
@@ -13,9 +11,7 @@ console.log(board.vendorName, board.name, board.version);
 
 ### assetTag?
 
-> `readonly` `optional` **assetTag**: `string`
-
-Defined in: [index.d.ts:5786](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5786)
+> `readonly` `optional` **assetTag**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Asset tag
 
@@ -23,9 +19,7 @@ Asset tag
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
-
-Defined in: [index.d.ts:5770](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5770)
+> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -33,9 +27,7 @@ Name
 
 ### serialNumber?
 
-> `readonly` `optional` **serialNumber**: `string`
-
-Defined in: [index.d.ts:5782](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5782)
+> `readonly` `optional` **serialNumber**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Serial number
 
@@ -43,9 +35,7 @@ Serial number
 
 ### vendorName?
 
-> `readonly` `optional` **vendorName**: `string`
-
-Defined in: [index.d.ts:5774](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5774)
+> `readonly` `optional` **vendorName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Vendor name
 
@@ -53,9 +43,7 @@ Vendor name
 
 ### version?
 
-> `readonly` `optional` **version**: `string`
-
-Defined in: [index.d.ts:5778](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5778)
+> `readonly` `optional` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Version
 
@@ -63,10 +51,8 @@ Version
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5787](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5787)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

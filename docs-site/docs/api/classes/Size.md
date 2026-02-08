@@ -1,7 +1,5 @@
 # Class: Size
 
-Defined in: [index.d.ts:5517](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5517)
-
 A 2D size with width and height.
 
 Sizes can be constructed from two numbers, an object with `width`/`height`, or another Size.
@@ -25,19 +23,17 @@ console.log(a.scale(2).toString()); // "(20, 40)"
 
 > **new Size**(`width`, `height`): `Size`
 
-Defined in: [index.d.ts:5529](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5529)
-
 Constructor with two numbers.
 
 #### Parameters
 
 ##### width
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### height
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -46,8 +42,6 @@ Constructor with two numbers.
 ### Constructor
 
 > **new Size**(`s`): `Size`
-
-Defined in: [index.d.ts:5533](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5533)
 
 Constructor with anything Size-like.
 
@@ -65,9 +59,7 @@ Constructor with anything Size-like.
 
 ### height
 
-> **height**: `number`
-
-Defined in: [index.d.ts:5525](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5525)
+> **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 height
 
@@ -75,9 +67,7 @@ height
 
 ### width
 
-> **width**: `number`
-
-Defined in: [index.d.ts:5521](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5521)
+> **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 width
 
@@ -86,8 +76,6 @@ width
 ### add()
 
 > **add**(`other`): `Size`
-
-Defined in: [index.d.ts:5561](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5561)
 
 Adds two sizes and returns a new Size.
 
@@ -112,8 +100,6 @@ console.log(sum.toString()); // "(15, 30)"
 
 > **clone**(): `Size`
 
-Defined in: [index.d.ts:5592](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5592)
-
 Clones this Size.
 
 ```ts
@@ -129,9 +115,7 @@ const copy = original.clone();
 
 ### equals()
 
-> **equals**(`other`): `boolean`
-
-Defined in: [index.d.ts:5552](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5552)
+> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if a Size equals another.
 
@@ -149,15 +133,13 @@ console.log(a.equals(b)); // true
 
 #### Returns
 
-`boolean`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### scale()
 
 > **scale**(`factor`): `Size`
-
-Defined in: [index.d.ts:5579](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5579)
 
 Scales this size by a factor and returns a new Size.
 
@@ -170,7 +152,7 @@ console.log(s.toString()); // "(30, 60)"
 
 ##### factor
 
-`number`
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -181,8 +163,6 @@ console.log(s.toString()); // "(30, 60)"
 ### subtract()
 
 > **subtract**(`other`): `Size`
-
-Defined in: [index.d.ts:5570](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5570)
 
 Subtracts two sizes and returns a new Size.
 
@@ -205,9 +185,7 @@ console.log(diff.toString()); // "(70, 30)"
 
 ### toJson()
 
-> **toJson**(): `string`
-
-Defined in: [index.d.ts:5542](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5542)
+> **toJson**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a JSON representation of this Size.
 
@@ -218,18 +196,16 @@ console.log(s.toJson()); // '{"width":100,"height":50}'
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5583](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5583)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns a string representation of this Size.
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

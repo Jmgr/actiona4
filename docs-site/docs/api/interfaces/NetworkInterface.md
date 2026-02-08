@@ -1,7 +1,5 @@
 # Interface: NetworkInterface
 
-Defined in: [index.d.ts:6022](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6022)
-
 A network interface.
 
 ```ts
@@ -16,9 +14,7 @@ console.log(iface.name, iface.mtu, iface.macAddress);
 
 ### inbound
 
-> `readonly` **inbound**: `Readonly`\<[`Traffic`](Traffic.md)\>
-
-Defined in: [index.d.ts:6030](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6030)
+> `readonly` **inbound**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Traffic`](Traffic.md)\>
 
 Inbound
 
@@ -26,9 +22,7 @@ Inbound
 
 ### macAddress?
 
-> `readonly` `optional` **macAddress**: `string`
-
-Defined in: [index.d.ts:6042](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6042)
+> `readonly` `optional` **macAddress**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 MAC address
 
@@ -36,9 +30,7 @@ MAC address
 
 ### mtu
 
-> `readonly` **mtu**: `number`
-
-Defined in: [index.d.ts:6038](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6038)
+> `readonly` **mtu**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 MTU
 
@@ -46,9 +38,7 @@ MTU
 
 ### name
 
-> `readonly` **name**: `string`
-
-Defined in: [index.d.ts:6026](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6026)
+> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -56,9 +46,7 @@ Name
 
 ### outbound
 
-> `readonly` **outbound**: `Readonly`\<[`Traffic`](Traffic.md)\>
-
-Defined in: [index.d.ts:6034](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6034)
+> `readonly` **outbound**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Traffic`](Traffic.md)\>
 
 Outbound
 
@@ -66,9 +54,7 @@ Outbound
 
 ### subnets
 
-> `readonly` **subnets**: readonly `string`[]
-
-Defined in: [index.d.ts:6046](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6046)
+> `readonly` **subnets**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Subnets
 
@@ -76,10 +62,8 @@ Subnets
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6047](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6047)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

@@ -1,7 +1,5 @@
 # Interface: ClipboardImage
 
-Defined in: [index.d.ts:2413](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2413)
-
 Provides image clipboard operations.
 
 ```ts
@@ -14,9 +12,7 @@ const clipped = await clipboard.image.get();
 
 ### get()
 
-> **get**(`mode?`): `Promise`\<[`Image`](../classes/Image.md)\>
-
-Defined in: [index.d.ts:2421](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2421)
+> **get**(`mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Gets the clipboard image content.
 
@@ -28,15 +24,13 @@ Gets the clipboard image content.
 
 #### Returns
 
-`Promise`\<[`Image`](../classes/Image.md)\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 ***
 
 ### set()
 
-> **set**(`image`, `mode?`): `Promise`\<`void`\>
-
-Defined in: [index.d.ts:2417](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L2417)
+> **set**(`image`, `mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the clipboard image content.
 
@@ -52,4 +46,4 @@ Sets the clipboard image content.
 
 #### Returns
 
-`Promise`\<`void`\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

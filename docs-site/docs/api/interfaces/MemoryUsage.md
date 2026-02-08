@@ -1,7 +1,5 @@
 # Interface: MemoryUsage
 
-Defined in: [index.d.ts:5865](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5865)
-
 A memory usage snapshot.
 
 ```ts
@@ -18,9 +16,7 @@ formatBytes(usage.total),
 
 ### available
 
-> `readonly` **available**: `number`
-
-Defined in: [index.d.ts:5877](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5877)
+> `readonly` **available**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Available
 
@@ -28,9 +24,7 @@ Available
 
 ### free
 
-> `readonly` **free**: `number`
-
-Defined in: [index.d.ts:5873](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5873)
+> `readonly` **free**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Free
 
@@ -38,9 +32,7 @@ Free
 
 ### total
 
-> `readonly` **total**: `number`
-
-Defined in: [index.d.ts:5881](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5881)
+> `readonly` **total**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Total
 
@@ -48,9 +40,7 @@ Total
 
 ### used
 
-> `readonly` **used**: `number`
-
-Defined in: [index.d.ts:5869](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5869)
+> `readonly` **used**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Used
 
@@ -58,10 +48,8 @@ Used
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:5882](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L5882)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

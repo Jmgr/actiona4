@@ -1,7 +1,5 @@
 # Interface: Disk
 
-Defined in: [index.d.ts:6416](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6416)
-
 A disk device.
 
 ```ts
@@ -22,9 +20,7 @@ formatBytes(disk.availableSpace),
 
 ### availableSpace
 
-> `readonly` **availableSpace**: `number`
-
-Defined in: [index.d.ts:6440](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6440)
+> `readonly` **availableSpace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Available space
 
@@ -32,9 +28,7 @@ Available space
 
 ### fileSystem?
 
-> `readonly` `optional` **fileSystem**: `string`
-
-Defined in: [index.d.ts:6428](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6428)
+> `readonly` `optional` **fileSystem**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 File system
 
@@ -42,9 +36,7 @@ File system
 
 ### isReadOnly
 
-> `readonly` **isReadOnly**: `boolean`
-
-Defined in: [index.d.ts:6448](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6448)
+> `readonly` **isReadOnly**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Is read-only
 
@@ -52,9 +44,7 @@ Is read-only
 
 ### isRemovable
 
-> `readonly` **isRemovable**: `boolean`
-
-Defined in: [index.d.ts:6444](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6444)
+> `readonly` **isRemovable**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Is removable
 
@@ -64,17 +54,13 @@ Is removable
 
 > `readonly` **kind**: [`DiskKind`](../enumerations/DiskKind.md)
 
-Defined in: [index.d.ts:6420](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6420)
-
 Kind
 
 ***
 
 ### mountPoint
 
-> `readonly` **mountPoint**: `string`
-
-Defined in: [index.d.ts:6432](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6432)
+> `readonly` **mountPoint**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Mount point
 
@@ -82,9 +68,7 @@ Mount point
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
-
-Defined in: [index.d.ts:6424](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6424)
+> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -92,9 +76,7 @@ Name
 
 ### totalSpace
 
-> `readonly` **totalSpace**: `number`
-
-Defined in: [index.d.ts:6436](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6436)
+> `readonly` **totalSpace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Total space
 
@@ -102,9 +84,7 @@ Total space
 
 ### usage
 
-> `readonly` **usage**: `Readonly`\<[`DiskUsage`](DiskUsage.md)\>
-
-Defined in: [index.d.ts:6452](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6452)
+> `readonly` **usage**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DiskUsage`](DiskUsage.md)\>
 
 Usage
 
@@ -112,10 +92,8 @@ Usage
 
 ### toString()
 
-> **toString**(): `string`
-
-Defined in: [index.d.ts:6453](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L6453)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

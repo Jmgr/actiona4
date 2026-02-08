@@ -1,7 +1,5 @@
 # Enumeration: Key
 
-Defined in: [index.d.ts:244](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L244)
-
 Standard keyboard keys.
 
 Use as constants on the `Key` class. You can also pass a single character string
@@ -16,9 +14,7 @@ await keyboard.key("a", Direction.Click);
 
 ### A
 
-> **A**: `number`
-
-Defined in: [index.d.ts:298](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L298)
+> **A**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'A'
 
@@ -26,9 +22,7 @@ Letter key 'A'
 
 ### AbntC1
 
-> **AbntC1**: `number`
-
-Defined in: [index.d.ts:429](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L429)
+> **AbntC1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Brazilian ABNT keyboard key C1
 
@@ -40,9 +34,7 @@ only works on Windows
 
 ### AbntC2
 
-> **AbntC2**: `number`
-
-Defined in: [index.d.ts:435](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L435)
+> **AbntC2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Brazilian ABNT keyboard key C2
 
@@ -54,9 +46,7 @@ only works on Windows
 
 ### Accept
 
-> **Accept**: `number`
-
-Defined in: [index.d.ts:441](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L441)
+> **Accept**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME “Accept” / commit conversion
 
@@ -68,9 +58,7 @@ only works on Windows
 
 ### Add
 
-> **Add**: `number`
-
-Defined in: [index.d.ts:446](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L446)
+> **Add**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad '+' (addition) key
 
@@ -78,9 +66,7 @@ Numpad '+' (addition) key
 
 ### Alt
 
-> **Alt**: `number`
-
-Defined in: [index.d.ts:451](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L451)
+> **Alt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Alt (Alternate) modifier key
 
@@ -88,9 +74,7 @@ Alt (Alternate) modifier key
 
 ### Apps
 
-> **Apps**: `number`
-
-Defined in: [index.d.ts:457](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L457)
+> **Apps**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Application/Menu key
 
@@ -102,9 +86,7 @@ only works on Windows
 
 ### Attention
 
-> **Attention**: `number`
-
-Defined in: [index.d.ts:463](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L463)
+> **Attention**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Attention key (legacy/rare)
 
@@ -116,9 +98,7 @@ only works on Windows
 
 ### B
 
-> **B**: `number`
-
-Defined in: [index.d.ts:303](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L303)
+> **B**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'B'
 
@@ -126,9 +106,7 @@ Letter key 'B'
 
 ### Backspace
 
-> **Backspace**: `number`
-
-Defined in: [index.d.ts:468](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L468)
+> **Backspace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Backspace / Delete-previous-character
 
@@ -136,9 +114,7 @@ Backspace / Delete-previous-character
 
 ### Begin
 
-> **Begin**: `number`
-
-Defined in: [index.d.ts:480](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L480)
+> **Begin**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Begin key
 
@@ -150,9 +126,7 @@ only works on Linux
 
 ### Break
 
-> **Break**: `number`
-
-Defined in: [index.d.ts:474](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L474)
+> **Break**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Break key (X11/Linux)
 
@@ -164,9 +138,7 @@ only works on Linux
 
 ### BrowserBack
 
-> **BrowserBack**: `number`
-
-Defined in: [index.d.ts:486](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L486)
+> **BrowserBack**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Back
 
@@ -178,9 +150,7 @@ only works on Windows
 
 ### BrowserFavorites
 
-> **BrowserFavorites**: `number`
-
-Defined in: [index.d.ts:492](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L492)
+> **BrowserFavorites**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Favorites
 
@@ -192,9 +162,7 @@ only works on Windows
 
 ### BrowserForward
 
-> **BrowserForward**: `number`
-
-Defined in: [index.d.ts:498](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L498)
+> **BrowserForward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Forward
 
@@ -206,9 +174,7 @@ only works on Windows
 
 ### BrowserHome
 
-> **BrowserHome**: `number`
-
-Defined in: [index.d.ts:504](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L504)
+> **BrowserHome**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Home
 
@@ -220,9 +186,7 @@ only works on Windows
 
 ### BrowserRefresh
 
-> **BrowserRefresh**: `number`
-
-Defined in: [index.d.ts:510](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L510)
+> **BrowserRefresh**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Refresh
 
@@ -234,9 +198,7 @@ only works on Windows
 
 ### BrowserSearch
 
-> **BrowserSearch**: `number`
-
-Defined in: [index.d.ts:516](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L516)
+> **BrowserSearch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Search
 
@@ -248,9 +210,7 @@ only works on Windows
 
 ### BrowserStop
 
-> **BrowserStop**: `number`
-
-Defined in: [index.d.ts:522](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L522)
+> **BrowserStop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Stop
 
@@ -262,9 +222,7 @@ only works on Windows
 
 ### C
 
-> **C**: `number`
-
-Defined in: [index.d.ts:308](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L308)
+> **C**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'C'
 
@@ -272,9 +230,7 @@ Letter key 'C'
 
 ### Cancel
 
-> **Cancel**: `number`
-
-Defined in: [index.d.ts:527](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L527)
+> **Cancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Cancel key (legacy)
 
@@ -282,9 +238,7 @@ Cancel key (legacy)
 
 ### CapsLock
 
-> **CapsLock**: `number`
-
-Defined in: [index.d.ts:532](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L532)
+> **CapsLock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Caps Lock toggle
 
@@ -292,9 +246,7 @@ Caps Lock toggle
 
 ### Clear
 
-> **Clear**: `number`
-
-Defined in: [index.d.ts:537](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L537)
+> **Clear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Clear key
 
@@ -302,9 +254,7 @@ Clear key
 
 ### Control
 
-> **Control**: `number`
-
-Defined in: [index.d.ts:542](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L542)
+> **Control**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Control (Ctrl) modifier key
 
@@ -312,9 +262,7 @@ Control (Ctrl) modifier key
 
 ### Convert
 
-> **Convert**: `number`
-
-Defined in: [index.d.ts:548](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L548)
+> **Convert**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Convert (start/confirm conversion)
 
@@ -326,9 +274,7 @@ only works on Windows
 
 ### CursorSelect
 
-> **CursorSelect**: `number`
-
-Defined in: [index.d.ts:554](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L554)
+> **CursorSelect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Cursor Select (CRSel)
 
@@ -340,9 +286,7 @@ only works on Windows
 
 ### D
 
-> **D**: `number`
-
-Defined in: [index.d.ts:313](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L313)
+> **D**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'D'
 
@@ -350,9 +294,7 @@ Letter key 'D'
 
 ### DbeAlphanumeric
 
-> **DbeAlphanumeric**: `number`
-
-Defined in: [index.d.ts:560](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L560)
+> **DbeAlphanumeric**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: switch to alphanumeric
 
@@ -364,9 +306,7 @@ only works on Windows
 
 ### DbeCodeinput
 
-> **DbeCodeinput**: `number`
-
-Defined in: [index.d.ts:566](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L566)
+> **DbeCodeinput**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: code input mode
 
@@ -378,9 +318,7 @@ only works on Windows
 
 ### DbeDetermineString
 
-> **DbeDetermineString**: `number`
-
-Defined in: [index.d.ts:572](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L572)
+> **DbeDetermineString**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: determine string
 
@@ -392,9 +330,7 @@ only works on Windows
 
 ### DbeEnterDlgConversionMode
 
-> **DbeEnterDlgConversionMode**: `number`
-
-Defined in: [index.d.ts:578](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L578)
+> **DbeEnterDlgConversionMode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: enter dialog conversion mode
 
@@ -406,9 +342,7 @@ only works on Windows
 
 ### DbeEnterImeConfigMode
 
-> **DbeEnterImeConfigMode**: `number`
-
-Defined in: [index.d.ts:584](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L584)
+> **DbeEnterImeConfigMode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: open configuration
 
@@ -420,9 +354,7 @@ only works on Windows
 
 ### DbeEnterWordRegisterMode
 
-> **DbeEnterWordRegisterMode**: `number`
-
-Defined in: [index.d.ts:590](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L590)
+> **DbeEnterWordRegisterMode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: word register mode
 
@@ -434,9 +366,7 @@ only works on Windows
 
 ### DbeFlushString
 
-> **DbeFlushString**: `number`
-
-Defined in: [index.d.ts:596](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L596)
+> **DbeFlushString**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: flush/reset composition string
 
@@ -448,9 +378,7 @@ only works on Windows
 
 ### DbeHiragana
 
-> **DbeHiragana**: `number`
-
-Defined in: [index.d.ts:602](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L602)
+> **DbeHiragana**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Hiragana
 
@@ -462,9 +390,7 @@ only works on Windows
 
 ### DbeKatakana
 
-> **DbeKatakana**: `number`
-
-Defined in: [index.d.ts:608](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L608)
+> **DbeKatakana**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Katakana
 
@@ -476,9 +402,7 @@ only works on Windows
 
 ### DbeNoCodepoint
 
-> **DbeNoCodepoint**: `number`
-
-Defined in: [index.d.ts:614](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L614)
+> **DbeNoCodepoint**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: no code point
 
@@ -490,9 +414,7 @@ only works on Windows
 
 ### DbeNoRoman
 
-> **DbeNoRoman**: `number`
-
-Defined in: [index.d.ts:620](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L620)
+> **DbeNoRoman**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: no roman
 
@@ -504,9 +426,7 @@ only works on Windows
 
 ### DbeRoman
 
-> **DbeRoman**: `number`
-
-Defined in: [index.d.ts:626](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L626)
+> **DbeRoman**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Roman
 
@@ -518,9 +438,7 @@ only works on Windows
 
 ### DbesbcsChar
 
-> **DbesbcsChar**: `number`
-
-Defined in: [index.d.ts:632](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L632)
+> **DbesbcsChar**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: SBCS character
 
@@ -532,9 +450,7 @@ only works on Windows
 
 ### DbesChar
 
-> **DbesChar**: `number`
-
-Defined in: [index.d.ts:638](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L638)
+> **DbesChar**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: SBCS/Special char
 
@@ -546,9 +462,7 @@ only works on Windows
 
 ### Decimal
 
-> **Decimal**: `number`
-
-Defined in: [index.d.ts:643](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L643)
+> **Decimal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad decimal point '.'
 
@@ -556,9 +470,7 @@ Numpad decimal point '.'
 
 ### Delete
 
-> **Delete**: `number`
-
-Defined in: [index.d.ts:648](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L648)
+> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Delete / Forward delete
 
@@ -566,9 +478,7 @@ Delete / Forward delete
 
 ### Divide
 
-> **Divide**: `number`
-
-Defined in: [index.d.ts:653](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L653)
+> **Divide**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad divide '/'
 
@@ -576,9 +486,7 @@ Numpad divide '/'
 
 ### DownArrow
 
-> **DownArrow**: `number`
-
-Defined in: [index.d.ts:658](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L658)
+> **DownArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Down
 
@@ -586,9 +494,7 @@ Arrow: Down
 
 ### E
 
-> **E**: `number`
-
-Defined in: [index.d.ts:318](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L318)
+> **E**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'E'
 
@@ -596,9 +502,7 @@ Letter key 'E'
 
 ### End
 
-> **End**: `number`
-
-Defined in: [index.d.ts:663](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L663)
+> **End**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 End key
 
@@ -606,9 +510,7 @@ End key
 
 ### Ereof
 
-> **Ereof**: `number`
-
-Defined in: [index.d.ts:669](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L669)
+> **Ereof**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Erase EOF
 
@@ -620,9 +522,7 @@ only works on Windows
 
 ### Escape
 
-> **Escape**: `number`
-
-Defined in: [index.d.ts:674](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L674)
+> **Escape**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Escape key
 
@@ -630,9 +530,7 @@ Escape key
 
 ### Execute
 
-> **Execute**: `number`
-
-Defined in: [index.d.ts:679](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L679)
+> **Execute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Execute key
 
@@ -640,9 +538,7 @@ Execute key
 
 ### Exsel
 
-> **Exsel**: `number`
-
-Defined in: [index.d.ts:685](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L685)
+> **Exsel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Extend Selection (ExSel)
 
@@ -654,9 +550,7 @@ only works on Windows
 
 ### F
 
-> **F**: `number`
-
-Defined in: [index.d.ts:323](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L323)
+> **F**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'F'
 
@@ -664,9 +558,7 @@ Letter key 'F'
 
 ### F1
 
-> **F1**: `number`
-
-Defined in: [index.d.ts:690](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L690)
+> **F1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F1
 
@@ -674,9 +566,7 @@ Function key F1
 
 ### F10
 
-> **F10**: `number`
-
-Defined in: [index.d.ts:735](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L735)
+> **F10**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F10
 
@@ -684,9 +574,7 @@ Function key F10
 
 ### F11
 
-> **F11**: `number`
-
-Defined in: [index.d.ts:740](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L740)
+> **F11**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F11
 
@@ -694,9 +582,7 @@ Function key F11
 
 ### F12
 
-> **F12**: `number`
-
-Defined in: [index.d.ts:745](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L745)
+> **F12**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F12
 
@@ -704,9 +590,7 @@ Function key F12
 
 ### F13
 
-> **F13**: `number`
-
-Defined in: [index.d.ts:750](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L750)
+> **F13**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F13
 
@@ -714,9 +598,7 @@ Function key F13
 
 ### F14
 
-> **F14**: `number`
-
-Defined in: [index.d.ts:755](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L755)
+> **F14**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F14
 
@@ -724,9 +606,7 @@ Function key F14
 
 ### F15
 
-> **F15**: `number`
-
-Defined in: [index.d.ts:760](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L760)
+> **F15**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F15
 
@@ -734,9 +614,7 @@ Function key F15
 
 ### F16
 
-> **F16**: `number`
-
-Defined in: [index.d.ts:765](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L765)
+> **F16**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F16
 
@@ -744,9 +622,7 @@ Function key F16
 
 ### F17
 
-> **F17**: `number`
-
-Defined in: [index.d.ts:770](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L770)
+> **F17**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F17
 
@@ -754,9 +630,7 @@ Function key F17
 
 ### F18
 
-> **F18**: `number`
-
-Defined in: [index.d.ts:775](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L775)
+> **F18**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F18
 
@@ -764,9 +638,7 @@ Function key F18
 
 ### F19
 
-> **F19**: `number`
-
-Defined in: [index.d.ts:780](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L780)
+> **F19**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F19
 
@@ -774,9 +646,7 @@ Function key F19
 
 ### F2
 
-> **F2**: `number`
-
-Defined in: [index.d.ts:695](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L695)
+> **F2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F2
 
@@ -784,9 +654,7 @@ Function key F2
 
 ### F20
 
-> **F20**: `number`
-
-Defined in: [index.d.ts:785](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L785)
+> **F20**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F20
 
@@ -794,9 +662,7 @@ Function key F20
 
 ### F21
 
-> **F21**: `number`
-
-Defined in: [index.d.ts:790](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L790)
+> **F21**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F21
 
@@ -804,9 +670,7 @@ Function key F21
 
 ### F22
 
-> **F22**: `number`
-
-Defined in: [index.d.ts:795](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L795)
+> **F22**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F22
 
@@ -814,9 +678,7 @@ Function key F22
 
 ### F23
 
-> **F23**: `number`
-
-Defined in: [index.d.ts:800](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L800)
+> **F23**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F23
 
@@ -824,9 +686,7 @@ Function key F23
 
 ### F24
 
-> **F24**: `number`
-
-Defined in: [index.d.ts:805](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L805)
+> **F24**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F24
 
@@ -834,9 +694,7 @@ Function key F24
 
 ### F25
 
-> **F25**: `number`
-
-Defined in: [index.d.ts:811](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L811)
+> **F25**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F25
 
@@ -848,9 +706,7 @@ only works on Linux
 
 ### F26
 
-> **F26**: `number`
-
-Defined in: [index.d.ts:817](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L817)
+> **F26**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F26
 
@@ -862,9 +718,7 @@ only works on Linux
 
 ### F27
 
-> **F27**: `number`
-
-Defined in: [index.d.ts:823](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L823)
+> **F27**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F27
 
@@ -876,9 +730,7 @@ only works on Linux
 
 ### F28
 
-> **F28**: `number`
-
-Defined in: [index.d.ts:829](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L829)
+> **F28**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F28
 
@@ -890,9 +742,7 @@ only works on Linux
 
 ### F29
 
-> **F29**: `number`
-
-Defined in: [index.d.ts:835](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L835)
+> **F29**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F29
 
@@ -904,9 +754,7 @@ only works on Linux
 
 ### F3
 
-> **F3**: `number`
-
-Defined in: [index.d.ts:700](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L700)
+> **F3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F3
 
@@ -914,9 +762,7 @@ Function key F3
 
 ### F30
 
-> **F30**: `number`
-
-Defined in: [index.d.ts:841](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L841)
+> **F30**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F30
 
@@ -928,9 +774,7 @@ only works on Linux
 
 ### F31
 
-> **F31**: `number`
-
-Defined in: [index.d.ts:847](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L847)
+> **F31**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F31
 
@@ -942,9 +786,7 @@ only works on Linux
 
 ### F32
 
-> **F32**: `number`
-
-Defined in: [index.d.ts:853](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L853)
+> **F32**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F32
 
@@ -956,9 +798,7 @@ only works on Linux
 
 ### F33
 
-> **F33**: `number`
-
-Defined in: [index.d.ts:859](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L859)
+> **F33**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F33
 
@@ -970,9 +810,7 @@ only works on Linux
 
 ### F34
 
-> **F34**: `number`
-
-Defined in: [index.d.ts:865](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L865)
+> **F34**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F34
 
@@ -984,9 +822,7 @@ only works on Linux
 
 ### F35
 
-> **F35**: `number`
-
-Defined in: [index.d.ts:871](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L871)
+> **F35**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F35
 
@@ -998,9 +834,7 @@ only works on Linux
 
 ### F4
 
-> **F4**: `number`
-
-Defined in: [index.d.ts:705](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L705)
+> **F4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F4
 
@@ -1008,9 +842,7 @@ Function key F4
 
 ### F5
 
-> **F5**: `number`
-
-Defined in: [index.d.ts:710](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L710)
+> **F5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F5
 
@@ -1018,9 +850,7 @@ Function key F5
 
 ### F6
 
-> **F6**: `number`
-
-Defined in: [index.d.ts:715](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L715)
+> **F6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F6
 
@@ -1028,9 +858,7 @@ Function key F6
 
 ### F7
 
-> **F7**: `number`
-
-Defined in: [index.d.ts:720](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L720)
+> **F7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F7
 
@@ -1038,9 +866,7 @@ Function key F7
 
 ### F8
 
-> **F8**: `number`
-
-Defined in: [index.d.ts:725](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L725)
+> **F8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F8
 
@@ -1048,9 +874,7 @@ Function key F8
 
 ### F9
 
-> **F9**: `number`
-
-Defined in: [index.d.ts:730](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L730)
+> **F9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F9
 
@@ -1058,9 +882,7 @@ Function key F9
 
 ### Final
 
-> **Final**: `number`
-
-Defined in: [index.d.ts:877](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L877)
+> **Final**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Final (end conversion)
 
@@ -1072,9 +894,7 @@ only works on Windows
 
 ### Find
 
-> **Find**: `number`
-
-Defined in: [index.d.ts:883](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L883)
+> **Find**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Find key
 
@@ -1086,9 +906,7 @@ only works on Linux
 
 ### G
 
-> **G**: `number`
-
-Defined in: [index.d.ts:328](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L328)
+> **G**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'G'
 
@@ -1096,9 +914,7 @@ Letter key 'G'
 
 ### GamepadA
 
-> **GamepadA**: `number`
-
-Defined in: [index.d.ts:889](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L889)
+> **GamepadA**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: A button
 
@@ -1110,9 +926,7 @@ only works on Windows
 
 ### GamepadB
 
-> **GamepadB**: `number`
-
-Defined in: [index.d.ts:895](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L895)
+> **GamepadB**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: B button
 
@@ -1124,9 +938,7 @@ only works on Windows
 
 ### GamepadDPadDown
 
-> **GamepadDPadDown**: `number`
-
-Defined in: [index.d.ts:901](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L901)
+> **GamepadDPadDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Down
 
@@ -1138,9 +950,7 @@ only works on Windows
 
 ### GamepadDPadLeft
 
-> **GamepadDPadLeft**: `number`
-
-Defined in: [index.d.ts:907](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L907)
+> **GamepadDPadLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Left
 
@@ -1152,9 +962,7 @@ only works on Windows
 
 ### GamepadDPadRight
 
-> **GamepadDPadRight**: `number`
-
-Defined in: [index.d.ts:913](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L913)
+> **GamepadDPadRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Right
 
@@ -1166,9 +974,7 @@ only works on Windows
 
 ### GamepadDPadUp
 
-> **GamepadDPadUp**: `number`
-
-Defined in: [index.d.ts:919](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L919)
+> **GamepadDPadUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Up
 
@@ -1180,9 +986,7 @@ only works on Windows
 
 ### GamepadLeftShoulder
 
-> **GamepadLeftShoulder**: `number`
-
-Defined in: [index.d.ts:925](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L925)
+> **GamepadLeftShoulder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left shoulder (L1)
 
@@ -1194,9 +998,7 @@ only works on Windows
 
 ### GamepadLeftThumbstickButton
 
-> **GamepadLeftThumbstickButton**: `number`
-
-Defined in: [index.d.ts:931](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L931)
+> **GamepadLeftThumbstickButton**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick button (L3)
 
@@ -1208,9 +1010,7 @@ only works on Windows
 
 ### GamepadLeftThumbstickDown
 
-> **GamepadLeftThumbstickDown**: `number`
-
-Defined in: [index.d.ts:937](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L937)
+> **GamepadLeftThumbstickDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick down
 
@@ -1222,9 +1022,7 @@ only works on Windows
 
 ### GamepadLeftThumbstickLeft
 
-> **GamepadLeftThumbstickLeft**: `number`
-
-Defined in: [index.d.ts:943](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L943)
+> **GamepadLeftThumbstickLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick left
 
@@ -1236,9 +1034,7 @@ only works on Windows
 
 ### GamepadLeftThumbstickRight
 
-> **GamepadLeftThumbstickRight**: `number`
-
-Defined in: [index.d.ts:949](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L949)
+> **GamepadLeftThumbstickRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick right
 
@@ -1250,9 +1046,7 @@ only works on Windows
 
 ### GamepadLeftThumbstickUp
 
-> **GamepadLeftThumbstickUp**: `number`
-
-Defined in: [index.d.ts:955](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L955)
+> **GamepadLeftThumbstickUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick up
 
@@ -1264,9 +1058,7 @@ only works on Windows
 
 ### GamepadLeftTrigger
 
-> **GamepadLeftTrigger**: `number`
-
-Defined in: [index.d.ts:961](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L961)
+> **GamepadLeftTrigger**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left trigger (L2)
 
@@ -1278,9 +1070,7 @@ only works on Windows
 
 ### GamepadMenu
 
-> **GamepadMenu**: `number`
-
-Defined in: [index.d.ts:967](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L967)
+> **GamepadMenu**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Menu / Start
 
@@ -1292,9 +1082,7 @@ only works on Windows
 
 ### GamepadRightShoulder
 
-> **GamepadRightShoulder**: `number`
-
-Defined in: [index.d.ts:973](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L973)
+> **GamepadRightShoulder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right shoulder (R1)
 
@@ -1306,9 +1094,7 @@ only works on Windows
 
 ### GamepadRightThumbstickButton
 
-> **GamepadRightThumbstickButton**: `number`
-
-Defined in: [index.d.ts:979](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L979)
+> **GamepadRightThumbstickButton**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick button (R3)
 
@@ -1320,9 +1106,7 @@ only works on Windows
 
 ### GamepadRightThumbstickDown
 
-> **GamepadRightThumbstickDown**: `number`
-
-Defined in: [index.d.ts:985](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L985)
+> **GamepadRightThumbstickDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick down
 
@@ -1334,9 +1118,7 @@ only works on Windows
 
 ### GamepadRightThumbstickLeft
 
-> **GamepadRightThumbstickLeft**: `number`
-
-Defined in: [index.d.ts:991](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L991)
+> **GamepadRightThumbstickLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick left
 
@@ -1348,9 +1130,7 @@ only works on Windows
 
 ### GamepadRightThumbstickRight
 
-> **GamepadRightThumbstickRight**: `number`
-
-Defined in: [index.d.ts:997](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L997)
+> **GamepadRightThumbstickRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick right
 
@@ -1362,9 +1142,7 @@ only works on Windows
 
 ### GamepadRightThumbstickUp
 
-> **GamepadRightThumbstickUp**: `number`
-
-Defined in: [index.d.ts:1003](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1003)
+> **GamepadRightThumbstickUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick up
 
@@ -1376,9 +1154,7 @@ only works on Windows
 
 ### GamepadRightTrigger
 
-> **GamepadRightTrigger**: `number`
-
-Defined in: [index.d.ts:1009](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1009)
+> **GamepadRightTrigger**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right trigger (R2)
 
@@ -1390,9 +1166,7 @@ only works on Windows
 
 ### GamepadView
 
-> **GamepadView**: `number`
-
-Defined in: [index.d.ts:1015](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1015)
+> **GamepadView**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: View / Back
 
@@ -1404,9 +1178,7 @@ only works on Windows
 
 ### GamepadX
 
-> **GamepadX**: `number`
-
-Defined in: [index.d.ts:1021](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1021)
+> **GamepadX**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: X button
 
@@ -1418,9 +1190,7 @@ only works on Windows
 
 ### GamepadY
 
-> **GamepadY**: `number`
-
-Defined in: [index.d.ts:1027](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1027)
+> **GamepadY**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Y button
 
@@ -1432,9 +1202,7 @@ only works on Windows
 
 ### H
 
-> **H**: `number`
-
-Defined in: [index.d.ts:333](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L333)
+> **H**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'H'
 
@@ -1442,9 +1210,7 @@ Letter key 'H'
 
 ### Hangeul
 
-> **Hangeul**: `number`
-
-Defined in: [index.d.ts:1033](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1033)
+> **Hangeul**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hangeul toggle (Korean layout)
 
@@ -1456,9 +1222,7 @@ only works on Windows
 
 ### Hangul
 
-> **Hangul**: `number`
-
-Defined in: [index.d.ts:1038](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1038)
+> **Hangul**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hangul toggle (Korean layout)
 
@@ -1466,9 +1230,7 @@ Hangul toggle (Korean layout)
 
 ### Hanja
 
-> **Hanja**: `number`
-
-Defined in: [index.d.ts:1043](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1043)
+> **Hanja**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hanja toggle (Chinese characters on Korean layout)
 
@@ -1476,9 +1238,7 @@ Hanja toggle (Chinese characters on Korean layout)
 
 ### Help
 
-> **Help**: `number`
-
-Defined in: [index.d.ts:1048](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1048)
+> **Help**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Help key
 
@@ -1486,9 +1246,7 @@ Help key
 
 ### Home
 
-> **Home**: `number`
-
-Defined in: [index.d.ts:1053](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1053)
+> **Home**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Home key
 
@@ -1496,9 +1254,7 @@ Home key
 
 ### I
 
-> **I**: `number`
-
-Defined in: [index.d.ts:338](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L338)
+> **I**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'I'
 
@@ -1506,9 +1262,7 @@ Letter key 'I'
 
 ### Ico00
 
-> **Ico00**: `number`
-
-Defined in: [index.d.ts:1059](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1059)
+> **Ico00**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ICO (legacy) key 00
 
@@ -1520,9 +1274,7 @@ only works on Windows
 
 ### IcoClear
 
-> **IcoClear**: `number`
-
-Defined in: [index.d.ts:1065](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1065)
+> **IcoClear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ICO (legacy) Clear
 
@@ -1534,9 +1286,7 @@ only works on Windows
 
 ### IcoHelp
 
-> **IcoHelp**: `number`
-
-Defined in: [index.d.ts:1071](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1071)
+> **IcoHelp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ICO (legacy) Help
 
@@ -1548,9 +1298,7 @@ only works on Windows
 
 ### ImeOff
 
-> **ImeOff**: `number`
-
-Defined in: [index.d.ts:1077](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1077)
+> **ImeOff**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Off (disable IME)
 
@@ -1562,9 +1310,7 @@ only works on Windows
 
 ### ImeOn
 
-> **ImeOn**: `number`
-
-Defined in: [index.d.ts:1083](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1083)
+> **ImeOn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME On (enable IME)
 
@@ -1576,9 +1322,7 @@ only works on Windows
 
 ### Insert
 
-> **Insert**: `number`
-
-Defined in: [index.d.ts:1088](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1088)
+> **Insert**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Insert key
 
@@ -1586,9 +1330,7 @@ Insert key
 
 ### J
 
-> **J**: `number`
-
-Defined in: [index.d.ts:343](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L343)
+> **J**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'J'
 
@@ -1596,9 +1338,7 @@ Letter key 'J'
 
 ### Junja
 
-> **Junja**: `number`
-
-Defined in: [index.d.ts:1094](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1094)
+> **Junja**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Junja mode
 
@@ -1610,9 +1350,7 @@ only works on Windows
 
 ### K
 
-> **K**: `number`
-
-Defined in: [index.d.ts:348](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L348)
+> **K**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'K'
 
@@ -1620,9 +1358,7 @@ Letter key 'K'
 
 ### Kana
 
-> **Kana**: `number`
-
-Defined in: [index.d.ts:1100](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1100)
+> **Kana**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Kana mode
 
@@ -1634,9 +1370,7 @@ only works on Windows
 
 ### Kanji
 
-> **Kanji**: `number`
-
-Defined in: [index.d.ts:1105](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1105)
+> **Kanji**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Kanji toggle (Japanese layout)
 
@@ -1644,9 +1378,7 @@ Kanji toggle (Japanese layout)
 
 ### L
 
-> **L**: `number`
-
-Defined in: [index.d.ts:353](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L353)
+> **L**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'L'
 
@@ -1654,9 +1386,7 @@ Letter key 'L'
 
 ### LaunchApp1
 
-> **LaunchApp1**: `number`
-
-Defined in: [index.d.ts:1111](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1111)
+> **LaunchApp1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch application 1
 
@@ -1668,9 +1398,7 @@ only works on Windows
 
 ### LaunchApp2
 
-> **LaunchApp2**: `number`
-
-Defined in: [index.d.ts:1117](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1117)
+> **LaunchApp2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch application 2
 
@@ -1682,9 +1410,7 @@ only works on Windows
 
 ### LaunchMail
 
-> **LaunchMail**: `number`
-
-Defined in: [index.d.ts:1123](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1123)
+> **LaunchMail**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch default mail client
 
@@ -1696,9 +1422,7 @@ only works on Windows
 
 ### LaunchMediaSelect
 
-> **LaunchMediaSelect**: `number`
-
-Defined in: [index.d.ts:1129](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1129)
+> **LaunchMediaSelect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch media selector
 
@@ -1710,9 +1434,7 @@ only works on Windows
 
 ### LeftAlt
 
-> **LeftAlt**: `number`
-
-Defined in: [index.d.ts:1150](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1150)
+> **LeftAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Alt/Menu
 
@@ -1720,9 +1442,7 @@ Left Alt/Menu
 
 ### LeftArrow
 
-> **LeftArrow**: `number`
-
-Defined in: [index.d.ts:1139](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1139)
+> **LeftArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Left
 
@@ -1730,9 +1450,7 @@ Arrow: Left
 
 ### LeftControl
 
-> **LeftControl**: `number`
-
-Defined in: [index.d.ts:1134](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1134)
+> **LeftControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Control
 
@@ -1740,9 +1458,7 @@ Left Control
 
 ### LeftShift
 
-> **LeftShift**: `number`
-
-Defined in: [index.d.ts:1155](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1155)
+> **LeftShift**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Shift
 
@@ -1750,9 +1466,7 @@ Left Shift
 
 ### LeftWindows
 
-> **LeftWindows**: `number`
-
-Defined in: [index.d.ts:1161](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1161)
+> **LeftWindows**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Windows / Super key
 
@@ -1764,9 +1478,7 @@ only works on Windows
 
 ### Linefeed
 
-> **Linefeed**: `number`
-
-Defined in: [index.d.ts:1145](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1145)
+> **Linefeed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Line Feed key
 
@@ -1778,9 +1490,7 @@ only works on Linux
 
 ### M
 
-> **M**: `number`
-
-Defined in: [index.d.ts:358](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L358)
+> **M**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'M'
 
@@ -1788,9 +1498,7 @@ Letter key 'M'
 
 ### MediaNextTrack
 
-> **MediaNextTrack**: `number`
-
-Defined in: [index.d.ts:1166](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1166)
+> **MediaNextTrack**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Next media track
 
@@ -1798,9 +1506,7 @@ Next media track
 
 ### MediaPlayPause
 
-> **MediaPlayPause**: `number`
-
-Defined in: [index.d.ts:1171](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1171)
+> **MediaPlayPause**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Play/Pause media
 
@@ -1808,9 +1514,7 @@ Play/Pause media
 
 ### MediaPrevTrack
 
-> **MediaPrevTrack**: `number`
-
-Defined in: [index.d.ts:1176](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1176)
+> **MediaPrevTrack**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Previous media track
 
@@ -1818,9 +1522,7 @@ Previous media track
 
 ### MediaStop
 
-> **MediaStop**: `number`
-
-Defined in: [index.d.ts:1181](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1181)
+> **MediaStop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Stop media
 
@@ -1828,9 +1530,7 @@ Stop media
 
 ### Meta
 
-> **Meta**: `number`
-
-Defined in: [index.d.ts:1186](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1186)
+> **Meta**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Meta key (also known as "windows", "super", and "command")
 
@@ -1838,9 +1538,7 @@ Meta key (also known as "windows", "super", and "command")
 
 ### MicrophoneMute
 
-> **MicrophoneMute**: `number`
-
-Defined in: [index.d.ts:1712](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1712)
+> **MicrophoneMute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Microphone mute
 
@@ -1852,9 +1550,7 @@ only works on Linux
 
 ### ModeChange
 
-> **ModeChange**: `number`
-
-Defined in: [index.d.ts:1191](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1191)
+> **ModeChange**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME mode change
 
@@ -1862,9 +1558,7 @@ IME mode change
 
 ### Multiply
 
-> **Multiply**: `number`
-
-Defined in: [index.d.ts:1196](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1196)
+> **Multiply**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad multiply '*'
 
@@ -1872,9 +1566,7 @@ Numpad multiply '*'
 
 ### N
 
-> **N**: `number`
-
-Defined in: [index.d.ts:363](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L363)
+> **N**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'N'
 
@@ -1882,9 +1574,7 @@ Letter key 'N'
 
 ### NavigationAccept
 
-> **NavigationAccept**: `number`
-
-Defined in: [index.d.ts:1202](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1202)
+> **NavigationAccept**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Accept/OK (UWP)
 
@@ -1896,9 +1586,7 @@ only works on Windows
 
 ### NavigationCancel
 
-> **NavigationCancel**: `number`
-
-Defined in: [index.d.ts:1208](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1208)
+> **NavigationCancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Cancel/Back (UWP)
 
@@ -1910,9 +1598,7 @@ only works on Windows
 
 ### NavigationDown
 
-> **NavigationDown**: `number`
-
-Defined in: [index.d.ts:1214](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1214)
+> **NavigationDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Down (UWP)
 
@@ -1924,9 +1610,7 @@ only works on Windows
 
 ### NavigationLeft
 
-> **NavigationLeft**: `number`
-
-Defined in: [index.d.ts:1220](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1220)
+> **NavigationLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Left (UWP)
 
@@ -1938,9 +1622,7 @@ only works on Windows
 
 ### NavigationMenu
 
-> **NavigationMenu**: `number`
-
-Defined in: [index.d.ts:1226](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1226)
+> **NavigationMenu**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Menu (UWP)
 
@@ -1952,9 +1634,7 @@ only works on Windows
 
 ### NavigationRight
 
-> **NavigationRight**: `number`
-
-Defined in: [index.d.ts:1232](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1232)
+> **NavigationRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Right (UWP)
 
@@ -1966,9 +1646,7 @@ only works on Windows
 
 ### NavigationUp
 
-> **NavigationUp**: `number`
-
-Defined in: [index.d.ts:1238](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1238)
+> **NavigationUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Up (UWP)
 
@@ -1980,9 +1658,7 @@ only works on Windows
 
 ### NavigationView
 
-> **NavigationView**: `number`
-
-Defined in: [index.d.ts:1244](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1244)
+> **NavigationView**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: View (UWP)
 
@@ -1994,9 +1670,7 @@ only works on Windows
 
 ### NoName
 
-> **NoName**: `number`
-
-Defined in: [index.d.ts:1250](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1250)
+> **NoName**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 NoName key (reserved)
 
@@ -2008,9 +1682,7 @@ only works on Windows
 
 ### NonConvert
 
-> **NonConvert**: `number`
-
-Defined in: [index.d.ts:1256](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1256)
+> **NonConvert**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Non-Convert (cancel conversion)
 
@@ -2022,9 +1694,7 @@ only works on Windows
 
 ### None
 
-> **None**: `number`
-
-Defined in: [index.d.ts:1262](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1262)
+> **None**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Placeholder "no key"
 
@@ -2036,9 +1706,7 @@ only works on Windows
 
 ### Num0
 
-> **Num0**: `number`
-
-Defined in: [index.d.ts:248](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L248)
+> **Num0**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '0' key (not numpad)
 
@@ -2046,9 +1714,7 @@ Top-row digit '0' key (not numpad)
 
 ### Num1
 
-> **Num1**: `number`
-
-Defined in: [index.d.ts:253](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L253)
+> **Num1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '1' key (not numpad)
 
@@ -2056,9 +1722,7 @@ Top-row digit '1' key (not numpad)
 
 ### Num2
 
-> **Num2**: `number`
-
-Defined in: [index.d.ts:258](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L258)
+> **Num2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '2' key (not numpad)
 
@@ -2066,9 +1730,7 @@ Top-row digit '2' key (not numpad)
 
 ### Num3
 
-> **Num3**: `number`
-
-Defined in: [index.d.ts:263](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L263)
+> **Num3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '3' key (not numpad)
 
@@ -2076,9 +1738,7 @@ Top-row digit '3' key (not numpad)
 
 ### Num4
 
-> **Num4**: `number`
-
-Defined in: [index.d.ts:268](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L268)
+> **Num4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '4' key (not numpad)
 
@@ -2086,9 +1746,7 @@ Top-row digit '4' key (not numpad)
 
 ### Num5
 
-> **Num5**: `number`
-
-Defined in: [index.d.ts:273](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L273)
+> **Num5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '5' key (not numpad)
 
@@ -2096,9 +1754,7 @@ Top-row digit '5' key (not numpad)
 
 ### Num6
 
-> **Num6**: `number`
-
-Defined in: [index.d.ts:278](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L278)
+> **Num6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '6' key (not numpad)
 
@@ -2106,9 +1762,7 @@ Top-row digit '6' key (not numpad)
 
 ### Num7
 
-> **Num7**: `number`
-
-Defined in: [index.d.ts:283](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L283)
+> **Num7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '7' key (not numpad)
 
@@ -2116,9 +1770,7 @@ Top-row digit '7' key (not numpad)
 
 ### Num8
 
-> **Num8**: `number`
-
-Defined in: [index.d.ts:288](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L288)
+> **Num8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '8' key (not numpad)
 
@@ -2126,9 +1778,7 @@ Top-row digit '8' key (not numpad)
 
 ### Num9
 
-> **Num9**: `number`
-
-Defined in: [index.d.ts:293](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L293)
+> **Num9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '9' key (not numpad)
 
@@ -2136,9 +1786,7 @@ Top-row digit '9' key (not numpad)
 
 ### Numlock
 
-> **Numlock**: `number`
-
-Defined in: [index.d.ts:1267](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1267)
+> **Numlock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Num Lock toggle
 
@@ -2146,9 +1794,7 @@ Num Lock toggle
 
 ### Numpad0
 
-> **Numpad0**: `number`
-
-Defined in: [index.d.ts:1272](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1272)
+> **Numpad0**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '0'
 
@@ -2156,9 +1802,7 @@ Numpad digit '0'
 
 ### Numpad1
 
-> **Numpad1**: `number`
-
-Defined in: [index.d.ts:1277](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1277)
+> **Numpad1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '1'
 
@@ -2166,9 +1810,7 @@ Numpad digit '1'
 
 ### Numpad2
 
-> **Numpad2**: `number`
-
-Defined in: [index.d.ts:1282](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1282)
+> **Numpad2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '2'
 
@@ -2176,9 +1818,7 @@ Numpad digit '2'
 
 ### Numpad3
 
-> **Numpad3**: `number`
-
-Defined in: [index.d.ts:1287](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1287)
+> **Numpad3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '3'
 
@@ -2186,9 +1826,7 @@ Numpad digit '3'
 
 ### Numpad4
 
-> **Numpad4**: `number`
-
-Defined in: [index.d.ts:1292](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1292)
+> **Numpad4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '4'
 
@@ -2196,9 +1834,7 @@ Numpad digit '4'
 
 ### Numpad5
 
-> **Numpad5**: `number`
-
-Defined in: [index.d.ts:1297](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1297)
+> **Numpad5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '5'
 
@@ -2206,9 +1842,7 @@ Numpad digit '5'
 
 ### Numpad6
 
-> **Numpad6**: `number`
-
-Defined in: [index.d.ts:1302](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1302)
+> **Numpad6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '6'
 
@@ -2216,9 +1850,7 @@ Numpad digit '6'
 
 ### Numpad7
 
-> **Numpad7**: `number`
-
-Defined in: [index.d.ts:1307](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1307)
+> **Numpad7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '7'
 
@@ -2226,9 +1858,7 @@ Numpad digit '7'
 
 ### Numpad8
 
-> **Numpad8**: `number`
-
-Defined in: [index.d.ts:1312](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1312)
+> **Numpad8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '8'
 
@@ -2236,9 +1866,7 @@ Numpad digit '8'
 
 ### Numpad9
 
-> **Numpad9**: `number`
-
-Defined in: [index.d.ts:1317](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1317)
+> **Numpad9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '9'
 
@@ -2246,9 +1874,7 @@ Numpad digit '9'
 
 ### NumpadEnter
 
-> **NumpadEnter**: `number`
-
-Defined in: [index.d.ts:1322](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1322)
+> **NumpadEnter**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad Enter
 
@@ -2256,9 +1882,7 @@ Numpad Enter
 
 ### O
 
-> **O**: `number`
-
-Defined in: [index.d.ts:368](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L368)
+> **O**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'O'
 
@@ -2266,9 +1890,7 @@ Letter key 'O'
 
 ### Oem1
 
-> **Oem1**: `number`
-
-Defined in: [index.d.ts:1328](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1328)
+> **Oem1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 1
 
@@ -2280,9 +1902,7 @@ only works on Windows
 
 ### Oem102
 
-> **Oem102**: `number`
-
-Defined in: [index.d.ts:1334](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1334)
+> **Oem102**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 102 (angle bracket/pipe on some layouts)
 
@@ -2294,9 +1914,7 @@ only works on Windows
 
 ### Oem2
 
-> **Oem2**: `number`
-
-Defined in: [index.d.ts:1340](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1340)
+> **Oem2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 2
 
@@ -2308,9 +1926,7 @@ only works on Windows
 
 ### Oem3
 
-> **Oem3**: `number`
-
-Defined in: [index.d.ts:1346](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1346)
+> **Oem3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 3 (backtick/tilde on some layouts)
 
@@ -2322,9 +1938,7 @@ only works on Windows
 
 ### Oem4
 
-> **Oem4**: `number`
-
-Defined in: [index.d.ts:1352](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1352)
+> **Oem4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 4 (left bracket on some layouts)
 
@@ -2336,9 +1950,7 @@ only works on Windows
 
 ### Oem5
 
-> **Oem5**: `number`
-
-Defined in: [index.d.ts:1358](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1358)
+> **Oem5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 5 (right bracket on some layouts)
 
@@ -2350,9 +1962,7 @@ only works on Windows
 
 ### Oem6
 
-> **Oem6**: `number`
-
-Defined in: [index.d.ts:1364](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1364)
+> **Oem6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 6 (semicolon on some layouts)
 
@@ -2364,9 +1974,7 @@ only works on Windows
 
 ### Oem7
 
-> **Oem7**: `number`
-
-Defined in: [index.d.ts:1370](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1370)
+> **Oem7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 7 (quote on some layouts)
 
@@ -2378,9 +1986,7 @@ only works on Windows
 
 ### Oem8
 
-> **Oem8**: `number`
-
-Defined in: [index.d.ts:1376](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1376)
+> **Oem8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 8
 
@@ -2392,9 +1998,7 @@ only works on Windows
 
 ### OemAttn
 
-> **OemAttn**: `number`
-
-Defined in: [index.d.ts:1382](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1382)
+> **OemAttn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Attention
 
@@ -2406,9 +2010,7 @@ only works on Windows
 
 ### OemAuto
 
-> **OemAuto**: `number`
-
-Defined in: [index.d.ts:1388](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1388)
+> **OemAuto**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Auto
 
@@ -2420,9 +2022,7 @@ only works on Windows
 
 ### OemAx
 
-> **OemAx**: `number`
-
-Defined in: [index.d.ts:1394](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1394)
+> **OemAx**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Ax
 
@@ -2434,9 +2034,7 @@ only works on Windows
 
 ### OemBacktab
 
-> **OemBacktab**: `number`
-
-Defined in: [index.d.ts:1400](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1400)
+> **OemBacktab**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Backtab (reverse Tab)
 
@@ -2448,9 +2046,7 @@ only works on Windows
 
 ### OemClear
 
-> **OemClear**: `number`
-
-Defined in: [index.d.ts:1406](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1406)
+> **OemClear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Clear
 
@@ -2462,9 +2058,7 @@ only works on Windows
 
 ### OemComma
 
-> **OemComma**: `number`
-
-Defined in: [index.d.ts:1412](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1412)
+> **OemComma**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Comma ','
 
@@ -2476,9 +2070,7 @@ only works on Windows
 
 ### OemCopy
 
-> **OemCopy**: `number`
-
-Defined in: [index.d.ts:1418](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1418)
+> **OemCopy**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Copy
 
@@ -2490,9 +2082,7 @@ only works on Windows
 
 ### OemCusel
 
-> **OemCusel**: `number`
-
-Defined in: [index.d.ts:1424](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1424)
+> **OemCusel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Cusel
 
@@ -2504,9 +2094,7 @@ only works on Windows
 
 ### OemEnlw
 
-> **OemEnlw**: `number`
-
-Defined in: [index.d.ts:1430](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1430)
+> **OemEnlw**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Enlw
 
@@ -2518,9 +2106,7 @@ only works on Windows
 
 ### OemFinish
 
-> **OemFinish**: `number`
-
-Defined in: [index.d.ts:1436](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1436)
+> **OemFinish**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Finish
 
@@ -2532,9 +2118,7 @@ only works on Windows
 
 ### OemfjJisho
 
-> **OemfjJisho**: `number`
-
-Defined in: [index.d.ts:1442](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1442)
+> **OemfjJisho**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Jisho (dictionary)
 
@@ -2546,9 +2130,7 @@ only works on Windows
 
 ### OemfjLoya
 
-> **OemfjLoya**: `number`
-
-Defined in: [index.d.ts:1448](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1448)
+> **OemfjLoya**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Loya
 
@@ -2560,9 +2142,7 @@ only works on Windows
 
 ### OemfjMasshou
 
-> **OemfjMasshou**: `number`
-
-Defined in: [index.d.ts:1454](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1454)
+> **OemfjMasshou**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Masshou
 
@@ -2574,9 +2154,7 @@ only works on Windows
 
 ### OemfjRoya
 
-> **OemfjRoya**: `number`
-
-Defined in: [index.d.ts:1460](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1460)
+> **OemfjRoya**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Roya
 
@@ -2588,9 +2166,7 @@ only works on Windows
 
 ### OemfjTouroku
 
-> **OemfjTouroku**: `number`
-
-Defined in: [index.d.ts:1466](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1466)
+> **OemfjTouroku**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Touroku
 
@@ -2602,9 +2178,7 @@ only works on Windows
 
 ### OemJump
 
-> **OemJump**: `number`
-
-Defined in: [index.d.ts:1472](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1472)
+> **OemJump**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Jump
 
@@ -2616,9 +2190,7 @@ only works on Windows
 
 ### OemMinus
 
-> **OemMinus**: `number`
-
-Defined in: [index.d.ts:1478](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1478)
+> **OemMinus**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Minus '-'
 
@@ -2630,9 +2202,7 @@ only works on Windows
 
 ### OemnecEqual
 
-> **OemnecEqual**: `number`
-
-Defined in: [index.d.ts:1484](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1484)
+> **OemnecEqual**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM NEC Equal '='
 
@@ -2644,9 +2214,7 @@ only works on Windows
 
 ### Oempa1
 
-> **Oempa1**: `number`
-
-Defined in: [index.d.ts:1490](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1490)
+> **Oempa1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM PA1
 
@@ -2658,9 +2226,7 @@ only works on Windows
 
 ### Oempa2
 
-> **Oempa2**: `number`
-
-Defined in: [index.d.ts:1496](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1496)
+> **Oempa2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM PA2
 
@@ -2672,9 +2238,7 @@ only works on Windows
 
 ### Oempa3
 
-> **Oempa3**: `number`
-
-Defined in: [index.d.ts:1502](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1502)
+> **Oempa3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM PA3
 
@@ -2686,9 +2250,7 @@ only works on Windows
 
 ### OemPeriod
 
-> **OemPeriod**: `number`
-
-Defined in: [index.d.ts:1508](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1508)
+> **OemPeriod**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Period '.'
 
@@ -2700,9 +2262,7 @@ only works on Windows
 
 ### OemPlus
 
-> **OemPlus**: `number`
-
-Defined in: [index.d.ts:1514](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1514)
+> **OemPlus**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Plus '+'
 
@@ -2714,9 +2274,7 @@ only works on Windows
 
 ### OemReset
 
-> **OemReset**: `number`
-
-Defined in: [index.d.ts:1520](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1520)
+> **OemReset**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Reset
 
@@ -2728,9 +2286,7 @@ only works on Windows
 
 ### OemWsctrl
 
-> **OemWsctrl**: `number`
-
-Defined in: [index.d.ts:1526](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1526)
+> **OemWsctrl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Wsctrl
 
@@ -2742,9 +2298,7 @@ only works on Windows
 
 ### Option
 
-> **Option**: `number`
-
-Defined in: [index.d.ts:1531](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1531)
+> **Option**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Same as Alt
 
@@ -2752,9 +2306,7 @@ Same as Alt
 
 ### P
 
-> **P**: `number`
-
-Defined in: [index.d.ts:373](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L373)
+> **P**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'P'
 
@@ -2762,9 +2314,7 @@ Letter key 'P'
 
 ### Pa1
 
-> **Pa1**: `number`
-
-Defined in: [index.d.ts:1537](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1537)
+> **Pa1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 PA1 key
 
@@ -2776,9 +2326,7 @@ only works on Windows
 
 ### Packet
 
-> **Packet**: `number`
-
-Defined in: [index.d.ts:1543](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1543)
+> **Packet**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Packet key (used to pass Unicode chars)
 
@@ -2790,9 +2338,7 @@ only works on Windows
 
 ### PageDown
 
-> **PageDown**: `number`
-
-Defined in: [index.d.ts:1548](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1548)
+> **PageDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Page Down
 
@@ -2800,9 +2346,7 @@ Page Down
 
 ### PageUp
 
-> **PageUp**: `number`
-
-Defined in: [index.d.ts:1553](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1553)
+> **PageUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Page Up
 
@@ -2810,9 +2354,7 @@ Page Up
 
 ### Pause
 
-> **Pause**: `number`
-
-Defined in: [index.d.ts:1558](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1558)
+> **Pause**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Pause key
 
@@ -2820,9 +2362,7 @@ Pause key
 
 ### Play
 
-> **Play**: `number`
-
-Defined in: [index.d.ts:1564](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1564)
+> **Play**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Media Play
 
@@ -2834,9 +2374,7 @@ only works on Windows
 
 ### PrintScreen
 
-> **PrintScreen**: `number`
-
-Defined in: [index.d.ts:1569](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1569)
+> **PrintScreen**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Screenshot
 
@@ -2844,9 +2382,7 @@ Screenshot
 
 ### Processkey
 
-> **Processkey**: `number`
-
-Defined in: [index.d.ts:1575](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1575)
+> **Processkey**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Process key
 
@@ -2858,9 +2394,7 @@ only works on Windows
 
 ### Q
 
-> **Q**: `number`
-
-Defined in: [index.d.ts:378](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L378)
+> **Q**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'Q'
 
@@ -2868,9 +2402,7 @@ Letter key 'Q'
 
 ### R
 
-> **R**: `number`
-
-Defined in: [index.d.ts:383](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L383)
+> **R**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'R'
 
@@ -2878,9 +2410,7 @@ Letter key 'R'
 
 ### Redo
 
-> **Redo**: `number`
-
-Defined in: [index.d.ts:1586](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1586)
+> **Redo**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Redo
 
@@ -2892,9 +2422,7 @@ only works on Linux
 
 ### Return
 
-> **Return**: `number`
-
-Defined in: [index.d.ts:1591](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1591)
+> **Return**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Enter / Return
 
@@ -2902,9 +2430,7 @@ Enter / Return
 
 ### RightAlt
 
-> **RightAlt**: `number`
-
-Defined in: [index.d.ts:1602](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1602)
+> **RightAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Alt/Menu
 
@@ -2916,9 +2442,7 @@ only works on Windows
 
 ### RightArrow
 
-> **RightArrow**: `number`
-
-Defined in: [index.d.ts:1596](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1596)
+> **RightArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Right
 
@@ -2926,9 +2450,7 @@ Arrow: Right
 
 ### RightControl
 
-> **RightControl**: `number`
-
-Defined in: [index.d.ts:1580](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1580)
+> **RightControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Control
 
@@ -2936,9 +2458,7 @@ Right Control
 
 ### RightShift
 
-> **RightShift**: `number`
-
-Defined in: [index.d.ts:1607](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1607)
+> **RightShift**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Shift
 
@@ -2946,9 +2466,7 @@ Right Shift
 
 ### RightWindows
 
-> **RightWindows**: `number`
-
-Defined in: [index.d.ts:1613](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1613)
+> **RightWindows**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Windows / Super key
 
@@ -2960,9 +2478,7 @@ only works on Windows
 
 ### S
 
-> **S**: `number`
-
-Defined in: [index.d.ts:388](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L388)
+> **S**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'S'
 
@@ -2970,9 +2486,7 @@ Letter key 'S'
 
 ### ScriptSwitch
 
-> **ScriptSwitch**: `number`
-
-Defined in: [index.d.ts:1636](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1636)
+> **ScriptSwitch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Script switch
 
@@ -2984,9 +2498,7 @@ only works on Linux
 
 ### Scroll
 
-> **Scroll**: `number`
-
-Defined in: [index.d.ts:1619](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1619)
+> **Scroll**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scroll key (legacy)
 
@@ -2998,9 +2510,7 @@ only works on Windows
 
 ### ScrollLock
 
-> **ScrollLock**: `number`
-
-Defined in: [index.d.ts:1625](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1625)
+> **ScrollLock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scroll Lock
 
@@ -3012,9 +2522,7 @@ only works on Linux
 
 ### Select
 
-> **Select**: `number`
-
-Defined in: [index.d.ts:1630](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1630)
+> **Select**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Select key
 
@@ -3022,9 +2530,7 @@ Select key
 
 ### Separator
 
-> **Separator**: `number`
-
-Defined in: [index.d.ts:1642](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1642)
+> **Separator**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad separator (locale-dependent)
 
@@ -3036,9 +2542,7 @@ only works on Windows
 
 ### Shift
 
-> **Shift**: `number`
-
-Defined in: [index.d.ts:1647](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1647)
+> **Shift**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Shift modifier
 
@@ -3046,9 +2550,7 @@ Shift modifier
 
 ### ShiftLock
 
-> **ShiftLock**: `number`
-
-Defined in: [index.d.ts:1653](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1653)
+> **ShiftLock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Shift Lock
 
@@ -3060,9 +2562,7 @@ only works on Linux
 
 ### Sleep
 
-> **Sleep**: `number`
-
-Defined in: [index.d.ts:1659](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1659)
+> **Sleep**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 System Sleep
 
@@ -3074,9 +2574,7 @@ only works on Windows
 
 ### Space
 
-> **Space**: `number`
-
-Defined in: [index.d.ts:1664](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1664)
+> **Space**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Spacebar
 
@@ -3084,9 +2582,7 @@ Spacebar
 
 ### Subtract
 
-> **Subtract**: `number`
-
-Defined in: [index.d.ts:1669](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1669)
+> **Subtract**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad '-' (subtract)
 
@@ -3094,9 +2590,7 @@ Numpad '-' (subtract)
 
 ### SysReq
 
-> **SysReq**: `number`
-
-Defined in: [index.d.ts:1675](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1675)
+> **SysReq**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 System Request (SysRq)
 
@@ -3108,9 +2602,7 @@ only works on Linux
 
 ### T
 
-> **T**: `number`
-
-Defined in: [index.d.ts:393](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L393)
+> **T**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'T'
 
@@ -3118,9 +2610,7 @@ Letter key 'T'
 
 ### Tab
 
-> **Tab**: `number`
-
-Defined in: [index.d.ts:1680](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1680)
+> **Tab**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Tab / focus next
 
@@ -3128,9 +2618,7 @@ Tab / focus next
 
 ### U
 
-> **U**: `number`
-
-Defined in: [index.d.ts:398](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L398)
+> **U**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'U'
 
@@ -3138,9 +2626,7 @@ Letter key 'U'
 
 ### Undo
 
-> **Undo**: `number`
-
-Defined in: [index.d.ts:1686](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1686)
+> **Undo**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Undo
 
@@ -3152,9 +2638,7 @@ only works on Linux
 
 ### UpArrow
 
-> **UpArrow**: `number`
-
-Defined in: [index.d.ts:1691](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1691)
+> **UpArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Up
 
@@ -3162,9 +2646,7 @@ Arrow: Up
 
 ### V
 
-> **V**: `number`
-
-Defined in: [index.d.ts:403](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L403)
+> **V**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'V'
 
@@ -3172,9 +2654,7 @@ Letter key 'V'
 
 ### VolumeDown
 
-> **VolumeDown**: `number`
-
-Defined in: [index.d.ts:1696](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1696)
+> **VolumeDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume down
 
@@ -3182,9 +2662,7 @@ Volume down
 
 ### VolumeMute
 
-> **VolumeMute**: `number`
-
-Defined in: [index.d.ts:1701](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1701)
+> **VolumeMute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume mute
 
@@ -3192,9 +2670,7 @@ Volume mute
 
 ### VolumeUp
 
-> **VolumeUp**: `number`
-
-Defined in: [index.d.ts:1706](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1706)
+> **VolumeUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume up
 
@@ -3202,9 +2678,7 @@ Volume up
 
 ### W
 
-> **W**: `number`
-
-Defined in: [index.d.ts:408](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L408)
+> **W**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'W'
 
@@ -3212,9 +2686,7 @@ Letter key 'W'
 
 ### X
 
-> **X**: `number`
-
-Defined in: [index.d.ts:413](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L413)
+> **X**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'X'
 
@@ -3222,9 +2694,7 @@ Letter key 'X'
 
 ### Y
 
-> **Y**: `number`
-
-Defined in: [index.d.ts:418](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L418)
+> **Y**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'Y'
 
@@ -3232,9 +2702,7 @@ Letter key 'Y'
 
 ### Z
 
-> **Z**: `number`
-
-Defined in: [index.d.ts:423](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L423)
+> **Z**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'Z'
 
@@ -3242,9 +2710,7 @@ Letter key 'Z'
 
 ### Zoom
 
-> **Zoom**: `number`
-
-Defined in: [index.d.ts:1718](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1718)
+> **Zoom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Zoom key
 

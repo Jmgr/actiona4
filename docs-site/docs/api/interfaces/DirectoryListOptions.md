@@ -1,7 +1,5 @@
 # Interface: DirectoryListOptions
 
-Defined in: [index.d.ts:3261](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3261)
-
 Options for `Directory.listEntries()`.
 
 ```ts
@@ -16,9 +14,7 @@ fetchSize: true,
 
 ### absolutePath?
 
-> `optional` **absolutePath**: `boolean`
-
-Defined in: [index.d.ts:3271](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3271)
+> `optional` **absolutePath**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should each entry's absolute path be computed?
 
@@ -30,9 +26,7 @@ Should each entry's absolute path be computed?
 
 ### fetchSize?
 
-> `optional` **fetchSize**: `boolean`
-
-Defined in: [index.d.ts:3276](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3276)
+> `optional` **fetchSize**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should each entry's size be fetched?
 
@@ -44,9 +38,7 @@ Should each entry's size be fetched?
 
 ### sort?
 
-> `optional` **sort**: `boolean`
-
-Defined in: [index.d.ts:3266](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3266)
+> `optional` **sort**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the entries be sorted?
 

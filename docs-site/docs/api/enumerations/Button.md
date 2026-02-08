@@ -1,7 +1,5 @@
 # Enumeration: Button
 
-Defined in: [index.d.ts:1839](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1839)
-
 Mouse button.
 
 ```ts
@@ -13,9 +11,7 @@ const pressed = await mouse.isPressed(Button.Left);
 
 ### Back
 
-> **Back**: `number`
-
-Defined in: [index.d.ts:1858](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1858)
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
 
@@ -23,9 +19,7 @@ Back button
 
 ### Forward
 
-> **Forward**: `number`
-
-Defined in: [index.d.ts:1863](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1863)
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
 
@@ -33,9 +27,7 @@ Forward button
 
 ### Left
 
-> **Left**: `number`
-
-Defined in: [index.d.ts:1843](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1843)
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
 
@@ -43,9 +35,7 @@ Left button
 
 ### Middle
 
-> **Middle**: `number`
-
-Defined in: [index.d.ts:1848](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1848)
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
 
@@ -53,8 +43,6 @@ Middle button
 
 ### Right
 
-> **Right**: `number`
-
-Defined in: [index.d.ts:1853](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L1853)
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button

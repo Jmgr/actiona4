@@ -1,7 +1,5 @@
 # Interface: Hotstrings
 
-Defined in: [index.d.ts:3779](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3779)
-
 The global hotstrings singleton for registering text-replacement triggers.
 
 When the user types a registered source string, it is automatically replaced
@@ -25,9 +23,7 @@ hotstrings.remove("btw");
 
 ### add()
 
-> **add**(`source`, `replacement`, `options?`): `void`
-
-Defined in: [index.d.ts:3790](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3790)
+> **add**(`source`, `replacement`, `options?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Registers a hotstring. When the user types `source`, it is replaced with `replacement`.
 
@@ -42,11 +38,11 @@ hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
 
 ##### source
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### replacement
 
-`string` | [`Image`](../classes/Image.md) | () => `string` \| `Promise`\<`string`\> | () => [`Image`](../classes/Image.md) \| `Promise`\<[`Image`](../classes/Image.md)\>
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`Image`](../classes/Image.md) | () => [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\> | () => [`Image`](../classes/Image.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 ##### options?
 
@@ -54,15 +50,13 @@ hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### remove()
 
-> **remove**(`source`): `void`
-
-Defined in: [index.d.ts:3794](https://github.com/Jmgr/actiona-ng/blob/f1176bbc3f17a88f0c5c87b23e11adcc98b5adb1/tests/src/index.d.ts#L3794)
+> **remove**(`source`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Removes a previously registered hotstring.
 
@@ -70,8 +64,8 @@ Removes a previously registered hotstring.
 
 ##### source
 
-`string`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
-`void`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
