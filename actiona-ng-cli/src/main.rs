@@ -27,7 +27,9 @@ mod built_info {
 }
 
 mod args;
+mod init;
 mod repl;
+mod setup;
 mod updates;
 
 #[cfg(windows)]
@@ -73,6 +75,20 @@ fn main() -> Result<()> {
         }
     }
 
+    // Handle commands that don't need the runtime
+    match &args.command {
+        Commands::Init { path } => return init::run(path),
+        Commands::Completions { shell } => {
+            let mut cmd = <Args as clap::CommandFactory>::command();
+            clap_complete::generate(*shell, &mut cmd, "actiona-ng-cli", &mut std::io::stdout());
+            return Ok(());
+        }
+        _ => {}
+    }
+
+    // Automatic platform-specific setup (e.g. Windows notification registration)
+    setup::ensure_platform_setup();
+
     let runtime_options = RuntimeOptions {
         #[cfg(unix)]
         display_name: args.display.clone(),
@@ -92,6 +108,8 @@ fn main() -> Result<()> {
 
             match &args.command {
                 Commands::Run { filepath } => {
+                    init::ensure_index_dts(filepath)?;
+
                     let script: String = tokio::fs::read_to_string(&filepath)
                         .await
                         .context("reading input file")?;
@@ -107,6 +125,9 @@ fn main() -> Result<()> {
                     runtime.set_wait_at_end(WaitAtEnd::No);
 
                     repl(script_engine).await?;
+                }
+                Commands::Init { .. } | Commands::Completions { .. } => {
+                    unreachable!("handled before runtime startup")
                 }
             };
 

@@ -20,6 +20,19 @@ pub enum Commands {
 
     /// 💻 starts the interactive terminal (REPL)
     Repl,
+
+    /// ⚙️ initializes a new script project
+    Init {
+        /// directory to initialize (defaults to current directory)
+        #[arg(default_value = ".")]
+        path: PathBuf,
+    },
+
+    /// 🐚 outputs shell completions to stdout
+    Completions {
+        /// the shell to generate completions for
+        shell: clap_complete::Shell,
+    },
 }
 
 #[derive(Debug, Parser)]

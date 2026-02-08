@@ -14,13 +14,19 @@ ignored = ["tauri-build"]
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
     "Wdk_System_SystemServices",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage",
     "Win32_System_SystemInformation",
+    "Win32_UI_Shell",
+    "Win32_UI_Shell_Common",
+    "Win32_UI_Shell_PropertiesSystem",
 ] }
 
 [dependencies]
 actiona-ng = { path = "../actiona-ng" }
 
 clap = { workspace = true, features = ["env"] }
+clap_complete.workspace = true
 color-eyre.workspace = true
 console.workspace = true
 directories.workspace = true
@@ -37,6 +43,9 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 two-face.workspace = true
 versions.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [build-dependencies]
 built.workspace = true

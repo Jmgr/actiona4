@@ -13,5 +13,6 @@ popd # actiona-ng
 cargo run --bin doc-generator -- ./target/doc/actiona_ng.json ./target/doc/index.d.ts
 
 cp ./target/doc/index.d.ts ./tests/src/
+cp ./target/doc/index.d.ts ./actiona-ng-cli/assets/
 
 popd
