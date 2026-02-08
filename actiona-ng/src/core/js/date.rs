@@ -57,14 +57,16 @@ mod tests {
             script_engine
                 .with::<_, _>(|ctx| {
                     let time = SystemTime::now();
-                    let date = date_from_system_time(&ctx, &time).unwrap();
-                    let time2 = system_time_from_date(ctx, date).unwrap();
+                    let date = date_from_system_time(&ctx, &time)?;
+                    let time2 = system_time_from_date(ctx, date)?;
 
                     let to_ms = |t: SystemTime| t.duration_since(UNIX_EPOCH).unwrap().as_millis();
 
                     assert_eq!(to_ms(time), to_ms(time2));
+                    Ok(())
                 })
-                .await;
+                .await
+                .unwrap();
         })
     }
 }

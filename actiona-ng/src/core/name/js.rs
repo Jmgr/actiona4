@@ -171,9 +171,11 @@ mod tests {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .with(|ctx| {
-                    register_singleton_class::<JsTest>(&ctx, JsTest::default()).unwrap();
+                    register_singleton_class::<JsTest>(&ctx, JsTest::default())?;
+                    Ok(())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert!(
                 script_engine

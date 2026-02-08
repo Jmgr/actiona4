@@ -3,7 +3,7 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU8, AtomicU64, Ordering},
 };
 
-use color_eyre::{Result, eyre::eyre};
+use color_eyre::Result;
 use derive_more::Constructor;
 use derive_where::derive_where;
 use enigo::{Enigo, Settings};
@@ -284,7 +284,7 @@ impl Runtime {
         let local_rng = rng.clone();
         let local_script_engine = script_engine.clone();
         script_engine
-            .with(|ctx| -> Result<()> {
+            .with(|ctx| {
                 let callbacks = Callbacks::new(
                     script_engine.context(),
                     cancellation_token.clone(),
@@ -299,8 +299,7 @@ impl Runtime {
                     app_handle,
                     local_script_engine,
                     callbacks,
-                ))
-                .unwrap();
+                ))?;
 
                 Self::register_classes(
                     ctx.clone(),
@@ -317,11 +316,7 @@ impl Runtime {
                     audio,
                     standard_paths,
                     windows,
-                )
-                .map_err(|_| {
-                    let caught_error = ctx.catch();
-                    eyre!("registration error: {:?}", caught_error)
-                })?;
+                )?;
 
                 Ok(())
             })
@@ -555,8 +550,10 @@ impl Runtime {
         script_engine
             .with(|ctx| {
                 let _ = ctx.remove_userdata::<JsUserData>();
+                Ok(())
             })
-            .await;
+            .await
+            .ok();
         drop(script_engine);
         drop(runtime);
 
@@ -809,17 +806,17 @@ mod tests {
         script_engine
             .with(|ctx| {
                 ctx.globals()
-                    .prop("print", Function::new(ctx.clone(), print))
-                    .unwrap();
-                register_enum::<TestEnum>(&ctx).unwrap();
+                    .prop("print", Function::new(ctx.clone(), print))?;
+                register_enum::<TestEnum>(&ctx)?;
                 register_singleton_class::<TestSingletonStruct>(
                     &ctx,
                     TestSingletonStruct::default(),
-                )
-                .unwrap();
-                register_value_class::<TestGenerator>(&ctx).unwrap();
+                )?;
+                register_value_class::<TestGenerator>(&ctx)?;
+                Ok(())
             })
-            .await;
+            .await
+            .unwrap();
     }
 
     #[test]

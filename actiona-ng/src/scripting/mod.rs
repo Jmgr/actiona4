@@ -125,16 +125,7 @@ impl Engine {
         })
     }
 
-    pub async fn with<F, R>(&self, f: F) -> R
-    where
-        F: for<'js> FnOnce(Ctx<'js>) -> R + ParallelSend,
-        R: ParallelSend,
-    {
-        self.context.with(f).await
-    }
-
-    // TODO: replace "with" and use this one
-    pub async fn with2<F, R>(&self, f: F) -> Result<R>
+    pub async fn with<F, R>(&self, f: F) -> Result<R>
     where
         F: for<'js> FnOnce(Ctx<'js>) -> rquickjs::Result<R> + ParallelSend,
         R: Send,
@@ -508,10 +499,12 @@ outer();
         // expose our Helper so JS can await a real delay
         engine
             .with(|ctx| {
-                let helper = rquickjs::Class::instance(ctx.clone(), Helper {}).unwrap();
-                ctx.globals().set("helper", helper).unwrap();
+                let helper = rquickjs::Class::instance(ctx.clone(), Helper {})?;
+                ctx.globals().set("helper", helper)?;
+                Ok(())
             })
-            .await;
+            .await
+            .unwrap();
 
         // JS launches an async function but *doesn't* await it;
         // eval_async therefore resolves immediately with ().

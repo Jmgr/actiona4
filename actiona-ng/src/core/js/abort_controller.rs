@@ -107,7 +107,7 @@ mod tests {
     };
 
     use rquickjs::{
-        JsLifetime, Result,
+        JsLifetime,
         class::{Trace, Tracer},
     };
 
@@ -151,8 +151,8 @@ mod tests {
 
             script_engine
                 .with(|ctx| {
-                    register_singleton_class::<TestStruct>(&ctx, test).unwrap();
-                    Result::<()>::Ok(())
+                    register_singleton_class::<TestStruct>(&ctx, test)?;
+                    Ok(())
                 })
                 .await
                 .unwrap();

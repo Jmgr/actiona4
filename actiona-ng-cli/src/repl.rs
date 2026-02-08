@@ -10,7 +10,7 @@ use color_eyre::{
     owo_colors::{self, OwoColorize},
 };
 use directories::BaseDirs;
-use rquickjs::{CatchResultExt, Ctx, Module, Value};
+use rquickjs::{CatchResultExt, Coerced, Ctx, Module, Value};
 use rustyline::{
     Editor, Helper, Hinter,
     completion::{Completer, FilenameCompleter, Pair},
@@ -166,17 +166,17 @@ impl Validator for ReplHelper {
             Handle::current().block_on(async move {
                 self.script_engine
                     .with(move |ctx| {
-                        if is_syntax_complete(&ctx, input, &script_engine) {
+                        Ok(if is_syntax_complete(&ctx, input, &script_engine) {
                             ValidationResult::Valid(None)
                         } else {
                             ValidationResult::Invalid(None)
-                        }
+                        })
                     })
                     .await
             })
         });
 
-        Ok(result)
+        result.map_err(|e| ReadlineError::Io(std::io::Error::other(e)))
     }
 }
 
@@ -211,16 +211,19 @@ async fn process_dot_command(command: ReplArgs, script_engine: &Engine) -> Resul
             let value: Result<Option<String>> = script_engine
                 .with(|ctx| {
                     let value = ctx.eval_file::<Value<'_>, _>(&filename); // TODO: promise
-                    Ok(match value {
+                    match value {
                         Ok(value) => {
                             if value.is_undefined() {
-                                None
+                                Ok(None)
                             } else {
-                                Some(value.to_string_coerced()?)
+                                Ok(Some(value.get::<Coerced<String>>()?.0))
                             }
                         }
-                        Err(_) => Some(ctx.catch().to_string_coerced()?),
-                    })
+                        Err(_) => {
+                            let caught = ctx.catch();
+                            Ok(Some(caught.get::<Coerced<String>>()?.0))
+                        }
+                    }
                 })
                 .await;
             if let Some(value) = value? {

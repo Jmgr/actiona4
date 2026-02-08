@@ -315,9 +315,9 @@ mod tests {
     async fn setup(script_engine: scripting::Engine, test: TestStruct) {
         script_engine
             .with(|ctx| {
-                register_singleton_class::<TestStruct>(&ctx, test).unwrap();
-                register_value_class::<JsCounter>(&ctx).unwrap();
-                Result::<()>::Ok(())
+                register_singleton_class::<TestStruct>(&ctx, test)?;
+                register_value_class::<JsCounter>(&ctx)?;
+                Ok(())
             })
             .await
             .unwrap();
@@ -342,7 +342,7 @@ mod tests {
                 )
                 .await;
 
-            assert_eq!(result.err().unwrap().to_string(), "Cancelled");
+            assert_eq!(result.err().unwrap().to_string(), "Error: Cancelled");
             assert!(has_started.load(Ordering::Relaxed));
             assert!(was_canceled.load(Ordering::Relaxed));
         });
@@ -368,7 +368,7 @@ mod tests {
                 )
                 .await;
 
-            assert_eq!(result.err().unwrap().to_string(), "Cancelled");
+            assert_eq!(result.err().unwrap().to_string(), "Error: Cancelled");
             assert!(has_started.load(Ordering::Relaxed));
             assert!(was_canceled.load(Ordering::Relaxed));
         });

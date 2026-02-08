@@ -822,7 +822,7 @@ mod tests {
             let result = script_engine
                 .eval_async::<()>(r#"await file.setSize(42)"#)
                 .await;
-            assert_eq!(result.unwrap_err().to_string(), "File is not open");
+            assert_eq!(result.unwrap_err().to_string(), "Error: File is not open");
         });
     }
 
@@ -879,10 +879,11 @@ mod tests {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
-                        .set("bytes", TypedArray::new_copy(ctx, BYTES).unwrap())
-                        .unwrap();
+                        .set("bytes", TypedArray::new_copy(ctx, BYTES)?)?;
+                    Ok(())
                 })
-                .await;
+                .await
+                .unwrap();
 
             script_engine
                 .eval_async::<()>(
@@ -897,10 +898,11 @@ mod tests {
 
             let result = script_engine
                 .with::<_, Vec<u8>>(|ctx| {
-                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
-                    result.as_bytes().unwrap().to_vec()
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result")?;
+                    Ok(result.as_bytes().unwrap().to_vec())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert_eq!(result, BYTES);
 
@@ -916,10 +918,11 @@ mod tests {
 
             let result = script_engine
                 .with::<_, Vec<u8>>(|ctx| {
-                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
-                    result.as_bytes().unwrap().to_vec()
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result")?;
+                    Ok(result.as_bytes().unwrap().to_vec())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert_eq!(result, b"te");
         });
@@ -934,10 +937,11 @@ mod tests {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
-                        .set("bytes", TypedArray::new_copy(ctx, BYTES).unwrap())
-                        .unwrap();
+                        .set("bytes", TypedArray::new_copy(ctx, BYTES)?)?;
+                    Ok(())
                 })
-                .await;
+                .await
+                .unwrap();
 
             let file_path = env::temp_dir().join("test_write_read_bytes_static.txt");
             script_engine
@@ -954,10 +958,11 @@ mod tests {
 
             let result = script_engine
                 .with::<_, Vec<u8>>(|ctx| {
-                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
-                    result.as_bytes().unwrap().to_vec()
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result")?;
+                    Ok(result.as_bytes().unwrap().to_vec())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert_eq!(result, BYTES);
 
@@ -973,10 +978,11 @@ mod tests {
 
             let result = script_engine
                 .with::<_, Vec<u8>>(|ctx| {
-                    let result = ctx.globals().get::<_, TypedArray<u8>>("result").unwrap();
-                    result.as_bytes().unwrap().to_vec()
+                    let result = ctx.globals().get::<_, TypedArray<u8>>("result")?;
+                    Ok(result.as_bytes().unwrap().to_vec())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert_eq!(result, b"te");
         });
@@ -1089,10 +1095,11 @@ mod tests {
 
             let time = script_engine
                 .with::<_, DateTime<Utc>>(|ctx| {
-                    let result = ctx.globals().get::<_, Object>("result").unwrap();
-                    system_time_from_date(ctx, result).unwrap().into()
+                    let result = ctx.globals().get::<_, Object>("result")?;
+                    Ok(system_time_from_date(ctx, result)?.into())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert_eq!(time.year(), YEAR);
             assert_eq!(time.month0(), MONTH);
@@ -1114,10 +1121,11 @@ mod tests {
 
             let time = script_engine
                 .with::<_, DateTime<Utc>>(|ctx| {
-                    let result = ctx.globals().get::<_, Object>("result").unwrap();
-                    system_time_from_date(ctx, result).unwrap().into()
+                    let result = ctx.globals().get::<_, Object>("result")?;
+                    Ok(system_time_from_date(ctx, result)?.into())
                 })
-                .await;
+                .await
+                .unwrap();
 
             assert_eq!(time.year(), YEAR);
             assert_eq!(time.month0(), MONTH);
@@ -1139,10 +1147,11 @@ mod tests {
 
             let time = script_engine
                 .with::<_, DateTime<Utc>>(|ctx| {
-                    let result = ctx.globals().get::<_, Object>("result").unwrap();
-                    system_time_from_date(ctx, result).unwrap().into()
+                    let result = ctx.globals().get::<_, Object>("result")?;
+                    Ok(system_time_from_date(ctx, result)?.into())
                 })
-                .await;
+                .await
+                .unwrap();
 
             #[cfg(unix)]
             let _ = time;

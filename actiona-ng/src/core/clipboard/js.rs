@@ -381,10 +381,11 @@ mod tests {
             script_engine
                 .with(|ctx| {
                     ctx.globals()
-                        .set("image", JsImage::new(local_image.into()))
-                        .unwrap();
+                        .set("image", JsImage::new(local_image.into()))?;
+                    Ok(())
                 })
-                .await;
+                .await
+                .unwrap();
 
             let result = script_engine
                 .eval_async::<JsImage>(
