@@ -136,23 +136,23 @@ mod tests {
     #[test]
     fn test_category_from_filename() {
         assert_eq!(
-            Items::category_from_filename(Path::new("src/core/mouse/js.rs")),
+            Items::category_from_filename(Path::new("src/api/mouse/js.rs")),
             Some("Mouse".to_string())
         );
         assert_eq!(
-            Items::category_from_filename(Path::new("src/core/js/mod.rs")),
+            Items::category_from_filename(Path::new("src/api/js/mod.rs")),
             Some("Core".to_string())
         );
         assert_eq!(
-            Items::category_from_filename(Path::new("src/core/ui/js.rs")),
+            Items::category_from_filename(Path::new("src/api/ui/js.rs")),
             Some("Ui".to_string())
         );
         assert_eq!(
-            Items::category_from_filename(Path::new("src/core/standardpaths/js.rs")),
+            Items::category_from_filename(Path::new("src/api/standardpaths/js.rs")),
             Some("Standardpaths".to_string())
         );
         assert_eq!(
-            Items::category_from_filename(Path::new("src/core/js/abort_controller.rs")),
+            Items::category_from_filename(Path::new("src/api/js/abort_controller.rs")),
             Some("Core".to_string())
         );
         assert_eq!(

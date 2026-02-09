@@ -8,12 +8,12 @@ documentation.workspace = true
 license.workspace = true
 default-run = "actiona4-run"
 
+[package.metadata.cargo-machete]
+ignored = ["tauri-build"]
+
 [[bin]]
 name = "actiona4-run"
 path = "src/main.rs"
-
-[package.metadata.cargo-machete]
-ignored = ["tauri-build"]
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [

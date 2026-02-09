@@ -34,8 +34,8 @@ use tokio::{
 use tokio_util::{io::ReaderStream, sync::CancellationToken, task::TaskTracker};
 
 use crate::{
-    cancel_on,
     api::{image::Image, js::task::IsDone},
+    cancel_on,
     sized_body::{BoxError, SizedBody},
 };
 

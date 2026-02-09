@@ -58,12 +58,13 @@ pub(crate) mod test_helpers {
         path::{Path, PathBuf},
     };
 
+    use rand::RngExt;
     use rquickjs::{JsLifetime, class::Trace};
 
     use crate::api::js::classes::ValueClass;
 
     pub fn random_name() -> String {
-        use rand::{Rng, distr::Alphanumeric};
+        use rand::distr::Alphanumeric;
 
         rand::rng()
             .sample_iter(&Alphanumeric)

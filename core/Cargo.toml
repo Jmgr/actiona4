@@ -7,9 +7,6 @@ description.workspace = true
 documentation.workspace = true
 license.workspace = true
 
-[lib]
-name = "actiona_core"
-
 [target.'cfg(windows)'.dependencies]
 pe-parser.workspace = true
 windows.workspace = true
@@ -29,6 +26,9 @@ zbus.workspace = true
 
 [package.metadata.cargo-machete]
 ignored = ["built", "cfg_aliases", "rquickjs-serde"]
+
+[lib]
+name = "actiona_core"
 
 [dependencies]
 ab_glyph.workspace = true

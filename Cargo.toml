@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["core", "run", "doc-generator", "macros"]
+members = ["core", "doc-generator", "macros", "run"]
 
 [workspace.package]
 version = "0.1.0"
@@ -92,13 +92,13 @@ reqwest = { version = "0.13.2", features = [
     "query",
 ] }
 rodio = { version = "0.21.1", features = ["tracing", "symphonia"] }
-rquickjs = { git = "https://github.com/DelSkayn/rquickjs.git", rev = "3fc3d357c08ae3df2090a4954dfa0739cd44a602", default-features = false, features = [
+rquickjs = { version = "0.11.0", default-features = false, features = [
     "macro",
     "futures",
     "parallel",
     "indexmap",
 ] }
-rquickjs-serde = { git = "https://github.com/Jmgr/rquickjs-serde.git", rev = "0825bf178ff475a806d4150919538a1b42142d2f" }
+rquickjs-serde = { version = "0.4.0" }
 rustdoc-types = "0.57.0"
 rustyline = { version = "17.0.2", features = ["derive"] }
 serde = "1.0.228"

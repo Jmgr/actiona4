@@ -1,10 +1,11 @@
-use cfg_aliases::cfg_aliases;
 #[cfg(windows)]
 use std::{
     collections::BTreeSet,
     env, fs,
     path::{Path, PathBuf},
 };
+
+use cfg_aliases::cfg_aliases;
 
 fn main() {
     cfg_aliases! {

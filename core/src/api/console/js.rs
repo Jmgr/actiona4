@@ -106,6 +106,7 @@ impl JsConsole {
                 .to_string()
                 .unwrap(),
             Type::Unknown => "[Unknown]".to_string(),
+            Type::Proxy => "[Proxy]".to_string(),
         }
     }
 
