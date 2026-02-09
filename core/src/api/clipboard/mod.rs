@@ -1,15 +1,17 @@
 use std::{
     borrow::Cow,
     fmt::Debug,
+    hash::{DefaultHasher, Hash, Hasher},
     num::TryFromIntError,
     path::{Path, PathBuf},
     sync::Arc,
+    time::Duration,
 };
 
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
-use color_eyre::{Report, eyre::eyre};
+use color_eyre::Report;
 use derive_more::Display;
 use image::RgbaImage;
 use itertools::Itertools;
@@ -18,6 +20,8 @@ use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 use thiserror::Error;
+use tokio::{select, time::sleep};
+use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
 use crate::{api::image::Image, error::CommonError};
@@ -87,6 +91,27 @@ pub enum ClipboardData {
     FileList(Vec<PathBuf>),
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct WaitForChangedOptions {
+    pub mode: Option<ClipboardMode>,
+    pub interval: Duration,
+}
+
+impl Default for WaitForChangedOptions {
+    fn default() -> Self {
+        Self {
+            mode: None,
+            interval: Duration::from_millis(200),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ClipboardSnapshot {
+    Empty,
+    Hash(u64),
+}
+
 #[derive(Clone)]
 pub struct Clipboard {
     inner: Arc<Mutex<arboard::Clipboard>>,
@@ -154,8 +179,67 @@ impl Clipboard {
         } else if let Ok(data) = self.get(|get| get.text(), mode) {
             ClipboardData::Text(data)
         } else {
-            return Err(eyre!("unknown clipboard data").into());
+            return Err(Error::ContentNotAvailable);
         })
+    }
+
+    fn snapshot(&self, mode: Option<ClipboardMode>) -> Result<ClipboardSnapshot> {
+        match self.save(mode) {
+            Ok(data) => {
+                let mut hasher = DefaultHasher::new();
+
+                match data {
+                    ClipboardData::Text(text) => {
+                        0u8.hash(&mut hasher);
+                        text.hash(&mut hasher);
+                    }
+                    ClipboardData::Image(image) => {
+                        1u8.hash(&mut hasher);
+                        image.width.hash(&mut hasher);
+                        image.height.hash(&mut hasher);
+                        image.bytes.hash(&mut hasher);
+                    }
+                    ClipboardData::Html(html) => {
+                        2u8.hash(&mut hasher);
+                        html.hash(&mut hasher);
+                    }
+                    ClipboardData::FileList(files) => {
+                        3u8.hash(&mut hasher);
+                        files.hash(&mut hasher);
+                    }
+                }
+
+                Ok(ClipboardSnapshot::Hash(hasher.finish()))
+            }
+            Err(Error::ContentNotAvailable) => Ok(ClipboardSnapshot::Empty),
+            Err(err) => Err(err),
+        }
+    }
+
+    pub async fn wait_for_changed(
+        &self,
+        options: WaitForChangedOptions,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
+        if options.interval.is_zero() {
+            return Err(CommonError::Unsupported("interval cannot be zero".to_string()).into());
+        }
+
+        let initial_snapshot = self.snapshot(options.mode)?;
+
+        loop {
+            select! {
+                _ = cancellation_token.cancelled() => {
+                    return Err(CommonError::Cancelled.into());
+                }
+                _ = sleep(options.interval) => {}
+            }
+
+            let current_snapshot = self.snapshot(options.mode)?;
+            if current_snapshot != initial_snapshot {
+                return Ok(());
+            }
+        }
     }
 
     pub fn restore(&self, data: ClipboardData, mode: Option<ClipboardMode>) -> Result<()> {

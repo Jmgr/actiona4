@@ -11,6 +11,7 @@
 
 use color_eyre::Result;
 use rquickjs::{Coerced, Ctx, Exception, Value};
+use tokio::select;
 use tokio_util::sync::CancellationToken;
 
 use crate::error::{CommonError, Error};
@@ -115,7 +116,7 @@ async fn cancel_on<T, F>(token: &CancellationToken, fut: F) -> Result<T, Error>
 where
     F: Future<Output = T>,
 {
-    tokio::select! {
+    select! {
         _ = token.cancelled() => Err(Error::CommonError(CommonError::Cancelled)),
         v = fut => Ok(v),
     }

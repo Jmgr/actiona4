@@ -1,7 +1,8 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{fmt::Debug, sync::Arc, time::Duration};
 
+use macros::FromJsObject;
 use rquickjs::{
-    JsLifetime, Result,
+    JsLifetime, Promise, Result,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -11,7 +12,12 @@ use crate::{
     IntoJSError, IntoJsResult,
     api::{
         image::js::JsImage,
-        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
+        js::{
+            abort_controller::JsAbortSignal,
+            classes::{HostClass, SingletonClass, register_enum, register_host_class},
+            duration::JsDuration,
+            task::task_with_token,
+        },
     },
     newtype,
 };
@@ -32,7 +38,56 @@ impl Debug for Clipboard {
 
 pub type JsClipboardMode = super::ClipboardMode;
 
-// TODO: add waitForChanged
+/// Options for waiting until clipboard content changes.
+///
+/// ```ts
+/// // Wait for any clipboard change
+/// await clipboard.waitForChanged();
+///
+/// // Wait on Linux selection clipboard with a custom polling interval
+/// await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 });
+///
+/// // Wait up to 1 second for a clipboard change
+/// await Concurrency.race([
+///   clipboard.waitForChanged(),
+///   sleep(1000),
+/// ]);
+/// ```
+/// @options
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsWaitForChangedOptions {
+    /// Clipboard source to watch.
+    /// @default `ClipboardMode.Clipboard`
+    pub mode: Option<JsClipboardMode>,
+
+    /// Polling interval in seconds.
+    /// @default `0.2`
+    pub interval: JsDuration,
+
+    /// Abort signal to cancel the wait.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl Default for JsWaitForChangedOptions {
+    fn default() -> Self {
+        Self {
+            mode: None,
+            interval: Duration::from_millis(200).into(),
+            signal: None,
+        }
+    }
+}
+
+impl From<JsWaitForChangedOptions> for super::WaitForChangedOptions {
+    fn from(value: JsWaitForChangedOptions) -> Self {
+        Self {
+            mode: value.mode,
+            interval: value.interval.into(),
+        }
+    }
+}
+
 /// The global clipboard singleton for reading and writing clipboard content.
 ///
 /// Supports text, images, file lists, and HTML content. Each content type
@@ -58,6 +113,9 @@ pub type JsClipboardMode = super::ClipboardMode;
 ///
 /// // On Linux, use the selection clipboard
 /// await clipboard.text.set("selected", ClipboardMode.Selection);
+///
+/// // Wait until clipboard content changes
+/// await clipboard.waitForChanged();
 /// ```
 ///
 /// @singleton
@@ -151,6 +209,33 @@ impl JsClipboard {
     /// ```
     pub async fn clear(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<()> {
         self.inner.clear(*mode).into_js_result(&ctx)
+    }
+
+    /// Waits until clipboard content changes.
+    ///
+    /// ```ts
+    /// const controller = new AbortController();
+    /// const task = clipboard.waitForChanged({ signal: controller.signal });
+    /// // controller.abort();
+    /// await task;
+    /// ```
+    /// @returns Task<void>
+    pub fn wait_for_changed<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<JsWaitForChangedOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let local_clipboard = self.inner.clone();
+        let options: super::WaitForChangedOptions = options.into();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            local_clipboard
+                .wait_for_changed(options, token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 }
 
