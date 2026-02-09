@@ -23,6 +23,8 @@ use thiserror::Error;
 use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
+#[cfg(windows)]
+use windows::Win32::System::DataExchange::GetClipboardSequenceNumber;
 
 use crate::{api::image::Image, error::CommonError};
 
@@ -115,6 +117,17 @@ enum ClipboardSnapshot {
 #[derive(Clone)]
 pub struct Clipboard {
     inner: Arc<Mutex<arboard::Clipboard>>,
+}
+
+#[cfg(windows)]
+#[allow(unsafe_code)]
+fn clipboard_sequence_number() -> Option<u32> {
+    let sequence_number = unsafe { GetClipboardSequenceNumber() };
+    if sequence_number == 0 {
+        None
+    } else {
+        Some(sequence_number)
+    }
 }
 
 impl Clipboard {
@@ -223,6 +236,28 @@ impl Clipboard {
     ) -> Result<()> {
         if options.interval.is_zero() {
             return Err(CommonError::Unsupported("interval cannot be zero".to_string()).into());
+        }
+
+        #[cfg(windows)]
+        if let Some(initial_sequence_number) = clipboard_sequence_number() {
+            loop {
+                select! {
+                    _ = cancellation_token.cancelled() => {
+                        return Err(CommonError::Cancelled.into());
+                    }
+                    _ = sleep(options.interval) => {}
+                }
+
+                match clipboard_sequence_number() {
+                    Some(current_sequence_number) => {
+                        if current_sequence_number != initial_sequence_number {
+                            return Ok(());
+                        }
+                    }
+                    // Sequence number is temporarily unavailable: fall back to content snapshots.
+                    None => break,
+                }
+            }
         }
 
         let initial_snapshot = self.snapshot(options.mode)?;

@@ -17,7 +17,7 @@ use windows::Win32::{
 };
 
 use crate::{
-    core::{mouse::Button, point::point},
+    api::{mouse::Button, point::point},
     runtime::{
         events::{
             AllSignals, Guard, LatestOnlySignals, MouseButtonEvent, MouseMoveEvent, Topic,

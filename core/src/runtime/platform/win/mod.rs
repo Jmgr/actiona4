@@ -25,7 +25,7 @@ use windows::{
 };
 
 use crate::{
-    core::displays::Displays,
+    api::displays::Displays,
     error::CommonError,
     platform::win::safe_handle::SafeWindowHandle,
     runtime::{

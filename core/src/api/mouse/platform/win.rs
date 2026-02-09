@@ -8,7 +8,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 
 use super::{Button, MouseImplTrait, Result};
 use crate::{
-    core::mouse::ButtonConditions,
+    api::mouse::ButtonConditions,
     error::CommonError,
     runtime::{Runtime, events::MouseButtonEvent},
 };

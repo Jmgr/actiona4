@@ -7,7 +7,7 @@ use windows::Win32::Graphics::Gdi::{
     SelectObject,
 };
 
-use crate::{core::rect::Rect, types::su32::Su32};
+use crate::{api::rect::Rect, types::su32::Su32};
 
 /// Captures a screen region using BitBlt and returns raw BGRA pixel data.
 #[allow(unsafe_code)]

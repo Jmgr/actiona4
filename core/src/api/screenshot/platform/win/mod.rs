@@ -5,7 +5,7 @@ use color_eyre::Result;
 use self::capture::capture_rect as capture_rect_raw;
 use super::{DisplayCapture, ScreenshotImplBase};
 use crate::{
-    core::{
+    api::{
         color::Color,
         image::{Image, find_image::Source},
         point::{Point, point},
@@ -65,7 +65,7 @@ mod tests {
     use std::time::Instant;
 
     use crate::{
-        core::{
+        api::{
             displays::Displays,
             point::point,
             rect::rect,

@@ -22,7 +22,7 @@ use windows::Win32::{
 use windows_result::BOOL;
 
 use crate::{
-    core::{
+    api::{
         point::{Point, point},
         rect::Rect,
         size::Size,
