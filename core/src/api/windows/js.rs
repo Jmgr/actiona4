@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use rquickjs::{
-    Ctx, JsLifetime, Result,
+    Ctx, JsLifetime, Result, Value,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
 };
 use tracing::instrument;
@@ -9,17 +10,71 @@ use tracing::instrument;
 use crate::{
     IntoJsResult,
     api::{
+        ResultExt,
         js::classes::{HostClass, SingletonClass, register_host_class},
+        name::js::JsName,
         point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
         size::js::{JsSize, JsSizeLike},
     },
     runtime::Runtime,
+    types::display::DisplayFields,
 };
 
 impl<T> IntoJsResult<T> for super::Result<T> {
     fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
         self.map_err(|err| rquickjs::Exception::throw_message(ctx, &err.to_string()))
+    }
+}
+
+/// Window search options.
+///
+/// @options
+#[derive(Debug, Default)]
+pub struct JsWindowsFindOptions<'js> {
+    /// Match by internal window ID.
+    /// When undefined, any window ID is accepted.
+    /// @default `undefined`
+    pub id: Option<u64>,
+
+    /// Match by window process ID.
+    /// When undefined, any process ID is accepted.
+    /// @default `undefined`
+    pub process_id: Option<u32>,
+
+    /// Match by window visibility.
+    /// When undefined, visibility is not filtered.
+    /// @default `undefined`
+    pub visible: Option<bool>,
+
+    /// Match by window title.
+    /// When undefined, title is not filtered.
+    /// @default `undefined`
+    pub title: Option<JsName<'js>>,
+
+    /// Match by window class name.
+    /// When undefined, class name is not filtered.
+    /// @default `undefined`
+    pub class_name: Option<JsName<'js>>,
+}
+
+impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
+    fn from_js(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        if value.is_undefined() || value.is_null() {
+            return Ok(Self::default());
+        }
+
+        let object = value
+            .into_object()
+            .or_throw_message(ctx, "Expected an object")?;
+
+        Ok(Self {
+            id: object.get("id")?,
+            process_id: object.get("processId")?,
+            visible: object.get("visible")?,
+            title: object.get("title")?,
+            class_name: object.get("className")?,
+        })
     }
 }
 
@@ -42,11 +97,9 @@ impl<T> IntoJsResult<T> for super::Result<T> {
 ///
 /// ```ts
 /// // Find and close a window by title
-/// const allWindows = await windows.all();
-/// for (const win of allWindows) {
-///     if ((await win.title()).includes("Notepad")) {
-///         await win.close();
-///     }
+/// const matches = await windows.find({ title: new Wildcard("*Notepad*") });
+/// for (const win of matches) {
+///     await win.close();
 /// }
 /// ```
 /// @singleton
@@ -114,6 +167,97 @@ impl JsWindows {
             inner: self.inner.clone(),
             id,
         })
+    }
+
+    /// Finds windows matching the provided criteria.
+    ///
+    /// `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
+    ///
+    /// ```ts
+    /// const byId = await windows.find({ id: 1 });
+    /// const visibleCode = await windows.find({ visible: true, title: new Wildcard("*Code*") });
+    /// const byPid = await windows.find({ processId: 12345 });
+    /// const byTitle = await windows.find({ title: new Wildcard("*Code*") });
+    /// const byClass = await windows.find({ className: /^gnome-terminal/i });
+    /// const exact = await windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
+    /// ```
+    /// @readonly
+    pub async fn find<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: JsWindowsFindOptions<'js>,
+    ) -> Result<Vec<JsWindowHandle>> {
+        let ids = self.inner.all().into_js_result(&ctx)?;
+        let mut windows = Vec::new();
+
+        for id in ids {
+            if let Some(filter_id) = options.id
+                && id.as_u64() != filter_id
+            {
+                continue;
+            }
+
+            if let Some(filter_visible) = options.visible {
+                let visible = self.inner.is_visible(id).into_js_result(&ctx)?;
+                if visible != filter_visible {
+                    continue;
+                }
+            }
+
+            if let Some(filter_process_id) = options.process_id {
+                let process_id = self.inner.process_id(id).into_js_result(&ctx)?;
+                if process_id != filter_process_id {
+                    continue;
+                }
+            }
+
+            if let Some(title) = options.title.as_ref() {
+                let window_title = self.inner.title(id).into_js_result(&ctx)?;
+                if !title.inner().matches(&ctx, &window_title) {
+                    continue;
+                }
+            }
+
+            if let Some(class_name) = options.class_name.as_ref() {
+                let window_class_name = self.inner.classname(id).into_js_result(&ctx)?;
+                if !class_name.inner().matches(&ctx, &window_class_name) {
+                    continue;
+                }
+            }
+
+            windows.push(JsWindowHandle {
+                inner: self.inner.clone(),
+                id,
+            });
+        }
+
+        Ok(windows)
+    }
+
+    /// Finds windows whose rectangle contains the given screen point.
+    ///
+    /// ```ts
+    /// const underMouse = await windows.findAt(await mouse.position());
+    /// const atOrigin = await windows.findAt(0, 0);
+    /// ```
+    /// @readonly
+    pub async fn find_at(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<Vec<JsWindowHandle>> {
+        let ids = self.inner.all().into_js_result(&ctx)?;
+        let mut windows = Vec::new();
+
+        for id in ids {
+            let rect = self.inner.rect(id).into_js_result(&ctx)?;
+            if !rect.contains(point.0) {
+                continue;
+            }
+
+            windows.push(JsWindowHandle {
+                inner: self.inner.clone(),
+                id,
+            });
+        }
+
+        Ok(windows)
     }
 }
 
@@ -280,6 +424,40 @@ impl JsWindowHandle {
     pub async fn is_active(&self, ctx: Ctx<'_>) -> Result<bool> {
         self.inner.is_active(self.id).into_js_result(&ctx)
     }
+
+    /// Returns a string representation of this window handle.
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        let id = format!("{:?}", self.id);
+        let title = self
+            .inner
+            .title(self.id)
+            .unwrap_or_else(|_| "<unavailable>".to_string());
+        let class_name = self
+            .inner
+            .classname(self.id)
+            .unwrap_or_else(|_| "<unavailable>".to_string());
+        let process_id = self
+            .inner
+            .process_id(self.id)
+            .map_or_else(|_| "?".to_string(), |pid| pid.to_string());
+        let visible = self
+            .inner
+            .is_visible(self.id)
+            .map_or_else(|_| "?".to_string(), |value| value.to_string());
+
+        format!(
+            "WindowHandle{}",
+            DisplayFields::default()
+                .display("id", id)
+                .display("title", title)
+                .display("className", class_name)
+                .display("processId", process_id)
+                .display("visible", visible)
+                .finish_as_string()
+        )
+    }
 }
 
 #[cfg(test)]
@@ -335,6 +513,73 @@ mod tests {
                     console.log(`position: ${pos.x},${pos.y}, size: ${s.width}x${s.height}`);
                     console.log(`rect: ${r.x},${r.y} ${r.width}x${r.height}`);
                     console.log(`pid: ${pid}, class: ${cls}`);
+                    "#,
+                )
+                .await
+                .unwrap();
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_find() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    const byAnyTitle = await windows.find({ title: /.*/ });
+                    for (const win of byAnyTitle) {
+                        const title = await win.title();
+                        if (!/.*/.test(title)) {
+                            throw new Error("title filter mismatch");
+                        }
+                    }
+
+                    const byAnyClass = await windows.find({ className: /.*/ });
+                    for (const win of byAnyClass) {
+                        const className = await win.className();
+                        if (!/.*/.test(className)) {
+                            throw new Error("className filter mismatch");
+                        }
+                    }
+
+                    const active = await windows.activeWindow();
+                    const pid = await active.processId();
+                    const byPid = await windows.find({ processId: pid });
+                    if (byPid.length === 0) {
+                        throw new Error("processId filter mismatch");
+                    }
+
+                    const byVisible = await windows.find({ visible: true });
+                    for (const win of byVisible) {
+                        if (!(await win.isVisible())) {
+                            throw new Error("visible filter mismatch");
+                        }
+                    }
+
+                    const activeRect = await active.rect();
+                    const center = {
+                        x: Math.floor(activeRect.x + activeRect.width / 2),
+                        y: Math.floor(activeRect.y + activeRect.height / 2),
+                    };
+
+                    const byPoint = await windows.findAt(center);
+                    if (byPoint.length === 0) {
+                        throw new Error("findAt filter mismatch");
+                    }
+
+                    for (const win of byPoint) {
+                        const rect = await win.rect();
+                        if (
+                            center.x < rect.x
+                            || center.x >= rect.x + rect.width
+                            || center.y < rect.y
+                            || center.y >= rect.y + rect.height
+                        ) {
+                            throw new Error("findAt containment mismatch");
+                        }
+                    }
                     "#,
                 )
                 .await

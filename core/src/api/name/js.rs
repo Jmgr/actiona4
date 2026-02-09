@@ -4,7 +4,7 @@
 //! @verbatim type NameLike = string | Wildcard | RegExp;
 
 use rquickjs::{
-    Exception, JsLifetime, Result,
+    Ctx, Exception, JsLifetime, Result, Value,
     class::{Trace, Tracer},
     function::{Constructor, FromParam, ParamRequirement, ParamsAccessor},
 };
@@ -93,37 +93,57 @@ impl JsWildcard {
 
 pub struct JsNameLike<'js>(pub super::Name<'js>);
 
+#[derive(Clone, Debug, JsLifetime)]
+pub struct JsName<'js>(pub super::Name<'js>);
+
+impl<'js> JsName<'js> {
+    #[must_use]
+    pub const fn inner(&self) -> &super::Name<'js> {
+        &self.0
+    }
+}
+
+pub(crate) fn value_to_name_like<'js>(
+    ctx: &Ctx<'js>,
+    value: Value<'js>,
+) -> Result<super::Name<'js>> {
+    if value.is_string() {
+        return Ok(super::Name::String(
+            value.as_string().unwrap().to_string().unwrap(),
+        ));
+    }
+
+    if let Ok(wildcard) = value.get::<JsWildcard>() {
+        return Ok(super::Name::Wildcard(wildcard));
+    }
+
+    let object = value
+        .into_object()
+        .or_throw_message(ctx, "Expected an object")?;
+
+    let regexp_ctor: Constructor = ctx.globals().get("RegExp")?;
+    if object.is_instance_of(regexp_ctor) {
+        return Ok(super::Name::Regex(object));
+    }
+
+    Err(Exception::throw_message(ctx, "Unexpected object type"))
+}
+
+impl<'js> rquickjs::FromJs<'js> for JsName<'js> {
+    fn from_js(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        Ok(Self(value_to_name_like(ctx, value)?))
+    }
+}
+
 impl<'js> FromParam<'js> for JsNameLike<'js> {
     fn param_requirement() -> ParamRequirement {
         ParamRequirement::single().combine(ParamRequirement::exhaustive()) // 1 -> 1
     }
 
     fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
+        let ctx = params.ctx().clone();
         let value = params.arg();
-
-        if value.is_string() {
-            return Ok(Self(super::Name::String(
-                value.as_string().unwrap().to_string().unwrap(),
-            )));
-        }
-
-        if let Ok(wildcard) = value.get::<JsWildcard>() {
-            return Ok(Self(super::Name::Wildcard(wildcard)));
-        }
-
-        let object = value
-            .into_object()
-            .or_throw_message(params.ctx(), "Expected an object")?;
-
-        let regexp_ctor: Constructor = params.ctx().globals().get("RegExp")?;
-        if object.is_instance_of(regexp_ctor) {
-            return Ok(Self(super::Name::Regex(object)));
-        }
-
-        Err(Exception::throw_message(
-            params.ctx(),
-            "Unexpected object type",
-        ))
+        Ok(Self(value_to_name_like(&ctx, value)?))
     }
 }
 

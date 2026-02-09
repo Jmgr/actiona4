@@ -2320,6 +2320,41 @@ declare interface PlayingSound {
     stop(): void;
 }
 /**
+ * Options for waiting until clipboard content changes.
+ * 
+ * ```ts
+ * // Wait for any clipboard change
+ * await clipboard.waitForChanged();
+ * 
+ * // Wait on Linux selection clipboard with a custom polling interval
+ * await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 });
+ * 
+ * // Wait up to 1 second for a clipboard change
+ * await Concurrency.race([
+ * clipboard.waitForChanged(),
+ * sleep(1000),
+ * ]);
+ * ```
+ * @category Clipboard
+ */
+declare interface WaitForChangedOptions {
+    /**
+     * Clipboard source to watch.
+     * @defaultValue `ClipboardMode.Clipboard`
+     */
+    mode?: ClipboardMode;
+    /**
+     * Polling interval in seconds.
+     * @defaultValue `0.2`
+     */
+    interval?: number;
+    /**
+     * Abort signal to cancel the wait.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
  * The global clipboard singleton for reading and writing clipboard content.
  * 
  * Supports text, images, file lists, and HTML content. Each content type
@@ -2345,6 +2380,9 @@ declare interface PlayingSound {
  * 
  * // On Linux, use the selection clipboard
  * await clipboard.text.set("selected", ClipboardMode.Selection);
+ * 
+ * // Wait until clipboard content changes
+ * await clipboard.waitForChanged();
  * ```
  * @category Clipboard
  */
@@ -2376,6 +2414,17 @@ declare interface Clipboard {
      * ```
      */
     clear(mode?: ClipboardMode): Promise<void>;
+    /**
+     * Waits until clipboard content changes.
+     * 
+     * ```ts
+     * const controller = new AbortController();
+     * const task = clipboard.waitForChanged({ signal: controller.signal });
+     * // controller.abort();
+     * await task;
+     * ```
+     */
+    waitForChanged(options?: WaitForChangedOptions): Task<void>;
 }
 /**
  * @category Clipboard
@@ -6837,6 +6886,42 @@ declare interface Web {
  */
 declare const web: Web;
 /**
+ * Window search options.
+ * @category Windows
+ */
+declare interface WindowsFindOptions {
+    /**
+     * Match by internal window ID.
+     * When undefined, any window ID is accepted.
+     * @defaultValue `undefined`
+     */
+    id?: number;
+    /**
+     * Match by window process ID.
+     * When undefined, any process ID is accepted.
+     * @defaultValue `undefined`
+     */
+    processId?: number;
+    /**
+     * Match by window visibility.
+     * When undefined, visibility is not filtered.
+     * @defaultValue `undefined`
+     */
+    visible?: boolean;
+    /**
+     * Match by window title.
+     * When undefined, title is not filtered.
+     * @defaultValue `undefined`
+     */
+    title?: NameLike;
+    /**
+     * Match by window class name.
+     * When undefined, class name is not filtered.
+     * @defaultValue `undefined`
+     */
+    className?: NameLike;
+}
+/**
  * Manages desktop windows: enumerate, focus, move, resize, and close windows.
  * 
  * ```ts
@@ -6856,11 +6941,9 @@ declare const web: Web;
  * 
  * ```ts
  * // Find and close a window by title
- * const allWindows = await windows.all();
- * for (const win of allWindows) {
- * if ((await win.title()).includes("Notepad")) {
+ * const matches = await windows.find({ title: new Wildcard("*Notepad*") });
+ * for (const win of matches) {
  * await win.close();
- * }
  * }
  * ```
  * @category Windows
@@ -6884,6 +6967,39 @@ declare interface Windows {
      * ```
      */
     activeWindow(): Promise<Readonly<WindowHandle>>;
+    /**
+     * Finds windows matching the provided criteria.
+     * 
+     * `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
+     * 
+     * ```ts
+     * const byId = await windows.find({ id: 1 });
+     * const visibleCode = await windows.find({ visible: true, title: new Wildcard("*Code*") });
+     * const byPid = await windows.find({ processId: 12345 });
+     * const byTitle = await windows.find({ title: new Wildcard("*Code*") });
+     * const byClass = await windows.find({ className: /^gnome-terminal/i });
+     * const exact = await windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
+     * ```
+     */
+    find(options: WindowsFindOptions): Promise<readonly WindowHandle[]>;
+    /**
+     * Finds windows whose rectangle contains the given screen point.
+     * 
+     * ```ts
+     * const underMouse = await windows.findAt(await mouse.position());
+     * const atOrigin = await windows.findAt(0, 0);
+     * ```
+     */
+    findAt(point: PointLike): Promise<readonly WindowHandle[]>;
+    /**
+     * Finds windows whose rectangle contains the given screen point.
+     * 
+     * ```ts
+     * const underMouse = await windows.findAt(await mouse.position());
+     * const atOrigin = await windows.findAt(0, 0);
+     * ```
+     */
+    findAt(x: number, y: number): Promise<readonly WindowHandle[]>;
 }
 /**
  * @category Windows
@@ -7043,6 +7159,10 @@ declare interface WindowHandle {
      * ```
      */
     isActive(): Promise<boolean>;
+    /**
+     * Returns a string representation of this window handle.
+     */
+    toString(): string;
 }
 /**
  * Hotstring options

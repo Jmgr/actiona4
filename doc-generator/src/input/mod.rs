@@ -748,6 +748,8 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
 
 fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result<Type> {
     Ok(match strip_modules(path.path.as_str()) {
+        // JsName is the internal parser type for APIs that accept NameLike.
+        "JsName" => Type::Verbatim("NameLike".to_string()),
         "String" => Type::String,
         "Result" => {
             let type_ = unwrap_generic(path)?;
@@ -837,10 +839,12 @@ impl TryFrom<Crate> for File {
 
 #[cfg(test)]
 mod tests {
-    use super::process_rustdoc;
+    use rustdoc_types::{Id, Path};
+
+    use super::{convert_type, process_rustdoc};
     use crate::{
         input::{Comments, Instructions, Overloads},
-        types::{Instruction, RustdocContext, Type, Variable},
+        types::{Context, Instruction, RustdocContext, Type, Variable},
     };
 
     #[test]
@@ -990,5 +994,18 @@ mod tests {
                 )
             ])
         );
+    }
+
+    #[test]
+    fn test_convert_js_name_to_name_like() {
+        let rustdoc_type = rustdoc_types::Type::ResolvedPath(Path {
+            path: "crate::api::name::js::JsName".to_string(),
+            id: Id(0),
+            args: None,
+        });
+
+        let type_ = convert_type(&rustdoc_type, None).unwrap();
+        assert_eq!(type_, Type::Verbatim("NameLike".to_string()));
+        assert_eq!(type_.to_string(Context::Property).unwrap(), "NameLike");
     }
 }

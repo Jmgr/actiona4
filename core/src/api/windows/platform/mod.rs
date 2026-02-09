@@ -19,6 +19,11 @@ impl WindowId {
 
         *self
     }
+
+    #[must_use]
+    pub const fn as_u64(self) -> u64 {
+        self.0
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
