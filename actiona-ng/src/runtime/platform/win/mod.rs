@@ -1,18 +1,18 @@
 #![allow(unsafe_code)]
 
 use std::{
-    sync::{Arc, Weak},
+    sync::{Arc, Mutex, Weak},
     thread::{self, JoinHandle},
 };
 
 use color_eyre::Result;
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 use tokio::{select, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 use windows::{
     Win32::{
-        Foundation::{HWND, LPARAM, LRESULT, WPARAM},
+        Foundation::{ERROR_CLASS_ALREADY_EXISTS, HWND, LPARAM, LRESULT, WPARAM},
         System::{LibraryLoader::GetModuleHandleW, Threading::GetCurrentThreadId},
         UI::WindowsAndMessaging::{
             CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
@@ -39,11 +39,11 @@ use crate::{
 
 pub mod events;
 
-static RUNTIME: OnceCell<Weak<Runtime>> = OnceCell::new();
+static RUNTIME: Lazy<Mutex<Weak<Runtime>>> = Lazy::new(|| Mutex::new(Weak::new()));
 
 #[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
-    let Some(runtime) = RUNTIME.get().and_then(|runtime| runtime.upgrade()) else {
+    let Some(runtime) = RUNTIME.lock().unwrap_or_else(|e| e.into_inner()).upgrade() else {
         return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
     };
 
@@ -80,7 +80,10 @@ impl MessagePumpRunner for DisplayRunner {
         // Register the class
         let atom = unsafe { RegisterClassW(&wnd_class) };
         if atom == 0 {
-            return Err(Error::from_thread().into());
+            let err = Error::from_thread();
+            if err.code() != ERROR_CLASS_ALREADY_EXISTS.to_hresult() {
+                return Err(err.into());
+            }
         }
 
         let hwnd = unsafe {
@@ -148,9 +151,7 @@ impl Runtime {
             KeyboardInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
         Ok(Arc::new_cyclic(|me| {
-            if RUNTIME.set(me.clone()).is_err() {
-                panic!("Runtime should only be instantiated once");
-            }
+            *RUNTIME.lock().unwrap_or_else(|e| e.into_inner()) = me.clone();
 
             Self {
                 mouse_input_dispatcher,

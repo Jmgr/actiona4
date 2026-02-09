@@ -53,7 +53,10 @@ pub fn check_min_arg_count(min: usize, ctx: &Ctx, args: &[Value<'_>]) -> Result<
 
 #[cfg(test)]
 pub(crate) mod test_helpers {
-    use std::{env::temp_dir, path::PathBuf};
+    use std::{
+        env::temp_dir,
+        path::{Path, PathBuf},
+    };
 
     use rquickjs::{JsLifetime, class::Trace};
 
@@ -71,6 +74,14 @@ pub(crate) mod test_helpers {
 
     pub fn random_temp_filename() -> PathBuf {
         temp_dir().join(format!("text_{}.txt", random_name()))
+    }
+
+    pub fn js_string(value: impl AsRef<str>) -> String {
+        serde_json::to_string(value.as_ref()).unwrap()
+    }
+
+    pub fn js_path(path: impl AsRef<Path>) -> String {
+        js_string(path.as_ref().to_string_lossy().as_ref())
     }
 
     #[derive(Clone, Debug, Default, JsLifetime, Trace)]

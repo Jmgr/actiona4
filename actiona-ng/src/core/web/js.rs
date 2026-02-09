@@ -581,7 +581,10 @@ mod tests {
     };
 
     use super::*;
-    use crate::{core::web::helper::TestImage, runtime::Runtime};
+    use crate::{
+        core::{test_helpers::js_path, web::helper::TestImage},
+        runtime::Runtime,
+    };
 
     #[test]
     fn test_download_text() {
@@ -869,13 +872,13 @@ mod tests {
                 .eval_async::<String>(&format!(
                     r#"
                     const form = new MultipartForm();
-                    form.addFile("file", "{}", "multipart_test.txt", "text/plain");
+                    form.addFile("file", {}, "multipart_test.txt", "text/plain");
                     await web.downloadText("{}", {{
                         method: Method.Post,
                         multipart: form,
                     }});
                     "#,
-                    filepath.to_string_lossy(),
+                    js_path(&filepath),
                     server.url("/upload")
                 ))
                 .await

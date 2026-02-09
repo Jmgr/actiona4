@@ -1,10 +1,10 @@
 use std::sync::{
-    Arc, Weak,
+    Arc, Mutex, Weak,
     atomic::{AtomicUsize, Ordering},
 };
 
 use color_eyre::Result;
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use windows::Win32::{
     Foundation::{LPARAM, LRESULT, WPARAM},
@@ -31,7 +31,8 @@ use crate::{
     types::input::Direction,
 };
 
-static MOUSE_INPUT_DISPATCHER: OnceCell<Weak<MouseInputDispatcher>> = OnceCell::new();
+static MOUSE_INPUT_DISPATCHER: Lazy<Mutex<Weak<MouseInputDispatcher>>> =
+    Lazy::new(|| Mutex::new(Weak::new()));
 
 #[allow(clippy::as_conversions)] // bit extraction: mask guarantees value fits in u16
 const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
@@ -70,9 +71,9 @@ impl MouseInputDispatcher {
         .await?;
 
         Ok(Arc::new_cyclic(|me| {
-            if MOUSE_INPUT_DISPATCHER.set(me.clone()).is_err() {
-                panic!("InputDispatcher should only be instantiated once");
-            }
+            *MOUSE_INPUT_DISPATCHER
+                .lock()
+                .unwrap_or_else(|e| e.into_inner()) = me.clone();
 
             Self {
                 mouse_buttons: Arc::new(TopicWrapper::new(
@@ -187,8 +188,9 @@ unsafe extern "system" fn low_level_mouse_proc(
     }
 
     let Some(dispatcher) = MOUSE_INPUT_DISPATCHER
-        .get()
-        .and_then(|dispatcher| dispatcher.upgrade())
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .upgrade()
     else {
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     };

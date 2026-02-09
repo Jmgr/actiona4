@@ -165,6 +165,8 @@ impl JsPath {
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
     use crate::runtime::Runtime;
 
     #[test]
@@ -174,7 +176,7 @@ mod tests {
                 .eval_async::<String>(r#"Path.join("foo", "bar")"#)
                 .await
                 .unwrap();
-            assert_eq!(result, "foo/bar");
+            assert_eq!(result, Path::new("foo").join("bar").to_string_lossy());
         });
     }
 
@@ -215,8 +217,13 @@ mod tests {
     #[test]
     fn test_absolute() {
         Runtime::test_with_script_engine(|script_engine| async move {
+            #[cfg(windows)]
+            let absolute_path = "C:/foo/bar/test.txt";
+            #[cfg(not(windows))]
+            let absolute_path = "/foo/bar/test.txt";
+
             let result = script_engine
-                .eval_async::<bool>(r#"Path.isAbsolute("/foo/bar/test.txt")"#)
+                .eval_async::<bool>(&format!(r#"Path.isAbsolute("{absolute_path}")"#))
                 .await
                 .unwrap();
             assert!(result);
@@ -232,8 +239,13 @@ mod tests {
     #[test]
     fn test_relative() {
         Runtime::test_with_script_engine(|script_engine| async move {
+            #[cfg(windows)]
+            let absolute_path = "C:/foo/bar/test.txt";
+            #[cfg(not(windows))]
+            let absolute_path = "/foo/bar/test.txt";
+
             let result = script_engine
-                .eval_async::<bool>(r#"Path.isRelative("/foo/bar/test.txt")"#)
+                .eval_async::<bool>(&format!(r#"Path.isRelative("{absolute_path}")"#))
                 .await
                 .unwrap();
             assert!(!result);

@@ -11,7 +11,7 @@ use std::{
 use color_eyre::Result;
 use derive_more::{Constructor, Deref, Display};
 use enigo::Key;
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::warn;
 use windows::Win32::{
@@ -63,7 +63,8 @@ use crate::{
     types::input::Direction,
 };
 
-static KEYBOARD_INPUT_DISPATCHER: OnceCell<Weak<KeyboardInputDispatcher>> = OnceCell::new();
+static KEYBOARD_INPUT_DISPATCHER: Lazy<Mutex<Weak<KeyboardInputDispatcher>>> =
+    Lazy::new(|| Mutex::new(Weak::new()));
 
 #[derive(Default)]
 pub struct KeyboardHook {}
@@ -106,9 +107,9 @@ impl KeyboardInputDispatcher {
         .await?;
 
         Ok(Arc::new_cyclic(|me| {
-            if KEYBOARD_INPUT_DISPATCHER.set(me.clone()).is_err() {
-                panic!("InputDispatcher should only be instantiated once");
-            }
+            *KEYBOARD_INPUT_DISPATCHER
+                .lock()
+                .unwrap_or_else(|e| e.into_inner()) = me.clone();
 
             Self {
                 keys: Arc::new(TopicWrapper::new(
@@ -273,8 +274,9 @@ unsafe extern "system" fn low_level_keyboard_proc(
     }
 
     let Some(dispatcher) = KEYBOARD_INPUT_DISPATCHER
-        .get()
-        .and_then(|dispatcher| dispatcher.upgrade())
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .upgrade()
     else {
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     };

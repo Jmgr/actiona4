@@ -765,7 +765,10 @@ mod tests {
     use tracing_test::traced_test;
 
     use crate::{
-        core::{js::date::system_time_from_date, test_helpers::random_temp_filename},
+        core::{
+            js::date::system_time_from_date,
+            test_helpers::{js_path, random_temp_filename},
+        },
         runtime::Runtime,
         scripting::Engine,
     };
@@ -780,8 +783,8 @@ mod tests {
 
             script_engine
                 .eval_async::<()>(&format!(
-                    r#"const file = await File.open("{}", {{ read: true, write: true, createNew: true }})"#,
-                    file_path.display()
+                    r#"const file = await File.open({}, {{ read: true, write: true, createNew: true }})"#,
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -857,11 +860,11 @@ mod tests {
             let result = script_engine
                 .eval_async::<String>(&format!(
                     r#"
-                await File.writeText("{}", "{TEXT}");
-                await File.readText("{}")
+                await File.writeText({}, "{TEXT}");
+                await File.readText({})
                 "#,
-                    file_path.display(),
-                    file_path.display()
+                    js_path(&file_path),
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -947,11 +950,11 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                await File.writeBytes("{}", bytes);
-                var result = await File.readBytes("{}");
+                await File.writeBytes({}, bytes);
+                var result = await File.readBytes({});
                 "#,
-                    file_path.display(),
-                    file_path.display()
+                    js_path(&file_path),
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -969,9 +972,9 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                var result = await File.readBytes("{}", 2);
+                var result = await File.readBytes({}, 2);
                 "#,
-                    file_path.display()
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -1275,9 +1278,9 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                var file = await File.open("{}", {{ create: true, write: true }})
+                var file = await File.open({}, {{ create: true, write: true }})
                 "#,
-                    file_path.to_string_lossy()
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -1310,9 +1313,9 @@ mod tests {
             let result = script_engine
                 .eval_async::<bool>(&format!(
                     r#"
-                    await File.exists("{}")
+                    await File.exists({})
                 "#,
-                    file_path.to_string_lossy()
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -1367,11 +1370,11 @@ mod tests {
                 .eval_async::<String>(&format!(
                     r#"
                 await file.writeText("{TEXT}");
-                await File.copy(file.path, "{}");
-                await File.readText("{}")
+                await File.copy(file.path, {});
+                await File.readText({})
                 "#,
-                    file_path.to_string_lossy(),
-                    file_path.to_string_lossy()
+                    js_path(&file_path),
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -1391,11 +1394,11 @@ mod tests {
                 .eval_async::<String>(&format!(
                     r#"
                 await file.writeText("{TEXT}");
-                await File.rename(file.path, "{}");
-                await File.readText("{}")
+                await File.rename(file.path, {});
+                await File.readText({})
                 "#,
-                    file_path.to_string_lossy(),
-                    file_path.to_string_lossy()
+                    js_path(&file_path),
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -1414,9 +1417,9 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                    await File.remove("{}")
+                    await File.remove({})
                 "#,
-                    file_path.to_string_lossy()
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();

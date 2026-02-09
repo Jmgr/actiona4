@@ -71,16 +71,16 @@ mod tests {
 
     use tokio::fs;
 
-    use crate::runtime::Runtime;
+    use crate::{core::test_helpers::js_path, runtime::Runtime};
 
     #[test]
     fn test_exists() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let temp_dir = env::temp_dir();
-            let path = temp_dir.to_string_lossy();
+            let path = js_path(&temp_dir);
 
             let result = script_engine
-                .eval_async::<bool>(&format!(r#"await Filesystem.exists("{path}")"#))
+                .eval_async::<bool>(&format!(r#"await Filesystem.exists({path})"#))
                 .await
                 .unwrap();
             assert!(result);
@@ -102,8 +102,8 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<bool>(&format!(
-                    r#"await Filesystem.isFile("{}")"#,
-                    file_path.to_string_lossy()
+                    r#"await Filesystem.isFile({})"#,
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();
@@ -111,8 +111,8 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<bool>(&format!(
-                    r#"await Filesystem.isFile("{}")"#,
-                    directory_path.to_string_lossy()
+                    r#"await Filesystem.isFile({})"#,
+                    js_path(&directory_path)
                 ))
                 .await
                 .unwrap();
@@ -129,8 +129,8 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<bool>(&format!(
-                    r#"await Filesystem.isDirectory("{}")"#,
-                    directory_path.to_string_lossy()
+                    r#"await Filesystem.isDirectory({})"#,
+                    js_path(&directory_path)
                 ))
                 .await
                 .unwrap();
@@ -138,8 +138,8 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<bool>(&format!(
-                    r#"await Filesystem.isDirectory("{}")"#,
-                    file_path.to_string_lossy()
+                    r#"await Filesystem.isDirectory({})"#,
+                    js_path(&file_path)
                 ))
                 .await
                 .unwrap();

@@ -1477,6 +1477,8 @@ impl<'js> Trace<'js> for JsImage {
 
 #[cfg(test)]
 mod tests {
+    use std::path::{Path, PathBuf};
+
     use rstest::rstest;
     use serial_test::serial;
 
@@ -1495,6 +1497,38 @@ mod tests {
             .collect::<String>()
             .trim_end_matches("_")
             .to_string()
+    }
+
+    fn workspace_tests_dir() -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("tests")
+    }
+
+    fn default_font_path() -> PathBuf {
+        #[cfg(windows)]
+        {
+            PathBuf::from(r"C:\Windows\Fonts\arial.ttf")
+        }
+
+        #[cfg(not(windows))]
+        {
+            PathBuf::from("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+        }
+    }
+
+    /// Set JS globals for image test paths to avoid backslash escaping issues.
+    async fn set_image_test_globals(engine: &crate::scripting::Engine, globals: &[(&str, &Path)]) {
+        engine
+            .with(|ctx| {
+                let g = ctx.globals();
+                for &(name, path) in globals {
+                    g.set(name, path.to_string_lossy().to_string())?;
+                }
+                Ok(())
+            })
+            .await
+            .unwrap();
     }
 
     #[rstest]
@@ -1554,26 +1588,42 @@ mod tests {
     )]
     fn test_generate(#[case] operation: String) {
         Runtime::test_with_script_engine(async move |script_engine| {
+            let tests_dir = workspace_tests_dir();
+            let input_path = tests_dir.join("pear.png");
+            let overlay_path = tests_dir.join("fire.png");
+            let font_path = default_font_path();
+            let file_name = sanitize(&operation);
+            let output_path = std::env::temp_dir().join(format!("actiona_ng_{file_name}.png"));
+
+            set_image_test_globals(
+                &script_engine,
+                &[
+                    ("inputPath", &input_path),
+                    ("overlayPath", &overlay_path),
+                    ("fontPath", &font_path),
+                    ("outputPath", &output_path),
+                ],
+            )
+            .await;
+
             // Load the input image
             script_engine
                 .eval_async::<()>(
-                    r#"var input = await Image.load("../tests/pear.png");
-                    var overlay = await Image.load("../tests/fire.png");
-                    var fontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";"#,
+                    r#"var input = await Image.load(inputPath);
+                    var overlay = await Image.load(overlayPath);"#,
                 )
                 .await
                 .unwrap();
 
             // Run the operation
             script_engine
-                .eval::<()>(&format!("input.{operation}"))
+                .eval_async::<()>(&format!("input.{operation}"))
                 .await
                 .unwrap();
 
             // Save the result
-            let file_name = sanitize(&operation);
             script_engine
-                .eval_async::<()>(&format!(r#"await input.save("test-data/{file_name}.png")"#))
+                .eval_async::<()>(r#"await input.save(outputPath)"#)
                 .await
                 .unwrap();
         })
@@ -1583,11 +1633,24 @@ mod tests {
     #[serial]
     fn test_find_image() {
         Runtime::test_with_script_engine(async move |script_engine| {
+            let tests_dir = workspace_tests_dir();
+            let source_path = tests_dir.join("input.png");
+            let template_path = tests_dir.join("pear.png");
+
+            set_image_test_globals(
+                &script_engine,
+                &[
+                    ("sourcePath", &source_path),
+                    ("templatePath", &template_path),
+                ],
+            )
+            .await;
+
             let result = script_engine
                 .eval_async::<Vec<String>>(
                     r#"
-                    const source = await Image.load("../tests/input.png");
-                    const template = await Image.load("../tests/pear.png");
+                    const source = await Image.load(sourcePath);
+                    const template = await Image.load(templatePath);
 
                     const task = source.findImage(template);
 
@@ -1647,11 +1710,24 @@ mod tests {
     #[serial]
     fn test_find_image_all() {
         Runtime::test_with_script_engine(async move |script_engine| {
+            let tests_dir = workspace_tests_dir();
+            let source_path = tests_dir.join("input.png");
+            let template_path = tests_dir.join("pear.png");
+
+            set_image_test_globals(
+                &script_engine,
+                &[
+                    ("sourcePath", &source_path),
+                    ("templatePath", &template_path),
+                ],
+            )
+            .await;
+
             script_engine
                 .eval_async::<()>(
                     r#"
-                    const source = await Image.load("../tests/input.png");
-                    const template = await Image.load("../tests/pear.png");
+                    const source = await Image.load(sourcePath);
+                    const template = await Image.load(templatePath);
 
                     const task = source.findImageAll(template);
 

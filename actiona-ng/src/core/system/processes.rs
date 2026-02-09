@@ -463,6 +463,7 @@ impl Processes {
                 system
                     .processes()
                     .iter()
+                    .filter(|(pid, _)| pid.as_u32() != 0)
                     .map(|(pid, process)| {
                         let pid = Pid::try_from(*pid)?;
                         let process = process.try_into()?;
@@ -505,6 +506,7 @@ impl Processes {
         system
             .processes()
             .iter()
+            .filter(|(pid, _)| pid.as_u32() != 0)
             .map(|(pid, process)| {
                 let pid = Pid::try_from(*pid)?;
                 let process = process.try_into()?;

@@ -288,7 +288,10 @@ mod tests {
     use tokio::fs;
 
     use crate::{
-        core::{directory::js::JsDirectoryEntry, test_helpers::random_name},
+        core::{
+            directory::js::JsDirectoryEntry,
+            test_helpers::{js_path, random_name},
+        },
         runtime::Runtime,
     };
 
@@ -301,25 +304,26 @@ mod tests {
             let result = script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                await Directory.remove("{}")
+                await Directory.remove({})
                 "#,
-                    file_path.to_string_lossy(),
+                    js_path(&file_path),
                 ))
                 .await;
+            let err = result.unwrap_err().to_string().to_lowercase();
             assert!(
-                result
-                    .unwrap_err()
-                    .to_string()
-                    .contains("No such file or directory")
+                err.contains("no such file or directory")
+                    || err.contains("cannot find the file")
+                    || err.contains("cannot find the path"),
+                "unexpected error: {err}"
             );
 
             // Check that the directory doesn't exist
             let result = script_engine
                 .eval_async::<bool>(&format!(
                     r#"
-                await Filesystem.exists("{}")
+                await Filesystem.exists({})
                 "#,
-                    file_path.to_string_lossy(),
+                    js_path(&file_path),
                 ))
                 .await
                 .unwrap();
@@ -329,9 +333,9 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                await Directory.create("{}")
+                await Directory.create({})
                 "#,
-                    file_path.to_string_lossy(),
+                    js_path(&file_path),
                 ))
                 .await
                 .unwrap();
@@ -340,9 +344,9 @@ mod tests {
             let result = script_engine
                 .eval_async::<bool>(&format!(
                     r#"
-                await Filesystem.exists("{}")
+                await Filesystem.exists({})
                 "#,
-                    file_path.to_string_lossy(),
+                    js_path(&file_path),
                 ))
                 .await
                 .unwrap();
@@ -352,9 +356,9 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                await Directory.remove("{}")
+                await Directory.remove({})
                 "#,
-                    file_path.to_string_lossy(),
+                    js_path(&file_path),
                 ))
                 .await
                 .unwrap();
@@ -378,9 +382,9 @@ mod tests {
             let result = script_engine
                 .eval_async::<Vec<JsDirectoryEntry>>(&format!(
                     r#"
-                await Directory.listEntries("{}")
+                await Directory.listEntries({})
                 "#,
-                    parent_path.to_string_lossy(),
+                    js_path(&parent_path),
                 ))
                 .await
                 .unwrap();
