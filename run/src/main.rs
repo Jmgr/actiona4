@@ -137,7 +137,7 @@ fn main() -> Result<()> {
                 Commands::Repl => {
                     runtime.set_wait_at_end(WaitAtEnd::No);
 
-                    repl(script_engine).await?;
+                    repl(script_engine, runtime.cancellation_token()).await?;
                 }
                 Commands::Init { .. } | Commands::Completions { .. } => {
                     unreachable!("handled before runtime startup")

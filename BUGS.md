@@ -1,2 +1,1 @@
 - run eval "" displays an update check error
-- run repl displays an error for incomplere input (should be silent)

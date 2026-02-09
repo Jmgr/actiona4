@@ -22,6 +22,7 @@ use rustyline::{
     validate::{ValidationContext, ValidationResult, Validator},
 };
 use tokio::{fs, runtime::Handle};
+use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use two_face::re_exports::syntect::{
     easy::HighlightLines,
@@ -270,7 +271,7 @@ fn setup_highlighting() -> (SyntaxSet, Theme, SyntaxReference) {
     (syntax_set, theme.clone(), syntax_reference)
 }
 
-pub async fn repl(script_engine: Engine) -> Result<()> {
+pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) -> Result<()> {
     let (syntax_set, theme, syntax_reference) = setup_highlighting();
 
     let validator = ReplHelper {
@@ -299,6 +300,10 @@ pub async fn repl(script_engine: Engine) -> Result<()> {
     println!("Enter \".help\" to display help.");
 
     loop {
+        if cancellation_token.is_cancelled() {
+            break;
+        }
+
         let readline = repl.readline("≫ ");
         match readline {
             Ok(line) => {
@@ -320,6 +325,10 @@ pub async fn repl(script_engine: Engine) -> Result<()> {
                                 eprintln!("{message}");
                             }
                         }
+                    }
+
+                    if cancellation_token.is_cancelled() {
+                        break;
                     }
 
                     continue;
@@ -351,9 +360,16 @@ pub async fn repl(script_engine: Engine) -> Result<()> {
                         }
                     }
                 }
+
+                if cancellation_token.is_cancelled() {
+                    break;
+                }
             }
             Err(ReadlineError::Interrupted) => {
                 // Ctrl + C
+                if cancellation_token.is_cancelled() {
+                    break;
+                }
                 continue;
             }
             Err(ReadlineError::Eof) => {
