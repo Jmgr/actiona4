@@ -68,13 +68,13 @@ pub type ScreenshotImpl = ScreenshotImplBase<X11Display>;
 
 impl ScreenshotImpl {
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
-        let x11_connection = self.runtime().platform().x11_connection();
+        let x11_connection = self.runtime.platform().x11_connection();
         let data = get_image(x11_connection, rect).await?;
         Image::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
     }
 
     pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
-        let x11_connection = self.runtime().platform().x11_connection();
+        let x11_connection = self.runtime.platform().x11_connection();
         let data = get_image(x11_connection, rect).await?;
         Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
     }

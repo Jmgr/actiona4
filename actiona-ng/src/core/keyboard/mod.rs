@@ -29,7 +29,12 @@ impl Keyboard {
     #[instrument(skip_all)]
     pub fn new(runtime: Arc<Runtime>) -> Result<Self> {
         let enigo = runtime.enigo();
+
+        #[cfg(unix)]
+        let implementation = KeyboardImpl::new(runtime.clone())?;
+        #[cfg(windows)]
         let implementation = KeyboardImpl::default();
+
         Ok(Self {
             runtime,
             enigo,
