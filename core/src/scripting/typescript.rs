@@ -1,15 +1,25 @@
 use color_eyre::{Result, eyre::eyre};
 use swc_common::{
-    FileName, FilePathMapping, GLOBALS, Globals, Mark, SourceMap,
-    errors::{ColorConfig, Handler},
-    source_map::DefaultSourceMapGenConfig,
-    sync::Lrc,
+    FileName, GLOBALS, Globals, Mark, source_map::DefaultSourceMapGenConfig, sync::Lrc,
 };
 use swc_ecma_ast::EsVersion;
 use swc_ecma_codegen::{Emitter, text_writer::JsWriter};
 use swc_ecma_parser::{Parser, StringInput, Syntax, lexer::Lexer};
 use swc_ecma_transforms_base::{fixer::fixer, hygiene::hygiene, resolver};
 use swc_ecma_transforms_typescript::strip;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+#[error("{message}")]
+pub(super) struct EmittedDiagnosticError {
+    message: String,
+}
+
+impl EmittedDiagnosticError {
+    fn new(message: String) -> Self {
+        Self { message }
+    }
+}
 
 pub(crate) struct TsToJs {
     js_code: String,
@@ -19,8 +29,15 @@ pub(crate) struct TsToJs {
 
 impl TsToJs {
     pub fn new(code: &str, filename: &str) -> Result<Self> {
-        let cm = Lrc::new(SourceMap::new(FilePathMapping::empty()));
-        let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
+        Self::new_with_diagnostics(code, filename, true)
+    }
+
+    pub fn new_silent(code: &str, filename: &str) -> Result<Self> {
+        Self::new_with_diagnostics(code, filename, false)
+    }
+
+    fn new_with_diagnostics(code: &str, filename: &str, emit_diagnostics: bool) -> Result<Self> {
+        let (cm, handler) = super::new_tty_handler();
 
         let fm = cm.new_source_file(
             Lrc::new(FileName::Custom(filename.to_string())),
@@ -36,14 +53,22 @@ impl TsToJs {
 
         let mut parser = Parser::new_from(lexer);
 
-        for e in parser.take_errors() {
-            e.into_diagnostic(&handler).emit();
-        }
+        let module = if emit_diagnostics {
+            for e in parser.take_errors() {
+                e.into_diagnostic(&handler).emit();
+            }
 
-        let module = parser
-            .parse_program()
-            .map_err(|e| e.into_diagnostic(&handler).emit())
-            .map_err(|_| eyre!("Module parsing failed"))?;
+            parser.parse_program().map_err(|e| {
+                let message = e.kind().msg().into_owned();
+                e.into_diagnostic(&handler).emit();
+                eyre!(EmittedDiagnosticError::new(message))
+            })?
+        } else {
+            let _ = parser.take_errors();
+            parser
+                .parse_program()
+                .map_err(|e| eyre!("{}", e.kind().msg()))?
+        };
 
         let globals = Globals::default();
         let (code, srcmap) = GLOBALS.set(

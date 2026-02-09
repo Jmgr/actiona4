@@ -6,7 +6,7 @@ use std::{
     sync::Arc,
 };
 
-use color_eyre::{Result, eyre::eyre};
+use color_eyre::{Report, Result, eyre::eyre};
 use derive_where::derive_where;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
@@ -14,6 +14,11 @@ use regex::Regex;
 use rquickjs::{
     AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
     Promise, Value, async_with, context::EvalOptions, markers::ParallelSend,
+};
+use swc_common::{
+    BytePos, FileName, FilePathMapping, SourceMap, Span,
+    errors::{ColorConfig, Handler},
+    sync::Lrc,
 };
 use tracing::instrument;
 
@@ -23,6 +28,57 @@ pub mod callbacks;
 pub mod typescript;
 
 pub type UnhandledException = (String, Vec<CallStackFrame>);
+
+const MAX_STACK_NOTES: usize = 8;
+
+/// Attempts to emit a rich SWC-style diagnostic for a script error.
+///
+/// Returns `true` if the error was handled and emitted, `false` if the caller
+/// should fall back to its own error display.
+#[must_use]
+pub fn try_emit_script_diagnostic(err: &Report, source_code: &str) -> bool {
+    if err
+        .downcast_ref::<typescript::EmittedDiagnosticError>()
+        .is_some()
+    {
+        return true;
+    }
+
+    let Some(runtime_error) = err.downcast_ref::<RuntimeScriptError>() else {
+        return false;
+    };
+
+    let (cm, handler) = new_tty_handler();
+
+    let primary_span = runtime_primary_span(runtime_error, source_code, &cm);
+    let mut diagnostic = if let Some(span) = primary_span {
+        handler.struct_span_err(span, &runtime_error.message)
+    } else {
+        handler.struct_err(&runtime_error.message)
+    };
+
+    let first_note_index = if primary_span.is_some() { 1 } else { 0 };
+    for frame in runtime_error
+        .stack
+        .iter()
+        .skip(first_note_index)
+        .take(MAX_STACK_NOTES)
+    {
+        diagnostic.note(&frame.to_string());
+    }
+    if runtime_error.stack.len() > (first_note_index + MAX_STACK_NOTES) {
+        diagnostic.note("...");
+    }
+
+    diagnostic.emit();
+    true
+}
+
+pub(in crate::scripting) fn new_tty_handler() -> (Lrc<SourceMap>, Handler) {
+    let cm = Lrc::new(SourceMap::new(FilePathMapping::empty()));
+    let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
+    (cm, handler)
+}
 
 #[derive(Clone)]
 #[derive_where(Debug)]
@@ -65,6 +121,155 @@ impl fmt::Display for CallStackFrame {
             )
         }
     }
+}
+
+#[derive(Debug)]
+struct RuntimeScriptError {
+    message: String,
+    stack: Vec<CallStackFrame>,
+}
+
+impl RuntimeScriptError {
+    fn new(message: String, stack: Vec<CallStackFrame>) -> Self {
+        Self { message, stack }
+    }
+}
+
+impl fmt::Display for RuntimeScriptError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.message)?;
+        for frame in &self.stack {
+            write!(f, "\n{frame}")?;
+        }
+        Ok(())
+    }
+}
+
+impl std::error::Error for RuntimeScriptError {}
+
+fn runtime_primary_span(
+    runtime_error: &RuntimeScriptError,
+    source_code: &str,
+    cm: &Lrc<SourceMap>,
+) -> Option<Span> {
+    let frame = runtime_error.stack.first()?;
+    let line_index = usize::try_from(frame.line.checked_sub(1)?).ok()?;
+    let column_index = usize::try_from(frame.col.checked_sub(1)?).ok()?;
+
+    let source_file = cm.new_source_file(
+        Lrc::new(FileName::Custom(frame.file.clone())),
+        source_code.to_string(),
+    );
+
+    let line_start = *source_file.analyze().lines.get(line_index)?;
+    let line = source_file.get_line(line_index)?;
+
+    if let Some((start_byte, end_byte)) =
+        reference_error_identifier_range(&runtime_error.message, &line, frame.col)
+    {
+        let lo = line_start + BytePos(u32::try_from(start_byte).ok()?);
+        let hi = line_start + BytePos(u32::try_from(end_byte).ok()?);
+        return Some(Span::new(lo, hi));
+    }
+
+    let column_byte = line
+        .char_indices()
+        .nth(column_index)
+        .map_or_else(|| line.len(), |(index, _)| index);
+    let column_byte = u32::try_from(column_byte).ok()?;
+    let lo = line_start + BytePos(column_byte);
+
+    Some(Span::new(lo, lo))
+}
+
+fn reference_error_identifier_range(
+    message: &str,
+    line: &str,
+    reported_col: u32,
+) -> Option<(usize, usize)> {
+    let identifier = parse_reference_error_identifier(message)?;
+    let reported_col = usize::try_from(reported_col.checked_sub(1)?).ok()?;
+    find_closest_identifier_range(line, identifier, reported_col)
+}
+
+fn parse_reference_error_identifier(message: &str) -> Option<&str> {
+    let identifier = message
+        .strip_prefix("ReferenceError: ")?
+        .strip_suffix(" is not defined")?
+        .trim();
+    let identifier = strip_matching_quotes(identifier);
+    is_valid_js_identifier(identifier).then_some(identifier)
+}
+
+fn strip_matching_quotes(value: &str) -> &str {
+    match value.as_bytes() {
+        [b'\'' | b'"', .., last] if *last == value.as_bytes()[0] => &value[1..value.len() - 1],
+        _ => value,
+    }
+}
+
+fn find_closest_identifier_range(
+    line: &str,
+    identifier: &str,
+    reported_col: usize,
+) -> Option<(usize, usize)> {
+    let ident_char_len = identifier.chars().count();
+    let mut best_match: Option<(usize, usize, usize)> = None;
+    for (start_byte, _) in line.match_indices(identifier) {
+        let end_byte = start_byte + identifier.len();
+        if !is_identifier_boundary(line, start_byte, end_byte) {
+            continue;
+        }
+
+        let start_col = line[..start_byte].chars().count();
+        let end_col_exclusive = start_col + ident_char_len;
+        let distance = column_distance_to_identifier(reported_col, start_col, end_col_exclusive);
+        let candidate = (distance, start_byte, end_byte);
+
+        if best_match.is_none_or(|current| candidate < current) {
+            best_match = Some(candidate);
+        }
+    }
+
+    best_match.map(|(_, start_byte, end_byte)| (start_byte, end_byte))
+}
+
+fn column_distance_to_identifier(
+    reported_col: usize,
+    start_col: usize,
+    end_col_exclusive: usize,
+) -> usize {
+    if reported_col < start_col {
+        start_col - reported_col
+    } else if reported_col >= end_col_exclusive {
+        reported_col - (end_col_exclusive.saturating_sub(1))
+    } else {
+        0
+    }
+}
+
+fn is_identifier_boundary(line: &str, start_byte: usize, end_byte: usize) -> bool {
+    let prev = line[..start_byte].chars().next_back();
+    let next = line[end_byte..].chars().next();
+    prev.is_none_or(|ch| !is_js_identifier_continue(ch))
+        && next.is_none_or(|ch| !is_js_identifier_continue(ch))
+}
+
+fn is_valid_js_identifier(identifier: &str) -> bool {
+    let mut chars = identifier.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+
+    is_js_identifier_start(first) && chars.all(is_js_identifier_continue)
+}
+
+fn is_js_identifier_start(ch: char) -> bool {
+    ch == '$' || ch == '_' || ch.is_alphabetic()
+}
+
+fn is_js_identifier_continue(ch: char) -> bool {
+    ch == '$' || ch == '_' || ch.is_alphanumeric()
 }
 
 fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
@@ -139,12 +344,12 @@ impl Engine {
     }
 
     #[allow(clippy::significant_drop_tightening)]
-    pub fn ts_to_js(&self, script: &str) -> Result<(u64, String)> {
-        self.prepare_script(script, None)
-    }
-
-    #[allow(clippy::significant_drop_tightening)]
-    pub fn prepare_script(&self, script: &str, filename: Option<&str>) -> Result<(u64, String)> {
+    pub fn prepare_script(
+        &self,
+        script: &str,
+        filename: Option<&str>,
+        silent: bool,
+    ) -> Result<(u64, String)> {
         let mut hasher = DefaultHasher::new();
         script.hash(&mut hasher);
         let hash = hasher.finish();
@@ -169,10 +374,13 @@ impl Engine {
                             .code()
                             .to_string()
                     } else {
-                        entry
-                            .insert(TsToJs::new(script, display_name)?)
-                            .code()
-                            .to_string()
+                        let ts_to_js = if silent {
+                            TsToJs::new_silent(script, display_name)?
+                        } else {
+                            TsToJs::new(script, display_name)?
+                        };
+
+                        entry.insert(ts_to_js).code().to_string()
                     }
                 }
             },
@@ -190,7 +398,7 @@ impl Engine {
     where
         for<'any_js> T: FromJs<'any_js> + Send,
     {
-        let (hash, js_code) = self.prepare_script(script, filename)?;
+        let (hash, js_code) = self.prepare_script(script, filename, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
         let mut options = EvalOptions::default();
@@ -225,7 +433,7 @@ impl Engine {
     where
         for<'any_js> T: FromJs<'any_js> + Send + 'static,
     {
-        let (hash, js_code) = self.prepare_script(script, filename)?;
+        let (hash, js_code) = self.prepare_script(script, filename, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
         async_with!(self.context => |ctx| {
@@ -255,7 +463,7 @@ impl Engine {
     where
         for<'any_js> T: FromJs<'any_js> + Send + 'static,
     {
-        let (hash, js_code) = self.ts_to_js(script)?;
+        let (hash, js_code) = self.prepare_script(script, None, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
         async_with!(self.context => |ctx| {
@@ -332,17 +540,7 @@ impl Engine {
                 CaughtError::Error(err) => Err(eyre!("script error: {err}")),
                 CaughtError::Exception(exception) => {
                     let (message, stack) = Self::process_exception(exception, sourcemaps)?;
-
-                    Err(if stack.is_empty() {
-                        eyre!("{message}")
-                    } else {
-                        let stack_str = stack
-                            .iter()
-                            .map(ToString::to_string)
-                            .collect::<Vec<_>>()
-                            .join("\n");
-                        eyre!("{message}\n{stack_str}")
-                    })
+                    Err(eyre!(RuntimeScriptError::new(message, stack)))
                 }
                 CaughtError::Value(value) => Err(eyre!("script value: {value:?}")),
             },
@@ -365,6 +563,7 @@ impl Engine {
 
 #[cfg(test)]
 mod tests {
+    use swc_common::SourceMapper;
     use tokio::time::Duration;
 
     use super::*;
@@ -742,5 +941,61 @@ await doWork();
             err_msg.contains("async named"),
             "async error should contain message, got: {err_msg}"
         );
+    }
+
+    #[test]
+    fn reference_error_identifier_parsing() {
+        assert_eq!(
+            parse_reference_error_identifier("ReferenceError: mouse2 is not defined"),
+            Some("mouse2")
+        );
+        assert_eq!(
+            parse_reference_error_identifier("ReferenceError: 'mouse2' is not defined"),
+            Some("mouse2")
+        );
+        assert_eq!(
+            parse_reference_error_identifier("TypeError: mouse2 is not defined"),
+            None
+        );
+    }
+
+    #[test]
+    fn closest_identifier_range_uses_nearest_match() {
+        let line = "mouse2 + x + mouse2";
+        let second_start = line
+            .rfind("mouse2")
+            .expect("line should contain a second identifier");
+
+        assert_eq!(
+            find_closest_identifier_range(line, "mouse2", 0),
+            Some((0, 6))
+        );
+        assert_eq!(
+            find_closest_identifier_range(line, "mouse2", second_start),
+            Some((second_start, second_start + 6))
+        );
+    }
+
+    #[test]
+    fn runtime_primary_span_highlights_reference_identifier() {
+        let runtime_error = RuntimeScriptError::new(
+            "ReferenceError: mouse2 is not defined".to_string(),
+            vec![CallStackFrame {
+                function: String::new(),
+                file: "test2.ts".to_string(),
+                line: 1,
+                col: 21,
+            }],
+        );
+        let source = "await windows.findAt(await mouse2.position());";
+
+        let (cm, _) = new_tty_handler();
+        let span = runtime_primary_span(&runtime_error, source, &cm)
+            .expect("runtime span should be produced");
+        let snippet = cm
+            .span_to_snippet(span)
+            .expect("span should be mappable to source snippet");
+
+        assert_eq!(snippet, "mouse2");
     }
 }

@@ -3,7 +3,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use actiona_core::{JsValueToString, scripting::Engine};
+use actiona_core::{
+    JsValueToString,
+    scripting::{self, Engine},
+};
 use clap::{CommandFactory, Parser};
 use color_eyre::{
     Result,
@@ -343,7 +346,9 @@ pub async fn repl(script_engine: Engine) -> Result<()> {
                     }
                     Ok(None) => {}
                     Err(err) => {
-                        eprintln!("{err}");
+                        if !scripting::try_emit_script_diagnostic(&err, &line) {
+                            eprintln!("{err}");
+                        }
                     }
                 }
             }
@@ -371,7 +376,7 @@ pub async fn repl(script_engine: Engine) -> Result<()> {
 }
 
 fn is_syntax_complete<'js>(ctx: &Ctx<'js>, code: &str, script_engine: &Engine) -> bool {
-    let Ok((_, js)) = script_engine.ts_to_js(code) else {
+    let Ok((_, js)) = script_engine.prepare_script(code, None, true) else {
         return false;
     };
     Module::declare(ctx.clone(), "repl_temp", js)

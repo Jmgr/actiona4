@@ -5,6 +5,7 @@ use std::sync::Arc;
 use actiona_core::{
     config::Config,
     runtime::{Runtime, RuntimeOptions, WaitAtEnd},
+    scripting,
 };
 use clap::Parser;
 use color_eyre::{Result, config::HookBuilder, eyre::Context};
@@ -119,14 +120,18 @@ fn main() -> Result<()> {
                         .eval_async_with_filename::<()>(&script, Some(&filename))
                         .await
                     {
-                        eprintln!("Error: {err}");
+                        if !scripting::try_emit_script_diagnostic(&err, &script) {
+                            eprintln!("Error: {err}");
+                        }
                     }
                 }
                 Commands::Eval { code } => {
                     let code = code.join("\n");
 
                     if let Err(err) = script_engine.eval_async::<()>(&code).await {
-                        eprintln!("Error: {err}");
+                        if !scripting::try_emit_script_diagnostic(&err, &code) {
+                            eprintln!("Error: {err}");
+                        }
                     }
                 }
                 Commands::Repl => {
