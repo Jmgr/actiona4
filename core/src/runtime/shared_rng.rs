@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use parking_lot::Mutex;
 use rand::{
-    Rng, RngCore, SeedableRng,
+    Rng, RngExt, SeedableRng,
     distr::{
         Distribution, StandardUniform,
         uniform::{SampleRange, SampleUniform},
@@ -17,7 +17,8 @@ pub struct SharedRng(Arc<Mutex<ChaCha8Rng>>);
 impl Default for SharedRng {
     #[instrument(skip_all)]
     fn default() -> Self {
-        Self(Arc::new(Mutex::new(ChaCha8Rng::from_os_rng())))
+        let mut rng = rand::rng();
+        Self(Arc::new(Mutex::new(ChaCha8Rng::from_rng(&mut rng))))
     }
 }
 
@@ -29,7 +30,8 @@ impl SharedRng {
 
     pub fn reset_seed(&self) {
         let mut guard = self.0.lock();
-        *guard = ChaCha8Rng::from_os_rng();
+        let mut rng = rand::rng();
+        *guard = ChaCha8Rng::from_rng(&mut rng);
     }
 
     #[must_use]
