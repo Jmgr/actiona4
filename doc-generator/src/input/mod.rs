@@ -1,6 +1,6 @@
 use std::mem::take;
 
-use actiona_ng::newtype;
+use actiona_core::newtype;
 use color_eyre::{
     Result,
     eyre::{bail, eyre},

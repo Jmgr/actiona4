@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["actiona-ng", "actiona-ng-cli", "doc-generator", "macros"]
+members = ["core", "run", "doc-generator", "macros"]
 
 [workspace.package]
 version = "0.1.0"

@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: "Actiona-ng",
+  title: "Actiona 4",
   tagline: "Desktop automation since 2005",
   favicon: "img/favicon.ico",
 
@@ -22,8 +22,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "Jmgr/actiona-ng", // Usually your GitHub org/user name.
-  projectName: "actiona-ng", // Usually your repo name.
+  organizationName: "Jmgr", // Usually your GitHub org/user name.
+  projectName: "actiona4", // Usually your repo name.
 
   onBrokenLinks: "throw",
 

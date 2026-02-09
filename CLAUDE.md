@@ -17,15 +17,15 @@ sudo apt install pkg-config libopencv-dev clang libclang-dev libwebkit2gtk-4.1-d
 cargo build
 
 # Run the CLI
-cargo run -p actiona-ng-cli -- run <script.ts>
-cargo run -p actiona-ng-cli -- eval "console.log('hello')"
-cargo run -p actiona-ng-cli -- repl
+cargo run -p run -- run <script.ts>
+cargo run -p run -- eval "console.log('hello')"
+cargo run -p run -- repl
 
 # Run tests (standard tests)
 cargo test
 
 # Run UI tests (custom harness, single-threaded)
-cargo test -p actiona-ng --test ui
+cargo test -p run --test ui
 
 # Format code (requires nightly rustfmt, cargo-derivefmt, cargo-sort)
 cargo make format
@@ -34,19 +34,19 @@ cargo make format
 cargo make lint
 
 # Regenerate the documentation => please run this after every JS API change, and check tests/src/index.d.ts for errors or inconsistencies
-./scripts/generate_doc.sh
+cargo make doc
 ```
 
 ## Architecture
 
 ### Workspace Structure
 
-- **actiona-ng**: Core library containing the runtime, JavaScript bindings, and all automation functionality
-- **actiona-ng-cli**: CLI application with run/eval/repl commands
+- **core**: Core library containing the runtime, JavaScript bindings, and all automation functionality
+- **run**: CLI application with run/eval/repl commands
 - **macros**: Proc macros for JavaScript/serde interop (`FromJsObject`, `IntoSerde`, `FromSerde`)
 - **doc-generator**: Tool for generating documentation from rustdoc JSON
 
-### Core Library (actiona-ng/src)
+### Core Library (core/src)
 
 - **runtime/mod.rs**: Main `Runtime` struct that orchestrates everything. Creates the QuickJS engine, registers all JS classes, manages cancellation tokens and task tracking. `run_with_ui()` starts Tauri + async runtime together.
 - **scripting/**: TypeScript-to-JavaScript transpilation (via SWC), sourcemap handling for error translation, and the `Engine` wrapper around QuickJS's `AsyncRuntime`/`AsyncContext`

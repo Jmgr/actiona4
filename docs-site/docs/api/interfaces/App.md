@@ -54,7 +54,7 @@ console.log(env["PATH"]);
 The path to the running executable.
 
 ```ts
-console.log(app.executablePath); // e.g. "/usr/bin/actiona-ng-cli"
+console.log(app.executablePath); // e.g. "/usr/bin/actiona4-run"
 ```
 
 ***

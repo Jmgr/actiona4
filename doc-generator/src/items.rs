@@ -81,7 +81,7 @@ impl Items {
             .filter_map(|component| component.as_os_str().to_str())
             .collect_vec();
 
-        if let Some(core_index) = segments.iter().position(|segment| *segment == "core")
+        if let Some(core_index) = segments.iter().position(|segment| *segment == "api")
             && let Some(core_child) = segments.get(core_index + 1)
         {
             if *core_child == "js" {

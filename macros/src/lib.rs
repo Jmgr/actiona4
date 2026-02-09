@@ -52,7 +52,7 @@ pub fn derive_from_js_object(input: TokenStream) -> TokenStream {
             fn from_js(ctx: &rquickjs::Ctx<'js>, value: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
                 let mut result = Self::default();
 
-                use crate::core::ResultExt;
+                use crate::api::ResultExt;
                 let object = value
                     .as_object()
                     .or_throw_message(ctx, "Expected an object")?;
