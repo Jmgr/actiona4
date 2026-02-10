@@ -15,6 +15,7 @@ use crate::{
             storage::{Disk, DiskUsage, IoStats},
         },
     },
+    types::display::display_with_type,
 };
 
 /// Storage devices and disk usage information.
@@ -86,7 +87,7 @@ impl JsStorage {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Storage", &self.inner)
     }
 }
 
@@ -207,7 +208,7 @@ impl JsDisk {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Disk", &self.inner)
     }
 }
 
@@ -308,7 +309,7 @@ impl JsIoStats {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("IoStats", &self.inner)
     }
 }
 
@@ -370,6 +371,6 @@ impl JsDiskUsage {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("DiskUsage", &self.inner)
     }
 }

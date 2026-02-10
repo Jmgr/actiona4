@@ -8,6 +8,7 @@ use crate::{
         js::classes::{HostClass, register_host_class},
         system::hardware::{Component, Hardware, Motherboard},
     },
+    types::display::display_with_type,
 };
 
 /// Hardware information.
@@ -150,7 +151,7 @@ impl JsHardware {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Hardware", &self.inner)
     }
 }
 
@@ -223,7 +224,7 @@ impl JsMotherboard {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Motherboard", &self.inner)
     }
 }
 
@@ -299,6 +300,6 @@ impl JsComponent {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Component", &self.inner)
     }
 }

@@ -17,6 +17,7 @@ use crate::{
             processes::{Process, Processes, Status},
         },
     },
+    types::display::display_with_type,
 };
 
 /// Process listing and inspection.
@@ -88,7 +89,7 @@ impl JsProcesses {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Processes", &self.inner)
     }
 }
 
@@ -344,7 +345,7 @@ impl JsProcess {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Process", &self.inner)
     }
 }
 

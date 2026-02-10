@@ -14,6 +14,7 @@ use crate::{
     IntoJsResult,
     api::{ResultExt, js::classes::ValueClass, point::try_point},
     runtime::WithUserData,
+    types::display::display_with_type,
 };
 
 pub struct JsPointLike(pub super::Point);
@@ -69,7 +70,7 @@ impl<'js> FromParam<'js> for JsPointLike {
 /// const a = new Point(1, 2);
 /// const b = new Point(4, 6);
 /// println(a.distanceTo(b)); // 5
-/// println(a.add(b).toString()); // "(5, 8)"
+/// println(a.add(b).toString()); // "Point(5, 8)"
 /// ```
 ///
 /// @prop x: number // X coordinate
@@ -217,7 +218,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const sum = new Point(1, 2).add(new Point(3, 4));
-    /// println(sum.toString()); // "(4, 6)"
+    /// println(sum.toString()); // "Point(4, 6)"
     /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
@@ -228,7 +229,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const diff = new Point(5, 7).subtract(new Point(2, 3));
-    /// println(diff.toString()); // "(3, 4)"
+    /// println(diff.toString()); // "Point(3, 4)"
     /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
@@ -239,7 +240,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const p = new Point(3, 4).scaled(2);
-    /// println(p.toString()); // "(6, 8)"
+    /// println(p.toString()); // "Point(6, 8)"
     /// ```
     pub fn scaled(&self, factor: f64) -> Result<Self> {
         let result = self.inner.scaled(factor).unwrap(); // TODO
@@ -250,7 +251,7 @@ impl JsPoint {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        format!("({}, {})", self.inner.x, self.inner.y)
+        display_with_type("Point", format!("{}, {}", self.inner.x, self.inner.y))
     }
 
     /// Clones this Point.

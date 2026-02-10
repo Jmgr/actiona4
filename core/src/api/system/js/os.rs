@@ -10,7 +10,7 @@ use crate::{
         },
         system::os::{Group, Os, User},
     },
-    types::display::{DisplayFields, display_list},
+    types::display::{DisplayFields, display_list, display_with_type},
 };
 
 /// OS-level information.
@@ -178,7 +178,7 @@ impl JsOs {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Os", &self.inner)
     }
 }
 
@@ -281,13 +281,16 @@ impl JsUser {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        DisplayFields::default()
-            .display("name", self.inner.name())
-            .display_if_some("group_id", &self.inner.group_id())
-            .display_if_some("group_name", &self.group_name())
-            .display("groups", display_list(self.inner.groups()))
-            .display("group_names", display_list(self.group_names()))
-            .finish_as_string()
+        display_with_type(
+            "User",
+            DisplayFields::default()
+                .display("name", self.inner.name())
+                .display_if_some("group_id", &self.inner.group_id())
+                .display_if_some("group_name", &self.group_name())
+                .display("groups", display_list(self.inner.groups()))
+                .display("group_names", display_list(self.group_names()))
+                .finish_as_string(),
+        )
     }
 }
 
@@ -342,6 +345,6 @@ impl JsGroup {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Group", &self.inner)
     }
 }

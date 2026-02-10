@@ -7,6 +7,17 @@ pub struct DisplayFields {
     not_first: bool,
 }
 
+#[must_use]
+pub fn display_with_type(type_name: &str, value: impl Display) -> String {
+    let value = value.to_string();
+
+    if value.starts_with('(') && value.ends_with(')') {
+        format!("{type_name}{value}")
+    } else {
+        format!("{type_name}({value})")
+    }
+}
+
 impl DisplayFields {
     fn maybe_space(&mut self) {
         if self.not_first {

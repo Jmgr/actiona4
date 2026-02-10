@@ -11,7 +11,10 @@ use rquickjs::{
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
 
-use crate::api::{ResultExt, js::classes::ValueClass};
+use crate::{
+    api::{ResultExt, js::classes::ValueClass},
+    types::display::display_with_type,
+};
 
 pub struct JsColorLike(pub super::Color);
 
@@ -79,7 +82,7 @@ impl<'js> FromParam<'js> for JsColorLike {
 /// // Read and modify channels
 /// const c = new Color(10, 20, 30);
 /// c.r = 100;
-/// println(c.toString()); // "(100, 20, 30, 255)"
+/// println(c.toString()); // "Color(100, 20, 30, 255)"
 ///
 /// // Compare colors
 /// Color.Red.equals(new Color(255, 0, 0)); // true
@@ -498,16 +501,19 @@ impl JsColor {
         *self == other
     }
 
-    /// Returns a string representation of the color: `"(r, g, b, a)"`.
+    /// Returns a string representation of the color: `"Color(r, g, b, a)"`.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        format!(
-            "({}, {}, {}, {})",
-            self.get_r(),
-            self.get_g(),
-            self.get_b(),
-            self.get_a()
+        display_with_type(
+            "Color",
+            format!(
+                "{}, {}, {}, {}",
+                self.get_r(),
+                self.get_g(),
+                self.get_b(),
+                self.get_a()
+            ),
         )
     }
 
@@ -650,7 +656,7 @@ mod tests {
             assert!(!result);
 
             let result = script_engine.eval::<String>("c.toString()").await.unwrap();
-            assert_eq!(result, "(255, 10, 11, 12)");
+            assert_eq!(result, "Color(255, 10, 11, 12)");
 
             let result = script_engine
                 .eval::<bool>("c.clone().equals(c)")
@@ -675,7 +681,7 @@ mod tests {
         color.set_a(8);
 
         assert!(color.equals(JsColor::new(5, 6, 7, 8)));
-        assert_eq!(color.to_string_js(), "(5, 6, 7, 8)");
+        assert_eq!(color.to_string_js(), "Color(5, 6, 7, 8)");
         assert_eq!(color.clone_js(), color);
     }
 

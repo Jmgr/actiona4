@@ -4,7 +4,10 @@ use rquickjs::{
     class::{Trace, Tracer},
 };
 
-use crate::api::{js::classes::SingletonClass, standardpaths::StandardPaths};
+use crate::{
+    api::{js::classes::SingletonClass, standardpaths::StandardPaths},
+    types::display::display_with_type,
+};
 
 /// Platform-specific standard directory paths.
 ///
@@ -127,7 +130,7 @@ impl JsStandardPaths {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("StandardPaths", &self.inner)
     }
 }
 

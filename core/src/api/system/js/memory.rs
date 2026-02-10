@@ -6,6 +6,7 @@ use crate::{
         js::classes::{HostClass, register_host_class},
         system::memory::{CGroupLimits, Memory, MemoryUsage},
     },
+    types::display::display_with_type,
 };
 
 /// Memory metrics.
@@ -74,7 +75,7 @@ impl JsMemory {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Memory", &self.inner)
     }
 }
 
@@ -144,7 +145,7 @@ impl JsMemoryUsage {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("MemoryUsage", &self.inner)
     }
 }
 
@@ -218,6 +219,6 @@ impl JsCGroupLimits {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("CGroupLimits", &self.inner)
     }
 }

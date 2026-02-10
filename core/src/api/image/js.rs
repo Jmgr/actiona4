@@ -33,6 +33,7 @@ use crate::{
     },
     error::CommonError,
     runtime::WithUserData,
+    types::display::display_with_type,
 };
 
 #[derive(
@@ -573,9 +574,12 @@ impl JsMatch {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        format!(
-            "({}, {}, {})",
-            self.inner.position, self.inner.rect, self.inner.score
+        display_with_type(
+            "Match",
+            format!(
+                "{}, {}, {}",
+                self.inner.position, self.inner.rect, self.inner.score
+            ),
         )
     }
 
@@ -861,11 +865,11 @@ impl JsImage {
         *self == other
     }
 
-    /// Returns a string representation of this image (width, height).
+    /// Returns a string representation of this image as `Image(width, height)`.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        format!("({}, {})", self.width(), self.height())
+        display_with_type("Image", format!("{}, {}", self.width(), self.height()))
     }
 
     /// Clones this image.

@@ -14,6 +14,7 @@ use rquickjs::{
 use crate::{
     IntoJsResult,
     api::{ResultExt, js::classes::ValueClass, size::try_size},
+    types::display::display_with_type,
 };
 
 pub struct JsSizeLike(pub super::Size);
@@ -68,8 +69,8 @@ impl<'js> FromParam<'js> for JsSizeLike {
 /// ```ts
 /// const a = new Size(10, 20);
 /// const b = new Size(5, 10);
-/// println(a.add(b).toString()); // "(15, 30)"
-/// println(a.scale(2).toString()); // "(20, 40)"
+/// println(a.add(b).toString()); // "Size(15, 30)"
+/// println(a.scale(2).toString()); // "Size(20, 40)"
 /// ```
 ///
 /// @prop width: number // width
@@ -156,7 +157,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const sum = new Size(10, 20).add(new Size(5, 10));
-    /// println(sum.toString()); // "(15, 30)"
+    /// println(sum.toString()); // "Size(15, 30)"
     /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
@@ -167,7 +168,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const diff = new Size(100, 50).subtract(new Size(30, 20));
-    /// println(diff.toString()); // "(70, 30)"
+    /// println(diff.toString()); // "Size(70, 30)"
     /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
@@ -178,7 +179,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const s = new Size(10, 20).scale(3);
-    /// println(s.toString()); // "(30, 60)"
+    /// println(s.toString()); // "Size(30, 60)"
     /// ```
     pub fn scale<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
         self.inner
@@ -191,7 +192,10 @@ impl JsSize {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        format!("({}, {})", self.inner.width, self.inner.height)
+        display_with_type(
+            "Size",
+            format!("{}, {}", self.inner.width, self.inner.height),
+        )
     }
 
     /// Clones this Size.

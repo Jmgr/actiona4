@@ -18,7 +18,7 @@ use crate::{
         size::js::{JsSize, JsSizeLike},
     },
     runtime::Runtime,
-    types::display::DisplayFields,
+    types::display::{DisplayFields, display_with_type},
 };
 
 impl<T> IntoJsResult<T> for super::Result<T> {
@@ -447,15 +447,15 @@ impl JsWindowHandle {
             .is_visible(self.id)
             .map_or_else(|_| "?".to_string(), |value| value.to_string());
 
-        format!(
-            "WindowHandle{}",
+        display_with_type(
+            "WindowHandle",
             DisplayFields::default()
                 .display("id", id)
                 .display("title", title)
                 .display("className", class_name)
                 .display("processId", process_id)
                 .display("visible", visible)
-                .finish_as_string()
+                .finish_as_string(),
         )
     }
 }

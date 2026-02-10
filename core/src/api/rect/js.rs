@@ -19,6 +19,7 @@ use crate::{
         point::{js::JsPoint, point, try_point},
         size::{js::JsSize, size, try_size},
     },
+    types::display::display_with_type,
 };
 
 pub struct JsRectLike(pub super::Rect);
@@ -242,12 +243,15 @@ impl JsRect {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        format!(
-            "({}, {}, {}, {})",
-            self.inner.top_left.x,
-            self.inner.top_left.y,
-            self.inner.size.width,
-            self.inner.size.height
+        display_with_type(
+            "Rect",
+            format!(
+                "{}, {}, {}, {}",
+                self.inner.top_left.x,
+                self.inner.top_left.y,
+                self.inner.size.width,
+                self.inner.size.height
+            ),
         )
     }
 

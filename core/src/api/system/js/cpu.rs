@@ -7,6 +7,7 @@ use crate::{
         js::classes::HostClass,
         system::cpu::{Cpu, CpuCore},
     },
+    types::display::display_with_type,
 };
 
 /// CPU metrics and topology.
@@ -108,7 +109,7 @@ impl JsCpu {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Cpu", &self.inner)
     }
 }
 

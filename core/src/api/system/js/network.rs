@@ -8,6 +8,7 @@ use crate::{
         js::classes::{HostClass, register_host_class},
         system::network::{Counters, Network, NetworkInterface, Traffic},
     },
+    types::display::display_with_type,
 };
 
 /// Network information and interfaces.
@@ -89,7 +90,7 @@ impl JsNetwork {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Network", &self.inner)
     }
 }
 
@@ -183,7 +184,7 @@ impl JsNetworkInterface {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("NetworkInterface", &self.inner)
     }
 }
 
@@ -244,7 +245,7 @@ impl JsCounters {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Counters", &self.inner)
     }
 }
 
@@ -306,6 +307,6 @@ impl JsTraffic {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner.to_string()
+        display_with_type("Traffic", &self.inner)
     }
 }

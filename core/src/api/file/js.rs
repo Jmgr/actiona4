@@ -27,6 +27,7 @@ use crate::{
     },
     error::CommonError,
     runtime::WithUserData,
+    types::display::display_with_type,
 };
 
 #[derive(Clone, Debug, JsLifetime)]
@@ -745,9 +746,10 @@ impl JsFile {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        self.inner
-            .as_ref()
-            .map_or_else(|| "()".to_string(), |file| format!("(path: {})", file.path))
+        self.inner.as_ref().map_or_else(
+            || display_with_type("File", ""),
+            |file| display_with_type("File", format!("path: {}", file.path)),
+        )
     }
 }
 
