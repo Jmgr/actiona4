@@ -77,7 +77,7 @@ impl JsMessageBoxOptions {
 ///   icon: MessageBoxIcon.Warning,
 /// });
 /// if (result === MessageBoxResult.Yes) {
-///   console.log("Confirmed");
+///   println("Confirmed");
 /// }
 /// ```
 ///

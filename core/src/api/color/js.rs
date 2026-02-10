@@ -79,7 +79,7 @@ impl<'js> FromParam<'js> for JsColorLike {
 /// // Read and modify channels
 /// const c = new Color(10, 20, 30);
 /// c.r = 100;
-/// console.log(c.toString()); // "(100, 20, 30, 255)"
+/// println(c.toString()); // "(100, 20, 30, 255)"
 ///
 /// // Compare colors
 /// Color.Red.equals(new Color(255, 0, 0)); // true

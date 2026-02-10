@@ -2272,7 +2272,7 @@ mod tests {
                     r#"
                     while(true) {
                         await sleep(1000);
-                        console.printLn("hello", await keyboard.isKeyPressed(Key.A));
+                        console.println("hello", await keyboard.isKeyPressed(Key.A));
                     }
                 "#,
                 )
@@ -2290,8 +2290,8 @@ mod tests {
                 .eval_async::<()>(
                     r#"
                     await keyboard.waitForKeys(["a", "z"]);
-                    //console.printLn("key", key);
-                    console.printLn("END");
+                    //console.println("key", key);
+                    console.println("END");
                 "#,
                 )
                 .await;

@@ -37,12 +37,12 @@ pub mod storage;
 /// const cpuUsage = await system.cpu.usage();
 /// const memory = await system.memory.usage();
 ///
-/// console.log(formatPercent(cpuUsage), formatBytes(memory.used));
+/// println(formatPercent(cpuUsage), formatBytes(memory.used));
 /// ```
 ///
 /// ```ts
 /// const interfaces = await system.network.listInterfaces();
-/// console.log(`interfaces: ${interfaces.length}`);
+/// println(`interfaces: ${interfaces.length}`);
 /// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]

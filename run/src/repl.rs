@@ -169,13 +169,7 @@ impl Validator for ReplHelper {
             let script_engine = self.script_engine.clone();
             Handle::current().block_on(async move {
                 self.script_engine
-                    .with(move |ctx| {
-                        Ok(if is_syntax_complete(&ctx, input, &script_engine) {
-                            ValidationResult::Valid(None)
-                        } else {
-                            ValidationResult::Invalid(None)
-                        })
-                    })
+                    .with(move |ctx| Ok(validate_repl_input(&ctx, input, &script_engine)))
                     .await
             })
         });
@@ -353,7 +347,11 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                     Ok(Some(value)) => {
                         println!("{value}");
                     }
-                    Ok(None) => {}
+                    Ok(None) => {
+                        if likely_print_without_newline(&line) {
+                            println!();
+                        }
+                    }
                     Err(err) => {
                         if !scripting::try_emit_script_diagnostic(&err, &line) {
                             eprintln!("{err}");
@@ -370,6 +368,7 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                 if cancellation_token.is_cancelled() {
                     break;
                 }
+                println!("(hint: press Ctrl+D to exit)");
                 continue;
             }
             Err(ReadlineError::Eof) => {
@@ -391,11 +390,105 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
     Ok(())
 }
 
-fn is_syntax_complete<'js>(ctx: &Ctx<'js>, code: &str, script_engine: &Engine) -> bool {
-    let Ok((_, js)) = script_engine.prepare_script(code, None, true) else {
-        return false;
+fn likely_print_without_newline(line: &str) -> bool {
+    // Best-effort heuristic on source text to emit a trailing newline after `print(...)` calls
+    // so the next REPL prompt starts on its own line.
+    // Known limitations:
+    //  - False positives for identifiers ending in "print", e.g. `myprint(...)`.
+    //  - False negatives for indirect calls, e.g. `let p = print; p(...)`.
+    //  - Does not parse strings/comments, so `"print("` would match.
+    if line.contains("console.print(") {
+        return true;
+    }
+
+    line.match_indices("print(").any(|(idx, _)| {
+        line[..idx]
+            .chars()
+            .next_back()
+            .is_none_or(|c| !(c.is_ascii_alphanumeric() || c == '_' || c == '$'))
+    })
+}
+
+fn validate_repl_input<'js>(
+    ctx: &Ctx<'js>,
+    code: &str,
+    script_engine: &Engine,
+) -> ValidationResult {
+    let (_, js) = match script_engine.prepare_script(code, None, true) {
+        Ok(compiled) => compiled,
+        Err(err) => {
+            return if is_likely_incomplete(code, &err.to_string()) {
+                ValidationResult::Incomplete
+            } else {
+                // Let eval path report syntax/runtime errors to avoid blocking Enter.
+                ValidationResult::Valid(None)
+            };
+        }
     };
-    Module::declare(ctx.clone(), "repl_temp", js)
-        .catch(ctx)
-        .is_ok()
+
+    match Module::declare(ctx.clone(), "repl_temp", js).catch(ctx) {
+        Ok(_) => ValidationResult::Valid(None),
+        Err(err) => {
+            let message = err.to_string();
+            if is_likely_incomplete(code, &message) {
+                ValidationResult::Incomplete
+            } else {
+                // Let eval path report syntax/runtime errors to avoid blocking Enter.
+                ValidationResult::Valid(None)
+            }
+        }
+    }
+}
+
+fn is_likely_incomplete(code: &str, message: &str) -> bool {
+    let message_lower = message.to_ascii_lowercase();
+    if message_lower.contains("<eof>")
+        || message_lower.contains("unexpected end")
+        || message_lower.contains("unterminated")
+        || message_lower.contains("unclosed")
+    {
+        return true;
+    }
+
+    // Count unmatched brackets, skipping those inside string literals and comments.
+    let mut balance = 0_i32;
+    let mut chars = code.chars().peekable();
+    while let Some(ch) = chars.next() {
+        match ch {
+            // Skip string literals
+            '\'' | '"' | '`' => {
+                let quote = ch;
+                while let Some(c) = chars.next() {
+                    if c == '\\' {
+                        chars.next(); // skip escaped character
+                    } else if c == quote {
+                        break;
+                    }
+                }
+            }
+            // Skip single-line comments
+            '/' if chars.peek() == Some(&'/') => {
+                for c in chars.by_ref() {
+                    if c == '\n' {
+                        break;
+                    }
+                }
+            }
+            // Skip block comments
+            '/' if chars.peek() == Some(&'*') => {
+                chars.next(); // consume '*'
+                while let Some(c) = chars.next() {
+                    if c == '*' && chars.peek() == Some(&'/') {
+                        chars.next();
+                        break;
+                    }
+                }
+            }
+            '(' | '[' | '{' => balance += 1,
+            ')' | ']' | '}' => balance -= 1,
+            _ => {}
+        }
+    }
+
+    balance > 0
 }

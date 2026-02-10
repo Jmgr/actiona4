@@ -16,11 +16,11 @@ use crate::{
 /// OS-level information.
 ///
 /// ```ts
-/// console.log(system.os.name, system.os.version, system.os.kernelVersion);
+/// println(system.os.name, system.os.version, system.os.kernelVersion);
 ///
 /// const users = await system.os.listUsers();
 /// const groups = await system.os.listGroups();
-/// console.log(users.length, groups.length);
+/// println(users.length, groups.length);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Os")]
@@ -188,7 +188,7 @@ impl JsOs {
 /// const users = await system.os.listUsers();
 /// const user = users[0];
 /// if (user) {
-///   console.log(user.id, user.name, user.groupName);
+///   println(user.id, user.name, user.groupName);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -297,7 +297,7 @@ impl JsUser {
 /// const groups = await system.os.listGroups();
 /// const group = groups[0];
 /// if (group) {
-///   console.log(group.id, group.name);
+///   println(group.id, group.name);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]

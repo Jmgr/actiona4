@@ -524,8 +524,8 @@ impl JsFindImageOptions {
 /// const template = await Image.load("button.png");
 /// const match = await source.findImage(template);
 /// if (match) {
-///   console.log(`Found at ${match.position} with score ${match.score}`);
-///   console.log(`Bounding rect: ${match.rect}`);
+///   println(`Found at ${match.position} with score ${match.score}`);
+///   println(`Bounding rect: ${match.rect}`);
 /// }
 /// ```
 ///
@@ -610,7 +610,7 @@ impl From<super::find_image::Match> for JsMatch {
 /// const task = source.findImage(template);
 /// for await (const progress of task) {
 ///   if (progress.stage === FindImageStage.Matching) {
-///     console.log(`Matching: ${formatPercent(progress.percent)}`);
+///     println(`Matching: ${formatPercent(progress.percent)}`);
 ///   }
 /// }
 /// ```
@@ -660,7 +660,7 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 /// ```ts
 /// const task = source.findImage(template);
 /// for await (const progress of task) {
-///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 ///   if (progress.finished) break;
 /// }
 /// const result = await task;
@@ -748,7 +748,7 @@ impl JsFindImageProgress {
 /// const button = await Image.load("button.png");
 /// const match = await screen.findImage(button, { matchThreshold: 0.9 });
 /// if (match) {
-///   console.log(`Button found at ${match.position}`);
+///   println(`Button found at ${match.position}`);
 /// }
 /// ```
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
@@ -1336,7 +1336,7 @@ impl JsImage {
     /// ```ts
     /// const match = await source.findImage(template);
     /// if (match) {
-    ///   console.log(`Found at ${match.position} with score ${match.score}`);
+    ///   println(`Found at ${match.position} with score ${match.score}`);
     /// }
     /// ```
     ///
@@ -1344,7 +1344,7 @@ impl JsImage {
     /// // Track progress while searching
     /// const task = source.findImage(template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -1393,7 +1393,7 @@ impl JsImage {
     /// ```ts
     /// const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
     /// for (const match of matches) {
-    ///   console.log(`Found at ${match.position}`);
+    ///   println(`Found at ${match.position}`);
     /// }
     /// ```
     ///
@@ -1401,7 +1401,7 @@ impl JsImage {
     /// // Track progress while searching
     /// const task = source.findImageAll(template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```

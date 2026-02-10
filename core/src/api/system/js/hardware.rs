@@ -17,7 +17,7 @@ use crate::{
 /// const board = hw.motherboard;
 /// const components = await hw.listComponents();
 ///
-/// console.log(hw.vendorName, board.name, components.length);
+/// println(hw.vendorName, board.name, components.length);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Hardware")]
@@ -158,7 +158,7 @@ impl JsHardware {
 ///
 /// ```ts
 /// const board = system.hardware.motherboard;
-/// console.log(board.vendorName, board.name, board.version);
+/// println(board.vendorName, board.name, board.version);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Motherboard")]
@@ -233,7 +233,7 @@ impl JsMotherboard {
 /// const components = await system.hardware.listComponents();
 /// const component = components[0];
 /// if (component) {
-///   console.log(component.label, component.temperature);
+///   println(component.label, component.temperature);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]

@@ -125,7 +125,7 @@ mod tests {
             script_engine
                 .eval_async::<()>(
                     r#"
-                    console.printLn("time: " + Date.now());
+                    console.println("time: " + Date.now());
 
                 //hotstrings.add("time", async () => "" + Date.now());
                 //hotstrings.add("time", "1762879038878");

@@ -188,7 +188,7 @@ impl JsAudio {
 ///
 /// ```ts
 /// const sound = audio.playFile("music.mp3");
-/// console.log(sound.duration);  // duration in seconds
+/// println(sound.duration);  // duration in seconds
 /// sound.volume = 0.5;
 /// sound.playbackRate = 1.5;
 /// sound.pause();
@@ -283,7 +283,7 @@ impl JsPlayingSound {
     /// ```ts
     /// const sound = audio.playFile("music.mp3");
     /// await sound.finished;
-    /// console.log("Sound finished!");
+    /// println("Sound finished!");
     /// ```
     ///
     /// @get

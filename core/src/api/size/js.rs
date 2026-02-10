@@ -68,8 +68,8 @@ impl<'js> FromParam<'js> for JsSizeLike {
 /// ```ts
 /// const a = new Size(10, 20);
 /// const b = new Size(5, 10);
-/// console.log(a.add(b).toString()); // "(15, 30)"
-/// console.log(a.scale(2).toString()); // "(20, 40)"
+/// println(a.add(b).toString()); // "(15, 30)"
+/// println(a.scale(2).toString()); // "(20, 40)"
 /// ```
 ///
 /// @prop width: number // width
@@ -133,7 +133,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const s = new Size(100, 50);
-    /// console.log(s.toJson()); // '{"width":100,"height":50}'
+    /// println(s.toJson()); // '{"width":100,"height":50}'
     /// ```
     #[must_use]
     pub fn to_json(&self) -> String {
@@ -145,7 +145,7 @@ impl JsSize {
     /// ```ts
     /// const a = new Size(10, 20);
     /// const b = new Size(10, 20);
-    /// console.log(a.equals(b)); // true
+    /// println(a.equals(b)); // true
     /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
@@ -156,7 +156,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const sum = new Size(10, 20).add(new Size(5, 10));
-    /// console.log(sum.toString()); // "(15, 30)"
+    /// println(sum.toString()); // "(15, 30)"
     /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
@@ -167,7 +167,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const diff = new Size(100, 50).subtract(new Size(30, 20));
-    /// console.log(diff.toString()); // "(70, 30)"
+    /// println(diff.toString()); // "(70, 30)"
     /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
@@ -178,7 +178,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const s = new Size(10, 20).scale(3);
-    /// console.log(s.toString()); // "(30, 60)"
+    /// println(s.toString()); // "(30, 60)"
     /// ```
     pub fn scale<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
         self.inner

@@ -57,7 +57,7 @@ impl JsConcurrency {
     ///     sleep(2000),
     ///   ]);
     /// } catch (e) {
-    ///   console.printLn(e); // Error: Failed quickly
+    ///   console.println(e); // Error: Failed quickly
     /// }
     /// ```
     ///

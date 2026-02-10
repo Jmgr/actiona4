@@ -42,12 +42,12 @@ impl<'js> Trace<'js> for super::Screenshot {
 ///
 /// ```ts
 /// const image = await screenshot.captureDisplay(0);
-/// console.log(image.size().toString());
+/// println(image.size().toString());
 /// ```
 ///
 /// ```ts
 /// const pixel = await screenshot.capturePixel(100, 100);
-/// console.log(pixel.toString());
+/// println(pixel.toString());
 /// ```
 ///
 /// @singleton
@@ -100,7 +100,7 @@ impl JsScreenshot {
     ///
     /// ```ts
     /// const color = await screenshot.capturePixel(100, 200);
-    /// console.log(color.toString());
+    /// println(color.toString());
     /// ```
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         Ok(self
@@ -120,7 +120,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -156,7 +156,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```
@@ -192,7 +192,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnDisplay(0, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -227,7 +227,7 @@ impl JsScreenshot {
     /// ```ts
     /// const task = screenshot.findImageOnDisplayAll(0, template);
     /// for await (const progress of task) {
-    ///   console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```

@@ -274,7 +274,7 @@ impl JsWebOptions {
 /// ```ts
 /// const task = web.download("https://example.com/file.bin");
 /// for await (const progress of task) {
-///   console.log(
+///   println(
 ///     formatBytes(progress.current),
 ///     formatBytes(progress.total),
 ///     progress.finished,
@@ -369,7 +369,7 @@ impl JsWebProgress {
 ///
 /// ```ts
 /// const image = await web.downloadImage("https://example.com/photo.png");
-/// console.log(image.size().toString());
+/// println(image.size().toString());
 /// ```
 ///
 /// @singleton
@@ -421,7 +421,7 @@ impl JsWeb {
     /// ```ts
     /// const task = web.download("https://example.com/file.bin");
     /// for await (const progress of task) {
-    ///   console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+    ///   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
     /// }
     /// const bytes = await task;
     /// ```
@@ -460,7 +460,7 @@ impl JsWeb {
     /// ```ts
     /// const task = web.downloadText("https://example.com/data.json");
     /// for await (const progress of task) {
-    ///   console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+    ///   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
     /// }
     /// const text = await task;
     /// ```
@@ -498,7 +498,7 @@ impl JsWeb {
     /// ```ts
     /// const task = web.downloadImage("https://example.com/photo.png");
     /// for await (const progress of task) {
-    ///   console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+    ///   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
     /// }
     /// const image = await task;
     /// ```
@@ -537,7 +537,7 @@ impl JsWeb {
     /// ```ts
     /// const task = web.downloadFile("https://example.com/file.zip", "/tmp");
     /// for await (const progress of task) {
-    ///   console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+    ///   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
     /// }
     /// const filePath = await task;
     /// ```

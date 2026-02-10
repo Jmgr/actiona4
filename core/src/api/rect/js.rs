@@ -87,7 +87,7 @@ impl<'js> FromParam<'js> for JsRectLike {
 /// ```ts
 /// const a = new Rect(0, 0, 100, 100);
 /// const b = new Rect(50, 50, 100, 100);
-/// console.log(a.intersects(b)); // true
+/// println(a.intersects(b)); // true
 /// const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 /// ```
 ///
@@ -219,7 +219,7 @@ impl JsRect {
     /// ```ts
     /// const a = new Rect(0, 0, 10, 10);
     /// const b = new Rect(0, 0, 10, 10);
-    /// console.log(a.equals(b)); // true
+    /// println(a.equals(b)); // true
     /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
@@ -230,8 +230,8 @@ impl JsRect {
     ///
     /// ```ts
     /// const r = new Rect(0, 0, 100, 100);
-    /// console.log(r.contains(new Point(50, 50)));  // true
-    /// console.log(r.contains(new Point(150, 50))); // false
+    /// println(r.contains(new Point(50, 50)));  // true
+    /// println(r.contains(new Point(150, 50))); // false
     /// ```
     #[must_use]
     pub fn contains(&self, point: JsPoint) -> bool {
@@ -268,7 +268,7 @@ impl JsRect {
     /// ```ts
     /// const a = new Rect(0, 0, 100, 100);
     /// const b = new Rect(50, 50, 100, 100);
-    /// console.log(a.intersects(b)); // true
+    /// println(a.intersects(b)); // true
     /// ```
     #[must_use]
     pub fn intersects(&self, other: Self) -> bool {

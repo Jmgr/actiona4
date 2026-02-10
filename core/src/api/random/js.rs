@@ -25,7 +25,7 @@ use crate::{
 ///
 /// ```ts
 /// random.setSeed(42);
-/// console.log(random.number()); // always the same value
+/// println(random.number()); // always the same value
 /// random.resetSeed();
 /// ```
 ///
@@ -153,7 +153,7 @@ impl JsRandom {
     ///
     /// ```ts
     /// const pos = await random.position();
-    /// console.log(pos.toString());
+    /// println(pos.toString());
     /// ```
     /// @readonly
     pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
@@ -177,7 +177,7 @@ impl JsRandom {
     ///
     /// ```ts
     /// const item = random.choice([], "default");
-    /// console.log(item); // "default"
+    /// println(item); // "default"
     /// ```
     ///
     /// @generic

@@ -7,13 +7,13 @@ use crate::api::js::classes::HostClass;
 ///
 /// ```ts
 /// if (await Filesystem.exists("/tmp/myfile.txt")) {
-///     console.log("exists!");
+///     println("exists!");
 /// }
 ///
 /// if (await Filesystem.isFile("/tmp/myfile.txt")) {
-///     console.log("it's a file");
+///     println("it's a file");
 /// } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
-///     console.log("it's a directory");
+///     println("it's a directory");
 /// }
 /// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]

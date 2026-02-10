@@ -23,14 +23,14 @@ pub type JsWaitAtEnd = WaitAtEnd;
 ///
 /// ```ts
 /// // Get the current version
-/// console.log(app.version);
+/// println(app.version);
 ///
 /// // Read environment variables
 /// const home = app.env["HOME"];
 ///
 /// // Change working directory
 /// app.setCwd("/tmp");
-/// console.log(app.cwd);
+/// println(app.cwd);
 ///
 /// // Control whether the script waits at the end
 /// app.waitAtEnd = true;
@@ -102,7 +102,7 @@ impl JsApp {
     /// The version of Actiona-cli.
     ///
     /// ```ts
-    /// console.log(app.version); // e.g. "0.1.0"
+    /// println(app.version); // e.g. "0.1.0"
     /// ```
     ///
     /// @get
@@ -116,8 +116,8 @@ impl JsApp {
     ///
     /// ```ts
     /// const env = app.env;
-    /// console.log(env["HOME"]);
-    /// console.log(env["PATH"]);
+    /// println(env["HOME"]);
+    /// println(env["PATH"]);
     /// ```
     ///
     /// @get
@@ -131,7 +131,7 @@ impl JsApp {
     /// The current working directory.
     ///
     /// ```ts
-    /// console.log(app.cwd); // e.g. "/home/user/project"
+    /// println(app.cwd); // e.g. "/home/user/project"
     /// ```
     ///
     /// @get
@@ -155,7 +155,7 @@ impl JsApp {
     /// The path to the running executable.
     ///
     /// ```ts
-    /// console.log(app.executablePath); // e.g. "/usr/bin/actiona4-run"
+    /// println(app.executablePath); // e.g. "/usr/bin/actiona4-run"
     /// ```
     ///
     /// @get

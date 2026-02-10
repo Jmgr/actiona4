@@ -84,7 +84,7 @@ impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
 /// // Get all windows
 /// const allWindows = await windows.all();
 /// for (const win of allWindows) {
-///     console.log(await win.title());
+///     println(await win.title());
 /// }
 /// ```
 ///
@@ -138,7 +138,7 @@ impl JsWindows {
     ///
     /// ```ts
     /// const allWindows = await windows.all();
-    /// console.log(`Found ${allWindows.length} windows`);
+    /// println(`Found ${allWindows.length} windows`);
     /// ```
     /// @readonly
     pub async fn all(&self, ctx: Ctx<'_>) -> Result<Vec<JsWindowHandle>> {
@@ -157,7 +157,7 @@ impl JsWindows {
     ///
     /// ```ts
     /// const win = await windows.activeWindow();
-    /// console.log(await win.title());
+    /// println(await win.title());
     /// ```
     /// @readonly
     pub async fn active_window(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
@@ -268,9 +268,9 @@ impl JsWindows {
 ///
 /// ```ts
 /// const win = await windows.activeWindow();
-/// console.log(await win.title());
-/// console.log(await win.isVisible());
-/// console.log(await win.rect());
+/// println(await win.title());
+/// println(await win.isVisible());
+/// println(await win.rect());
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "WindowHandle")]
@@ -336,7 +336,7 @@ impl JsWindowHandle {
     ///
     /// ```ts
     /// const r = await win.rect();
-    /// console.log(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
+    /// println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
     /// ```
     /// @readonly
     pub async fn rect(&self, ctx: Ctx<'_>) -> Result<JsRect> {
@@ -387,7 +387,7 @@ impl JsWindowHandle {
     ///
     /// ```ts
     /// const pos = await win.position();
-    /// console.log(`${pos.x}, ${pos.y}`);
+    /// println(`${pos.x}, ${pos.y}`);
     /// ```
     /// @readonly
     pub async fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
@@ -409,7 +409,7 @@ impl JsWindowHandle {
     ///
     /// ```ts
     /// const s = await win.size();
-    /// console.log(`${s.width}x${s.height}`);
+    /// println(`${s.width}x${s.height}`);
     /// ```
     /// @readonly
     pub async fn size(&self, ctx: Ctx<'_>) -> Result<JsSize> {

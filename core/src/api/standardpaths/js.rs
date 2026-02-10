@@ -11,9 +11,9 @@ use crate::api::{js::classes::SingletonClass, standardpaths::StandardPaths};
 /// All properties return the path as a string, or undefined if unavailable.
 ///
 /// ```ts
-/// console.log(standardPaths.home);       // e.g. "/home/user"
-/// console.log(standardPaths.downloads);   // e.g. "/home/user/Downloads"
-/// console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
+/// println(standardPaths.home);       // e.g. "/home/user"
+/// println(standardPaths.downloads);   // e.g. "/home/user/Downloads"
+/// println(standardPaths.documents);   // e.g. "/home/user/Documents"
 /// ```
 ///
 /// @category StandardPaths
@@ -143,7 +143,7 @@ mod tests {
     fn test_standard_paths() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
-                .eval_async::<()>("console.printLn(standardPaths);")
+                .eval_async::<()>("console.println(standardPaths);")
                 .await
                 .unwrap();
         });

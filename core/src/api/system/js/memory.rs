@@ -14,7 +14,7 @@ use crate::{
 /// const usage = await system.memory.usage();
 /// const swap = await system.memory.swapUsage();
 ///
-/// console.log(formatBytes(usage.used), formatBytes(swap.used));
+/// println(formatBytes(usage.used), formatBytes(swap.used));
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Memory")]
@@ -82,7 +82,7 @@ impl JsMemory {
 ///
 /// ```ts
 /// const usage = await system.memory.usage();
-/// console.log(
+/// println(
 ///   formatBytes(usage.used),
 ///   formatBytes(usage.free),
 ///   formatBytes(usage.available),
@@ -153,7 +153,7 @@ impl JsMemoryUsage {
 /// ```ts
 /// const limits = system.memory.cgroupLimits;
 /// if (limits) {
-///   console.log(
+///   println(
 ///     formatBytes(limits.totalMemory),
 ///     formatBytes(limits.freeMemory),
 ///     formatBytes(limits.freeSwap),

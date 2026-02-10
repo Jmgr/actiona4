@@ -57,6 +57,48 @@ declare function sleep(ms: number): Task<void>;
  */
 declare function exit(): void;
 /**
+ * Prints values without a trailing newline.
+ * 
+ * Alias for `console.print(...)`.
+ * @category Console
+ */
+declare function print(...args: unknown[]): void;
+/**
+ * Prints values followed by a newline.
+ * 
+ * Alias for `console.println(...)`.
+ * @category Console
+ */
+declare function println(...args: unknown[]): void;
+/**
+ * Logs values to stdout.
+ * 
+ * Alias for `console.log(...)`.
+ * @category Console
+ */
+declare function log(...args: unknown[]): void;
+/**
+ * Logs a warning in yellow.
+ * 
+ * Alias for `console.warn(...)`.
+ * @category Console
+ */
+declare function warn(...args: unknown[]): void;
+/**
+ * Logs an error in bold red.
+ * 
+ * Alias for `console.error(...)`.
+ * @category Console
+ */
+declare function error(...args: unknown[]): void;
+/**
+ * Pretty-prints values using an inspect-style multiline format.
+ * 
+ * Alias for `console.inspect(...)`.
+ * @category Console
+ */
+declare function inspect(...args: unknown[]): void;
+/**
  * Formats a frequency value in Hz using SI prefixes.
  * 
  * ```ts
@@ -187,7 +229,7 @@ declare enum TextVerticalAlign {
  * const task = source.findImage(template);
  * for await (const progress of task) {
  * if (progress.stage === FindImageStage.Matching) {
- * console.log(`Matching: ${formatPercent(progress.percent)}`);
+ * println(`Matching: ${formatPercent(progress.percent)}`);
  * }
  * }
  * ```
@@ -1730,7 +1772,7 @@ declare enum KeyError {
  * const processes = await system.processes.list();
  * const process = processes[0];
  * if (process && process.status === ProcessStatus.Run) {
- * console.log("process is running");
+ * println("process is running");
  * }
  * ```
  * @category System
@@ -1771,7 +1813,7 @@ declare enum ProcessStatus {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk && disk.kind === DiskKind.SSD) {
- * console.log("SSD");
+ * println("SSD");
  * }
  * ```
  * 
@@ -2095,14 +2137,14 @@ declare enum Method {
  * 
  * ```ts
  * // Get the current version
- * console.log(app.version);
+ * println(app.version);
  * 
  * // Read environment variables
  * const home = app.env["HOME"];
  * 
  * // Change working directory
  * app.setCwd("/tmp");
- * console.log(app.cwd);
+ * println(app.cwd);
  * 
  * // Control whether the script waits at the end
  * app.waitAtEnd = true;
@@ -2119,7 +2161,7 @@ declare interface App {
      * The version of Actiona-cli.
      * 
      * ```ts
-     * console.log(app.version); // e.g. "0.1.0"
+     * println(app.version); // e.g. "0.1.0"
      * ```
      */
     readonly version: string;
@@ -2128,8 +2170,8 @@ declare interface App {
      * 
      * ```ts
      * const env = app.env;
-     * console.log(env["HOME"]);
-     * console.log(env["PATH"]);
+     * println(env["HOME"]);
+     * println(env["PATH"]);
      * ```
      */
     readonly env: Readonly<Record<string, string | undefined>>;
@@ -2137,7 +2179,7 @@ declare interface App {
      * The current working directory.
      * 
      * ```ts
-     * console.log(app.cwd); // e.g. "/home/user/project"
+     * println(app.cwd); // e.g. "/home/user/project"
      * ```
      */
     readonly cwd: string;
@@ -2145,7 +2187,7 @@ declare interface App {
      * The path to the running executable.
      * 
      * ```ts
-     * console.log(app.executablePath); // e.g. "/usr/bin/actiona4-run"
+     * println(app.executablePath); // e.g. "/usr/bin/actiona4-run"
      * ```
      */
     readonly executablePath: string;
@@ -2268,7 +2310,7 @@ declare const audio: Audio;
  * 
  * ```ts
  * const sound = audio.playFile("music.mp3");
- * console.log(sound.duration);  // duration in seconds
+ * println(sound.duration);  // duration in seconds
  * sound.volume = 0.5;
  * sound.playbackRate = 1.5;
  * sound.pause();
@@ -2302,7 +2344,7 @@ declare interface PlayingSound {
      * ```ts
      * const sound = audio.playFile("music.mp3");
      * await sound.finished;
-     * console.log("Sound finished!");
+     * println("Sound finished!");
      * ```
      */
     readonly finished: Promise<void>;
@@ -2531,7 +2573,7 @@ declare interface ClipboardHtml {
  * // Read and modify channels
  * const c = new Color(10, 20, 30);
  * c.r = 100;
- * console.log(c.toString()); // "(100, 20, 30, 255)"
+ * println(c.toString()); // "(100, 20, 30, 255)"
  * 
  * // Compare colors
  * Color.Red.equals(new Color(255, 0, 0)); // true
@@ -3163,7 +3205,7 @@ declare class Color {
  * 
  * ```ts
  * // Print values
- * console.log("hello", 42, { key: "value" });
+ * println("hello", 42, { key: "value" });
  * 
  * // Warnings and errors are styled
  * console.warn("this is a warning");
@@ -3188,9 +3230,9 @@ declare interface Console {
     /**
      * Prints values followed by a newline.
      */
-    printLn(...args: unknown[]): void;
+    println(...args: unknown[]): void;
     /**
-     * Logs values to stdout. Alias for `printLn`.
+     * Logs values to stdout. Alias for `println`.
      */
     log(...args: unknown[]): void;
     /**
@@ -3205,6 +3247,10 @@ declare interface Console {
      * Logs an error in bold red.
      */
     error(...args: unknown[]): void;
+    /**
+     * Pretty-prints values using an inspect-style multiline format.
+     */
+    inspect(...args: unknown[]): void;
     /**
      * Clears the terminal screen.
      */
@@ -3248,7 +3294,7 @@ declare const console: Console;
  * ```ts
  * const entries = await Directory.listEntries("/home/user");
  * for (const entry of entries) {
- * console.log(entry.fileName, entry.isFile, entry.size);
+ * println(entry.fileName, entry.isFile, entry.size);
  * }
  * ```
  * @category Directory
@@ -3334,7 +3380,7 @@ declare interface DirectoryListOptions {
  * // List entries in a directory
  * const entries = await Directory.listEntries("/tmp/my/nested/dir");
  * for (const entry of entries) {
- * console.log(entry.fileName, entry.isFile ? "file" : "dir");
+ * println(entry.fileName, entry.isFile ? "file" : "dir");
  * }
  * 
  * // Remove a directory tree
@@ -3391,7 +3437,7 @@ declare class Directory {
  * 
  * // Find which display contains a point
  * const info = await displays.fromPoint(100, 200);
- * if (info) console.log(info.name, info.rect);
+ * if (info) println(info.name, info.rect);
  * 
  * // Find a display by friendly name
  * const monitor = await displays.fromName("HDMI-1");
@@ -3447,8 +3493,8 @@ declare const displays: Displays;
  * ```ts
  * const info = await displays.fromName("HDMI-1");
  * if (info) {
- * console.log(info.friendlyName, info.rect, formatFrequency(info.frequency));
- * console.log("Primary:", info.isPrimary);
+ * println(info.friendlyName, info.rect, formatFrequency(info.frequency));
+ * println("Primary:", info.isPrimary);
  * }
  * ```
  * @category Displays
@@ -3774,13 +3820,13 @@ declare class File {
  * 
  * ```ts
  * if (await Filesystem.exists("/tmp/myfile.txt")) {
- * console.log("exists!");
+ * println("exists!");
  * }
  * 
  * if (await Filesystem.isFile("/tmp/myfile.txt")) {
- * console.log("it's a file");
+ * println("it's a file");
  * } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
- * console.log("it's a directory");
+ * println("it's a directory");
  * }
  * ```
  * @category Filesystem
@@ -4050,8 +4096,8 @@ declare interface FindImageOptions {
  * const template = await Image.load("button.png");
  * const match = await source.findImage(template);
  * if (match) {
- * console.log(`Found at ${match.position} with score ${match.score}`);
- * console.log(`Bounding rect: ${match.rect}`);
+ * println(`Found at ${match.position} with score ${match.score}`);
+ * println(`Bounding rect: ${match.rect}`);
  * }
  * ```
  * @category Image
@@ -4090,7 +4136,7 @@ declare interface Match {
  * ```ts
  * const task = source.findImage(template);
  * for await (const progress of task) {
- * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+ * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
  * if (progress.finished) break;
  * }
  * const result = await task;
@@ -4144,7 +4190,7 @@ declare interface FindImageProgress {
  * const button = await Image.load("button.png");
  * const match = await screen.findImage(button, { matchThreshold: 0.9 });
  * if (match) {
- * console.log(`Button found at ${match.position}`);
+ * println(`Button found at ${match.position}`);
  * }
  * ```
  * @category Image
@@ -4579,7 +4625,7 @@ declare class Image {
      * ```ts
      * const match = await source.findImage(template);
      * if (match) {
-     * console.log(`Found at ${match.position} with score ${match.score}`);
+     * println(`Found at ${match.position} with score ${match.score}`);
      * }
      * ```
      * 
@@ -4587,7 +4633,7 @@ declare class Image {
      * // Track progress while searching
      * const task = source.findImage(template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -4601,7 +4647,7 @@ declare class Image {
      * ```ts
      * const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
      * for (const match of matches) {
-     * console.log(`Found at ${match.position}`);
+     * println(`Found at ${match.position}`);
      * }
      * ```
      * 
@@ -4609,7 +4655,7 @@ declare class Image {
      * // Track progress while searching
      * const task = source.findImageAll(template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -4674,11 +4720,50 @@ declare interface Concurrency {
      * Losing tasks will be cancelled automatically.
      * 
      * ```ts
-     * // Use race to implement a timeout
+     * // Resolve with the first successful result.
+     * const result = await Concurrency.race([
+     * sleep(200).then(() => "fast"),
+     * sleep(1000).then(() => "slow"),
+     * ]);
+     * // result === "fast"
+     * ```
+     * 
+     * ```ts
+     * // Use race to implement a timeout.
      * const result = await Concurrency.race([
      * fetchData(),
      * sleep(5000).then(() => { throw new Error("Timeout"); })
      * ]);
+     * ```
+     * 
+     * ```ts
+     * // Rejections also win the race.
+     * // Here the error is thrown quickly and the slower task is cancelled.
+     * try {
+     * await Concurrency.race([
+     * sleep(50).then(() => { throw new Error("Failed quickly"); }),
+     * sleep(2000),
+     * ]);
+     * } catch (e) {
+     * console.println(e); // Error: Failed quickly
+     * }
+     * ```
+     * 
+     * ```ts
+     * // You can cancel the race task itself.
+     * const t = Concurrency.race([
+     * sleep(5000),
+     * sleep(8000),
+     * ]);
+     * t.cancel();
+     * await t; // throws "Error: Cancelled"
+     * ```
+     * 
+     * ```ts
+     * // Empty or non-promise-only inputs resolve to undefined.
+     * const a = await Concurrency.race([]);
+     * const b = await Concurrency.race([1, "text", null]);
+     * // a === undefined, b === undefined
      * ```
      */
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
@@ -5046,8 +5131,8 @@ declare class Path {
  * ```ts
  * const a = new Point(1, 2);
  * const b = new Point(4, 6);
- * console.log(a.distanceTo(b)); // 5
- * console.log(a.add(b).toString()); // "(5, 8)"
+ * println(a.distanceTo(b)); // 5
+ * println(a.add(b).toString()); // "(5, 8)"
  * ```
  * @category Point
  */
@@ -5073,7 +5158,7 @@ declare class Point {
      * 
      * ```ts
      * const p = new Point(3, 4);
-     * console.log(p.length()); // 5
+     * println(p.length()); // 5
      * ```
      */
     length(): number;
@@ -5099,7 +5184,7 @@ declare class Point {
      * ```ts
      * const a = new Point(0, 0);
      * const b = new Point(3, 4);
-     * console.log(a.distanceTo(b)); // 5
+     * println(a.distanceTo(b)); // 5
      * ```
      */
     distanceTo(other: Point): number;
@@ -5108,7 +5193,7 @@ declare class Point {
      * 
      * ```ts
      * const p = new Point(1, 2);
-     * console.log(p.toJson()); // '{"x":1,"y":2}'
+     * println(p.toJson()); // '{"x":1,"y":2}'
      * ```
      */
     toJson(): string;
@@ -5116,8 +5201,8 @@ declare class Point {
      * Returns true if this Point is at the origin, (0, 0).
      * 
      * ```ts
-     * console.log(new Point(0, 0).isOrigin()); // true
-     * console.log(new Point(1, 0).isOrigin()); // false
+     * println(new Point(0, 0).isOrigin()); // true
+     * println(new Point(1, 0).isOrigin()); // false
      * ```
      */
     isOrigin(): boolean;
@@ -5126,7 +5211,7 @@ declare class Point {
      * 
      * ```ts
      * const d = Point.distance(new Point(0, 0), new Point(3, 4));
-     * console.log(d); // 5
+     * println(d); // 5
      * ```
      */
     static distance(a: Point, b: Point): number;
@@ -5136,7 +5221,7 @@ declare class Point {
      * ```ts
      * const a = new Point(1, 2);
      * const b = new Point(1, 2);
-     * console.log(a.equals(b)); // true
+     * println(a.equals(b)); // true
      * ```
      */
     equals(other: Point): boolean;
@@ -5145,7 +5230,7 @@ declare class Point {
      * 
      * ```ts
      * const sum = new Point(1, 2).add(new Point(3, 4));
-     * console.log(sum.toString()); // "(4, 6)"
+     * println(sum.toString()); // "(4, 6)"
      * ```
      */
     add(other: Point): Point;
@@ -5154,7 +5239,7 @@ declare class Point {
      * 
      * ```ts
      * const diff = new Point(5, 7).subtract(new Point(2, 3));
-     * console.log(diff.toString()); // "(3, 4)"
+     * println(diff.toString()); // "(3, 4)"
      * ```
      */
     subtract(other: Point): Point;
@@ -5163,7 +5248,7 @@ declare class Point {
      * 
      * ```ts
      * const p = new Point(3, 4).scaled(2);
-     * console.log(p.toString()); // "(6, 8)"
+     * println(p.toString()); // "(6, 8)"
      * ```
      */
     scaled(factor: number): Point;
@@ -5195,7 +5280,7 @@ declare class Point {
  * 
  * ```ts
  * random.setSeed(42);
- * console.log(random.number()); // always the same value
+ * println(random.number()); // always the same value
  * random.resetSeed();
  * ```
  * @category Random
@@ -5245,7 +5330,7 @@ declare interface Random {
      * 
      * ```ts
      * const pos = await random.position();
-     * console.log(pos.toString());
+     * println(pos.toString());
      * ```
      */
     position(): Promise<Readonly<Point>>;
@@ -5259,7 +5344,7 @@ declare interface Random {
      * 
      * ```ts
      * const item = random.choice([], "default");
-     * console.log(item); // "default"
+     * println(item); // "default"
      * ```
      */
     choice<T>(array: Array<T>, fallback?: T): T;
@@ -5281,7 +5366,7 @@ declare const random: Random;
  * ```ts
  * const a = new Rect(0, 0, 100, 100);
  * const b = new Rect(50, 50, 100, 100);
- * console.log(a.intersects(b)); // true
+ * println(a.intersects(b)); // true
  * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
  * ```
  * @category Rect
@@ -5325,7 +5410,7 @@ declare class Rect {
      * ```ts
      * const a = new Rect(0, 0, 10, 10);
      * const b = new Rect(0, 0, 10, 10);
-     * console.log(a.equals(b)); // true
+     * println(a.equals(b)); // true
      * ```
      */
     equals(other: Rect): boolean;
@@ -5334,8 +5419,8 @@ declare class Rect {
      * 
      * ```ts
      * const r = new Rect(0, 0, 100, 100);
-     * console.log(r.contains(new Point(50, 50)));  // true
-     * console.log(r.contains(new Point(150, 50))); // false
+     * println(r.contains(new Point(50, 50)));  // true
+     * println(r.contains(new Point(150, 50))); // false
      * ```
      */
     contains(point: Point): boolean;
@@ -5358,7 +5443,7 @@ declare class Rect {
      * ```ts
      * const a = new Rect(0, 0, 100, 100);
      * const b = new Rect(50, 50, 100, 100);
-     * console.log(a.intersects(b)); // true
+     * println(a.intersects(b)); // true
      * ```
      */
     intersects(other: Rect): boolean;
@@ -5391,12 +5476,12 @@ declare class Rect {
  * 
  * ```ts
  * const image = await screenshot.captureDisplay(0);
- * console.log(image.size().toString());
+ * println(image.size().toString());
  * ```
  * 
  * ```ts
  * const pixel = await screenshot.capturePixel(100, 100);
- * console.log(pixel.toString());
+ * println(pixel.toString());
  * ```
  * @category Screenshot
  */
@@ -5430,7 +5515,7 @@ declare interface Screenshot {
      * 
      * ```ts
      * const color = await screenshot.capturePixel(100, 200);
-     * console.log(color.toString());
+     * println(color.toString());
      * ```
      */
     capturePixel(position: PointLike): Promise<Color>;
@@ -5439,7 +5524,7 @@ declare interface Screenshot {
      * 
      * ```ts
      * const color = await screenshot.capturePixel(100, 200);
-     * console.log(color.toString());
+     * println(color.toString());
      * ```
      */
     capturePixel(x: number, y: number): Promise<Color>;
@@ -5453,7 +5538,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -5469,7 +5554,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -5485,7 +5570,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5501,7 +5586,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5517,7 +5602,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnDisplay(0, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -5533,7 +5618,7 @@ declare interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnDisplayAll(0, template);
      * for await (const progress of task) {
-     * console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -5558,8 +5643,8 @@ declare const screenshot: Screenshot;
  * ```ts
  * const a = new Size(10, 20);
  * const b = new Size(5, 10);
- * console.log(a.add(b).toString()); // "(15, 30)"
- * console.log(a.scale(2).toString()); // "(20, 40)"
+ * println(a.add(b).toString()); // "(15, 30)"
+ * println(a.scale(2).toString()); // "(20, 40)"
  * ```
  * @category Size
  */
@@ -5585,7 +5670,7 @@ declare class Size {
      * 
      * ```ts
      * const s = new Size(100, 50);
-     * console.log(s.toJson()); // '{"width":100,"height":50}'
+     * println(s.toJson()); // '{"width":100,"height":50}'
      * ```
      */
     toJson(): string;
@@ -5595,7 +5680,7 @@ declare class Size {
      * ```ts
      * const a = new Size(10, 20);
      * const b = new Size(10, 20);
-     * console.log(a.equals(b)); // true
+     * println(a.equals(b)); // true
      * ```
      */
     equals(other: Size): boolean;
@@ -5604,7 +5689,7 @@ declare class Size {
      * 
      * ```ts
      * const sum = new Size(10, 20).add(new Size(5, 10));
-     * console.log(sum.toString()); // "(15, 30)"
+     * println(sum.toString()); // "(15, 30)"
      * ```
      */
     add(other: Size): Size;
@@ -5613,7 +5698,7 @@ declare class Size {
      * 
      * ```ts
      * const diff = new Size(100, 50).subtract(new Size(30, 20));
-     * console.log(diff.toString()); // "(70, 30)"
+     * println(diff.toString()); // "(70, 30)"
      * ```
      */
     subtract(other: Size): Size;
@@ -5622,7 +5707,7 @@ declare class Size {
      * 
      * ```ts
      * const s = new Size(10, 20).scale(3);
-     * console.log(s.toString()); // "(30, 60)"
+     * println(s.toString()); // "(30, 60)"
      * ```
      */
     scale(factor: number): Size;
@@ -5646,9 +5731,9 @@ declare class Size {
  * All properties return the path as a string, or undefined if unavailable.
  * 
  * ```ts
- * console.log(standardPaths.home);       // e.g. "/home/user"
- * console.log(standardPaths.downloads);   // e.g. "/home/user/Downloads"
- * console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
+ * println(standardPaths.home);       // e.g. "/home/user"
+ * println(standardPaths.downloads);   // e.g. "/home/user/Downloads"
+ * println(standardPaths.documents);   // e.g. "/home/user/Documents"
  * ```
  * @category StandardPaths
  */
@@ -5714,7 +5799,7 @@ declare const standard_paths: StandardPaths;
  * const core0Usage = await system.cpu.coreUsage(0);
  * const freqs = await system.cpu.frequencies();
  * 
- * console.log(
+ * println(
  * system.cpu.logicalCoreCount,
  * formatPercent(globalUsage),
  * formatPercent(core0Usage),
@@ -5749,7 +5834,7 @@ declare interface Cpu {
  * const board = hw.motherboard;
  * const components = await hw.listComponents();
  * 
- * console.log(hw.vendorName, board.name, components.length);
+ * println(hw.vendorName, board.name, components.length);
  * ```
  * @category System
  */
@@ -5808,7 +5893,7 @@ declare interface ListComponentsOptions {
  * 
  * ```ts
  * const board = system.hardware.motherboard;
- * console.log(board.vendorName, board.name, board.version);
+ * println(board.vendorName, board.name, board.version);
  * ```
  * @category System
  */
@@ -5842,7 +5927,7 @@ declare interface Motherboard {
  * const components = await system.hardware.listComponents();
  * const component = components[0];
  * if (component) {
- * console.log(component.label, component.temperature);
+ * println(component.label, component.temperature);
  * }
  * ```
  * @category System
@@ -5877,7 +5962,7 @@ declare interface Component {
  * const usage = await system.memory.usage();
  * const swap = await system.memory.swapUsage();
  * 
- * console.log(formatBytes(usage.used), formatBytes(swap.used));
+ * println(formatBytes(usage.used), formatBytes(swap.used));
  * ```
  * @category System
  */
@@ -5902,7 +5987,7 @@ declare interface Memory {
  * 
  * ```ts
  * const usage = await system.memory.usage();
- * console.log(
+ * println(
  * formatBytes(usage.used),
  * formatBytes(usage.free),
  * formatBytes(usage.available),
@@ -5936,7 +6021,7 @@ declare interface MemoryUsage {
  * ```ts
  * const limits = system.memory.cgroupLimits;
  * if (limits) {
- * console.log(
+ * println(
  * formatBytes(limits.totalMemory),
  * formatBytes(limits.freeMemory),
  * formatBytes(limits.freeSwap),
@@ -5974,12 +6059,12 @@ declare interface CGroupLimits {
  * const cpuUsage = await system.cpu.usage();
  * const memory = await system.memory.usage();
  * 
- * console.log(formatPercent(cpuUsage), formatBytes(memory.used));
+ * println(formatPercent(cpuUsage), formatBytes(memory.used));
  * ```
  * 
  * ```ts
  * const interfaces = await system.network.listInterfaces();
- * console.log(`interfaces: ${interfaces.length}`);
+ * println(`interfaces: ${interfaces.length}`);
  * ```
  * @category System
  */
@@ -6028,9 +6113,9 @@ declare const system: System;
  * Network information and interfaces.
  * 
  * ```ts
- * console.log(system.network.hostname);
+ * println(system.network.hostname);
  * const interfaces = await system.network.listInterfaces();
- * console.log(interfaces.length);
+ * println(interfaces.length);
  * ```
  * @category System
  */
@@ -6063,7 +6148,7 @@ declare interface ListInterfacesOptions {
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
  * if (iface) {
- * console.log(iface.name, iface.mtu, iface.macAddress);
+ * println(iface.name, iface.mtu, iface.macAddress);
  * }
  * ```
  * @category System
@@ -6103,7 +6188,7 @@ declare interface NetworkInterface {
  * const iface = interfaces[0];
  * if (iface) {
  * const counters = iface.inbound.total;
- * console.log(formatBytes(counters.data), counters.packets, counters.errors);
+ * println(formatBytes(counters.data), counters.packets, counters.errors);
  * }
  * ```
  * @category System
@@ -6130,7 +6215,7 @@ declare interface Counters {
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
  * if (iface) {
- * console.log(
+ * println(
  * formatBytes(iface.inbound.total.data),
  * formatBytes(iface.inbound.delta.data),
  * );
@@ -6153,11 +6238,11 @@ declare interface Traffic {
  * OS-level information.
  * 
  * ```ts
- * console.log(system.os.name, system.os.version, system.os.kernelVersion);
+ * println(system.os.name, system.os.version, system.os.kernelVersion);
  * 
  * const users = await system.os.listUsers();
  * const groups = await system.os.listGroups();
- * console.log(users.length, groups.length);
+ * println(users.length, groups.length);
  * ```
  * @category System
  */
@@ -6219,7 +6304,7 @@ declare interface Os {
  * const users = await system.os.listUsers();
  * const user = users[0];
  * if (user) {
- * console.log(user.id, user.name, user.groupName);
+ * println(user.id, user.name, user.groupName);
  * }
  * ```
  * @category System
@@ -6260,7 +6345,7 @@ declare interface User {
  * const groups = await system.os.listGroups();
  * const group = groups[0];
  * if (group) {
- * console.log(group.id, group.name);
+ * println(group.id, group.name);
  * }
  * ```
  * @category System
@@ -6281,7 +6366,7 @@ declare interface Group {
  * 
  * ```ts
  * const processes = await system.processes.list();
- * console.log(processes.length);
+ * println(processes.length);
  * ```
  * @category System
  */
@@ -6310,7 +6395,7 @@ declare interface ListProcessesOptions {
  * const processes = await system.processes.list();
  * const process = processes[0];
  * if (process) {
- * console.log(process.pid, process.name, process.status);
+ * println(process.pid, process.name, process.status);
  * }
  * ```
  * @category System
@@ -6422,7 +6507,7 @@ declare interface Process {
  * 
  * ```ts
  * const disks = await system.storage.listDisks();
- * console.log(disks.length);
+ * println(disks.length);
  * ```
  * @category System
  */
@@ -6451,7 +6536,7 @@ declare interface ListDisksOptions {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * console.log(
+ * println(
  * disk.name,
  * disk.kind,
  * disk.mountPoint,
@@ -6508,7 +6593,7 @@ declare interface Disk {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * console.log(
+ * println(
  * formatBytes(disk.usage.read.total),
  * formatBytes(disk.usage.written.delta),
  * );
@@ -6534,7 +6619,7 @@ declare interface IoStats {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * console.log(
+ * println(
  * formatBytes(disk.usage.read.total),
  * formatBytes(disk.usage.written.total),
  * );
@@ -6604,7 +6689,7 @@ declare interface MessageBoxOptions {
  * icon: MessageBoxIcon.Warning,
  * });
  * if (result === MessageBoxResult.Yes) {
- * console.log("Confirmed");
+ * println("Confirmed");
  * }
  * ```
  * @category UI
@@ -6777,7 +6862,7 @@ declare interface WebOptions {
  * ```ts
  * const task = web.download("https://example.com/file.bin");
  * for await (const progress of task) {
- * console.log(
+ * println(
  * formatBytes(progress.current),
  * formatBytes(progress.total),
  * progress.finished,
@@ -6811,7 +6896,7 @@ declare interface WebProgress {
  * 
  * ```ts
  * const image = await web.downloadImage("https://example.com/photo.png");
- * console.log(image.size().toString());
+ * println(image.size().toString());
  * ```
  * @category Web
  */
@@ -6826,7 +6911,7 @@ declare interface Web {
      * ```ts
      * const task = web.download("https://example.com/file.bin");
      * for await (const progress of task) {
-     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const bytes = await task;
      * ```
@@ -6842,7 +6927,7 @@ declare interface Web {
      * ```ts
      * const task = web.downloadText("https://example.com/data.json");
      * for await (const progress of task) {
-     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const text = await task;
      * ```
@@ -6858,7 +6943,7 @@ declare interface Web {
      * ```ts
      * const task = web.downloadImage("https://example.com/photo.png");
      * for await (const progress of task) {
-     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const image = await task;
      * ```
@@ -6874,7 +6959,7 @@ declare interface Web {
      * ```ts
      * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
      * for await (const progress of task) {
-     * console.log(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const filePath = await task;
      * ```
@@ -6928,7 +7013,7 @@ declare interface WindowsFindOptions {
  * // Get all windows
  * const allWindows = await windows.all();
  * for (const win of allWindows) {
- * console.log(await win.title());
+ * println(await win.title());
  * }
  * ```
  * 
@@ -6954,7 +7039,7 @@ declare interface Windows {
      * 
      * ```ts
      * const allWindows = await windows.all();
-     * console.log(`Found ${allWindows.length} windows`);
+     * println(`Found ${allWindows.length} windows`);
      * ```
      */
     all(): Promise<readonly WindowHandle[]>;
@@ -6963,7 +7048,7 @@ declare interface Windows {
      * 
      * ```ts
      * const win = await windows.activeWindow();
-     * console.log(await win.title());
+     * println(await win.title());
      * ```
      */
     activeWindow(): Promise<Readonly<WindowHandle>>;
@@ -7013,9 +7098,9 @@ declare const windows: Windows;
  * 
  * ```ts
  * const win = await windows.activeWindow();
- * console.log(await win.title());
- * console.log(await win.isVisible());
- * console.log(await win.rect());
+ * println(await win.title());
+ * println(await win.isVisible());
+ * println(await win.rect());
  * ```
  * @category Windows
  */
@@ -7065,7 +7150,7 @@ declare interface WindowHandle {
      * 
      * ```ts
      * const r = await win.rect();
-     * console.log(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
+     * println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
      * ```
      */
     rect(): Promise<Readonly<Rect>>;
@@ -7118,7 +7203,7 @@ declare interface WindowHandle {
      * 
      * ```ts
      * const pos = await win.position();
-     * console.log(`${pos.x}, ${pos.y}`);
+     * println(`${pos.x}, ${pos.y}`);
      * ```
      */
     position(): Promise<Readonly<Point>>;
@@ -7147,7 +7232,7 @@ declare interface WindowHandle {
      * 
      * ```ts
      * const s = await win.size();
-     * console.log(`${s.width}x${s.height}`);
+     * println(`${s.width}x${s.height}`);
      * ```
      */
     size(): Promise<Readonly<Size>>;

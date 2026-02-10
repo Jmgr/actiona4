@@ -13,9 +13,9 @@ use crate::{
 /// Network information and interfaces.
 ///
 /// ```ts
-/// console.log(system.network.hostname);
+/// println(system.network.hostname);
 /// const interfaces = await system.network.listInterfaces();
-/// console.log(interfaces.length);
+/// println(interfaces.length);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Network")]
@@ -99,7 +99,7 @@ impl JsNetwork {
 /// const interfaces = await system.network.listInterfaces();
 /// const iface = interfaces[0];
 /// if (iface) {
-///   console.log(iface.name, iface.mtu, iface.macAddress);
+///   println(iface.name, iface.mtu, iface.macAddress);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -194,7 +194,7 @@ impl JsNetworkInterface {
 /// const iface = interfaces[0];
 /// if (iface) {
 ///   const counters = iface.inbound.total;
-///   console.log(formatBytes(counters.data), counters.packets, counters.errors);
+///   println(formatBytes(counters.data), counters.packets, counters.errors);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -254,7 +254,7 @@ impl JsCounters {
 /// const interfaces = await system.network.listInterfaces();
 /// const iface = interfaces[0];
 /// if (iface) {
-///   console.log(
+///   println(
 ///     formatBytes(iface.inbound.total.data),
 ///     formatBytes(iface.inbound.delta.data),
 ///   );

@@ -21,7 +21,7 @@ use crate::{
 ///
 /// ```ts
 /// const disks = await system.storage.listDisks();
-/// console.log(disks.length);
+/// println(disks.length);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Storage")]
@@ -96,7 +96,7 @@ impl JsStorage {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk) {
-///   console.log(
+///   println(
 ///     disk.name,
 ///     disk.kind,
 ///     disk.mountPoint,
@@ -217,7 +217,7 @@ impl JsDisk {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk && disk.kind === DiskKind.SSD) {
-///   console.log("SSD");
+///   println("SSD");
 /// }
 /// ```
 ///
@@ -263,7 +263,7 @@ impl From<DiskKind> for JsDiskKind {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk) {
-///   console.log(
+///   println(
 ///     formatBytes(disk.usage.read.total),
 ///     formatBytes(disk.usage.written.delta),
 ///   );
@@ -318,7 +318,7 @@ impl JsIoStats {
 /// const disks = await system.storage.listDisks();
 /// const disk = disks[0];
 /// if (disk) {
-///   console.log(
+///   println(
 ///     formatBytes(disk.usage.read.total),
 ///     formatBytes(disk.usage.written.total),
 ///   );

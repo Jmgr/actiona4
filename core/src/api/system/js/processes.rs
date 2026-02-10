@@ -23,7 +23,7 @@ use crate::{
 ///
 /// ```ts
 /// const processes = await system.processes.list();
-/// console.log(processes.length);
+/// println(processes.length);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Processes")]
@@ -98,7 +98,7 @@ impl JsProcesses {
 /// const processes = await system.processes.list();
 /// const process = processes[0];
 /// if (process) {
-///   console.log(process.pid, process.name, process.status);
+///   println(process.pid, process.name, process.status);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -354,7 +354,7 @@ impl JsProcess {
 /// const processes = await system.processes.list();
 /// const process = processes[0];
 /// if (process && process.status === ProcessStatus.Run) {
-///   console.log("process is running");
+///   println("process is running");
 /// }
 /// ```
 #[derive(

@@ -12,7 +12,7 @@ use crate::api::js::classes::{HostClass, register_host_class};
 /// ```ts
 /// const entries = await Directory.listEntries("/home/user");
 /// for (const entry of entries) {
-///     console.log(entry.fileName, entry.isFile, entry.size);
+///     println(entry.fileName, entry.isFile, entry.size);
 /// }
 /// ```
 #[derive(Clone, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
@@ -143,7 +143,7 @@ impl Default for JsDirectoryListOptions {
 /// // List entries in a directory
 /// const entries = await Directory.listEntries("/tmp/my/nested/dir");
 /// for (const entry of entries) {
-///     console.log(entry.fileName, entry.isFile ? "file" : "dir");
+///     println(entry.fileName, entry.isFile ? "file" : "dir");
 /// }
 ///
 /// // Remove a directory tree

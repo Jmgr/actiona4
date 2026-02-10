@@ -29,7 +29,7 @@ impl<T> IntoJsResult<T> for super::Result<T> {
 ///
 /// // Find which display contains a point
 /// const info = await displays.fromPoint(100, 200);
-/// if (info) console.log(info.name, info.rect);
+/// if (info) println(info.name, info.rect);
 ///
 /// // Find a display by friendly name
 /// const monitor = await displays.fromName("HDMI-1");
@@ -173,8 +173,8 @@ impl JsDisplays {
 /// ```ts
 /// const info = await displays.fromName("HDMI-1");
 /// if (info) {
-///     console.log(info.friendlyName, info.rect, formatFrequency(info.frequency));
-///     console.log("Primary:", info.isPrimary);
+///     println(info.friendlyName, info.rect, formatFrequency(info.frequency));
+///     println("Primary:", info.isPrimary);
 /// }
 /// ```
 #[derive(Clone, Debug, JsLifetime)]

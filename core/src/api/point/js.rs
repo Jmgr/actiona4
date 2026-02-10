@@ -68,8 +68,8 @@ impl<'js> FromParam<'js> for JsPointLike {
 /// ```ts
 /// const a = new Point(1, 2);
 /// const b = new Point(4, 6);
-/// console.log(a.distanceTo(b)); // 5
-/// console.log(a.add(b).toString()); // "(5, 8)"
+/// println(a.distanceTo(b)); // 5
+/// println(a.add(b).toString()); // "(5, 8)"
 /// ```
 ///
 /// @prop x: number // X coordinate
@@ -133,7 +133,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const p = new Point(3, 4);
-    /// console.log(p.length()); // 5
+    /// println(p.length()); // 5
     /// ```
     #[must_use]
     pub fn length(&self) -> f64 {
@@ -160,7 +160,7 @@ impl JsPoint {
     /// ```ts
     /// const a = new Point(0, 0);
     /// const b = new Point(3, 4);
-    /// console.log(a.distanceTo(b)); // 5
+    /// println(a.distanceTo(b)); // 5
     /// ```
     #[must_use]
     pub fn distance_to(&self, other: Self) -> f64 {
@@ -171,7 +171,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const p = new Point(1, 2);
-    /// console.log(p.toJson()); // '{"x":1,"y":2}'
+    /// println(p.toJson()); // '{"x":1,"y":2}'
     /// ```
     #[must_use]
     pub fn to_json(&self) -> String {
@@ -181,8 +181,8 @@ impl JsPoint {
     /// Returns true if this Point is at the origin, (0, 0).
     ///
     /// ```ts
-    /// console.log(new Point(0, 0).isOrigin()); // true
-    /// console.log(new Point(1, 0).isOrigin()); // false
+    /// println(new Point(0, 0).isOrigin()); // true
+    /// println(new Point(1, 0).isOrigin()); // false
     /// ```
     #[must_use]
     pub fn is_origin(&self) -> bool {
@@ -193,7 +193,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const d = Point.distance(new Point(0, 0), new Point(3, 4));
-    /// console.log(d); // 5
+    /// println(d); // 5
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -206,7 +206,7 @@ impl JsPoint {
     /// ```ts
     /// const a = new Point(1, 2);
     /// const b = new Point(1, 2);
-    /// console.log(a.equals(b)); // true
+    /// println(a.equals(b)); // true
     /// ```
     #[must_use]
     pub fn equals(&self, other: Self) -> bool {
@@ -217,7 +217,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const sum = new Point(1, 2).add(new Point(3, 4));
-    /// console.log(sum.toString()); // "(4, 6)"
+    /// println(sum.toString()); // "(4, 6)"
     /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
@@ -228,7 +228,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const diff = new Point(5, 7).subtract(new Point(2, 3));
-    /// console.log(diff.toString()); // "(3, 4)"
+    /// println(diff.toString()); // "(3, 4)"
     /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
@@ -239,7 +239,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const p = new Point(3, 4).scaled(2);
-    /// console.log(p.toString()); // "(6, 8)"
+    /// println(p.toString()); // "(6, 8)"
     /// ```
     pub fn scaled(&self, factor: f64) -> Result<Self> {
         let result = self.inner.scaled(factor).unwrap(); // TODO
