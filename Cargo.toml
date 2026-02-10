@@ -42,6 +42,7 @@ encoding_rs = "0.8.35"
 enigo = { git = "https://github.com/enigo-rs/enigo.git", rev = "17fc1d5d3d2319fb23b5dffee1bf347b42b40ce4" }
 env_logger = "0.11.8"
 eyre = "0.6.12"
+flate2 = "1.1.9"
 futures = "0.3.31"
 futures-util = "0.3.31"
 http-body = "1.0.1"
@@ -120,7 +121,7 @@ syn = "2.0.114"
 sys-locale = "0.3.2"
 sysinfo = "0.38.1"
 system_shutdown = { version = "4.1.0" }
-tauri = { version = "2.10.2", default-features = true, features = [
+tauri = { version = "2.10.2", default-features = false, features = [
     "wry",
     #"common-controls-v6", # breaks tests on Windows: TODO
     "x11",

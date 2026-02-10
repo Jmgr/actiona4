@@ -1,9 +1,18 @@
-use std::{fs, path::Path};
+use std::{fs, io::Read, path::Path, sync::LazyLock};
 
 use color_eyre::{Result, eyre::Context};
+use flate2::read::GzDecoder;
 
 const TSCONFIG: &str = include_str!("../assets/tsconfig.json");
-const INDEX_DTS: &str = include_str!("../assets/index.d.ts");
+const INDEX_DTS_GZ: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/index.d.ts.gz"));
+static INDEX_DTS: LazyLock<String> = LazyLock::new(|| {
+    let mut decoder = GzDecoder::new(INDEX_DTS_GZ);
+    let mut text = String::new();
+    decoder
+        .read_to_string(&mut text)
+        .expect("Failed to decode embedded index.d.ts.gz");
+    text
+});
 
 const STARTER_SCRIPT: &str = r#"// Welcome to Actiona!
 // Run this script with: actiona4-run run script.ts
@@ -27,14 +36,14 @@ pub fn ensure_index_dts(script_path: &Path) -> Result<()> {
     let dir = script_path.parent().unwrap_or_else(|| Path::new("."));
 
     let dts_path = dir.join("index.d.ts");
-
+    let index_dts = INDEX_DTS.as_str();
     let needs_write = match fs::read_to_string(&dts_path) {
-        Ok(existing) => existing != INDEX_DTS,
+        Ok(existing) => existing != index_dts,
         Err(_) => false, // Don't create index.d.ts if it doesn't exist — that's what `init` is for
     };
 
     if needs_write {
-        fs::write(&dts_path, INDEX_DTS).context("updating index.d.ts")?;
+        fs::write(&dts_path, index_dts).context("updating index.d.ts")?;
         eprintln!("Updated {}", dts_path.display());
     }
 
@@ -56,10 +65,10 @@ fn write_tsconfig(path: &Path) -> Result<()> {
 
 fn write_index_dts(path: &Path) -> Result<()> {
     let dts_path = path.join("index.d.ts");
-
+    let index_dts = INDEX_DTS.as_str();
     let action = if dts_path.exists() {
         let existing = fs::read_to_string(&dts_path).context("reading existing index.d.ts")?;
-        if existing == INDEX_DTS {
+        if existing == index_dts {
             eprintln!("Skipped index.d.ts (already up to date)");
             return Ok(());
         }
@@ -68,7 +77,7 @@ fn write_index_dts(path: &Path) -> Result<()> {
         "Created"
     };
 
-    fs::write(&dts_path, INDEX_DTS).context("writing index.d.ts")?;
+    fs::write(&dts_path, index_dts).context("writing index.d.ts")?;
     eprintln!("{action} {}", dts_path.display());
 
     Ok(())

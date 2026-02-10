@@ -166,10 +166,10 @@ fn find_opencv_world_dll_source(profile_dir: &Path, dll_names: &[String]) -> Opt
     }
 
     for variable in ["OpenCV_DIR", "OPENCV_DIR"] {
-        if let Ok(raw) = env::var(variable) {
-            if !raw.trim().is_empty() {
-                push_candidate_dirs_for_opencv_root(&mut candidate_dirs, PathBuf::from(raw));
-            }
+        if let Ok(raw) = env::var(variable)
+            && !raw.trim().is_empty()
+        {
+            push_candidate_dirs_for_opencv_root(&mut candidate_dirs, PathBuf::from(raw));
         }
     }
 
@@ -211,12 +211,11 @@ fn push_candidate_dirs_for_link_path(candidate_dirs: &mut Vec<PathBuf>, raw_path
 
     candidate_dirs.push(raw_path.clone());
 
-    if let Some(file_name) = raw_path.file_name().and_then(|name| name.to_str()) {
-        if file_name.eq_ignore_ascii_case("lib") {
-            if let Some(parent) = raw_path.parent() {
-                candidate_dirs.push(parent.join("bin"));
-            }
-        }
+    if let Some(file_name) = raw_path.file_name().and_then(|name| name.to_str())
+        && file_name.eq_ignore_ascii_case("lib")
+        && let Some(parent) = raw_path.parent()
+    {
+        candidate_dirs.push(parent.join("bin"));
     }
 }
 

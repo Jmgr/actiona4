@@ -11,10 +11,6 @@ default-run = "actiona4-run"
 [package.metadata.cargo-machete]
 ignored = ["tauri-build"]
 
-[features]
-default = []
-windows-console-bin = []
-
 [[bin]]
 name = "actiona4-run"
 path = "src/bin/actiona4-run.rs"
@@ -23,6 +19,10 @@ path = "src/bin/actiona4-run.rs"
 name = "actiona4-run-console"
 path = "src/bin/actiona4-run-console.rs"
 required-features = ["windows-console-bin"]
+
+[features]
+default = []
+windows-console-bin = []
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
@@ -43,6 +43,7 @@ clap_complete.workspace = true
 color-eyre.workspace = true
 console.workspace = true
 directories.workspace = true
+flate2.workspace = true
 humantime.workspace = true
 rquickjs.workspace = true
 rustyline.workspace = true
@@ -62,6 +63,7 @@ built.workspace = true
 cfg_aliases.workspace = true
 clap = { workspace = true, features = ["env"] }
 clap_complete.workspace = true
+flate2.workspace = true
 tauri-build.workspace = true
 
 [dev-dependencies]
