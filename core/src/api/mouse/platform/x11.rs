@@ -11,7 +11,7 @@ use crate::{
     runtime::{Runtime, events::MouseButtonEvent},
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MouseImpl {
     runtime: Arc<Runtime>,
     master_pointer_device_id: u16,

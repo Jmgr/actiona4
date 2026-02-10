@@ -98,7 +98,7 @@ impl User {
 }
 
 #[derive_where(Debug)]
-pub struct Os {
+struct OsInner {
     #[derive_where(skip)]
     users: Arc<Mutex<sysinfo::Users>>,
 
@@ -117,39 +117,44 @@ pub struct Os {
     task_tracker: TaskTracker,
 }
 
+#[derive(Clone, Debug)]
+pub struct Os {
+    inner: Arc<OsInner>,
+}
+
 impl Display for Os {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if f.alternate() {
             DisplayFields::default()
-                .display_if_some("name", &self.name)
+                .display_if_some("name", &self.inner.name)
                 .display("uptime", self.uptime())
                 .display("boot_time", self.boot_time())
                 .display_if_some("open_files_limit", &self.open_files_limit())
-                .display_if_some("kernel_version", &self.kernel_version)
-                .display("kernel_long_version", &self.kernel_long_version)
-                .display_if_some("version", &self.version)
-                .display_if_some("long_version", &self.long_version)
-                .display("distribution_id", &self.distribution_id)
+                .display_if_some("kernel_version", &self.inner.kernel_version)
+                .display("kernel_long_version", &self.inner.kernel_long_version)
+                .display_if_some("version", &self.inner.version)
+                .display_if_some("long_version", &self.inner.long_version)
+                .display("distribution_id", &self.inner.distribution_id)
                 .display(
                     "distribution_id_like",
-                    display_list(&self.distribution_id_like),
+                    display_list(&self.inner.distribution_id_like),
                 )
                 .display("users", display_map(&self.users()))
                 .display("groups", display_map(&self.groups()))
                 .finish(f)
         } else {
             DisplayFields::default()
-                .display_if_some("name", &self.name)
+                .display_if_some("name", &self.inner.name)
                 .display("uptime", self.uptime())
                 .display("boot_time", self.boot_time())
-                .display_if_some("kernel_version", &self.kernel_version)
-                .display("kernel_long_version", &self.kernel_long_version)
-                .display_if_some("version", &self.version)
-                .display_if_some("long_version", &self.long_version)
-                .display("distribution_id", &self.distribution_id)
+                .display_if_some("kernel_version", &self.inner.kernel_version)
+                .display("kernel_long_version", &self.inner.kernel_long_version)
+                .display_if_some("version", &self.inner.version)
+                .display_if_some("long_version", &self.inner.long_version)
+                .display("distribution_id", &self.inner.distribution_id)
                 .display(
                     "distribution_id_like",
-                    display_list(&self.distribution_id_like),
+                    display_list(&self.inner.distribution_id_like),
                 )
                 .finish(f)
         }
@@ -164,52 +169,54 @@ impl Os {
             .await?;
 
         Ok(Self {
-            users: Arc::new(Mutex::new(users)),
-            groups: Arc::new(Mutex::new(groups)),
-            name: sysinfo::System::name().into(),
-            kernel_version: sysinfo::System::kernel_version().into(),
-            version: sysinfo::System::os_version().into(),
-            long_version: sysinfo::System::long_os_version().into(),
-            distribution_id: sysinfo::System::distribution_id(),
-            distribution_id_like: sysinfo::System::distribution_id_like(),
-            kernel_long_version: sysinfo::System::kernel_long_version(),
-            task_tracker,
+            inner: Arc::new(OsInner {
+                users: Arc::new(Mutex::new(users)),
+                groups: Arc::new(Mutex::new(groups)),
+                name: sysinfo::System::name().into(),
+                kernel_version: sysinfo::System::kernel_version().into(),
+                version: sysinfo::System::os_version().into(),
+                long_version: sysinfo::System::long_os_version().into(),
+                distribution_id: sysinfo::System::distribution_id(),
+                distribution_id_like: sysinfo::System::distribution_id_like(),
+                kernel_long_version: sysinfo::System::kernel_long_version(),
+                task_tracker,
+            }),
         })
     }
 
     #[must_use]
     pub fn name(&self) -> Option<&str> {
-        self.name.as_deref()
+        self.inner.name.as_deref()
     }
 
     #[must_use]
     pub fn kernel_version(&self) -> Option<&str> {
-        self.kernel_version.as_deref()
+        self.inner.kernel_version.as_deref()
     }
 
     #[must_use]
     pub fn version(&self) -> Option<&str> {
-        self.version.as_deref()
+        self.inner.version.as_deref()
     }
 
     #[must_use]
     pub fn long_version(&self) -> Option<&str> {
-        self.long_version.as_deref()
+        self.inner.long_version.as_deref()
     }
 
     #[must_use]
     pub fn distribution_id(&self) -> &str {
-        &self.distribution_id
+        &self.inner.distribution_id
     }
 
     #[must_use]
-    pub const fn distribution_id_like(&self) -> &Vec<String> {
-        &self.distribution_id_like
+    pub fn distribution_id_like(&self) -> &Vec<String> {
+        &self.inner.distribution_id_like
     }
 
     #[must_use]
     pub fn kernel_long_version(&self) -> &str {
-        &self.kernel_long_version
+        &self.inner.kernel_long_version
     }
 
     #[must_use]
@@ -228,8 +235,9 @@ impl Os {
     }
 
     pub async fn refresh_users(&self) -> Result<HashMap<UidUnit, User>> {
-        let users = self.users.clone();
+        let users = self.inner.users.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut users = users.lock();
@@ -248,7 +256,7 @@ impl Os {
 
     #[must_use]
     pub fn users(&self) -> HashMap<UidUnit, User> {
-        let users = self.users.lock();
+        let users = self.inner.users.lock();
         users
             .list()
             .iter()
@@ -257,8 +265,9 @@ impl Os {
     }
 
     pub async fn refresh_groups(&self) -> Result<HashMap<u32, Group>> {
-        let groups = self.groups.clone();
+        let groups = self.inner.groups.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut groups = groups.lock();
@@ -277,7 +286,7 @@ impl Os {
 
     #[must_use]
     pub fn groups(&self) -> HashMap<u32, Group> {
-        let groups = self.groups.lock();
+        let groups = self.inner.groups.lock();
         groups
             .list()
             .iter()

@@ -1,4 +1,4 @@
-use std::{ffi::OsStr, fmt::Display, path::Path, sync::Arc};
+use std::{ffi::OsStr, fmt::Display, path::Path};
 
 use color_eyre::Result;
 use system_shutdown::{
@@ -26,15 +26,15 @@ pub mod platform;
 pub mod processes;
 pub mod storage;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct System {
-    cpu: Arc<Cpu>,
-    memory: Arc<Memory>,
-    os: Arc<Os>,
-    network: Arc<Network>,
-    hardware: Arc<Hardware>,
-    storage: Arc<Storage>,
-    processes: Arc<Processes>,
+    cpu: Cpu,
+    memory: Memory,
+    os: Os,
+    network: Network,
+    hardware: Hardware,
+    storage: Storage,
+    processes: Processes,
 }
 
 impl Display for System {
@@ -65,48 +65,48 @@ impl System {
         );
 
         Ok(Self {
-            cpu: Arc::new(cpu?),
-            memory: Arc::new(memory?),
-            os: Arc::new(os?),
-            network: Arc::new(network?),
-            hardware: Arc::new(hardware?),
-            storage: Arc::new(storage?),
-            processes: Arc::new(processes?),
+            cpu: cpu?,
+            memory: memory?,
+            os: os?,
+            network: network?,
+            hardware: hardware?,
+            storage: storage?,
+            processes: processes?,
         })
     }
 
     #[must_use]
-    pub fn cpu(&self) -> Arc<Cpu> {
+    pub fn cpu(&self) -> Cpu {
         self.cpu.clone()
     }
 
     #[must_use]
-    pub fn memory(&self) -> Arc<Memory> {
+    pub fn memory(&self) -> Memory {
         self.memory.clone()
     }
 
     #[must_use]
-    pub fn os(&self) -> Arc<Os> {
+    pub fn os(&self) -> Os {
         self.os.clone()
     }
 
     #[must_use]
-    pub fn network(&self) -> Arc<Network> {
+    pub fn network(&self) -> Network {
         self.network.clone()
     }
 
     #[must_use]
-    pub fn hardware(&self) -> Arc<Hardware> {
+    pub fn hardware(&self) -> Hardware {
         self.hardware.clone()
     }
 
     #[must_use]
-    pub fn storage(&self) -> Arc<Storage> {
+    pub fn storage(&self) -> Storage {
         self.storage.clone()
     }
 
     #[must_use]
-    pub fn processes(&self) -> Arc<Processes> {
+    pub fn processes(&self) -> Processes {
         self.processes.clone()
     }
 

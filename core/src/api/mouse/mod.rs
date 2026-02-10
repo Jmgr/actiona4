@@ -311,11 +311,11 @@ pub struct ButtonConditions {
     direction: Option<Direction>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Mouse {
     enigo: Arc<Mutex<Enigo>>,
     implementation: MouseImpl,
-    pressed_buttons: Mutex<IndexSet<Button>>,
+    pressed_buttons: Arc<Mutex<IndexSet<Button>>>,
 }
 
 // TODO: record
@@ -327,7 +327,7 @@ impl Mouse {
         Ok(Self {
             enigo: runtime.enigo(),
             implementation: MouseImpl::new(runtime).await?,
-            pressed_buttons: Mutex::new(Default::default()),
+            pressed_buttons: Arc::new(Mutex::new(Default::default())),
         })
     }
 

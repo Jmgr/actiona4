@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, Object, Result, atom::PredefinedAtom, class::Trace};
 
@@ -27,7 +25,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Os")]
 pub struct JsOs {
-    inner: Arc<Os>,
+    inner: Os,
 }
 
 impl<'js> HostClass<'js> for JsOs {
@@ -45,7 +43,7 @@ impl<'js> Trace<'js> for JsOs {
 impl JsOs {
     /// @skip
     #[must_use]
-    pub const fn new(inner: Arc<Os>) -> Self {
+    pub const fn new(inner: Os) -> Self {
         Self { inner }
     }
 }

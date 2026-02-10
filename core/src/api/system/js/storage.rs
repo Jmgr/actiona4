@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use derive_more::Display;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
@@ -28,7 +26,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Storage")]
 pub struct JsStorage {
-    inner: Arc<Storage>,
+    inner: Storage,
 }
 
 impl<'js> HostClass<'js> for JsStorage {
@@ -45,7 +43,7 @@ impl<'js> Trace<'js> for JsStorage {
 impl JsStorage {
     /// @skip
     #[must_use]
-    pub const fn new(inner: Arc<Storage>) -> Self {
+    pub const fn new(inner: Storage) -> Self {
         Self { inner }
     }
 }

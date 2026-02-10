@@ -1,4 +1,4 @@
-use std::{fmt::Debug, sync::Arc, time::Duration};
+use std::{fmt::Debug, time::Duration};
 
 use macros::FromJsObject;
 use rquickjs::{
@@ -122,7 +122,7 @@ impl From<JsWaitForChangedOptions> for super::WaitForChangedOptions {
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Clipboard")]
 pub struct JsClipboard {
-    inner: Arc<super::Clipboard>,
+    inner: super::Clipboard,
     text: JsClipboardText,
     image: JsClipboardImage,
     file_list: JsClipboardFileList,
@@ -149,7 +149,7 @@ impl JsClipboard {
     /// @skip
     #[must_use]
     #[instrument(skip_all)]
-    pub fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub fn new(clipboard: super::Clipboard) -> Self {
         let text = JsClipboardText::new(clipboard.clone());
         let image = JsClipboardImage::new(clipboard.clone());
         let file_list = JsClipboardFileList::new(clipboard.clone());
@@ -248,7 +248,7 @@ impl JsClipboard {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardText")]
 pub struct JsClipboardText {
-    inner: Arc<super::Clipboard>,
+    inner: super::Clipboard,
 }
 
 impl<'js> HostClass<'js> for JsClipboardText {}
@@ -260,7 +260,7 @@ impl<'js> Trace<'js> for JsClipboardText {
 impl JsClipboardText {
     /// @skip
     #[must_use]
-    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: super::Clipboard) -> Self {
         Self { inner: clipboard }
     }
 }
@@ -288,7 +288,7 @@ impl JsClipboardText {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardImage")]
 pub struct JsClipboardImage {
-    inner: Arc<super::Clipboard>,
+    inner: super::Clipboard,
 }
 
 impl<'js> HostClass<'js> for JsClipboardImage {}
@@ -300,7 +300,7 @@ impl<'js> Trace<'js> for JsClipboardImage {
 impl JsClipboardImage {
     /// @skip
     #[must_use]
-    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: super::Clipboard) -> Self {
         Self { inner: clipboard }
     }
 }
@@ -336,7 +336,7 @@ impl JsClipboardImage {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardFileList")]
 pub struct JsClipboardFileList {
-    inner: Arc<super::Clipboard>,
+    inner: super::Clipboard,
 }
 
 impl<'js> HostClass<'js> for JsClipboardFileList {}
@@ -348,7 +348,7 @@ impl<'js> Trace<'js> for JsClipboardFileList {
 impl JsClipboardFileList {
     /// @skip
     #[must_use]
-    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: super::Clipboard) -> Self {
         Self { inner: clipboard }
     }
 }
@@ -388,7 +388,7 @@ impl JsClipboardFileList {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ClipboardHtml")]
 pub struct JsClipboardHtml {
-    inner: Arc<super::Clipboard>,
+    inner: super::Clipboard,
 }
 
 impl<'js> HostClass<'js> for JsClipboardHtml {}
@@ -400,7 +400,7 @@ impl<'js> Trace<'js> for JsClipboardHtml {
 impl JsClipboardHtml {
     /// @skip
     #[must_use]
-    pub const fn new(clipboard: Arc<super::Clipboard>) -> Self {
+    pub const fn new(clipboard: super::Clipboard) -> Self {
         Self { inner: clipboard }
     }
 }

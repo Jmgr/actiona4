@@ -1,4 +1,4 @@
-use std::{path::Path, sync::Arc};
+use std::path::Path;
 
 use macros::FromJsObject;
 use rquickjs::{
@@ -101,7 +101,7 @@ impl JsPlaySoundOptions {
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "Audio")]
 pub struct JsAudio {
-    inner: Arc<Audio>,
+    inner: Audio,
 }
 
 impl<'js> Trace<'js> for JsAudio {
@@ -124,7 +124,7 @@ impl JsAudio {
         task_tracker: TaskTracker,
     ) -> color_eyre::Result<Self> {
         Ok(Self {
-            inner: Arc::new(Audio::new(cancellation_token, task_tracker)?),
+            inner: Audio::new(cancellation_token, task_tracker)?,
         })
     }
 }
@@ -201,7 +201,7 @@ impl JsAudio {
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "PlayingSound")]
 pub struct JsPlayingSound {
-    inner: Arc<PlayingSound>,
+    inner: PlayingSound,
 }
 
 impl<'js> HostClass<'js> for JsPlayingSound {}
@@ -213,10 +213,8 @@ impl<'js> Trace<'js> for JsPlayingSound {
 impl JsPlayingSound {
     /// @skip
     #[must_use]
-    pub fn new(inner: PlayingSound) -> Self {
-        Self {
-            inner: Arc::new(inner),
-        }
+    pub const fn new(inner: PlayingSound) -> Self {
+        Self { inner }
     }
 }
 

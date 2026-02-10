@@ -9,7 +9,7 @@ use xkeysym::Keysym;
 
 use crate::runtime::Runtime;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KeyboardImpl {
     runtime: Arc<Runtime>,
 }

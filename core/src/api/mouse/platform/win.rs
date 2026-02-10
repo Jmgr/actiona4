@@ -13,7 +13,7 @@ use crate::{
     runtime::{Runtime, events::MouseButtonEvent},
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MouseImpl {
     runtime: Arc<Runtime>,
 }

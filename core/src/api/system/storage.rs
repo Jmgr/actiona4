@@ -178,6 +178,7 @@ impl Disk {
     }
 }
 
+#[derive(Clone)]
 #[derive_where(Debug)]
 pub struct Storage {
     #[derive_where(skip)]

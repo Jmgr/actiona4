@@ -408,6 +408,7 @@ impl Process {
     }
 }
 
+#[derive(Clone)]
 #[derive_where(Debug)]
 pub struct Processes {
     #[derive_where(skip)]

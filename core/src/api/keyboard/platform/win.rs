@@ -2,7 +2,7 @@ use color_eyre::{Result, eyre::eyre};
 use enigo::Key;
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VIRTUAL_KEY};
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct KeyboardImpl {}
 
 impl KeyboardImpl {

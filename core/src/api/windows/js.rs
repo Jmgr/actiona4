@@ -106,7 +106,7 @@ impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Windows")]
 pub struct JsWindows {
-    inner: Arc<super::Windows>,
+    inner: super::Windows,
 }
 
 impl<'js> SingletonClass<'js> for JsWindows {
@@ -127,7 +127,7 @@ impl JsWindows {
     #[instrument(skip_all)]
     pub fn new(runtime: Arc<Runtime>) -> Self {
         Self {
-            inner: Arc::new(super::Windows::new(runtime)),
+            inner: super::Windows::new(runtime),
         }
     }
 }
@@ -275,7 +275,7 @@ impl JsWindows {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "WindowHandle")]
 pub struct JsWindowHandle {
-    inner: Arc<super::Windows>,
+    inner: super::Windows,
     id: super::WindowId,
 }
 

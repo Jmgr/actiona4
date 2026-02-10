@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use itertools::Itertools;
 use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
@@ -24,8 +22,8 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Hardware")]
 pub struct JsHardware {
-    inner: Arc<Hardware>,
-    motherboard: Arc<Motherboard>,
+    inner: Hardware,
+    motherboard: Motherboard,
 }
 
 impl<'js> HostClass<'js> for JsHardware {
@@ -43,8 +41,8 @@ impl<'js> Trace<'js> for JsHardware {
 impl JsHardware {
     /// @skip
     #[must_use]
-    pub fn new(inner: Arc<Hardware>) -> Self {
-        let motherboard = Arc::new(inner.motherboard().clone());
+    pub fn new(inner: Hardware) -> Self {
+        let motherboard = inner.motherboard().clone();
 
         Self { inner, motherboard }
     }
@@ -165,7 +163,7 @@ impl JsHardware {
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Motherboard")]
 pub struct JsMotherboard {
-    inner: Arc<Motherboard>,
+    inner: Motherboard,
 }
 
 impl<'js> HostClass<'js> for JsMotherboard {}
@@ -174,8 +172,8 @@ impl<'js> Trace<'js> for JsMotherboard {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
 }
 
-impl From<Arc<Motherboard>> for JsMotherboard {
-    fn from(value: Arc<Motherboard>) -> Self {
+impl From<Motherboard> for JsMotherboard {
+    fn from(value: Motherboard) -> Self {
         Self { inner: value }
     }
 }

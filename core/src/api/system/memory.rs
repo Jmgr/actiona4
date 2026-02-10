@@ -121,6 +121,7 @@ impl CGroupLimits {
     }
 }
 
+#[derive(Clone)]
 #[derive_where(Debug)]
 pub struct Memory {
     #[derive_where(skip)]

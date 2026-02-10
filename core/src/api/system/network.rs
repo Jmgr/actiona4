@@ -191,6 +191,7 @@ impl NetworkInterface {
     }
 }
 
+#[derive(Clone)]
 #[derive_where(Debug)]
 pub struct Network {
     #[derive_where(skip)]

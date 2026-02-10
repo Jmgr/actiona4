@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use derive_more::Display;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
@@ -30,7 +28,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Processes")]
 pub struct JsProcesses {
-    inner: Arc<Processes>,
+    inner: Processes,
 }
 
 impl<'js> HostClass<'js> for JsProcesses {
@@ -47,7 +45,7 @@ impl<'js> Trace<'js> for JsProcesses {
 impl JsProcesses {
     /// @skip
     #[must_use]
-    pub const fn new(inner: Arc<Processes>) -> Self {
+    pub const fn new(inner: Processes) -> Self {
         Self { inner }
     }
 }

@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    sync::{Arc, atomic::AtomicUsize},
+    sync::Arc,
     thread::{self, JoinHandle},
     time::Duration,
 };
@@ -47,8 +47,8 @@ use crate::{
     runtime::{
         events::{Guard, KeyboardKeyEvent, KeyboardTextEvent, MouseButtonEvent, TopicWrapper},
         platform::x11::events::input::{
-            InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
-            keysym_to_key,
+            ActivationCounter, InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic,
+            MouseMoveTopic, keysym_to_key,
         },
     },
     types::input::Direction,
@@ -74,10 +74,10 @@ pub struct Runtime {
     x11_connection: Arc<X11Connection>,
     has_shm: bool,
     atoms: AtomCollection,
-    mouse_buttons_topic: Arc<TopicWrapper<MouseButtonsTopic>>,
-    mouse_move_topic: Arc<TopicWrapper<MouseMoveTopic>>,
-    keyboard_keys_topic: Arc<TopicWrapper<KeyboardKeysTopic>>,
-    keyboard_text_topic: Arc<TopicWrapper<KeyboardTextTopic>>,
+    mouse_buttons_topic: TopicWrapper<MouseButtonsTopic>,
+    mouse_move_topic: TopicWrapper<MouseMoveTopic>,
+    keyboard_keys_topic: TopicWrapper<KeyboardKeysTopic>,
+    keyboard_text_topic: TopicWrapper<KeyboardTextTopic>,
     window_event_sender: broadcast::Sender<WindowEvent>,
     main_loop_thread: Option<JoinHandle<Result<()>>>,
 }
@@ -211,28 +211,28 @@ impl Runtime {
             },
         );
 
-        let input_mask = Arc::new(InputMask::new(x11_connection.clone()).await?);
-        let mouse_buttons_topic = Arc::new(TopicWrapper::new(
+        let input_mask = InputMask::new(x11_connection.clone()).await?;
+        let mouse_buttons_topic = TopicWrapper::new(
             MouseButtonsTopic::new(input_mask.clone()),
             cancellation_token.clone(),
             task_tracker.clone(),
-        ));
-        let mouse_move_topic = Arc::new(TopicWrapper::new(
+        );
+        let mouse_move_topic = TopicWrapper::new(
             MouseMoveTopic::new(input_mask.clone()),
             cancellation_token.clone(),
             task_tracker.clone(),
-        ));
-        let activation_counter = Arc::new(AtomicUsize::new(0));
-        let keyboard_keys_topic = Arc::new(TopicWrapper::new(
+        );
+        let activation_counter = ActivationCounter::default();
+        let keyboard_keys_topic = TopicWrapper::new(
             KeyboardKeysTopic::new(input_mask.clone(), activation_counter.clone()),
             cancellation_token.clone(),
             task_tracker.clone(),
-        ));
-        let keyboard_text_topic = Arc::new(TopicWrapper::new(
+        );
+        let keyboard_text_topic = TopicWrapper::new(
             KeyboardTextTopic::new(input_mask, activation_counter),
             cancellation_token.clone(),
             task_tracker.clone(),
-        ));
+        );
         let (window_event_sender, _) = broadcast::channel(1024);
 
         let local_cancellation_token = cancellation_token.clone();

@@ -152,7 +152,7 @@ impl Component {
 }
 
 #[derive_where(Debug)]
-pub struct Hardware {
+struct HardwareInner {
     #[derive_where(skip)]
     components: Arc<Mutex<sysinfo::Components>>,
 
@@ -169,17 +169,22 @@ pub struct Hardware {
     task_tracker: TaskTracker,
 }
 
+#[derive(Clone, Debug)]
+pub struct Hardware {
+    inner: Arc<HardwareInner>,
+}
+
 impl Display for Hardware {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
-            .display_if_some("name", &self.name)
-            .display_if_some("family", &self.family)
-            .display_if_some("serial_number", &self.serial_number)
-            .display_if_some("stock_keeping_unit", &self.stock_keeping_unit)
-            .display_if_some("uuid", &self.uuid)
-            .display_if_some("version", &self.version)
-            .display_if_some("vendor_name", &self.vendor_name)
-            .display("motherboard", &self.motherboard)
+            .display_if_some("name", &self.inner.name)
+            .display_if_some("family", &self.inner.family)
+            .display_if_some("serial_number", &self.inner.serial_number)
+            .display_if_some("stock_keeping_unit", &self.inner.stock_keeping_unit)
+            .display_if_some("uuid", &self.inner.uuid)
+            .display_if_some("version", &self.inner.version)
+            .display_if_some("vendor_name", &self.inner.vendor_name)
+            .display("motherboard", &self.inner.motherboard)
             .display("components", display_list(&self.components()))
             .finish(f)
     }
@@ -193,62 +198,65 @@ impl Hardware {
             .await?;
 
         Ok(Self {
-            components: Arc::new(Mutex::new(components)),
-            name: Product::name().into(),
-            family: Product::family().into(),
-            serial_number: Product::serial_number().into(),
-            stock_keeping_unit: Product::stock_keeping_unit().into(),
-            uuid: Product::uuid().into(),
-            version: Product::version().into(),
-            vendor_name: Product::vendor_name().into(),
-            motherboard: Motherboard::default(),
-            task_tracker,
+            inner: Arc::new(HardwareInner {
+                components: Arc::new(Mutex::new(components)),
+                name: Product::name().into(),
+                family: Product::family().into(),
+                serial_number: Product::serial_number().into(),
+                stock_keeping_unit: Product::stock_keeping_unit().into(),
+                uuid: Product::uuid().into(),
+                version: Product::version().into(),
+                vendor_name: Product::vendor_name().into(),
+                motherboard: Motherboard::default(),
+                task_tracker,
+            }),
         })
     }
 
     #[must_use]
     pub fn name(&self) -> Option<&str> {
-        self.name.as_deref()
+        self.inner.name.as_deref()
     }
 
     #[must_use]
     pub fn family(&self) -> Option<&str> {
-        self.family.as_deref()
+        self.inner.family.as_deref()
     }
 
     #[must_use]
     pub fn serial_number(&self) -> Option<&str> {
-        self.serial_number.as_deref()
+        self.inner.serial_number.as_deref()
     }
 
     #[must_use]
     pub fn stock_keeping_unit(&self) -> Option<&str> {
-        self.stock_keeping_unit.as_deref()
+        self.inner.stock_keeping_unit.as_deref()
     }
 
     #[must_use]
     pub fn version(&self) -> Option<&str> {
-        self.version.as_deref()
+        self.inner.version.as_deref()
     }
 
     #[must_use]
     pub fn uuid(&self) -> Option<&str> {
-        self.uuid.as_deref()
+        self.inner.uuid.as_deref()
     }
 
     #[must_use]
     pub fn vendor_name(&self) -> Option<&str> {
-        self.vendor_name.as_deref()
+        self.inner.vendor_name.as_deref()
     }
 
     #[must_use]
-    pub const fn motherboard(&self) -> &Motherboard {
-        &self.motherboard
+    pub fn motherboard(&self) -> &Motherboard {
+        &self.inner.motherboard
     }
 
     pub async fn refresh_components(&self, rescan: bool) -> Result<Vec<Component>> {
-        let components = self.components.clone();
+        let components = self.inner.components.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut components = components.lock();
@@ -262,8 +270,9 @@ impl Hardware {
     pub async fn refresh_component(&self, component: &Component) -> Result<Option<Component>> {
         let component_id = component.id.clone();
         let component_label = component.label.clone();
-        let components = self.components.clone();
+        let components = self.inner.components.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut components = components.lock();
@@ -286,7 +295,7 @@ impl Hardware {
     }
 
     pub fn components(&self) -> Vec<Component> {
-        let components = self.components.lock();
+        let components = self.inner.components.lock();
 
         components.list().iter().map(Component::from).collect_vec()
     }

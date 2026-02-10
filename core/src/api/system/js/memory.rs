@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace};
 
 use crate::{
@@ -21,7 +19,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Memory")]
 pub struct JsMemory {
-    inner: Arc<Memory>,
+    inner: Memory,
 }
 
 impl<'js> HostClass<'js> for JsMemory {
@@ -39,7 +37,7 @@ impl<'js> Trace<'js> for JsMemory {
 impl JsMemory {
     /// @skip
     #[must_use]
-    pub const fn new(inner: Arc<Memory>) -> Self {
+    pub const fn new(inner: Memory) -> Self {
         Self { inner }
     }
 }

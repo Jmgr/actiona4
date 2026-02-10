@@ -64,7 +64,7 @@ struct UpdateResponse {
 }
 
 pub struct Updater {
-    config: Arc<Config>,
+    config: Config,
     app: String,
     app_version: SemVer,
 }
@@ -72,15 +72,16 @@ pub struct Updater {
 impl Updater {
     #[must_use]
     pub fn new(
-        config: Arc<Config>,
+        config: Config,
         enabled: bool,
         app: &str,
         app_version: SemVer,
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
     ) -> (Arc<Self>, oneshot::Receiver<()>) {
+        let local_config = config.clone();
         let result = Arc::new(Self {
-            config: config.clone(),
+            config,
             app: app.to_string(),
             app_version,
         });
@@ -99,7 +100,7 @@ impl Updater {
         task_tracker.spawn(async move {
             loop {
                 let now = OffsetDateTime::now_utc();
-                let next_update_check = config.state(|state| state.next_update_check);
+                let next_update_check = local_config.state(|state| state.next_update_check);
                 let next_update_check = next_update_check.unwrap_or(now);
                 let should_check = next_update_check <= now;
 
@@ -116,7 +117,7 @@ impl Updater {
 
                             if result.update_available
                                 && let Some(version_info) = result.info
-                                && let Err(err) = config
+                                && let Err(err) = local_config
                                     .state_mut(|state| {
                                         state.new_version_available = Some(version_info)
                                     })
@@ -138,7 +139,7 @@ impl Updater {
                         }
                     };
 
-                    if let Err(err) = config
+                    if let Err(err) = local_config
                         .state_mut(|state| state.next_update_check = Some(now + next_check))
                         .await
                     {

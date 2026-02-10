@@ -52,9 +52,9 @@ impl HookSpec for MouseHook {
 
 #[derive(Debug)]
 pub struct MouseInputDispatcher {
-    mouse_buttons: Arc<TopicWrapper<MouseButtonsTopic>>,
-    mouse_move: Arc<TopicWrapper<MouseMoveTopic>>,
-    subscribers: Arc<AtomicUsize>,
+    mouse_buttons: TopicWrapper<MouseButtonsTopic>,
+    mouse_move: TopicWrapper<MouseMoveTopic>,
+    subscribers: AtomicUsize,
     message_pump: SafeMessagePump,
 }
 
@@ -76,21 +76,21 @@ impl MouseInputDispatcher {
                 .unwrap_or_else(|e| e.into_inner()) = me.clone();
 
             Self {
-                mouse_buttons: Arc::new(TopicWrapper::new(
+                mouse_buttons: TopicWrapper::new(
                     MouseButtonsTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
                     task_tracker.clone(),
-                )),
-                mouse_move: Arc::new(TopicWrapper::new(
+                ),
+                mouse_move: TopicWrapper::new(
                     MouseMoveTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
                     task_tracker.clone(),
-                )),
-                subscribers: Arc::new(AtomicUsize::new(0)),
+                ),
+                subscribers: AtomicUsize::new(0),
                 message_pump,
             }
         }))

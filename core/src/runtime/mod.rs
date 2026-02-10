@@ -192,7 +192,7 @@ pub struct Runtime {
     background_tasks_counter: AtomicU64,
 
     #[derive_where(skip)]
-    clipboard: Arc<Clipboard>,
+    clipboard: Clipboard,
 }
 
 #[instrument(skip_all)]
@@ -252,7 +252,7 @@ impl Runtime {
             }
         });
 
-        let clipboard = Arc::new(Clipboard::new()?);
+        let clipboard = Clipboard::new()?;
         let runtime = Arc::new(Self {
             runtime,
             enigo: new_enigo()?,
@@ -623,7 +623,7 @@ impl Runtime {
     }
 
     #[must_use]
-    pub fn clipboard(&self) -> Arc<Clipboard> {
+    pub fn clipboard(&self) -> Clipboard {
         self.clipboard.clone()
     }
 

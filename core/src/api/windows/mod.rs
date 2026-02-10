@@ -21,13 +21,13 @@ pub enum WindowsError {
 
 pub type Result<T> = std::result::Result<T, WindowsError>;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Windows {
     #[cfg(unix)]
-    handler: platform::x11::X11WindowHandler,
+    handler: Arc<platform::x11::X11WindowHandler>,
 
     #[cfg(windows)]
-    handler: platform::win::WindowsWindowHandler,
+    handler: Arc<platform::win::WindowsWindowHandler>,
 }
 
 impl Windows {
@@ -36,7 +36,7 @@ impl Windows {
         #[cfg(unix)]
         {
             Self {
-                handler: platform::x11::X11WindowHandler::new(runtime),
+                handler: Arc::new(platform::x11::X11WindowHandler::new(runtime)),
             }
         }
 
@@ -44,7 +44,7 @@ impl Windows {
         {
             let _ = runtime;
             Self {
-                handler: platform::win::WindowsWindowHandler::default(),
+                handler: Arc::new(platform::win::WindowsWindowHandler::default()),
             }
         }
     }

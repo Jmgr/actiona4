@@ -18,7 +18,7 @@ use platform::x11::KeyboardImpl;
 
 use crate::{cancel_on, runtime::Runtime};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Keyboard {
     runtime: Arc<Runtime>,
     enigo: Arc<Mutex<Enigo>>,

@@ -89,7 +89,7 @@ impl From<JsDirection> for enigo::Direction {
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Keyboard")]
 pub struct JsKeyboard {
-    inner: Arc<super::Keyboard>,
+    inner: super::Keyboard,
 }
 
 impl<'js> Trace<'js> for JsKeyboard {
@@ -118,7 +118,7 @@ impl JsKeyboard {
     #[instrument(skip_all)]
     pub fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
         Ok(Self {
-            inner: Arc::new(super::Keyboard::new(runtime)?),
+            inner: super::Keyboard::new(runtime)?,
         })
     }
 }

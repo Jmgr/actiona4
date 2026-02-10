@@ -12,6 +12,7 @@ use crate::api::js::duration::JsDuration;
 
 pub mod js;
 
+#[derive(Clone)]
 pub struct PlayingSound {
     sink: Arc<Sink>,
     duration: Option<Duration>,
@@ -128,6 +129,7 @@ impl OutputStreamCell {
     }
 }
 
+#[derive(Clone)]
 pub struct Audio {
     output_stream: Arc<OutputStreamCell>,
     cancellation_token: CancellationToken,

@@ -87,9 +87,9 @@ struct KeyId {
 
 #[derive(Debug)]
 pub struct KeyboardInputDispatcher {
-    keys: Arc<TopicWrapper<KeyboardKeysTopic>>,
-    text: Arc<TopicWrapper<KeyboardTextTopic>>,
-    subscribers: Arc<AtomicUsize>,
+    keys: TopicWrapper<KeyboardKeysTopic>,
+    text: TopicWrapper<KeyboardTextTopic>,
+    subscribers: AtomicUsize,
     message_pump: SafeMessagePump,
     pressed_keys: Mutex<HashSet<KeyId>>,
 }
@@ -112,21 +112,21 @@ impl KeyboardInputDispatcher {
                 .unwrap_or_else(|e| e.into_inner()) = me.clone();
 
             Self {
-                keys: Arc::new(TopicWrapper::new(
+                keys: TopicWrapper::new(
                     KeyboardKeysTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
                     task_tracker.clone(),
-                )),
-                text: Arc::new(TopicWrapper::new(
+                ),
+                text: TopicWrapper::new(
                     KeyboardTextTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
                     task_tracker.clone(),
-                )),
-                subscribers: Arc::new(AtomicUsize::new(0)),
+                ),
+                subscribers: AtomicUsize::new(0),
                 message_pump,
                 pressed_keys: Mutex::new(HashSet::default()),
             }

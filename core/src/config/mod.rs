@@ -7,7 +7,7 @@ pub mod settings;
 pub mod state;
 pub mod store;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Config {
     settings: Store<Settings>,
     state: Store<State>,

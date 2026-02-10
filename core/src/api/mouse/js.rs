@@ -61,7 +61,7 @@ pub type JsTween = super::Tween;
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Mouse")]
 pub struct JsMouse {
-    inner: Arc<super::Mouse>,
+    inner: super::Mouse,
 }
 
 impl<'js> SingletonClass<'js> for JsMouse {
@@ -82,7 +82,7 @@ impl JsMouse {
     #[instrument(skip_all)]
     pub async fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
         Ok(Self {
-            inner: Arc::new(super::Mouse::new(runtime).await?),
+            inner: super::Mouse::new(runtime).await?,
         })
     }
 }

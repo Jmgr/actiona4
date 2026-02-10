@@ -79,7 +79,7 @@ impl Display for CpuCore {
     }
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct CpuVariant {
     vendor: String,
     brand: String,
@@ -95,7 +95,7 @@ impl Display for CpuVariant {
 }
 
 #[derive_where(Debug)]
-pub struct Cpu {
+struct CpuInner {
     #[derive_where(skip)]
     system: Arc<Mutex<sysinfo::System>>,
 
@@ -107,27 +107,32 @@ pub struct Cpu {
     task_tracker: TaskTracker,
 }
 
+#[derive(Clone, Debug)]
+pub struct Cpu {
+    inner: Arc<CpuInner>,
+}
+
 impl Display for Cpu {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if f.alternate() {
             DisplayFields::default()
-                .display("architecture", &self.architecture)
-                .display_if_some("physical_core_count", &self.physical_core_count)
+                .display("architecture", &self.inner.architecture)
+                .display_if_some("physical_core_count", &self.inner.physical_core_count)
                 .display("cores", display_list(&self.cores()))
                 .finish(f)
         } else {
             let mut fields = DisplayFields::default()
-                .display("architecture", &self.architecture)
+                .display("architecture", &self.inner.architecture)
                 .display("core_count", self.cores().len())
-                .display_if_some("physical_core_count", &self.physical_core_count);
+                .display_if_some("physical_core_count", &self.inner.physical_core_count);
 
-            if let Some(variant) = self.cpu_variants.first()
-                && self.cpu_variants.len() == 1
+            if let Some(variant) = self.inner.cpu_variants.first()
+                && self.inner.cpu_variants.len() == 1
             {
                 fields = fields.display("vendor", &variant.vendor);
                 fields = fields.display("brand", &variant.brand);
             } else {
-                fields = fields.display("variants", display_list(&self.cpu_variants));
+                fields = fields.display("variants", display_list(&self.inner.cpu_variants));
             }
 
             fields.finish(f)
@@ -158,17 +163,20 @@ impl Cpu {
             .collect_vec();
 
         Ok(Self {
-            system: Arc::new(Mutex::new(system)),
-            physical_core_count: sysinfo::System::physical_core_count(),
-            architecture: sysinfo::System::cpu_arch(),
-            cpu_variants,
-            task_tracker,
+            inner: Arc::new(CpuInner {
+                system: Arc::new(Mutex::new(system)),
+                physical_core_count: sysinfo::System::physical_core_count(),
+                architecture: sysinfo::System::cpu_arch(),
+                cpu_variants,
+                task_tracker,
+            }),
         })
     }
 
     pub async fn refresh_global_usage(&self) -> Result<Percent> {
-        let local_system = self.system.clone();
+        let local_system = self.inner.system.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut system = local_system.lock();
@@ -185,7 +193,7 @@ impl Cpu {
 
     #[must_use]
     pub fn global_usage(&self) -> Percent {
-        let system = self.system.lock();
+        let system = self.inner.system.lock();
         system.global_cpu_usage().into()
     }
 
@@ -194,8 +202,9 @@ impl Cpu {
     }
 
     pub async fn refresh_core_usage_by_index(&self, index: usize) -> Result<Percent> {
-        let local_system = self.system.clone();
+        let local_system = self.inner.system.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut system = local_system.lock();
@@ -215,8 +224,9 @@ impl Cpu {
     }
 
     pub async fn refresh_frequencies(&self) -> Result<Vec<CpuCore>> {
-        let local_system = self.system.clone();
+        let local_system = self.inner.system.clone();
         let result = self
+            .inner
             .task_tracker
             .spawn_blocking(move || {
                 let mut system = local_system.lock();
@@ -234,7 +244,7 @@ impl Cpu {
 
     #[must_use]
     pub fn cores(&self) -> Vec<CpuCore> {
-        let system = self.system.lock();
+        let system = self.inner.system.lock();
         system
             .cpus()
             .iter()
@@ -244,12 +254,12 @@ impl Cpu {
     }
 
     #[must_use]
-    pub const fn physical_core_count(&self) -> Option<usize> {
-        self.physical_core_count
+    pub fn physical_core_count(&self) -> Option<usize> {
+        self.inner.physical_core_count
     }
 
     #[must_use]
     pub fn architecture(&self) -> &str {
-        &self.architecture
+        &self.inner.architecture
     }
 }

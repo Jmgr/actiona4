@@ -1,7 +1,4 @@
-use std::{
-    io::{self, IsTerminal},
-    sync::Arc,
-};
+use std::io::{self, IsTerminal};
 
 use actiona_core::{config::Config, updater::Updater};
 use color_eyre::{Result, eyre::OptionExt, owo_colors::OwoColorize};
@@ -16,7 +13,7 @@ use crate::{args::Args, built_info};
 #[instrument(skip_all)]
 pub async fn check_updates(
     args: &Args,
-    config: Arc<Config>,
+    config: Config,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
 ) -> Result<()> {

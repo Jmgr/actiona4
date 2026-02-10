@@ -16,7 +16,7 @@ pub(super) struct EmittedDiagnosticError {
 }
 
 impl EmittedDiagnosticError {
-    fn new(message: String) -> Self {
+    const fn new(message: String) -> Self {
         Self { message }
     }
 }

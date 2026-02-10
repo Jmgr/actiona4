@@ -51,11 +51,10 @@ pub fn try_emit_script_diagnostic(err: &Report, source_code: &str) -> bool {
     let (cm, handler) = new_tty_handler();
 
     let primary_span = runtime_primary_span(runtime_error, source_code, &cm);
-    let mut diagnostic = if let Some(span) = primary_span {
-        handler.struct_span_err(span, &runtime_error.message)
-    } else {
-        handler.struct_err(&runtime_error.message)
-    };
+    let mut diagnostic = primary_span.map_or_else(
+        || handler.struct_err(&runtime_error.message),
+        |span| handler.struct_span_err(span, &runtime_error.message),
+    );
 
     let first_note_index = if primary_span.is_some() { 1 } else { 0 };
     for frame in runtime_error
@@ -130,7 +129,7 @@ struct RuntimeScriptError {
 }
 
 impl RuntimeScriptError {
-    fn new(message: String, stack: Vec<CallStackFrame>) -> Self {
+    const fn new(message: String, stack: Vec<CallStackFrame>) -> Self {
         Self { message, stack }
     }
 }
@@ -234,7 +233,7 @@ fn find_closest_identifier_range(
     best_match.map(|(_, start_byte, end_byte)| (start_byte, end_byte))
 }
 
-fn column_distance_to_identifier(
+const fn column_distance_to_identifier(
     reported_col: usize,
     start_col: usize,
     end_col_exclusive: usize,

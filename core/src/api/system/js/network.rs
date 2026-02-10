@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use itertools::Itertools;
 use macros::FromJsObject;
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
@@ -22,7 +20,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Network")]
 pub struct JsNetwork {
-    inner: Arc<Network>,
+    inner: Network,
 }
 
 impl<'js> HostClass<'js> for JsNetwork {
@@ -40,7 +38,7 @@ impl<'js> Trace<'js> for JsNetwork {
 impl JsNetwork {
     /// @skip
     #[must_use]
-    pub const fn new(inner: Arc<Network>) -> Self {
+    pub const fn new(inner: Network) -> Self {
         Self { inner }
     }
 }

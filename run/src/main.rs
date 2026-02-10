@@ -97,7 +97,7 @@ fn main() -> Result<()> {
 
     Runtime::run_with_ui(
         move |runtime, script_engine| async move {
-            let config = Arc::new(Config::new().await?);
+            let config = Config::new().await?;
 
             check_updates(
                 &args,
@@ -119,19 +119,18 @@ fn main() -> Result<()> {
                     if let Err(err) = script_engine
                         .eval_async_with_filename::<()>(&script, Some(&filename))
                         .await
+                        && !scripting::try_emit_script_diagnostic(&err, &script)
                     {
-                        if !scripting::try_emit_script_diagnostic(&err, &script) {
-                            eprintln!("Error: {err}");
-                        }
+                        eprintln!("Error: {err}");
                     }
                 }
                 Commands::Eval { code } => {
                     let code = code.join("\n");
 
-                    if let Err(err) = script_engine.eval_async::<()>(&code).await {
-                        if !scripting::try_emit_script_diagnostic(&err, &code) {
-                            eprintln!("Error: {err}");
-                        }
+                    if let Err(err) = script_engine.eval_async::<()>(&code).await
+                        && !scripting::try_emit_script_diagnostic(&err, &code)
+                    {
+                        eprintln!("Error: {err}");
                     }
                 }
                 Commands::Repl => {

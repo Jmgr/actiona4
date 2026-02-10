@@ -76,9 +76,22 @@ impl InputMask {
     }
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct ActivationCounter(Arc<AtomicUsize>);
+
+impl ActivationCounter {
+    fn increment(&self) -> usize {
+        self.0.fetch_add(1, Ordering::Relaxed)
+    }
+
+    fn decrement(&self) -> usize {
+        self.0.fetch_sub(1, Ordering::Relaxed)
+    }
+}
+
 #[derive(Constructor, Debug)]
 pub struct MouseButtonsTopic {
-    input_mask: Arc<InputMask>,
+    input_mask: InputMask,
 }
 
 fn mouse_buttons_events() -> XIEventMask {
@@ -100,7 +113,7 @@ impl Topic for MouseButtonsTopic {
 
 #[derive(Constructor, Debug)]
 pub struct MouseMoveTopic {
-    input_mask: Arc<InputMask>,
+    input_mask: InputMask,
 }
 
 const fn mouse_motion_events() -> XIEventMask {
@@ -122,19 +135,19 @@ impl Topic for MouseMoveTopic {
 
 #[derive(Constructor, Debug)]
 pub struct KeyboardKeysTopic {
-    input_mask: Arc<InputMask>,
-    activation_counter: Arc<AtomicUsize>, // TODO: use dispatcher, like Windows
+    input_mask: InputMask,
+    activation_counter: ActivationCounter, // TODO: use dispatcher, like Windows
 }
 
 fn keyboard_keys_events() -> XIEventMask {
     XIEventMask::RAW_KEY_PRESS | XIEventMask::RAW_KEY_RELEASE
 }
 
-async fn keyboard_start(input_mask: Arc<InputMask>) -> Result<()> {
+async fn keyboard_start(input_mask: &InputMask) -> Result<()> {
     input_mask.set(keyboard_keys_events()).await
 }
 
-async fn keyboard_stop(input_mask: Arc<InputMask>) -> Result<()> {
+async fn keyboard_stop(input_mask: &InputMask) -> Result<()> {
     input_mask.remove(keyboard_keys_events()).await
 }
 
@@ -143,15 +156,15 @@ impl Topic for KeyboardKeysTopic {
     type Signal = AllSignals<Self::T>;
 
     async fn on_start(&self) -> Result<()> {
-        if self.activation_counter.fetch_add(1, Ordering::Relaxed) == 0 {
-            keyboard_start(self.input_mask.clone()).await?;
+        if self.activation_counter.increment() == 0 {
+            keyboard_start(&self.input_mask).await?;
         }
         Ok(())
     }
 
     async fn on_stop(&self) -> Result<()> {
-        if self.activation_counter.fetch_sub(1, Ordering::Relaxed) == 1 {
-            keyboard_stop(self.input_mask.clone()).await?;
+        if self.activation_counter.decrement() == 1 {
+            keyboard_stop(&self.input_mask).await?;
         }
         Ok(())
     }
@@ -159,8 +172,8 @@ impl Topic for KeyboardKeysTopic {
 
 #[derive(Constructor, Debug)]
 pub struct KeyboardTextTopic {
-    input_mask: Arc<InputMask>,
-    activation_counter: Arc<AtomicUsize>,
+    input_mask: InputMask,
+    activation_counter: ActivationCounter,
 }
 
 impl Topic for KeyboardTextTopic {
@@ -168,15 +181,15 @@ impl Topic for KeyboardTextTopic {
     type Signal = AllSignals<Self::T>;
 
     async fn on_start(&self) -> Result<()> {
-        if self.activation_counter.fetch_add(1, Ordering::Relaxed) == 0 {
-            keyboard_start(self.input_mask.clone()).await?;
+        if self.activation_counter.increment() == 0 {
+            keyboard_start(&self.input_mask).await?;
         }
         Ok(())
     }
 
     async fn on_stop(&self) -> Result<()> {
-        if self.activation_counter.fetch_sub(1, Ordering::Relaxed) == 1 {
-            keyboard_stop(self.input_mask.clone()).await?;
+        if self.activation_counter.decrement() == 1 {
+            keyboard_stop(&self.input_mask).await?;
         }
         Ok(())
     }

@@ -5,10 +5,23 @@ use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
-pub struct Store<T> {
-    value: Arc<RwLock<T>>,
+struct StoreInner<T> {
+    value: RwLock<T>,
     directory: PathBuf,
     filename: &'static str,
+}
+
+#[derive(Debug)]
+pub struct Store<T> {
+    inner: Arc<StoreInner<T>>,
+}
+
+impl<T> Clone for Store<T> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+        }
+    }
 }
 
 impl<T> Store<T>
@@ -18,15 +31,17 @@ where
     #[must_use]
     pub fn new(directory: PathBuf, filename: &'static str) -> Self {
         Self {
-            value: Default::default(),
-            directory,
-            filename,
+            inner: Arc::new(StoreInner {
+                value: Default::default(),
+                directory,
+                filename,
+            }),
         }
     }
 
     #[must_use]
     pub fn path(&self) -> PathBuf {
-        self.directory.join(self.filename)
+        self.inner.directory.join(self.inner.filename)
     }
 
     pub async fn load(&self) -> Result<()> {
@@ -40,17 +55,20 @@ where
         };
 
         let parsed = toml::from_str(&contents)?;
-        *self.value.write() = parsed;
+        *self.inner.value.write() = parsed;
 
         Ok(())
     }
 
     pub async fn save(&self) -> Result<()> {
-        tokio::fs::create_dir_all(&self.directory).await?;
+        tokio::fs::create_dir_all(&self.inner.directory).await?;
 
-        let settings = toml::to_string(&*self.value.read())?;
+        let settings = toml::to_string(&*self.inner.value.read())?;
 
-        let temporary_filepath = self.directory.join(format!("{}.tmp", self.filename));
+        let temporary_filepath = self
+            .inner
+            .directory
+            .join(format!("{}.tmp", self.inner.filename));
 
         tokio::fs::write(&temporary_filepath, &settings).await?;
 
@@ -60,14 +78,14 @@ where
     }
 
     pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
-        let guard = self.value.read();
+        let guard = self.inner.value.read();
 
         f(&guard)
     }
 
     pub async fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> Result<R> {
         let result = {
-            let mut guard = self.value.write();
+            let mut guard = self.inner.value.write();
             f(&mut guard)
         };
 

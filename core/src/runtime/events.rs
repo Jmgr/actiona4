@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 
 use color_eyre::Result;
 use derive_more::{Constructor, Deref, DerefMut};
@@ -70,7 +70,7 @@ pub trait Topic: Send + Sync + 'static {
 
 #[derive(Debug)]
 pub struct Guard<T: Topic> {
-    topic_wrapper: Arc<TopicWrapper<T>>,
+    topic_wrapper: TopicWrapper<T>,
     signal_sender: T::Signal, // TODO: use a receiver instead
 }
 
@@ -92,10 +92,28 @@ enum SubscribersChange {
 }
 
 #[derive(Debug)]
-pub struct TopicWrapper<T: Topic> {
+struct TopicWrapperInner<T: Topic> {
     signal_sender: T::Signal,
     subscribers_change_sender: mpsc::UnboundedSender<SubscribersChange>,
     topic: Arc<T>,
+}
+
+pub struct TopicWrapper<T: Topic> {
+    inner: Arc<TopicWrapperInner<T>>,
+}
+
+impl<T: Topic> Clone for TopicWrapper<T> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+        }
+    }
+}
+
+impl<T: Topic> Debug for TopicWrapper<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("TopicWrapper").finish()
+    }
 }
 
 impl<T: Topic + 'static> TopicWrapper<T> {
@@ -141,40 +159,45 @@ impl<T: Topic + 'static> TopicWrapper<T> {
         });
 
         Self {
-            signal_sender: T::Signal::new(),
-            subscribers_change_sender: sender,
-            topic,
+            inner: Arc::new(TopicWrapperInner {
+                signal_sender: T::Signal::new(),
+                subscribers_change_sender: sender,
+                topic,
+            }),
         }
     }
 
     #[must_use]
-    pub fn subscribe(self: &Arc<Self>) -> Guard<T> {
+    pub fn subscribe(&self) -> Guard<T> {
         self.increment();
 
         Guard {
             topic_wrapper: self.clone(),
-            signal_sender: self.signal_sender.clone(),
+            signal_sender: self.inner.signal_sender.clone(),
         }
     }
 
     pub fn publish(&self, value: T::T) {
-        self.signal_sender.send(value);
+        self.inner.signal_sender.send(value);
     }
 
     fn increment(&self) {
         _ = self
+            .inner
             .subscribers_change_sender
             .send(SubscribersChange::Increment);
     }
 
     fn decrement(&self) {
         _ = self
+            .inner
             .subscribers_change_sender
             .send(SubscribersChange::Decrement);
     }
 
+    #[must_use]
     pub fn topic(&self) -> Arc<T> {
-        self.topic.clone()
+        self.inner.topic.clone()
     }
 }
 

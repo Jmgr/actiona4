@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use itertools::Itertools;
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace};
 
@@ -28,7 +26,7 @@ use crate::{
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Cpu")]
 pub struct JsCpu {
-    inner: Arc<Cpu>,
+    inner: Cpu,
     cores: Vec<CpuCore>,
 }
 
@@ -41,7 +39,7 @@ impl<'js> Trace<'js> for JsCpu {
 impl JsCpu {
     /// @skip
     #[must_use]
-    pub fn new(inner: Arc<Cpu>) -> Self {
+    pub fn new(inner: Cpu) -> Self {
         let cores = inner.cores();
 
         Self { inner, cores }
