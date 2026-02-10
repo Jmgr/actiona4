@@ -22,8 +22,6 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{IntoJsResult, error::CommonError, runtime::WithUserData};
 
-// TODO: use task in more places
-
 pub trait IntoToken {
     fn into_token(self) -> Option<CancellationToken>;
 }
@@ -221,8 +219,6 @@ mod tests {
         scripting,
     };
 
-    // TODO: skip everything in "tests" mod
-    /// @skip
     #[derive(Clone, Copy, Debug, Default, From)]
     pub struct ProgressValue(pub i32);
 
