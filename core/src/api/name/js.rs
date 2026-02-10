@@ -66,7 +66,6 @@ impl JsWildcard {
 }
 
 /*
-// TODO
 /// Creates a new Name.
 ///
 /// Example

@@ -71,8 +71,7 @@ impl JsConsole {
             Type::Constructor => "[Constructor]".to_string(),
             Type::Function => "[Function]".to_string(),
             Type::Promise => "[Promise]".to_string(),
-            Type::Exception => "[Exception]".to_string(),
-            Type::Object => {
+            Type::Exception | Type::Object => {
                 let obj = value.as_object().unwrap();
 
                 let global_prototype = ctx.globals().get_prototype().unwrap();
@@ -225,6 +224,8 @@ impl JsConsole {
 
 #[cfg(test)]
 mod tests {
+    use rquickjs::{Context, Runtime as JsRuntime};
+
     use crate::runtime::Runtime;
 
     #[test]
@@ -240,6 +241,31 @@ mod tests {
                 )
                 .await
                 .unwrap();
+        });
+    }
+
+    #[test]
+    fn test_exception_values_use_js_to_string() {
+        let runtime = JsRuntime::new().unwrap();
+        let context = Context::full(&runtime).unwrap();
+
+        context.with(|ctx| {
+            let value: rquickjs::Value = ctx
+                .eval(
+                    r#"
+                    (() => {
+                        try {
+                            throw new Error("Failed quickly");
+                        } catch (e) {
+                            return e;
+                        }
+                    })()
+                    "#,
+                )
+                .unwrap();
+
+            let output = super::JsConsole::print_value(&ctx, value);
+            assert_eq!(output, "Error: Failed quickly");
         });
     }
 }
