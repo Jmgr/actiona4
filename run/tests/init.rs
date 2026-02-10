@@ -58,6 +58,34 @@ fn init_creates_project_and_starter_script_runs() {
 }
 
 #[test]
+fn script_path_defaults_to_run_subcommand() {
+    let dir = tempfile::tempdir().expect("failed to create temp dir");
+    let project_path = dir.path().join("test-project");
+
+    let output = cargo_bin()
+        .args(["init", project_path.to_str().unwrap()])
+        .output()
+        .expect("failed to run init");
+    assert!(output.status.success());
+
+    let output = cargo_bin()
+        .arg(project_path.join("script.ts").to_str().unwrap())
+        .output()
+        .expect("failed to run starter script without subcommand");
+    assert!(
+        output.status.success(),
+        "starter script failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("Hello from Actiona!"),
+        "unexpected output: {stdout}"
+    );
+}
+
+#[test]
 fn init_is_idempotent() {
     let dir = tempfile::tempdir().expect("failed to create temp dir");
     let project_path = dir.path().join("test-project");

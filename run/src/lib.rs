@@ -1,11 +1,11 @@
-use std::{path::Path, sync::Arc};
+use std::{ffi::OsString, path::Path, sync::Arc};
 
 use actiona_core::{
     config::Config,
     runtime::{Runtime, RuntimeOptions, WaitAtEnd},
     scripting,
 };
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use color_eyre::{Result, config::HookBuilder, eyre::Context};
 use tracing_subscriber::{
     EnvFilter, fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt,
@@ -44,7 +44,7 @@ fn is_windows10_1607_or_newer() -> Option<bool> {
 pub fn run_cli() -> Result<()> {
     init_tracing();
 
-    let args = Arc::new(Args::parse());
+    let args = Arc::new(parse_args_with_default_run());
 
     if args.debug {
         color_eyre::install()?;
@@ -159,6 +159,63 @@ pub fn run_cli() -> Result<()> {
     Ok(())
 }
 
+fn parse_args_with_default_run() -> Args {
+    let args = maybe_insert_default_run(std::env::args_os().collect());
+    Args::parse_from(args)
+}
+
+fn maybe_insert_default_run(mut args: Vec<OsString>) -> Vec<OsString> {
+    let cmd = Args::command();
+
+    let Some(index) = first_positional_index(&args, &cmd) else {
+        return args;
+    };
+
+    let subcommands: Vec<&str> = cmd.get_subcommands().map(|s| s.get_name()).collect();
+
+    if let Some(name) = args[index].to_str()
+        && !subcommands.contains(&name)
+    {
+        args.insert(index, OsString::from("run"));
+    }
+
+    args
+}
+
+fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usize> {
+    // Build a set of flags that consume a following value.
+    let value_flags: Vec<(Option<char>, Option<&str>)> = cmd
+        .get_arguments()
+        .filter(|a| a.get_action().takes_values())
+        .map(|a| (a.get_short(), a.get_long()))
+        .collect();
+
+    let takes_value = |flag: &str| -> bool {
+        value_flags.iter().any(|(short, long)| {
+            long.is_some_and(|l| flag == format!("--{l}"))
+                || short.is_some_and(|s| flag == format!("-{s}"))
+        })
+    };
+
+    let mut index = 1;
+    while index < args.len() {
+        let arg = args[index].to_string_lossy();
+
+        if arg == "--" {
+            return (index + 1 < args.len()).then_some(index + 1);
+        }
+
+        if arg.starts_with('-') {
+            index += if takes_value(&arg) { 2 } else { 1 };
+            continue;
+        }
+
+        return Some(index);
+    }
+
+    None
+}
+
 fn init_tracing() {
     let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
 
@@ -173,4 +230,47 @@ fn init_tracing() {
         .with(filter)
         .with(stdout_layer)
         .init();
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::OsString;
+
+    use super::maybe_insert_default_run;
+
+    #[test]
+    fn defaults_to_run_for_script_path() {
+        let args = vec![OsString::from("actiona4-run"), OsString::from("script.ts")];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(args, vec!["actiona4-run", "run", "script.ts"]);
+    }
+
+    #[test]
+    fn keeps_explicit_subcommand() {
+        let args = vec![
+            OsString::from("actiona4-run"),
+            OsString::from("run"),
+            OsString::from("script.ts"),
+        ];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(args, vec!["actiona4-run", "run", "script.ts"]);
+    }
+
+    #[test]
+    fn respects_top_level_options_before_default_subcommand() {
+        let args = vec![
+            OsString::from("actiona4-run"),
+            OsString::from("--display"),
+            OsString::from(":0"),
+            OsString::from("script.ts"),
+        ];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(
+            args,
+            vec!["actiona4-run", "--display", ":0", "run", "script.ts"]
+        );
+    }
 }
