@@ -11,9 +11,18 @@ default-run = "actiona4-run"
 [package.metadata.cargo-machete]
 ignored = ["tauri-build"]
 
+[features]
+default = []
+windows-console-bin = []
+
 [[bin]]
 name = "actiona4-run"
-path = "src/main.rs"
+path = "src/bin/actiona4-run.rs"
+
+[[bin]]
+name = "actiona4-run-console"
+path = "src/bin/actiona4-run-console.rs"
+required-features = ["windows-console-bin"]
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
