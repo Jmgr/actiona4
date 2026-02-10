@@ -125,7 +125,6 @@ where
 // TODO: check all errors
 // TODO: check all token cancellation return a Cancelled error
 // TODO: check all unwraps
-// TODO: check if we can use cancel_on in a few places where select! is used
 // TODO: display a tray icon, enabled by default when waitAtEnd is true
 // TODO: enigo::set_dpi_awareness()
 /*

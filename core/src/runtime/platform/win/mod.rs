@@ -7,7 +7,7 @@ use std::{
 
 use color_eyre::Result;
 use once_cell::sync::Lazy;
-use tokio::{select, sync::oneshot};
+use tokio::sync::oneshot;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 use windows::{
@@ -26,7 +26,7 @@ use windows::{
 
 use crate::{
     api::displays::Displays,
-    error::CommonError,
+    cancel_on,
     platform::win::safe_handle::SafeWindowHandle,
     runtime::{
         events::Guard,
@@ -240,10 +240,7 @@ impl SafeMessagePump {
                 }
             })?;
 
-        let thread_id = select! {
-            _ = cancellation_token.cancelled() => { return Err(CommonError::Cancelled.into()); }
-            thread_id = thread_id_receiver => { thread_id }
-        }?;
+        let thread_id = cancel_on(&cancellation_token, thread_id_receiver).await??;
 
         task_tracker.spawn(async move {
             cancellation_token.cancelled().await;

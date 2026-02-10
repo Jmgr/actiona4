@@ -1,7 +1,6 @@
 use std::ffi::{CString, NulError};
 
 use thiserror::Error;
-use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use x11rb::{rust_connection::RustConnection, xcb_ffi::XCBConnection};
 use x11rb_async::{
@@ -10,6 +9,8 @@ use x11rb_async::{
     protocol::xproto::Screen,
     rust_connection::RustConnection as AsyncRustConnection,
 };
+
+use crate::cancel_on;
 
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug, Error)]
@@ -72,10 +73,7 @@ impl X11Connection {
 
         let local_cancellation_token = cancellation_token.clone();
         task_tracker.spawn(async move {
-            select! {
-                _ = local_cancellation_token.cancelled() => {}
-                _ = packet_reader => {},
-            }
+            _ = cancel_on(&local_cancellation_token, packet_reader).await;
         });
 
         Ok(Self {
