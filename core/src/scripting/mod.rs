@@ -171,6 +171,14 @@ fn runtime_primary_span(
         return Some(Span::new(lo, hi));
     }
 
+    if let Some((start_byte, end_byte)) =
+        not_a_function_identifier_range(&runtime_error.message, &line, frame.col)
+    {
+        let lo = line_start + BytePos(u32::try_from(start_byte).ok()?);
+        let hi = line_start + BytePos(u32::try_from(end_byte).ok()?);
+        return Some(Span::new(lo, hi));
+    }
+
     let column_byte = line
         .char_indices()
         .nth(column_index)
@@ -200,6 +208,35 @@ fn parse_reference_error_identifier(message: &str) -> Option<&str> {
     is_valid_js_identifier(identifier).then_some(identifier)
 }
 
+fn not_a_function_identifier_range(
+    message: &str,
+    line: &str,
+    reported_col: u32,
+) -> Option<(usize, usize)> {
+    let reported_col = usize::try_from(reported_col.checked_sub(1)?).ok()?;
+
+    if let Some(identifier) = parse_type_error_identifier(message) {
+        return find_closest_identifier_range(line, identifier, reported_col);
+    }
+
+    is_plain_not_a_function_type_error(message)
+        .then(|| find_closest_call_identifier_range(line, reported_col))
+        .flatten()
+}
+
+fn parse_type_error_identifier(message: &str) -> Option<&str> {
+    let identifier = message
+        .strip_prefix("TypeError: ")?
+        .strip_suffix(" is not a function")?
+        .trim();
+    let identifier = strip_matching_quotes(identifier);
+    is_valid_js_identifier(identifier).then_some(identifier)
+}
+
+fn is_plain_not_a_function_type_error(message: &str) -> bool {
+    message.trim() == "TypeError: not a function"
+}
+
 fn strip_matching_quotes(value: &str) -> &str {
     match value.as_bytes() {
         [b'\'' | b'"', .., last] if *last == value.as_bytes()[0] => &value[1..value.len() - 1],
@@ -224,6 +261,57 @@ fn find_closest_identifier_range(
         let end_col_exclusive = start_col + ident_char_len;
         let distance = column_distance_to_identifier(reported_col, start_col, end_col_exclusive);
         let candidate = (distance, start_byte, end_byte);
+
+        if best_match.is_none_or(|current| candidate < current) {
+            best_match = Some(candidate);
+        }
+    }
+
+    best_match.map(|(_, start_byte, end_byte)| (start_byte, end_byte))
+}
+
+fn find_closest_call_identifier_range(line: &str, reported_col: usize) -> Option<(usize, usize)> {
+    let mut best_match: Option<(usize, usize, usize)> = None;
+    for (start_byte, ch) in line.char_indices() {
+        if !is_js_identifier_start(ch) {
+            continue;
+        }
+
+        if !line[..start_byte]
+            .chars()
+            .next_back()
+            .is_none_or(|prev| !is_js_identifier_continue(prev))
+        {
+            continue;
+        }
+
+        let mut ident_end_byte = start_byte + ch.len_utf8();
+        for next in line[ident_end_byte..].chars() {
+            if is_js_identifier_continue(next) {
+                ident_end_byte += next.len_utf8();
+            } else {
+                break;
+            }
+        }
+
+        let after_ident_byte = ident_end_byte
+            + line[ident_end_byte..]
+                .chars()
+                .take_while(|c| c.is_whitespace())
+                .map(char::len_utf8)
+                .sum::<usize>();
+
+        let Some(next) = line[after_ident_byte..].chars().next() else {
+            continue;
+        };
+        if next != '(' {
+            continue;
+        }
+
+        let start_col = line[..start_byte].chars().count();
+        let end_col_exclusive = start_col + line[start_byte..ident_end_byte].chars().count();
+        let distance = column_distance_to_identifier(reported_col, start_col, end_col_exclusive);
+        let candidate = (distance, start_byte, ident_end_byte);
 
         if best_match.is_none_or(|current| candidate < current) {
             best_match = Some(candidate);
@@ -959,6 +1047,22 @@ await doWork();
     }
 
     #[test]
+    fn type_error_identifier_parsing() {
+        assert_eq!(
+            parse_type_error_identifier("TypeError: mouse2 is not a function"),
+            Some("mouse2")
+        );
+        assert_eq!(
+            parse_type_error_identifier("TypeError: 'mouse2' is not a function"),
+            Some("mouse2")
+        );
+        assert_eq!(
+            parse_type_error_identifier("TypeError: not a function"),
+            None
+        );
+    }
+
+    #[test]
     fn closest_identifier_range_uses_nearest_match() {
         let line = "mouse2 + x + mouse2";
         let second_start = line
@@ -972,6 +1076,18 @@ await doWork();
         assert_eq!(
             find_closest_identifier_range(line, "mouse2", second_start),
             Some((second_start, second_start + 6))
+        );
+    }
+
+    #[test]
+    fn closest_call_identifier_range_uses_nearest_match() {
+        let line = "foo(1) + bar(2)";
+        let bar_start = line.rfind("bar").expect("line should contain bar");
+
+        assert_eq!(find_closest_call_identifier_range(line, 0), Some((0, 3)));
+        assert_eq!(
+            find_closest_call_identifier_range(line, bar_start),
+            Some((bar_start, bar_start + 3))
         );
     }
 
@@ -996,5 +1112,28 @@ await doWork();
             .expect("span should be mappable to source snippet");
 
         assert_eq!(snippet, "mouse2");
+    }
+
+    #[test]
+    fn runtime_primary_span_highlights_not_a_function_callsite() {
+        let runtime_error = RuntimeScriptError::new(
+            "TypeError: not a function".to_string(),
+            vec![CallStackFrame {
+                function: String::new(),
+                file: "script".to_string(),
+                line: 1,
+                col: 41,
+            }],
+        );
+        let source = r#"await screenshot.captureRect(0, 0, 100, 100).save("out.png")"#;
+
+        let (cm, _) = new_tty_handler();
+        let span = runtime_primary_span(&runtime_error, source, &cm)
+            .expect("runtime span should be produced");
+        let snippet = cm
+            .span_to_snippet(span)
+            .expect("span should be mappable to source snippet");
+
+        assert_eq!(snippet, "save");
     }
 }
