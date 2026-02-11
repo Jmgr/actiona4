@@ -6,7 +6,7 @@ Read/write usage for a disk.
 const disks = await system.storage.listDisks();
 const disk = disks[0];
 if (disk) {
-console.log(
+println(
 formatBytes(disk.usage.read.total),
 formatBytes(disk.usage.written.total),
 );

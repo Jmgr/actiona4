@@ -7,7 +7,7 @@ Received by iterating over the async iterator returned by `findImage` or `findIm
 ```ts
 const task = source.findImage(template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 if (progress.finished) break;
 }
 const result = await task;

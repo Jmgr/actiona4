@@ -25,6 +25,9 @@ await clipboard.clear();
 
 // On Linux, use the selection clipboard
 await clipboard.text.set("selected", ClipboardMode.Selection);
+
+// Wait until clipboard content changes
+await clipboard.waitForChanged();
 ```
 
 ## Properties
@@ -83,3 +86,28 @@ await clipboard.clear(ClipboardMode.Selection);
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### waitForChanged()
+
+> **waitForChanged**(`options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Waits until clipboard content changes.
+
+```ts
+const controller = new AbortController();
+const task = clipboard.waitForChanged({ signal: controller.signal });
+// controller.abort();
+await task;
+```
+
+#### Parameters
+
+##### options?
+
+[`WaitForChangedOptions`](WaitForChangedOptions.md)
+
+#### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

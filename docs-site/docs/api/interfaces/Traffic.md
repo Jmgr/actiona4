@@ -6,7 +6,7 @@ Traffic statistics.
 const interfaces = await system.network.listInterfaces();
 const iface = interfaces[0];
 if (iface) {
-console.log(
+println(
 formatBytes(iface.inbound.total.data),
 formatBytes(iface.inbound.delta.data),
 );

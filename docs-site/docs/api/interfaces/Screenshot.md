@@ -7,12 +7,12 @@ as well as finding images on screen.
 
 ```ts
 const image = await screenshot.captureDisplay(0);
-console.log(image.size().toString());
+println(image.size().toString());
 ```
 
 ```ts
 const pixel = await screenshot.capturePixel(100, 100);
-console.log(pixel.toString());
+println(pixel.toString());
 ```
 
 ## Methods
@@ -49,7 +49,7 @@ Captures the color of a single pixel on screen.
 
 ```ts
 const color = await screenshot.capturePixel(100, 200);
-console.log(color.toString());
+println(color.toString());
 ```
 
 ##### Parameters
@@ -70,7 +70,7 @@ Captures the color of a single pixel on screen.
 
 ```ts
 const color = await screenshot.capturePixel(100, 200);
-console.log(color.toString());
+println(color.toString());
 ```
 
 ##### Parameters
@@ -158,7 +158,7 @@ const match = await screenshot.findImageOnDisplay(0, template);
 ```ts
 const task = screenshot.findImageOnDisplay(0, template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -196,7 +196,7 @@ const matches = await screenshot.findImageOnDisplayAll(0, template);
 ```ts
 const task = screenshot.findImageOnDisplayAll(0, template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```
@@ -236,7 +236,7 @@ const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -272,7 +272,7 @@ const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -324,7 +324,7 @@ const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```
@@ -360,7 +360,7 @@ const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```

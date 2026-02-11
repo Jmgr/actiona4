@@ -6,7 +6,7 @@ A disk device.
 const disks = await system.storage.listDisks();
 const disk = disks[0];
 if (disk) {
-console.log(
+println(
 disk.name,
 disk.kind,
 disk.mountPoint,

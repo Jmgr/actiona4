@@ -4,7 +4,7 @@ Process listing and inspection.
 
 ```ts
 const processes = await system.processes.list();
-console.log(processes.length);
+println(processes.length);
 ```
 
 ## Methods

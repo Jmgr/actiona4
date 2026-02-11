@@ -18,7 +18,7 @@ const blue = Color.Blue;
 // Read and modify channels
 const c = new Color(10, 20, 30);
 c.r = 100;
-console.log(c.toString()); // "(100, 20, 30, 255)"
+println(c.toString()); // "Color(100, 20, 30, 255)"
 
 // Compare colors
 Color.Red.equals(new Color(255, 0, 0)); // true
@@ -1285,7 +1285,7 @@ Color.Red.equals(new Color(255, 0, 0)); // true
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of the color: `"(r, g, b, a)"`.
+Returns a string representation of the color: `"Color(r, g, b, a)"`.
 
 #### Returns
 

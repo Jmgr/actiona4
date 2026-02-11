@@ -5,7 +5,7 @@ CGroup memory and swap limits.
 ```ts
 const limits = system.memory.cgroupLimits;
 if (limits) {
-console.log(
+println(
 formatBytes(limits.totalMemory),
 formatBytes(limits.freeMemory),
 formatBytes(limits.freeSwap),

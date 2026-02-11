@@ -32,7 +32,7 @@ const screen = await Image.load("screenshot.png");
 const button = await Image.load("button.png");
 const match = await screen.findImage(button, { matchThreshold: 0.9 });
 if (match) {
-console.log(`Button found at ${match.position}`);
+println(`Button found at ${match.position}`);
 }
 ```
 
@@ -1511,7 +1511,7 @@ for progress updates. Returns [`undefined`](https://developer.mozilla.org/docs/W
 ```ts
 const match = await source.findImage(template);
 if (match) {
-console.log(`Found at ${match.position} with score ${match.score}`);
+println(`Found at ${match.position} with score ${match.score}`);
 }
 ```
 
@@ -1519,7 +1519,7 @@ console.log(`Found at ${match.position} with score ${match.score}`);
 // Track progress while searching
 const task = source.findImage(template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -1551,7 +1551,7 @@ Returns a `ProgressTask` that can be awaited for an array of matches.
 ```ts
 const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
 for (const match of matches) {
-console.log(`Found at ${match.position}`);
+println(`Found at ${match.position}`);
 }
 ```
 
@@ -1559,7 +1559,7 @@ console.log(`Found at ${match.position}`);
 // Track progress while searching
 const task = source.findImageAll(template);
 for await (const progress of task) {
-console.log(`${progress.stage}: ${formatPercent(progress.percent)}`);
+println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```
@@ -1944,7 +1944,7 @@ Sets the color of a pixel.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of this image (width, height).
+Returns a string representation of this image as `Image(width, height)`.
 
 #### Returns
 

@@ -3,11 +3,11 @@
 OS-level information.
 
 ```ts
-console.log(system.os.name, system.os.version, system.os.kernelVersion);
+println(system.os.name, system.os.version, system.os.kernelVersion);
 
 const users = await system.os.listUsers();
 const groups = await system.os.listGroups();
-console.log(users.length, groups.length);
+println(users.length, groups.length);
 ```
 
 ## Properties

@@ -21,6 +21,7 @@
 - [ClipboardHtml](interfaces/ClipboardHtml.md)
 - [ClipboardImage](interfaces/ClipboardImage.md)
 - [ClipboardText](interfaces/ClipboardText.md)
+- [WaitForChangedOptions](interfaces/WaitForChangedOptions.md)
 - [clipboard](variables/clipboard.md)
 
 ## Color
@@ -31,6 +32,9 @@
 
 - [Console](interfaces/Console.md)
 - [console](variables/console.md)
+- [inspect](functions/inspect.md)
+- [print](functions/print.md)
+- [println](functions/println.md)
 
 ## Core
 
@@ -210,4 +214,5 @@
 
 - [WindowHandle](interfaces/WindowHandle.md)
 - [Windows](interfaces/Windows.md)
+- [WindowsFindOptions](interfaces/WindowsFindOptions.md)
 - [windows](variables/windows.md)

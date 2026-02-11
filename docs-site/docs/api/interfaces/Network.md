@@ -3,9 +3,9 @@
 Network information and interfaces.
 
 ```ts
-console.log(system.network.hostname);
+println(system.network.hostname);
 const interfaces = await system.network.listInterfaces();
-console.log(interfaces.length);
+println(interfaces.length);
 ```
 
 ## Properties

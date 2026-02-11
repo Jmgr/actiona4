@@ -7,7 +7,7 @@ const globalUsage = await system.cpu.usage();
 const core0Usage = await system.cpu.coreUsage(0);
 const freqs = await system.cpu.frequencies();
 
-console.log(
+println(
 system.cpu.logicalCoreCount,
 formatPercent(globalUsage),
 formatPercent(core0Usage),

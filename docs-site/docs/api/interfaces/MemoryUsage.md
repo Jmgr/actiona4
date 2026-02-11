@@ -4,7 +4,7 @@ A memory usage snapshot.
 
 ```ts
 const usage = await system.memory.usage();
-console.log(
+println(
 formatBytes(usage.used),
 formatBytes(usage.free),
 formatBytes(usage.available),

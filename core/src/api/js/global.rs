@@ -43,7 +43,6 @@ pub fn exit<'js>(ctx: Ctx<'js>) {
 /// Prints values without a trailing newline.
 ///
 /// Alias for `console.print(...)`.
-/// @category Console
 /// @rest
 pub fn print<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
     JsConsole::do_print(&ctx, data);
@@ -52,7 +51,6 @@ pub fn print<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
 /// Prints values followed by a newline.
 ///
 /// Alias for `console.println(...)`.
-/// @category Console
 /// @rest
 pub fn println<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
     JsConsole::do_println(&ctx, data);
@@ -61,7 +59,6 @@ pub fn println<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
 /// Pretty-prints values using an inspect-style multiline format.
 ///
 /// Alias for `console.inspect(...)`.
-/// @category Console
 /// @rest
 pub fn inspect<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
     JsConsole::do_inspect(&ctx, data);

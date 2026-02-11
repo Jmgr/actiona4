@@ -6,7 +6,7 @@ Memory metrics.
 const usage = await system.memory.usage();
 const swap = await system.memory.swapUsage();
 
-console.log(formatBytes(usage.used), formatBytes(swap.used));
+println(formatBytes(usage.used), formatBytes(swap.used));
 ```
 
 ## Properties

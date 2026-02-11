@@ -6,7 +6,7 @@ A running process.
 const processes = await system.processes.list();
 const process = processes[0];
 if (process) {
-console.log(process.pid, process.name, process.status);
+println(process.pid, process.name, process.status);
 }
 ```
 

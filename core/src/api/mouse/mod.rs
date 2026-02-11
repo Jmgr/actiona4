@@ -318,9 +318,6 @@ pub struct Mouse {
     pressed_buttons: Arc<Mutex<IndexSet<Button>>>,
 }
 
-// TODO: record
-// TODO: drag and drop?
-
 impl Mouse {
     #[instrument(skip_all)]
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
@@ -896,9 +893,6 @@ mod tests {
                     .await
                     .unwrap()
             }
-
-            // TODO
-            // ...
         });
     }
 

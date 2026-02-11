@@ -71,27 +71,6 @@ declare function print(...args: unknown[]): void;
  */
 declare function println(...args: unknown[]): void;
 /**
- * Logs values to stdout.
- * 
- * Alias for `console.log(...)`.
- * @category Console
- */
-declare function log(...args: unknown[]): void;
-/**
- * Logs a warning in yellow.
- * 
- * Alias for `console.warn(...)`.
- * @category Console
- */
-declare function warn(...args: unknown[]): void;
-/**
- * Logs an error in bold red.
- * 
- * Alias for `console.error(...)`.
- * @category Console
- */
-declare function error(...args: unknown[]): void;
-/**
  * Pretty-prints values using an inspect-style multiline format.
  * 
  * Alias for `console.inspect(...)`.
@@ -2573,7 +2552,7 @@ declare interface ClipboardHtml {
  * // Read and modify channels
  * const c = new Color(10, 20, 30);
  * c.r = 100;
- * println(c.toString()); // "(100, 20, 30, 255)"
+ * println(c.toString()); // "Color(100, 20, 30, 255)"
  * 
  * // Compare colors
  * Color.Red.equals(new Color(255, 0, 0)); // true
@@ -3192,7 +3171,7 @@ declare class Color {
      */
     equals(other: Color): boolean;
     /**
-     * Returns a string representation of the color: `"(r, g, b, a)"`.
+     * Returns a string representation of the color: `"Color(r, g, b, a)"`.
      */
     toString(): string;
     /**
@@ -4233,7 +4212,7 @@ declare class Image {
      */
     equals(other: Image): boolean;
     /**
-     * Returns a string representation of this image (width, height).
+     * Returns a string representation of this image as `Image(width, height)`.
      */
     toString(): string;
     /**
@@ -5132,7 +5111,7 @@ declare class Path {
  * const a = new Point(1, 2);
  * const b = new Point(4, 6);
  * println(a.distanceTo(b)); // 5
- * println(a.add(b).toString()); // "(5, 8)"
+ * println(a.add(b).toString()); // "Point(5, 8)"
  * ```
  * @category Point
  */
@@ -5230,7 +5209,7 @@ declare class Point {
      * 
      * ```ts
      * const sum = new Point(1, 2).add(new Point(3, 4));
-     * println(sum.toString()); // "(4, 6)"
+     * println(sum.toString()); // "Point(4, 6)"
      * ```
      */
     add(other: Point): Point;
@@ -5239,7 +5218,7 @@ declare class Point {
      * 
      * ```ts
      * const diff = new Point(5, 7).subtract(new Point(2, 3));
-     * println(diff.toString()); // "(3, 4)"
+     * println(diff.toString()); // "Point(3, 4)"
      * ```
      */
     subtract(other: Point): Point;
@@ -5248,7 +5227,7 @@ declare class Point {
      * 
      * ```ts
      * const p = new Point(3, 4).scaled(2);
-     * println(p.toString()); // "(6, 8)"
+     * println(p.toString()); // "Point(6, 8)"
      * ```
      */
     scaled(factor: number): Point;
@@ -5643,8 +5622,8 @@ declare const screenshot: Screenshot;
  * ```ts
  * const a = new Size(10, 20);
  * const b = new Size(5, 10);
- * println(a.add(b).toString()); // "(15, 30)"
- * println(a.scale(2).toString()); // "(20, 40)"
+ * println(a.add(b).toString()); // "Size(15, 30)"
+ * println(a.scale(2).toString()); // "Size(20, 40)"
  * ```
  * @category Size
  */
@@ -5689,7 +5668,7 @@ declare class Size {
      * 
      * ```ts
      * const sum = new Size(10, 20).add(new Size(5, 10));
-     * println(sum.toString()); // "(15, 30)"
+     * println(sum.toString()); // "Size(15, 30)"
      * ```
      */
     add(other: Size): Size;
@@ -5698,7 +5677,7 @@ declare class Size {
      * 
      * ```ts
      * const diff = new Size(100, 50).subtract(new Size(30, 20));
-     * println(diff.toString()); // "(70, 30)"
+     * println(diff.toString()); // "Size(70, 30)"
      * ```
      */
     subtract(other: Size): Size;
@@ -5707,7 +5686,7 @@ declare class Size {
      * 
      * ```ts
      * const s = new Size(10, 20).scale(3);
-     * println(s.toString()); // "(30, 60)"
+     * println(s.toString()); // "Size(30, 60)"
      * ```
      */
     scale(factor: number): Size;

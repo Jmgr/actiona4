@@ -12,7 +12,7 @@ const r2 = new Rect({ x: 0, y: 0, width: 100, height: 50 });
 ```ts
 const a = new Rect(0, 0, 100, 100);
 const b = new Rect(50, 50, 100, 100);
-console.log(a.intersects(b)); // true
+println(a.intersects(b)); // true
 const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 ```
 
@@ -137,8 +137,8 @@ Returns true if this Rect contains the given point.
 
 ```ts
 const r = new Rect(0, 0, 100, 100);
-console.log(r.contains(new Point(50, 50)));  // true
-console.log(r.contains(new Point(150, 50))); // false
+println(r.contains(new Point(50, 50)));  // true
+println(r.contains(new Point(150, 50))); // false
 ```
 
 #### Parameters
@@ -162,7 +162,7 @@ Returns true if this Rect equals another.
 ```ts
 const a = new Rect(0, 0, 10, 10);
 const b = new Rect(0, 0, 10, 10);
-console.log(a.equals(b)); // true
+println(a.equals(b)); // true
 ```
 
 #### Parameters
@@ -210,7 +210,7 @@ Returns true if this Rect intersects with another.
 ```ts
 const a = new Rect(0, 0, 100, 100);
 const b = new Rect(50, 50, 100, 100);
-console.log(a.intersects(b)); // true
+println(a.intersects(b)); // true
 ```
 
 #### Parameters

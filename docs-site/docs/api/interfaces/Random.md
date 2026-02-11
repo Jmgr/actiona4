@@ -13,7 +13,7 @@ const item = random.choice(["a", "b", "c"]);
 
 ```ts
 random.setSeed(42);
-console.log(random.number()); // always the same value
+println(random.number()); // always the same value
 random.resetSeed();
 ```
 
@@ -32,7 +32,7 @@ const item = random.choice(["apple", "banana", "cherry"]);
 
 ```ts
 const item = random.choice([], "default");
-console.log(item); // "default"
+println(item); // "default"
 ```
 
 #### Type Parameters
@@ -155,7 +155,7 @@ Returns a random position on any display.
 
 ```ts
 const pos = await random.position();
-console.log(pos.toString());
+println(pos.toString());
 ```
 
 #### Returns

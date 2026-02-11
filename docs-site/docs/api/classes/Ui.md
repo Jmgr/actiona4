@@ -16,7 +16,7 @@ buttons: MessageBoxButtons.yesNo(),
 icon: MessageBoxIcon.Warning,
 });
 if (result === MessageBoxResult.Yes) {
-console.log("Confirmed");
+println("Confirmed");
 }
 ```
 

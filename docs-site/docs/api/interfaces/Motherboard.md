@@ -4,7 +4,7 @@ Motherboard details.
 
 ```ts
 const board = system.hardware.motherboard;
-console.log(board.vendorName, board.name, board.version);
+println(board.vendorName, board.name, board.version);
 ```
 
 ## Properties

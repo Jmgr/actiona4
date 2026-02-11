@@ -6,7 +6,7 @@ A system group.
 const groups = await system.os.listGroups();
 const group = groups[0];
 if (group) {
-console.log(group.id, group.name);
+println(group.id, group.name);
 }
 ```
 

@@ -8,7 +8,7 @@ const point = await displays.randomPoint();
 
 // Find which display contains a point
 const info = await displays.fromPoint(100, 200);
-if (info) console.log(info.name, info.rect);
+if (info) println(info.name, info.rect);
 
 // Find a display by friendly name
 const monitor = await displays.fromName("HDMI-1");

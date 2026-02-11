@@ -13,8 +13,8 @@ const s3 = new Size(s1);
 ```ts
 const a = new Size(10, 20);
 const b = new Size(5, 10);
-console.log(a.add(b).toString()); // "(15, 30)"
-console.log(a.scale(2).toString()); // "(20, 40)"
+println(a.add(b).toString()); // "Size(15, 30)"
+println(a.scale(2).toString()); // "Size(20, 40)"
 ```
 
 ## Constructors
@@ -81,7 +81,7 @@ Adds two sizes and returns a new Size.
 
 ```ts
 const sum = new Size(10, 20).add(new Size(5, 10));
-console.log(sum.toString()); // "(15, 30)"
+println(sum.toString()); // "Size(15, 30)"
 ```
 
 #### Parameters
@@ -122,7 +122,7 @@ Returns true if a Size equals another.
 ```ts
 const a = new Size(10, 20);
 const b = new Size(10, 20);
-console.log(a.equals(b)); // true
+println(a.equals(b)); // true
 ```
 
 #### Parameters
@@ -145,7 +145,7 @@ Scales this size by a factor and returns a new Size.
 
 ```ts
 const s = new Size(10, 20).scale(3);
-console.log(s.toString()); // "(30, 60)"
+println(s.toString()); // "Size(30, 60)"
 ```
 
 #### Parameters
@@ -168,7 +168,7 @@ Subtracts two sizes and returns a new Size.
 
 ```ts
 const diff = new Size(100, 50).subtract(new Size(30, 20));
-console.log(diff.toString()); // "(70, 30)"
+println(diff.toString()); // "Size(70, 30)"
 ```
 
 #### Parameters
@@ -191,7 +191,7 @@ Returns a JSON representation of this Size.
 
 ```ts
 const s = new Size(100, 50);
-console.log(s.toJson()); // '{"width":100,"height":50}'
+println(s.toJson()); // '{"width":100,"height":50}'
 ```
 
 #### Returns

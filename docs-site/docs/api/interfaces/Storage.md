@@ -4,7 +4,7 @@ Storage devices and disk usage information.
 
 ```ts
 const disks = await system.storage.listDisks();
-console.log(disks.length);
+println(disks.length);
 ```
 
 ## Methods

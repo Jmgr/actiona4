@@ -5,7 +5,7 @@ Progress information for web downloads and uploads.
 ```ts
 const task = web.download("https://example.com/file.bin");
 for await (const progress of task) {
-console.log(
+println(
 formatBytes(progress.current),
 formatBytes(progress.total),
 progress.finished,

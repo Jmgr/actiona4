@@ -7,9 +7,9 @@ Provides methods to query and manipulate the window.
 
 ```ts
 const win = await windows.activeWindow();
-console.log(await win.title());
-console.log(await win.isVisible());
-console.log(await win.rect());
+println(await win.title());
+println(await win.isVisible());
+println(await win.rect());
 ```
 
 ## Methods
@@ -118,7 +118,7 @@ Returns the window position.
 
 ```ts
 const pos = await win.position();
-console.log(`${pos.x}, ${pos.y}`);
+println(`${pos.x}, ${pos.y}`);
 ```
 
 #### Returns
@@ -151,7 +151,7 @@ Returns the window's bounding rectangle.
 
 ```ts
 const r = await win.rect();
-console.log(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
+println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
 ```
 
 #### Returns
@@ -288,7 +288,7 @@ Returns the window size.
 
 ```ts
 const s = await win.size();
-console.log(`${s.width}x${s.height}`);
+println(`${s.width}x${s.height}`);
 ```
 
 #### Returns
@@ -310,3 +310,15 @@ const title = await win.title();
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this window handle.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

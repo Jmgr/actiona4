@@ -9,7 +9,7 @@ await Directory.create("/tmp/my/nested/dir");
 // List entries in a directory
 const entries = await Directory.listEntries("/tmp/my/nested/dir");
 for (const entry of entries) {
-console.log(entry.fileName, entry.isFile ? "file" : "dir");
+println(entry.fileName, entry.isFile ? "file" : "dir");
 }
 
 // Remove a directory tree

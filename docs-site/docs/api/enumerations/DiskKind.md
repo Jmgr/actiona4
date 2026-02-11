@@ -6,7 +6,7 @@ Disk kind values.
 const disks = await system.storage.listDisks();
 const disk = disks[0];
 if (disk && disk.kind === DiskKind.SSD) {
-console.log("SSD");
+println("SSD");
 }
 ```
 

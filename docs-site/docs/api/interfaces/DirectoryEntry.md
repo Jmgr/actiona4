@@ -6,7 +6,7 @@ or symlink within a directory.
 ```ts
 const entries = await Directory.listEntries("/home/user");
 for (const entry of entries) {
-console.log(entry.fileName, entry.isFile, entry.size);
+println(entry.fileName, entry.isFile, entry.size);
 }
 ```
 

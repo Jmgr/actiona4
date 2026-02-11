@@ -5,9 +5,9 @@ Platform-specific standard directory paths.
 All properties return the path as a string, or undefined if unavailable.
 
 ```ts
-console.log(standardPaths.home);       // e.g. "/home/user"
-console.log(standardPaths.downloads);   // e.g. "/home/user/Downloads"
-console.log(standardPaths.documents);   // e.g. "/home/user/Documents"
+println(standardPaths.home);       // e.g. "/home/user"
+println(standardPaths.downloads);   // e.g. "/home/user/Downloads"
+println(standardPaths.documents);   // e.g. "/home/user/Documents"
 ```
 
 ## Properties

@@ -7,7 +7,7 @@ const hw = system.hardware;
 const board = hw.motherboard;
 const components = await hw.listComponents();
 
-console.log(hw.vendorName, board.name, components.length);
+println(hw.vendorName, board.name, components.length);
 ```
 
 ## Properties

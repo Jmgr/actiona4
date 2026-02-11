@@ -6,7 +6,7 @@ Process status.
 const processes = await system.processes.list();
 const process = processes[0];
 if (process && process.status === ProcessStatus.Run) {
-console.log("process is running");
+println("process is running");
 }
 ```
 

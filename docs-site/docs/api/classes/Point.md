@@ -13,8 +13,8 @@ const p3 = new Point(p1);
 ```ts
 const a = new Point(1, 2);
 const b = new Point(4, 6);
-console.log(a.distanceTo(b)); // 5
-console.log(a.add(b).toString()); // "(5, 8)"
+println(a.distanceTo(b)); // 5
+println(a.add(b).toString()); // "Point(5, 8)"
 ```
 
 ## Constructors
@@ -81,7 +81,7 @@ Adds two points and returns a new Point.
 
 ```ts
 const sum = new Point(1, 2).add(new Point(3, 4));
-console.log(sum.toString()); // "(4, 6)"
+println(sum.toString()); // "Point(4, 6)"
 ```
 
 #### Parameters
@@ -122,7 +122,7 @@ Calculates the distance between this point and another.
 ```ts
 const a = new Point(0, 0);
 const b = new Point(3, 4);
-console.log(a.distanceTo(b)); // 5
+println(a.distanceTo(b)); // 5
 ```
 
 #### Parameters
@@ -146,7 +146,7 @@ Returns true if a Point equals another.
 ```ts
 const a = new Point(1, 2);
 const b = new Point(1, 2);
-console.log(a.equals(b)); // true
+println(a.equals(b)); // true
 ```
 
 #### Parameters
@@ -168,8 +168,8 @@ console.log(a.equals(b)); // true
 Returns true if this Point is at the origin, (0, 0).
 
 ```ts
-console.log(new Point(0, 0).isOrigin()); // true
-console.log(new Point(1, 0).isOrigin()); // false
+println(new Point(0, 0).isOrigin()); // true
+println(new Point(1, 0).isOrigin()); // false
 ```
 
 #### Returns
@@ -186,7 +186,7 @@ Length of this point (distance from origin).
 
 ```ts
 const p = new Point(3, 4);
-console.log(p.length()); // 5
+println(p.length()); // 5
 ```
 
 #### Returns
@@ -203,7 +203,7 @@ Scales this point by a factor and returns a new Point.
 
 ```ts
 const p = new Point(3, 4).scaled(2);
-console.log(p.toString()); // "(6, 8)"
+println(p.toString()); // "Point(6, 8)"
 ```
 
 #### Parameters
@@ -226,7 +226,7 @@ Subtracts two points and returns a new Point.
 
 ```ts
 const diff = new Point(5, 7).subtract(new Point(2, 3));
-console.log(diff.toString()); // "(3, 4)"
+println(diff.toString()); // "Point(3, 4)"
 ```
 
 #### Parameters
@@ -249,7 +249,7 @@ Returns a JSON representation of this Point.
 
 ```ts
 const p = new Point(1, 2);
-console.log(p.toJson()); // '{"x":1,"y":2}'
+println(p.toJson()); // '{"x":1,"y":2}'
 ```
 
 #### Returns
@@ -278,7 +278,7 @@ Computes the distance between two points.
 
 ```ts
 const d = Point.distance(new Point(0, 0), new Point(3, 4));
-console.log(d); // 5
+println(d); // 5
 ```
 
 #### Parameters

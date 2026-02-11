@@ -6,7 +6,7 @@ A network interface.
 const interfaces = await system.network.listInterfaces();
 const iface = interfaces[0];
 if (iface) {
-console.log(iface.name, iface.mtu, iface.macAddress);
+println(iface.name, iface.mtu, iface.macAddress);
 }
 ```
 
