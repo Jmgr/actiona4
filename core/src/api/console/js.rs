@@ -141,7 +141,7 @@ impl JsConsole {
             Type::Exception | Type::Object => {
                 let obj = value.as_object().unwrap();
 
-                if let Some(s) = Self::try_custom_to_string(ctx, &obj, &value) {
+                if let Some(s) = Self::try_custom_to_string(ctx, obj, &value) {
                     return s;
                 }
 
@@ -194,7 +194,7 @@ impl JsConsole {
             Type::Exception | Type::Object => {
                 let obj = value.as_object().unwrap();
 
-                if let Some(s) = Self::try_custom_to_string(ctx, &obj, &value) {
+                if let Some(s) = Self::try_custom_to_string(ctx, obj, &value) {
                     return s;
                 }
 

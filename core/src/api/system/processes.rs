@@ -4,20 +4,14 @@ use std::{
     sync::Arc,
 };
 
-#[cfg(windows)]
-use color_eyre::eyre::eyre;
 use color_eyre::{Report, Result};
 use derive_more::Display;
 use derive_where::derive_where;
 use parking_lot::Mutex;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate};
-use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tokio_util::task::TaskTracker;
 use tracing::{error, instrument};
 
-#[cfg(unix)]
-use super::platform::linux::ProcessSignal;
-//#[cfg(windows)]
-//use super::platform::win::ProcessSignal;
 use crate::{
     api::system::storage::DiskUsage,
     types::{
@@ -517,42 +511,6 @@ impl Processes {
             .collect::<Result<HashMap<_, _>>>()
     }
 
-    /// Linux only
-    pub fn send_signal(&self, pid: Pid, signal: Signal) -> Result<()> {
-        #[cfg(unix)]
-        {
-            ProcessSignal::send_signal(pid, signal)
-        }
-
-        #[cfg(windows)]
-        {
-            _ = pid;
-            _ = signal;
-            Err(eyre!("signals are not supported on Windows"))
-        }
-    }
-
-    /// Linux only
-    pub async fn send_signal_and_wait(
-        &self,
-        pid: Pid,
-        signal: Signal,
-        cancellation_token: CancellationToken,
-    ) -> Result<Option<i32>> {
-        #[cfg(unix)]
-        {
-            ProcessSignal::send_signal_and_wait(pid, signal, cancellation_token).await
-        }
-
-        #[cfg(windows)]
-        {
-            _ = pid;
-            _ = signal;
-            _ = cancellation_token;
-            Err(eyre!("signals are not supported on Windows"))
-        }
-    }
-
     pub async fn from_pid(&self, pid: Pid) -> Result<Option<Process>> {
         let process_id = pid.into();
         let system = self.system.clone();
@@ -573,6 +531,4 @@ impl Processes {
             .await??;
         Ok(result)
     }
-
-    // TODO: send signals to processes: process_signal
 }

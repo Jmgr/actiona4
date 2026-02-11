@@ -37,6 +37,15 @@ cargo make lint
 cargo make doc
 ```
 
+## Definition of done
+
+A change is complete when the following pass without error or warning:
+```bash
+cargo make format
+cargo make lint
+cargo make doc
+```
+
 ## Architecture
 
 ### Workspace Structure

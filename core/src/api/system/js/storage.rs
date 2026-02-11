@@ -309,7 +309,7 @@ impl JsIoStats {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("IoStats", &self.inner)
+        display_with_type("IoStats", self.inner)
     }
 }
 
@@ -371,6 +371,6 @@ impl JsDiskUsage {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("DiskUsage", &self.inner)
+        display_with_type("DiskUsage", self.inner)
     }
 }

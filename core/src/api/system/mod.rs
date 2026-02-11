@@ -197,7 +197,7 @@ mod tests {
     #[ignore]
     fn test_signal() {
         Runtime::test(async move |runtime| {
-            let system = System::new(runtime.task_tracker()).await.unwrap();
+            let _system = System::new(runtime.task_tracker()).await.unwrap();
 
             let child = Command::new("gnome-calculator")
                 .spawn()
@@ -209,11 +209,13 @@ mod tests {
 
             sleep(Duration::from_secs(3)).await;
 
-            let result = system
-                .processes()
-                .send_signal_and_wait(pid, Signal::Term, runtime.cancellation_token())
-                .await
-                .unwrap();
+            let result = crate::api::process::send_signal_and_wait(
+                pid,
+                Signal::Term,
+                runtime.cancellation_token(),
+            )
+            .await
+            .unwrap();
             println!("result: {result:?}");
 
             sleep(Duration::from_secs(3)).await;

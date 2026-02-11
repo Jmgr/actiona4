@@ -60,21 +60,21 @@ declare function exit(): void;
  * Prints values without a trailing newline.
  * 
  * Alias for `console.print(...)`.
- * @category Console
+ * @category Core
  */
 declare function print(...args: unknown[]): void;
 /**
  * Prints values followed by a newline.
  * 
  * Alias for `console.println(...)`.
- * @category Console
+ * @category Core
  */
 declare function println(...args: unknown[]): void;
 /**
  * Pretty-prints values using an inspect-style multiline format.
  * 
  * Alias for `console.inspect(...)`.
- * @category Console
+ * @category Core
  */
 declare function inspect(...args: unknown[]): void;
 /**
@@ -1743,6 +1743,81 @@ declare enum Key {
  */
 declare enum KeyError {
     Unsupported,
+}
+/**
+ * Unix signal.
+ * 
+ * ```ts
+ * await process.sendSignal(1234, Signal.Term);
+ * ```
+ * @category Process
+ * @platform only works on Linux
+ */
+declare enum Signal {
+    /**
+     * `SIGHUP` - hang up; often used to request config reload.
+     */
+    Hup,
+
+    /**
+     * `SIGINT` - interrupt (like Ctrl-C).
+     */
+    Int,
+
+    /**
+     * `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
+     */
+    Quit,
+
+    /**
+     * `SIGTERM` - polite termination request.
+     */
+    Term,
+
+    /**
+     * `SIGKILL` - force kill immediately.
+     */
+    Kill,
+
+    /**
+     * `SIGSTOP` - stop/suspend execution immediately.
+     */
+    Stop,
+
+    /**
+     * `SIGTSTP` - terminal stop (like Ctrl-Z).
+     */
+    Tstp,
+
+    /**
+     * `SIGCONT` - continue a stopped process.
+     */
+    Cont,
+
+    /**
+     * `SIGTTIN` - background process attempted terminal input.
+     */
+    Ttin,
+
+    /**
+     * `SIGTTOU` - background process attempted terminal output.
+     */
+    Ttou,
+
+    /**
+     * `SIGWINCH` - terminal window size changed.
+     */
+    Winch,
+
+    /**
+     * `SIGUSR1` - user-defined signal 1.
+     */
+    Usr1,
+
+    /**
+     * `SIGUSR2` - user-defined signal 2.
+     */
+    Usr2,
 }
 /**
  * Process status.
@@ -5246,6 +5321,256 @@ declare class Point {
     clone(): Point;
 }
 /**
+ * Options for starting a process.
+ * @category Process
+ */
+declare interface StartProcessOptions {
+    /**
+     * Arguments to pass to the command.
+     * @defaultValue `[]`
+     */
+    args?: string[];
+    /**
+     * Working directory for the process.
+     * @defaultValue `undefined`
+     */
+    workingDirectory?: string;
+    /**
+     * Environment variables for the process.
+     * @defaultValue `undefined`
+     */
+    env?: Record<string, string | undefined>;
+    /**
+     * Abort signal to kill the process.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Start and manage child processes.
+ * 
+ * ```ts
+ * const handle = process.start("echo", { args: ["hello world"] });
+ * for await (const line of handle.stdout) {
+ * println(line);
+ * }
+ * const result = await handle.finished;
+ * println(result.exitCode);
+ * ```
+ * 
+ * ```ts
+ * const result = await process.startAndWait("ls", { args: ["-la"] });
+ * println(result.stdout);
+ * ```
+ * 
+ * ```ts
+ * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+ * println(pid);
+ * ```
+ * @category Process
+ */
+declare interface Process {
+    /**
+     * Starts a process and returns a `ProcessHandle` for interacting with it.
+     * 
+     * ```ts
+     * const handle = process.start("echo", { args: ["hello world"] });
+     * for await (const line of handle.stdout) {
+     * println(line);
+     * }
+     * const result = await handle.finished;
+     * println(result.exitCode);
+     * ```
+     * 
+     * ```ts
+     * const handle = process.start("cat");
+     * await handle.write("hello\n");
+     * await handle.closeStdin();
+     * for await (const line of handle.stdout) {
+     * println(line);
+     * }
+     * await handle.finished;
+     * ```
+     */
+    start(command: string, options?: StartProcessOptions): Promise<ProcessHandle>;
+    /**
+     * Starts a process, waits for it to finish, and returns the exit result
+     * including captured stdout and stderr.
+     * 
+     * ```ts
+     * const result = await process.startAndWait("ls", { args: ["-la"] });
+     * println(result.stdout);
+     * println(result.exitCode);
+     * ```
+     */
+    startAndWait(command: string, options?: StartProcessOptions): Task<ProcessExitResult>;
+    /**
+     * Starts a detached process and returns its PID.
+     * The process will continue running after the script exits.
+     * 
+     * ```ts
+     * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+     * println(`Started server with PID: ${pid}`);
+     * ```
+     */
+    startDetached(command: string, options?: StartProcessOptions): Promise<number>;
+    /**
+     * Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
+     * 
+     * ```ts
+     * await process.kill(1234);
+     * ```
+     */
+    kill(pid: number): Promise<void>;
+    /**
+     * Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
+     * 
+     * ```ts
+     * await process.terminate(1234);
+     * ```
+     */
+    terminate(pid: number): Promise<void>;
+    /**
+     * Send a signal to a process by PID.
+     * 
+     * ```ts
+     * await process.sendSignal(1234, Signal.Term);
+     * ```
+     * @platform only works on Linux
+     */
+    sendSignal(pid: number, signal: Signal): Promise<void>;
+    toString(): string;
+}
+/**
+ * @category Process
+ */
+declare const process: Process;
+/**
+ * A handle to a running process.
+ * 
+ * Provides access to the process's PID, stdin, stdout, stderr, and allows
+ * waiting for the process to exit or killing it.
+ * 
+ * ```ts
+ * const handle = await process.start("echo", { args: ["hello"] });
+ * for await (const line of handle.stdout) {
+ * println(line);
+ * }
+ * const result = await handle.finished;
+ * println(result.exitCode);
+ * ```
+ * @category Process
+ */
+declare interface ProcessHandle {
+    /**
+     * Process ID.
+     */
+    readonly pid: number;
+    /**
+     * An async iterator that yields lines from the process's standard output.
+     * 
+     * ```ts
+     * const handle = await process.start("echo", { args: ["hello"] });
+     * for await (const line of handle.stdout) {
+     * println(line);
+     * }
+     * ```
+     */
+    readonly stdout: AsyncIterableIterator<string>;
+    /**
+     * An async iterator that yields lines from the process's standard error.
+     * 
+     * ```ts
+     * const handle = await process.start("my-command");
+     * for await (const line of handle.stderr) {
+     * println(`error: ${line}`);
+     * }
+     * ```
+     */
+    readonly stderr: AsyncIterableIterator<string>;
+    /**
+     * A promise that resolves with the exit result when the process finishes.
+     * 
+     * ```ts
+     * const handle = await process.start("ls");
+     * const result = await handle.finished;
+     * println(result.exitCode);
+     * ```
+     */
+    readonly finished: Task<ProcessExitResult>;
+    /**
+     * Write data to the process's stdin.
+     * 
+     * ```ts
+     * const handle = await process.start("cat");
+     * await handle.write("hello\n");
+     * ```
+     */
+    write(data: string): Promise<void>;
+    /**
+     * Close the process's stdin. This signals EOF to the child process,
+     * which is necessary for programs that read until EOF (like `cat`).
+     * 
+     * ```ts
+     * const handle = await process.start("cat");
+     * await handle.write("hello\n");
+     * await handle.closeStdin();
+     * ```
+     */
+    closeStdin(): Promise<void>;
+    /**
+     * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
+     * 
+     * ```ts
+     * const handle = await process.start("sleep", { args: ["100"] });
+     * await handle.kill();
+     * ```
+     */
+    kill(): Promise<void>;
+    /**
+     * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
+     * 
+     * ```ts
+     * const handle = await process.start("sleep", { args: ["100"] });
+     * await handle.terminate();
+     * ```
+     */
+    terminate(): Promise<void>;
+    toString(): string;
+}
+/**
+ * The result of a process that has finished.
+ * 
+ * ```ts
+ * const handle = await process.start("ls");
+ * const result = await handle.finished;
+ * if (result.exitCode === 0) {
+ * println("success");
+ * }
+ * ```
+ * 
+ * ```ts
+ * const result = await process.startAndWait("echo", { args: ["hello"] });
+ * println(result.stdout);
+ * ```
+ * @category Process
+ */
+declare interface ProcessExitResult {
+    /**
+     * The exit code of the process. `undefined` if the process was killed by a signal.
+     */
+    readonly exitCode?: number;
+    /**
+     * The captured stdout output. Only available when using `startAndWait`.
+     */
+    readonly stdout?: string;
+    /**
+     * The captured stderr output. Only available when using `startAndWait`.
+     */
+    readonly stderr?: string;
+    toString(): string;
+}
+/**
  * Random number generator.
  * 
  * Provides methods for generating random numbers, integers, positions, and choices.
@@ -6353,7 +6678,18 @@ declare interface Processes {
     /**
      * Lists all processes
      */
-    list(options?: ListProcessesOptions): Promise<readonly Process[]>;
+    list(options?: ListProcessesOptions): Promise<readonly ProcessInfo[]>;
+    /**
+     * Finds processes matching the provided criteria.
+     * ```ts
+     * const byPid = await system.processes.find({ pid: 12345 });
+     * const byParent = await system.processes.find({ parentPid: 1 });
+     * const byName = await system.processes.find({ name: new Wildcard("my-app*") });
+     * const running = await system.processes.find({ status: ProcessStatus.Run });
+     * const exact = await system.processes.find({ pid: 12345, name: "my-app" });
+     * ```
+     */
+    find(options: ProcessesFindOptions): Promise<readonly ProcessInfo[]>;
     toString(): string;
 }
 /**
@@ -6368,7 +6704,42 @@ declare interface ListProcessesOptions {
     rescan?: boolean;
 }
 /**
- * A running process.
+ * Process search options.
+ * @category System
+ */
+declare interface ProcessesFindOptions {
+    /**
+     * Match by process ID.
+     * When undefined, any PID is accepted.
+     * @defaultValue `undefined`
+     */
+    pid?: number;
+    /**
+     * Match by parent process ID.
+     * When undefined, parent PID is not filtered.
+     * @defaultValue `undefined`
+     */
+    parentPid?: number;
+    /**
+     * Match by process name.
+     * When undefined, name is not filtered.
+     * @defaultValue `undefined`
+     */
+    name?: NameLike;
+    /**
+     * Match by process status.
+     * When undefined, status is not filtered.
+     * @defaultValue `undefined`
+     */
+    status?: ProcessStatus;
+    /**
+     * Refresh process list before filtering.
+     * @defaultValue `true`
+     */
+    rescan?: boolean;
+}
+/**
+ * A process information entry.
  * 
  * ```ts
  * const processes = await system.processes.list();
@@ -6379,7 +6750,7 @@ declare interface ListProcessesOptions {
  * ```
  * @category System
  */
-declare interface Process {
+declare interface ProcessInfo {
     /**
      * Name
      */
@@ -6479,6 +6850,39 @@ declare interface Process {
      * Open files limit
      */
     readonly openFilesLimit?: number;
+    /**
+     * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
+     * 
+     * ```ts
+     * // Force-stop a specific PID if it is still running.
+     * const targetPid = 12345;
+     * const proc = (await system.processes.find({ pid: targetPid }))[0];
+     * if (proc) await proc.kill();
+     * ```
+     */
+    kill(): Promise<void>;
+    /**
+     * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
+     * 
+     * ```ts
+     * // Ask a specific PID to shut down cleanly.
+     * const targetPid = 12345;
+     * const proc = (await system.processes.find({ pid: targetPid }))[0];
+     * if (proc) await proc.terminate();
+     * ```
+     */
+    terminate(): Promise<void>;
+    /**
+     * Send a signal to the process.
+     * 
+     * ```ts
+     * const targetPid = 12345;
+     * const proc = (await system.processes.find({ pid: targetPid }))[0];
+     * if (proc) await proc.sendSignal(Signal.Term);
+     * ```
+     * @platform only works on Linux
+     */
+    sendSignal(signal: Signal): Promise<void>;
     toString(): string;
 }
 /**

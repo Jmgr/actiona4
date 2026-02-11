@@ -17,6 +17,7 @@ pub mod mouse;
 pub mod name;
 pub mod path;
 pub mod point;
+pub mod process;
 pub mod random;
 pub mod rect;
 pub mod screenshot;

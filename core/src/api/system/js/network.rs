@@ -245,7 +245,7 @@ impl JsCounters {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("Counters", &self.inner)
+        display_with_type("Counters", self.inner)
     }
 }
 
@@ -307,6 +307,6 @@ impl JsTraffic {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("Traffic", &self.inner)
+        display_with_type("Traffic", self.inner)
     }
 }

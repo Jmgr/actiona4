@@ -277,10 +277,10 @@ fn find_closest_call_identifier_range(line: &str, reported_col: usize) -> Option
             continue;
         }
 
-        if !line[..start_byte]
+        if line[..start_byte]
             .chars()
             .next_back()
-            .is_none_or(|prev| !is_js_identifier_continue(prev))
+            .is_some_and(is_js_identifier_continue)
         {
             continue;
         }
