@@ -36,15 +36,21 @@ type RectLike = Rect | { x: number; y: number; width: number; height: number };
  */
 type SizeLike = Size | { width: number; height: number };
 /**
- * Pauses the execution for the given number of milliseconds.
+ * Pauses the execution for the given duration.
  * 
  * ```ts
+ * // Wait 500 milliseconds
+ * await sleep(500);
+ * 
  * // Wait 1 second
- * await sleep(1000);
+ * await sleep("1s");
+ * 
+ * // Wait 1 hour
+ * await sleep("1h");
  * ```
  * @category Core
  */
-declare function sleep(ms: number): Task<void>;
+declare function sleep(duration: number | string): Task<void>;
 /**
  * Stops the script execution immediately.
  * 
@@ -2299,12 +2305,12 @@ declare interface PlaySoundOptions {
      * Fade in duration
      * @defaultValue `0`
      */
-    fadeIn?: number;
+    fadeIn?: number | string;
     /**
      * Fade out duration
      * @defaultValue `0`
      */
-    fadeOut?: number;
+    fadeOut?: number | string;
     /**
      * Abort signal to cancel the sound playback.
      * @defaultValue `undefined`
@@ -2428,7 +2434,7 @@ declare interface PlayingSound {
  * // Wait up to 1 second for a clipboard change
  * await Concurrency.race([
  * clipboard.waitForChanged(),
- * sleep(1000),
+ * sleep("1s"),
  * ]);
  * ```
  * @category Clipboard
@@ -2443,7 +2449,7 @@ declare interface WaitForChangedOptions {
      * Polling interval in seconds.
      * @defaultValue `0.2`
      */
-    interval?: number;
+    interval?: number | string;
     /**
      * Abort signal to cancel the wait.
      * @defaultValue `undefined`
@@ -4745,7 +4751,7 @@ declare interface AbortSignal {
  * const task = source.findImage(template, { signal: controller.signal });
  * 
  * // Cancel after 5 seconds
- * await sleep(5000);
+ * await sleep("5s");
  * controller.abort();
  * ```
  * @category Core
@@ -4764,7 +4770,7 @@ declare class AbortController {
  * ```ts
  * // Race two promises, resolving with whichever finishes first, cancelling the other.
  * // Note that this is different from `Promises.race`, which doesn't cancel any promise.
- * const result = await Concurrency.race([sleep(100), sleep(1000)]);
+ * const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
  * ```
  * @category Core
  */
@@ -4776,8 +4782,8 @@ declare interface Concurrency {
      * ```ts
      * // Resolve with the first successful result.
      * const result = await Concurrency.race([
-     * sleep(200).then(() => "fast"),
-     * sleep(1000).then(() => "slow"),
+     * sleep("200ms").then(() => "fast"),
+     * sleep("1s").then(() => "slow"),
      * ]);
      * // result === "fast"
      * ```
@@ -4786,7 +4792,7 @@ declare interface Concurrency {
      * // Use race to implement a timeout.
      * const result = await Concurrency.race([
      * fetchData(),
-     * sleep(5000).then(() => { throw new Error("Timeout"); })
+     * sleep("5s").then(() => { throw new Error("Timeout"); })
      * ]);
      * ```
      * 
@@ -4795,8 +4801,8 @@ declare interface Concurrency {
      * // Here the error is thrown quickly and the slower task is cancelled.
      * try {
      * await Concurrency.race([
-     * sleep(50).then(() => { throw new Error("Failed quickly"); }),
-     * sleep(2000),
+     * sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
+     * sleep("2s"),
      * ]);
      * } catch (e) {
      * console.println(e); // Error: Failed quickly
@@ -4806,8 +4812,8 @@ declare interface Concurrency {
      * ```ts
      * // You can cancel the race task itself.
      * const t = Concurrency.race([
-     * sleep(5000),
-     * sleep(8000),
+     * sleep("5s"),
+     * sleep("8s"),
      * ]);
      * t.cancel();
      * await t; // throws "Error: Cancelled"
@@ -4996,16 +5002,16 @@ declare const mouse: Mouse;
  * Options for measuring mouse movement speed.
  * 
  * ```ts
- * const speed = await mouse.measureSpeed({ duration: 3 });
+ * const speed = await mouse.measureSpeed({ duration: "3s" });
  * ```
  * @category Mouse
  */
 declare interface MeasureSpeedOptions {
     /**
-     * Duration in seconds
-     * @defaultValue `2`
+     * Measurement duration.
+     * @defaultValue `2s`
      */
-    duration?: number;
+    duration?: number | string;
     /**
      * Abort signal to cancel the measurement.
      * @defaultValue `undefined`
@@ -5031,12 +5037,12 @@ declare interface ClickOptions extends PressOptions {
      * Delay between consecutive clicks, in seconds.
      * @defaultValue `0`
      */
-    interval?: number;
+    interval?: number | string;
     /**
      * How long to hold each click, in seconds.
      * @defaultValue `0`
      */
-    duration?: number;
+    duration?: number | string;
     /**
      * Abort signal to cancel the click.
      * @defaultValue `undefined`
@@ -5056,7 +5062,7 @@ declare interface DoubleClickOptions extends ClickOptions {
      * Delay between the two clicks, in seconds.
      * @defaultValue `0.25`
      */
-    delay?: number;
+    delay?: number | string;
 }
 /**
  * A wildcard pattern for matching strings.
@@ -5364,7 +5370,7 @@ declare interface StartProcessOptions {
  * ```
  * 
  * ```ts
- * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+ * const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
  * println(pid);
  * ```
  * @category Process
@@ -5409,7 +5415,7 @@ declare interface Process {
      * The process will continue running after the script exits.
      * 
      * ```ts
-     * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+     * const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
      * println(`Started server with PID: ${pid}`);
      * ```
      */
@@ -7214,7 +7220,7 @@ declare interface WebOptions {
      * Request timeout duration.
      * @defaultValue `undefined`
      */
-    timeout?: number;
+    timeout?: number | string;
     /**
      * Sets the content-type header.
      * Overrides any content-type set by other fields.
@@ -7696,7 +7702,7 @@ declare interface MoveOptions {
      * Interval in seconds
      * @defaultValue `0.01`
      */
-    interval?: number;
+    interval?: number | string;
 }
 /**
  * Options for pressing (and holding) a mouse button.

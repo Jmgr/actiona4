@@ -13,7 +13,7 @@ use crate::api::js::task::task;
 /// ```ts
 /// // Race two promises, resolving with whichever finishes first, cancelling the other.
 /// // Note that this is different from `Promises.race`, which doesn't cancel any promise.
-/// const result = await Concurrency.race([sleep(100), sleep(1000)]);
+/// const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
 /// ```
 #[derive(Debug, JsLifetime, Trace)]
 #[rquickjs::class]
@@ -34,8 +34,8 @@ impl JsConcurrency {
     /// ```ts
     /// // Resolve with the first successful result.
     /// const result = await Concurrency.race([
-    ///   sleep(200).then(() => "fast"),
-    ///   sleep(1000).then(() => "slow"),
+    ///   sleep("200ms").then(() => "fast"),
+    ///   sleep("1s").then(() => "slow"),
     /// ]);
     /// // result === "fast"
     /// ```
@@ -44,7 +44,7 @@ impl JsConcurrency {
     /// // Use race to implement a timeout.
     /// const result = await Concurrency.race([
     ///   fetchData(),
-    ///   sleep(5000).then(() => { throw new Error("Timeout"); })
+    ///   sleep("5s").then(() => { throw new Error("Timeout"); })
     /// ]);
     /// ```
     ///
@@ -53,8 +53,8 @@ impl JsConcurrency {
     /// // Here the error is thrown quickly and the slower task is cancelled.
     /// try {
     ///   await Concurrency.race([
-    ///     sleep(50).then(() => { throw new Error("Failed quickly"); }),
-    ///     sleep(2000),
+    ///     sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
+    ///     sleep("2s"),
     ///   ]);
     /// } catch (e) {
     ///   console.println(e); // Error: Failed quickly
@@ -64,8 +64,8 @@ impl JsConcurrency {
     /// ```ts
     /// // You can cancel the race task itself.
     /// const t = Concurrency.race([
-    ///   sleep(5000),
-    ///   sleep(8000),
+    ///   sleep("5s"),
+    ///   sleep("8s"),
     /// ]);
     /// t.cancel();
     /// await t; // throws "Error: Cancelled"
@@ -150,7 +150,7 @@ mod tests {
             let start = Instant::now();
 
             script_engine
-                .eval_async::<()>("await Concurrency.race([sleep(100), sleep(1000)])")
+                .eval_async::<()>("await Concurrency.race([sleep(\"100ms\"), sleep(\"1s\")])")
                 .await
                 .unwrap();
 
@@ -166,7 +166,7 @@ mod tests {
 
             script_engine
                 .eval_async::<()>(
-                    "await Concurrency.race([Concurrency.race([sleep(100)]), sleep(1000)])",
+                    "await Concurrency.race([Concurrency.race([sleep(\"100ms\")]), sleep(\"1s\")])",
                 )
                 .await
                 .unwrap();
@@ -193,7 +193,7 @@ mod tests {
         Runtime::test_with_script_engine(|script_engine| async move {
             let value = script_engine
                 .eval_async::<String>(
-                    r#"await Concurrency.race([1, "text", sleep(30).then(() => "done"), null])"#,
+                    r#"await Concurrency.race([1, "text", sleep("30ms").then(() => "done"), null])"#,
                 )
                 .await
                 .unwrap();
@@ -208,7 +208,7 @@ mod tests {
             let result = script_engine
                 .eval_async::<String>(
                     r#"
-                    const loser = sleep(1000);
+                    const loser = sleep("1s");
                     let loserError = "";
                     loser.catch((e) => {
                         loserError = e.toString();
@@ -217,7 +217,7 @@ mod tests {
                     let raceError = "";
                     try {
                         await Concurrency.race([
-                            sleep(20).then(() => {
+                            sleep("20ms").then(() => {
                                 throw new Error("boom");
                             }),
                             loser,
@@ -226,7 +226,7 @@ mod tests {
                         raceError = e.toString();
                     }
 
-                    await sleep(50);
+                    await sleep("50ms");
                     `${raceError}|${loserError}`
                     "#,
                 )
@@ -243,8 +243,8 @@ mod tests {
             let loser_error = script_engine
                 .eval_async::<String>(
                     r#"
-                    const winner = sleep(30);
-                    const loser = sleep(1000);
+                    const winner = sleep("30ms");
+                    const loser = sleep("1s");
 
                     await Concurrency.race([winner, loser]);
                     await winner;

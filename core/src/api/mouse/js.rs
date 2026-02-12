@@ -15,7 +15,7 @@ use crate::{
         js::{
             abort_controller::JsAbortSignal,
             classes::{SingletonClass, register_enum},
-            duration::{JsDuration, secs_to_duration},
+            duration::JsDuration,
             task::{task, task_with_token},
         },
         point::js::{JsPoint, JsPointLike},
@@ -93,14 +93,14 @@ pub type JsPressOptions = super::PressOptions;
 /// Options for measuring mouse movement speed.
 ///
 /// ```ts
-/// const speed = await mouse.measureSpeed({ duration: 3 });
+/// const speed = await mouse.measureSpeed({ duration: "3s" });
 /// ```
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsMeasureSpeedOptions {
-    /// Duration in seconds
-    /// @default `2`
-    pub duration: Option<f64>,
+    /// Measurement duration.
+    /// @default `2s`
+    pub duration: Option<JsDuration>,
 
     /// Abort signal to cancel the measurement.
     /// @default `undefined`
@@ -226,12 +226,14 @@ impl JsMouse {
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
-        let duration = secs_to_duration(options.duration.unwrap_or(2.));
+        let duration = options
+            .duration
+            .unwrap_or_else(|| Duration::from_secs(2).into());
         let local_mouse = self.inner.clone();
 
         task_with_token(ctx, signal, async move |ctx, token| {
             local_mouse
-                .measure_speed(duration, token)
+                .measure_speed(duration.0, token)
                 .await
                 .into_js_result(&ctx)
         })
@@ -445,7 +447,7 @@ mod tests {
     fn test_measure_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
             let speed: f64 = script_engine
-                .eval_async("await mouse.measureSpeed(2000)")
+                .eval_async("await mouse.measureSpeed({ duration: \"2s\" })")
                 .await
                 .unwrap();
             println!("speed: {speed}");

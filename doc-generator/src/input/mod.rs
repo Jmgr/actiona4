@@ -804,7 +804,7 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
                 .to_string(),
             )
         }
-        "JsDuration" => Type::Number,
+        "JsDuration" => Type::Verbatim("number | string".to_string()),
         object => Type::Verbatim(object.to_string()),
     })
 }
@@ -1007,5 +1007,21 @@ mod tests {
         let type_ = convert_type(&rustdoc_type, None).unwrap();
         assert_eq!(type_, Type::Verbatim("NameLike".to_string()));
         assert_eq!(type_.to_string(Context::Property).unwrap(), "NameLike");
+    }
+
+    #[test]
+    fn test_convert_js_duration_to_number_or_string() {
+        let rustdoc_type = rustdoc_types::Type::ResolvedPath(Path {
+            path: "crate::api::js::duration::JsDuration".to_string(),
+            id: Id(0),
+            args: None,
+        });
+
+        let type_ = convert_type(&rustdoc_type, None).unwrap();
+        assert_eq!(type_, Type::Verbatim("number | string".to_string()));
+        assert_eq!(
+            type_.to_string(Context::Property).unwrap(),
+            "number | string"
+        );
     }
 }

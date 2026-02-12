@@ -1,28 +1,35 @@
-use std::time::Duration;
-
 use rquickjs::{Ctx, Function, Promise, Result, Value, prelude::Rest};
 use tokio::select;
 use tracing::instrument;
 
 use crate::{
     IntoJsResult,
-    api::{console::js::JsConsole, js::task::task},
+    api::{
+        console::js::JsConsole,
+        js::{duration::JsDuration, task::task},
+    },
     error::CommonError,
     runtime::WithUserData,
 };
 
-/// Pauses the execution for the given number of milliseconds.
+/// Pauses the execution for the given duration.
 ///
 /// ```ts
+/// // Wait 500 milliseconds
+/// await sleep(500);
+///
 /// // Wait 1 second
-/// await sleep(1000);
+/// await sleep("1s");
+///
+/// // Wait 1 hour
+/// await sleep("1h");
 /// ```
 /// @returns Task<void>
-pub fn sleep<'js>(ctx: Ctx<'js>, ms: f64) -> Result<Promise<'js>> {
+pub fn sleep<'js>(ctx: Ctx<'js>, duration: JsDuration) -> Result<Promise<'js>> {
     task(ctx, async move |ctx, token| {
         select! {
             _ = token.cancelled() => { Err(CommonError::Cancelled).into_js_result(&ctx) },
-            _ = tokio::time::sleep(Duration::from_secs_f64(ms / 1000.)) => { Ok(()) },
+            _ = tokio::time::sleep(duration.0) => { Ok(()) },
         }
     })
 }
@@ -91,7 +98,7 @@ mod tests {
             let start = Instant::now();
 
             script_engine
-                .eval_async::<()>("await sleep(100)")
+                .eval_async::<()>("await sleep(\"100ms\")")
                 .await
                 .unwrap();
 

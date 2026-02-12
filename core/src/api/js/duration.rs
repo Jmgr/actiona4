@@ -34,33 +34,11 @@ impl<'js> FromJs<'js> for JsDuration {
     }
 }
 
-pub(crate) fn secs_to_duration(secs: f64) -> Duration {
-    Duration::from_secs_f64(secs)
-}
-
 #[cfg(test)]
 mod tests {
     use std::time::Duration;
 
-    use super::secs_to_duration;
     use crate::{api::js::duration::JsDuration, runtime::Runtime};
-
-    #[test]
-    fn secs_to_duration_zero() {
-        assert_eq!(secs_to_duration(0.0), Duration::from_secs(0));
-    }
-
-    #[test]
-    fn secs_to_duration_fractional() {
-        let duration = secs_to_duration(1.25);
-        assert!((duration.as_secs_f64() - 1.25).abs() < 1e-9);
-    }
-
-    #[test]
-    fn secs_to_duration_large() {
-        let duration = secs_to_duration(3600.0 * 24.0 * 7.0);
-        assert_eq!(duration, Duration::from_secs(60 * 60 * 24 * 7));
-    }
 
     #[test]
     fn from_js_duration_float() {

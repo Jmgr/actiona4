@@ -50,7 +50,7 @@ pub type JsClipboardMode = super::ClipboardMode;
 /// // Wait up to 1 second for a clipboard change
 /// await Concurrency.race([
 ///   clipboard.waitForChanged(),
-///   sleep(1000),
+///   sleep("1s"),
 /// ]);
 /// ```
 /// @options

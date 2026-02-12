@@ -58,7 +58,7 @@ impl IntoToken for Option<JsAbortSignal> {
 /// const task = source.findImage(template, { signal: controller.signal });
 ///
 /// // Cancel after 5 seconds
-/// await sleep(5000);
+/// await sleep("5s");
 /// controller.abort();
 /// ```
 #[derive(Debug, JsLifetime)]
@@ -164,7 +164,7 @@ mod tests {
 
                 let promise = testStruct.run(controller.signal);
 
-                await sleep(50);
+                await sleep("50ms");
 
                 controller.abort();
 

@@ -2,8 +2,7 @@ use derive_more::Display;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace,
-    prelude::Opt,
+    Ctx, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace, prelude::Opt,
 };
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -508,7 +507,7 @@ impl JsProcessInfo {
         #[cfg(not(unix))]
         {
             let _ = signal;
-            Err(Exception::throw_message(
+            Err(rquickjs::Exception::throw_message(
                 &ctx,
                 "process.sendSignal is only supported on Unix platforms",
             ))

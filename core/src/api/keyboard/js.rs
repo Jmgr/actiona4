@@ -2271,7 +2271,7 @@ mod tests {
                 .eval_async::<()>(
                     r#"
                     while(true) {
-                        await sleep(1000);
+                        await sleep("1s");
                         console.println("hello", await keyboard.isKeyPressed(Key.A));
                     }
                 "#,
