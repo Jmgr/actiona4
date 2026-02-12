@@ -11,6 +11,7 @@ use windows::{
         System::StationsAndDesktops::{
             DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
         },
+        System::Threading::{OpenProcess, PROCESS_TERMINATE, TerminateProcess},
         UI::WindowsAndMessaging::{
             GetClassNameW, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
             IsWindowVisible, SendNotifyMessageW, WM_CLOSE,
@@ -19,7 +20,10 @@ use windows::{
     core::{BOOL, Error},
 };
 
-use crate::{platform::win::safe_handle::SafeDesktopHandle, types::su32::Su32};
+use crate::{
+    platform::win::safe_handle::{SafeDesktopHandle, SafeHandle},
+    types::su32::Su32,
+};
 
 #[derive(Debug)]
 pub enum ProcessType {
@@ -133,6 +137,14 @@ pub fn is_window_visible(hwnd: &HWND) -> bool {
 pub fn send_close_message_to_window(hwnd: HWND) -> Result<()> {
     unsafe {
         SendNotifyMessageW(hwnd, WM_CLOSE, WPARAM::default(), LPARAM::default())?;
+    }
+    Ok(())
+}
+
+pub fn terminate_process_by_pid(pid: u32) -> Result<()> {
+    unsafe {
+        let handle = SafeHandle::try_new(OpenProcess(PROCESS_TERMINATE, false, pid)?)?;
+        TerminateProcess(handle.as_raw(), 1)?;
     }
     Ok(())
 }

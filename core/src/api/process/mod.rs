@@ -298,16 +298,8 @@ pub fn kill_by_pid(pid: Pid) -> Result<()> {
 
     #[cfg(windows)]
     {
-        use windows::Win32::System::Threading::{OpenProcess, PROCESS_TERMINATE, TerminateProcess};
-
-        use crate::platform::win::safe_handle::SafeHandle;
-
         let process_id: u32 = pid.into();
-        unsafe {
-            let handle = SafeHandle::try_new(OpenProcess(PROCESS_TERMINATE, false, process_id)?)?;
-            TerminateProcess(handle.as_raw(), 1)?;
-        }
-        Ok(())
+        crate::platform::win::process_info::terminate_process_by_pid(process_id)
     }
 }
 
@@ -322,10 +314,21 @@ pub fn terminate_by_pid(pid: Pid) -> Result<()> {
     {
         use crate::platform::win::process_info::{send_close_message_to_window, windows_for_pid};
 
-        let windows = windows_for_pid(pid.into())?;
-        for hwnd in windows {
-            send_close_message_to_window(hwnd)?;
+        let process_id: u32 = pid.into();
+        let windows = windows_for_pid(process_id)?;
+        let mut close_failed = false;
+        for hwnd in windows.iter().copied() {
+            if send_close_message_to_window(hwnd).is_err() {
+                close_failed = true;
+            }
         }
+
+        // Console/background processes may have no windows. In that case,
+        // or if window-close signaling fails, fall back to force termination.
+        if windows.is_empty() || close_failed {
+            return crate::platform::win::process_info::terminate_process_by_pid(process_id);
+        }
+
         Ok(())
     }
 }

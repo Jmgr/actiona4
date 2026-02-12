@@ -333,10 +333,21 @@ impl JsProcess {
     /// ```
     ///
     /// @platforms =linux
-    #[cfg(unix)]
     pub async fn send_signal(&self, ctx: Ctx<'_>, pid: u32, signal: JsSignal) -> Result<()> {
-        let pid = Pid::try_from(pid).into_js_result(&ctx)?;
-        super::send_signal(pid, signal.into()).into_js_result(&ctx)
+        #[cfg(unix)]
+        {
+            let pid = Pid::try_from(pid).into_js_result(&ctx)?;
+            super::send_signal(pid, signal.into()).into_js_result(&ctx)
+        }
+
+        #[cfg(not(unix))]
+        {
+            let _ = (pid, signal);
+            Err(Exception::throw_message(
+                &ctx,
+                "process.sendSignal is only supported on Unix platforms",
+            ))
+        }
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
@@ -648,6 +659,12 @@ impl JsProcessExitResult {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(windows)]
+    use std::time::Duration;
+
+    #[cfg(windows)]
+    use tokio::time::timeout;
+
     use crate::runtime::Runtime;
 
     /// Returns a shell command string for running a shell expression.
@@ -923,6 +940,27 @@ mod tests {
                 ))
                 .await
                 .unwrap();
+        });
+    }
+
+    #[test]
+    #[cfg(windows)]
+    fn test_terminate_gui_notepad() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            timeout(
+                Duration::from_secs(10),
+                script_engine.eval_async::<()>(
+                    r#"
+                const handle = await process.start("notepad");
+                await sleep(0.5);
+                await handle.terminate();
+                await handle.finished;
+                "#,
+                ),
+            )
+            .await
+            .expect("timed out waiting for notepad terminate")
+            .unwrap();
         });
     }
 }

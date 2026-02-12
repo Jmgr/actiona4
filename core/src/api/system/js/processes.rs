@@ -2,7 +2,8 @@ use derive_more::Display;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
-    Ctx, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace, prelude::Opt,
+    Ctx, Exception, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace,
+    prelude::Opt,
 };
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -498,9 +499,20 @@ impl JsProcessInfo {
     /// ```
     ///
     /// @platforms =linux
-    #[cfg(unix)]
     pub async fn send_signal(&self, ctx: Ctx<'_>, signal: JsSignal) -> Result<()> {
-        crate::api::process::send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)
+        #[cfg(unix)]
+        {
+            crate::api::process::send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)
+        }
+
+        #[cfg(not(unix))]
+        {
+            let _ = signal;
+            Err(Exception::throw_message(
+                &ctx,
+                "process.sendSignal is only supported on Unix platforms",
+            ))
+        }
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]

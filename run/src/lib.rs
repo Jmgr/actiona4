@@ -262,15 +262,21 @@ mod tests {
     fn respects_top_level_options_before_default_subcommand() {
         let args = vec![
             OsString::from("actiona4-run"),
-            OsString::from("--display"),
-            OsString::from(":0"),
+            OsString::from("--disable-updates"),
+            OsString::from("false"),
             OsString::from("script.ts"),
         ];
 
         let args = maybe_insert_default_run(args);
         assert_eq!(
             args,
-            vec!["actiona4-run", "--display", ":0", "run", "script.ts"]
+            vec![
+                "actiona4-run",
+                "--disable-updates",
+                "false",
+                "run",
+                "script.ts"
+            ]
         );
     }
 }

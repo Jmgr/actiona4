@@ -175,13 +175,17 @@ impl System {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(unix)]
     use std::time::Duration;
 
+    #[cfg(unix)]
     use tokio::{process::Command, time::sleep};
     use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan, prelude::*};
 
     use super::*;
-    use crate::{api::system::processes::Signal, runtime::Runtime};
+    #[cfg(unix)]
+    use crate::api::system::processes::Signal;
+    use crate::runtime::Runtime;
 
     #[test]
     #[ignore]
@@ -195,6 +199,7 @@ mod tests {
 
     #[test]
     #[ignore]
+    #[cfg(unix)]
     fn test_signal() {
         Runtime::test(async move |runtime| {
             let _system = System::new(runtime.task_tracker()).await.unwrap();
