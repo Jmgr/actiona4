@@ -15,7 +15,11 @@ use tracing::instrument;
 
 use crate::{
     IntoJsResult,
-    api::js::{abort_controller::JsAbortSignal, classes::SingletonClass, task::task_with_token},
+    api::js::{
+        abort_controller::JsAbortSignal,
+        classes::{SingletonClass, registration_target},
+        task::task_with_token,
+    },
     runtime::Runtime,
 };
 
@@ -101,9 +105,10 @@ impl SingletonClass<'_> for JsKeyboard {
         // Register the Key class first, then add enum variants as static properties.
         // Both JsKey and JsStandardKey use the name "Key", so we must define the class
         // first and then set enum properties on its constructor object.
-        Class::<JsKey>::define(&ctx.globals())?;
+        let target = registration_target(ctx);
+        Class::<JsKey>::define(&target)?;
 
-        let key_obj: Object = ctx.globals().get("Key")?;
+        let key_obj: Object = target.get("Key")?;
         for v in <JsStandardKey as strum::IntoEnumIterator>::iter() {
             let name = serde_plain::to_string(&v).unwrap();
             key_obj.set(&name, name.clone())?;

@@ -218,8 +218,10 @@ impl File {
         Ok(())
     }
 
-    pub fn write(&self, path: &str) -> Result<()> {
-        let mut output_file = fs::File::create(path)?; // TODO: write to a buffer, then to a file
+    pub fn write(&self, path: &str, no_globals: bool) -> Result<()> {
+        let mut output_file = fs::File::create(path)?;
+
+        let decl = if no_globals { "" } else { "declare " };
 
         write_comments(
             &[format!(
@@ -232,14 +234,18 @@ impl File {
         )?;
         writeln!(output_file)?;
 
+        if no_globals {
+            writeln!(output_file, "declare namespace actiona {{")?;
+        }
+
         for module in self.modules.iter() {
             let verbatim = module.verbatim.join("\n");
             if !verbatim.is_empty() {
-                writeln!(output_file, "{}", verbatim)?;
+                writeln!(output_file, "{verbatim}")?;
             }
         }
 
-        output_methods(&self.functions, true, &mut output_file)?;
+        output_methods(&self.functions, true, decl, &mut output_file)?;
 
         for enum_ in self.enums.iter() {
             let mut comments = enum_.comments.clone();
@@ -257,7 +263,7 @@ impl File {
 
             let verbatim = enum_.verbatim.join("\n");
             if verbatim.is_empty() {
-                writeln!(output_file, "declare enum {} {{", enum_.name)?;
+                writeln!(output_file, "{decl}enum {} {{", enum_.name)?;
 
                 for (i, variant) in enum_.variants.iter().enumerate() {
                     let is_first = i == 0;
@@ -279,7 +285,7 @@ impl File {
 
                 writeln!(output_file, "}}")?;
             } else {
-                writeln!(output_file, "{}", verbatim)?;
+                writeln!(output_file, "{verbatim}")?;
             }
         }
 
@@ -297,14 +303,15 @@ impl File {
             if verbatim.is_empty() {
                 let has_constructor = struct_.methods.iter().any(|method| method.is_constructor);
 
+                let kind = if struct_.methods.is_empty() || !has_constructor {
+                    "interface"
+                } else {
+                    "class"
+                };
+
                 writeln!(
                     output_file,
-                    "declare {} {}{}{} {{",
-                    if struct_.methods.is_empty() || !has_constructor {
-                        "interface"
-                    } else {
-                        "class"
-                    },
+                    "{decl}{kind} {}{}{} {{",
                     struct_.name,
                     if struct_.is_generic { "<T>" } else { "" },
                     if let Some(name) = &struct_.extends {
@@ -372,10 +379,10 @@ impl File {
                 }
 
                 for extra_method in &struct_.extra_methods {
-                    writeln!(output_file, "    {};", extra_method)?;
+                    writeln!(output_file, "    {extra_method};")?;
                 }
 
-                output_methods(&struct_.methods, false, &mut output_file)?;
+                output_methods(&struct_.methods, false, decl, &mut output_file)?;
 
                 writeln!(output_file, "}}")?;
 
@@ -386,14 +393,18 @@ impl File {
 
                     writeln!(
                         output_file,
-                        "declare const {}: {};",
+                        "{decl}const {}: {};",
                         struct_.name.to_case(Case::Snake),
                         struct_.name
                     )?;
                 }
             } else {
-                writeln!(output_file, "{}", verbatim)?;
+                writeln!(output_file, "{verbatim}")?;
             }
+        }
+
+        if no_globals {
+            writeln!(output_file, "}}")?;
         }
 
         Ok(())
@@ -403,9 +414,9 @@ impl File {
 fn output_methods(
     methods: &[Method],
     is_free_function: bool,
+    decl: &str,
     output_file: &mut std::fs::File,
 ) -> Result<()> {
-    // Used for overloading methods
     let mut methods = methods.to_vec();
 
     // Make sure constructors are displayed first
@@ -450,8 +461,6 @@ fn output_methods(
             }
 
             let mut comments = overload.comments.clone();
-            // Struct methods inherit category from their parent struct/interface,
-            // so only free functions need per-overload category tags.
             if is_free_function {
                 add_category_comment(&mut comments, method.category.as_deref());
             }
@@ -486,15 +495,14 @@ fn output_methods(
                 }
 
                 let prefix = if is_free_function {
-                    "declare function "
+                    format!("{decl}function ")
                 } else {
-                    "    "
+                    "    ".to_string()
                 };
 
                 writeln!(
                     output_file,
-                    "{}{private}{}{}{}({parameters}): {};",
-                    prefix,
+                    "{prefix}{private}{}{}{}({parameters}): {};",
                     if method.is_static && !is_free_function {
                         "static "
                     } else {

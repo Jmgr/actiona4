@@ -4,6 +4,7 @@ use actiona_core::{
     config::Config,
     runtime::{Runtime, RuntimeOptions, WaitAtEnd},
     scripting,
+    scripting::pragma::parse_pragmas,
 };
 use clap::{CommandFactory, Parser};
 use color_eyre::{Result, config::HookBuilder, eyre::Context};
@@ -97,9 +98,24 @@ pub fn run_cli() -> Result<()> {
     // Automatic platform-specific setup (e.g. Windows notification registration)
     setup::ensure_platform_setup();
 
+    // Determine no_globals before creating the runtime, since it affects registration.
+    let no_globals = match &args.command {
+        Commands::Run { filepath } => {
+            let script = std::fs::read_to_string(filepath).context("reading input file")?;
+            parse_pragmas(&script).no_globals
+        }
+        Commands::Eval { code } => {
+            let code = code.join("\n");
+            parse_pragmas(&code).no_globals
+        }
+        Commands::Repl { no_globals } => *no_globals,
+        _ => false,
+    };
+
     let runtime_options = RuntimeOptions {
         #[cfg(unix)]
         display_name: args.display.clone(),
+        no_globals,
     };
 
     Runtime::run_with_ui(
@@ -140,7 +156,7 @@ pub fn run_cli() -> Result<()> {
                         eprintln!("Error: {err}");
                     }
                 }
-                Commands::Repl => {
+                Commands::Repl { .. } => {
                     runtime.set_wait_at_end(WaitAtEnd::No);
 
                     repl(script_engine, runtime.cancellation_token()).await?;

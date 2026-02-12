@@ -12,7 +12,7 @@ use tracing::instrument;
 use crate::{
     IntoJsResult,
     api::{
-        js::classes::{SingletonClass, register_host_class},
+        js::classes::{SingletonClass, register_host_class, registration_target},
         system::{
             System,
             js::{
@@ -61,11 +61,10 @@ impl SingletonClass<'_> for JsSystem {
         register_host_class::<JsProcesses>(ctx)?;
         register_host_class::<JsStorage>(ctx)?;
 
-        ctx.globals()
-            .set("formatFrequency", Func::from(format_frequency))?;
-        ctx.globals()
-            .set("formatPercent", Func::from(format_percent))?;
-        ctx.globals().set("formatBytes", Func::from(format_bytes))?;
+        let target = registration_target(ctx);
+        target.set("formatFrequency", Func::from(format_frequency))?;
+        target.set("formatPercent", Func::from(format_percent))?;
+        target.set("formatBytes", Func::from(format_bytes))?;
         Ok(())
     }
 }

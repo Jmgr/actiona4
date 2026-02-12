@@ -134,7 +134,7 @@ impl JsConcurrency {
     /// @skip
     #[instrument(skip_all)]
     pub fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
-        ctx.globals().prop("Concurrency", Self::new())
+        super::classes::registration_target(ctx).prop("Concurrency", Self::new())
     }
 }
 

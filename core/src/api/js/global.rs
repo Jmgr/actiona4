@@ -73,16 +73,12 @@ pub fn inspect<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
 
 #[instrument(skip_all)]
 pub(crate) fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
-    ctx.globals()
-        .prop("sleep", Function::new(ctx.clone(), sleep))?;
-    ctx.globals()
-        .prop("exit", Function::new(ctx.clone(), exit))?;
-    ctx.globals()
-        .prop("print", Function::new(ctx.clone(), print))?;
-    ctx.globals()
-        .prop("println", Function::new(ctx.clone(), println))?;
-    ctx.globals()
-        .prop("inspect", Function::new(ctx.clone(), inspect))?;
+    let target = super::classes::registration_target(ctx);
+    target.prop("sleep", Function::new(ctx.clone(), sleep))?;
+    target.prop("exit", Function::new(ctx.clone(), exit))?;
+    target.prop("print", Function::new(ctx.clone(), print))?;
+    target.prop("println", Function::new(ctx.clone(), println))?;
+    target.prop("inspect", Function::new(ctx.clone(), inspect))?;
     Ok(())
 }
 

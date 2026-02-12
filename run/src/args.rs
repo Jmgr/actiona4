@@ -19,7 +19,11 @@ pub enum Commands {
     },
 
     /// 💻 starts the interactive terminal (REPL)
-    Repl,
+    Repl {
+        /// Use the `actiona` namespace instead of globals
+        #[arg(long)]
+        no_globals: bool,
+    },
 
     /// ⚙️ initializes a new script project
     Init {

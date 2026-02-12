@@ -6,7 +6,22 @@ use serde_name::trace_name;
 use strum::IntoEnumIterator;
 use tracing::instrument;
 
-use crate::IntoJsResult;
+use crate::{IntoJsResult, runtime::WithUserData};
+
+/// Returns the object where Actiona API items should be registered.
+///
+/// In normal mode this is `ctx.globals()`. In `no_globals` mode this is
+/// the `actiona` namespace object stored on globals.
+#[must_use]
+pub fn registration_target<'js>(ctx: &Ctx<'js>) -> Object<'js> {
+    if ctx.user_data().no_globals() {
+        ctx.globals()
+            .get::<_, Object>("actiona")
+            .expect("actiona namespace should exist")
+    } else {
+        ctx.globals()
+    }
+}
 
 /// Represents a JavaScript class that exists as a single instance in the global scope.
 ///
@@ -41,14 +56,16 @@ pub fn register_singleton_class<'js, T: SingletonClass<'js> + JsClass<'js> + Siz
 ) -> rquickjs::Result<()> {
     T::register_dependencies(ctx)?;
 
+    let target = registration_target(ctx);
+
     // Remove "Js" prefix if present
     let name = T::NAME.strip_prefix("Js").unwrap_or(T::NAME);
 
     let name = name.to_case(Case::Camel);
 
-    ctx.globals().prop(&name, instance)?;
+    target.prop(&name, instance)?;
 
-    let object = ctx.globals().get::<_, Object>(name)?;
+    let object = target.get::<_, Object>(name)?;
 
     T::extra_registration(&object)?;
 
@@ -92,11 +109,13 @@ pub fn register_value_class<'js, T: ValueClass<'js> + JsClass<'js>>(
             .wrap_err("register dependencies")
             .into_js_result(ctx)?;
 
-        Class::<T>::define(&ctx.globals())
+        let target = registration_target(ctx);
+
+        Class::<T>::define(&target)
             .wrap_err("define constructor")
             .into_js_result(ctx)?;
 
-        let object = ctx.globals().get::<_, Object>(name)?;
+        let object = target.get::<_, Object>(name)?;
 
         T::extra_registration(&object)
             .wrap_err("extra registration")
@@ -137,7 +156,9 @@ pub fn register_host_class<'js, T: HostClass<'js> + JsClass<'js>>(
             .wrap_err("register dependencies")
             .into_js_result(ctx)?;
 
-        Class::<T>::define(&ctx.globals())
+        let target = registration_target(ctx);
+
+        Class::<T>::define(&target)
             .wrap_err("define constructor")
             .into_js_result(ctx)?;
 
@@ -153,6 +174,7 @@ pub fn register_enum<'js, E>(ctx: &Ctx<'js>) -> rquickjs::Result<()>
 where
     E: Serialize + for<'de> Deserialize<'de> + IntoEnumIterator,
 {
+    let target = registration_target(ctx);
     let obj = Object::new(ctx.clone())?;
     for v in E::iter() {
         // Serialize variant to serde's canonical string (honors rename/rename_all)
@@ -161,5 +183,5 @@ where
         // Set both the property name and the value to that canonical string
         obj.set(&key, key.clone())?;
     }
-    ctx.globals().set(trace_name::<E>().unwrap(), obj)
+    target.set(trace_name::<E>().unwrap(), obj)
 }

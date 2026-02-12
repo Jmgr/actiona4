@@ -25,6 +25,7 @@ use tracing::instrument;
 use crate::scripting::typescript::TsToJs;
 
 pub mod callbacks;
+pub mod pragma;
 pub mod typescript;
 
 pub type UnhandledException = (String, Vec<CallStackFrame>);

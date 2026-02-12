@@ -99,6 +99,7 @@ pub(crate) struct JsUserData {
     app_handle: Option<AppHandle>,
     script_engine: ScriptEngine,
     callbacks: Callbacks,
+    no_globals: bool,
 }
 
 impl JsUserData {
@@ -135,6 +136,10 @@ impl JsUserData {
 
     pub(crate) const fn callbacks(&self) -> &Callbacks {
         &self.callbacks
+    }
+
+    pub(crate) const fn no_globals(&self) -> bool {
+        self.no_globals
     }
 }
 
@@ -175,6 +180,9 @@ pub enum WaitAtEnd {
 pub struct RuntimeOptions {
     #[cfg(unix)]
     pub display_name: Option<String>,
+    /// When true, all Actiona API objects are placed under an `actiona` namespace
+    /// instead of the global scope.
+    pub no_globals: bool,
 }
 
 #[derive_where(Debug)]
@@ -306,7 +314,13 @@ impl Runtime {
                     app_handle,
                     local_script_engine,
                     callbacks,
+                    options.no_globals,
                 ))?;
+
+                if options.no_globals {
+                    let namespace = rquickjs::Object::new(ctx.clone())?;
+                    ctx.globals().set("actiona", namespace)?;
+                }
 
                 Self::register_classes(
                     ctx.clone(),
