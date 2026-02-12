@@ -32,9 +32,6 @@
 
 - [Console](interfaces/Console.md)
 - [console](variables/console.md)
-- [inspect](functions/inspect.md)
-- [print](functions/print.md)
-- [println](functions/println.md)
 
 ## Core
 
@@ -42,6 +39,9 @@
 - [AbortSignal](interfaces/AbortSignal.md)
 - [Concurrency](interfaces/Concurrency.md)
 - [exit](functions/exit.md)
+- [inspect](functions/inspect.md)
+- [print](functions/print.md)
+- [println](functions/println.md)
 - [sleep](functions/sleep.md)
 
 ## Directory
@@ -135,6 +135,15 @@
 
 - [Point](classes/Point.md)
 
+## Process
+
+- [Signal](enumerations/Signal.md)
+- [Process](interfaces/Process.md)
+- [ProcessExitResult](interfaces/ProcessExitResult.md)
+- [ProcessHandle](interfaces/ProcessHandle.md)
+- [StartProcessOptions](interfaces/StartProcessOptions.md)
+- [process](variables/process.md)
+
 ## Random
 
 - [Random](interfaces/Random.md)
@@ -181,8 +190,9 @@
 - [Network](interfaces/Network.md)
 - [NetworkInterface](interfaces/NetworkInterface.md)
 - [Os](interfaces/Os.md)
-- [Process](interfaces/Process.md)
 - [Processes](interfaces/Processes.md)
+- [ProcessesFindOptions](interfaces/ProcessesFindOptions.md)
+- [ProcessInfo](interfaces/ProcessInfo.md)
 - [Storage](interfaces/Storage.md)
 - [System](interfaces/System.md)
 - [Traffic](interfaces/Traffic.md)

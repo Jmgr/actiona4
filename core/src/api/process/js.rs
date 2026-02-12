@@ -160,7 +160,7 @@ impl From<JsSignal> for Signal {
 /// ```
 ///
 /// ```ts
-/// const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+/// const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
 /// println(pid);
 /// ```
 ///
@@ -286,7 +286,7 @@ impl JsProcess {
     /// The process will continue running after the script exits.
     ///
     /// ```ts
-    /// const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+    /// const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
     /// println(`Started server with PID: ${pid}`);
     /// ```
     pub async fn start_detached(
