@@ -27,13 +27,9 @@ windows-console-bin = []
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
     "Wdk_System_SystemServices",
-    "Win32_System_Com",
-    "Win32_System_Com_StructuredStorage",
     "Win32_System_SystemInformation",
-    "Win32_UI_Shell",
-    "Win32_UI_Shell_Common",
-    "Win32_UI_Shell_PropertiesSystem",
 ] }
+winrt-toast-reborn.workspace = true
 
 [dependencies]
 actiona_core = { package = "core", path = "../core" }

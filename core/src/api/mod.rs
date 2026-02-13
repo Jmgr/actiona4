@@ -15,6 +15,7 @@ pub mod js;
 pub mod keyboard;
 pub mod mouse;
 pub mod name;
+pub mod notification;
 pub mod path;
 pub mod point;
 pub mod process;

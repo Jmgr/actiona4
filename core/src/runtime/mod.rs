@@ -53,6 +53,7 @@ use crate::{
         keyboard::js::JsKeyboard,
         mouse::js::JsMouse,
         name::js::JsWildcard,
+        notification::js::JsNotification,
         path::js::JsPath,
         point::js::JsPoint,
         process::js::JsProcess,
@@ -291,6 +292,7 @@ impl Runtime {
         );
         let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
         let process = JsProcess::new(task_tracker.clone());
+        let notification = JsNotification::new();
         let standard_paths = JsStandardPaths::default();
         let windows = JsWindows::new(runtime.clone());
 
@@ -336,6 +338,7 @@ impl Runtime {
                     hotstrings,
                     audio,
                     process,
+                    notification,
                     standard_paths,
                     windows,
                 )?;
@@ -363,6 +366,7 @@ impl Runtime {
         hotstrings: JsHotstrings,
         audio: JsAudio,
         process: JsProcess,
+        notification: JsNotification,
         standard_paths: JsStandardPaths,
         windows: JsWindows,
     ) -> rquickjs::Result<()> {
@@ -401,6 +405,7 @@ impl Runtime {
         register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
         register_singleton_class::<JsAudio>(&ctx, audio)?;
         register_singleton_class::<JsProcess>(&ctx, process)?;
+        register_singleton_class::<JsNotification>(&ctx, notification)?;
         register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
         register_singleton_class::<JsWindows>(&ctx, windows)?;
 

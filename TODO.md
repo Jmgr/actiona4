@@ -17,8 +17,7 @@ Find Image:
 - record
 - drag and drop?
 
-- allow sleep to accept a string: sleep("10s") -- maybe add a DurationLike?
-
+- check we don't await without a cancellation token
 
 // TODO: check all errors
 // TODO: check all token cancellation return a Cancelled error
