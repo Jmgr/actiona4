@@ -36,6 +36,14 @@ type RectLike = Rect | { x: number; y: number; width: number; height: number };
  */
 type SizeLike = Size | { width: number; height: number };
 /**
+ * Returns the object where Actiona API items should be registered.
+ * 
+ * In normal mode this is `ctx.globals()`. In `no_globals` mode this is
+ * the `actiona` namespace object stored on globals.
+ * @category Core
+ */
+declare function registrationTarget(): Object;
+/**
  * Pauses the execution for the given duration.
  * 
  * ```ts
@@ -1749,6 +1757,16 @@ declare enum Key {
  */
 declare enum KeyError {
     Unsupported,
+}
+/**
+ * @category Notification
+ */
+declare enum NotificationUrgency {
+    Low,
+
+    Normal,
+
+    Critical,
 }
 /**
  * Unix signal.
@@ -5084,6 +5102,239 @@ declare class Wildcard {
      * Constructor.
      */
     constructor(pattern: string);
+}
+/**
+ * A custom string hint for Linux notifications.
+ * @category Notification
+ */
+declare interface NotificationCustomHint {
+    /**
+     * Hint name.
+     */
+    name?: string;
+    /**
+     * Hint value.
+     */
+    value?: string;
+}
+/**
+ * A custom integer hint for Linux notifications.
+ * @category Notification
+ */
+declare interface NotificationCustomIntHint {
+    /**
+     * Hint name.
+     */
+    name?: string;
+    /**
+     * Integer hint value.
+     */
+    value?: number;
+}
+/**
+ * A notification action button.
+ * @category Notification
+ */
+declare interface NotificationAction {
+    /**
+     * Action identifier.
+     */
+    identifier?: string;
+    /**
+     * Action label visible to the user.
+     */
+    label?: string;
+}
+/**
+ * Options for a notification.
+ * @category Notification
+ */
+declare interface NotificationOptions {
+    /**
+     * Title of the notification (summary line).
+     * @defaultValue `undefined`
+     */
+    title?: string;
+    /**
+     * Application name, filled by default with executable name.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    appName?: string;
+    /**
+     * Body text of the notification.
+     * Multiple lines possible, may support simple markup.
+     * Check `notification.capabilities()` for a list.
+     * @defaultValue `undefined`
+     */
+    body?: string;
+    /**
+     * Icon name/path assigned to the notification icon field.
+     * Usually available in /usr/share/icons.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    iconName?: string;
+    /**
+     * Whether to set the icon automatically from executable name.
+     * @defaultValue `false`
+     * @platform only works on Linux
+     */
+    autoIcon?: boolean;
+    /**
+     * Icon image to display with the notification.
+     * @defaultValue `undefined`
+     */
+    icon?: Image;
+    /**
+     * Timeout before the notification is automatically dismissed.
+     * Note that most servers don't respect this setting.
+     * @defaultValue `undefined`
+     */
+    timeout?: number | string;
+    /**
+     * If `true`, action identifiers may be interpreted as icon names.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    actionIcons?: boolean;
+    /**
+     * Notification category such as `email`, `im`, or `device`.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    category?: string;
+    /**
+     * Desktop entry id (usually app `.desktop` name without extension).
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    desktopEntry?: string;
+    /**
+     * If `true`, keep notification resident until explicitly dismissed.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    resident?: boolean;
+    /**
+     * Absolute path to a sound file to play for this notification.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    soundFile?: string;
+    /**
+     * Themeable freedesktop sound name, e.g. `message-new-instant`.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    soundName?: string;
+    /**
+     * If `true`, suppress notification sounds.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    suppressSound?: boolean;
+    /**
+     * If `true`, request non-persistent behavior from the server.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    transient?: boolean;
+    /**
+     * Target screen position for the notification.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    point?: Point;
+    /**
+     * Urgency level.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    urgency?: NotificationUrgency;
+    /**
+     * Custom string key/value pairs forwarded as-is.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    customHints?: NotificationCustomHint[];
+    /**
+     * Custom integer key/value pairs forwarded as-is.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    customIntHints?: NotificationCustomIntHint[];
+    /**
+     * Notification actions.
+     * @defaultValue `undefined`
+     * @platform only works on Linux
+     */
+    actions?: NotificationAction[];
+}
+/**
+ * The global notification singleton for sending desktop notifications.
+ * @category Notification
+ */
+declare interface Notification {
+    /**
+     * Shows a desktop notification.
+     */
+    show(options?: NotificationOptions): Promise<NotificationHandle>;
+    /**
+     * Server capabilities.
+     * @platform only works on Linux
+     */
+    capabilities(): Promise<string[]>;
+}
+/**
+ * @category Notification
+ */
+declare const notification: Notification;
+/**
+ * Options for waiting on a notification action or close event.
+ * @category Notification
+ */
+declare interface WaitForActionOptions {
+    /**
+     * Abort signal to cancel waiting.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * A handle for a shown desktop notification.
+ * @category Notification
+ */
+declare interface NotificationHandle {
+    /**
+     * Updates the notification with new options.
+     * 
+     * ```ts
+     * const handle = await notification.show({ title: "Initial" });
+     * await handle.update({ title: "Updated", body: "New body" });
+     * ```
+     */
+    update(options?: NotificationOptions): Promise<void>;
+    /**
+     * Waits for an action to be invoked on this notification, or for the notification to close.
+     * Returns the action identifier, or `null` if the notification was closed without an action.
+     * 
+     * ```ts
+     * const handle = await notification.show({ title: "Update available", actions: [{ identifier: "update", label: "Update now" }] });
+     * const action = await handle.waitForAction();
+     * if (action === "update") { /* ... */ }
+     * ```
+     */
+    waitForAction(options?: WaitForActionOptions): Task<string | null>;
+    /**
+     * Waits until this notification is closed or the optional abort signal is triggered.
+     * 
+     * ```ts
+     * const handle = await notification.show({ title: "Waiting..." });
+     * await handle.waitUntilClosed();
+     * ```
+     */
+    waitUntilClosed(options?: WaitForActionOptions): Task<void>;
 }
 /**
  * Utilities for manipulating file paths. All methods are static.

@@ -14,7 +14,7 @@ pub struct NotificationHandle {
 
 fn build_toast(options: &NotificationOptions) -> Result<Toast> {
     let mut toast = Toast::new();
-    toast.text1(&options.summary);
+    toast.text1(options.title.as_deref().unwrap_or_default());
 
     if let Some(body) = &options.body {
         toast.text2(body.as_str());
