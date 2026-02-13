@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use parking_lot::Mutex;
 use rquickjs::{
@@ -8,6 +10,10 @@ use rquickjs::{
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 
+use super::{
+    NotificationAction, NotificationCustomHint, NotificationCustomIntHint, NotificationOptions,
+    NotificationUrgency,
+};
 use crate::{
     IntoJsResult,
     api::{
@@ -21,11 +27,6 @@ use crate::{
         point::js::JsPoint,
     },
     runtime::WithUserData,
-};
-
-use super::{
-    NotificationAction, NotificationCustomHint, NotificationCustomIntHint, NotificationOptions,
-    NotificationUrgency,
 };
 
 #[derive(
@@ -285,7 +286,7 @@ impl From<JsNotificationOptions> for NotificationOptions {
 
 /// The global notification singleton for sending desktop notifications.
 /// @singleton
-#[derive(JsLifetime)]
+#[derive(Default, JsLifetime)]
 #[rquickjs::class(rename = "Notification")]
 pub struct JsNotification {
     inner: super::Notification,
@@ -300,16 +301,6 @@ impl<'js> SingletonClass<'js> for JsNotification {
         register_enum::<JsNotificationUrgency>(ctx)?;
         register_host_class::<JsNotificationHandle>(ctx)?;
         Ok(())
-    }
-}
-
-impl JsNotification {
-    /// @skip
-    #[must_use]
-    pub fn new() -> Self {
-        Self {
-            inner: super::Notification::default(),
-        }
     }
 }
 
@@ -352,24 +343,36 @@ pub struct JsWaitForActionOptions {
 #[derive(JsLifetime)]
 #[rquickjs::class(rename = "NotificationHandle")]
 pub struct JsNotificationHandle {
-    inner: Mutex<Option<super::NotificationHandle>>,
+    inner: Mutex<Option<Arc<super::NotificationHandle>>>,
 }
 
 impl JsNotificationHandle {
     #[must_use]
     fn new(inner: super::NotificationHandle) -> Self {
         Self {
-            inner: Mutex::new(Some(inner)),
+            inner: Mutex::new(Some(Arc::new(inner))),
         }
     }
 
     fn take_handle(&self, ctx: &Ctx<'_>) -> rquickjs::Result<super::NotificationHandle> {
-        self.inner.lock().take().ok_or_else(|| {
+        let mut inner = self.inner.lock();
+        let handle = inner.take().ok_or_else(|| {
             Exception::throw_message(
                 ctx,
                 "the notification handle has already been consumed by waitForAction or waitUntilClosed",
             )
-        })
+        })?;
+
+        match Arc::try_unwrap(handle) {
+            Ok(handle) => Ok(handle),
+            Err(handle) => {
+                *inner = Some(handle);
+                Err(Exception::throw_message(
+                    ctx,
+                    "cannot consume the notification handle while an update is in progress",
+                ))
+            }
+        }
     }
 }
 
@@ -393,11 +396,10 @@ impl JsNotificationHandle {
         ctx: Ctx<'js>,
         options: Opt<JsNotificationOptions>,
     ) -> Result<()> {
-        let inner = self.inner.lock();
-        let handle = inner.as_ref().ok_or_else(|| {
+        let handle = self.inner.lock().as_ref().cloned().ok_or_else(|| {
             Exception::throw_message(
                 &ctx,
-                "cannot update: waitUntilClosed has already been called for this notification handle",
+                "cannot update: the notification handle has already been consumed",
             )
         })?;
         let options: super::NotificationOptions = options.0.unwrap_or_default().into();
@@ -421,7 +423,7 @@ impl JsNotificationHandle {
         options: Opt<JsWaitForActionOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
-        let signal = options.signal.clone();
+        let signal = options.signal;
         let task_tracker = ctx.user_data().task_tracker();
         let handle = self.take_handle(&ctx)?;
 
@@ -447,7 +449,7 @@ impl JsNotificationHandle {
         options: Opt<JsWaitForActionOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
-        let signal = options.signal.clone();
+        let signal = options.signal;
         let task_tracker = ctx.user_data().task_tracker();
         let handle = self.take_handle(&ctx)?;
 

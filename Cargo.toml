@@ -175,14 +175,14 @@ windows-result = "0.4.1"
 winrt-toast-reborn = "0.3.8"
 
 # Unix
+libwmctl = "0.0.51"
+memfd = "0.6.5"
+memmap2 = "0.9.9"
 notify-rust = { version = "4.12.0", default-features = false, features = [
     "z-with-tokio",
     "async",
     "images",
 ] }
-libwmctl = "0.0.51"
-memfd = "0.6.5"
-memmap2 = "0.9.9"
 procfs = { version = "0.18.0", default-features = false, features = ["flate2"] }
 rustix = { version = "1.1.3", default-features = false, features = ["process"] }
 x11rb = "0.13.2"

@@ -1,8 +1,7 @@
 use std::time::Duration;
 
 use color_eyre::Result;
-use tokio_util::sync::CancellationToken;
-use tokio_util::task::TaskTracker;
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::api::{image::Image, point::Point};
 

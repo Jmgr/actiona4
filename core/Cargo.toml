@@ -14,10 +14,10 @@ windows-result.workspace = true
 winrt-toast-reborn.workspace = true
 
 [target.'cfg(unix)'.dependencies]
-notify-rust.workspace = true
 libwmctl.workspace = true
 memfd.workspace = true
 memmap2.workspace = true
+notify-rust.workspace = true
 procfs.workspace = true
 rustix.workspace = true
 x11rb.workspace = true

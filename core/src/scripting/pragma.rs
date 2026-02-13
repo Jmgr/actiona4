@@ -1,5 +1,5 @@
 /// Parsed pragma directives from a script's header comments.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Pragmas {
     /// When true, all Actiona API objects are placed under an `actiona` namespace
     /// instead of the global scope (e.g. `actiona.mouse` instead of `mouse`).

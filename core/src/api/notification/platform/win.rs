@@ -1,7 +1,5 @@
-use tokio::select;
-use tokio::sync::oneshot;
-use tokio_util::sync::CancellationToken;
-use tokio_util::task::TaskTracker;
+use tokio::{select, sync::oneshot};
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use winrt_toast_reborn::{Toast, ToastDuration, ToastManager};
 
 use crate::api::notification::{NotificationOptions, Result, save_image_to_temp};

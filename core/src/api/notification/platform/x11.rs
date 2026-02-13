@@ -4,8 +4,7 @@ use color_eyre::eyre::eyre;
 use notify_rust::{Hint, Urgency, get_capabilities};
 use parking_lot::Mutex;
 use tokio::sync::oneshot;
-use tokio_util::sync::CancellationToken;
-use tokio_util::task::TaskTracker;
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
     api::notification::{NotificationOptions, NotificationUrgency, Result},
@@ -17,7 +16,7 @@ pub struct Notification;
 
 impl Notification {
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {
-        let notification = Self::build_notification(options).await?;
+        let notification = Self::build_notification(options)?;
         let inner = notification.show_async().await?;
 
         Ok(NotificationHandle {
@@ -25,7 +24,7 @@ impl Notification {
         })
     }
 
-    async fn build_notification(options: NotificationOptions) -> Result<notify_rust::Notification> {
+    fn build_notification(options: NotificationOptions) -> Result<notify_rust::Notification> {
         let mut notification = notify_rust::Notification::new();
         notification.summary(options.title.as_deref().unwrap_or_default());
 
@@ -122,12 +121,12 @@ pub struct NotificationHandle {
 }
 
 impl NotificationHandle {
+    /// notify_rust's `update()` calls `block_on` internally, so it must run
+    /// off the async runtime thread via `spawn_blocking`.
     pub async fn update(&self, options: NotificationOptions) -> Result<()> {
-        let notification = Notification::build_notification(options).await?;
+        let notification = Notification::build_notification(options)?;
         let inner = self.inner.clone();
 
-        // notify_rust's update() calls block_on internally, so it must
-        // run off the async runtime thread.
         tokio::task::spawn_blocking(move || {
             let mut handle = inner.lock();
             **handle = notification;
@@ -151,7 +150,8 @@ impl NotificationHandle {
 
         task_tracker.spawn_blocking(move || {
             inner.wait_for_action(|action| {
-                if let Some(sender) = sender.lock().take() {
+                let sender = sender.lock().take();
+                if let Some(sender) = sender {
                     let value = match action {
                         "__closed" => None,
                         action => Some(action.to_owned()),
@@ -180,8 +180,8 @@ mod tests {
         point::point,
     };
 
-    #[tokio::test]
-    async fn build_notification_sets_title_and_common_hints() {
+    #[test]
+    fn build_notification_sets_title_and_common_hints() {
         let options = NotificationOptions {
             title: Some("Configured title".to_owned()),
             body: Some("Configured body".to_owned()),
@@ -210,7 +210,7 @@ mod tests {
             ..NotificationOptions::default()
         };
 
-        let notification = Notification::build_notification(options).await.unwrap();
+        let notification = Notification::build_notification(options).unwrap();
 
         assert_eq!(notification.summary, "Configured title");
         assert_eq!(notification.body, "Configured body");
@@ -243,11 +243,11 @@ mod tests {
         assert!(notification.hints.contains(&Hint::Y(34)));
     }
 
-    #[tokio::test]
-    async fn build_notification_uses_empty_title_and_default_transient_hint() {
+    #[test]
+    fn build_notification_uses_empty_title_and_default_transient_hint() {
         let options = NotificationOptions::default();
 
-        let notification = Notification::build_notification(options).await.unwrap();
+        let notification = Notification::build_notification(options).unwrap();
 
         assert_eq!(notification.summary, "");
         assert!(notification.hints.contains(&Hint::Transient(true)));

@@ -292,7 +292,7 @@ impl Runtime {
         );
         let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
         let process = JsProcess::new(task_tracker.clone());
-        let notification = JsNotification::new();
+        let notification = JsNotification::default();
         let standard_paths = JsStandardPaths::default();
         let windows = JsWindows::new(runtime.clone());
 
