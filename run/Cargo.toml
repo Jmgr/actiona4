@@ -17,7 +17,7 @@ path = "src/bin/actiona-run.rs"
 
 [[bin]]
 name = "actiona-run-console"
-path = "src/bin/actiona-run-console.rs"
+path = "src/windows/actiona-run-console.rs"
 required-features = ["windows-console-bin"]
 
 [features]

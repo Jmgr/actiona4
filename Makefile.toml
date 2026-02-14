@@ -50,10 +50,27 @@ args = [
 command = "cargo"
 args = ["install", "cargo-sort"]
 
+[tasks.install-tauri-cli]
+script_runner = "bash"
+script_extension = "sh"
+script = [
+    "if ! command -v cargo-tauri >/dev/null 2>&1; then cargo install tauri-cli --locked; fi",
+]
+
 [tasks.deps]
 dependencies = ["install-rustfmt", "install-derivefmt", "install-sort"]
 
 [tasks.doc]
+condition = { platforms = ["linux"] }
 script_runner = "bash"
 script_extension = "sh"
 script = ["./scripts/generate_doc.sh"]
+
+[tasks.appimage-run]
+condition = { platforms = ["linux"] }
+description = "Build an AppImage for the actiona-run executable."
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/run"
+dependencies = ["install-tauri-cli"]
+script_runner = "bash"
+script_extension = "sh"
+script = ["cargo tauri build --bundles appimage"]

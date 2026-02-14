@@ -6,6 +6,10 @@ Find Image:
  2) search for multiple templates (in parallel), label them
  3) track an item (post 1.0)
  4) UI to test parameters and display results on screen (transparent target icon?)
+ 
+ - window management: active-win-pos-rs
+ 
+ - High DPI?
 
  Mouse:
 - record

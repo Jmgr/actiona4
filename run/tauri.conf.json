@@ -5,5 +5,8 @@
   "identifier": "tools.actiona.actiona-run",
   "build": {
     "frontendDist": "ui"
+  },
+  "bundle": {
+    "icon": ["icons/icon.png", "icons/icon.ico"]
   }
 }
