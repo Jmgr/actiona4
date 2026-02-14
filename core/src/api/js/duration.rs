@@ -27,9 +27,9 @@ impl<'js> FromJs<'js> for JsDuration {
                 Exception::throw_message(ctx, &format!("Failed to parse duration '{value}': {err}"))
             })?
         } else {
-            let secs = f64::from_js(ctx, value)?;
+            let milliseconds = f64::from_js(ctx, value)?;
 
-            Duration::from_secs_f64(secs)
+            Duration::from_secs_f64(milliseconds / 1_000.0)
         }))
     }
 }
@@ -44,7 +44,7 @@ mod tests {
     fn from_js_duration_float() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let duration = script_engine.eval_async::<JsDuration>("1.5").await.unwrap();
-            assert!((duration.0.as_secs_f64() - 1.5).abs() < 1e-9);
+            assert_eq!(duration.0, Duration::from_micros(1500));
         });
     }
 
@@ -52,7 +52,7 @@ mod tests {
     fn from_js_duration_int() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let duration = script_engine.eval_async::<JsDuration>("2").await.unwrap();
-            assert_eq!(duration.0, Duration::from_secs(2));
+            assert_eq!(duration.0, Duration::from_millis(2));
         });
     }
 

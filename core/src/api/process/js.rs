@@ -952,7 +952,7 @@ mod tests {
                 script_engine.eval_async::<()>(
                     r#"
                 const handle = await process.start("notepad");
-                await sleep(0.5);
+                await sleep("500ms");
                 await handle.terminate();
                 await handle.finished;
                 "#,

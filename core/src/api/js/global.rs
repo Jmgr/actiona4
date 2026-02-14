@@ -24,6 +24,7 @@ use crate::{
 /// // Wait 1 hour
 /// await sleep("1h");
 /// ```
+/// Numeric values are interpreted as milliseconds.
 /// @returns Task<void>
 pub fn sleep<'js>(ctx: Ctx<'js>, duration: JsDuration) -> Result<Promise<'js>> {
     task(ctx, async move |ctx, token| {
