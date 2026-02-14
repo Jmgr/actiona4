@@ -11,8 +11,10 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 
 use super::{
-    NotificationAction, NotificationCustomHint, NotificationCustomIntHint, NotificationOptions,
-    NotificationUrgency,
+    NotificationAction, NotificationActionPlacement, NotificationActivationType,
+    NotificationButtonStyle, NotificationCustomHint, NotificationCustomIntHint, NotificationHeader,
+    NotificationInput, NotificationInputType, NotificationOptions, NotificationScenario,
+    NotificationSelection, NotificationSound, NotificationUrgency,
 };
 use crate::{
     IntoJsResult,
@@ -59,7 +61,247 @@ impl From<JsNotificationUrgency> for NotificationUrgency {
     }
 }
 
+/// Toast notification scenario.
+///
+/// @platforms =windows
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "NotificationScenario")]
+pub enum JsNotificationScenario {
+    Reminder,
+    Alarm,
+    IncomingCall,
+    Urgent,
+}
+
+impl From<JsNotificationScenario> for NotificationScenario {
+    fn from(value: JsNotificationScenario) -> Self {
+        match value {
+            JsNotificationScenario::Reminder => Self::Reminder,
+            JsNotificationScenario::Alarm => Self::Alarm,
+            JsNotificationScenario::IncomingCall => Self::IncomingCall,
+            JsNotificationScenario::Urgent => Self::Urgent,
+        }
+    }
+}
+
+/// Notification sound.
+///
+/// @platforms =windows
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "NotificationSound")]
+pub enum JsNotificationSound {
+    Default,
+    IM,
+    Mail,
+    Reminder,
+    SMS,
+    None,
+    LoopingAlarm,
+    LoopingAlarm2,
+    LoopingAlarm3,
+    LoopingAlarm4,
+    LoopingAlarm5,
+    LoopingAlarm6,
+    LoopingAlarm7,
+    LoopingAlarm8,
+    LoopingAlarm9,
+    LoopingAlarm10,
+    LoopingCall,
+    LoopingCall2,
+    LoopingCall3,
+    LoopingCall4,
+    LoopingCall5,
+    LoopingCall6,
+    LoopingCall7,
+    LoopingCall8,
+    LoopingCall9,
+    LoopingCall10,
+}
+
+impl From<JsNotificationSound> for NotificationSound {
+    fn from(value: JsNotificationSound) -> Self {
+        match value {
+            JsNotificationSound::Default => Self::Default,
+            JsNotificationSound::IM => Self::IM,
+            JsNotificationSound::Mail => Self::Mail,
+            JsNotificationSound::Reminder => Self::Reminder,
+            JsNotificationSound::SMS => Self::SMS,
+            JsNotificationSound::None => Self::None,
+            JsNotificationSound::LoopingAlarm => Self::LoopingAlarm,
+            JsNotificationSound::LoopingAlarm2 => Self::LoopingAlarm2,
+            JsNotificationSound::LoopingAlarm3 => Self::LoopingAlarm3,
+            JsNotificationSound::LoopingAlarm4 => Self::LoopingAlarm4,
+            JsNotificationSound::LoopingAlarm5 => Self::LoopingAlarm5,
+            JsNotificationSound::LoopingAlarm6 => Self::LoopingAlarm6,
+            JsNotificationSound::LoopingAlarm7 => Self::LoopingAlarm7,
+            JsNotificationSound::LoopingAlarm8 => Self::LoopingAlarm8,
+            JsNotificationSound::LoopingAlarm9 => Self::LoopingAlarm9,
+            JsNotificationSound::LoopingAlarm10 => Self::LoopingAlarm10,
+            JsNotificationSound::LoopingCall => Self::LoopingCall,
+            JsNotificationSound::LoopingCall2 => Self::LoopingCall2,
+            JsNotificationSound::LoopingCall3 => Self::LoopingCall3,
+            JsNotificationSound::LoopingCall4 => Self::LoopingCall4,
+            JsNotificationSound::LoopingCall5 => Self::LoopingCall5,
+            JsNotificationSound::LoopingCall6 => Self::LoopingCall6,
+            JsNotificationSound::LoopingCall7 => Self::LoopingCall7,
+            JsNotificationSound::LoopingCall8 => Self::LoopingCall8,
+            JsNotificationSound::LoopingCall9 => Self::LoopingCall9,
+            JsNotificationSound::LoopingCall10 => Self::LoopingCall10,
+        }
+    }
+}
+
+/// Activation type for toast actions and headers.
+///
+/// @platforms =windows
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "NotificationActivationType")]
+pub enum JsNotificationActivationType {
+    Foreground,
+    Background,
+    Protocol,
+}
+
+impl From<JsNotificationActivationType> for NotificationActivationType {
+    fn from(value: JsNotificationActivationType) -> Self {
+        match value {
+            JsNotificationActivationType::Foreground => Self::Foreground,
+            JsNotificationActivationType::Background => Self::Background,
+            JsNotificationActivationType::Protocol => Self::Protocol,
+        }
+    }
+}
+
+/// Placement of a toast action button.
+///
+/// @platforms =windows
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "NotificationActionPlacement")]
+pub enum JsNotificationActionPlacement {
+    ContextMenu,
+}
+
+impl From<JsNotificationActionPlacement> for NotificationActionPlacement {
+    fn from(value: JsNotificationActionPlacement) -> Self {
+        match value {
+            JsNotificationActionPlacement::ContextMenu => Self::ContextMenu,
+        }
+    }
+}
+
+/// Style of a toast action button.
+///
+/// @platforms =windows
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "NotificationButtonStyle")]
+pub enum JsNotificationButtonStyle {
+    Success,
+    Critical,
+}
+
+impl From<JsNotificationButtonStyle> for NotificationButtonStyle {
+    fn from(value: JsNotificationButtonStyle) -> Self {
+        match value {
+            JsNotificationButtonStyle::Success => Self::Success,
+            JsNotificationButtonStyle::Critical => Self::Critical,
+        }
+    }
+}
+
+/// Input type for toast input fields.
+///
+/// @platforms =windows
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+#[serde(rename = "NotificationInputType")]
+pub enum JsNotificationInputType {
+    Text,
+    Selection,
+}
+
+impl From<JsNotificationInputType> for NotificationInputType {
+    fn from(value: JsNotificationInputType) -> Self {
+        match value {
+            JsNotificationInputType::Text => Self::Text,
+            JsNotificationInputType::Selection => Self::Selection,
+        }
+    }
+}
+
 /// A custom string hint for Linux notifications.
+///
+/// @platforms =linux
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsNotificationCustomHint {
@@ -79,6 +321,8 @@ impl From<JsNotificationCustomHint> for NotificationCustomHint {
 }
 
 /// A custom integer hint for Linux notifications.
+///
+/// @platforms =linux
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsNotificationCustomIntHint {
@@ -102,10 +346,35 @@ impl From<JsNotificationCustomIntHint> for NotificationCustomIntHint {
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsNotificationAction {
-    /// Action identifier.
+    /// Action identifier (used as arguments on Windows).
     pub identifier: String,
     /// Action label visible to the user.
     pub label: String,
+    /// Action type string (Windows-specific, e.g. for protocol activation).
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub action_type: Option<String>,
+    /// Activation type for this action.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub activation_type: Option<JsNotificationActivationType>,
+    /// Placement of this action button.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub placement: Option<JsNotificationActionPlacement>,
+    /// Visual style of the button.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub button_style: Option<JsNotificationButtonStyle>,
+    /// ID of the input element this action is associated with.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub input_id: Option<String>,
 }
 
 impl From<JsNotificationAction> for NotificationAction {
@@ -113,11 +382,101 @@ impl From<JsNotificationAction> for NotificationAction {
         Self {
             identifier: value.identifier,
             label: value.label,
+            action_type: value.action_type,
+            activation_type: value.activation_type.map(Into::into),
+            placement: value.placement.map(Into::into),
+            button_style: value.button_style.map(Into::into),
+            input_id: value.input_id,
+        }
+    }
+}
+
+/// A notification header for grouping toasts in Action Center.
+///
+/// @platforms =windows
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsNotificationHeader {
+    /// Unique identifier for this header group.
+    pub id: String,
+    /// Title displayed for the header group.
+    pub title: String,
+    /// Arguments passed when the header is clicked.
+    pub arguments: String,
+}
+
+impl From<JsNotificationHeader> for NotificationHeader {
+    fn from(value: JsNotificationHeader) -> Self {
+        Self {
+            id: value.id,
+            title: value.title,
+            arguments: value.arguments,
+        }
+    }
+}
+
+/// A toast input field.
+///
+/// @platforms =windows
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsNotificationInput {
+    /// Unique identifier for this input.
+    pub id: String,
+    /// Type of input field.
+    pub input_type: Option<JsNotificationInputType>,
+    /// Placeholder text shown when the input is empty.
+    ///
+    /// @default `undefined`
+    pub placeholder: Option<String>,
+    /// Title displayed above the input.
+    ///
+    /// @default `undefined`
+    pub title: Option<String>,
+    /// Default value for the input.
+    ///
+    /// @default `undefined`
+    pub default_input: Option<String>,
+}
+
+impl From<JsNotificationInput> for NotificationInput {
+    fn from(value: JsNotificationInput) -> Self {
+        Self {
+            id: value.id,
+            input_type: value
+                .input_type
+                .map(Into::into)
+                .unwrap_or(NotificationInputType::Text),
+            placeholder: value.placeholder,
+            title: value.title,
+            default_input: value.default_input,
+        }
+    }
+}
+
+/// A selection option for a dropdown input.
+///
+/// @platforms =windows
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsNotificationSelection {
+    /// Unique identifier for this selection option.
+    pub id: String,
+    /// Display text for this selection option.
+    pub content: String,
+}
+
+impl From<JsNotificationSelection> for NotificationSelection {
+    fn from(value: JsNotificationSelection) -> Self {
+        Self {
+            id: value.id,
+            content: value.content,
         }
     }
 }
 
 /// Options for a notification.
+///
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsNotificationOptions {
@@ -134,7 +493,7 @@ pub struct JsNotificationOptions {
 
     /// Body text of the notification.
     /// Multiple lines possible, may support simple markup.
-    /// Check `notification.capabilities()` for a list.
+    /// On Linux, check `notification.capabilities()` for a list.
     ///
     /// @default `undefined`
     pub body: Option<String>,
@@ -237,9 +596,98 @@ pub struct JsNotificationOptions {
 
     /// Notification actions.
     ///
-    /// @platforms =linux
     /// @default `undefined`
     pub actions: Option<Vec<JsNotificationAction>>,
+
+    /// Attribution text displayed at the bottom of the notification.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub attribution_text: Option<String>,
+
+    /// Hero image displayed prominently at the top of the notification.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub hero_image: Option<JsImage>,
+
+    /// Whether to crop the icon into a circle.
+    ///
+    /// @platforms =windows
+    /// @default `false`
+    pub icon_crop_circle: bool,
+
+    /// Toast scenario that adjusts notification behavior.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub scenario: Option<JsNotificationScenario>,
+
+    /// Sound to play with the notification.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub sound: Option<JsNotificationSound>,
+
+    /// Whether to loop the notification sound.
+    ///
+    /// @platforms =windows
+    /// @default `false`
+    pub sound_looping: bool,
+
+    /// Whether to suppress all notification sound.
+    ///
+    /// @platforms =windows
+    /// @default `false`
+    pub silent: bool,
+
+    /// Header for grouping notifications in Action Center.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub header: Option<JsNotificationHeader>,
+
+    /// Input fields displayed in the notification.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub inputs: Option<Vec<JsNotificationInput>>,
+
+    /// Selection options for dropdown inputs.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub selections: Option<Vec<JsNotificationSelection>>,
+
+    /// Tag for identifying and replacing notifications.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub tag: Option<String>,
+
+    /// Group identifier for organizing notifications.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub group: Option<String>,
+
+    /// Remote ID for cross-device notification correlation.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub remote_id: Option<String>,
+
+    /// Launch string passed to the app when the notification is clicked.
+    ///
+    /// @platforms =windows
+    /// @default `undefined`
+    pub launch: Option<String>,
+
+    /// Whether to enable button styling on actions.
+    ///
+    /// @platforms =windows
+    /// @default `false`
+    pub use_button_style: bool,
 }
 
 impl From<JsNotificationOptions> for NotificationOptions {
@@ -280,6 +728,31 @@ impl From<JsNotificationOptions> for NotificationOptions {
                 .into_iter()
                 .map(Into::into)
                 .collect(),
+            attribution_text: value.attribution_text,
+            hero_image: value.hero_image.map(|i| i.into_inner()),
+            icon_crop_circle: value.icon_crop_circle,
+            scenario: value.scenario.map(Into::into),
+            sound: value.sound.map(Into::into),
+            sound_looping: value.sound_looping,
+            silent: value.silent,
+            header: value.header.map(Into::into),
+            inputs: value
+                .inputs
+                .unwrap_or_default()
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+            selections: value
+                .selections
+                .unwrap_or_default()
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+            tag: value.tag,
+            group: value.group,
+            remote_id: value.remote_id,
+            launch: value.launch,
+            use_button_style: value.use_button_style,
         }
     }
 }
@@ -299,6 +772,12 @@ impl<'js> Trace<'js> for JsNotification {
 impl<'js> SingletonClass<'js> for JsNotification {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
         register_enum::<JsNotificationUrgency>(ctx)?;
+        register_enum::<JsNotificationScenario>(ctx)?;
+        register_enum::<JsNotificationSound>(ctx)?;
+        register_enum::<JsNotificationActivationType>(ctx)?;
+        register_enum::<JsNotificationActionPlacement>(ctx)?;
+        register_enum::<JsNotificationButtonStyle>(ctx)?;
+        register_enum::<JsNotificationInputType>(ctx)?;
         register_host_class::<JsNotificationHandle>(ctx)?;
         Ok(())
     }
@@ -391,6 +870,7 @@ impl JsNotificationHandle {
     /// await handle.update({ title: "Updated", body: "New body" });
     /// ```
     ///
+    /// @platforms =linux
     pub async fn update<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -488,6 +968,7 @@ mod tests {
     #[test]
     #[traced_test]
     #[ignore]
+    #[cfg(unix)]
     fn test_update() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine

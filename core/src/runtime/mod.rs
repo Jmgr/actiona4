@@ -181,6 +181,7 @@ pub enum WaitAtEnd {
 pub struct RuntimeOptions {
     #[cfg(unix)]
     pub display_name: Option<String>,
+
     /// When true, all Actiona API objects are placed under an `actiona` namespace
     /// instead of the global scope.
     pub no_globals: bool,

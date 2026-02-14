@@ -30,14 +30,18 @@ use crate::{
     platform::win::safe_handle::SafeWindowHandle,
     runtime::{
         events::Guard,
-        platform::win::events::input::{
-            keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
-            mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},
+        platform::win::{
+            events::input::{
+                keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
+                mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},
+            },
+            notification::ensure_notification_registration,
         },
     },
 };
 
 pub mod events;
+mod notification;
 
 static RUNTIME: Lazy<Mutex<Weak<Runtime>>> = Lazy::new(|| Mutex::new(Weak::new()));
 
@@ -144,6 +148,8 @@ impl Runtime {
             task_tracker.clone(),
         )
         .await?;
+
+        ensure_notification_registration();
 
         let mouse_input_dispatcher =
             MouseInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;

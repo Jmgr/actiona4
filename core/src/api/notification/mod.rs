@@ -6,17 +6,20 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use crate::api::{image::Image, point::Point};
 
 pub mod js;
-mod platform;
+pub mod platform;
 
 #[derive(Clone, Debug, Default)]
 pub struct NotificationOptions {
     pub title: Option<String>,
-    pub app_name: Option<String>,
     pub body: Option<String>,
+    pub timeout: Option<Duration>,
+    pub actions: Vec<NotificationAction>,
+    pub icon: Option<Image>,
+
+    // Linux-specific
+    pub app_name: Option<String>,
     pub icon_name: Option<String>,
     pub auto_icon: bool,
-    pub icon: Option<Image>,
-    pub timeout: Option<Duration>,
     pub action_icons: Option<bool>,
     pub category: Option<String>,
     pub desktop_entry: Option<String>,
@@ -29,7 +32,23 @@ pub struct NotificationOptions {
     pub urgency: Option<NotificationUrgency>,
     pub custom_hints: Vec<NotificationCustomHint>,
     pub custom_int_hints: Vec<NotificationCustomIntHint>,
-    pub actions: Vec<NotificationAction>,
+
+    // Windows-specific
+    pub attribution_text: Option<String>,
+    pub hero_image: Option<Image>,
+    pub icon_crop_circle: bool,
+    pub scenario: Option<NotificationScenario>,
+    pub sound: Option<NotificationSound>,
+    pub sound_looping: bool,
+    pub silent: bool,
+    pub header: Option<NotificationHeader>,
+    pub inputs: Vec<NotificationInput>,
+    pub selections: Vec<NotificationSelection>,
+    pub tag: Option<String>,
+    pub group: Option<String>,
+    pub remote_id: Option<String>,
+    pub launch: Option<String>,
+    pub use_button_style: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -55,6 +74,96 @@ pub struct NotificationCustomIntHint {
 pub struct NotificationAction {
     pub identifier: String,
     pub label: String,
+    // Windows-specific
+    pub action_type: Option<String>,
+    pub activation_type: Option<NotificationActivationType>,
+    pub placement: Option<NotificationActionPlacement>,
+    pub button_style: Option<NotificationButtonStyle>,
+    pub input_id: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum NotificationScenario {
+    Reminder,
+    Alarm,
+    IncomingCall,
+    Urgent,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum NotificationSound {
+    Default,
+    IM,
+    Mail,
+    Reminder,
+    SMS,
+    None,
+    LoopingAlarm,
+    LoopingAlarm2,
+    LoopingAlarm3,
+    LoopingAlarm4,
+    LoopingAlarm5,
+    LoopingAlarm6,
+    LoopingAlarm7,
+    LoopingAlarm8,
+    LoopingAlarm9,
+    LoopingAlarm10,
+    LoopingCall,
+    LoopingCall2,
+    LoopingCall3,
+    LoopingCall4,
+    LoopingCall5,
+    LoopingCall6,
+    LoopingCall7,
+    LoopingCall8,
+    LoopingCall9,
+    LoopingCall10,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum NotificationActivationType {
+    Foreground,
+    Background,
+    Protocol,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum NotificationActionPlacement {
+    ContextMenu,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum NotificationButtonStyle {
+    Success,
+    Critical,
+}
+
+#[derive(Clone, Debug)]
+pub struct NotificationHeader {
+    pub id: String,
+    pub title: String,
+    pub arguments: String,
+}
+
+#[derive(Clone, Debug)]
+pub struct NotificationInput {
+    pub id: String,
+    pub input_type: NotificationInputType,
+    pub placeholder: Option<String>,
+    pub title: Option<String>,
+    pub default_input: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum NotificationInputType {
+    Text,
+    Selection,
+}
+
+#[derive(Clone, Debug)]
+pub struct NotificationSelection {
+    pub id: String,
+    pub content: String,
 }
 
 #[derive(Default)]
@@ -68,7 +177,7 @@ impl Notification {
         Ok(NotificationHandle { inner })
     }
 
-    pub fn capabilities() -> Result<Vec<String>> {
+    pub const fn capabilities() -> Result<Vec<String>> {
         platform::Notification::capabilities()
     }
 }

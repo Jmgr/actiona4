@@ -7,7 +7,7 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Jonathan Mercier-Ganady"]
 description = "Cross-platform desktop automation tool"
-documentation = "https://actiona.tools"
+documentation = "https://actiona.app"
 license = "MIT"
 
 [workspace.dependencies]

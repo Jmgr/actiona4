@@ -29,7 +29,6 @@ mod built_info {
 mod args;
 mod init;
 mod repl;
-mod setup;
 mod updates;
 
 #[cfg(windows)]
@@ -94,9 +93,6 @@ pub fn run_cli() -> Result<()> {
         }
         _ => {}
     }
-
-    // Automatic platform-specific setup (e.g. Windows notification registration)
-    setup::ensure_platform_setup();
 
     // Determine no_globals before creating the runtime, since it affects registration.
     let no_globals = match &args.command {

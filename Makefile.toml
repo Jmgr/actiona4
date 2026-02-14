@@ -54,4 +54,6 @@ args = ["install", "cargo-sort"]
 dependencies = ["install-rustfmt", "install-derivefmt", "install-sort"]
 
 [tasks.doc]
+script_runner = "bash"
+script_extension = "sh"
 script = ["./scripts/generate_doc.sh"]
