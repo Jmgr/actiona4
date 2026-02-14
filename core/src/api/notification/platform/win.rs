@@ -56,7 +56,8 @@ impl Notification {
         })
     }
 
-    pub const fn capabilities() -> Result<Vec<String>> {
+    #[allow(clippy::missing_const_for_fn)]
+    pub fn capabilities() -> Result<Vec<String>> {
         Ok(Vec::new())
     }
 }

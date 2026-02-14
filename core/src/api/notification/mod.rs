@@ -177,7 +177,7 @@ impl Notification {
         Ok(NotificationHandle { inner })
     }
 
-    pub const fn capabilities() -> Result<Vec<String>> {
+    pub fn capabilities() -> Result<Vec<String>> {
         platform::Notification::capabilities()
     }
 }

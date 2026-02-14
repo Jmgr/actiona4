@@ -17,6 +17,10 @@ Find Image:
 - record
 - drag and drop?
 
+Notification:
+- add a "permanent" mode that sets .hint(Hint::Resident(true)) and .timeout(Timeout::Never)
+- add a "close" function
+
 - check we don't await without a cancellation token
 
 // TODO: check all errors

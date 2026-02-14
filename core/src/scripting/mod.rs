@@ -651,7 +651,11 @@ impl Engine {
 
 #[cfg(test)]
 mod tests {
-    use swc_common::SourceMapper;
+    use std::path::PathBuf;
+
+    use swc_common::{FileName, SourceMap, SourceMapper, sync::Lrc};
+    use swc_ecma_ast::EsVersion;
+    use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
     use tokio::time::Duration;
 
     use super::*;
@@ -748,6 +752,33 @@ outer();
         assert!(
             err_msg.contains("script:4:"),
             "sourcemap should translate JS positions back to TS line 4, got: {err_msg}"
+        );
+    }
+
+    #[test]
+    fn generated_index_d_ts_is_parseable() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../run/assets/index.d.ts");
+        let code = std::fs::read_to_string(&path).unwrap();
+
+        let cm: Lrc<SourceMap> = Default::default();
+        let fm = cm.new_source_file(FileName::Custom("index.d.ts".into()).into(), code);
+        let lexer = Lexer::new(
+            Syntax::Typescript(TsSyntax {
+                dts: true,
+                ..Default::default()
+            }),
+            EsVersion::Es2020,
+            StringInput::from(&*fm),
+            None,
+        );
+        let mut parser = Parser::new_from(lexer);
+
+        let parse_result = parser.parse_program();
+        let parser_errors = parser.take_errors();
+
+        assert!(
+            parse_result.is_ok() && parser_errors.is_empty(),
+            "d.ts parse errors: result={parse_result:?}, errors={parser_errors:?}"
         );
     }
 

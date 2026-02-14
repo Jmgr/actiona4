@@ -1769,6 +1769,118 @@ declare enum NotificationUrgency {
     Critical,
 }
 /**
+ * Toast notification scenario.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare enum NotificationScenario {
+    Reminder,
+
+    Alarm,
+
+    IncomingCall,
+
+    Urgent,
+}
+/**
+ * Notification sound.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare enum NotificationSound {
+    Default,
+
+    Im,
+
+    Mail,
+
+    Reminder,
+
+    Sms,
+
+    None,
+
+    LoopingAlarm,
+
+    LoopingAlarm2,
+
+    LoopingAlarm3,
+
+    LoopingAlarm4,
+
+    LoopingAlarm5,
+
+    LoopingAlarm6,
+
+    LoopingAlarm7,
+
+    LoopingAlarm8,
+
+    LoopingAlarm9,
+
+    LoopingAlarm10,
+
+    LoopingCall,
+
+    LoopingCall2,
+
+    LoopingCall3,
+
+    LoopingCall4,
+
+    LoopingCall5,
+
+    LoopingCall6,
+
+    LoopingCall7,
+
+    LoopingCall8,
+
+    LoopingCall9,
+
+    LoopingCall10,
+}
+/**
+ * Activation type for toast actions and headers.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare enum NotificationActivationType {
+    Foreground,
+
+    Background,
+
+    Protocol,
+}
+/**
+ * Placement of a toast action button.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare enum NotificationActionPlacement {
+    ContextMenu,
+}
+/**
+ * Style of a toast action button.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare enum NotificationButtonStyle {
+    Success,
+
+    Critical,
+}
+/**
+ * Input type for toast input fields.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare enum NotificationInputType {
+    Text,
+
+    Selection,
+}
+/**
  * Unix signal.
  * 
  * ```ts
@@ -5106,6 +5218,7 @@ declare class Wildcard {
 /**
  * A custom string hint for Linux notifications.
  * @category Notification
+ * @platform only works on Linux
  */
 declare interface NotificationCustomHint {
     /**
@@ -5120,6 +5233,7 @@ declare interface NotificationCustomHint {
 /**
  * A custom integer hint for Linux notifications.
  * @category Notification
+ * @platform only works on Linux
  */
 declare interface NotificationCustomIntHint {
     /**
@@ -5137,13 +5251,107 @@ declare interface NotificationCustomIntHint {
  */
 declare interface NotificationAction {
     /**
-     * Action identifier.
+     * Action identifier (used as arguments on Windows).
      */
     identifier?: string;
     /**
      * Action label visible to the user.
      */
     label?: string;
+    /**
+     * Action type string (Windows-specific, e.g. for protocol activation).
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    actionType?: string;
+    /**
+     * Activation type for this action.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    activationType?: NotificationActivationType;
+    /**
+     * Placement of this action button.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    placement?: NotificationActionPlacement;
+    /**
+     * Visual style of the button.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    buttonStyle?: NotificationButtonStyle;
+    /**
+     * ID of the input element this action is associated with.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    inputId?: string;
+}
+/**
+ * A notification header for grouping toasts in Action Center.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare interface NotificationHeader {
+    /**
+     * Unique identifier for this header group.
+     */
+    id?: string;
+    /**
+     * Title displayed for the header group.
+     */
+    title?: string;
+    /**
+     * Arguments passed when the header is clicked.
+     */
+    arguments?: string;
+}
+/**
+ * A toast input field.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare interface NotificationInput {
+    /**
+     * Unique identifier for this input.
+     */
+    id?: string;
+    /**
+     * Type of input field.
+     */
+    inputType?: NotificationInputType;
+    /**
+     * Placeholder text shown when the input is empty.
+     * @defaultValue `undefined`
+     */
+    placeholder?: string;
+    /**
+     * Title displayed above the input.
+     * @defaultValue `undefined`
+     */
+    title?: string;
+    /**
+     * Default value for the input.
+     * @defaultValue `undefined`
+     */
+    defaultInput?: string;
+}
+/**
+ * A selection option for a dropdown input.
+ * @category Notification
+ * @platform only works on Windows
+ */
+declare interface NotificationSelection {
+    /**
+     * Unique identifier for this selection option.
+     */
+    id?: string;
+    /**
+     * Display text for this selection option.
+     */
+    content?: string;
 }
 /**
  * Options for a notification.
@@ -5164,7 +5372,7 @@ declare interface NotificationOptions {
     /**
      * Body text of the notification.
      * Multiple lines possible, may support simple markup.
-     * Check `notification.capabilities()` for a list.
+     * On Linux, check `notification.capabilities()` for a list.
      * @defaultValue `undefined`
      */
     body?: string;
@@ -5267,9 +5475,98 @@ declare interface NotificationOptions {
     /**
      * Notification actions.
      * @defaultValue `undefined`
-     * @platform only works on Linux
      */
     actions?: NotificationAction[];
+    /**
+     * Attribution text displayed at the bottom of the notification.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    attributionText?: string;
+    /**
+     * Hero image displayed prominently at the top of the notification.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    heroImage?: Image;
+    /**
+     * Whether to crop the icon into a circle.
+     * @defaultValue `false`
+     * @platform only works on Windows
+     */
+    iconCropCircle?: boolean;
+    /**
+     * Toast scenario that adjusts notification behavior.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    scenario?: NotificationScenario;
+    /**
+     * Sound to play with the notification.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    sound?: NotificationSound;
+    /**
+     * Whether to loop the notification sound.
+     * @defaultValue `false`
+     * @platform only works on Windows
+     */
+    soundLooping?: boolean;
+    /**
+     * Whether to suppress all notification sound.
+     * @defaultValue `false`
+     * @platform only works on Windows
+     */
+    silent?: boolean;
+    /**
+     * Header for grouping notifications in Action Center.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    header?: NotificationHeader;
+    /**
+     * Input fields displayed in the notification.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    inputs?: NotificationInput[];
+    /**
+     * Selection options for dropdown inputs.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    selections?: NotificationSelection[];
+    /**
+     * Tag for identifying and replacing notifications.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    tag?: string;
+    /**
+     * Group identifier for organizing notifications.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    group?: string;
+    /**
+     * Remote ID for cross-device notification correlation.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    remoteId?: string;
+    /**
+     * Launch string passed to the app when the notification is clicked.
+     * @defaultValue `undefined`
+     * @platform only works on Windows
+     */
+    launch?: string;
+    /**
+     * Whether to enable button styling on actions.
+     * @defaultValue `false`
+     * @platform only works on Windows
+     */
+    useButtonStyle?: boolean;
 }
 /**
  * The global notification singleton for sending desktop notifications.
@@ -5313,6 +5610,7 @@ declare interface NotificationHandle {
      * const handle = await notification.show({ title: "Initial" });
      * await handle.update({ title: "Updated", body: "New body" });
      * ```
+     * @platform only works on Linux
      */
     update(options?: NotificationOptions): Promise<void>;
     /**
@@ -5322,7 +5620,7 @@ declare interface NotificationHandle {
      * ```ts
      * const handle = await notification.show({ title: "Update available", actions: [{ identifier: "update", label: "Update now" }] });
      * const action = await handle.waitForAction();
-     * if (action === "update") { /* ... */ }
+     * if (action === "update") { await runUpdate(); }
      * ```
      */
     waitForAction(options?: WaitForActionOptions): Task<string | null>;

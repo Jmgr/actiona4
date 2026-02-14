@@ -893,7 +893,7 @@ impl JsNotificationHandle {
     /// ```ts
     /// const handle = await notification.show({ title: "Update available", actions: [{ identifier: "update", label: "Update now" }] });
     /// const action = await handle.waitForAction();
-    /// if (action === "update") { /* ... */ }
+    /// if (action === "update") { await runUpdate(); }
     /// ```
     ///
     /// @returns Task<string | null>

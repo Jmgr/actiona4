@@ -206,6 +206,11 @@ mod tests {
             actions: vec![NotificationAction {
                 identifier: "open".to_owned(),
                 label: "Open".to_owned(),
+                action_type: None,
+                activation_type: None,
+                placement: None,
+                button_style: None,
+                input_id: None,
             }],
             ..NotificationOptions::default()
         };

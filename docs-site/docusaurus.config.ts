@@ -75,7 +75,7 @@ const config: Config = {
           "typedoc-plugin-mdn-links",
           "./plugins/typedoc-plugin-intrinsic-links.mjs",
         ],
-        entryPoints: ["../tests/src/index.d.ts"],
+        entryPoints: ["../run/assets/index.d.ts"],
         tsconfig: "../tests/tsconfig.json",
         out: "docs/api",
         entryFileName: "index",
