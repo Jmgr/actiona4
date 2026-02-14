@@ -2,9 +2,17 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueHint};
 
+/// Run Actiona 4 automation scripts from the command line.
+///
+/// Examples:
+/// - `actiona-run ./scripts/hello.ts`
+/// - `actiona-run eval "console.log('hello')"`
+/// - `actiona-run repl`
+/// - `actiona-run init ./my-script`
 #[derive(Debug, Subcommand)]
+#[command(verbatim_doc_comment)]
 pub enum Commands {
-    /// 🤖 runs a script
+    /// 🤖 runs a script (default)
     Run {
         /// file path to the script
         #[arg(value_hint = ValueHint::FilePath)]

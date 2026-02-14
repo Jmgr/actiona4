@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Actiona-ng is a cross-platform desktop automation tool written in Rust. It provides a TypeScript/JavaScript scripting interface (via QuickJS) to control mouse, keyboard, windows, clipboard, audio, and other system functions. The UI layer uses Tauri.
+Actiona 4 is a cross-platform desktop automation tool written in Rust. It provides a TypeScript/JavaScript scripting interface (via QuickJS) to control mouse, keyboard, windows, clipboard, audio, and other system functions. The UI layer uses Tauri.
 
 ## Build Commands
 
