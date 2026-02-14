@@ -3,6 +3,7 @@ use std::sync::Arc;
 use parking_lot::Mutex;
 use tokio::{select, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use uuid::Uuid;
 use winrt_toast_reborn::{
     Action, Audio, Header, Input, Selection, Toast, ToastDuration, ToastManager,
     content::{
@@ -26,7 +27,14 @@ pub struct Notification;
 
 impl Notification {
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {
-        let toast = build_toast(&options)?;
+        let mut toast = build_toast(&options)?;
+
+        // Auto-generate a tag so the notification can be closed programmatically.
+        let tag = options
+            .tag
+            .clone()
+            .unwrap_or_else(|| Uuid::new_v4().to_string());
+        toast.tag(tag.as_str());
 
         let (tx, rx) = oneshot::channel::<Option<String>>();
         let tx = Arc::new(Mutex::new(Some(tx)));
@@ -52,6 +60,7 @@ impl Notification {
         manager.show(&toast)?;
 
         Ok(NotificationHandle {
+            tag,
             receiver: Arc::new(Mutex::new(Some(rx))),
         })
     }
@@ -63,10 +72,18 @@ impl Notification {
 }
 
 pub struct NotificationHandle {
+    tag: String,
     receiver: Arc<Mutex<Option<oneshot::Receiver<Option<String>>>>>,
 }
 
 impl NotificationHandle {
+    /// Programmatically close the notification.
+    pub async fn close(self) -> Result<()> {
+        let manager = ToastManager::new(AUMID);
+        manager.remove(&self.tag)?;
+        Ok(())
+    }
+
     pub async fn update(&self, _options: NotificationOptions) -> Result<()> {
         // Windows Toast notifications do not support in-place updates.
         Ok(())
@@ -248,9 +265,8 @@ fn build_toast(options: &NotificationOptions) -> Result<Toast> {
         ));
     }
 
-    if let Some(tag) = &options.tag {
-        toast.tag(tag.as_str());
-    }
+    // Note: tag is set in Notification::show() to ensure every notification
+    // has a tag (auto-generated if not provided) for programmatic close support.
     if let Some(group) = &options.group {
         toast.group(group.as_str());
     }

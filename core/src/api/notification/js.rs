@@ -541,6 +541,8 @@ pub struct JsNotificationOptions {
     pub desktop_entry: Option<String>,
 
     /// If `true`, keep notification resident until explicitly dismissed.
+    /// Also automatically sets the timeout to never expire unless an explicit
+    /// timeout is provided.
     ///
     /// @platforms =linux
     /// @default `undefined`
@@ -863,6 +865,18 @@ impl<'js> Trace<'js> for JsNotificationHandle {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsNotificationHandle {
+    /// Programmatically closes the notification.
+    ///
+    /// ```ts
+    /// const handle = await notification.show({ title: "Hello", resident: true });
+    /// await sleep("5s");
+    /// await handle.close();
+    /// ```
+    pub async fn close(&self, ctx: Ctx<'_>) -> Result<()> {
+        let handle = self.take_handle(&ctx)?;
+        handle.close().await.into_js_result(&ctx)
+    }
+
     /// Updates the notification with new options.
     ///
     /// ```ts
@@ -994,6 +1008,24 @@ mod tests {
                     r#"
                     let handle = await notification.show({ title: "Test Notification", body: "This is a test" });
                     await handle.waitUntilClosed();
+                    "#,
+                )
+                .await
+                .unwrap();
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_close() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    let handle = await notification.show({ title: "Closing soon", body: "This will be closed programmatically", resident: true });
+                    await sleep("2s");
+                    await handle.close();
                     "#,
                 )
                 .await

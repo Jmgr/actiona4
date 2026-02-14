@@ -58,6 +58,9 @@ impl Notification {
 
         if let Some(resident) = options.resident {
             notification.hint(Hint::Resident(resident));
+            if resident {
+                notification.timeout(notify_rust::Timeout::Never);
+            }
         }
 
         if let Some(sound_file) = &options.sound_file {
@@ -121,6 +124,20 @@ pub struct NotificationHandle {
 }
 
 impl NotificationHandle {
+    /// Programmatically close the notification.
+    pub async fn close(self) -> Result<()> {
+        let inner = Arc::into_inner(self.inner)
+            .expect("update should not be running during close")
+            .into_inner();
+
+        tokio::task::spawn_blocking(move || {
+            inner.close();
+        })
+        .await?;
+
+        Ok(())
+    }
+
     /// notify_rust's `update()` calls `block_on` internally, so it must run
     /// off the async runtime thread via `spawn_blocking`.
     pub async fn update(&self, options: NotificationOptions) -> Result<()> {
@@ -169,7 +186,7 @@ impl NotificationHandle {
 
 #[cfg(test)]
 mod tests {
-    use notify_rust::Hint;
+    use notify_rust::{Hint, Timeout};
 
     use super::Notification;
     use crate::api::{
@@ -246,6 +263,7 @@ mod tests {
         assert!(notification.hints.contains(&Hint::Transient(false)));
         assert!(notification.hints.contains(&Hint::X(12)));
         assert!(notification.hints.contains(&Hint::Y(34)));
+        assert_eq!(notification.timeout, Timeout::Never);
     }
 
     #[test]

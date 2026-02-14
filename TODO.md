@@ -36,9 +36,3 @@ unsafe {
     SetConsoleOutputCP(CP_UTF8);
 }
 */
-/*
-You are running actiona-run version 0.1.0, latest version is 1.0.1,
-released 3d ago.
-*/
-// TODO: 3d ago? Oo
-// TODO: Maybe remove Arc<Foo> and make Foo clonable directly

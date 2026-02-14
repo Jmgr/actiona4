@@ -187,6 +187,10 @@ pub struct NotificationHandle {
 }
 
 impl NotificationHandle {
+    pub async fn close(self) -> Result<()> {
+        self.inner.close().await
+    }
+
     pub async fn update(&self, options: NotificationOptions) -> Result<()> {
         self.inner.update(options).await
     }
