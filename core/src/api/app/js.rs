@@ -155,7 +155,7 @@ impl JsApp {
     /// The path to the running executable.
     ///
     /// ```ts
-    /// println(app.executablePath); // e.g. "/usr/bin/actiona4-run"
+    /// println(app.executablePath); // e.g. "/usr/bin/actiona-run"
     /// ```
     ///
     /// @get

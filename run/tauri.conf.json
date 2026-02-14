@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "actiona4-run",
+  "productName": "actiona-run",
   "version": "0.1.0",
-  "identifier": "tools.actiona.actiona4-run",
+  "identifier": "tools.actiona.actiona-run",
   "build": {
     "frontendDist": "ui"
   }

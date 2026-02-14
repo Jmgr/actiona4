@@ -6,18 +6,18 @@ authors.workspace = true
 description.workspace = true
 documentation.workspace = true
 license.workspace = true
-default-run = "actiona4-run"
+default-run = "actiona-run"
 
 [package.metadata.cargo-machete]
 ignored = ["tauri-build"]
 
 [[bin]]
-name = "actiona4-run"
-path = "src/bin/actiona4-run.rs"
+name = "actiona-run"
+path = "src/bin/actiona-run.rs"
 
 [[bin]]
-name = "actiona4-run-console"
-path = "src/bin/actiona4-run-console.rs"
+name = "actiona-run-console"
+path = "src/bin/actiona-run-console.rs"
 required-features = ["windows-console-bin"]
 
 [features]

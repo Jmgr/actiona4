@@ -3,156 +3,158 @@
  */
 
 declare namespace actiona {
-/**
- * ColorLike
- */
-type ColorLike = Color | { r: number; g: number; b: number; a?: number };
-/**
- * Task: cancellable promise.
- */
-type Task<Result> = Promise<Result> & {
+  /**
+   * ColorLike
+   */
+  type ColorLike = Color | { r: number; g: number; b: number; a?: number };
+  /**
+   * Task: cancellable promise.
+   */
+  type Task<Result> = Promise<Result> & {
     cancel(): void;
-};
+  };
 
-/**
- * ProgressTask: task with progress.
- */
-type ProgressTask<Result, Progress> = Task<Result> & {
+  /**
+   * ProgressTask: task with progress.
+   */
+  type ProgressTask<Result, Progress> = Task<Result> & {
     [Symbol.asyncIterator](): AsyncIterator<Progress>;
-};
-/**
- * NameLike
- */
-type NameLike = string | Wildcard | RegExp;
-/**
- * PointLike
- */
-type PointLike = Point | { x: number; y: number };
-/**
- * RectLike
- */
-type RectLike = Rect | { x: number; y: number; width: number; height: number };
-/**
- * SizeLike
- */
-type SizeLike = Size | { width: number; height: number };
-/**
- * Returns the object where Actiona API items should be registered.
- * 
- * In normal mode this is `ctx.globals()`. In `no_globals` mode this is
- * the `actiona` namespace object stored on globals.
- * @category Core
- */
-function registrationTarget(): Object;
-/**
- * Pauses the execution for the given duration.
- * 
- * ```ts
- * // Wait 500 milliseconds
- * await sleep(500);
- * 
- * // Wait 1 second
- * await sleep("1s");
- * 
- * // Wait 1 hour
- * await sleep("1h");
- * ```
- * @category Core
- */
-function sleep(duration: number | string): Task<void>;
-/**
- * Stops the script execution immediately.
- * 
- * ```ts
- * if (errorCondition) {
- * exit();
- * }
- * ```
- * @category Core
- */
-function exit(): void;
-/**
- * Prints values without a trailing newline.
- * 
- * Alias for `console.print(...)`.
- * @category Core
- */
-function print(...args: unknown[]): void;
-/**
- * Prints values followed by a newline.
- * 
- * Alias for `console.println(...)`.
- * @category Core
- */
-function println(...args: unknown[]): void;
-/**
- * Pretty-prints values using an inspect-style multiline format.
- * 
- * Alias for `console.inspect(...)`.
- * @category Core
- */
-function inspect(...args: unknown[]): void;
-/**
- * Formats a frequency value in Hz using SI prefixes.
- * 
- * ```ts
- * formatFrequency(40000);    // "40 kHz"
- * formatFrequency(3400000);  // "3.4 MHz"
- * ```
- * @category System
- */
-function formatFrequency(frequency: number): string;
-/**
- * Formats a percentage value and appends `%`.
- * 
- * ```ts
- * formatPercent(50);          // "50%"
- * formatPercent(50.005);      // "50.01%"
- * formatPercent(12.3456, 1);  // "12.3%"
- * ```
- * @category System
- */
-function formatPercent(percent: number, precision?: number): string;
-/**
- * Formats a byte size using human-readable units.
- * 
- * ```ts
- * formatBytes(42000);        // "42 kB"
- * formatBytes(1048576);      // "1.05 MB"
- * ```
- * @category System
- */
-function formatBytes(bytes: number): string;
-/**
- * Direction to flip an image.
- * 
- * ```ts
- * // Flip horizontally (mirror)
- * image.flip(FlipDirection.Horizontal);
- * 
- * // Flip vertically
- * image.flip(FlipDirection.Vertical);
- * ```
- * @category Image
- */
-enum FlipDirection {
+  };
+  /**
+   * NameLike
+   */
+  type NameLike = string | Wildcard | RegExp;
+  /**
+   * PointLike
+   */
+  type PointLike = Point | { x: number; y: number };
+  /**
+   * RectLike
+   */
+  type RectLike =
+    | Rect
+    | { x: number; y: number; width: number; height: number };
+  /**
+   * SizeLike
+   */
+  type SizeLike = Size | { width: number; height: number };
+  /**
+   * Returns the object where Actiona API items should be registered.
+   *
+   * In normal mode this is `ctx.globals()`. In `no_globals` mode this is
+   * the `actiona` namespace object stored on globals.
+   * @category Core
+   */
+  function registrationTarget(): Object;
+  /**
+   * Pauses the execution for the given duration.
+   *
+   * ```ts
+   * // Wait 500 milliseconds
+   * await sleep(500);
+   *
+   * // Wait 1 second
+   * await sleep("1s");
+   *
+   * // Wait 1 hour
+   * await sleep("1h");
+   * ```
+   * @category Core
+   */
+  function sleep(duration: number | string): Task<void>;
+  /**
+   * Stops the script execution immediately.
+   *
+   * ```ts
+   * if (errorCondition) {
+   * exit();
+   * }
+   * ```
+   * @category Core
+   */
+  function exit(): void;
+  /**
+   * Prints values without a trailing newline.
+   *
+   * Alias for `console.print(...)`.
+   * @category Core
+   */
+  function print(...args: unknown[]): void;
+  /**
+   * Prints values followed by a newline.
+   *
+   * Alias for `console.println(...)`.
+   * @category Core
+   */
+  function println(...args: unknown[]): void;
+  /**
+   * Pretty-prints values using an inspect-style multiline format.
+   *
+   * Alias for `console.inspect(...)`.
+   * @category Core
+   */
+  function inspect(...args: unknown[]): void;
+  /**
+   * Formats a frequency value in Hz using SI prefixes.
+   *
+   * ```ts
+   * formatFrequency(40000);    // "40 kHz"
+   * formatFrequency(3400000);  // "3.4 MHz"
+   * ```
+   * @category System
+   */
+  function formatFrequency(frequency: number): string;
+  /**
+   * Formats a percentage value and appends `%`.
+   *
+   * ```ts
+   * formatPercent(50);          // "50%"
+   * formatPercent(50.005);      // "50.01%"
+   * formatPercent(12.3456, 1);  // "12.3%"
+   * ```
+   * @category System
+   */
+  function formatPercent(percent: number, precision?: number): string;
+  /**
+   * Formats a byte size using human-readable units.
+   *
+   * ```ts
+   * formatBytes(42000);        // "42 kB"
+   * formatBytes(1048576);      // "1.05 MB"
+   * ```
+   * @category System
+   */
+  function formatBytes(bytes: number): string;
+  /**
+   * Direction to flip an image.
+   *
+   * ```ts
+   * // Flip horizontally (mirror)
+   * image.flip(FlipDirection.Horizontal);
+   *
+   * // Flip vertically
+   * image.flip(FlipDirection.Vertical);
+   * ```
+   * @category Image
+   */
+  enum FlipDirection {
     Horizontal,
 
     Vertical,
-}
-/**
- * Resize filter algorithms.
- * 
- * ```ts
- * // Use nearest-neighbor for pixel art (no smoothing)
- * image.resize(64, 64, { filter: ResizeFilter.Nearest });
- * 
- * // Use Lanczos3 for high-quality downscaling
- * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
- * ```
- * @category Image
- */
-enum ResizeFilter {
+  }
+  /**
+   * Resize filter algorithms.
+   *
+   * ```ts
+   * // Use nearest-neighbor for pixel art (no smoothing)
+   * image.resize(64, 64, { filter: ResizeFilter.Nearest });
+   *
+   * // Use Lanczos3 for high-quality downscaling
+   * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
+   * ```
+   * @category Image
+   */
+  enum ResizeFilter {
     Nearest,
 
     Linear,
@@ -162,74 +164,74 @@ enum ResizeFilter {
     Gaussian,
 
     Lanczos3,
-}
-/**
- * Interpolation algorithms used for image rotations.
- * 
- * ```ts
- * // Fast but lower quality
- * image.rotate(45, { interpolation: Interpolation.Nearest });
- * 
- * // Smooth result (default)
- * image.rotate(45, { interpolation: Interpolation.Bilinear });
- * ```
- * @category Image
- */
-enum Interpolation {
+  }
+  /**
+   * Interpolation algorithms used for image rotations.
+   *
+   * ```ts
+   * // Fast but lower quality
+   * image.rotate(45, { interpolation: Interpolation.Nearest });
+   *
+   * // Smooth result (default)
+   * image.rotate(45, { interpolation: Interpolation.Bilinear });
+   * ```
+   * @category Image
+   */
+  enum Interpolation {
     Nearest,
 
     Bilinear,
 
     Bicubic,
-}
-/**
- * Horizontal alignment for text drawing.
- * 
- * ```ts
- * image.drawText(100, 50, "Centered", fontPath, Color.Black, {
- * horizontalAlign: TextHorizontalAlign.Center
- * });
- * ```
- * @category Image
- */
-enum TextHorizontalAlign {
+  }
+  /**
+   * Horizontal alignment for text drawing.
+   *
+   * ```ts
+   * image.drawText(100, 50, "Centered", fontPath, Color.Black, {
+   * horizontalAlign: TextHorizontalAlign.Center
+   * });
+   * ```
+   * @category Image
+   */
+  enum TextHorizontalAlign {
     Left,
 
     Center,
 
     Right,
-}
-/**
- * Vertical alignment for text drawing.
- * 
- * ```ts
- * image.drawText(50, 100, "Middle", fontPath, Color.Black, {
- * verticalAlign: TextVerticalAlign.Middle
- * });
- * ```
- * @category Image
- */
-enum TextVerticalAlign {
+  }
+  /**
+   * Vertical alignment for text drawing.
+   *
+   * ```ts
+   * image.drawText(50, 100, "Middle", fontPath, Color.Black, {
+   * verticalAlign: TextVerticalAlign.Middle
+   * });
+   * ```
+   * @category Image
+   */
+  enum TextVerticalAlign {
     Top,
 
     Middle,
 
     Bottom,
-}
-/**
- * Stages of a find image operation.
- * 
- * ```ts
- * const task = source.findImage(template);
- * for await (const progress of task) {
- * if (progress.stage === FindImageStage.Matching) {
- * println(`Matching: ${formatPercent(progress.percent)}`);
- * }
- * }
- * ```
- * @category Image
- */
-enum FindImageStage {
+  }
+  /**
+   * Stages of a find image operation.
+   *
+   * ```ts
+   * const task = source.findImage(template);
+   * for await (const progress of task) {
+   * if (progress.stage === FindImageStage.Matching) {
+   * println(`Matching: ${formatPercent(progress.percent)}`);
+   * }
+   * }
+   * ```
+   * @category Image
+   */
+  enum FindImageStage {
     Capturing,
 
     Preparing,
@@ -243,41 +245,41 @@ enum FindImageStage {
     ComputingResults,
 
     Finished,
-}
-/**
- * Direction for key press/release actions.
- * 
- * ```ts
- * // Press and hold a key
- * await keyboard.key(Key.Shift, Direction.Press);
- * // Release it
- * await keyboard.key(Key.Shift, Direction.Release);
- * 
- * // Press and release in one action
- * await keyboard.key(Key.Return, Direction.Click);
- * ```
- * @category Keyboard
- */
-enum Direction {
+  }
+  /**
+   * Direction for key press/release actions.
+   *
+   * ```ts
+   * // Press and hold a key
+   * await keyboard.key(Key.Shift, Direction.Press);
+   * // Release it
+   * await keyboard.key(Key.Shift, Direction.Release);
+   *
+   * // Press and release in one action
+   * await keyboard.key(Key.Return, Direction.Click);
+   * ```
+   * @category Keyboard
+   */
+  enum Direction {
     Press,
 
     Release,
 
     Click,
-}
-/**
- * Standard keyboard keys.
- * 
- * Use as constants on the `Key` class. You can also pass a single character string
- * or a raw keycode number wherever a `Key` is expected.
- * 
- * ```ts
- * await keyboard.key(Key.Return, Direction.Click);
- * await keyboard.key("a", Direction.Click);
- * ```
- * @category Keyboard
- */
-enum Key {
+  }
+  /**
+   * Standard keyboard keys.
+   *
+   * Use as constants on the `Key` class. You can also pass a single character string
+   * or a raw keycode number wherever a `Key` is expected.
+   *
+   * ```ts
+   * await keyboard.key(Key.Return, Direction.Click);
+   * await keyboard.key("a", Direction.Click);
+   * ```
+   * @category Keyboard
+   */
+  enum Key {
     /**
      * Top-row digit '0' key (not numpad)
      */
@@ -1752,29 +1754,29 @@ enum Key {
      * @platform only works on Windows
      */
     Zoom,
-}
-/**
- * @category Keyboard
- */
-enum KeyError {
+  }
+  /**
+   * @category Keyboard
+   */
+  enum KeyError {
     Unsupported,
-}
-/**
- * @category Notification
- */
-enum NotificationUrgency {
+  }
+  /**
+   * @category Notification
+   */
+  enum NotificationUrgency {
     Low,
 
     Normal,
 
     Critical,
-}
-/**
- * Toast notification scenario.
- * @category Notification
- * @platform only works on Windows
- */
-enum NotificationScenario {
+  }
+  /**
+   * Toast notification scenario.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  enum NotificationScenario {
     Reminder,
 
     Alarm,
@@ -1782,13 +1784,13 @@ enum NotificationScenario {
     IncomingCall,
 
     Urgent,
-}
-/**
- * Notification sound.
- * @category Notification
- * @platform only works on Windows
- */
-enum NotificationSound {
+  }
+  /**
+   * Notification sound.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  enum NotificationSound {
     Default,
 
     Im,
@@ -1840,57 +1842,57 @@ enum NotificationSound {
     LoopingCall9,
 
     LoopingCall10,
-}
-/**
- * Activation type for toast actions and headers.
- * @category Notification
- * @platform only works on Windows
- */
-enum NotificationActivationType {
+  }
+  /**
+   * Activation type for toast actions and headers.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  enum NotificationActivationType {
     Foreground,
 
     Background,
 
     Protocol,
-}
-/**
- * Placement of a toast action button.
- * @category Notification
- * @platform only works on Windows
- */
-enum NotificationActionPlacement {
+  }
+  /**
+   * Placement of a toast action button.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  enum NotificationActionPlacement {
     ContextMenu,
-}
-/**
- * Style of a toast action button.
- * @category Notification
- * @platform only works on Windows
- */
-enum NotificationButtonStyle {
+  }
+  /**
+   * Style of a toast action button.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  enum NotificationButtonStyle {
     Success,
 
     Critical,
-}
-/**
- * Input type for toast input fields.
- * @category Notification
- * @platform only works on Windows
- */
-enum NotificationInputType {
+  }
+  /**
+   * Input type for toast input fields.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  enum NotificationInputType {
     Text,
 
     Selection,
-}
-/**
- * Unix signal.
- * 
- * ```ts
- * await process.sendSignal(1234, Signal.Term);
- * ```
- * @category Process
- * @platform only works on Linux
- */
-enum Signal {
+  }
+  /**
+   * Unix signal.
+   *
+   * ```ts
+   * await process.sendSignal(1234, Signal.Term);
+   * ```
+   * @category Process
+   * @platform only works on Linux
+   */
+  enum Signal {
     /**
      * `SIGHUP` - hang up; often used to request config reload.
      */
@@ -1955,20 +1957,20 @@ enum Signal {
      * `SIGUSR2` - user-defined signal 2.
      */
     Usr2,
-}
-/**
- * Process status.
- * 
- * ```ts
- * const processes = await system.processes.list();
- * const process = processes[0];
- * if (process && process.status === ProcessStatus.Run) {
- * println("process is running");
- * }
- * ```
- * @category System
- */
-enum ProcessStatus {
+  }
+  /**
+   * Process status.
+   *
+   * ```ts
+   * const processes = await system.processes.list();
+   * const process = processes[0];
+   * if (process && process.status === ProcessStatus.Run) {
+   * println("process is running");
+   * }
+   * ```
+   * @category System
+   */
+  enum ProcessStatus {
     Idle,
 
     Run,
@@ -1996,22 +1998,22 @@ enum ProcessStatus {
     Suspended,
 
     Unknown,
-}
-/**
- * Disk kind values.
- * 
- * ```ts
- * const disks = await system.storage.listDisks();
- * const disk = disks[0];
- * if (disk && disk.kind === DiskKind.SSD) {
- * println("SSD");
- * }
- * ```
- * 
- * Disk kind
- * @category System
- */
-enum DiskKind {
+  }
+  /**
+   * Disk kind values.
+   *
+   * ```ts
+   * const disks = await system.storage.listDisks();
+   * const disk = disks[0];
+   * if (disk && disk.kind === DiskKind.SSD) {
+   * println("SSD");
+   * }
+   * ```
+   *
+   * Disk kind
+   * @category System
+   */
+  enum DiskKind {
     /**
      * Hard disk drive
      */
@@ -2026,13 +2028,13 @@ enum DiskKind {
      * Unknown drive kind
      */
     Unknown,
-}
-/**
- * Should the script wait at the end of the execution?
- * @category App
- * @defaultValue `WaitAtEnd.Automatic`
- */
-enum WaitAtEnd {
+  }
+  /**
+   * Should the script wait at the end of the execution?
+   * @category App
+   * @defaultValue `WaitAtEnd.Automatic`
+   */
+  enum WaitAtEnd {
     /**
      * Automatically decide if the script should wait.
      * Setting hotstrings will have the script wait.
@@ -2048,28 +2050,28 @@ enum WaitAtEnd {
      * Never wait.
      */
     No,
-}
-/**
- * @category Clipboard
- */
-enum ClipboardMode {
+  }
+  /**
+   * @category Clipboard
+   */
+  enum ClipboardMode {
     Clipboard,
 
     /**
      * @platform only works on Linux
      */
     Selection,
-}
-/**
- * Mouse button.
- * 
- * ```ts
- * await mouse.click({ button: Button.Right });
- * const pressed = await mouse.isPressed(Button.Left);
- * ```
- * @category Mouse
- */
-enum Button {
+  }
+  /**
+   * Mouse button.
+   *
+   * ```ts
+   * await mouse.click({ button: Button.Right });
+   * const pressed = await mouse.isPressed(Button.Left);
+   * ```
+   * @category Mouse
+   */
+  enum Button {
     /**
      * Left button
      */
@@ -2094,34 +2096,34 @@ enum Button {
      * Forward button
      */
     Forward,
-}
-/**
- * Scroll axis direction.
- * 
- * ```ts
- * await mouse.scroll(3, Axis.Vertical);
- * await mouse.scroll(-1, Axis.Horizontal);
- * ```
- * @category Mouse
- */
-enum Axis {
+  }
+  /**
+   * Scroll axis direction.
+   *
+   * ```ts
+   * await mouse.scroll(3, Axis.Vertical);
+   * await mouse.scroll(-1, Axis.Horizontal);
+   * ```
+   * @category Mouse
+   */
+  enum Axis {
     Horizontal,
 
     Vertical,
-}
-/**
- * Tweening functions for smooth mouse movement.
- * 
- * ```ts
- * // Move with a bounce effect
- * await mouse.move(500, 300, { tween: Tween.BounceOut });
- * 
- * // Move with linear interpolation (no easing)
- * await mouse.move(100, 100, { tween: Tween.Linear });
- * ```
- * @category Mouse
- */
-enum Tween {
+  }
+  /**
+   * Tweening functions for smooth mouse movement.
+   *
+   * ```ts
+   * // Move with a bounce effect
+   * await mouse.move(500, 300, { tween: Tween.BounceOut });
+   *
+   * // Move with linear interpolation (no easing)
+   * await mouse.move(100, 100, { tween: Tween.Linear });
+   * ```
+   * @category Mouse
+   */
+  enum Tween {
     /**
      * Starts slowly, then accelerates with an overshoot.
      */
@@ -2276,21 +2278,21 @@ enum Tween {
      * Ends slowly with a sinusoidal deceleration.
      */
     SineOut,
-}
-/**
- * @category UI
- */
-enum MessageBoxIcon {
+  }
+  /**
+   * @category UI
+   */
+  enum MessageBoxIcon {
     Info,
 
     Warning,
 
     Error,
-}
-/**
- * @category UI
- */
-enum MessageBoxResult {
+  }
+  /**
+   * @category UI
+   */
+  enum MessageBoxResult {
     Yes,
 
     No,
@@ -2298,12 +2300,12 @@ enum MessageBoxResult {
     Ok,
 
     Cancel,
-}
-/**
- * HTTP request method.
- * @category Web
- */
-enum Method {
+  }
+  /**
+   * HTTP request method.
+   * @category Web
+   */
+  enum Method {
     Get,
 
     Post,
@@ -2321,36 +2323,36 @@ enum Method {
     Patch,
 
     Trace,
-}
-/**
- * The global application singleton, providing access to environment information
- * and execution settings.
- * 
- * ```ts
- * // Get the current version
- * println(app.version);
- * 
- * // Read environment variables
- * const home = app.env["HOME"];
- * 
- * // Change working directory
- * app.setCwd("/tmp");
- * println(app.cwd);
- * 
- * // Control whether the script waits at the end
- * app.waitAtEnd = true;
- * app.waitAtEnd = WaitAtEnd.Automatic;
- * ```
- * @category App
- */
-interface App {
+  }
+  /**
+   * The global application singleton, providing access to environment information
+   * and execution settings.
+   *
+   * ```ts
+   * // Get the current version
+   * println(app.version);
+   *
+   * // Read environment variables
+   * const home = app.env["HOME"];
+   *
+   * // Change working directory
+   * app.setCwd("/tmp");
+   * println(app.cwd);
+   *
+   * // Control whether the script waits at the end
+   * app.waitAtEnd = true;
+   * app.waitAtEnd = WaitAtEnd.Automatic;
+   * ```
+   * @category App
+   */
+  interface App {
     /**
      * Should the app wait at the end of execution
      */
     waitAtEnd: WaitAtEnd | boolean;
     /**
      * The version of Actiona-cli.
-     * 
+     *
      * ```ts
      * println(app.version); // e.g. "0.1.0"
      * ```
@@ -2358,7 +2360,7 @@ interface App {
     readonly version: string;
     /**
      * All environment variables as a readonly key-value map.
-     * 
+     *
      * ```ts
      * const env = app.env;
      * println(env["HOME"]);
@@ -2368,7 +2370,7 @@ interface App {
     readonly env: Readonly<Record<string, string | undefined>>;
     /**
      * The current working directory.
-     * 
+     *
      * ```ts
      * println(app.cwd); // e.g. "/home/user/project"
      * ```
@@ -2376,42 +2378,42 @@ interface App {
     readonly cwd: string;
     /**
      * The path to the running executable.
-     * 
+     *
      * ```ts
-     * println(app.executablePath); // e.g. "/usr/bin/actiona4-run"
+     * println(app.executablePath); // e.g. "/usr/bin/actiona-run"
      * ```
      */
     readonly executablePath: string;
     /**
      * Sets the current working directory.
-     * 
+     *
      * ```ts
      * app.setCwd("/tmp");
      * ```
      */
     setCwd(cwd: string): void;
-}
-/**
- * @category App
- */
-const app: App;
-/**
- * Options for playing a sound file.
- * 
- * ```ts
- * // Play with default options
- * audio.playFile("sound.wav");
- * 
- * // Play at half volume, looping, with a fade in
- * audio.playFile("music.mp3", {
- * volume: 0.5,
- * loop: true,
- * fadeIn: 2000,
- * });
- * ```
- * @category Audio
- */
-interface PlaySoundOptions {
+  }
+  /**
+   * @category App
+   */
+  const app: App;
+  /**
+   * Options for playing a sound file.
+   *
+   * ```ts
+   * // Play with default options
+   * audio.playFile("sound.wav");
+   *
+   * // Play at half volume, looping, with a fade in
+   * audio.playFile("music.mp3", {
+   * volume: 0.5,
+   * loop: true,
+   * fadeIn: 2000,
+   * });
+   * ```
+   * @category Audio
+   */
+  interface PlaySoundOptions {
     /**
      * Volume to play the sound at
      * @defaultValue `1.0`
@@ -2447,29 +2449,29 @@ interface PlaySoundOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * The global audio singleton for playing sound files.
- * 
- * ```ts
- * // Play a sound and forget about it
- * audio.playFile("notification.wav");
- * 
- * // Play a sound and wait for it to finish
- * await audio.playFileAndWait("alert.wav");
- * 
- * // Play with options and control playback
- * const sound = audio.playFile("music.mp3", { volume: 0.8, loop: true });
- * sound.pause();
- * sound.resume();
- * sound.stop();
- * ```
- * @category Audio
- */
-interface Audio {
+  }
+  /**
+   * The global audio singleton for playing sound files.
+   *
+   * ```ts
+   * // Play a sound and forget about it
+   * audio.playFile("notification.wav");
+   *
+   * // Play a sound and wait for it to finish
+   * await audio.playFileAndWait("alert.wav");
+   *
+   * // Play with options and control playback
+   * const sound = audio.playFile("music.mp3", { volume: 0.8, loop: true });
+   * sound.pause();
+   * sound.resume();
+   * sound.stop();
+   * ```
+   * @category Audio
+   */
+  interface Audio {
     /**
      * Plays a sound file and returns a `PlayingSound` handle for controlling playback.
-     * 
+     *
      * ```ts
      * const sound = audio.playFile("music.mp3");
      * sound.volume = 0.5;
@@ -2478,10 +2480,10 @@ interface Audio {
     playFile(path: string, options?: PlaySoundOptions): PlayingSound;
     /**
      * Plays a sound file and waits for it to finish.
-     * 
+     *
      * ```ts
      * await audio.playFileAndWait("alert.wav");
-     * 
+     *
      * // With a fade out and abort signal
      * const controller = new AbortController();
      * await audio.playFileAndWait("long-track.mp3", {
@@ -2491,26 +2493,26 @@ interface Audio {
      * ```
      */
     playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
-}
-/**
- * @category Audio
- */
-const audio: Audio;
-/**
- * A handle to an actively playing sound, allowing control over playback.
- * 
- * ```ts
- * const sound = audio.playFile("music.mp3");
- * println(sound.duration);  // duration in seconds
- * sound.volume = 0.5;
- * sound.playbackRate = 1.5;
- * sound.pause();
- * sound.resume();
- * await sound.finished;  // wait until the sound ends
- * ```
- * @category Audio
- */
-interface PlayingSound {
+  }
+  /**
+   * @category Audio
+   */
+  const audio: Audio;
+  /**
+   * A handle to an actively playing sound, allowing control over playback.
+   *
+   * ```ts
+   * const sound = audio.playFile("music.mp3");
+   * println(sound.duration);  // duration in seconds
+   * sound.volume = 0.5;
+   * sound.playbackRate = 1.5;
+   * sound.pause();
+   * sound.resume();
+   * await sound.finished;  // wait until the sound ends
+   * ```
+   * @category Audio
+   */
+  interface PlayingSound {
     /**
      * Sound volume
      * @defaultValue `1`
@@ -2531,7 +2533,7 @@ interface PlayingSound {
     readonly duration?: number;
     /**
      * A promise that resolves when the sound has finished playing.
-     * 
+     *
      * ```ts
      * const sound = audio.playFile("music.mp3");
      * await sound.finished;
@@ -2551,26 +2553,26 @@ interface PlayingSound {
      * Stops the sound permanently.
      */
     stop(): void;
-}
-/**
- * Options for waiting until clipboard content changes.
- * 
- * ```ts
- * // Wait for any clipboard change
- * await clipboard.waitForChanged();
- * 
- * // Wait on Linux selection clipboard with a custom polling interval
- * await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 });
- * 
- * // Wait up to 1 second for a clipboard change
- * await Concurrency.race([
- * clipboard.waitForChanged(),
- * sleep("1s"),
- * ]);
- * ```
- * @category Clipboard
- */
-interface WaitForChangedOptions {
+  }
+  /**
+   * Options for waiting until clipboard content changes.
+   *
+   * ```ts
+   * // Wait for any clipboard change
+   * await clipboard.waitForChanged();
+   *
+   * // Wait on Linux selection clipboard with a custom polling interval
+   * await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 });
+   *
+   * // Wait up to 1 second for a clipboard change
+   * await Concurrency.race([
+   * clipboard.waitForChanged(),
+   * sleep("1s"),
+   * ]);
+   * ```
+   * @category Clipboard
+   */
+  interface WaitForChangedOptions {
     /**
      * Clipboard source to watch.
      * @defaultValue `ClipboardMode.Clipboard`
@@ -2586,40 +2588,40 @@ interface WaitForChangedOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * The global clipboard singleton for reading and writing clipboard content.
- * 
- * Supports text, images, file lists, and HTML content. Each content type
- * is accessed through a dedicated sub-object.
- * 
- * ```ts
- * // Copy and paste text
- * await clipboard.text.set("Hello, world!");
- * const text = await clipboard.text.get();
- * 
- * // Copy and paste an image
- * const img = display.screenshot();
- * await clipboard.image.set(img);
- * 
- * // Work with file lists
- * await clipboard.fileList.set(["/path/to/file.txt"]);
- * 
- * // HTML content with alt text fallback
- * await clipboard.html.set("<b>bold</b>", "bold");
- * 
- * // Clear the clipboard
- * await clipboard.clear();
- * 
- * // On Linux, use the selection clipboard
- * await clipboard.text.set("selected", ClipboardMode.Selection);
- * 
- * // Wait until clipboard content changes
- * await clipboard.waitForChanged();
- * ```
- * @category Clipboard
- */
-interface Clipboard {
+  }
+  /**
+   * The global clipboard singleton for reading and writing clipboard content.
+   *
+   * Supports text, images, file lists, and HTML content. Each content type
+   * is accessed through a dedicated sub-object.
+   *
+   * ```ts
+   * // Copy and paste text
+   * await clipboard.text.set("Hello, world!");
+   * const text = await clipboard.text.get();
+   *
+   * // Copy and paste an image
+   * const img = display.screenshot();
+   * await clipboard.image.set(img);
+   *
+   * // Work with file lists
+   * await clipboard.fileList.set(["/path/to/file.txt"]);
+   *
+   * // HTML content with alt text fallback
+   * await clipboard.html.set("<b>bold</b>", "bold");
+   *
+   * // Clear the clipboard
+   * await clipboard.clear();
+   *
+   * // On Linux, use the selection clipboard
+   * await clipboard.text.set("selected", ClipboardMode.Selection);
+   *
+   * // Wait until clipboard content changes
+   * await clipboard.waitForChanged();
+   * ```
+   * @category Clipboard
+   */
+  interface Clipboard {
     /**
      * Sub-object for text clipboard operations.
      */
@@ -2638,10 +2640,10 @@ interface Clipboard {
     readonly html: ClipboardHtml;
     /**
      * Clears the clipboard contents.
-     * 
+     *
      * ```ts
      * await clipboard.clear();
-     * 
+     *
      * // On Linux, clear the selection clipboard
      * await clipboard.clear(ClipboardMode.Selection);
      * ```
@@ -2649,7 +2651,7 @@ interface Clipboard {
     clear(mode?: ClipboardMode): Promise<void>;
     /**
      * Waits until clipboard content changes.
-     * 
+     *
      * ```ts
      * const controller = new AbortController();
      * const task = clipboard.waitForChanged({ signal: controller.signal });
@@ -2658,21 +2660,21 @@ interface Clipboard {
      * ```
      */
     waitForChanged(options?: WaitForChangedOptions): Task<void>;
-}
-/**
- * @category Clipboard
- */
-const clipboard: Clipboard;
-/**
- * Provides text clipboard operations.
- * 
- * ```ts
- * await clipboard.text.set("Hello!");
- * const text = await clipboard.text.get();
- * ```
- * @category Clipboard
- */
-interface ClipboardText {
+  }
+  /**
+   * @category Clipboard
+   */
+  const clipboard: Clipboard;
+  /**
+   * Provides text clipboard operations.
+   *
+   * ```ts
+   * await clipboard.text.set("Hello!");
+   * const text = await clipboard.text.get();
+   * ```
+   * @category Clipboard
+   */
+  interface ClipboardText {
     /**
      * Sets the clipboard text content.
      */
@@ -2681,18 +2683,18 @@ interface ClipboardText {
      * Gets the clipboard text content.
      */
     get(mode?: ClipboardMode): Promise<string>;
-}
-/**
- * Provides image clipboard operations.
- * 
- * ```ts
- * const img = display.screenshot();
- * await clipboard.image.set(img);
- * const clipped = await clipboard.image.get();
- * ```
- * @category Clipboard
- */
-interface ClipboardImage {
+  }
+  /**
+   * Provides image clipboard operations.
+   *
+   * ```ts
+   * const img = display.screenshot();
+   * await clipboard.image.set(img);
+   * const clipped = await clipboard.image.get();
+   * ```
+   * @category Clipboard
+   */
+  interface ClipboardImage {
     /**
      * Sets the clipboard image content.
      */
@@ -2701,17 +2703,17 @@ interface ClipboardImage {
      * Gets the clipboard image content.
      */
     get(mode?: ClipboardMode): Promise<Image>;
-}
-/**
- * Provides file list clipboard operations.
- * 
- * ```ts
- * await clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
- * const files = await clipboard.fileList.get();
- * ```
- * @category Clipboard
- */
-interface ClipboardFileList {
+  }
+  /**
+   * Provides file list clipboard operations.
+   *
+   * ```ts
+   * await clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
+   * const files = await clipboard.fileList.get();
+   * ```
+   * @category Clipboard
+   */
+  interface ClipboardFileList {
     /**
      * Sets the clipboard file list content.
      */
@@ -2720,22 +2722,22 @@ interface ClipboardFileList {
      * Gets the clipboard file list content.
      */
     get(mode?: ClipboardMode): Promise<readonly string[]>;
-}
-/**
- * Provides HTML clipboard operations.
- * 
- * ```ts
- * // Set HTML with a plain-text fallback
- * await clipboard.html.set("<b>bold</b>", "bold");
- * 
- * // Set HTML without a fallback
- * await clipboard.html.set("<em>italic</em>");
- * 
- * const html = await clipboard.html.get();
- * ```
- * @category Clipboard
- */
-interface ClipboardHtml {
+  }
+  /**
+   * Provides HTML clipboard operations.
+   *
+   * ```ts
+   * // Set HTML with a plain-text fallback
+   * await clipboard.html.set("<b>bold</b>", "bold");
+   *
+   * // Set HTML without a fallback
+   * await clipboard.html.set("<em>italic</em>");
+   *
+   * const html = await clipboard.html.get();
+   * ```
+   * @category Clipboard
+   */
+  interface ClipboardHtml {
     /**
      * Sets the clipboard HTML content, with an optional plain-text alternative.
      */
@@ -2744,44 +2746,44 @@ interface ClipboardHtml {
      * Gets the clipboard HTML content.
      */
     get(mode?: ClipboardMode): Promise<string>;
-}
-/**
- * An RGBA color with 8-bit channels.
- * 
- * Can be constructed from individual r/g/b/a values, or by using one of the
- * many named color constants (CSS colors).
- * 
- * ```ts
- * // Create from RGB (alpha defaults to 255)
- * const red = new Color(255, 0, 0);
- * 
- * // Create from RGBA
- * const semiTransparent = new Color(255, 0, 0, 128);
- * 
- * // Use a named constant
- * const blue = Color.Blue;
- * 
- * // Read and modify channels
- * const c = new Color(10, 20, 30);
- * c.r = 100;
- * println(c.toString()); // "Color(100, 20, 30, 255)"
- * 
- * // Compare colors
- * Color.Red.equals(new Color(255, 0, 0)); // true
- * 
- * // Clone a color
- * const copy = Color.Red.clone();
- * ```
- * 
- * 
- * 
- * 
- * ```js
- * let c = new Color(128, 255, 255, 255);
- * ```
- * @category Color
- */
-class Color {
+  }
+  /**
+   * An RGBA color with 8-bit channels.
+   *
+   * Can be constructed from individual r/g/b/a values, or by using one of the
+   * many named color constants (CSS colors).
+   *
+   * ```ts
+   * // Create from RGB (alpha defaults to 255)
+   * const red = new Color(255, 0, 0);
+   *
+   * // Create from RGBA
+   * const semiTransparent = new Color(255, 0, 0, 128);
+   *
+   * // Use a named constant
+   * const blue = Color.Blue;
+   *
+   * // Read and modify channels
+   * const c = new Color(10, 20, 30);
+   * c.r = 100;
+   * println(c.toString()); // "Color(100, 20, 30, 255)"
+   *
+   * // Compare colors
+   * Color.Red.equals(new Color(255, 0, 0)); // true
+   *
+   * // Clone a color
+   * const copy = Color.Red.clone();
+   * ```
+   *
+   *
+   *
+   *
+   * ```js
+   * let c = new Color(128, 255, 255, 255);
+   * ```
+   * @category Color
+   */
+  class Color {
     /**
      * #FF0000FF
      */
@@ -3376,7 +3378,7 @@ class Color {
     constructor(c: ColorLike);
     /**
      * Returns `true` if both colors have the same r, g, b, and a values.
-     * 
+     *
      * ```ts
      * Color.Red.equals(new Color(255, 0, 0)); // true
      * ```
@@ -3390,30 +3392,30 @@ class Color {
      * Returns a copy of this color.
      */
     clone(): Color;
-}
-/**
- * The global console singleton for printing output and basic debugging.
- * 
- * ```ts
- * // Print values
- * println("hello", 42, { key: "value" });
- * 
- * // Warnings and errors are styled
- * console.warn("this is a warning");
- * console.error("something went wrong");
- * 
- * // Measure elapsed time
- * console.time("fetch");
- * // ... do work ...
- * console.timeEnd("fetch"); // prints "fetch: 1s 234ms - timer ended"
- * 
- * // Count how many times a label is hit
- * console.count("loop");
- * console.count("loop");
- * ```
- * @category Console
- */
-interface Console {
+  }
+  /**
+   * The global console singleton for printing output and basic debugging.
+   *
+   * ```ts
+   * // Print values
+   * println("hello", 42, { key: "value" });
+   *
+   * // Warnings and errors are styled
+   * console.warn("this is a warning");
+   * console.error("something went wrong");
+   *
+   * // Measure elapsed time
+   * console.time("fetch");
+   * // ... do work ...
+   * console.timeEnd("fetch"); // prints "fetch: 1s 234ms - timer ended"
+   *
+   * // Count how many times a label is hit
+   * console.count("loop");
+   * console.count("loop");
+   * ```
+   * @category Console
+   */
+  interface Console {
     /**
      * Prints values without a trailing newline.
      */
@@ -3448,7 +3450,7 @@ interface Console {
     clear(): void;
     /**
      * Starts a timer with the given label (defaults to `"default"`).
-     * 
+     *
      * ```ts
      * console.time("myTimer");
      * ```
@@ -3456,7 +3458,7 @@ interface Console {
     time(label?: string): void;
     /**
      * Stops a timer and prints the elapsed time.
-     * 
+     *
      * ```ts
      * console.time("myTimer");
      * // ... do work ...
@@ -3466,31 +3468,31 @@ interface Console {
     timeEnd(label?: string): void;
     /**
      * Increments and prints a counter for the given label (defaults to `"default"`).
-     * 
+     *
      * ```ts
      * console.count("loop"); // prints "loop: 1"
      * console.count("loop"); // prints "loop: 2"
      * ```
      */
     count(label?: string): void;
-}
-/**
- * @category Console
- */
-const console: Console;
-/**
- * An entry returned by `Directory.listEntries()`, representing a file, directory,
- * or symlink within a directory.
- * 
- * ```ts
- * const entries = await Directory.listEntries("/home/user");
- * for (const entry of entries) {
- * println(entry.fileName, entry.isFile, entry.size);
- * }
- * ```
- * @category Directory
- */
-interface DirectoryEntry {
+  }
+  /**
+   * @category Console
+   */
+  const console: Console;
+  /**
+   * An entry returned by `Directory.listEntries()`, representing a file, directory,
+   * or symlink within a directory.
+   *
+   * ```ts
+   * const entries = await Directory.listEntries("/home/user");
+   * for (const entry of entries) {
+   * println(entry.fileName, entry.isFile, entry.size);
+   * }
+   * ```
+   * @category Directory
+   */
+  interface DirectoryEntry {
     /**
      * The full path to the entry.
      */
@@ -3515,36 +3517,36 @@ interface DirectoryEntry {
      * The size of the entry in bytes.
      */
     readonly size: number;
-}
-/**
- * Options for `Directory.create()` and `Directory.remove()`.
- * 
- * ```ts
- * await Directory.create("/tmp/a/b/c", { recursive: true });
- * await Directory.remove("/tmp/a", { recursive: false });
- * ```
- * @category Directory
- */
-interface DirectoryOptions {
+  }
+  /**
+   * Options for `Directory.create()` and `Directory.remove()`.
+   *
+   * ```ts
+   * await Directory.create("/tmp/a/b/c", { recursive: true });
+   * await Directory.remove("/tmp/a", { recursive: false });
+   * ```
+   * @category Directory
+   */
+  interface DirectoryOptions {
     /**
      * Should the directories be created or removed recursively?
      * @defaultValue `true`
      */
     recursive?: boolean;
-}
-/**
- * Options for `Directory.listEntries()`.
- * 
- * ```ts
- * const entries = await Directory.listEntries("/tmp", {
- * sort: false,
- * absolutePath: false,
- * fetchSize: true,
- * });
- * ```
- * @category Directory
- */
-interface DirectoryListOptions {
+  }
+  /**
+   * Options for `Directory.listEntries()`.
+   *
+   * ```ts
+   * const entries = await Directory.listEntries("/tmp", {
+   * sort: false,
+   * absolutePath: false,
+   * fetchSize: true,
+   * });
+   * ```
+   * @category Directory
+   */
+  interface DirectoryListOptions {
     /**
      * Should the entries be sorted?
      * @defaultValue `true`
@@ -3560,34 +3562,34 @@ interface DirectoryListOptions {
      * @defaultValue `true`
      */
     fetchSize?: boolean;
-}
-/**
- * Provides static methods for creating, removing, and listing directories.
- * 
- * ```ts
- * // Create a directory (recursively by default)
- * await Directory.create("/tmp/my/nested/dir");
- * 
- * // List entries in a directory
- * const entries = await Directory.listEntries("/tmp/my/nested/dir");
- * for (const entry of entries) {
- * println(entry.fileName, entry.isFile ? "file" : "dir");
- * }
- * 
- * // Remove a directory tree
- * await Directory.remove("/tmp/my");
- * ```
- * @category Directory
- */
-class Directory {
+  }
+  /**
+   * Provides static methods for creating, removing, and listing directories.
+   *
+   * ```ts
+   * // Create a directory (recursively by default)
+   * await Directory.create("/tmp/my/nested/dir");
+   *
+   * // List entries in a directory
+   * const entries = await Directory.listEntries("/tmp/my/nested/dir");
+   * for (const entry of entries) {
+   * println(entry.fileName, entry.isFile ? "file" : "dir");
+   * }
+   *
+   * // Remove a directory tree
+   * await Directory.remove("/tmp/my");
+   * ```
+   * @category Directory
+   */
+  class Directory {
     private constructor();
     /**
      * Creates a directory at the given path. By default, creates parent directories
      * recursively.
-     * 
+     *
      * ```ts
      * await Directory.create("/tmp/a/b/c");
-     * 
+     *
      * // Non-recursive: fails if parent doesn't exist
      * await Directory.create("/tmp/a/b/c", { recursive: false });
      * ```
@@ -3595,10 +3597,10 @@ class Directory {
     static create(path: string, options?: DirectoryOptions): Promise<void>;
     /**
      * Removes a directory. By default, removes all contents recursively.
-     * 
+     *
      * ```ts
      * await Directory.remove("/tmp/my/dir");
-     * 
+     *
      * // Non-recursive: fails if the directory is not empty
      * await Directory.remove("/tmp/my/dir", { recursive: false });
      * ```
@@ -3606,40 +3608,43 @@ class Directory {
     static remove(path: string, options?: DirectoryOptions): Promise<void>;
     /**
      * Lists all entries in a directory, returning an array of `DirectoryEntry`.
-     * 
+     *
      * ```ts
      * // List with defaults (sorted, absolute paths, sizes fetched)
      * const entries = await Directory.listEntries("/home/user/docs");
-     * 
+     *
      * // Skip size fetching for faster listing
      * const entries = await Directory.listEntries("/home/user/docs", {
      * fetchSize: false,
      * });
      * ```
      */
-    static listEntries(path: string, options?: DirectoryListOptions): Promise<readonly DirectoryEntry[]>;
-}
-/**
- * The global displays singleton for querying connected monitors and screens.
- * 
- * ```ts
- * // Get a random point across all displays
- * const point = await displays.randomPoint();
- * 
- * // Find which display contains a point
- * const info = await displays.fromPoint(100, 200);
- * if (info) println(info.name, info.rect);
- * 
- * // Find a display by friendly name
- * const monitor = await displays.fromName("HDMI-1");
- * 
- * // Get the largest or smallest display
- * const largest = await displays.largest();
- * const smallest = await displays.smallest();
- * ```
- * @category Displays
- */
-interface Displays {
+    static listEntries(
+      path: string,
+      options?: DirectoryListOptions,
+    ): Promise<readonly DirectoryEntry[]>;
+  }
+  /**
+   * The global displays singleton for querying connected monitors and screens.
+   *
+   * ```ts
+   * // Get a random point across all displays
+   * const point = await displays.randomPoint();
+   *
+   * // Find which display contains a point
+   * const info = await displays.fromPoint(100, 200);
+   * if (info) println(info.name, info.rect);
+   *
+   * // Find a display by friendly name
+   * const monitor = await displays.fromName("HDMI-1");
+   *
+   * // Get the largest or smallest display
+   * const largest = await displays.largest();
+   * const smallest = await displays.smallest();
+   * ```
+   * @category Displays
+   */
+  interface Displays {
     /**
      * Returns a random point within the bounds of all connected displays.
      */
@@ -3672,25 +3677,25 @@ interface Displays {
      * Returns the largest display by area, or `undefined` if no displays are connected.
      */
     largest(): Promise<Readonly<DisplayInfo | undefined>>;
-}
-/**
- * @category Displays
- */
-const displays: Displays;
-/**
- * Information about a connected display, including its name, geometry,
- * rotation, scale factor, and refresh rate.
- * 
- * ```ts
- * const info = await displays.fromName("HDMI-1");
- * if (info) {
- * println(info.friendlyName, info.rect, formatFrequency(info.frequency));
- * println("Primary:", info.isPrimary);
- * }
- * ```
- * @category Displays
- */
-interface DisplayInfo {
+  }
+  /**
+   * @category Displays
+   */
+  const displays: Displays;
+  /**
+   * Information about a connected display, including its name, geometry,
+   * rotation, scale factor, and refresh rate.
+   *
+   * ```ts
+   * const info = await displays.fromName("HDMI-1");
+   * if (info) {
+   * println(info.friendlyName, info.rect, formatFrequency(info.frequency));
+   * println("Primary:", info.isPrimary);
+   * }
+   * ```
+   * @category Displays
+   */
+  interface DisplayInfo {
     /**
      * Unique numeric identifier for this display.
      */
@@ -3731,29 +3736,29 @@ interface DisplayInfo {
      * Whether this is the primary (main) display.
      */
     readonly isPrimary: boolean;
-}
-/**
- * Options for `File.open()`.
- * 
- * ```ts
- * // Read-only (default)
- * const file = await File.open("data.txt");
- * 
- * // Create a new file for writing
- * const file = await File.open("out.txt", {
- * write: true,
- * createNew: true,
- * });
- * 
- * // Append to an existing file
- * const file = await File.open("log.txt", {
- * write: true,
- * append: true,
- * });
- * ```
- * @category File
- */
-interface OpenOptions {
+  }
+  /**
+   * Options for `File.open()`.
+   *
+   * ```ts
+   * // Read-only (default)
+   * const file = await File.open("data.txt");
+   *
+   * // Create a new file for writing
+   * const file = await File.open("out.txt", {
+   * write: true,
+   * createNew: true,
+   * });
+   *
+   * // Append to an existing file
+   * const file = await File.open("log.txt", {
+   * write: true,
+   * append: true,
+   * });
+   * ```
+   * @category File
+   */
+  interface OpenOptions {
     /**
      * Should the file be opened with read access?
      * @defaultValue `true`
@@ -3789,34 +3794,34 @@ interface OpenOptions {
      * @defaultValue `false`
      */
     createNew?: boolean;
-}
-/**
- * A file handle for reading and writing. Also provides static utility methods
- * for common file operations without needing to open a handle.
- * 
- * ```ts
- * // Read a file in one shot (static)
- * const text = await File.readText("config.json");
- * 
- * // Write a file in one shot (static)
- * await File.writeText("output.txt", "Hello!");
- * 
- * // Open, read/write, then close
- * const file = await File.open("data.bin", { read: true, write: true, create: true });
- * await file.writeBytes(new Uint8Array([1, 2, 3]));
- * await file.rewind();
- * const bytes = await file.readBytes();
- * await file.close();
- * 
- * // File utilities
- * await File.copy("src.txt", "dst.txt");
- * await File.rename("old.txt", "new.txt");
- * const exists = await File.exists("file.txt");
- * await File.remove("file.txt");
- * ```
- * @category File
- */
-class File {
+  }
+  /**
+   * A file handle for reading and writing. Also provides static utility methods
+   * for common file operations without needing to open a handle.
+   *
+   * ```ts
+   * // Read a file in one shot (static)
+   * const text = await File.readText("config.json");
+   *
+   * // Write a file in one shot (static)
+   * await File.writeText("output.txt", "Hello!");
+   *
+   * // Open, read/write, then close
+   * const file = await File.open("data.bin", { read: true, write: true, create: true });
+   * await file.writeBytes(new Uint8Array([1, 2, 3]));
+   * await file.rewind();
+   * const bytes = await file.readBytes();
+   * await file.close();
+   *
+   * // File utilities
+   * await File.copy("src.txt", "dst.txt");
+   * await File.rename("old.txt", "new.txt");
+   * const exists = await File.exists("file.txt");
+   * await File.remove("file.txt");
+   * ```
+   * @category File
+   */
+  class File {
     /**
      * The file path
      */
@@ -3824,20 +3829,20 @@ class File {
     private constructor();
     /**
      * Opens a file.
-     * 
+     *
      * Example
      * ```js
      * // Open a file for reading
      * let file = await File.open("my_file.txt", {
      * read: true,
      * });
-     * 
+     *
      * // Create a new file for writing.
      * let file = await File.open("my_file.txt", {
      * write: true,
      * createNew: true,
      * });
-     * 
+     *
      * // Append to an existing file.
      * let file = await File.open("my_file.txt", {
      * write: true,
@@ -3870,7 +3875,7 @@ class File {
     writeText(text: string): Promise<void>;
     /**
      * Writes text to a file at the given path (static).
-     * 
+     *
      * ```ts
      * await File.writeText("hello.txt", "Hello, world!");
      * ```
@@ -3891,7 +3896,7 @@ class File {
     readText(): Promise<string>;
     /**
      * Reads the entire file as a UTF-8 string (static).
-     * 
+     *
      * ```ts
      * const text = await File.readText("config.json");
      * ```
@@ -3967,7 +3972,7 @@ class File {
     rewind(): Promise<void>;
     /**
      * Returns `true` if a file exists at the given path.
-     * 
+     *
      * ```ts
      * if (await File.exists("config.json")) {
      * const text = await File.readText("config.json");
@@ -3977,7 +3982,7 @@ class File {
     static exists(path: string): Promise<boolean>;
     /**
      * Removes a file from the filesystem.
-     * 
+     *
      * Note that there is no guarantee that the file is immediately deleted (e.g. depending on platform, other open file descriptors may prevent immediate removal).
      */
     static remove(path: string): Promise<void>;
@@ -4005,24 +4010,24 @@ class File {
      * Returns a string representation of the file handle.
      */
     toString(): string;
-}
-/**
- * Provides static methods for querying filesystem path types.
- * 
- * ```ts
- * if (await Filesystem.exists("/tmp/myfile.txt")) {
- * println("exists!");
- * }
- * 
- * if (await Filesystem.isFile("/tmp/myfile.txt")) {
- * println("it's a file");
- * } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
- * println("it's a directory");
- * }
- * ```
- * @category Filesystem
- */
-class Filesystem {
+  }
+  /**
+   * Provides static methods for querying filesystem path types.
+   *
+   * ```ts
+   * if (await Filesystem.exists("/tmp/myfile.txt")) {
+   * println("exists!");
+   * }
+   *
+   * if (await Filesystem.isFile("/tmp/myfile.txt")) {
+   * println("it's a file");
+   * } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
+   * println("it's a directory");
+   * }
+   * ```
+   * @category Filesystem
+   */
+  class Filesystem {
     private constructor();
     /**
      * Returns `true` if a path exists on the filesystem.
@@ -4040,62 +4045,70 @@ class Filesystem {
      * Returns `true` if the path points to a symbolic link.
      */
     static isSymlink(path: string): Promise<boolean>;
-}
-/**
- * The global hotstrings singleton for registering text-replacement triggers.
- * 
- * When the user types a registered source string, it is automatically replaced
- * with the specified replacement (text, callback, or image).
- * 
- * ```ts
- * // Simple text replacement
- * hotstrings.add("btw", "by the way");
- * 
- * // Dynamic replacement via callback
- * hotstrings.add("time", () => new Date().toLocaleTimeString());
- * 
- * // Async callback
- * hotstrings.add("rand", async () => "" + random.integer(0, 99999));
- * 
- * // Remove a hotstring
- * hotstrings.remove("btw");
- * ```
- * @category Hotstrings
- */
-interface Hotstrings {
+  }
+  /**
+   * The global hotstrings singleton for registering text-replacement triggers.
+   *
+   * When the user types a registered source string, it is automatically replaced
+   * with the specified replacement (text, callback, or image).
+   *
+   * ```ts
+   * // Simple text replacement
+   * hotstrings.add("btw", "by the way");
+   *
+   * // Dynamic replacement via callback
+   * hotstrings.add("time", () => new Date().toLocaleTimeString());
+   *
+   * // Async callback
+   * hotstrings.add("rand", async () => "" + random.integer(0, 99999));
+   *
+   * // Remove a hotstring
+   * hotstrings.remove("btw");
+   * ```
+   * @category Hotstrings
+   */
+  interface Hotstrings {
     /**
      * Registers a hotstring. When the user types `source`, it is replaced with `replacement`.
-     * 
+     *
      * The replacement can be a string, an `Image`, or a callback returning either.
-     * 
+     *
      * ```ts
      * // With options: don't erase the typed key
      * hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
      * ```
      */
-    add(source: string, replacement: string | (() => string | Promise<string>) | Image | (() => Image | Promise<Image>), options?: HotstringOptions): void;
+    add(
+      source: string,
+      replacement:
+        | string
+        | (() => string | Promise<string>)
+        | Image
+        | (() => Image | Promise<Image>),
+      options?: HotstringOptions,
+    ): void;
     /**
      * Removes a previously registered hotstring.
      */
     remove(source: string): void;
-}
-/**
- * @category Hotstrings
- */
-const hotstrings: Hotstrings;
-/**
- * Options for resizing an image.
- * 
- * ```ts
- * // Resize while preserving aspect ratio
- * image.resize(200, 150, { keepAspectRatio: true });
- * 
- * // Resize with a specific filter
- * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
- * ```
- * @category Image
- */
-interface ResizeOptions {
+  }
+  /**
+   * @category Hotstrings
+   */
+  const hotstrings: Hotstrings;
+  /**
+   * Options for resizing an image.
+   *
+   * ```ts
+   * // Resize while preserving aspect ratio
+   * image.resize(200, 150, { keepAspectRatio: true });
+   *
+   * // Resize with a specific filter
+   * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
+   * ```
+   * @category Image
+   */
+  interface ResizeOptions {
     /**
      * Should the aspect ratio be kept?
      * @defaultValue `false`
@@ -4106,20 +4119,20 @@ interface ResizeOptions {
      * @defaultValue `ResizeFilter.Cubic`
      */
     filter?: ResizeFilter;
-}
-/**
- * Options for blurring an image.
- * 
- * ```ts
- * // Fast blur
- * image.blur({ fast: true });
- * 
- * // Gaussian blur with custom sigma
- * image.blur({ sigma: 5.0 });
- * ```
- * @category Image
- */
-interface BlurOptions {
+  }
+  /**
+   * Options for blurring an image.
+   *
+   * ```ts
+   * // Fast blur
+   * image.blur({ fast: true });
+   *
+   * // Gaussian blur with custom sigma
+   * image.blur({ sigma: 5.0 });
+   * ```
+   * @category Image
+   */
+  interface BlurOptions {
     /**
      * Perform a fast, lower quality blur
      * @defaultValue `false`
@@ -4130,42 +4143,42 @@ interface BlurOptions {
      * @defaultValue `2`
      */
     sigma?: number;
-}
-/**
- * Options for drawing an image onto another image.
- * 
- * ```ts
- * // Draw only a portion of the source image
- * canvas.drawImage(0, 0, sprite, {
- * sourceRect: new Rect(0, 0, 32, 32)
- * });
- * ```
- * @category Image
- */
-interface DrawImageOptions {
+  }
+  /**
+   * Options for drawing an image onto another image.
+   *
+   * ```ts
+   * // Draw only a portion of the source image
+   * canvas.drawImage(0, 0, sprite, {
+   * sourceRect: new Rect(0, 0, 32, 32)
+   * });
+   * ```
+   * @category Image
+   */
+  interface DrawImageOptions {
     /**
      * Source rectangle.
      * `undefined` means the whole image.
      * @defaultValue `undefined`
      */
     sourceRect?: Rect;
-}
-/**
- * Options for rotating an image.
- * 
- * ```ts
- * // Rotate around a custom center point
- * image.rotate(45, { center: new Point(10, 10) });
- * 
- * // You can also use a plain object for the center
- * image.rotate(45, { center: {x: 10, y: 10} });
- * 
- * // Rotate with a background color for exposed areas
- * image.rotate(30, { defaultColor: Color.White });
- * ```
- * @category Image
- */
-interface RotationOptions {
+  }
+  /**
+   * Options for rotating an image.
+   *
+   * ```ts
+   * // Rotate around a custom center point
+   * image.rotate(45, { center: new Point(10, 10) });
+   *
+   * // You can also use a plain object for the center
+   * image.rotate(45, { center: {x: 10, y: 10} });
+   *
+   * // Rotate with a background color for exposed areas
+   * image.rotate(30, { defaultColor: Color.White });
+   * ```
+   * @category Image
+   */
+  interface RotationOptions {
     /**
      * Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
      * @defaultValue `Interpolation.Bilinear`
@@ -4181,37 +4194,37 @@ interface RotationOptions {
      * @defaultValue `Color.Black`
      */
     defaultColor?: Color;
-}
-/**
- * Options for drawing shapes on an image.
- * 
- * ```ts
- * // Draw a hollow circle (outline only)
- * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
- * ```
- * @category Image
- */
-interface DrawingOptions {
+  }
+  /**
+   * Options for drawing shapes on an image.
+   *
+   * ```ts
+   * // Draw a hollow circle (outline only)
+   * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
+   * ```
+   * @category Image
+   */
+  interface DrawingOptions {
     /**
      * Draw a hollow shape instead of a filled one
      * @defaultValue `false`
      */
     hollow?: boolean;
-}
-/**
- * Options for drawing text on an image.
- * 
- * ```ts
- * // Draw large, centered text
- * image.drawText(100, 50, "Hello", fontPath, Color.White, {
- * fontSize: 32,
- * horizontalAlign: TextHorizontalAlign.Center,
- * verticalAlign: TextVerticalAlign.Middle
- * });
- * ```
- * @category Image
- */
-interface DrawTextOptions {
+  }
+  /**
+   * Options for drawing text on an image.
+   *
+   * ```ts
+   * // Draw large, centered text
+   * image.drawText(100, 50, "Hello", fontPath, Color.White, {
+   * fontSize: 32,
+   * horizontalAlign: TextHorizontalAlign.Center,
+   * verticalAlign: TextVerticalAlign.Middle
+   * });
+   * ```
+   * @category Image
+   */
+  interface DrawTextOptions {
     /**
      * Font size in pixels.
      * @defaultValue `16`
@@ -4232,21 +4245,21 @@ interface DrawTextOptions {
      * @defaultValue `TextVerticalAlign.Top`
      */
     verticalAlign?: TextVerticalAlign;
-}
-/**
- * Options for finding an image within another image.
- * 
- * ```ts
- * // Find with stricter matching
- * const match = await source.findImage(template, { matchThreshold: 0.95 });
- * 
- * // Find with abort support
- * const controller = new AbortController();
- * const match = await source.findImage(template, { signal: controller.signal });
- * ```
- * @category Image
- */
-interface FindImageOptions {
+  }
+  /**
+   * Options for finding an image within another image.
+   *
+   * ```ts
+   * // Find with stricter matching
+   * const match = await source.findImage(template, { matchThreshold: 0.95 });
+   *
+   * // Find with abort support
+   * const controller = new AbortController();
+   * const match = await source.findImage(template, { signal: controller.signal });
+   * ```
+   * @category Image
+   */
+  interface FindImageOptions {
     /**
      * Use color matching.
      * @defaultValue `true`
@@ -4278,22 +4291,22 @@ interface FindImageOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * A match returned by a findImage or findImageAll call.
- * 
- * ```ts
- * const source = await Image.load("screenshot.png");
- * const template = await Image.load("button.png");
- * const match = await source.findImage(template);
- * if (match) {
- * println(`Found at ${match.position} with score ${match.score}`);
- * println(`Bounding rect: ${match.rect}`);
- * }
- * ```
- * @category Image
- */
-interface Match {
+  }
+  /**
+   * A match returned by a findImage or findImageAll call.
+   *
+   * ```ts
+   * const source = await Image.load("screenshot.png");
+   * const template = await Image.load("button.png");
+   * const match = await source.findImage(template);
+   * if (match) {
+   * println(`Found at ${match.position} with score ${match.score}`);
+   * println(`Bounding rect: ${match.rect}`);
+   * }
+   * ```
+   * @category Image
+   */
+  interface Match {
     /**
      * the position on the source image where the target image was found
      */
@@ -4318,23 +4331,23 @@ interface Match {
      * Clones this Match.
      */
     clone(): Match;
-}
-/**
- * Progress of a find image operation.
- * 
- * Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
- * 
- * ```ts
- * const task = source.findImage(template);
- * for await (const progress of task) {
- * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
- * if (progress.finished) break;
- * }
- * const result = await task;
- * ```
- * @category Image
- */
-interface FindImageProgress {
+  }
+  /**
+   * Progress of a find image operation.
+   *
+   * Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
+   *
+   * ```ts
+   * const task = source.findImage(template);
+   * for await (const progress of task) {
+   * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+   * if (progress.finished) break;
+   * }
+   * const result = await task;
+   * ```
+   * @category Image
+   */
+  interface FindImageProgress {
     /**
      * The current stage of the find image operation.
      */
@@ -4347,46 +4360,46 @@ interface FindImageProgress {
      * Whether the operation has finished.
      */
     readonly finished: boolean;
-}
-/**
- * An image that can be loaded, created, manipulated, and saved.
- * 
- * Provides methods for image processing (blur, rotate, resize, color adjustments),
- * drawing primitives (lines, circles, rectangles, text), and template matching (findImage).
- * 
- * Most mutating methods return `this` for chaining. Each also has an immutable variant
- * that returns a new `Image` (e.g., `blur()` vs `blurred()`).
- * 
- * ```ts
- * // Create, manipulate, and save
- * let image = new Image(200, 100);
- * image.fill(Color.White)
- * .drawCircle(100, 50, 30, Color.Red)
- * .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
- * await image.save("output.png");
- * ```
- * 
- * ```ts
- * // Load, transform, and save
- * let photo = await Image.load("photo.png");
- * photo.resize(800, 600, { keepAspectRatio: true })
- * .adjustBrightness(10)
- * .adjustContrast(5);
- * await photo.save("photo_edited.png");
- * ```
- * 
- * ```ts
- * // Find an image within another
- * const screen = await Image.load("screenshot.png");
- * const button = await Image.load("button.png");
- * const match = await screen.findImage(button, { matchThreshold: 0.9 });
- * if (match) {
- * println(`Button found at ${match.position}`);
- * }
- * ```
- * @category Image
- */
-class Image {
+  }
+  /**
+   * An image that can be loaded, created, manipulated, and saved.
+   *
+   * Provides methods for image processing (blur, rotate, resize, color adjustments),
+   * drawing primitives (lines, circles, rectangles, text), and template matching (findImage).
+   *
+   * Most mutating methods return `this` for chaining. Each also has an immutable variant
+   * that returns a new `Image` (e.g., `blur()` vs `blurred()`).
+   *
+   * ```ts
+   * // Create, manipulate, and save
+   * let image = new Image(200, 100);
+   * image.fill(Color.White)
+   * .drawCircle(100, 50, 30, Color.Red)
+   * .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
+   * await image.save("output.png");
+   * ```
+   *
+   * ```ts
+   * // Load, transform, and save
+   * let photo = await Image.load("photo.png");
+   * photo.resize(800, 600, { keepAspectRatio: true })
+   * .adjustBrightness(10)
+   * .adjustContrast(5);
+   * await photo.save("photo_edited.png");
+   * ```
+   *
+   * ```ts
+   * // Find an image within another
+   * const screen = await Image.load("screenshot.png");
+   * const button = await Image.load("button.png");
+   * const match = await screen.findImage(button, { matchThreshold: 0.9 });
+   * if (match) {
+   * println(`Button found at ${match.position}`);
+   * }
+   * ```
+   * @category Image
+   */
+  class Image {
     readonly width: number;
     readonly height: number;
     /**
@@ -4395,7 +4408,7 @@ class Image {
     readonly rect: Readonly<Rect>;
     /**
      * Creates a new empty image.
-     * 
+     *
      * Example
      * ```js
      * let image = new Image(100, 100);
@@ -4404,7 +4417,7 @@ class Image {
     constructor(width: number, height: number);
     /**
      * Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
-     * 
+     *
      * ```ts
      * const bytes = await file.readAll();
      * const image = Image.fromBytes(bytes);
@@ -4550,7 +4563,13 @@ class Image {
     /**
      * Sets the color of a pixel.
      */
-    setPixel(position: PointLike, r: number, g: number, b: number, a?: number): this;
+    setPixel(
+      position: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Sets the color of a pixel.
      */
@@ -4558,7 +4577,14 @@ class Image {
     /**
      * Sets the color of a pixel.
      */
-    setPixel(x: number, y: number, r: number, g: number, b: number, a?: number): this;
+    setPixel(
+      x: number,
+      y: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Creates a new image from a part of this image.
      */
@@ -4574,7 +4600,13 @@ class Image {
     /**
      * Draw a cross on this image.
      */
-    drawCross(position: PointLike, r: number, g: number, b: number, a?: number): this;
+    drawCross(
+      position: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Draw a cross on this image.
      */
@@ -4582,7 +4614,14 @@ class Image {
     /**
      * Draw a cross on this image.
      */
-    drawCross(x: number, y: number, r: number, g: number, b: number, a?: number): this;
+    drawCross(
+      x: number,
+      y: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Draw a cross on a copy of this image.
      */
@@ -4590,7 +4629,13 @@ class Image {
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(position: PointLike, r: number, g: number, b: number, a?: number): Image;
+    withCross(
+      position: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): Image;
     /**
      * Draw a cross on a copy of this image.
      */
@@ -4598,7 +4643,14 @@ class Image {
     /**
      * Draw a cross on a copy of this image.
      */
-    withCross(x: number, y: number, r: number, g: number, b: number, a?: number): Image;
+    withCross(
+      x: number,
+      y: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): Image;
     /**
      * Draw a line on this image.
      */
@@ -4606,7 +4658,14 @@ class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): this;
+    drawLine(
+      start: PointLike,
+      end: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Draw a line on this image.
      */
@@ -4614,7 +4673,15 @@ class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): this;
+    drawLine(
+      start: PointLike,
+      x: number,
+      y: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Draw a line on this image.
      */
@@ -4622,15 +4689,38 @@ class Image {
     /**
      * Draw a line on this image.
      */
-    drawLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): this;
+    drawLine(
+      x: number,
+      y: number,
+      end: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): this;
+    drawLine(
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      color: ColorLike,
+    ): this;
     /**
      * Draw a line on this image.
      */
-    drawLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): this;
+    drawLine(
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): this;
     /**
      * Draw a line on a copy of this image.
      */
@@ -4638,7 +4728,14 @@ class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): Image;
+    withLine(
+      start: PointLike,
+      end: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): Image;
     /**
      * Draw a line on a copy of this image.
      */
@@ -4646,7 +4743,15 @@ class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): Image;
+    withLine(
+      start: PointLike,
+      x: number,
+      y: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): Image;
     /**
      * Draw a line on a copy of this image.
      */
@@ -4654,172 +4759,453 @@ class Image {
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): Image;
+    withLine(
+      x: number,
+      y: number,
+      end: PointLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): Image;
+    withLine(
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      color: ColorLike,
+    ): Image;
     /**
      * Draw a line on a copy of this image.
      */
-    withLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): Image;
+    withLine(
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+    ): Image;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): this;
+    drawCircle(
+      center: PointLike,
+      radius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    drawCircle(
+      center: PointLike,
+      radius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): this;
+    drawCircle(
+      x: number,
+      y: number,
+      radius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a circle on this image.
      */
-    drawCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    drawCircle(
+      x: number,
+      y: number,
+      radius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): Image;
+    withCircle(
+      center: PointLike,
+      radius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    withCircle(
+      center: PointLike,
+      radius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): Image;
+    withCircle(
+      x: number,
+      y: number,
+      radius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a circle on a copy of this image.
      */
-    withCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    withCircle(
+      x: number,
+      y: number,
+      radius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
+    drawEllipse(
+      center: PointLike,
+      widthRadius: number,
+      heightRadius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    drawEllipse(
+      center: PointLike,
+      widthRadius: number,
+      heightRadius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
+    drawEllipse(
+      x: number,
+      y: number,
+      widthRadius: number,
+      heightRadius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw an ellipse on this image.
      */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    drawEllipse(
+      x: number,
+      y: number,
+      widthRadius: number,
+      heightRadius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
+    withEllipse(
+      center: PointLike,
+      widthRadius: number,
+      heightRadius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    withEllipse(
+      center: PointLike,
+      widthRadius: number,
+      heightRadius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
+    withEllipse(
+      x: number,
+      y: number,
+      widthRadius: number,
+      heightRadius: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw an ellipse on a copy of this image.
      */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    withEllipse(
+      x: number,
+      y: number,
+      widthRadius: number,
+      heightRadius: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): this;
+    drawRectangle(
+      rect: RectLike,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    drawRectangle(
+      rect: RectLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): this;
+    drawRectangle(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a rectangle on this image.
      */
-    drawRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
+    drawRectangle(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): this;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): Image;
+    withRectangle(
+      rect: RectLike,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    withRectangle(
+      rect: RectLike,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): Image;
+    withRectangle(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      color: ColorLike,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw a rectangle on a copy of this image.
      */
-    withRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
+    withRectangle(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawingOptions,
+    ): Image;
     /**
      * Draw text on this image using the provided font.
      */
-    drawText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
+    drawText(
+      position: PointLike,
+      text: string,
+      fontPath: string,
+      color: ColorLike,
+      options?: DrawTextOptions,
+    ): this;
     /**
      * Draw text on this image using the provided font.
      */
-    drawText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
+    drawText(
+      position: PointLike,
+      text: string,
+      fontPath: string,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawTextOptions,
+    ): this;
     /**
      * Draw text on this image using the provided font.
      */
-    drawText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
+    drawText(
+      x: number,
+      y: number,
+      text: string,
+      fontPath: string,
+      color: ColorLike,
+      options?: DrawTextOptions,
+    ): this;
     /**
      * Draw text on this image using the provided font.
      */
-    drawText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
+    drawText(
+      x: number,
+      y: number,
+      text: string,
+      fontPath: string,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawTextOptions,
+    ): this;
     /**
      * Draw text on a copy of this image.
      */
-    withText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
+    withText(
+      position: PointLike,
+      text: string,
+      fontPath: string,
+      color: ColorLike,
+      options?: DrawTextOptions,
+    ): Image;
     /**
      * Draw text on a copy of this image.
      */
-    withText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
+    withText(
+      position: PointLike,
+      text: string,
+      fontPath: string,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawTextOptions,
+    ): Image;
     /**
      * Draw text on a copy of this image.
      */
-    withText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
+    withText(
+      x: number,
+      y: number,
+      text: string,
+      fontPath: string,
+      color: ColorLike,
+      options?: DrawTextOptions,
+    ): Image;
     /**
      * Draw text on a copy of this image.
      */
-    withText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
+    withText(
+      x: number,
+      y: number,
+      text: string,
+      fontPath: string,
+      r: number,
+      g: number,
+      b: number,
+      a?: number,
+      options?: DrawTextOptions,
+    ): Image;
     /**
      * Draw another image on this image.
      */
-    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
+    drawImage(
+      position: PointLike,
+      image: Image,
+      options?: DrawImageOptions,
+    ): this;
     /**
      * Draw another image on this image.
      */
-    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
+    drawImage(
+      x: number,
+      y: number,
+      image: Image,
+      options?: DrawImageOptions,
+    ): this;
     /**
      * Draw another image on a copy of this image.
      */
-    withImage(position: PointLike, image: Image, options?: DrawImageOptions): Image;
+    withImage(
+      position: PointLike,
+      image: Image,
+      options?: DrawImageOptions,
+    ): Image;
     /**
      * Draw another image on a copy of this image.
      */
-    withImage(x: number, y: number, image: Image, options?: DrawImageOptions): Image;
+    withImage(
+      x: number,
+      y: number,
+      image: Image,
+      options?: DrawImageOptions,
+    ): Image;
     /**
      * Finds the best match of an image inside this image.
-     * 
+     *
      * Returns a `ProgressTask` that can be awaited for the result and iterated
      * for progress updates. Returns `undefined` if no match is found.
-     * 
+     *
      * ```ts
      * const match = await source.findImage(template);
      * if (match) {
      * println(`Found at ${match.position} with score ${match.score}`);
      * }
      * ```
-     * 
+     *
      * ```ts
      * // Track progress while searching
      * const task = source.findImage(template);
@@ -4829,19 +5215,22 @@ class Image {
      * const match = await task;
      * ```
      */
-    findImage(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    findImage(
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match | undefined, FindImageProgress>;
     /**
      * Finds all occurrences of an image inside this image.
-     * 
+     *
      * Returns a `ProgressTask` that can be awaited for an array of matches.
-     * 
+     *
      * ```ts
      * const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
      * for (const match of matches) {
      * println(`Found at ${match.position}`);
      * }
      * ```
-     * 
+     *
      * ```ts
      * // Track progress while searching
      * const task = source.findImageAll(template);
@@ -4851,65 +5240,67 @@ class Image {
      * const matches = await task;
      * ```
      */
-    findImageAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
-}
-/**
- * A signal that can be used to abort asynchronous operations.
- * 
- * Obtained from an `AbortController` via the `signal` property. Pass it
- * to cancellable operations (e.g., `findImage`) in their options.
- * 
- * ```ts
- * const controller = new AbortController();
- * const task = source.findImage(template, { signal: controller.signal });
- * // Cancel from elsewhere:
- * controller.abort();
- * ```
- * @category Core
- */
-interface AbortSignal {
-}
-/**
- * Controls cancellation of asynchronous operations.
- * 
- * Create an `AbortController`, pass its `signal` to a cancellable operation,
- * and call `abort()` to cancel it.
- * 
- * ```ts
- * const controller = new AbortController();
- * 
- * // Start a long-running operation
- * const task = source.findImage(template, { signal: controller.signal });
- * 
- * // Cancel after 5 seconds
- * await sleep("5s");
- * controller.abort();
- * ```
- * @category Core
- */
-class AbortController {
+    findImageAll(
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match[], FindImageProgress>;
+  }
+  /**
+   * A signal that can be used to abort asynchronous operations.
+   *
+   * Obtained from an `AbortController` via the `signal` property. Pass it
+   * to cancellable operations (e.g., `findImage`) in their options.
+   *
+   * ```ts
+   * const controller = new AbortController();
+   * const task = source.findImage(template, { signal: controller.signal });
+   * // Cancel from elsewhere:
+   * controller.abort();
+   * ```
+   * @category Core
+   */
+  interface AbortSignal {}
+  /**
+   * Controls cancellation of asynchronous operations.
+   *
+   * Create an `AbortController`, pass its `signal` to a cancellable operation,
+   * and call `abort()` to cancel it.
+   *
+   * ```ts
+   * const controller = new AbortController();
+   *
+   * // Start a long-running operation
+   * const task = source.findImage(template, { signal: controller.signal });
+   *
+   * // Cancel after 5 seconds
+   * await sleep("5s");
+   * controller.abort();
+   * ```
+   * @category Core
+   */
+  class AbortController {
     readonly signal: AbortSignal;
     constructor();
     /**
      * Signals cancellation to all operations using this controller's signal.
      */
     abort(): void;
-}
-/**
- * Utilities for concurrent operations.
- * 
- * ```ts
- * // Race two promises, resolving with whichever finishes first, cancelling the other.
- * // Note that this is different from `Promises.race`, which doesn't cancel any promise.
- * const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
- * ```
- * @category Core
- */
-interface Concurrency {
+  }
+  /**
+   * Utilities for concurrent operations.
+   *
+   * ```ts
+   * // Race two promises, resolving with whichever finishes first, cancelling the other.
+   * // Note that this is different from `Promises.race`, which doesn't cancel any promise.
+   * const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
+   * ```
+   * @category Core
+   */
+  interface Concurrency {
     /**
      * Races multiple promises, returning the result of the first one to settle.
      * Losing tasks will be cancelled automatically.
-     * 
+     *
      * ```ts
      * // Resolve with the first successful result.
      * const result = await Concurrency.race([
@@ -4918,7 +5309,7 @@ interface Concurrency {
      * ]);
      * // result === "fast"
      * ```
-     * 
+     *
      * ```ts
      * // Use race to implement a timeout.
      * const result = await Concurrency.race([
@@ -4926,7 +5317,7 @@ interface Concurrency {
      * sleep("5s").then(() => { throw new Error("Timeout"); })
      * ]);
      * ```
-     * 
+     *
      * ```ts
      * // Rejections also win the race.
      * // Here the error is thrown quickly and the slower task is cancelled.
@@ -4939,7 +5330,7 @@ interface Concurrency {
      * console.println(e); // Error: Failed quickly
      * }
      * ```
-     * 
+     *
      * ```ts
      * // You can cancel the race task itself.
      * const t = Concurrency.race([
@@ -4949,7 +5340,7 @@ interface Concurrency {
      * t.cancel();
      * await t; // throws "Error: Cancelled"
      * ```
-     * 
+     *
      * ```ts
      * // Empty or non-promise-only inputs resolve to undefined.
      * const a = await Concurrency.race([]);
@@ -4957,37 +5348,37 @@ interface Concurrency {
      * // a === undefined, b === undefined
      * ```
      */
-    race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
-}
-/**
- * Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
- * 
- * ```ts
- * // Type text
- * await keyboard.text("Hello, world!");
- * ```
- * 
- * ```ts
- * // Press a key combination (Ctrl+C)
- * await keyboard.key(Key.Control, Direction.Press);
- * await keyboard.key("c", Direction.Click);
- * await keyboard.key(Key.Control, Direction.Release);
- * ```
- * 
- * ```ts
- * // Wait for a key combination
- * await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
- * ```
- * @category Keyboard
- */
-interface Keyboard {
+    race<T>(promises: Iterable<T | PromiseLike<T>>): Task<Awaited<T>>;
+  }
+  /**
+   * Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
+   *
+   * ```ts
+   * // Type text
+   * await keyboard.text("Hello, world!");
+   * ```
+   *
+   * ```ts
+   * // Press a key combination (Ctrl+C)
+   * await keyboard.key(Key.Control, Direction.Press);
+   * await keyboard.key("c", Direction.Click);
+   * await keyboard.key(Key.Control, Direction.Release);
+   * ```
+   *
+   * ```ts
+   * // Wait for a key combination
+   * await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
+   * ```
+   * @category Keyboard
+   */
+  interface Keyboard {
     /**
      * Types the given text string using simulated key events.
      */
     text(text: string): Promise<void>;
     /**
      * Presses, releases, or clicks a key.
-     * 
+     *
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
      */
     key(key: Key | string | number, direction: Direction): Promise<void>;
@@ -5001,11 +5392,11 @@ interface Keyboard {
     isKeyPressed(key: Key | string | number): Promise<boolean>;
     /**
      * Waits until the specified keys are all pressed simultaneously.
-     * 
+     *
      * ```ts
      * await keyboard.waitForKeys([Key.Control, "s"]);
      * ```
-     * 
+     *
      * ```ts
      * // Wait for exactly these keys and no others, with abort support
      * const controller = new AbortController();
@@ -5016,21 +5407,21 @@ interface Keyboard {
      * ```
      */
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
-}
-/**
- * @category Keyboard
- */
-const keyboard: Keyboard;
-/**
- * Options for waiting for key combinations.
- * 
- * ```ts
- * // Wait for exactly Ctrl+S and no other keys
- * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
- * ```
- * @category Keyboard
- */
-interface WaitForKeysOptions {
+  }
+  /**
+   * @category Keyboard
+   */
+  const keyboard: Keyboard;
+  /**
+   * Options for waiting for key combinations.
+   *
+   * ```ts
+   * // Wait for exactly Ctrl+S and no other keys
+   * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
+   * ```
+   * @category Keyboard
+   */
+  interface WaitForKeysOptions {
     /**
      * Wait for exactly these keys and no other
      * @defaultValue `false`
@@ -5041,31 +5432,31 @@ interface WaitForKeysOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * Controls mouse input: movement, clicking, scrolling, and position queries.
- * 
- * ```ts
- * // Move and click
- * await mouse.move(500, 300);
- * await mouse.click();
- * ```
- * 
- * ```ts
- * // Right-click at a specific position
- * await mouse.click({ button: Button.Right, position: { x: 100, y: 200 } });
- * ```
- * 
- * ```ts
- * // Smooth movement with custom tween
- * await mouse.move(800, 600, {
- * speed: 1500,
- * tween: Tween.BounceOut
- * });
- * ```
- * @category Mouse
- */
-interface Mouse {
+  }
+  /**
+   * Controls mouse input: movement, clicking, scrolling, and position queries.
+   *
+   * ```ts
+   * // Move and click
+   * await mouse.move(500, 300);
+   * await mouse.click();
+   * ```
+   *
+   * ```ts
+   * // Right-click at a specific position
+   * await mouse.click({ button: Button.Right, position: { x: 100, y: 200 } });
+   * ```
+   *
+   * ```ts
+   * // Smooth movement with custom tween
+   * await mouse.move(800, 600, {
+   * speed: 1500,
+   * tween: Tween.BounceOut
+   * });
+   * ```
+   * @category Mouse
+   */
+  interface Mouse {
     /**
      * Returns whether a mouse button is currently pressed.
      * @platform does not work on Wayland
@@ -5124,20 +5515,20 @@ interface Mouse {
      * Releases a mouse button.
      */
     release(button?: Button): Promise<void>;
-}
-/**
- * @category Mouse
- */
-const mouse: Mouse;
-/**
- * Options for measuring mouse movement speed.
- * 
- * ```ts
- * const speed = await mouse.measureSpeed({ duration: "3s" });
- * ```
- * @category Mouse
- */
-interface MeasureSpeedOptions {
+  }
+  /**
+   * @category Mouse
+   */
+  const mouse: Mouse;
+  /**
+   * Options for measuring mouse movement speed.
+   *
+   * ```ts
+   * const speed = await mouse.measureSpeed({ duration: "3s" });
+   * ```
+   * @category Mouse
+   */
+  interface MeasureSpeedOptions {
     /**
      * Measurement duration.
      * @defaultValue `2s`
@@ -5148,17 +5539,17 @@ interface MeasureSpeedOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * Options for clicking a mouse button.
- * 
- * ```ts
- * // Click and hold for 0.5 seconds
- * await mouse.click({ duration: 0.5 });
- * ```
- * @category Mouse
- */
-interface ClickOptions extends PressOptions {
+  }
+  /**
+   * Options for clicking a mouse button.
+   *
+   * ```ts
+   * // Click and hold for 0.5 seconds
+   * await mouse.click({ duration: 0.5 });
+   * ```
+   * @category Mouse
+   */
+  interface ClickOptions extends PressOptions {
     /**
      * Number of times to click.
      * @defaultValue `1`
@@ -5179,49 +5570,49 @@ interface ClickOptions extends PressOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * Options for double-clicking a mouse button.
- * 
- * ```ts
- * await mouse.doubleClick({ delay: 0.1 });
- * ```
- * @category Mouse
- */
-interface DoubleClickOptions extends ClickOptions {
+  }
+  /**
+   * Options for double-clicking a mouse button.
+   *
+   * ```ts
+   * await mouse.doubleClick({ delay: 0.1 });
+   * ```
+   * @category Mouse
+   */
+  interface DoubleClickOptions extends ClickOptions {
     /**
      * Delay between the two clicks, in seconds.
      * @defaultValue `0.25`
      */
     delay?: number | string;
-}
-/**
- * A wildcard pattern for matching strings.
- * 
- * Supports `*` (match any sequence) and `?` (match any single character).
- * 
- * ```ts
- * const pattern = new Wildcard("*.txt");
- * ```
- * 
- * ```ts
- * // Used in APIs that accept a NameLike parameter
- * const pattern = new Wildcard("my_app*");
- * ```
- * @category Name
- */
-class Wildcard {
+  }
+  /**
+   * A wildcard pattern for matching strings.
+   *
+   * Supports `*` (match any sequence) and `?` (match any single character).
+   *
+   * ```ts
+   * const pattern = new Wildcard("*.txt");
+   * ```
+   *
+   * ```ts
+   * // Used in APIs that accept a NameLike parameter
+   * const pattern = new Wildcard("my_app*");
+   * ```
+   * @category Name
+   */
+  class Wildcard {
     /**
      * Constructor.
      */
     constructor(pattern: string);
-}
-/**
- * A custom string hint for Linux notifications.
- * @category Notification
- * @platform only works on Linux
- */
-interface NotificationCustomHint {
+  }
+  /**
+   * A custom string hint for Linux notifications.
+   * @category Notification
+   * @platform only works on Linux
+   */
+  interface NotificationCustomHint {
     /**
      * Hint name.
      */
@@ -5230,13 +5621,13 @@ interface NotificationCustomHint {
      * Hint value.
      */
     value?: string;
-}
-/**
- * A custom integer hint for Linux notifications.
- * @category Notification
- * @platform only works on Linux
- */
-interface NotificationCustomIntHint {
+  }
+  /**
+   * A custom integer hint for Linux notifications.
+   * @category Notification
+   * @platform only works on Linux
+   */
+  interface NotificationCustomIntHint {
     /**
      * Hint name.
      */
@@ -5245,12 +5636,12 @@ interface NotificationCustomIntHint {
      * Integer hint value.
      */
     value?: number;
-}
-/**
- * A notification action button.
- * @category Notification
- */
-interface NotificationAction {
+  }
+  /**
+   * A notification action button.
+   * @category Notification
+   */
+  interface NotificationAction {
     /**
      * Action identifier (used as arguments on Windows).
      */
@@ -5289,13 +5680,13 @@ interface NotificationAction {
      * @platform only works on Windows
      */
     inputId?: string;
-}
-/**
- * A notification header for grouping toasts in Action Center.
- * @category Notification
- * @platform only works on Windows
- */
-interface NotificationHeader {
+  }
+  /**
+   * A notification header for grouping toasts in Action Center.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  interface NotificationHeader {
     /**
      * Unique identifier for this header group.
      */
@@ -5308,13 +5699,13 @@ interface NotificationHeader {
      * Arguments passed when the header is clicked.
      */
     arguments?: string;
-}
-/**
- * A toast input field.
- * @category Notification
- * @platform only works on Windows
- */
-interface NotificationInput {
+  }
+  /**
+   * A toast input field.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  interface NotificationInput {
     /**
      * Unique identifier for this input.
      */
@@ -5338,13 +5729,13 @@ interface NotificationInput {
      * @defaultValue `undefined`
      */
     defaultInput?: string;
-}
-/**
- * A selection option for a dropdown input.
- * @category Notification
- * @platform only works on Windows
- */
-interface NotificationSelection {
+  }
+  /**
+   * A selection option for a dropdown input.
+   * @category Notification
+   * @platform only works on Windows
+   */
+  interface NotificationSelection {
     /**
      * Unique identifier for this selection option.
      */
@@ -5353,12 +5744,12 @@ interface NotificationSelection {
      * Display text for this selection option.
      */
     content?: string;
-}
-/**
- * Options for a notification.
- * @category Notification
- */
-interface NotificationOptions {
+  }
+  /**
+   * Options for a notification.
+   * @category Notification
+   */
+  interface NotificationOptions {
     /**
      * Title of the notification (summary line).
      * @defaultValue `undefined`
@@ -5568,12 +5959,12 @@ interface NotificationOptions {
      * @platform only works on Windows
      */
     useButtonStyle?: boolean;
-}
-/**
- * The global notification singleton for sending desktop notifications.
- * @category Notification
- */
-interface Notification {
+  }
+  /**
+   * The global notification singleton for sending desktop notifications.
+   * @category Notification
+   */
+  interface Notification {
     /**
      * Shows a desktop notification.
      */
@@ -5583,30 +5974,30 @@ interface Notification {
      * @platform only works on Linux
      */
     capabilities(): Promise<string[]>;
-}
-/**
- * @category Notification
- */
-const notification: Notification;
-/**
- * Options for waiting on a notification action or close event.
- * @category Notification
- */
-interface WaitForActionOptions {
+  }
+  /**
+   * @category Notification
+   */
+  const notification: Notification;
+  /**
+   * Options for waiting on a notification action or close event.
+   * @category Notification
+   */
+  interface WaitForActionOptions {
     /**
      * Abort signal to cancel waiting.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * A handle for a shown desktop notification.
- * @category Notification
- */
-interface NotificationHandle {
+  }
+  /**
+   * A handle for a shown desktop notification.
+   * @category Notification
+   */
+  interface NotificationHandle {
     /**
      * Updates the notification with new options.
-     * 
+     *
      * ```ts
      * const handle = await notification.show({ title: "Initial" });
      * await handle.update({ title: "Updated", body: "New body" });
@@ -5617,7 +6008,7 @@ interface NotificationHandle {
     /**
      * Waits for an action to be invoked on this notification, or for the notification to close.
      * Returns the action identifier, or `null` if the notification was closed without an action.
-     * 
+     *
      * ```ts
      * const handle = await notification.show({ title: "Update available", actions: [{ identifier: "update", label: "Update now" }] });
      * const action = await handle.waitForAction();
@@ -5627,36 +6018,36 @@ interface NotificationHandle {
     waitForAction(options?: WaitForActionOptions): Task<string | null>;
     /**
      * Waits until this notification is closed or the optional abort signal is triggered.
-     * 
+     *
      * ```ts
      * const handle = await notification.show({ title: "Waiting..." });
      * await handle.waitUntilClosed();
      * ```
      */
     waitUntilClosed(options?: WaitForActionOptions): Task<void>;
-}
-/**
- * Utilities for manipulating file paths. All methods are static.
- * 
- * ```ts
- * const full = Path.join("/home/user", "documents", "file.txt");
- * const dir = Path.parent(full);   // "/home/user/documents"
- * const name = Path.filename(full); // "file.txt"
- * const ext = Path.extension(full); // "txt"
- * ```
- * 
- * ```ts
- * // Change a file's extension
- * const newPath = Path.setExtension("/tmp/data.csv", "json");
- * // "/tmp/data.json"
- * ```
- * @category Path
- */
-class Path {
+  }
+  /**
+   * Utilities for manipulating file paths. All methods are static.
+   *
+   * ```ts
+   * const full = Path.join("/home/user", "documents", "file.txt");
+   * const dir = Path.parent(full);   // "/home/user/documents"
+   * const name = Path.filename(full); // "file.txt"
+   * const ext = Path.extension(full); // "txt"
+   * ```
+   *
+   * ```ts
+   * // Change a file's extension
+   * const newPath = Path.setExtension("/tmp/data.csv", "json");
+   * // "/tmp/data.json"
+   * ```
+   * @category Path
+   */
+  class Path {
     private constructor();
     /**
      * Joins path segments into a single path.
-     * 
+     *
      * ```ts
      * Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
      * ```
@@ -5664,7 +6055,7 @@ class Path {
     static join(...args: string[]): string;
     /**
      * Returns the file name component of a path.
-     * 
+     *
      * ```ts
      * Path.filename("/home/user/file.txt"); // "file.txt"
      * ```
@@ -5676,7 +6067,7 @@ class Path {
     static basename(path: string): string;
     /**
      * Returns the parent directory of a path.
-     * 
+     *
      * ```ts
      * Path.parent("/home/user/file.txt"); // "/home/user"
      * ```
@@ -5688,7 +6079,7 @@ class Path {
     static dirname(path: string): string;
     /**
      * Returns whether the path is absolute.
-     * 
+     *
      * ```ts
      * Path.isAbsolute("/home/user"); // true
      * Path.isAbsolute("relative/path"); // false
@@ -5697,7 +6088,7 @@ class Path {
     static isAbsolute(path: string): boolean;
     /**
      * Returns whether the path is relative.
-     * 
+     *
      * ```ts
      * Path.isRelative("relative/path"); // true
      * Path.isRelative("/absolute/path"); // false
@@ -5706,7 +6097,7 @@ class Path {
     static isRelative(path: string): boolean;
     /**
      * Returns the file extension of a path (without the leading dot).
-     * 
+     *
      * ```ts
      * Path.extension("/home/user/file.txt"); // "txt"
      * Path.extension("/home/user/file"); // ""
@@ -5719,34 +6110,34 @@ class Path {
     static extname(path: string): string;
     /**
      * Returns the path with a different extension. Returns an empty string on failure.
-     * 
+     *
      * ```ts
      * Path.setExtension("/tmp/data.csv", "json"); // "/tmp/data.json"
      * Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
      * ```
      */
     static setExtension(path: string, extension: string): string;
-}
-/**
- * A 2D point with integer coordinates.
- * 
- * Points can be constructed from two numbers, an object with `x`/`y`, or another Point.
- * 
- * ```ts
- * const p1 = new Point(10, 20);
- * const p2 = new Point({ x: 10, y: 20 });
- * const p3 = new Point(p1);
- * ```
- * 
- * ```ts
- * const a = new Point(1, 2);
- * const b = new Point(4, 6);
- * println(a.distanceTo(b)); // 5
- * println(a.add(b).toString()); // "Point(5, 8)"
- * ```
- * @category Point
- */
-class Point {
+  }
+  /**
+   * A 2D point with integer coordinates.
+   *
+   * Points can be constructed from two numbers, an object with `x`/`y`, or another Point.
+   *
+   * ```ts
+   * const p1 = new Point(10, 20);
+   * const p2 = new Point({ x: 10, y: 20 });
+   * const p3 = new Point(p1);
+   * ```
+   *
+   * ```ts
+   * const a = new Point(1, 2);
+   * const b = new Point(4, 6);
+   * println(a.distanceTo(b)); // 5
+   * println(a.add(b).toString()); // "Point(5, 8)"
+   * ```
+   * @category Point
+   */
+  class Point {
     /**
      * X coordinate
      */
@@ -5765,7 +6156,7 @@ class Point {
     constructor(p: PointLike);
     /**
      * Length of this point (distance from origin).
-     * 
+     *
      * ```ts
      * const p = new Point(3, 4);
      * println(p.length()); // 5
@@ -5774,7 +6165,7 @@ class Point {
     length(): number;
     /**
      * Returns a random point within a circle of the given radius around a center point.
-     * 
+     *
      * ```ts
      * const p = Point.randomInCircle(100, 100, 50);
      * ```
@@ -5782,7 +6173,7 @@ class Point {
     static randomInCircle(center: PointLike, radius: number): Point;
     /**
      * Returns a random point within a circle of the given radius around a center point.
-     * 
+     *
      * ```ts
      * const p = Point.randomInCircle(100, 100, 50);
      * ```
@@ -5790,7 +6181,7 @@ class Point {
     static randomInCircle(x: number, y: number, radius: number): Point;
     /**
      * Calculates the distance between this point and another.
-     * 
+     *
      * ```ts
      * const a = new Point(0, 0);
      * const b = new Point(3, 4);
@@ -5800,7 +6191,7 @@ class Point {
     distanceTo(other: Point): number;
     /**
      * Returns a JSON representation of this Point.
-     * 
+     *
      * ```ts
      * const p = new Point(1, 2);
      * println(p.toJson()); // '{"x":1,"y":2}'
@@ -5809,7 +6200,7 @@ class Point {
     toJson(): string;
     /**
      * Returns true if this Point is at the origin, (0, 0).
-     * 
+     *
      * ```ts
      * println(new Point(0, 0).isOrigin()); // true
      * println(new Point(1, 0).isOrigin()); // false
@@ -5818,7 +6209,7 @@ class Point {
     isOrigin(): boolean;
     /**
      * Computes the distance between two points.
-     * 
+     *
      * ```ts
      * const d = Point.distance(new Point(0, 0), new Point(3, 4));
      * println(d); // 5
@@ -5827,7 +6218,7 @@ class Point {
     static distance(a: Point, b: Point): number;
     /**
      * Returns true if a Point equals another.
-     * 
+     *
      * ```ts
      * const a = new Point(1, 2);
      * const b = new Point(1, 2);
@@ -5837,7 +6228,7 @@ class Point {
     equals(other: Point): boolean;
     /**
      * Adds two points and returns a new Point.
-     * 
+     *
      * ```ts
      * const sum = new Point(1, 2).add(new Point(3, 4));
      * println(sum.toString()); // "Point(4, 6)"
@@ -5846,7 +6237,7 @@ class Point {
     add(other: Point): Point;
     /**
      * Subtracts two points and returns a new Point.
-     * 
+     *
      * ```ts
      * const diff = new Point(5, 7).subtract(new Point(2, 3));
      * println(diff.toString()); // "Point(3, 4)"
@@ -5855,7 +6246,7 @@ class Point {
     subtract(other: Point): Point;
     /**
      * Scales this point by a factor and returns a new Point.
-     * 
+     *
      * ```ts
      * const p = new Point(3, 4).scaled(2);
      * println(p.toString()); // "Point(6, 8)"
@@ -5868,19 +6259,19 @@ class Point {
     toString(): string;
     /**
      * Clones this Point.
-     * 
+     *
      * ```ts
      * const original = new Point(1, 2);
      * const copy = original.clone();
      * ```
      */
     clone(): Point;
-}
-/**
- * Options for starting a process.
- * @category Process
- */
-interface StartProcessOptions {
+  }
+  /**
+   * Options for starting a process.
+   * @category Process
+   */
+  interface StartProcessOptions {
     /**
      * Arguments to pass to the command.
      * @defaultValue `[]`
@@ -5901,34 +6292,34 @@ interface StartProcessOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * Start and manage child processes.
- * 
- * ```ts
- * const handle = process.start("echo", { args: ["hello world"] });
- * for await (const line of handle.stdout) {
- * println(line);
- * }
- * const result = await handle.finished;
- * println(result.exitCode);
- * ```
- * 
- * ```ts
- * const result = await process.startAndWait("ls", { args: ["-la"] });
- * println(result.stdout);
- * ```
- * 
- * ```ts
- * const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
- * println(pid);
- * ```
- * @category Process
- */
-interface Process {
+  }
+  /**
+   * Start and manage child processes.
+   *
+   * ```ts
+   * const handle = process.start("echo", { args: ["hello world"] });
+   * for await (const line of handle.stdout) {
+   * println(line);
+   * }
+   * const result = await handle.finished;
+   * println(result.exitCode);
+   * ```
+   *
+   * ```ts
+   * const result = await process.startAndWait("ls", { args: ["-la"] });
+   * println(result.stdout);
+   * ```
+   *
+   * ```ts
+   * const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
+   * println(pid);
+   * ```
+   * @category Process
+   */
+  interface Process {
     /**
      * Starts a process and returns a `ProcessHandle` for interacting with it.
-     * 
+     *
      * ```ts
      * const handle = process.start("echo", { args: ["hello world"] });
      * for await (const line of handle.stdout) {
@@ -5937,7 +6328,7 @@ interface Process {
      * const result = await handle.finished;
      * println(result.exitCode);
      * ```
-     * 
+     *
      * ```ts
      * const handle = process.start("cat");
      * await handle.write("hello\n");
@@ -5948,31 +6339,40 @@ interface Process {
      * await handle.finished;
      * ```
      */
-    start(command: string, options?: StartProcessOptions): Promise<ProcessHandle>;
+    start(
+      command: string,
+      options?: StartProcessOptions,
+    ): Promise<ProcessHandle>;
     /**
      * Starts a process, waits for it to finish, and returns the exit result
      * including captured stdout and stderr.
-     * 
+     *
      * ```ts
      * const result = await process.startAndWait("ls", { args: ["-la"] });
      * println(result.stdout);
      * println(result.exitCode);
      * ```
      */
-    startAndWait(command: string, options?: StartProcessOptions): Task<ProcessExitResult>;
+    startAndWait(
+      command: string,
+      options?: StartProcessOptions,
+    ): Task<ProcessExitResult>;
     /**
      * Starts a detached process and returns its PID.
      * The process will continue running after the script exits.
-     * 
+     *
      * ```ts
      * const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
      * println(`Started server with PID: ${pid}`);
      * ```
      */
-    startDetached(command: string, options?: StartProcessOptions): Promise<number>;
+    startDetached(
+      command: string,
+      options?: StartProcessOptions,
+    ): Promise<number>;
     /**
      * Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
-     * 
+     *
      * ```ts
      * await process.kill(1234);
      * ```
@@ -5980,7 +6380,7 @@ interface Process {
     kill(pid: number): Promise<void>;
     /**
      * Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
-     * 
+     *
      * ```ts
      * await process.terminate(1234);
      * ```
@@ -5988,7 +6388,7 @@ interface Process {
     terminate(pid: number): Promise<void>;
     /**
      * Send a signal to a process by PID.
-     * 
+     *
      * ```ts
      * await process.sendSignal(1234, Signal.Term);
      * ```
@@ -5996,35 +6396,35 @@ interface Process {
      */
     sendSignal(pid: number, signal: Signal): Promise<void>;
     toString(): string;
-}
-/**
- * @category Process
- */
-const process: Process;
-/**
- * A handle to a running process.
- * 
- * Provides access to the process's PID, stdin, stdout, stderr, and allows
- * waiting for the process to exit or killing it.
- * 
- * ```ts
- * const handle = await process.start("echo", { args: ["hello"] });
- * for await (const line of handle.stdout) {
- * println(line);
- * }
- * const result = await handle.finished;
- * println(result.exitCode);
- * ```
- * @category Process
- */
-interface ProcessHandle {
+  }
+  /**
+   * @category Process
+   */
+  const process: Process;
+  /**
+   * A handle to a running process.
+   *
+   * Provides access to the process's PID, stdin, stdout, stderr, and allows
+   * waiting for the process to exit or killing it.
+   *
+   * ```ts
+   * const handle = await process.start("echo", { args: ["hello"] });
+   * for await (const line of handle.stdout) {
+   * println(line);
+   * }
+   * const result = await handle.finished;
+   * println(result.exitCode);
+   * ```
+   * @category Process
+   */
+  interface ProcessHandle {
     /**
      * Process ID.
      */
     readonly pid: number;
     /**
      * An async iterator that yields lines from the process's standard output.
-     * 
+     *
      * ```ts
      * const handle = await process.start("echo", { args: ["hello"] });
      * for await (const line of handle.stdout) {
@@ -6035,7 +6435,7 @@ interface ProcessHandle {
     readonly stdout: AsyncIterableIterator<string>;
     /**
      * An async iterator that yields lines from the process's standard error.
-     * 
+     *
      * ```ts
      * const handle = await process.start("my-command");
      * for await (const line of handle.stderr) {
@@ -6046,7 +6446,7 @@ interface ProcessHandle {
     readonly stderr: AsyncIterableIterator<string>;
     /**
      * A promise that resolves with the exit result when the process finishes.
-     * 
+     *
      * ```ts
      * const handle = await process.start("ls");
      * const result = await handle.finished;
@@ -6056,7 +6456,7 @@ interface ProcessHandle {
     readonly finished: Task<ProcessExitResult>;
     /**
      * Write data to the process's stdin.
-     * 
+     *
      * ```ts
      * const handle = await process.start("cat");
      * await handle.write("hello\n");
@@ -6066,7 +6466,7 @@ interface ProcessHandle {
     /**
      * Close the process's stdin. This signals EOF to the child process,
      * which is necessary for programs that read until EOF (like `cat`).
-     * 
+     *
      * ```ts
      * const handle = await process.start("cat");
      * await handle.write("hello\n");
@@ -6076,7 +6476,7 @@ interface ProcessHandle {
     closeStdin(): Promise<void>;
     /**
      * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
-     * 
+     *
      * ```ts
      * const handle = await process.start("sleep", { args: ["100"] });
      * await handle.kill();
@@ -6085,7 +6485,7 @@ interface ProcessHandle {
     kill(): Promise<void>;
     /**
      * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
-     * 
+     *
      * ```ts
      * const handle = await process.start("sleep", { args: ["100"] });
      * await handle.terminate();
@@ -6093,25 +6493,25 @@ interface ProcessHandle {
      */
     terminate(): Promise<void>;
     toString(): string;
-}
-/**
- * The result of a process that has finished.
- * 
- * ```ts
- * const handle = await process.start("ls");
- * const result = await handle.finished;
- * if (result.exitCode === 0) {
- * println("success");
- * }
- * ```
- * 
- * ```ts
- * const result = await process.startAndWait("echo", { args: ["hello"] });
- * println(result.stdout);
- * ```
- * @category Process
- */
-interface ProcessExitResult {
+  }
+  /**
+   * The result of a process that has finished.
+   *
+   * ```ts
+   * const handle = await process.start("ls");
+   * const result = await handle.finished;
+   * if (result.exitCode === 0) {
+   * println("success");
+   * }
+   * ```
+   *
+   * ```ts
+   * const result = await process.startAndWait("echo", { args: ["hello"] });
+   * println(result.stdout);
+   * ```
+   * @category Process
+   */
+  interface ProcessExitResult {
     /**
      * The exit code of the process. `undefined` if the process was killed by a signal.
      */
@@ -6125,27 +6525,27 @@ interface ProcessExitResult {
      */
     readonly stderr?: string;
     toString(): string;
-}
-/**
- * Random number generator.
- * 
- * Provides methods for generating random numbers, integers, positions, and choices.
- * The generator is deterministic when seeded.
- * 
- * ```ts
- * const n = random.number(); // 0..1
- * const i = random.integer(1, 10); // 1..10
- * const item = random.choice(["a", "b", "c"]);
- * ```
- * 
- * ```ts
- * random.setSeed(42);
- * println(random.number()); // always the same value
- * random.resetSeed();
- * ```
- * @category Random
- */
-interface Random {
+  }
+  /**
+   * Random number generator.
+   *
+   * Provides methods for generating random numbers, integers, positions, and choices.
+   * The generator is deterministic when seeded.
+   *
+   * ```ts
+   * const n = random.number(); // 0..1
+   * const i = random.integer(1, 10); // 1..10
+   * const item = random.choice(["a", "b", "c"]);
+   * ```
+   *
+   * ```ts
+   * random.setSeed(42);
+   * println(random.number()); // always the same value
+   * random.resetSeed();
+   * ```
+   * @category Random
+   */
+  interface Random {
     /**
      * Returns a number between 0 (inclusive) and 1 (exclusive)
      */
@@ -6171,7 +6571,7 @@ interface Random {
      * This seed is used for all random number generation. Since the random number generator is
      * deterministic that means that setting it to a particular number will always generate the same
      * random numbers.
-     * 
+     *
      * ```ts
      * random.setSeed(42);
      * ```
@@ -6179,7 +6579,7 @@ interface Random {
     setSeed(seed: number): void;
     /**
      * Resets the seed to be a random one.
-     * 
+     *
      * ```ts
      * random.resetSeed();
      * ```
@@ -6187,7 +6587,7 @@ interface Random {
     resetSeed(): void;
     /**
      * Returns a random position on any display.
-     * 
+     *
      * ```ts
      * const pos = await random.position();
      * println(pos.toString());
@@ -6197,41 +6597,41 @@ interface Random {
     /**
      * Chooses one random entry in an array.
      * A fallback can be provided, in case the array is empty.
-     * 
+     *
      * ```ts
      * const item = random.choice(["apple", "banana", "cherry"]);
      * ```
-     * 
+     *
      * ```ts
      * const item = random.choice([], "default");
      * println(item); // "default"
      * ```
      */
     choice<T>(array: Array<T>, fallback?: T): T;
-}
-/**
- * @category Random
- */
-const random: Random;
-/**
- * A 2D rectangle with position and size.
- * 
- * Rects can be constructed from four numbers, an object with `x`/`y`/`width`/`height`, or another Rect.
- * 
- * ```ts
- * const r1 = new Rect(0, 0, 100, 50);
- * const r2 = new Rect({ x: 0, y: 0, width: 100, height: 50 });
- * ```
- * 
- * ```ts
- * const a = new Rect(0, 0, 100, 100);
- * const b = new Rect(50, 50, 100, 100);
- * println(a.intersects(b)); // true
- * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
- * ```
- * @category Rect
- */
-class Rect {
+  }
+  /**
+   * @category Random
+   */
+  const random: Random;
+  /**
+   * A 2D rectangle with position and size.
+   *
+   * Rects can be constructed from four numbers, an object with `x`/`y`/`width`/`height`, or another Rect.
+   *
+   * ```ts
+   * const r1 = new Rect(0, 0, 100, 50);
+   * const r2 = new Rect({ x: 0, y: 0, width: 100, height: 50 });
+   * ```
+   *
+   * ```ts
+   * const a = new Rect(0, 0, 100, 100);
+   * const b = new Rect(50, 50, 100, 100);
+   * println(a.intersects(b)); // true
+   * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
+   * ```
+   * @category Rect
+   */
+  class Rect {
     /**
      * X coordinate
      */
@@ -6266,7 +6666,7 @@ class Rect {
     constructor(r: RectLike);
     /**
      * Returns true if this Rect equals another.
-     * 
+     *
      * ```ts
      * const a = new Rect(0, 0, 10, 10);
      * const b = new Rect(0, 0, 10, 10);
@@ -6276,7 +6676,7 @@ class Rect {
     equals(other: Rect): boolean;
     /**
      * Returns true if this Rect contains the given point.
-     * 
+     *
      * ```ts
      * const r = new Rect(0, 0, 100, 100);
      * println(r.contains(new Point(50, 50)));  // true
@@ -6290,7 +6690,7 @@ class Rect {
     toString(): string;
     /**
      * Clones this Rect.
-     * 
+     *
      * ```ts
      * const original = new Rect(0, 0, 100, 100);
      * const copy = original.clone();
@@ -6299,7 +6699,7 @@ class Rect {
     clone(): Rect;
     /**
      * Returns true if this Rect intersects with another.
-     * 
+     *
      * ```ts
      * const a = new Rect(0, 0, 100, 100);
      * const b = new Rect(50, 50, 100, 100);
@@ -6309,7 +6709,7 @@ class Rect {
     intersects(other: Rect): boolean;
     /**
      * Returns the intersection of two Rects, or undefined if they don't overlap.
-     * 
+     *
      * ```ts
      * const a = new Rect(0, 0, 100, 100);
      * const b = new Rect(50, 50, 100, 100);
@@ -6319,7 +6719,7 @@ class Rect {
     intersection(other: Rect): Rect | undefined;
     /**
      * Returns the smallest Rect containing both this and another Rect.
-     * 
+     *
      * ```ts
      * const a = new Rect(0, 0, 50, 50);
      * const b = new Rect(25, 25, 50, 50);
@@ -6327,28 +6727,28 @@ class Rect {
      * ```
      */
     union(other: Rect): Rect;
-}
-/**
- * Screenshot capture and image search.
- * 
- * Provides methods to capture screen regions, displays, and individual pixels,
- * as well as finding images on screen.
- * 
- * ```ts
- * const image = await screenshot.captureDisplay(0);
- * println(image.size().toString());
- * ```
- * 
- * ```ts
- * const pixel = await screenshot.capturePixel(100, 100);
- * println(pixel.toString());
- * ```
- * @category Screenshot
- */
-interface Screenshot {
+  }
+  /**
+   * Screenshot capture and image search.
+   *
+   * Provides methods to capture screen regions, displays, and individual pixels,
+   * as well as finding images on screen.
+   *
+   * ```ts
+   * const image = await screenshot.captureDisplay(0);
+   * println(image.size().toString());
+   * ```
+   *
+   * ```ts
+   * const pixel = await screenshot.capturePixel(100, 100);
+   * println(pixel.toString());
+   * ```
+   * @category Screenshot
+   */
+  interface Screenshot {
     /**
      * Captures a screenshot of a screen rectangle.
-     * 
+     *
      * ```ts
      * const image = await screenshot.captureRect(0, 0, 1920, 1080);
      * ```
@@ -6356,15 +6756,20 @@ interface Screenshot {
     captureRect(rect: RectLike): Promise<Image>;
     /**
      * Captures a screenshot of a screen rectangle.
-     * 
+     *
      * ```ts
      * const image = await screenshot.captureRect(0, 0, 1920, 1080);
      * ```
      */
-    captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
+    captureRect(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+    ): Promise<Image>;
     /**
      * Captures a screenshot of an entire display.
-     * 
+     *
      * ```ts
      * const image = await screenshot.captureDisplay(0);
      * ```
@@ -6372,7 +6777,7 @@ interface Screenshot {
     captureDisplay(displayId: number): Promise<Image>;
     /**
      * Captures the color of a single pixel on screen.
-     * 
+     *
      * ```ts
      * const color = await screenshot.capturePixel(100, 200);
      * println(color.toString());
@@ -6381,7 +6786,7 @@ interface Screenshot {
     capturePixel(position: PointLike): Promise<Color>;
     /**
      * Captures the color of a single pixel on screen.
-     * 
+     *
      * ```ts
      * const color = await screenshot.capturePixel(100, 200);
      * println(color.toString());
@@ -6390,11 +6795,11 @@ interface Screenshot {
     capturePixel(x: number, y: number): Promise<Color>;
     /**
      * Finds the best match of an image on a screen rectangle.
-     * 
+     *
      * ```ts
      * const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * ```
-     * 
+     *
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
@@ -6403,14 +6808,18 @@ interface Screenshot {
      * const match = await task;
      * ```
      */
-    findImageOnRect(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    findImageOnRect(
+      rect: RectLike,
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match | undefined, FindImageProgress>;
     /**
      * Finds the best match of an image on a screen rectangle.
-     * 
+     *
      * ```ts
      * const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * ```
-     * 
+     *
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
@@ -6419,14 +6828,21 @@ interface Screenshot {
      * const match = await task;
      * ```
      */
-    findImageOnRect(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    findImageOnRect(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match | undefined, FindImageProgress>;
     /**
      * Finds all occurrences of an image on a screen rectangle.
-     * 
+     *
      * ```ts
      * const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * ```
-     * 
+     *
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
@@ -6435,14 +6851,18 @@ interface Screenshot {
      * const matches = await task;
      * ```
      */
-    findImageOnRectAll(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    findImageOnRectAll(
+      rect: RectLike,
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match[], FindImageProgress>;
     /**
      * Finds all occurrences of an image on a screen rectangle.
-     * 
+     *
      * ```ts
      * const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * ```
-     * 
+     *
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
@@ -6451,14 +6871,21 @@ interface Screenshot {
      * const matches = await task;
      * ```
      */
-    findImageOnRectAll(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    findImageOnRectAll(
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match[], FindImageProgress>;
     /**
      * Finds the best match of an image on a display.
-     * 
+     *
      * ```ts
      * const match = await screenshot.findImageOnDisplay(0, template);
      * ```
-     * 
+     *
      * ```ts
      * const task = screenshot.findImageOnDisplay(0, template);
      * for await (const progress of task) {
@@ -6467,14 +6894,18 @@ interface Screenshot {
      * const match = await task;
      * ```
      */
-    findImageOnDisplay(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    findImageOnDisplay(
+      displayId: number,
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match | undefined, FindImageProgress>;
     /**
      * Finds all occurrences of an image on a display.
-     * 
+     *
      * ```ts
      * const matches = await screenshot.findImageOnDisplayAll(0, template);
      * ```
-     * 
+     *
      * ```ts
      * const task = screenshot.findImageOnDisplayAll(0, template);
      * for await (const progress of task) {
@@ -6483,32 +6914,36 @@ interface Screenshot {
      * const matches = await task;
      * ```
      */
-    findImageOnDisplayAll(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
-}
-/**
- * @category Screenshot
- */
-const screenshot: Screenshot;
-/**
- * A 2D size with width and height.
- * 
- * Sizes can be constructed from two numbers, an object with `width`/`height`, or another Size.
- * 
- * ```ts
- * const s1 = new Size(100, 50);
- * const s2 = new Size({ width: 100, height: 50 });
- * const s3 = new Size(s1);
- * ```
- * 
- * ```ts
- * const a = new Size(10, 20);
- * const b = new Size(5, 10);
- * println(a.add(b).toString()); // "Size(15, 30)"
- * println(a.scale(2).toString()); // "Size(20, 40)"
- * ```
- * @category Size
- */
-class Size {
+    findImageOnDisplayAll(
+      displayId: number,
+      image: Image,
+      options?: FindImageOptions,
+    ): ProgressTask<Match[], FindImageProgress>;
+  }
+  /**
+   * @category Screenshot
+   */
+  const screenshot: Screenshot;
+  /**
+   * A 2D size with width and height.
+   *
+   * Sizes can be constructed from two numbers, an object with `width`/`height`, or another Size.
+   *
+   * ```ts
+   * const s1 = new Size(100, 50);
+   * const s2 = new Size({ width: 100, height: 50 });
+   * const s3 = new Size(s1);
+   * ```
+   *
+   * ```ts
+   * const a = new Size(10, 20);
+   * const b = new Size(5, 10);
+   * println(a.add(b).toString()); // "Size(15, 30)"
+   * println(a.scale(2).toString()); // "Size(20, 40)"
+   * ```
+   * @category Size
+   */
+  class Size {
     /**
      * width
      */
@@ -6527,7 +6962,7 @@ class Size {
     constructor(s: SizeLike);
     /**
      * Returns a JSON representation of this Size.
-     * 
+     *
      * ```ts
      * const s = new Size(100, 50);
      * println(s.toJson()); // '{"width":100,"height":50}'
@@ -6536,7 +6971,7 @@ class Size {
     toJson(): string;
     /**
      * Returns true if a Size equals another.
-     * 
+     *
      * ```ts
      * const a = new Size(10, 20);
      * const b = new Size(10, 20);
@@ -6546,7 +6981,7 @@ class Size {
     equals(other: Size): boolean;
     /**
      * Adds two sizes and returns a new Size.
-     * 
+     *
      * ```ts
      * const sum = new Size(10, 20).add(new Size(5, 10));
      * println(sum.toString()); // "Size(15, 30)"
@@ -6555,7 +6990,7 @@ class Size {
     add(other: Size): Size;
     /**
      * Subtracts two sizes and returns a new Size.
-     * 
+     *
      * ```ts
      * const diff = new Size(100, 50).subtract(new Size(30, 20));
      * println(diff.toString()); // "Size(70, 30)"
@@ -6564,7 +6999,7 @@ class Size {
     subtract(other: Size): Size;
     /**
      * Scales this size by a factor and returns a new Size.
-     * 
+     *
      * ```ts
      * const s = new Size(10, 20).scale(3);
      * println(s.toString()); // "Size(30, 60)"
@@ -6577,27 +7012,27 @@ class Size {
     toString(): string;
     /**
      * Clones this Size.
-     * 
+     *
      * ```ts
      * const original = new Size(100, 50);
      * const copy = original.clone();
      * ```
      */
     clone(): Size;
-}
-/**
- * Platform-specific standard directory paths.
- * 
- * All properties return the path as a string, or undefined if unavailable.
- * 
- * ```ts
- * println(standardPaths.home);       // e.g. "/home/user"
- * println(standardPaths.downloads);   // e.g. "/home/user/Downloads"
- * println(standardPaths.documents);   // e.g. "/home/user/Documents"
- * ```
- * @category StandardPaths
- */
-interface StandardPaths {
+  }
+  /**
+   * Platform-specific standard directory paths.
+   *
+   * All properties return the path as a string, or undefined if unavailable.
+   *
+   * ```ts
+   * println(standardPaths.home);       // e.g. "/home/user"
+   * println(standardPaths.downloads);   // e.g. "/home/user/Downloads"
+   * println(standardPaths.documents);   // e.g. "/home/user/Documents"
+   * ```
+   * @category StandardPaths
+   */
+  interface StandardPaths {
     /**
      * Home directory
      */
@@ -6646,29 +7081,29 @@ interface StandardPaths {
      * Returns a string representation of all standard paths.
      */
     toString(): string;
-}
-/**
- * @category StandardPaths
- */
-const standard_paths: StandardPaths;
-/**
- * CPU metrics and topology.
- * 
- * ```ts
- * const globalUsage = await system.cpu.usage();
- * const core0Usage = await system.cpu.coreUsage(0);
- * const freqs = await system.cpu.frequencies();
- * 
- * println(
- * system.cpu.logicalCoreCount,
- * formatPercent(globalUsage),
- * formatPercent(core0Usage),
- * formatFrequency(freqs[0]),
- * );
- * ```
- * @category System
- */
-interface Cpu {
+  }
+  /**
+   * @category StandardPaths
+   */
+  const standard_paths: StandardPaths;
+  /**
+   * CPU metrics and topology.
+   *
+   * ```ts
+   * const globalUsage = await system.cpu.usage();
+   * const core0Usage = await system.cpu.coreUsage(0);
+   * const freqs = await system.cpu.frequencies();
+   *
+   * println(
+   * system.cpu.logicalCoreCount,
+   * formatPercent(globalUsage),
+   * formatPercent(core0Usage),
+   * formatFrequency(freqs[0]),
+   * );
+   * ```
+   * @category System
+   */
+  interface Cpu {
     /**
      * Logical core count
      */
@@ -6685,20 +7120,20 @@ interface Cpu {
     coreUsage(logicalCoreIndex: number): Promise<number>;
     frequencies(): Promise<readonly number[]>;
     toString(): string;
-}
-/**
- * Hardware information.
- * 
- * ```ts
- * const hw = system.hardware;
- * const board = hw.motherboard;
- * const components = await hw.listComponents();
- * 
- * println(hw.vendorName, board.name, components.length);
- * ```
- * @category System
- */
-interface Hardware {
+  }
+  /**
+   * Hardware information.
+   *
+   * ```ts
+   * const hw = system.hardware;
+   * const board = hw.motherboard;
+   * const components = await hw.listComponents();
+   *
+   * println(hw.vendorName, board.name, components.length);
+   * ```
+   * @category System
+   */
+  interface Hardware {
     /**
      * Name
      */
@@ -6734,30 +7169,32 @@ interface Hardware {
     /**
      * Hardware components
      */
-    listComponents(options?: ListComponentsOptions): Promise<readonly Component[]>;
+    listComponents(
+      options?: ListComponentsOptions,
+    ): Promise<readonly Component[]>;
     toString(): string;
-}
-/**
- * List components options
- * @category System
- */
-interface ListComponentsOptions {
+  }
+  /**
+   * List components options
+   * @category System
+   */
+  interface ListComponentsOptions {
     /**
      * Rescan
      * @defaultValue `true`
      */
     rescan?: boolean;
-}
-/**
- * Motherboard details.
- * 
- * ```ts
- * const board = system.hardware.motherboard;
- * println(board.vendorName, board.name, board.version);
- * ```
- * @category System
- */
-interface Motherboard {
+  }
+  /**
+   * Motherboard details.
+   *
+   * ```ts
+   * const board = system.hardware.motherboard;
+   * println(board.vendorName, board.name, board.version);
+   * ```
+   * @category System
+   */
+  interface Motherboard {
     /**
      * Name
      */
@@ -6779,20 +7216,20 @@ interface Motherboard {
      */
     readonly assetTag?: string;
     toString(): string;
-}
-/**
- * A hardware component (for example a thermal sensor).
- * 
- * ```ts
- * const components = await system.hardware.listComponents();
- * const component = components[0];
- * if (component) {
- * println(component.label, component.temperature);
- * }
- * ```
- * @category System
- */
-interface Component {
+  }
+  /**
+   * A hardware component (for example a thermal sensor).
+   *
+   * ```ts
+   * const components = await system.hardware.listComponents();
+   * const component = components[0];
+   * if (component) {
+   * println(component.label, component.temperature);
+   * }
+   * ```
+   * @category System
+   */
+  interface Component {
     /**
      * Label
      */
@@ -6814,19 +7251,19 @@ interface Component {
      */
     readonly criticalTemperature?: number;
     toString(): string;
-}
-/**
- * Memory metrics.
- * 
- * ```ts
- * const usage = await system.memory.usage();
- * const swap = await system.memory.swapUsage();
- * 
- * println(formatBytes(usage.used), formatBytes(swap.used));
- * ```
- * @category System
- */
-interface Memory {
+  }
+  /**
+   * Memory metrics.
+   *
+   * ```ts
+   * const usage = await system.memory.usage();
+   * const swap = await system.memory.swapUsage();
+   *
+   * println(formatBytes(usage.used), formatBytes(swap.used));
+   * ```
+   * @category System
+   */
+  interface Memory {
     /**
      * CGroup limits
      * @platform only works on Linux
@@ -6841,22 +7278,22 @@ interface Memory {
      */
     swapUsage(): Promise<MemoryUsage>;
     toString(): string;
-}
-/**
- * A memory usage snapshot.
- * 
- * ```ts
- * const usage = await system.memory.usage();
- * println(
- * formatBytes(usage.used),
- * formatBytes(usage.free),
- * formatBytes(usage.available),
- * formatBytes(usage.total),
- * );
- * ```
- * @category System
- */
-interface MemoryUsage {
+  }
+  /**
+   * A memory usage snapshot.
+   *
+   * ```ts
+   * const usage = await system.memory.usage();
+   * println(
+   * formatBytes(usage.used),
+   * formatBytes(usage.free),
+   * formatBytes(usage.available),
+   * formatBytes(usage.total),
+   * );
+   * ```
+   * @category System
+   */
+  interface MemoryUsage {
     /**
      * Used
      */
@@ -6874,26 +7311,26 @@ interface MemoryUsage {
      */
     readonly total: number;
     toString(): string;
-}
-/**
- * CGroup memory and swap limits.
- * 
- * ```ts
- * const limits = system.memory.cgroupLimits;
- * if (limits) {
- * println(
- * formatBytes(limits.totalMemory),
- * formatBytes(limits.freeMemory),
- * formatBytes(limits.freeSwap),
- * );
- * }
- * ```
- * 
- * CGroup limits
- * @category System
- * @platform only works on Linux
- */
-interface CGroupLimits {
+  }
+  /**
+   * CGroup memory and swap limits.
+   *
+   * ```ts
+   * const limits = system.memory.cgroupLimits;
+   * if (limits) {
+   * println(
+   * formatBytes(limits.totalMemory),
+   * formatBytes(limits.freeMemory),
+   * formatBytes(limits.freeSwap),
+   * );
+   * }
+   * ```
+   *
+   * CGroup limits
+   * @category System
+   * @platform only works on Linux
+   */
+  interface CGroupLimits {
     /**
      * Total memory
      */
@@ -6911,24 +7348,24 @@ interface CGroupLimits {
      */
     readonly rss: number;
     toString(): string;
-}
-/**
- * System information and power/session operations.
- * 
- * ```ts
- * const cpuUsage = await system.cpu.usage();
- * const memory = await system.memory.usage();
- * 
- * println(formatPercent(cpuUsage), formatBytes(memory.used));
- * ```
- * 
- * ```ts
- * const interfaces = await system.network.listInterfaces();
- * println(`interfaces: ${interfaces.length}`);
- * ```
- * @category System
- */
-interface System {
+  }
+  /**
+   * System information and power/session operations.
+   *
+   * ```ts
+   * const cpuUsage = await system.cpu.usage();
+   * const memory = await system.memory.usage();
+   *
+   * println(formatPercent(cpuUsage), formatBytes(memory.used));
+   * ```
+   *
+   * ```ts
+   * const interfaces = await system.network.listInterfaces();
+   * println(`interfaces: ${interfaces.length}`);
+   * ```
+   * @category System
+   */
+  interface System {
     /**
      * Cpu information
      */
@@ -6964,22 +7401,22 @@ interface System {
     sleep(): Promise<void>;
     open(path: string, withApp?: string): Promise<void>;
     openPath(path: string, withApp?: string): Promise<void>;
-}
-/**
- * @category System
- */
-const system: System;
-/**
- * Network information and interfaces.
- * 
- * ```ts
- * println(system.network.hostname);
- * const interfaces = await system.network.listInterfaces();
- * println(interfaces.length);
- * ```
- * @category System
- */
-interface Network {
+  }
+  /**
+   * @category System
+   */
+  const system: System;
+  /**
+   * Network information and interfaces.
+   *
+   * ```ts
+   * println(system.network.hostname);
+   * const interfaces = await system.network.listInterfaces();
+   * println(interfaces.length);
+   * ```
+   * @category System
+   */
+  interface Network {
     /**
      * Host name
      */
@@ -6987,33 +7424,35 @@ interface Network {
     /**
      * Interfaces
      */
-    listInterfaces(options?: ListInterfacesOptions): Promise<readonly NetworkInterface[]>;
+    listInterfaces(
+      options?: ListInterfacesOptions,
+    ): Promise<readonly NetworkInterface[]>;
     toString(): string;
-}
-/**
- * List network interfaces options
- * @category System
- */
-interface ListInterfacesOptions {
+  }
+  /**
+   * List network interfaces options
+   * @category System
+   */
+  interface ListInterfacesOptions {
     /**
      * Rescan
      * @defaultValue `true`
      */
     rescan?: boolean;
-}
-/**
- * A network interface.
- * 
- * ```ts
- * const interfaces = await system.network.listInterfaces();
- * const iface = interfaces[0];
- * if (iface) {
- * println(iface.name, iface.mtu, iface.macAddress);
- * }
- * ```
- * @category System
- */
-interface NetworkInterface {
+  }
+  /**
+   * A network interface.
+   *
+   * ```ts
+   * const interfaces = await system.network.listInterfaces();
+   * const iface = interfaces[0];
+   * if (iface) {
+   * println(iface.name, iface.mtu, iface.macAddress);
+   * }
+   * ```
+   * @category System
+   */
+  interface NetworkInterface {
     /**
      * Name
      */
@@ -7039,21 +7478,21 @@ interface NetworkInterface {
      */
     readonly subnets: readonly string[];
     toString(): string;
-}
-/**
- * Byte/packet/error counters.
- * 
- * ```ts
- * const interfaces = await system.network.listInterfaces();
- * const iface = interfaces[0];
- * if (iface) {
- * const counters = iface.inbound.total;
- * println(formatBytes(counters.data), counters.packets, counters.errors);
- * }
- * ```
- * @category System
- */
-interface Counters {
+  }
+  /**
+   * Byte/packet/error counters.
+   *
+   * ```ts
+   * const interfaces = await system.network.listInterfaces();
+   * const iface = interfaces[0];
+   * if (iface) {
+   * const counters = iface.inbound.total;
+   * println(formatBytes(counters.data), counters.packets, counters.errors);
+   * }
+   * ```
+   * @category System
+   */
+  interface Counters {
     /**
      * Data
      */
@@ -7067,23 +7506,23 @@ interface Counters {
      */
     readonly errors: number;
     toString(): string;
-}
-/**
- * Traffic statistics.
- * 
- * ```ts
- * const interfaces = await system.network.listInterfaces();
- * const iface = interfaces[0];
- * if (iface) {
- * println(
- * formatBytes(iface.inbound.total.data),
- * formatBytes(iface.inbound.delta.data),
- * );
- * }
- * ```
- * @category System
- */
-interface Traffic {
+  }
+  /**
+   * Traffic statistics.
+   *
+   * ```ts
+   * const interfaces = await system.network.listInterfaces();
+   * const iface = interfaces[0];
+   * if (iface) {
+   * println(
+   * formatBytes(iface.inbound.total.data),
+   * formatBytes(iface.inbound.delta.data),
+   * );
+   * }
+   * ```
+   * @category System
+   */
+  interface Traffic {
     /**
      * Total
      */
@@ -7093,20 +7532,20 @@ interface Traffic {
      */
     readonly delta: Readonly<Counters>;
     toString(): string;
-}
-/**
- * OS-level information.
- * 
- * ```ts
- * println(system.os.name, system.os.version, system.os.kernelVersion);
- * 
- * const users = await system.os.listUsers();
- * const groups = await system.os.listGroups();
- * println(users.length, groups.length);
- * ```
- * @category System
- */
-interface Os {
+  }
+  /**
+   * OS-level information.
+   *
+   * ```ts
+   * println(system.os.name, system.os.version, system.os.kernelVersion);
+   *
+   * const users = await system.os.listUsers();
+   * const groups = await system.os.listGroups();
+   * println(users.length, groups.length);
+   * ```
+   * @category System
+   */
+  interface Os {
     /**
      * Name
      */
@@ -7156,20 +7595,20 @@ interface Os {
      */
     listGroups(): Promise<readonly Group[]>;
     toString(): string;
-}
-/**
- * A system user.
- * 
- * ```ts
- * const users = await system.os.listUsers();
- * const user = users[0];
- * if (user) {
- * println(user.id, user.name, user.groupName);
- * }
- * ```
- * @category System
- */
-interface User {
+  }
+  /**
+   * A system user.
+   *
+   * ```ts
+   * const users = await system.os.listUsers();
+   * const user = users[0];
+   * if (user) {
+   * println(user.id, user.name, user.groupName);
+   * }
+   * ```
+   * @category System
+   */
+  interface User {
     /**
      * Name
      */
@@ -7197,20 +7636,20 @@ interface User {
      */
     readonly groupNames: readonly string[];
     toString(): string;
-}
-/**
- * A system group.
- * 
- * ```ts
- * const groups = await system.os.listGroups();
- * const group = groups[0];
- * if (group) {
- * println(group.id, group.name);
- * }
- * ```
- * @category System
- */
-interface Group {
+  }
+  /**
+   * A system group.
+   *
+   * ```ts
+   * const groups = await system.os.listGroups();
+   * const group = groups[0];
+   * if (group) {
+   * println(group.id, group.name);
+   * }
+   * ```
+   * @category System
+   */
+  interface Group {
     /**
      * Name
      */
@@ -7220,17 +7659,17 @@ interface Group {
      */
     readonly id: number;
     toString(): string;
-}
-/**
- * Process listing and inspection.
- * 
- * ```ts
- * const processes = await system.processes.list();
- * println(processes.length);
- * ```
- * @category System
- */
-interface Processes {
+  }
+  /**
+   * Process listing and inspection.
+   *
+   * ```ts
+   * const processes = await system.processes.list();
+   * println(processes.length);
+   * ```
+   * @category System
+   */
+  interface Processes {
     /**
      * Lists all processes
      */
@@ -7247,23 +7686,23 @@ interface Processes {
      */
     find(options: ProcessesFindOptions): Promise<readonly ProcessInfo[]>;
     toString(): string;
-}
-/**
- * List processes options
- * @category System
- */
-interface ListProcessesOptions {
+  }
+  /**
+   * List processes options
+   * @category System
+   */
+  interface ListProcessesOptions {
     /**
      * Rescan
      * @defaultValue `true`
      */
     rescan?: boolean;
-}
-/**
- * Process search options.
- * @category System
- */
-interface ProcessesFindOptions {
+  }
+  /**
+   * Process search options.
+   * @category System
+   */
+  interface ProcessesFindOptions {
     /**
      * Match by process ID.
      * When undefined, any PID is accepted.
@@ -7293,20 +7732,20 @@ interface ProcessesFindOptions {
      * @defaultValue `true`
      */
     rescan?: boolean;
-}
-/**
- * A process information entry.
- * 
- * ```ts
- * const processes = await system.processes.list();
- * const process = processes[0];
- * if (process) {
- * println(process.pid, process.name, process.status);
- * }
- * ```
- * @category System
- */
-interface ProcessInfo {
+  }
+  /**
+   * A process information entry.
+   *
+   * ```ts
+   * const processes = await system.processes.list();
+   * const process = processes[0];
+   * if (process) {
+   * println(process.pid, process.name, process.status);
+   * }
+   * ```
+   * @category System
+   */
+  interface ProcessInfo {
     /**
      * Name
      */
@@ -7408,7 +7847,7 @@ interface ProcessInfo {
     readonly openFilesLimit?: number;
     /**
      * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
-     * 
+     *
      * ```ts
      * // Force-stop a specific PID if it is still running.
      * const targetPid = 12345;
@@ -7419,7 +7858,7 @@ interface ProcessInfo {
     kill(): Promise<void>;
     /**
      * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
-     * 
+     *
      * ```ts
      * // Ask a specific PID to shut down cleanly.
      * const targetPid = 12345;
@@ -7430,7 +7869,7 @@ interface ProcessInfo {
     terminate(): Promise<void>;
     /**
      * Send a signal to the process.
-     * 
+     *
      * ```ts
      * const targetPid = 12345;
      * const proc = (await system.processes.find({ pid: targetPid }))[0];
@@ -7440,53 +7879,53 @@ interface ProcessInfo {
      */
     sendSignal(signal: Signal): Promise<void>;
     toString(): string;
-}
-/**
- * Storage devices and disk usage information.
- * 
- * ```ts
- * const disks = await system.storage.listDisks();
- * println(disks.length);
- * ```
- * @category System
- */
-interface Storage {
+  }
+  /**
+   * Storage devices and disk usage information.
+   *
+   * ```ts
+   * const disks = await system.storage.listDisks();
+   * println(disks.length);
+   * ```
+   * @category System
+   */
+  interface Storage {
     /**
      * Disks
      */
     listDisks(options?: ListDisksOptions): Promise<readonly Disk[]>;
     toString(): string;
-}
-/**
- * List disks options
- * @category System
- */
-interface ListDisksOptions {
+  }
+  /**
+   * List disks options
+   * @category System
+   */
+  interface ListDisksOptions {
     /**
      * Rescan
      * @defaultValue `true`
      */
     rescan?: boolean;
-}
-/**
- * A disk device.
- * 
- * ```ts
- * const disks = await system.storage.listDisks();
- * const disk = disks[0];
- * if (disk) {
- * println(
- * disk.name,
- * disk.kind,
- * disk.mountPoint,
- * formatBytes(disk.totalSpace),
- * formatBytes(disk.availableSpace),
- * );
- * }
- * ```
- * @category System
- */
-interface Disk {
+  }
+  /**
+   * A disk device.
+   *
+   * ```ts
+   * const disks = await system.storage.listDisks();
+   * const disk = disks[0];
+   * if (disk) {
+   * println(
+   * disk.name,
+   * disk.kind,
+   * disk.mountPoint,
+   * formatBytes(disk.totalSpace),
+   * formatBytes(disk.availableSpace),
+   * );
+   * }
+   * ```
+   * @category System
+   */
+  interface Disk {
     /**
      * Kind
      */
@@ -7524,23 +7963,23 @@ interface Disk {
      */
     readonly usage: Readonly<DiskUsage>;
     toString(): string;
-}
-/**
- * Disk I/O statistics (bytes).
- * 
- * ```ts
- * const disks = await system.storage.listDisks();
- * const disk = disks[0];
- * if (disk) {
- * println(
- * formatBytes(disk.usage.read.total),
- * formatBytes(disk.usage.written.delta),
- * );
- * }
- * ```
- * @category System
- */
-interface IoStats {
+  }
+  /**
+   * Disk I/O statistics (bytes).
+   *
+   * ```ts
+   * const disks = await system.storage.listDisks();
+   * const disk = disks[0];
+   * if (disk) {
+   * println(
+   * formatBytes(disk.usage.read.total),
+   * formatBytes(disk.usage.written.delta),
+   * );
+   * }
+   * ```
+   * @category System
+   */
+  interface IoStats {
     /**
      * Total
      */
@@ -7550,23 +7989,23 @@ interface IoStats {
      */
     readonly delta: number;
     toString(): string;
-}
-/**
- * Read/write usage for a disk.
- * 
- * ```ts
- * const disks = await system.storage.listDisks();
- * const disk = disks[0];
- * if (disk) {
- * println(
- * formatBytes(disk.usage.read.total),
- * formatBytes(disk.usage.written.total),
- * );
- * }
- * ```
- * @category System
- */
-interface DiskUsage {
+  }
+  /**
+   * Read/write usage for a disk.
+   *
+   * ```ts
+   * const disks = await system.storage.listDisks();
+   * const disk = disks[0];
+   * if (disk) {
+   * println(
+   * formatBytes(disk.usage.read.total),
+   * formatBytes(disk.usage.written.total),
+   * );
+   * }
+   * ```
+   * @category System
+   */
+  interface DiskUsage {
     /**
      * Written
      */
@@ -7576,20 +8015,20 @@ interface DiskUsage {
      */
     readonly read: Readonly<IoStats>;
     toString(): string;
-}
-/**
- * Message box options.
- * 
- * ```ts
- * await Ui.messageBox("Delete this file?", {
- * title: "Confirm",
- * buttons: MessageBoxButtons.yesNo(),
- * icon: MessageBoxIcon.Warning,
- * });
- * ```
- * @category UI
- */
-interface MessageBoxOptions {
+  }
+  /**
+   * Message box options.
+   *
+   * ```ts
+   * await Ui.messageBox("Delete this file?", {
+   * title: "Confirm",
+   * buttons: MessageBoxButtons.yesNo(),
+   * icon: MessageBoxIcon.Warning,
+   * });
+   * ```
+   * @category UI
+   */
+  interface MessageBoxOptions {
     /**
      * Title displayed in the message box title bar.
      * @defaultValue `undefined`
@@ -7610,57 +8049,60 @@ interface MessageBoxOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
-}
-/**
- * User interface utilities.
- * 
- * Provides methods for displaying message boxes and other UI elements.
- * Only available when running with the Tauri UI.
- * 
- * ```ts
- * const result = await Ui.messageBox("Hello, world!");
- * ```
- * 
- * ```ts
- * const result = await Ui.messageBox("Delete this file?", {
- * title: "Confirm",
- * buttons: MessageBoxButtons.yesNo(),
- * icon: MessageBoxIcon.Warning,
- * });
- * if (result === MessageBoxResult.Yes) {
- * println("Confirmed");
- * }
- * ```
- * @category UI
- */
-class Ui {
+  }
+  /**
+   * User interface utilities.
+   *
+   * Provides methods for displaying message boxes and other UI elements.
+   * Only available when running with the Tauri UI.
+   *
+   * ```ts
+   * const result = await Ui.messageBox("Hello, world!");
+   * ```
+   *
+   * ```ts
+   * const result = await Ui.messageBox("Delete this file?", {
+   * title: "Confirm",
+   * buttons: MessageBoxButtons.yesNo(),
+   * icon: MessageBoxIcon.Warning,
+   * });
+   * if (result === MessageBoxResult.Yes) {
+   * println("Confirmed");
+   * }
+   * ```
+   * @category UI
+   */
+  class Ui {
     private constructor();
     /**
      * Displays a message box and returns the user's response.
-     * 
+     *
      * ```ts
      * const result = await Ui.messageBox("Operation complete");
      * ```
      */
-    static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
-}
-/**
- * @category UI
- */
-const ui: Ui;
-/**
- * Button configurations for message boxes.
- * 
- * Use the static factory methods to create button sets.
- * 
- * ```ts
- * const buttons = MessageBoxButtons.ok();
- * const buttons2 = MessageBoxButtons.yesNoCancel();
- * const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
- * ```
- * @category UI
- */
-class MessageBoxButtons {
+    static messageBox(
+      text: string,
+      options?: MessageBoxOptions,
+    ): Task<MessageBoxResult>;
+  }
+  /**
+   * @category UI
+   */
+  const ui: Ui;
+  /**
+   * Button configurations for message boxes.
+   *
+   * Use the static factory methods to create button sets.
+   *
+   * ```ts
+   * const buttons = MessageBoxButtons.ok();
+   * const buttons2 = MessageBoxButtons.yesNoCancel();
+   * const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
+   * ```
+   * @category UI
+   */
+  class MessageBoxButtons {
     private constructor();
     /**
      * Creates an OK button.
@@ -7677,7 +8119,10 @@ class MessageBoxButtons {
     /**
      * Creates OK and Cancel buttons with custom labels.
      */
-    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
+    static okCancelCustom(
+      okLabel: string,
+      cancelLabel: string,
+    ): MessageBoxButtons;
     /**
      * Creates Yes and No buttons.
      */
@@ -7689,58 +8134,77 @@ class MessageBoxButtons {
     /**
      * Creates Yes, No, and Cancel buttons with custom labels.
      */
-    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
-}
-/**
- * Multipart form for uploading files and data.
- * 
- * ```ts
- * const form = new MultipartForm();
- * form.addText("title", "My Upload");
- * form.addFile("file", "/path/to/file.txt");
- * const result = await web.downloadText("https://example.com/upload", {
- * method: Method.Post,
- * multipart: form,
- * });
- * ```
- * @category Web
- */
-class MultipartForm {
+    static yesNoCancelCustom(
+      yesLabel: string,
+      noLabel: string,
+      cancelLabel: string,
+    ): MessageBoxButtons;
+  }
+  /**
+   * Multipart form for uploading files and data.
+   *
+   * ```ts
+   * const form = new MultipartForm();
+   * form.addText("title", "My Upload");
+   * form.addFile("file", "/path/to/file.txt");
+   * const result = await web.downloadText("https://example.com/upload", {
+   * method: Method.Post,
+   * multipart: form,
+   * });
+   * ```
+   * @category Web
+   */
+  class MultipartForm {
     constructor();
     /**
      * Adds a text field.
-     * 
+     *
      * ```ts
      * const form = new MultipartForm();
      * form.addText("username", "john");
      * ```
      */
-    addText(name: string, value: string, filename?: string, mimetype?: string): void;
+    addText(
+      name: string,
+      value: string,
+      filename?: string,
+      mimetype?: string,
+    ): void;
     /**
      * Adds a file field.
-     * 
+     *
      * ```ts
      * const form = new MultipartForm();
      * form.addFile("document", "/path/to/report.pdf");
      * ```
      */
-    addFile(name: string, path: string, filename?: string, mimetype?: string): void;
+    addFile(
+      name: string,
+      path: string,
+      filename?: string,
+      mimetype?: string,
+    ): void;
     /**
      * Adds a byte field.
-     * 
+     *
      * ```ts
      * const form = new MultipartForm();
      * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
      * form.addBytes("data", bytes, "hello.bin");
      * ```
      */
-    addBytes(name: string, bytes: Uint8Array, filename?: string, mimetype?: string): void;
-}
-/**
- * Web request options.
- * @category Web
- */
-interface WebOptions {
+    addBytes(
+      name: string,
+      bytes: Uint8Array,
+      filename?: string,
+      mimetype?: string,
+    ): void;
+  }
+  /**
+   * Web request options.
+   * @category Web
+   */
+  interface WebOptions {
     /**
      * Abort signal to cancel the request.
      * @defaultValue `undefined`
@@ -7794,23 +8258,23 @@ interface WebOptions {
      * @defaultValue `undefined`
      */
     multipart?: MultipartForm;
-}
-/**
- * Progress information for web downloads and uploads.
- * 
- * ```ts
- * const task = web.download("https://example.com/file.bin");
- * for await (const progress of task) {
- * println(
- * formatBytes(progress.current),
- * formatBytes(progress.total),
- * progress.finished,
- * );
- * }
- * ```
- * @category Web
- */
-interface WebProgress {
+  }
+  /**
+   * Progress information for web downloads and uploads.
+   *
+   * ```ts
+   * const task = web.download("https://example.com/file.bin");
+   * for await (const progress of task) {
+   * println(
+   * formatBytes(progress.current),
+   * formatBytes(progress.total),
+   * progress.finished,
+   * );
+   * }
+   * ```
+   * @category Web
+   */
+  interface WebProgress {
     /**
      * Total bytes expected (0 if unknown).
      */
@@ -7823,30 +8287,30 @@ interface WebProgress {
      * Whether the transfer is complete.
      */
     readonly finished: boolean;
-}
-/**
- * HTTP client for downloading files, text, images, and binary data.
- * 
- * Supports progress tracking, authentication, custom headers, and multipart uploads.
- * 
- * ```ts
- * const text = await web.downloadText("https://example.com/data.json");
- * ```
- * 
- * ```ts
- * const image = await web.downloadImage("https://example.com/photo.png");
- * println(image.size().toString());
- * ```
- * @category Web
- */
-interface Web {
+  }
+  /**
+   * HTTP client for downloading files, text, images, and binary data.
+   *
+   * Supports progress tracking, authentication, custom headers, and multipart uploads.
+   *
+   * ```ts
+   * const text = await web.downloadText("https://example.com/data.json");
+   * ```
+   *
+   * ```ts
+   * const image = await web.downloadImage("https://example.com/photo.png");
+   * println(image.size().toString());
+   * ```
+   * @category Web
+   */
+  interface Web {
     /**
      * Downloads a binary file.
-     * 
+     *
      * ```ts
      * const bytes = await web.download("https://example.com/file.bin");
      * ```
-     * 
+     *
      * ```ts
      * const task = web.download("https://example.com/file.bin");
      * for await (const progress of task) {
@@ -7855,14 +8319,17 @@ interface Web {
      * const bytes = await task;
      * ```
      */
-    download(url: string, options?: WebOptions): ProgressTask<Uint8Array, WebProgress>;
+    download(
+      url: string,
+      options?: WebOptions,
+    ): ProgressTask<Uint8Array, WebProgress>;
     /**
      * Downloads a text file.
-     * 
+     *
      * ```ts
      * const text = await web.downloadText("https://example.com/data.json");
      * ```
-     * 
+     *
      * ```ts
      * const task = web.downloadText("https://example.com/data.json");
      * for await (const progress of task) {
@@ -7871,14 +8338,17 @@ interface Web {
      * const text = await task;
      * ```
      */
-    downloadText(url: string, options?: WebOptions): ProgressTask<string, WebProgress>;
+    downloadText(
+      url: string,
+      options?: WebOptions,
+    ): ProgressTask<string, WebProgress>;
     /**
      * Downloads an image.
-     * 
+     *
      * ```ts
      * const image = await web.downloadImage("https://example.com/photo.png");
      * ```
-     * 
+     *
      * ```ts
      * const task = web.downloadImage("https://example.com/photo.png");
      * for await (const progress of task) {
@@ -7887,14 +8357,17 @@ interface Web {
      * const image = await task;
      * ```
      */
-    downloadImage(url: string, options?: WebOptions): ProgressTask<Image, WebProgress>;
+    downloadImage(
+      url: string,
+      options?: WebOptions,
+    ): ProgressTask<Image, WebProgress>;
     /**
      * Downloads a file to a directory.
-     * 
+     *
      * ```ts
      * const filePath = await web.downloadFile("https://example.com/file.zip");
      * ```
-     * 
+     *
      * ```ts
      * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
      * for await (const progress of task) {
@@ -7903,17 +8376,21 @@ interface Web {
      * const filePath = await task;
      * ```
      */
-    downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
-}
-/**
- * @category Web
- */
-const web: Web;
-/**
- * Window search options.
- * @category Windows
- */
-interface WindowsFindOptions {
+    downloadFile(
+      url: string,
+      directory?: string,
+      options?: WebOptions,
+    ): ProgressTask<string, WebProgress>;
+  }
+  /**
+   * @category Web
+   */
+  const web: Web;
+  /**
+   * Window search options.
+   * @category Windows
+   */
+  interface WindowsFindOptions {
     /**
      * Match by internal window ID.
      * When undefined, any window ID is accepted.
@@ -7944,38 +8421,38 @@ interface WindowsFindOptions {
      * @defaultValue `undefined`
      */
     className?: NameLike;
-}
-/**
- * Manages desktop windows: enumerate, focus, move, resize, and close windows.
- * 
- * ```ts
- * // Get all windows
- * const allWindows = await windows.all();
- * for (const win of allWindows) {
- * println(await win.title());
- * }
- * ```
- * 
- * ```ts
- * // Get the active window and move it
- * const win = await windows.activeWindow();
- * await win.setPosition(100, 100);
- * await win.setSize(800, 600);
- * ```
- * 
- * ```ts
- * // Find and close a window by title
- * const matches = await windows.find({ title: new Wildcard("*Notepad*") });
- * for (const win of matches) {
- * await win.close();
- * }
- * ```
- * @category Windows
- */
-interface Windows {
+  }
+  /**
+   * Manages desktop windows: enumerate, focus, move, resize, and close windows.
+   *
+   * ```ts
+   * // Get all windows
+   * const allWindows = await windows.all();
+   * for (const win of allWindows) {
+   * println(await win.title());
+   * }
+   * ```
+   *
+   * ```ts
+   * // Get the active window and move it
+   * const win = await windows.activeWindow();
+   * await win.setPosition(100, 100);
+   * await win.setSize(800, 600);
+   * ```
+   *
+   * ```ts
+   * // Find and close a window by title
+   * const matches = await windows.find({ title: new Wildcard("*Notepad*") });
+   * for (const win of matches) {
+   * await win.close();
+   * }
+   * ```
+   * @category Windows
+   */
+  interface Windows {
     /**
      * Returns all currently open windows.
-     * 
+     *
      * ```ts
      * const allWindows = await windows.all();
      * println(`Found ${allWindows.length} windows`);
@@ -7984,7 +8461,7 @@ interface Windows {
     all(): Promise<readonly WindowHandle[]>;
     /**
      * Returns the currently active (focused) window.
-     * 
+     *
      * ```ts
      * const win = await windows.activeWindow();
      * println(await win.title());
@@ -7993,9 +8470,9 @@ interface Windows {
     activeWindow(): Promise<Readonly<WindowHandle>>;
     /**
      * Finds windows matching the provided criteria.
-     * 
+     *
      * `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
-     * 
+     *
      * ```ts
      * const byId = await windows.find({ id: 1 });
      * const visibleCode = await windows.find({ visible: true, title: new Wildcard("*Code*") });
@@ -8008,7 +8485,7 @@ interface Windows {
     find(options: WindowsFindOptions): Promise<readonly WindowHandle[]>;
     /**
      * Finds windows whose rectangle contains the given screen point.
-     * 
+     *
      * ```ts
      * const underMouse = await windows.findAt(await mouse.position());
      * const atOrigin = await windows.findAt(0, 0);
@@ -8017,36 +8494,36 @@ interface Windows {
     findAt(point: PointLike): Promise<readonly WindowHandle[]>;
     /**
      * Finds windows whose rectangle contains the given screen point.
-     * 
+     *
      * ```ts
      * const underMouse = await windows.findAt(await mouse.position());
      * const atOrigin = await windows.findAt(0, 0);
      * ```
      */
     findAt(x: number, y: number): Promise<readonly WindowHandle[]>;
-}
-/**
- * @category Windows
- */
-const windows: Windows;
-/**
- * A handle to a specific desktop window.
- * 
- * Obtained from `windows.all()` or `windows.activeWindow()`.
- * Provides methods to query and manipulate the window.
- * 
- * ```ts
- * const win = await windows.activeWindow();
- * println(await win.title());
- * println(await win.isVisible());
- * println(await win.rect());
- * ```
- * @category Windows
- */
-interface WindowHandle {
+  }
+  /**
+   * @category Windows
+   */
+  const windows: Windows;
+  /**
+   * A handle to a specific desktop window.
+   *
+   * Obtained from `windows.all()` or `windows.activeWindow()`.
+   * Provides methods to query and manipulate the window.
+   *
+   * ```ts
+   * const win = await windows.activeWindow();
+   * println(await win.title());
+   * println(await win.isVisible());
+   * println(await win.rect());
+   * ```
+   * @category Windows
+   */
+  interface WindowHandle {
     /**
      * Returns whether this window is visible.
-     * 
+     *
      * ```ts
      * const visible = await win.isVisible();
      * ```
@@ -8054,7 +8531,7 @@ interface WindowHandle {
     isVisible(): Promise<boolean>;
     /**
      * Returns the window title.
-     * 
+     *
      * ```ts
      * const title = await win.title();
      * ```
@@ -8062,7 +8539,7 @@ interface WindowHandle {
     title(): Promise<string>;
     /**
      * Returns the window class name.
-     * 
+     *
      * ```ts
      * const className = await win.className();
      * ```
@@ -8070,7 +8547,7 @@ interface WindowHandle {
     className(): Promise<string>;
     /**
      * Closes this window.
-     * 
+     *
      * ```ts
      * await win.close();
      * ```
@@ -8078,7 +8555,7 @@ interface WindowHandle {
     close(): Promise<void>;
     /**
      * Returns the process ID of the window's owning process.
-     * 
+     *
      * ```ts
      * const pid = await win.processId();
      * ```
@@ -8086,7 +8563,7 @@ interface WindowHandle {
     processId(): Promise<number>;
     /**
      * Returns the window's bounding rectangle.
-     * 
+     *
      * ```ts
      * const r = await win.rect();
      * println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
@@ -8095,7 +8572,7 @@ interface WindowHandle {
     rect(): Promise<Readonly<Rect>>;
     /**
      * Makes this window the active (focused) window.
-     * 
+     *
      * ```ts
      * await win.setActive();
      * ```
@@ -8103,7 +8580,7 @@ interface WindowHandle {
     setActive(): Promise<void>;
     /**
      * Minimizes this window.
-     * 
+     *
      * ```ts
      * await win.minimize();
      * ```
@@ -8111,7 +8588,7 @@ interface WindowHandle {
     minimize(): Promise<void>;
     /**
      * Maximizes this window.
-     * 
+     *
      * ```ts
      * await win.maximize();
      * ```
@@ -8119,7 +8596,7 @@ interface WindowHandle {
     maximize(): Promise<void>;
     /**
      * Sets the window position.
-     * 
+     *
      * ```ts
      * await win.setPosition(100, 200);
      * await win.setPosition(new Point(100, 200));
@@ -8129,7 +8606,7 @@ interface WindowHandle {
     setPosition(position: PointLike): Promise<void>;
     /**
      * Sets the window position.
-     * 
+     *
      * ```ts
      * await win.setPosition(100, 200);
      * await win.setPosition(new Point(100, 200));
@@ -8139,7 +8616,7 @@ interface WindowHandle {
     setPosition(x: number, y: number): Promise<void>;
     /**
      * Returns the window position.
-     * 
+     *
      * ```ts
      * const pos = await win.position();
      * println(`${pos.x}, ${pos.y}`);
@@ -8148,7 +8625,7 @@ interface WindowHandle {
     position(): Promise<Readonly<Point>>;
     /**
      * Sets the window size.
-     * 
+     *
      * ```ts
      * await win.setSize(800, 600);
      * await win.setSize(new Size(800, 600));
@@ -8158,7 +8635,7 @@ interface WindowHandle {
     setSize(size: SizeLike): Promise<void>;
     /**
      * Sets the window size.
-     * 
+     *
      * ```ts
      * await win.setSize(800, 600);
      * await win.setSize(new Size(800, 600));
@@ -8168,7 +8645,7 @@ interface WindowHandle {
     setSize(width: number, height: number): Promise<void>;
     /**
      * Returns the window size.
-     * 
+     *
      * ```ts
      * const s = await win.size();
      * println(`${s.width}x${s.height}`);
@@ -8177,7 +8654,7 @@ interface WindowHandle {
     size(): Promise<Readonly<Size>>;
     /**
      * Returns whether this window is the active (focused) window.
-     * 
+     *
      * ```ts
      * const active = await win.isActive();
      * ```
@@ -8187,12 +8664,12 @@ interface WindowHandle {
      * Returns a string representation of this window handle.
      */
     toString(): string;
-}
-/**
- * Hotstring options
- * @category Hotstrings
- */
-interface HotstringOptions {
+  }
+  /**
+   * Hotstring options
+   * @category Hotstrings
+   */
+  interface HotstringOptions {
     /**
      * Erase the key first before replacing it with the replacement content.
      * @defaultValue `true`
@@ -8209,20 +8686,20 @@ interface HotstringOptions {
      * @defaultValue `true`
      */
     saveRestoreClipboard?: boolean;
-}
-/**
- * Options for smooth mouse movement.
- * 
- * ```ts
- * await mouse.move(500, 300, {
- * speed: 1000,
- * tween: Tween.SineOut,
- * targetRandomness: 5
- * });
- * ```
- * @category Mouse
- */
-interface MoveOptions {
+  }
+  /**
+   * Options for smooth mouse movement.
+   *
+   * ```ts
+   * await mouse.move(500, 300, {
+   * speed: 1000,
+   * tween: Tween.SineOut,
+   * targetRandomness: 5
+   * });
+   * ```
+   * @category Mouse
+   */
+  interface MoveOptions {
     /**
      * Movement speed in pixels per second.
      * @defaultValue `2000`
@@ -8253,20 +8730,20 @@ interface MoveOptions {
      * @defaultValue `0.01`
      */
     interval?: number | string;
-}
-/**
- * Options for pressing (and holding) a mouse button.
- * 
- * ```ts
- * // Press the right button at a specific position
- * await mouse.press({ button: Button.Right, position: new Point(100, 200) });
- * 
- * // Press at coordinates using PointLike shorthand
- * await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
- * ```
- * @category Mouse
- */
-interface PressOptions {
+  }
+  /**
+   * Options for pressing (and holding) a mouse button.
+   *
+   * ```ts
+   * // Press the right button at a specific position
+   * await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+   *
+   * // Press at coordinates using PointLike shorthand
+   * await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
+   * ```
+   * @category Mouse
+   */
+  interface PressOptions {
     /**
      * Mouse button to press.
      * @defaultValue `Button.Left`
@@ -8282,5 +8759,5 @@ interface PressOptions {
      * @defaultValue `false`
      */
     relativePosition?: boolean;
-}
+  }
 }

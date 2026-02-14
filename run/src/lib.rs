@@ -86,7 +86,7 @@ pub fn run_cli() -> Result<()> {
                         .file_stem()
                         .map(|stem| stem.to_string_lossy().into_owned())
                 })
-                .unwrap_or_else(|| "actiona4-run".to_owned());
+                .unwrap_or_else(|| "actiona-run".to_owned());
 
             clap_complete::generate(*shell, &mut cmd, &bin_name, &mut std::io::stdout());
             return Ok(());
@@ -232,7 +232,9 @@ fn init_tracing() {
     let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
 
     let stdout_layer = tracing_subscriber::fmt::layer()
-        .with_writer(std::io::stdout)
+        // Keep command output deterministic on stdout (e.g. scripts/tests) by
+        // sending tracing logs to stderr.
+        .with_writer(std::io::stderr)
         .with_ansi(true)
         .with_target(true)
         .with_line_number(true)
@@ -252,28 +254,28 @@ mod tests {
 
     #[test]
     fn defaults_to_run_for_script_path() {
-        let args = vec![OsString::from("actiona4-run"), OsString::from("script.ts")];
+        let args = vec![OsString::from("actiona-run"), OsString::from("script.ts")];
 
         let args = maybe_insert_default_run(args);
-        assert_eq!(args, vec!["actiona4-run", "run", "script.ts"]);
+        assert_eq!(args, vec!["actiona-run", "run", "script.ts"]);
     }
 
     #[test]
     fn keeps_explicit_subcommand() {
         let args = vec![
-            OsString::from("actiona4-run"),
+            OsString::from("actiona-run"),
             OsString::from("run"),
             OsString::from("script.ts"),
         ];
 
         let args = maybe_insert_default_run(args);
-        assert_eq!(args, vec!["actiona4-run", "run", "script.ts"]);
+        assert_eq!(args, vec!["actiona-run", "run", "script.ts"]);
     }
 
     #[test]
     fn respects_top_level_options_before_default_subcommand() {
         let args = vec![
-            OsString::from("actiona4-run"),
+            OsString::from("actiona-run"),
             OsString::from("--disable-updates"),
             OsString::from("false"),
             OsString::from("script.ts"),
@@ -283,7 +285,7 @@ mod tests {
         assert_eq!(
             args,
             vec![
-                "actiona4-run",
+                "actiona-run",
                 "--disable-updates",
                 "false",
                 "run",

@@ -1,11 +1,5 @@
 TODO:
-- process creation
 - select a rectangle UI
-
-Notifications:
-- replace hand rolled AUMID Windows code with crate winrt_toast_reborn
-- notify_rust for X11
-- see features/notifications.md
 
 Find Image:
  1) search one or search multiple
@@ -43,7 +37,7 @@ unsafe {
 }
 */
 /*
-You are running actiona4-run version 0.1.0, latest version is 1.0.1,
+You are running actiona-run version 0.1.0, latest version is 1.0.1,
 released 3d ago.
 */
 // TODO: 3d ago? Oo

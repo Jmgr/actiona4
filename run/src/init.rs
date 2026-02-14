@@ -15,7 +15,7 @@ static INDEX_DTS: LazyLock<String> = LazyLock::new(|| {
 });
 
 const STARTER_SCRIPT: &str = r#"// Welcome to Actiona!
-// Run this script with: actiona4-run script.ts (or actiona4-run run script.ts)
+// Run this script with: actiona-run script.ts (or actiona-run run script.ts)
 
 println("Hello from Actiona!");
 "#;

@@ -15,7 +15,7 @@ pub struct Config {
 
 impl Config {
     pub async fn new() -> Result<Self> {
-        let project_dirs = ProjectDirs::from("app.actiona4-run", "Actiona", "Actiona4-run")
+        let project_dirs = ProjectDirs::from("app.actiona-run", "Actiona", "Actiona-run")
             .ok_or_eyre("failed to get project directories")?;
 
         let result = Self {
