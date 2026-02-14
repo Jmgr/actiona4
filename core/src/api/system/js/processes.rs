@@ -198,7 +198,7 @@ impl JsProcesses {
 
             if let Some(filter_name) = options.name.as_ref() {
                 let process_name = process.name().as_deref().unwrap_or_default();
-                if !filter_name.inner().matches(&ctx, process_name) {
+                if !filter_name.inner().matches(&ctx, process_name)? {
                     continue;
                 }
             }

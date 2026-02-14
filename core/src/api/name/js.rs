@@ -164,7 +164,12 @@ mod tests {
 
     #[rquickjs::methods(rename_all = "camelCase")]
     impl JsTest {
-        pub fn name_match<'js>(&self, ctx: Ctx<'js>, name: JsNameLike<'js>, text: String) -> bool {
+        pub fn name_match<'js>(
+            &self,
+            ctx: Ctx<'js>,
+            name: JsNameLike<'js>,
+            text: String,
+        ) -> rquickjs::Result<bool> {
             name.0.matches(&ctx, &text)
         }
     }
@@ -234,6 +239,19 @@ mod tests {
                     .await
                     .unwrap()
             );
+
+            let error = script_engine
+                .eval::<bool>(
+                    r#"
+                    const re = /foo/;
+                    re.test = () => { throw new Error("regex test boom"); };
+                    test.nameMatch(re, "foo");
+                "#,
+                )
+                .await
+                .unwrap_err()
+                .to_string();
+            assert!(error.contains("regex test boom"));
         });
     }
 }

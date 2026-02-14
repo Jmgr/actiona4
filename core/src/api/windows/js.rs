@@ -213,14 +213,14 @@ impl JsWindows {
 
             if let Some(title) = options.title.as_ref() {
                 let window_title = self.inner.title(id).into_js_result(&ctx)?;
-                if !title.inner().matches(&ctx, &window_title) {
+                if !title.inner().matches(&ctx, &window_title)? {
                     continue;
                 }
             }
 
             if let Some(class_name) = options.class_name.as_ref() {
                 let window_class_name = self.inner.classname(id).into_js_result(&ctx)?;
-                if !class_name.inner().matches(&ctx, &window_class_name) {
+                if !class_name.inner().matches(&ctx, &window_class_name)? {
                     continue;
                 }
             }

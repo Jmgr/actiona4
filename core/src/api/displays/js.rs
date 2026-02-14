@@ -101,11 +101,13 @@ impl JsDisplays {
             .wait_get()
             .await
             .into_js_result(&ctx)?;
-        Ok(displays_infos
-            .iter()
-            .find(|display_info| name.0.matches(&ctx, &display_info.friendly_name))
-            .cloned()
-            .map(|display_info| display_info.into()))
+        for display_info in displays_infos.iter() {
+            if name.0.matches(&ctx, &display_info.friendly_name)? {
+                return Ok(Some(display_info.clone().into()));
+            }
+        }
+
+        Ok(None)
     }
 
     /// Finds a display by its device name, or `undefined` if not found.
@@ -121,11 +123,13 @@ impl JsDisplays {
             .wait_get()
             .await
             .into_js_result(&ctx)?;
-        Ok(displays_infos
-            .iter()
-            .find(|display_info| name.0.matches(&ctx, &display_info.name))
-            .cloned()
-            .map(|display_info| display_info.into()))
+        for display_info in displays_infos.iter() {
+            if name.0.matches(&ctx, &display_info.name)? {
+                return Ok(Some(display_info.clone().into()));
+            }
+        }
+
+        Ok(None)
     }
 
     /// Finds a display by its unique numeric ID, or `undefined` if not found.
