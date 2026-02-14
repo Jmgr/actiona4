@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use serde::{Deserialize, Serialize};
@@ -174,10 +174,12 @@ impl Ui {
                 }
             };
 
-            sender.send(result).unwrap();
+            _ = sender.send(result);
         });
 
-        let result = receiver.await.unwrap();
+        let result = receiver
+            .await
+            .map_err(|err| eyre!("message box did not return a result: {err}"))?;
 
         Ok(result)
     }

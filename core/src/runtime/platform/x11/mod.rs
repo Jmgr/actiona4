@@ -84,10 +84,16 @@ pub struct Runtime {
 
 impl Drop for Runtime {
     fn drop(&mut self) {
-        if let Some(main_loop_thread) = self.main_loop_thread.take()
-            && let Err(err) = main_loop_thread.join().expect("thread join should succeed")
-        {
-            error!("main loop thread finished with an error: {err}");
+        if let Some(main_loop_thread) = self.main_loop_thread.take() {
+            match main_loop_thread.join() {
+                Ok(Ok(())) => {}
+                Ok(Err(err)) => {
+                    error!("main loop thread finished with an error: {err}");
+                }
+                Err(_) => {
+                    error!("main loop thread panicked");
+                }
+            }
         }
     }
 }

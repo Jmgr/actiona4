@@ -23,7 +23,7 @@ use rustyline::{
 };
 use tokio::{fs, runtime::Handle};
 use tokio_util::sync::CancellationToken;
-use tracing::instrument;
+use tracing::{instrument, warn};
 use two_face::re_exports::syntect::{
     easy::HighlightLines,
     highlighting::{Style, Theme},
@@ -260,7 +260,13 @@ fn setup_highlighting() -> (SyntaxSet, Theme, SyntaxReference) {
     let syntax_set = two_face::syntax::extra_no_newlines();
     let theme_set = two_face::theme::extra();
     let theme = theme_set.get(two_face::theme::EmbeddedThemeName::Nord);
-    let syntax_reference = syntax_set.find_syntax_by_extension("ts").unwrap().clone();
+    let syntax_reference = if let Some(syntax_reference) = syntax_set.find_syntax_by_extension("ts")
+    {
+        syntax_reference.clone()
+    } else {
+        warn!("TypeScript syntax definition not found, falling back to plain text highlighting");
+        syntax_set.find_syntax_plain_text().clone()
+    };
 
     (syntax_set, theme.clone(), syntax_reference)
 }

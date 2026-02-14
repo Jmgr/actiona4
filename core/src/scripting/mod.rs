@@ -400,11 +400,17 @@ impl Engine {
                     }
 
                     if let Ok(object) = reason.try_into_exception() {
-                        let (message, stack) =
-                            Self::process_exception(object, sourcemaps_clone.clone()).unwrap();
-
                         let mut unhandled_exceptions_clone = unhandled_exceptions_clone.lock();
-                        unhandled_exceptions_clone.push((message, stack));
+                        if let Ok((message, stack)) =
+                            Self::process_exception(object, sourcemaps_clone.clone())
+                        {
+                            unhandled_exceptions_clone.push((message, stack));
+                        } else {
+                            unhandled_exceptions_clone.push((
+                                "Error: failed to process unhandled promise rejection".to_string(),
+                                Vec::new(),
+                            ));
+                        }
                     }
                 },
             )))
@@ -581,9 +587,9 @@ impl Engine {
             .as_object()
             .get("name")
             .unwrap_or_else(|_| "Error".to_string());
-        let message = exception.message().unwrap();
+        let message = exception.message().unwrap_or_default();
         let message = format!("{name}: {message}");
-        let stack = exception.stack().unwrap();
+        let stack = exception.stack().unwrap_or_default();
         let lines = stack.lines().map(|line| parse_callstack_line(line.trim()));
         let stack = match lines.collect::<Result<Vec<_>>>() {
             Ok(res) => res,

@@ -147,13 +147,12 @@ impl JsPoint {
     /// const p = Point.randomInCircle(100, 100, 50);
     /// ```
     #[qjs(static)]
-    #[must_use]
-    pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Self {
+    pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Result<Self> {
         let user_data = ctx.user_data();
 
-        super::Point::random_in_circle(center.0, radius, user_data.rng())
-            .unwrap()
-            .into() // TODO
+        let point = super::Point::random_in_circle(center.0, radius, user_data.rng())
+            .into_js_result(&ctx)?;
+        Ok(point.into())
     }
 
     /// Calculates the distance between this point and another.
@@ -242,9 +241,11 @@ impl JsPoint {
     /// const p = new Point(3, 4).scaled(2);
     /// println(p.toString()); // "Point(6, 8)"
     /// ```
-    pub fn scaled(&self, factor: f64) -> Result<Self> {
-        let result = self.inner.scaled(factor).unwrap(); // TODO
-        Ok(result.into())
+    pub fn scaled<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
+        self.inner
+            .scaled(factor)
+            .map(Into::into)
+            .into_js_result(&ctx)
     }
 
     /// Returns a string representation of this Point.

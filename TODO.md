@@ -7,20 +7,17 @@ Find Image:
  3) track an item (post 1.0)
  4) UI to test parameters and display results on screen (transparent target icon?)
  
- - window management: active-win-pos-rs
- 
  - High DPI?
 
  Mouse:
 - record
 - drag and drop?
 
+Select rect on screen
+- https://github.com/neXromancers/hacksaw/tree/master
+
 Update
 - show notification if new version
-
-Notification:
-- add a "permanent" mode that sets .hint(Hint::Resident(true)) and .timeout(Timeout::Never)
-- add a "close" function
 
 - check we don't await without a cancellation token
 
@@ -34,14 +31,6 @@ Note that the top-left hand corner of the desktop is not necessarily the same as
 If the user uses a desktop with multiple monitors, the top-left hand corner of the desktop is
 the top-left hand corner of the main monitor on Windows and macOS or the top-left of the
 leftmost monitor on X11.
-*/
-/*
-use windows_sys::Win32::Globalization::CP_UTF8;
-use windows_sys::Win32::System::Console::SetConsoleOutputCP;
-
-unsafe {
-    SetConsoleOutputCP(CP_UTF8);
-}
 */
 
 You basically have two different worlds here:

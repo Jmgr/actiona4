@@ -126,8 +126,8 @@ pub struct NotificationHandle {
 impl NotificationHandle {
     /// Programmatically close the notification.
     pub async fn close(self) -> Result<()> {
-        let inner = Arc::into_inner(self.inner)
-            .expect("update should not be running during close")
+        let inner = Arc::try_unwrap(self.inner)
+            .map_err(|_| eyre!("notification is still in use while closing"))?
             .into_inner();
 
         tokio::task::spawn_blocking(move || {
@@ -161,8 +161,8 @@ impl NotificationHandle {
     ) -> Result<Option<String>> {
         let (sender, receiver) = oneshot::channel::<Option<String>>();
         let sender = Mutex::new(Some(sender));
-        let inner = Arc::into_inner(self.inner)
-            .expect("update should not be running during wait_for_action")
+        let inner = Arc::try_unwrap(self.inner)
+            .map_err(|_| eyre!("notification is still in use while waiting for action"))?
             .into_inner();
 
         task_tracker.spawn_blocking(move || {

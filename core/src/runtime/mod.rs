@@ -453,8 +453,12 @@ impl Runtime {
                 let show = MenuItem::with_id(app, "show", "Show Info", true, None::<&str>)?;
                 let menu = Menu::with_items(app, &[&show, &quit])?;
 
-                let _tray = TrayIconBuilder::new()
-                    .icon(app.default_window_icon().unwrap().clone()) // or .title("Actiona 4")
+                let mut tray_builder = TrayIconBuilder::new();
+                if let Some(icon) = app.default_window_icon() {
+                    tray_builder = tray_builder.icon(icon.clone());
+                }
+
+                let _tray = tray_builder
                     .tooltip("Actiona 4 daemon") // hover text
                     .menu(&menu)
                     .show_menu_on_left_click(true) // default is true; set to false if you want left-click to do something else

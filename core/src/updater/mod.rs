@@ -177,7 +177,11 @@ impl Updater {
                 }
 
                 // Wait until next check
-                if cancel_on(&cancellation_token, sleep(next_check.try_into().unwrap()))
+                let Ok(next_check_duration) = next_check.try_into() else {
+                    warn!("next update check duration is out of range: {next_check:?}");
+                    break;
+                };
+                if cancel_on(&cancellation_token, sleep(next_check_duration))
                     .await
                     .is_err()
                 {

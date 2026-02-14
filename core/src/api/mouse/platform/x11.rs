@@ -34,8 +34,11 @@ impl MouseImpl {
         let x11_connection = runtime.platform().x11_connection();
         let cookie = xi_query_device(x11_connection.async_connection(), Device::ALL_MASTER)
             .await
-            .unwrap();
-        let reply = cookie.reply().await.unwrap();
+            .map_err(|err| MouseError::ConnectionError(err.to_string()))?;
+        let reply = cookie
+            .reply()
+            .await
+            .map_err(|err| MouseError::ReplyError(err.to_string()))?;
 
         let mut master_pointer_device_id = None;
 
@@ -45,7 +48,8 @@ impl MouseImpl {
             }
         }
 
-        let master_pointer_device_id = master_pointer_device_id.unwrap(); // TODO
+        let master_pointer_device_id =
+            master_pointer_device_id.ok_or(MouseError::NoMasterPointerDevice)?;
 
         Ok(Self {
             runtime,
