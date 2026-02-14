@@ -19,7 +19,7 @@ use windows::{
 use crate::{
     args::{Args, Commands},
     repl::repl,
-    updates::check_updates,
+    updates::{check_updates, check_updates_now},
 };
 
 mod built_info {
@@ -77,6 +77,17 @@ pub fn run_cli() -> Result<()> {
     // Handle commands that don't need the runtime
     match &args.command {
         Commands::Init { path } => return init::run(path),
+        Commands::Update => {
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .context("creating tokio runtime for update check")?;
+
+            return runtime.block_on(async {
+                let config = Config::new().await?;
+                check_updates_now(config).await
+            });
+        }
         Commands::Completions { shell } => {
             let mut cmd = <Args as clap::CommandFactory>::command();
             let bin_name = std::env::args_os()
@@ -157,7 +168,7 @@ pub fn run_cli() -> Result<()> {
 
                     repl(script_engine, runtime.cancellation_token()).await?;
                 }
-                Commands::Init { .. } | Commands::Completions { .. } => {
+                Commands::Init { .. } | Commands::Update | Commands::Completions { .. } => {
                     unreachable!("handled before runtime startup")
                 }
             };
@@ -270,6 +281,14 @@ mod tests {
 
         let args = maybe_insert_default_run(args);
         assert_eq!(args, vec!["actiona-run", "run", "script.ts"]);
+    }
+
+    #[test]
+    fn keeps_update_subcommand() {
+        let args = vec![OsString::from("actiona-run"), OsString::from("update")];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(args, vec!["actiona-run", "update"]);
     }
 
     #[test]

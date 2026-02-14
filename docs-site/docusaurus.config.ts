@@ -76,7 +76,7 @@ const config: Config = {
           "./plugins/typedoc-plugin-intrinsic-links.mjs",
         ],
         entryPoints: ["../run/assets/index.d.ts"],
-        tsconfig: "../tests/tsconfig.json",
+        tsconfig: "../run/assets/tsconfig.json",
         out: "docs/api",
         entryFileName: "index",
         readme: "none",

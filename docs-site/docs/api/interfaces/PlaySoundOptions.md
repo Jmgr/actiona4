@@ -18,7 +18,7 @@ fadeIn: 2000,
 
 ### fadeIn?
 
-> `optional` **fadeIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fadeIn**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Fade in duration
 
@@ -30,7 +30,7 @@ Fade in duration
 
 ### fadeOut?
 
-> `optional` **fadeOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fadeOut**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Fade out duration
 

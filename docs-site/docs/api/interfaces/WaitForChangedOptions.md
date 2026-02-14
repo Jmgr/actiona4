@@ -12,7 +12,7 @@ await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 }
 // Wait up to 1 second for a clipboard change
 await Concurrency.race([
 clipboard.waitForChanged(),
-sleep(1000),
+sleep("1s"),
 ]);
 ```
 
@@ -20,7 +20,7 @@ sleep(1000),
 
 ### interval?
 
-> `optional` **interval**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Polling interval in seconds.
 

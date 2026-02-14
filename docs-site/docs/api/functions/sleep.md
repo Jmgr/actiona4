@@ -1,19 +1,25 @@
 # Function: sleep()
 
-> **sleep**(`ms`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **sleep**(`duration`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-Pauses the execution for the given number of milliseconds.
+Pauses the execution for the given duration.
 
 ```ts
+// Wait 500 milliseconds
+await sleep(500);
+
 // Wait 1 second
-await sleep(1000);
+await sleep("1s");
+
+// Wait 1 hour
+await sleep("1h");
 ```
 
 ## Parameters
 
-### ms
+### duration
 
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ## Returns
 

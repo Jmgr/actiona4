@@ -32,6 +32,9 @@ pub enum Commands {
         path: PathBuf,
     },
 
+    /// 🔄 checks for updates now
+    Update,
+
     /// 🐚 outputs shell completions to stdout
     Completions {
         /// the shell to generate completions for

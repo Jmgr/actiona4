@@ -5819,6 +5819,7 @@ dependencies = [
  "directories",
  "flate2",
  "humantime",
+ "indicatif",
  "rquickjs",
  "rustyline",
  "shell-words",

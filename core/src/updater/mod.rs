@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::eyre};
 use indexmap::IndexMap;
 use reqwest::Client;
 use serde::Deserialize;
@@ -25,6 +25,7 @@ use crate::{
 };
 
 const UPDATER_URL: &str = "https://updates.actiona.app/v1";
+const MAX_ERROR_RESPONSE_LEN: usize = 128;
 
 #[cfg(not(windows))]
 #[derive(Clone, Copy, Debug, Display, Serialize)]
@@ -70,6 +71,26 @@ pub struct Updater {
 }
 
 impl Updater {
+    pub async fn check_once(
+        config: Config,
+        app: &str,
+        app_version: SemVer,
+    ) -> Result<Option<VersionInfo>> {
+        let updater = Self {
+            config,
+            app: app.to_string(),
+            app_version,
+        };
+
+        let result = updater.check_updates().await?;
+
+        if result.update_available {
+            Ok(result.info)
+        } else {
+            Ok(None)
+        }
+    }
+
     #[must_use]
     pub fn new(
         config: Config,
@@ -186,6 +207,12 @@ impl Updater {
         #[cfg(windows)]
         let display: Option<String> = None;
 
+        #[cfg(not(windows))]
+        let distribution = Some(System::distribution_id());
+
+        #[cfg(windows)]
+        let distribution: Option<String> = None;
+
         let os_version = System::os_version();
 
         #[cfg(not(windows))]
@@ -204,28 +231,75 @@ impl Updater {
         params.insert("app_channel", Channel::Stable.to_string());
         params.insert("app_version", self.app_version.to_string());
         params.insert("os_name", OS_NAME.to_string());
-        params.insert("os_distribution", System::distribution_id()); // TODO: remove option?
+
+        if let Some(distribution) = distribution {
+            params.insert("os_distribution", distribution);
+        }
 
         if let Some(os_version) = os_version {
             params.insert("os_version", os_version);
         }
 
         params.insert("os_arch", System::cpu_arch());
-        params.insert(
-            "os_locale",
-            get_locale().unwrap_or_else(|| String::from("en")),
-        ); // TODO: set as option
+
+        if let Some(os_locale) = get_locale() {
+            params.insert("os_locale", os_locale);
+        }
 
         if let Some(os_display) = os_display {
             params.insert("os_display", os_display);
         }
 
-        params.insert("app_distribution", "unknown".to_string()); // TODO: set as option
-        params.insert("app_locale", "en".to_string()); // TODO: set as option
+        // TODO: detect app distribution, if possible.
+        // params.insert("app_distribution", "unknown".to_string());
 
-        let response = client.get(UPDATER_URL).query(&params).send().await?;
-        let response = response.json::<UpdateResponse>().await?;
+        // actiona-run is not translated for now.
+        // params.insert("app_locale", "en".to_string());
+
+        let request = client.get(UPDATER_URL).query(&params).build()?;
+        let response = client
+            .execute(request)
+            .await
+            .map_err(|err| eyre!("error sending update request\nnetwork error: {err}"))?;
+        let status = response.status();
+        let body = response.text().await?;
+
+        if !status.is_success() {
+            if let Some(body) = summarize_response_body(&body) {
+                return Err(eyre!(
+                    "update server returned HTTP {status}\nresponse body:\n{body}"
+                ));
+            } else {
+                return Err(eyre!(
+                    "update server returned HTTP {status}\nresponse body:\n{body}"
+                ));
+            }
+        }
+
+        let response = serde_json::from_str::<UpdateResponse>(&body).map_err(|err| {
+            summarize_response_body(&body)
+                .map_or_else(|| eyre!("error decoding update response (HTTP {status}): {err}"),
+                    |body| eyre!("error decoding update response (HTTP {status}): {err}\nresponse body:\n{body}"))
+        })?;
 
         Ok(response)
     }
+}
+
+fn summarize_response_body(body: &str) -> Option<String> {
+    let body = body.trim();
+    if body.is_empty() {
+        return None;
+    }
+
+    let mut summary = String::new();
+    for (index, ch) in body.chars().enumerate() {
+        if index >= MAX_ERROR_RESPONSE_LEN {
+            summary.push_str("\n... (response truncated)");
+            break;
+        }
+        summary.push(ch);
+    }
+
+    Some(summary)
 }

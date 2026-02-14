@@ -3,20 +3,20 @@
 Options for measuring mouse movement speed.
 
 ```ts
-const speed = await mouse.measureSpeed({ duration: 3 });
+const speed = await mouse.measureSpeed({ duration: "3s" });
 ```
 
 ## Properties
 
 ### duration?
 
-> `optional` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Duration in seconds
+Measurement duration.
 
 #### Default Value
 
-`2`
+`2s`
 
 ***
 

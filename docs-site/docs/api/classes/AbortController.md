@@ -12,7 +12,7 @@ const controller = new AbortController();
 const task = source.findImage(template, { signal: controller.signal });
 
 // Cancel after 5 seconds
-await sleep(5000);
+await sleep("5s");
 controller.abort();
 ```
 

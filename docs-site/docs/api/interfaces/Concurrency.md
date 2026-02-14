@@ -5,7 +5,7 @@ Utilities for concurrent operations.
 ```ts
 // Race two promises, resolving with whichever finishes first, cancelling the other.
 // Note that this is different from `Promises.race`, which doesn't cancel any promise.
-const result = await Concurrency.race([sleep(100), sleep(1000)]);
+const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
 ```
 
 ## Methods
@@ -20,8 +20,8 @@ Losing tasks will be cancelled automatically.
 ```ts
 // Resolve with the first successful result.
 const result = await Concurrency.race([
-sleep(200).then(() => "fast"),
-sleep(1000).then(() => "slow"),
+sleep("200ms").then(() => "fast"),
+sleep("1s").then(() => "slow"),
 ]);
 // result === "fast"
 ```
@@ -30,7 +30,7 @@ sleep(1000).then(() => "slow"),
 // Use race to implement a timeout.
 const result = await Concurrency.race([
 fetchData(),
-sleep(5000).then(() => { throw new Error("Timeout"); })
+sleep("5s").then(() => { throw new Error("Timeout"); })
 ]);
 ```
 
@@ -39,8 +39,8 @@ sleep(5000).then(() => { throw new Error("Timeout"); })
 // Here the error is thrown quickly and the slower task is cancelled.
 try {
 await Concurrency.race([
-sleep(50).then(() => { throw new Error("Failed quickly"); }),
-sleep(2000),
+sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
+sleep("2s"),
 ]);
 } catch (e) {
 console.println(e); // Error: Failed quickly
@@ -50,8 +50,8 @@ console.println(e); // Error: Failed quickly
 ```ts
 // You can cancel the race task itself.
 const t = Concurrency.race([
-sleep(5000),
-sleep(8000),
+sleep("5s"),
+sleep("8s"),
 ]);
 t.cancel();
 await t; // throws "Error: Cancelled"

@@ -17,7 +17,7 @@ println(result.stdout);
 ```
 
 ```ts
-const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
 println(pid);
 ```
 
@@ -153,7 +153,7 @@ Starts a detached process and returns its PID.
 The process will continue running after the script exits.
 
 ```ts
-const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
 println(`Started server with PID: ${pid}`);
 ```
 

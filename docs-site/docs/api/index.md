@@ -1,4 +1,4 @@
-# my-api
+# Documentation
 
 ## App
 
@@ -42,6 +42,7 @@
 - [inspect](functions/inspect.md)
 - [print](functions/print.md)
 - [println](functions/println.md)
+- [registrationTarget](functions/registrationTarget.md)
 - [sleep](functions/sleep.md)
 
 ## Directory
@@ -126,6 +127,27 @@
 ## Name
 
 - [Wildcard](classes/Wildcard.md)
+
+## Notification
+
+- [NotificationActionPlacement](enumerations/NotificationActionPlacement.md)
+- [NotificationActivationType](enumerations/NotificationActivationType.md)
+- [NotificationButtonStyle](enumerations/NotificationButtonStyle.md)
+- [NotificationInputType](enumerations/NotificationInputType.md)
+- [NotificationScenario](enumerations/NotificationScenario.md)
+- [NotificationSound](enumerations/NotificationSound.md)
+- [NotificationUrgency](enumerations/NotificationUrgency.md)
+- [Notification](interfaces/Notification.md)
+- [NotificationAction](interfaces/NotificationAction.md)
+- [NotificationCustomHint](interfaces/NotificationCustomHint.md)
+- [NotificationCustomIntHint](interfaces/NotificationCustomIntHint.md)
+- [NotificationHandle](interfaces/NotificationHandle.md)
+- [NotificationHeader](interfaces/NotificationHeader.md)
+- [NotificationInput](interfaces/NotificationInput.md)
+- [NotificationOptions](interfaces/NotificationOptions.md)
+- [NotificationSelection](interfaces/NotificationSelection.md)
+- [WaitForActionOptions](interfaces/WaitForActionOptions.md)
+- [notification](variables/notification.md)
 
 ## Path
 
