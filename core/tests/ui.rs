@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used, clippy::expect_used)]
+
 use actiona_core::runtime::Runtime;
 use askama::Template;
 use libtest_mimic_collect::libtest_mimic::Arguments;

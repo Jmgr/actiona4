@@ -5,7 +5,7 @@ use std::{
 };
 
 use derive_more::{Deref, From};
-use libwmctl::{ErrorWrapper, Position, Shape, active, windows};
+use libwmctl::{Position, Shape, active, windows};
 use parking_lot::Mutex;
 use x11rb::{
     connection::Connection,
@@ -18,7 +18,7 @@ use crate::{
         point::{Point, try_point},
         rect::{Rect, rect},
         size::{Size, try_size},
-        windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
+        windows::platform::{Registry, Result, WindowId, WindowsHandler},
     },
     runtime::Runtime,
     types::{
@@ -56,24 +56,6 @@ impl Hash for WindowHandle {
 pub struct X11WindowHandler {
     inner: Mutex<Registry<WindowHandle>>,
     runtime: Arc<Runtime>,
-}
-
-impl From<ErrorWrapper> for Error {
-    fn from(value: ErrorWrapper) -> Self {
-        Self::Other(value.into())
-    }
-}
-
-impl From<x11rb::rust_connection::ConnectionError> for Error {
-    fn from(value: x11rb::rust_connection::ConnectionError) -> Self {
-        Self::Other(value.into())
-    }
-}
-
-impl From<x11rb::rust_connection::ReplyError> for Error {
-    fn from(value: x11rb::rust_connection::ReplyError) -> Self {
-        Self::Other(value.into())
-    }
 }
 
 impl WindowsHandler for X11WindowHandler {

@@ -1,8 +1,8 @@
-use std::{num::TryFromIntError, sync::Arc};
+use std::sync::Arc;
 
-use color_eyre::Report;
-use display_info::error::DIError;
-use thiserror::Error;
+use color_eyre::eyre::eyre;
+
+pub type Result<T> = color_eyre::Result<T>;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 
@@ -18,29 +18,6 @@ use crate::{
 };
 
 pub mod js;
-
-#[derive(Debug, Error)]
-pub enum DisplaysError {
-    #[error("Connection to the X11 server failed: {0}")]
-    ConnectionError(String),
-
-    #[error("Display info error: {0}")]
-    DisplayInfoError(#[from] DIError),
-
-    #[error("No displays detected")]
-    NoDisplays,
-
-    #[error("No primary display found")]
-    NoPrimaryDisplay,
-
-    #[error(transparent)]
-    TryFromIntError(#[from] TryFromIntError),
-
-    #[error(transparent)]
-    EyreError(#[from] Report),
-}
-
-pub type Result<T> = std::result::Result<T, DisplaysError>;
 
 #[derive(Clone, Debug)]
 pub struct Displays {
@@ -72,7 +49,7 @@ impl Displays {
             total_area += rect.size.width * rect.size.height;
         }
         if total_area == 0 {
-            return Err(DisplaysError::NoDisplays);
+            return Err(eyre!("no displays detected"));
         }
 
         // Pick a display with probability proportional to its area
@@ -92,7 +69,7 @@ impl Displays {
             }
         }
 
-        let rect = chosen.ok_or(DisplaysError::NoDisplays)?;
+        let rect = chosen.ok_or_else(|| eyre!("no displays detected"))?;
         drop(displays_info); // release the lock before sampling inside the rect
 
         // Sample uniformly inside the chosen rect.
@@ -103,7 +80,7 @@ impl Displays {
         let x = rng.random_range(i64::from(rect.top_left.x)..x_end);
         let y = rng.random_range(i64::from(rect.top_left.y)..y_end);
 
-        Ok(try_point(x, y)?)
+        try_point(x, y)
     }
 
     pub async fn primary_display(&self) -> Result<DisplayInfo> {
@@ -112,15 +89,15 @@ impl Displays {
             .iter()
             .find(|display| display.is_primary)
             .cloned()
-            .ok_or(DisplaysError::NoPrimaryDisplay)
+            .ok_or_else(|| eyre!("no primary display found"))
     }
 
     pub async fn wait_get_info(&self) -> Result<Arc<DisplayInfoVec>> {
-        Ok(self.displays_info.wait_get().await?)
+        self.displays_info.wait_get().await
     }
 
     pub async fn changed(&self) -> Result<()> {
-        Ok(self.displays_info.changed().await?)
+        self.displays_info.changed().await
     }
 
     pub fn refresh(&self) {

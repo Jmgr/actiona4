@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
+use color_eyre::{Result, eyre::eyre};
 use tokio::select;
 use tokio_util::sync::CancellationToken;
 use x11rb_async::protocol::xinput::{Device, DeviceType, xi_query_device, xi_query_pointer};
 
-use super::{Button, MouseImplTrait, Result};
+use super::{Button, MouseImplTrait};
 use crate::{
-    api::mouse::{ButtonConditions, MouseError},
+    api::mouse::ButtonConditions,
     error::CommonError,
     runtime::{Runtime, events::MouseButtonEvent},
 };
@@ -32,13 +33,8 @@ impl Button {
 impl MouseImpl {
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         let x11_connection = runtime.platform().x11_connection();
-        let cookie = xi_query_device(x11_connection.async_connection(), Device::ALL_MASTER)
-            .await
-            .map_err(|err| MouseError::ConnectionError(err.to_string()))?;
-        let reply = cookie
-            .reply()
-            .await
-            .map_err(|err| MouseError::ReplyError(err.to_string()))?;
+        let cookie = xi_query_device(x11_connection.async_connection(), Device::ALL_MASTER).await?;
+        let reply = cookie.reply().await?;
 
         let mut master_pointer_device_id = None;
 
@@ -48,8 +44,8 @@ impl MouseImpl {
             }
         }
 
-        let master_pointer_device_id =
-            master_pointer_device_id.ok_or(MouseError::NoMasterPointerDevice)?;
+        let master_pointer_device_id = master_pointer_device_id
+            .ok_or_else(|| eyre!("could not find master pointer device"))?;
 
         Ok(Self {
             runtime,
@@ -68,18 +64,13 @@ impl MouseImplTrait for MouseImpl {
             x11_connection.screen().root,
             master_pointer_device_id,
         )
-        .await
-        .map_err(|err| MouseError::ConnectionError(err.to_string()))?;
+        .await?;
 
-        let buttons = cookie
-            .reply()
-            .await
-            .map_err(|err| MouseError::ReplyError(err.to_string()))?
-            .buttons;
+        let buttons = cookie.reply().await?.buttons;
 
-        let mask = buttons.first().ok_or_else(|| {
-            MouseError::Unexpected("button mask should have at least one entry".into())
-        })?;
+        let mask = buttons
+            .first()
+            .ok_or_else(|| eyre!("button mask should have at least one entry"))?;
 
         Ok(mask & button.into_button_mask() != 0)
     }

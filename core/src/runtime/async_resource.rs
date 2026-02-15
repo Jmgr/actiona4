@@ -50,6 +50,6 @@ impl<T> AsyncResource<T> {
     /// There is no guarantee that the value is different.
     /// Returns an error if cancelled.
     pub async fn changed(&self) -> Result<()> {
-        Ok(cancel_on(&self.cancellation_token, self.notify.notified()).await?)
+        cancel_on(&self.cancellation_token, self.notify.notified()).await
     }
 }

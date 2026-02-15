@@ -21,12 +21,6 @@ use crate::{
     types::display::{DisplayFields, display_with_type},
 };
 
-impl<T> IntoJsResult<T> for super::Result<T> {
-    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
-        self.map_err(|err| rquickjs::Exception::throw_message(ctx, &err.to_string()))
-    }
-}
-
 /// Window search options.
 ///
 /// @options

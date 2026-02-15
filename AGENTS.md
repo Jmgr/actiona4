@@ -96,7 +96,7 @@ Platform-specific code is implemented in `platform` directories.
 ## Key Conventions
 
 - Use `#[instrument(skip_all)]` from tracing for function-level instrumentation
-- Errors use `color_eyre::Result` and `thiserror` for custom error types
+- Errors use `color_eyre::Result` for custom error types
 - JavaScript methods use camelCase naming via `#[rquickjs::methods(rename_all = "camelCase")]`
 - Clippy lints: `#![warn(clippy::all, clippy::nursery)]` and `#![deny(unsafe_code)]`
 - Rust edition 2024 with stable toolchain (nightly only for rustfmt)

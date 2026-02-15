@@ -1,5 +1,5 @@
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Result,
+    Ctx, JsLifetime, Result,
     class::{Trace, Tracer},
 };
 use tracing::instrument;
@@ -14,12 +14,6 @@ use crate::{
     },
     runtime::{self, WithUserData},
 };
-
-impl<T> IntoJsResult<T> for super::Result<T> {
-    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
-        self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
-    }
-}
 
 /// The global displays singleton for querying connected monitors and screens.
 ///

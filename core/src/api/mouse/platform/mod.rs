@@ -4,9 +4,10 @@ pub mod x11;
 #[cfg(windows)]
 pub mod win;
 
+use color_eyre::Result;
 use tokio_util::sync::CancellationToken;
 
-pub use super::{Button, Result};
+pub use super::Button;
 use crate::{api::mouse::ButtonConditions, runtime::events::MouseButtonEvent};
 
 pub trait MouseImplTrait {

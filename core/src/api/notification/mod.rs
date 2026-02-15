@@ -74,6 +74,7 @@ pub struct NotificationCustomIntHint {
 pub struct NotificationAction {
     pub identifier: String,
     pub label: String,
+
     // Windows-specific
     pub action_type: Option<String>,
     pub activation_type: Option<NotificationActivationType>,

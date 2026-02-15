@@ -5,6 +5,7 @@ use std::{
     hash::{Hash, Hasher},
 };
 
+use color_eyre::eyre::eyre;
 use derive_more::Deref;
 use parking_lot::Mutex;
 use windows::Win32::{
@@ -26,7 +27,7 @@ use crate::{
         point::{Point, point},
         rect::Rect,
         size::Size,
-        windows::platform::{Error, Registry, Result, WindowId, WindowsHandler},
+        windows::platform::{Registry, Result, WindowId, WindowsHandler},
     },
     platform::win::safe_handle::SafeDesktopHandle,
     types::su32::Su32,
@@ -283,7 +284,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn active_window(&self) -> Result<WindowId> {
         let foreground = unsafe { GetForegroundWindow() };
         if foreground.0.is_null() {
-            return Err(Error::NotFound);
+            return Err(eyre!("not found"));
         }
 
         let window = WindowHandle(foreground);

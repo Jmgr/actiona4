@@ -2,6 +2,7 @@
 #![warn(clippy::all, clippy::nursery)]
 #![warn(clippy::as_conversions)]
 #![warn(clippy::must_use_candidate)]
+//#![warn(clippy::unwrap_used)]
 #![deny(unsafe_code)]
 #![allow(clippy::too_long_first_doc_paragraph)]
 #![allow(clippy::significant_drop_tightening)]
@@ -14,7 +15,7 @@ use rquickjs::{Coerced, Ctx, Exception, Value};
 use tokio::select;
 use tokio_util::sync::CancellationToken;
 
-use crate::error::{CommonError, Error};
+use crate::error::CommonError;
 
 pub mod api;
 pub mod config;
@@ -50,6 +51,12 @@ where
 {
     fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
         self.map_err(|err| err.into_js(ctx))
+    }
+}
+
+impl<T> IntoJsResult<T> for std::result::Result<T, color_eyre::Report> {
+    fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
+        self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }
 }
 
@@ -112,12 +119,12 @@ macro_rules! newtype {
     };
 }
 
-async fn cancel_on<T, F>(token: &CancellationToken, fut: F) -> Result<T, Error>
+async fn cancel_on<T, F>(token: &CancellationToken, fut: F) -> color_eyre::Result<T>
 where
     F: Future<Output = T>,
 {
     select! {
-        _ = token.cancelled() => Err(Error::CommonError(CommonError::Cancelled)),
+        _ = token.cancelled() => Err(CommonError::Cancelled.into()),
         v = fut => Ok(v),
     }
 }

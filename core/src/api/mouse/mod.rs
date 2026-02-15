@@ -4,9 +4,9 @@ use std::{
     time::{Duration, Instant},
 };
 
-use color_eyre::Report;
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Display;
-use enigo::{Enigo, InputError, NewConError};
+use enigo::Enigo;
 use indexmap::IndexSet;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
@@ -15,7 +15,6 @@ use parking_lot::Mutex;
 use platform::MouseImplTrait;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-use thiserror::Error;
 use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::{info, instrument};
@@ -44,41 +43,6 @@ use platform::x11::MouseImpl;
 
 use super::point::Point;
 use crate::{api::point::point, runtime::Runtime};
-
-#[derive(Debug, Error)]
-pub enum MouseError {
-    #[error(transparent)]
-    CommonError(#[from] CommonError),
-
-    #[error(transparent)]
-    EyreReport(#[from] Report),
-
-    #[error("Connecting to the X11 server failed: {0}")]
-    ConnectError(String),
-
-    #[error("Connection to the X11 server failed: {0}")]
-    ConnectionError(String),
-
-    #[error("X11 reply error: {0}")]
-    ReplyError(String),
-
-    #[error("Could not find master pointer device")]
-    NoMasterPointerDevice,
-
-    #[error("Unexpected error: {0}")]
-    Unexpected(String),
-
-    #[error("Enigo new connection error: {0}")]
-    EnigoNewConnError(#[from] NewConError),
-
-    #[error("Enigo input error: {0}")]
-    EnigoInputError(#[from] InputError),
-
-    #[error("{0}")]
-    ParameterError(String),
-}
-
-pub type Result<T> = std::result::Result<T, MouseError>;
 
 /// Mouse button.
 ///
@@ -485,15 +449,13 @@ impl Mouse {
         let distance = start_position.distance_to(target_position);
 
         let duration = if options.speed < 0. {
-            return Err(MouseError::ParameterError(
-                "speed must be greater than zero".into(),
-            ));
+            return Err(eyre!("speed must be greater than zero"));
         } else {
             Duration::from_secs_f64(distance / options.speed)
         };
 
         if options.interval.0.is_zero() {
-            return Err(MouseError::ParameterError("interval cannot be zero".into()));
+            return Err(eyre!("interval cannot be zero"));
         }
 
         let mut perlin_rng = UniformRandomGen::new(rng.next_u32());
@@ -542,10 +504,7 @@ impl Mouse {
                 perpendicular_y * noise * damping_factor,
             );
 
-            let position = tween.move_next()
-                + try_point(noise_offset_x, noise_offset_y).map_err(
-                    |err: color_eyre::eyre::Error| MouseError::ParameterError(err.to_string()),
-                )?;
+            let position = tween.move_next() + try_point(noise_offset_x, noise_offset_y)?;
 
             self.set_position(position, Coordinate::Abs)?;
 

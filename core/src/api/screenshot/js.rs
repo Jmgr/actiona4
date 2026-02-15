@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use rquickjs::{
-    Ctx, Exception, JsLifetime, Promise, Result,
+    Ctx, JsLifetime, Promise, Result,
     class::{Trace, Tracer},
     prelude::Opt,
 };
@@ -24,12 +24,6 @@ use crate::{
     },
     runtime::{Runtime, WithUserData},
 };
-
-impl<T> IntoJsResult<T> for super::Result<T> {
-    fn into_js_result(self, ctx: &Ctx<'_>) -> Result<T> {
-        self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
-    }
-}
 
 impl<'js> Trace<'js> for super::Screenshot {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -298,7 +292,9 @@ where
                     progress_sender,
                 ))
                 .await
-                .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
+                .map_err(|e| {
+                    rquickjs::Exception::throw_message(&ctx, &format!("Task join error: {e}"))
+                })?
                 .into_js_result(&ctx)?;
 
             Ok(result)

@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use thiserror::Error;
-
 use self::platform::WindowsHandler;
 use crate::{
     api::{point::Point, rect::Rect, size::Size},
@@ -11,15 +9,9 @@ use crate::{
 pub mod js;
 pub mod platform;
 
-pub use platform::{Error, WindowId};
+pub use platform::WindowId;
 
-#[derive(Debug, Error)]
-pub enum WindowsError {
-    #[error(transparent)]
-    Platform(#[from] platform::Error),
-}
-
-pub type Result<T> = std::result::Result<T, WindowsError>;
+pub type Result<T> = color_eyre::Result<T>;
 
 #[derive(Clone, Debug)]
 pub struct Windows {
@@ -50,66 +42,66 @@ impl Windows {
     }
 
     pub fn all(&self) -> Result<Vec<WindowId>> {
-        Ok(self.handler.all()?)
+        self.handler.all()
     }
 
     pub fn active_window(&self) -> Result<WindowId> {
-        Ok(self.handler.active_window()?)
+        self.handler.active_window()
     }
 
     pub fn is_visible(&self, id: WindowId) -> Result<bool> {
-        Ok(self.handler.is_visible(id)?)
+        self.handler.is_visible(id)
     }
 
     pub fn title(&self, id: WindowId) -> Result<String> {
-        Ok(self.handler.title(id)?)
+        self.handler.title(id)
     }
 
     pub fn classname(&self, id: WindowId) -> Result<String> {
-        Ok(self.handler.classname(id)?)
+        self.handler.classname(id)
     }
 
     pub fn close(&self, id: WindowId) -> Result<()> {
-        Ok(self.handler.close(id)?)
+        self.handler.close(id)
     }
 
     pub fn process_id(&self, id: WindowId) -> Result<u32> {
-        Ok(self.handler.process_id(id)?)
+        self.handler.process_id(id)
     }
 
     pub fn rect(&self, id: WindowId) -> Result<Rect> {
-        Ok(self.handler.rect(id)?)
+        self.handler.rect(id)
     }
 
     pub fn set_active(&self, id: WindowId) -> Result<()> {
-        Ok(self.handler.set_active(id)?)
+        self.handler.set_active(id)
     }
 
     pub fn minimize(&self, id: WindowId) -> Result<()> {
-        Ok(self.handler.minimize(id)?)
+        self.handler.minimize(id)
     }
 
     pub fn maximize(&self, id: WindowId) -> Result<()> {
-        Ok(self.handler.maximize(id)?)
+        self.handler.maximize(id)
     }
 
     pub fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
-        Ok(self.handler.set_position(id, position)?)
+        self.handler.set_position(id, position)
     }
 
     pub fn position(&self, id: WindowId) -> Result<Point> {
-        Ok(self.handler.position(id)?)
+        self.handler.position(id)
     }
 
     pub fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
-        Ok(self.handler.set_size(id, size)?)
+        self.handler.set_size(id, size)
     }
 
     pub fn size(&self, id: WindowId) -> Result<Size> {
-        Ok(self.handler.size(id)?)
+        self.handler.size(id)
     }
 
     pub fn is_active(&self, id: WindowId) -> Result<bool> {
-        Ok(self.handler.is_active(id)?)
+        self.handler.is_active(id)
     }
 }

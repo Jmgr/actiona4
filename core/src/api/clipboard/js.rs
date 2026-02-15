@@ -9,7 +9,7 @@ use rquickjs::{
 use tracing::instrument;
 
 use crate::{
-    IntoJSError, IntoJsResult,
+    IntoJsResult,
     api::{
         image::js::JsImage,
         js::{
@@ -21,8 +21,6 @@ use crate::{
     },
     newtype,
 };
-
-impl IntoJSError for super::Error {}
 
 newtype!(
     #[derive(JsLifetime)]

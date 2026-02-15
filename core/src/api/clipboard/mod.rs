@@ -2,7 +2,6 @@ use std::{
     borrow::Cow,
     fmt::Debug,
     hash::{DefaultHasher, Hash, Hasher},
-    num::TryFromIntError,
     path::{Path, PathBuf},
     sync::Arc,
     time::Duration,
@@ -11,7 +10,7 @@ use std::{
 #[cfg(linux)]
 use arboard::{ClearExtLinux, GetExtLinux, LinuxClipboardKind, SetExtLinux};
 use arboard::{Get, ImageData, Set};
-use color_eyre::Report;
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Display;
 use image::RgbaImage;
 use itertools::Itertools;
@@ -19,7 +18,6 @@ use macros::{FromSerde, IntoSerde};
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-use thiserror::Error;
 use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
@@ -30,39 +28,10 @@ use crate::{api::image::Image, error::CommonError};
 
 pub mod js;
 
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error(transparent)]
-    EyreReport(#[from] Report),
-
-    #[error(transparent)]
-    TryFromIntError(#[from] TryFromIntError),
-
-    #[error(transparent)]
-    CommonError(#[from] CommonError),
-
-    #[error("content not available (incorrect format or empty clipboard)")]
-    ContentNotAvailable,
-
-    #[error("format conversion failure")]
-    ConversionFailure,
-}
-
-impl From<arboard::Error> for Error {
-    fn from(value: arboard::Error) -> Self {
-        match value {
-            arboard::Error::ContentNotAvailable => Self::ContentNotAvailable,
-            arboard::Error::ClipboardNotSupported => {
-                CommonError::UnsupportedPlatform("not supported on platform".to_string()).into()
-            }
-            arboard::Error::ConversionFailure => Self::ConversionFailure,
-            arboard::Error::Unknown { description } => CommonError::Unknown(description).into(),
-            _ => CommonError::Unexpected.into(),
-        }
-    }
-}
-
-pub type Result<T> = std::result::Result<T, Error>;
+/// Sentinel error for "content not available" — used for `downcast_ref` matching.
+#[derive(Debug, thiserror::Error)]
+#[error("content not available (incorrect format or empty clipboard)")]
+pub struct ContentNotAvailable;
 
 #[derive(
     Clone,
@@ -192,7 +161,7 @@ impl Clipboard {
         } else if let Ok(data) = self.get(|get| get.text(), mode) {
             ClipboardData::Text(data)
         } else {
-            return Err(Error::ContentNotAvailable);
+            return Err(ContentNotAvailable.into());
         })
     }
 
@@ -224,7 +193,9 @@ impl Clipboard {
 
                 Ok(ClipboardSnapshot::Hash(hasher.finish()))
             }
-            Err(Error::ContentNotAvailable) => Ok(ClipboardSnapshot::Empty),
+            Err(err) if err.downcast_ref::<ContentNotAvailable>().is_some() => {
+                Ok(ClipboardSnapshot::Empty)
+            }
             Err(err) => Err(err),
         }
     }
@@ -235,7 +206,7 @@ impl Clipboard {
         cancellation_token: CancellationToken,
     ) -> Result<()> {
         if options.interval.is_zero() {
-            return Err(CommonError::Unsupported("interval cannot be zero".to_string()).into());
+            return Err(eyre!("unsupported: interval cannot be zero"));
         }
 
         #[cfg(windows)]
@@ -309,16 +280,17 @@ impl Clipboard {
     pub fn set_image(&self, image: Image, mode: Option<ClipboardMode>) -> Result<()> {
         let image = image.into_rgba8();
         let (width, height) = image.dimensions();
+        let width: usize = width.try_into()?;
+        let height: usize = height.try_into()?;
         let bytes = Cow::Owned(image.into_raw());
 
         self.set(
             |set| {
                 set.image(ImageData {
-                    width: width.try_into()?,
-                    height: height.try_into()?,
+                    width,
+                    height,
                     bytes,
-                })?;
-                Result::Ok(())
+                })
             },
             mode,
         )?;
@@ -334,7 +306,7 @@ impl Clipboard {
             image.height.try_into()?,
             image.bytes.to_vec(),
         )
-        .ok_or(Error::ConversionFailure)?;
+        .ok_or_else(|| eyre!("format conversion failure"))?;
 
         Ok(Image::from_rgba8(img))
     }

@@ -1,52 +1,14 @@
-use std::ffi::{CString, NulError};
+use std::ffi::CString;
 
-use thiserror::Error;
+use color_eyre::Result;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use x11rb::{rust_connection::RustConnection, xcb_ffi::XCBConnection};
 use x11rb_async::{
-    connection::Connection as AsyncConnection,
-    errors::{ConnectError, ConnectionError, ReplyError},
-    protocol::xproto::Screen,
+    connection::Connection as AsyncConnection, protocol::xproto::Screen,
     rust_connection::RustConnection as AsyncRustConnection,
 };
 
 use crate::cancel_on;
-
-#[allow(clippy::enum_variant_names)]
-#[derive(Debug, Error)]
-pub enum X11Error {
-    #[error("Connecting to the X11 server failed: {0}")]
-    ConnectError(String),
-
-    #[error("Connection to the X11 server failed: {0}")]
-    ConnectionError(String),
-
-    #[error("X11 reply error: {0}")]
-    ReplyError(String),
-
-    #[error(transparent)]
-    NulErr(#[from] NulError),
-}
-
-impl From<ConnectError> for X11Error {
-    fn from(value: ConnectError) -> Self {
-        Self::ConnectError(value.to_string())
-    }
-}
-
-impl From<ConnectionError> for X11Error {
-    fn from(value: ConnectionError) -> Self {
-        Self::ConnectionError(value.to_string())
-    }
-}
-
-impl From<ReplyError> for X11Error {
-    fn from(value: ReplyError) -> Self {
-        Self::ReplyError(value.to_string())
-    }
-}
-
-pub type Result<T> = std::result::Result<T, X11Error>;
 
 #[derive(Debug)]
 pub struct X11Connection {

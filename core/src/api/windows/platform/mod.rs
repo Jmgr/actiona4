@@ -26,19 +26,7 @@ impl WindowId {
     }
 }
 
-#[derive(Debug, thiserror::Error)]
-pub enum Error {
-    #[error("unsupported")]
-    Unsupported,
-
-    #[error("not found")]
-    NotFound,
-
-    #[error(transparent)]
-    Other(#[from] color_eyre::Report),
-}
-
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = color_eyre::Result<T>;
 
 pub trait WindowsHandler {
     fn all(&self) -> Result<Vec<WindowId>>;
@@ -100,7 +88,9 @@ impl<H: Clone + Eq + Hash> Registry<H> {
     }
 
     pub fn get_handle(&self, id: WindowId) -> Result<&H> {
-        self.map.get_by_left(&id).ok_or(Error::NotFound)
+        self.map
+            .get_by_left(&id)
+            .ok_or_else(|| color_eyre::eyre::eyre!("not found"))
     }
 
     pub fn get_id(&self, handle: &H) -> Option<WindowId> {
