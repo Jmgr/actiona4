@@ -1,10 +1,11 @@
 use std::sync::{
-    Arc, Mutex, Weak,
+    Arc, Weak,
     atomic::{AtomicUsize, Ordering},
 };
 
 use color_eyre::Result;
 use once_cell::sync::Lazy;
+use parking_lot::Mutex;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use windows::Win32::{
     Foundation::{LPARAM, LRESULT, WPARAM},
@@ -71,9 +72,7 @@ impl MouseInputDispatcher {
         .await?;
 
         Ok(Arc::new_cyclic(|me| {
-            *MOUSE_INPUT_DISPATCHER
-                .lock()
-                .unwrap_or_else(|e| e.into_inner()) = me.clone();
+            *MOUSE_INPUT_DISPATCHER.lock() = me.clone();
 
             Self {
                 mouse_buttons: TopicWrapper::new(
@@ -187,11 +186,7 @@ unsafe extern "system" fn low_level_mouse_proc(
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     }
 
-    let Some(dispatcher) = MOUSE_INPUT_DISPATCHER
-        .lock()
-        .unwrap_or_else(|e| e.into_inner())
-        .upgrade()
-    else {
+    let Some(dispatcher) = MOUSE_INPUT_DISPATCHER.lock().upgrade() else {
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     };
 

@@ -1,12 +1,13 @@
 #![allow(unsafe_code)]
 
 use std::{
-    sync::{Arc, Mutex, Weak},
+    sync::{Arc, Weak},
     thread::{self, JoinHandle},
 };
 
 use color_eyre::Result;
 use once_cell::sync::Lazy;
+use parking_lot::Mutex;
 use tokio::sync::oneshot;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
@@ -47,7 +48,7 @@ static RUNTIME: Lazy<Mutex<Weak<Runtime>>> = Lazy::new(|| Mutex::new(Weak::new()
 
 #[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
-    let Some(runtime) = RUNTIME.lock().unwrap_or_else(|e| e.into_inner()).upgrade() else {
+    let Some(runtime) = RUNTIME.lock().upgrade() else {
         return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
     };
 
@@ -157,7 +158,7 @@ impl Runtime {
             KeyboardInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
         Ok(Arc::new_cyclic(|me| {
-            *RUNTIME.lock().unwrap_or_else(|e| e.into_inner()) = me.clone();
+            *RUNTIME.lock() = me.clone();
 
             Self {
                 mouse_input_dispatcher,
