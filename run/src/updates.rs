@@ -26,22 +26,22 @@ pub async fn check_updates(
     task_tracker: TaskTracker,
 ) -> Result<()> {
     // CLI and env have a higher priority than settings
-    let updates_enabled = args
-        .disable_updates
-        .unwrap_or_else(|| config.settings(|settings| !settings.disable_updates));
+    let update_check = args
+        .update_check
+        .unwrap_or_else(|| config.settings(|settings| settings.update_check));
 
     let app_version =
         SemVer::new(built_info::PKG_VERSION).ok_or_eyre("failed to parse crate version")?;
     let (_updater, ready) = Updater::new(
         config.clone(),
-        updates_enabled,
+        update_check,
         &app_name(),
         app_version.clone(),
         cancellation_token,
         task_tracker,
     );
 
-    if !updates_enabled {
+    if !update_check {
         return Ok(());
     }
 

@@ -48,6 +48,20 @@ pub enum Commands {
         /// the shell to generate completions for
         shell: clap_complete::Shell,
     },
+
+    /// ⚙️ gets or sets configuration values
+    ///
+    /// Examples:
+    /// - `actiona-run config update_check true`
+    /// - `actiona-run config telemetry false`
+    /// - `actiona-run config update_check` (prints current value)
+    Config {
+        /// the setting name (update_check, telemetry)
+        key: String,
+
+        /// the value to set (true or false); omit to read the current value
+        value: Option<bool>,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -68,7 +82,7 @@ pub struct Args {
     /// Should Actiona check for updates once per day?
     /// Default is true.
     #[arg(long, env)]
-    pub disable_updates: Option<bool>,
+    pub update_check: Option<bool>,
 
     /// Should Actiona send anonymous telemetry data?
     /// Default is false.

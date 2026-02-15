@@ -38,6 +38,7 @@ mod built_info {
 }
 
 mod args;
+mod config;
 mod init;
 mod repl;
 mod updates;
@@ -90,7 +91,10 @@ pub fn run_cli() -> Result<()> {
     #[cfg(windows)]
     if matches!(
         args.command,
-        Commands::Update | Commands::Completions { .. } | Commands::Init { .. }
+        Commands::Update
+            | Commands::Completions { .. }
+            | Commands::Init { .. }
+            | Commands::Config { .. }
     ) {
         unsafe {
             _ = AttachConsole(u32::MAX);
@@ -100,6 +104,17 @@ pub fn run_cli() -> Result<()> {
     // Handle commands that don't need the runtime
     match &args.command {
         Commands::Init { path } => return init::run(path),
+        Commands::Config { key, value } => {
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .context("creating tokio runtime for config")?;
+
+            return runtime.block_on(async {
+                let cfg = Config::new().await?;
+                config::run(cfg, key, *value).await
+            });
+        }
         Commands::Update => {
             let runtime = tokio::runtime::Builder::new_current_thread()
                 .enable_all()
@@ -191,7 +206,10 @@ pub fn run_cli() -> Result<()> {
 
                     repl(script_engine, runtime.cancellation_token()).await?;
                 }
-                Commands::Init { .. } | Commands::Update | Commands::Completions { .. } => {
+                Commands::Init { .. }
+                | Commands::Update
+                | Commands::Completions { .. }
+                | Commands::Config { .. } => {
                     unreachable!("handled before runtime startup")
                 }
             };
