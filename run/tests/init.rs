@@ -125,12 +125,20 @@ fn globals_mode_registers_on_global_scope() {
         &script_path,
         r#"
 // No pragma — globals mode
-println(typeof mouse);
-println(typeof keyboard);
-println(typeof Point);
-println(typeof Key);
-println(typeof sleep);
-println(typeof actiona);
+const checks = [
+    ["mouse", typeof mouse, "object"],
+    ["keyboard", typeof keyboard, "object"],
+    ["Point", typeof Point, "function"],
+    ["Key", typeof Key, "function"],
+    ["sleep", typeof sleep, "function"],
+    ["actiona", typeof actiona, "undefined"],
+];
+
+for (const [name, actual, expected] of checks) {
+    if (actual !== expected) {
+        throw new Error(`${name}: expected ${expected}, got ${actual}`);
+    }
+}
 "#,
     )
     .unwrap();
@@ -144,18 +152,6 @@ println(typeof actiona);
         "globals script failed: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let lines: Vec<&str> = stdout.lines().collect();
-    assert_eq!(lines[0], "object", "mouse should be on global scope");
-    assert_eq!(lines[1], "object", "keyboard should be on global scope");
-    assert_eq!(lines[2], "function", "Point should be on global scope");
-    assert_eq!(lines[3], "function", "Key should be on global scope");
-    assert_eq!(lines[4], "function", "sleep should be on global scope");
-    assert_eq!(
-        lines[5], "undefined",
-        "actiona namespace should not exist in globals mode"
-    );
 }
 
 #[test]
@@ -166,14 +162,22 @@ fn no_globals_mode_registers_under_actiona_namespace() {
     std::fs::write(
         &script_path,
         r#"//@actiona noglobals
-actiona.println(typeof actiona);
-actiona.println(typeof actiona.mouse);
-actiona.println(typeof actiona.keyboard);
-actiona.println(typeof actiona.Point);
-actiona.println(typeof actiona.Key);
-actiona.println(typeof actiona.sleep);
-actiona.println(typeof mouse);
-actiona.println(typeof keyboard);
+const checks = [
+    ["actiona", typeof actiona, "object"],
+    ["actiona.mouse", typeof actiona.mouse, "object"],
+    ["actiona.keyboard", typeof actiona.keyboard, "object"],
+    ["actiona.Point", typeof actiona.Point, "function"],
+    ["actiona.Key", typeof actiona.Key, "function"],
+    ["actiona.sleep", typeof actiona.sleep, "function"],
+    ["mouse", typeof mouse, "undefined"],
+    ["keyboard", typeof keyboard, "undefined"],
+];
+
+for (const [name, actual, expected] of checks) {
+    if (actual !== expected) {
+        throw new Error(`${name}: expected ${expected}, got ${actual}`);
+    }
+}
 "#,
     )
     .unwrap();
@@ -186,38 +190,6 @@ actiona.println(typeof keyboard);
         output.status.success(),
         "noglobals script failed: {}",
         String::from_utf8_lossy(&output.stderr)
-    );
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let lines: Vec<&str> = stdout.lines().collect();
-    assert_eq!(lines[0], "object", "actiona namespace should exist");
-    assert_eq!(
-        lines[1], "object",
-        "actiona.mouse should be on the namespace"
-    );
-    assert_eq!(
-        lines[2], "object",
-        "actiona.keyboard should be on the namespace"
-    );
-    assert_eq!(
-        lines[3], "function",
-        "actiona.Point should be on the namespace"
-    );
-    assert_eq!(
-        lines[4], "function",
-        "actiona.Key should be on the namespace"
-    );
-    assert_eq!(
-        lines[5], "function",
-        "actiona.sleep should be on the namespace"
-    );
-    assert_eq!(
-        lines[6], "undefined",
-        "mouse should not be on global scope in noglobals mode"
-    );
-    assert_eq!(
-        lines[7], "undefined",
-        "keyboard should not be on global scope in noglobals mode"
     );
 }
 
