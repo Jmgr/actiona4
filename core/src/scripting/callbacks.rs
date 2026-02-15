@@ -80,8 +80,16 @@ impl Callbacks {
                         (call.function_key, call.parameters.take())
                     };
 
-                    let parameters = match parameters {
-                        Some(parameters) => match parameters.restore(&ctx) {
+                    let parameters = parameters.map_or_else(
+                        || {
+                            warn!(
+                                ?call_key,
+                                ?function_key,
+                                "callback call has no parameters"
+                            );
+                            None
+                        },
+                        |parameters| match parameters.restore(&ctx) {
                             Ok(parameters) => Some(parameters),
                             Err(error) => {
                                 warn!(
@@ -93,15 +101,7 @@ impl Callbacks {
                                 None
                             }
                         },
-                        None => {
-                            warn!(
-                                ?call_key,
-                                ?function_key,
-                                "callback call has no parameters"
-                            );
-                            None
-                        }
-                    };
+                    );
 
                     if let Some(parameters) = parameters {
                         let functions = &user_data.callbacks().functions;
@@ -199,10 +199,10 @@ impl Callbacks {
 
                     call.result = Some(Persistent::save(&ctx, result));
 
-                    if let Some(finished) = call.finished.take() {
-                        if finished.send(()).is_err() {
-                            warn!(?call_key, "callback completion receiver was dropped");
-                        }
+                    if let Some(finished) = call.finished.take()
+                        && finished.send(()).is_err()
+                    {
+                        warn!(?call_key, "callback completion receiver was dropped");
                     }
                 })
                 .await;

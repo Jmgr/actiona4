@@ -287,14 +287,14 @@ impl Hotstrings {
                         enigo.key(Key::Unicode('v'), Direction::Release)?;
                         enigo.key(Key::Control, Direction::Release)?;
 
-                        if let Some(data) = data {
-                            if let Err(error) = clipboard.restore(data, None) {
-                                warn!(
-                                    key = %key,
-                                    error = %error,
-                                    "failed to restore clipboard after text hotstring replacement"
-                                );
-                            }
+                        if let Some(data) = data
+                            && let Err(error) = clipboard.restore(data, None)
+                        {
+                            warn!(
+                                key = %key,
+                                error = %error,
+                                "failed to restore clipboard after text hotstring replacement"
+                            );
                         }
                     } else {
                         // Write the replacement

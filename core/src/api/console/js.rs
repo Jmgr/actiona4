@@ -94,55 +94,51 @@ impl JsConsole {
             Type::Uninitialized => "uninitialized".to_string(),
             Type::Undefined => "undefined".to_string(),
             Type::Null => "null".to_string(),
-            Type::Bool => {
-                if let Some(bool_value) = value.as_bool() {
-                    bool_value.to_string()
-                } else {
+            Type::Bool => value.as_bool().map_or_else(
+                || {
                     warn!(
                         value = ?value,
                         fallback = "[InvalidBool]",
                         "failed to inspect js bool value"
                     );
                     "[InvalidBool]".to_string()
-                }
-            }
-            Type::Int => {
-                if let Some(int_value) = value.as_int() {
-                    int_value.to_string()
-                } else {
+                },
+                |bool_value| bool_value.to_string(),
+            ),
+            Type::Int => value.as_int().map_or_else(
+                || {
                     warn!(
                         value = ?value,
                         fallback = "[InvalidInt]",
                         "failed to inspect js int value"
                     );
                     "[InvalidInt]".to_string()
-                }
-            }
-            Type::Float => {
-                if let Some(float_value) = value.as_float() {
-                    float_value.to_string()
-                } else {
+                },
+                |int_value| int_value.to_string(),
+            ),
+            Type::Float => value.as_float().map_or_else(
+                || {
                     warn!(
                         value = ?value,
                         fallback = "[InvalidFloat]",
                         "failed to inspect js float value"
                     );
                     "[InvalidFloat]".to_string()
-                }
-            }
+                },
+                |float_value| float_value.to_string(),
+            ),
             Type::String => {
-                let string_value = if let Some(string_value) =
-                    value.as_string().and_then(|value| value.to_string().ok())
-                {
-                    string_value
-                } else {
-                    warn!(
-                        value = ?value,
-                        fallback = "[InvalidString]",
-                        "failed to inspect js string value"
-                    );
-                    "[InvalidString]".to_string()
-                };
+                let string_value = value
+                    .as_string()
+                    .and_then(|value| value.to_string().ok())
+                    .unwrap_or_else(|| {
+                        warn!(
+                            value = ?value,
+                            fallback = "[InvalidString]",
+                            "failed to inspect js string value"
+                        );
+                        "[InvalidString]".to_string()
+                    });
                 Self::inspect_string(&string_value)
             }
             Type::Symbol => "[Symbol]".to_string(),
@@ -264,22 +260,18 @@ impl JsConsole {
                 }
             }
             Type::Module => "[Module]".to_string(),
-            Type::BigInt => {
-                if let Some(value) = value
-                    .get::<Coerced<String>>()
-                    .ok()
-                    .and_then(|value| value.0.to_string().ok())
-                {
-                    value
-                } else {
+            Type::BigInt => value
+                .get::<Coerced<String>>()
+                .ok()
+                .and_then(|value| value.0.to_string().ok())
+                .unwrap_or_else(|| {
                     warn!(
                         value = ?value,
                         fallback = "[BigInt]",
                         "failed to inspect js bigint value"
                     );
                     "[BigInt]".to_string()
-                }
-            }
+                }),
             Type::Unknown => "[Unknown]".to_string(),
             Type::Proxy => "[Proxy]".to_string(),
         }
@@ -391,20 +383,17 @@ impl JsConsole {
 
                 match arg.type_of() {
                     // Top-level string: no quotes
-                    Type::String => {
-                        if let Some(string_value) =
-                            arg.as_string().and_then(|value| value.to_string().ok())
-                        {
-                            string_value
-                        } else {
+                    Type::String => arg
+                        .as_string()
+                        .and_then(|value| value.to_string().ok())
+                        .unwrap_or_else(|| {
                             warn!(
                                 argument = ?arg,
                                 fallback = "[InvalidString]",
                                 "failed to convert top-level js string argument"
                             );
                             "[InvalidString]".to_string()
-                        }
-                    }
+                        }),
                     // Everything else: use full inspector
                     _ => Self::print_value(ctx, arg),
                 }
