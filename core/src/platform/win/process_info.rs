@@ -8,24 +8,16 @@ use tokio::fs;
 use windows::{
     Win32::{
         Foundation::{HWND, LPARAM, WPARAM},
-        System::{
-            StationsAndDesktops::{
-                DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
-            },
-            Threading::{OpenProcess, PROCESS_TERMINATE, TerminateProcess},
-        },
+        System::Threading::{OpenProcess, PROCESS_TERMINATE, TerminateProcess},
         UI::WindowsAndMessaging::{
-            GetClassNameW, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
-            IsWindowVisible, SendNotifyMessageW, WM_CLOSE,
+            EnumWindows, GetClassNameW, GetWindowTextLengthW, GetWindowTextW,
+            GetWindowThreadProcessId, IsWindowVisible, SendNotifyMessageW, WM_CLOSE,
         },
     },
     core::{BOOL, Error},
 };
 
-use crate::{
-    platform::win::safe_handle::{SafeDesktopHandle, SafeHandle},
-    types::su32::Su32,
-};
+use crate::{platform::win::safe_handle::SafeHandle, types::su32::Su32};
 
 #[derive(Debug)]
 pub enum ProcessType {
@@ -69,22 +61,12 @@ unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     true.into()
 }
 
-#[allow(clippy::as_conversions)] // pointer casts required by Windows EnumDesktopWindows API
+#[allow(clippy::as_conversions)] // pointer casts required by Windows EnumWindows API
 pub fn all_windows() -> Result<Vec<HWND>> {
     let mut result = Vec::new();
     let result_ptr = &mut result as *mut Vec<HWND>;
     unsafe {
-        let hdesk = SafeDesktopHandle::try_new(OpenInputDesktop(
-            DESKTOP_CONTROL_FLAGS::default(),
-            false,
-            DESKTOP_READOBJECTS,
-        )?)?;
-
-        EnumDesktopWindows(
-            Some(hdesk.as_raw()),
-            Some(enum_proc),
-            LPARAM(result_ptr as isize),
-        )?;
+        EnumWindows(Some(enum_proc), LPARAM(result_ptr as isize))?;
     }
 
     Ok(result)

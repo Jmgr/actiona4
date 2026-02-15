@@ -3,7 +3,7 @@
 use std::{
     collections::HashSet,
     sync::{
-        Arc, Mutex, Weak,
+        Arc, Weak,
         atomic::{AtomicUsize, Ordering},
     },
 };
@@ -12,6 +12,7 @@ use color_eyre::Result;
 use derive_more::{Constructor, Deref, Display};
 use enigo::Key;
 use once_cell::sync::Lazy;
+use parking_lot::Mutex;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::warn;
 use windows::Win32::{
@@ -107,9 +108,7 @@ impl KeyboardInputDispatcher {
         .await?;
 
         Ok(Arc::new_cyclic(|me| {
-            *KEYBOARD_INPUT_DISPATCHER
-                .lock()
-                .unwrap_or_else(|e| e.into_inner()) = me.clone();
+            *KEYBOARD_INPUT_DISPATCHER.lock() = me.clone();
 
             Self {
                 keys: TopicWrapper::new(
@@ -144,7 +143,7 @@ impl KeyboardInputDispatcher {
     }
 
     fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool) -> bool {
-        let mut pressed_keys = self.pressed_keys.lock().unwrap();
+        let mut pressed_keys = self.pressed_keys.lock();
         if is_pressed {
             if !pressed_keys.insert(*key_id) {
                 return true;
@@ -273,11 +272,7 @@ unsafe extern "system" fn low_level_keyboard_proc(
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     }
 
-    let Some(dispatcher) = KEYBOARD_INPUT_DISPATCHER
-        .lock()
-        .unwrap_or_else(|e| e.into_inner())
-        .upgrade()
-    else {
+    let Some(dispatcher) = KEYBOARD_INPUT_DISPATCHER.lock().upgrade() else {
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     };
 

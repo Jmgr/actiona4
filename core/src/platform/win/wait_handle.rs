@@ -105,7 +105,9 @@ impl Future for WaitHandle {
 #[allow(clippy::as_conversions)] // pointer cast required by Windows callback API
 unsafe extern "system" fn callback(ptr: *mut std::ffi::c_void, _timer_fired: bool) {
     let complete = unsafe { &mut *(ptr as *mut Option<oneshot::Sender<()>>) };
-    _ = complete.take().unwrap().send(());
+    if let Some(sender) = complete.take() {
+        _ = sender.send(());
+    }
 }
 
 #[cfg(test)]

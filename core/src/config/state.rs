@@ -28,8 +28,9 @@ pub struct VersionInfo {
 
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct State {
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(default, with = "time::serde::iso8601::option")]
     pub next_update_check: Option<OffsetDateTime>,
+    #[serde(default)]
     pub new_version_available: Option<VersionInfo>,
 }
 

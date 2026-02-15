@@ -945,21 +945,21 @@ mod tests {
 
     #[test]
     #[cfg(windows)]
-    fn test_terminate_gui_notepad() {
+    fn test_terminate_gui_charmap() {
         Runtime::test_with_script_engine(async |script_engine| {
             timeout(
                 Duration::from_secs(10),
                 script_engine.eval_async::<()>(
                     r#"
-                const handle = await process.start("notepad");
-                await sleep("500ms");
+                const handle = await process.start("charmap");
+                await sleep("2s");
                 await handle.terminate();
                 await handle.finished;
                 "#,
                 ),
             )
             .await
-            .expect("timed out waiting for notepad terminate")
+            .expect("timed out waiting for charmap terminate")
             .unwrap();
         });
     }

@@ -208,7 +208,11 @@ impl Drop for SafeMessagePump {
         unsafe {
             _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
         }
-        _ = self.join_handle.take().unwrap().join();
+        if let Some(handle) = self.join_handle.take() {
+            _ = handle.join();
+        } else {
+            error!("SafeMessagePump join_handle was already taken");
+        }
     }
 }
 
@@ -226,7 +230,14 @@ impl SafeMessagePump {
         let join_handle = thread::Builder::new()
             .name(name.to_string())
             .spawn(move || {
-                let mut runner = R::new().unwrap(); // TODO
+                let mut runner = match R::new() {
+                    Ok(runner) => runner,
+                    Err(err) => {
+                        error!("failed to create message pump runner: {err}");
+                        _ = thread_id_sender.send(0);
+                        return;
+                    }
+                };
 
                 let thread_id = unsafe { GetCurrentThreadId() };
                 _ = thread_id_sender.send(thread_id);

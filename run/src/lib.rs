@@ -2,7 +2,6 @@
 #![warn(clippy::as_conversions)]
 #![warn(clippy::must_use_candidate)]
 #![warn(clippy::unwrap_used)]
-#![deny(unsafe_code)]
 #![allow(clippy::too_long_first_doc_paragraph)]
 #![allow(clippy::significant_drop_tightening)]
 #![allow(clippy::future_not_send)]
@@ -24,7 +23,8 @@ use tracing_subscriber::{
 };
 #[cfg(windows)]
 use windows::{
-    Wdk::System::SystemServices::RtlGetVersion, Win32::System::SystemInformation::OSVERSIONINFOW,
+    Wdk::System::SystemServices::RtlGetVersion,
+    Win32::System::{Console::AttachConsole, SystemInformation::OSVERSIONINFOW},
 };
 
 use crate::{
@@ -82,6 +82,18 @@ pub fn run_cli() -> Result<()> {
             eprintln!(
                 "Warning: Unable to determine your version of Windows. Actiona is only supported on Windows 10 1607 or newer."
             )
+        }
+    }
+
+    // When built as a Windows GUI app (windows_subsystem = "windows"), stdout/stderr
+    // are not connected. Attach to the parent console so CLI-only commands can print.
+    #[cfg(windows)]
+    if matches!(
+        args.command,
+        Commands::Update | Commands::Completions { .. } | Commands::Init { .. }
+    ) {
+        unsafe {
+            _ = AttachConsole(u32::MAX);
         }
     }
 

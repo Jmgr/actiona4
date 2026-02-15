@@ -30,10 +30,7 @@ impl Notification {
         let mut toast = build_toast(&options)?;
 
         // Auto-generate a tag so the notification can be closed programmatically.
-        let tag = options
-            .tag
-            .clone()
-            .unwrap_or_else(|| Uuid::new_v4().to_string());
+        let tag = options.tag.unwrap_or_else(|| Uuid::new_v4().to_string());
         toast.tag(tag.as_str());
 
         let (tx, rx) = oneshot::channel::<Option<String>>();

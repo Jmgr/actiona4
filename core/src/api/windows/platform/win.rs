@@ -66,12 +66,6 @@ impl Default for WindowsWindowHandler {
     }
 }
 
-impl From<windows_result::Error> for Error {
-    fn from(value: windows_result::Error) -> Self {
-        Self::Other(value.into())
-    }
-}
-
 #[allow(clippy::as_conversions)] // pointer casts required by Windows callback API
 unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     let vec_ptr = lparam.0 as *mut Vec<HWND>;
