@@ -486,7 +486,10 @@ where
     T: Debug + Send + 'static,
 {
     thread::spawn(move || {
-        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+        let runtime = Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("failed to build single-thread Tokio runtime for X11 worker");
         let local_set = LocalSet::new();
 
         local_set.block_on(&runtime, async move { Box::pin((make_fut)()).await })

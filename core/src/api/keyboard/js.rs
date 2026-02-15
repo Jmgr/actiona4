@@ -110,7 +110,12 @@ impl SingletonClass<'_> for JsKeyboard {
 
         let key_obj: Object = target.get("Key")?;
         for v in <JsStandardKey as strum::IntoEnumIterator>::iter() {
-            let name = serde_plain::to_string(&v).unwrap();
+            let name = serde_plain::to_string(&v).map_err(|err| {
+                Exception::throw_message(
+                    ctx,
+                    &format!("Failed to serialize JsStandardKey variant name: {err}"),
+                )
+            })?;
             key_obj.set(&name, name.clone())?;
         }
 

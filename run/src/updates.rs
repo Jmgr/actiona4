@@ -117,11 +117,10 @@ fn print_update_available(
         );
 
         let since = OffsetDateTime::now_utc() - version_info.release_date;
-        let since = if let Ok(since) = Duration::try_from(since) {
-            format!("{} ago", HumanDuration(since))
-        } else {
-            "just now".to_string()
-        };
+        let since = Duration::try_from(since).map_or_else(
+            |_| "just now".to_string(),
+            |since| format!("{} ago", HumanDuration(since)),
+        );
 
         println!(
             "You are running {} version {}, latest version is {},\nreleased {}.",

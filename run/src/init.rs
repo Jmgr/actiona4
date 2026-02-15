@@ -1,7 +1,13 @@
-use std::{fs, io::Read, path::Path, sync::LazyLock};
+use std::{
+    fs,
+    io::{self, Read},
+    path::Path,
+    sync::LazyLock,
+};
 
 use color_eyre::{Result, eyre::Context};
 use flate2::read::GzDecoder;
+use tracing::warn;
 
 const TSCONFIG: &str = include_str!("../assets/tsconfig.json");
 const INDEX_DTS_GZ: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/index.d.ts.gz"));
@@ -39,8 +45,18 @@ pub fn ensure_index_dts(script_path: &Path) -> Result<()> {
     let index_dts = INDEX_DTS.as_str();
     let needs_write = match fs::read_to_string(&dts_path) {
         Ok(existing) => existing != index_dts,
-        Err(_) => false, // Don't create index.d.ts if it doesn't exist — that's what `init` is for
+        Err(error) if error.kind() == io::ErrorKind::NotFound => false,
+        Err(error) => {
+            warn!(
+                script_path = %script_path.display(),
+                path = %dts_path.display(),
+                error = %error,
+                "failed to read index.d.ts while checking if it needs an update"
+            );
+            false
+        }
     };
+    // Don't create index.d.ts if it doesn't exist; that's what `init` is for.
 
     if needs_write {
         fs::write(&dts_path, index_dts).context("updating index.d.ts")?;
@@ -85,16 +101,30 @@ fn write_index_dts(path: &Path) -> Result<()> {
 
 fn write_starter_script(path: &Path) -> Result<()> {
     // Skip if any .ts file already exists (excluding .d.ts declaration files)
-    let has_ts_files = fs::read_dir(path)
-        .context("reading project directory")?
-        .filter_map(|e| e.ok())
-        .any(|e| {
-            let path = e.path();
-            path.extension().is_some_and(|ext| ext == "ts")
-                && !path
-                    .file_name()
-                    .is_some_and(|name| name.to_string_lossy().ends_with(".d.ts"))
-        });
+    let mut has_ts_files = false;
+    for entry in fs::read_dir(path).context("reading project directory")? {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(error) => {
+                warn!(
+                    project_dir = %path.display(),
+                    error = %error,
+                    "failed to read an entry while scanning for existing .ts files"
+                );
+                continue;
+            }
+        };
+
+        let entry_path = entry.path();
+        if entry_path.extension().is_some_and(|ext| ext == "ts")
+            && !entry_path
+                .file_name()
+                .is_some_and(|name| name.to_string_lossy().ends_with(".d.ts"))
+        {
+            has_ts_files = true;
+            break;
+        }
+    }
 
     if has_ts_files {
         return Ok(());

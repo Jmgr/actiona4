@@ -8,6 +8,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     prelude::*,
 };
+use tracing::warn;
 
 use crate::api::js::classes::SingletonClass;
 
@@ -93,20 +94,83 @@ impl JsConsole {
             Type::Uninitialized => "uninitialized".to_string(),
             Type::Undefined => "undefined".to_string(),
             Type::Null => "null".to_string(),
-            Type::Bool => format!("{}", value.as_bool().unwrap()),
-            Type::Int => format!("{}", value.as_int().unwrap()),
-            Type::Float => format!("{}", value.as_float().unwrap()),
+            Type::Bool => {
+                if let Some(bool_value) = value.as_bool() {
+                    bool_value.to_string()
+                } else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[InvalidBool]",
+                        "failed to inspect js bool value"
+                    );
+                    "[InvalidBool]".to_string()
+                }
+            }
+            Type::Int => {
+                if let Some(int_value) = value.as_int() {
+                    int_value.to_string()
+                } else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[InvalidInt]",
+                        "failed to inspect js int value"
+                    );
+                    "[InvalidInt]".to_string()
+                }
+            }
+            Type::Float => {
+                if let Some(float_value) = value.as_float() {
+                    float_value.to_string()
+                } else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[InvalidFloat]",
+                        "failed to inspect js float value"
+                    );
+                    "[InvalidFloat]".to_string()
+                }
+            }
             Type::String => {
-                let string_value = value.as_string().unwrap().to_string().unwrap();
+                let string_value = if let Some(string_value) =
+                    value.as_string().and_then(|value| value.to_string().ok())
+                {
+                    string_value
+                } else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[InvalidString]",
+                        "failed to inspect js string value"
+                    );
+                    "[InvalidString]".to_string()
+                };
                 Self::inspect_string(&string_value)
             }
             Type::Symbol => "[Symbol]".to_string(),
             Type::Array => {
-                let arr = value.as_array().unwrap();
+                let Some(arr) = value.as_array() else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[InvalidArray]",
+                        "failed to inspect js array value"
+                    );
+                    return "[InvalidArray]".to_string();
+                };
                 let mut elems = vec![];
                 for i in 0..arr.len() {
-                    let item = arr.get(i).unwrap();
-                    elems.push(Self::print_value(ctx, item));
+                    let item = match arr.get(i) {
+                        Ok(item) => Self::print_value(ctx, item),
+                        Err(error) => {
+                            warn!(
+                                index = i,
+                                array_len = arr.len(),
+                                error = %error,
+                                fallback = "[InvalidElement]",
+                                "failed to inspect js array element"
+                            );
+                            "[InvalidElement]".to_string()
+                        }
+                    };
+                    elems.push(item);
                 }
 
                 if elems.is_empty() {
@@ -116,7 +180,14 @@ impl JsConsole {
                 }
             }
             Type::Constructor | Type::Function => {
-                let obj = value.as_object().unwrap();
+                let Some(obj) = value.as_object() else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[Function]",
+                        "failed to inspect js function value"
+                    );
+                    return "[Function]".to_string();
+                };
 
                 let kind = obj
                     .get::<_, Object>("constructor")
@@ -139,7 +210,14 @@ impl JsConsole {
             }
             Type::Promise => "[Promise]".to_string(),
             Type::Exception | Type::Object => {
-                let obj = value.as_object().unwrap();
+                let Some(obj) = value.as_object() else {
+                    warn!(
+                        value = ?value,
+                        fallback = "{}",
+                        "failed to inspect js object value"
+                    );
+                    return "{}".to_string();
+                };
 
                 if let Some(s) = Self::try_custom_to_string(ctx, obj, &value) {
                     return s;
@@ -147,9 +225,35 @@ impl JsConsole {
 
                 let mut fields = vec![];
                 for key in obj.keys::<String>() {
-                    let key = key.unwrap();
-                    let val: Value = obj.get(key.clone()).unwrap();
-                    let key_str = key.to_string().unwrap();
+                    let key = match key {
+                        Ok(key) => key,
+                        Err(error) => {
+                            warn!(error = %error, "failed to inspect js object key");
+                            continue;
+                        }
+                    };
+                    let val = match obj.get::<_, Value>(key.clone()) {
+                        Ok(val) => val,
+                        Err(error) => {
+                            warn!(
+                                key = ?key,
+                                error = %error,
+                                "failed to inspect js object field value"
+                            );
+                            continue;
+                        }
+                    };
+                    let key_str = match key.to_string() {
+                        Ok(key_str) => key_str,
+                        Err(error) => {
+                            warn!(
+                                key = ?key,
+                                error = %error,
+                                "failed to convert js object key to string"
+                            );
+                            continue;
+                        }
+                    };
                     let val_str = Self::print_value(ctx, val);
                     fields.push(format!("{key_str}: {val_str}"));
                 }
@@ -160,12 +264,22 @@ impl JsConsole {
                 }
             }
             Type::Module => "[Module]".to_string(),
-            Type::BigInt => value
-                .get::<Coerced<String>>()
-                .unwrap()
-                .0
-                .to_string()
-                .unwrap(),
+            Type::BigInt => {
+                if let Some(value) = value
+                    .get::<Coerced<String>>()
+                    .ok()
+                    .and_then(|value| value.0.to_string().ok())
+                {
+                    value
+                } else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[BigInt]",
+                        "failed to inspect js bigint value"
+                    );
+                    "[BigInt]".to_string()
+                }
+            }
             Type::Unknown => "[Unknown]".to_string(),
             Type::Proxy => "[Proxy]".to_string(),
         }
@@ -176,7 +290,14 @@ impl JsConsole {
 
         match value.type_of() {
             Type::Array => {
-                let arr = value.as_array().unwrap();
+                let Some(arr) = value.as_array() else {
+                    warn!(
+                        value = ?value,
+                        fallback = "[InvalidArray]",
+                        "failed to pretty-print js array value"
+                    );
+                    return "[InvalidArray]".to_string();
+                };
                 if arr.is_empty() {
                     return "[]".to_string();
                 }
@@ -184,15 +305,33 @@ impl JsConsole {
                 let indentation = " ".repeat(indent + 2);
                 let mut elems = vec![];
                 for i in 0..arr.len() {
-                    let item = arr.get(i).unwrap();
-                    let item_str = Self::print_value_pretty(ctx, item, indent + 2);
+                    let item_str = match arr.get(i) {
+                        Ok(item) => Self::print_value_pretty(ctx, item, indent + 2),
+                        Err(error) => {
+                            warn!(
+                                index = i,
+                                array_len = arr.len(),
+                                error = %error,
+                                fallback = "[InvalidElement]",
+                                "failed to pretty-print js array element"
+                            );
+                            "[InvalidElement]".to_string()
+                        }
+                    };
                     elems.push(format!("{indentation}{item_str}"));
                 }
 
                 format!("[\n{}\n{}]", elems.join(",\n"), " ".repeat(indent))
             }
             Type::Exception | Type::Object => {
-                let obj = value.as_object().unwrap();
+                let Some(obj) = value.as_object() else {
+                    warn!(
+                        value = ?value,
+                        fallback = "{}",
+                        "failed to pretty-print js object value"
+                    );
+                    return "{}".to_string();
+                };
 
                 if let Some(s) = Self::try_custom_to_string(ctx, obj, &value) {
                     return s;
@@ -201,9 +340,35 @@ impl JsConsole {
                 let mut fields = vec![];
                 let indentation = " ".repeat(indent + 2);
                 for key in obj.keys::<String>() {
-                    let key = key.unwrap();
-                    let val: Value = obj.get(key.clone()).unwrap();
-                    let key_str = key.to_string().unwrap();
+                    let key = match key {
+                        Ok(key) => key,
+                        Err(error) => {
+                            warn!(error = %error, "failed to pretty-print js object key");
+                            continue;
+                        }
+                    };
+                    let val = match obj.get::<_, Value>(key.clone()) {
+                        Ok(val) => val,
+                        Err(error) => {
+                            warn!(
+                                key = ?key,
+                                error = %error,
+                                "failed to pretty-print js object field value"
+                            );
+                            continue;
+                        }
+                    };
+                    let key_str = match key.to_string() {
+                        Ok(key_str) => key_str,
+                        Err(error) => {
+                            warn!(
+                                key = ?key,
+                                error = %error,
+                                "failed to convert js object key to string while pretty-printing"
+                            );
+                            continue;
+                        }
+                    };
                     let val_str = Self::print_value_pretty(ctx, val, indent + 2);
                     fields.push(format!("{indentation}{key_str}: {val_str}"));
                 }
@@ -226,7 +391,20 @@ impl JsConsole {
 
                 match arg.type_of() {
                     // Top-level string: no quotes
-                    Type::String => arg.as_string().unwrap().to_string().unwrap(),
+                    Type::String => {
+                        if let Some(string_value) =
+                            arg.as_string().and_then(|value| value.to_string().ok())
+                        {
+                            string_value
+                        } else {
+                            warn!(
+                                argument = ?arg,
+                                fallback = "[InvalidString]",
+                                "failed to convert top-level js string argument"
+                            );
+                            "[InvalidString]".to_string()
+                        }
+                    }
                     // Everything else: use full inspector
                     _ => Self::print_value(ctx, arg),
                 }
@@ -243,7 +421,9 @@ impl JsConsole {
 
     pub(crate) fn do_print<'js>(ctx: &Ctx<'js>, data: Rest<Value<'js>>) {
         print!("{}", Self::args_to_string(ctx, data));
-        std::io::stdout().flush().unwrap();
+        if let Err(error) = std::io::stdout().flush() {
+            warn!(error = %error, "failed to flush stdout");
+        }
     }
 
     pub(crate) fn do_println<'js>(ctx: &Ctx<'js>, data: Rest<Value<'js>>) {
@@ -306,7 +486,9 @@ impl JsConsole {
     /// Clears the terminal screen.
     pub fn clear(&self) {
         let term = Term::stdout();
-        term.clear_screen().unwrap();
+        if let Err(error) = term.clear_screen() {
+            warn!(error = %error, "failed to clear terminal screen");
+        }
     }
 
     /// Starts a timer with the given label (defaults to `"default"`).

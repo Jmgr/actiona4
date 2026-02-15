@@ -107,9 +107,11 @@ pub(crate) fn value_to_name_like<'js>(
     value: Value<'js>,
 ) -> Result<super::Name<'js>> {
     if value.is_string() {
-        return Ok(super::Name::String(
-            value.as_string().unwrap().to_string().unwrap(),
-        ));
+        let string = value
+            .as_string()
+            .and_then(|value| value.to_string().ok())
+            .ok_or_else(|| Exception::throw_message(ctx, "Failed to convert string value"))?;
+        return Ok(super::Name::String(string));
     }
 
     if let Ok(wildcard) = value.get::<JsWildcard>() {

@@ -1,3 +1,14 @@
+#![warn(clippy::all, clippy::nursery)]
+#![warn(clippy::as_conversions)]
+#![warn(clippy::must_use_candidate)]
+#![warn(clippy::unwrap_used)]
+#![deny(unsafe_code)]
+#![allow(clippy::too_long_first_doc_paragraph)]
+#![allow(clippy::significant_drop_tightening)]
+#![allow(clippy::future_not_send)]
+#![allow(clippy::too_many_arguments)]
+#![allow(rustdoc::invalid_html_tags)]
+
 use std::{ffi::OsString, path::Path, sync::Arc};
 
 use actiona_core::{
@@ -194,10 +205,11 @@ fn maybe_insert_default_run(mut args: Vec<OsString>) -> Vec<OsString> {
         return args;
     };
 
-    let subcommands: Vec<&str> = cmd.get_subcommands().map(|s| s.get_name()).collect();
-
     if let Some(name) = args[index].to_str()
-        && !subcommands.contains(&name)
+        && !cmd
+            .get_subcommands()
+            .map(|s| s.get_name())
+            .any(|subcommand| subcommand == name)
     {
         args.insert(index, OsString::from("run"));
     }

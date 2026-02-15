@@ -13,6 +13,7 @@ use parking_lot::Mutex;
 use rquickjs::{AsyncContext, Coerced, async_with};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::warn;
 use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
@@ -190,15 +191,41 @@ impl Hotstrings {
                 (key.graphemes(true).count(), ReplacementData::Image(image))
             }
             Replacement::JsCallback((context, function_key)) => {
+                let key_for_callback = key.clone();
                 let replacement_data = async_with!(context => |ctx| {
                     let user_data = ctx.user_data();
                     let callbacks = user_data.callbacks();
-                    let result = callbacks.call(&ctx, function_key, Vec::new()).await.unwrap();
+                    let result = match callbacks.call(&ctx, function_key, Vec::new()).await {
+                        Ok(result) => result,
+                        Err(error) => {
+                            warn!(
+                                key = %key_for_callback,
+                                ?function_key,
+                                error = %error,
+                                fallback = %key_for_callback,
+                                "hotstring callback failed; keeping typed text"
+                            );
+                            // Keep the typed text unchanged if callback execution fails.
+                            return ReplacementData::Text(key_for_callback.clone());
+                        }
+                    };
                     #[allow(clippy::option_if_let_else)]
                     if let Ok(image) = result.get::<JsImage>() {
                         ReplacementData::Image(image.into_inner())
                     } else {
-                        ReplacementData::Text(result.get::<Coerced<String>>().unwrap().0)
+                        match result.get::<Coerced<String>>() {
+                            Ok(text) => ReplacementData::Text(text.0),
+                            Err(error) => {
+                                warn!(
+                                    key = %key_for_callback,
+                                    ?function_key,
+                                    error = %error,
+                                    fallback = %key_for_callback,
+                                    "hotstring callback did not return image or string; keeping typed text"
+                                );
+                                ReplacementData::Text(key_for_callback.clone())
+                            }
+                        }
                     }
                 })
                 .await;
@@ -236,8 +263,17 @@ impl Hotstrings {
                         let clipboard = runtime.clipboard();
 
                         let data = if options.save_restore_clipboard {
-                            // Ignore errors if the format is unknown
-                            clipboard.save(None).ok()
+                            match clipboard.save(None) {
+                                Ok(data) => Some(data),
+                                Err(error) => {
+                                    warn!(
+                                        key = %key,
+                                        error = %error,
+                                        "failed to save clipboard before text hotstring replacement"
+                                    );
+                                    None
+                                }
+                            }
                         } else {
                             None
                         };
@@ -252,7 +288,13 @@ impl Hotstrings {
                         enigo.key(Key::Control, Direction::Release)?;
 
                         if let Some(data) = data {
-                            _ = clipboard.restore(data, None);
+                            if let Err(error) = clipboard.restore(data, None) {
+                                warn!(
+                                    key = %key,
+                                    error = %error,
+                                    "failed to restore clipboard after text hotstring replacement"
+                                );
+                            }
                         }
                     } else {
                         // Write the replacement

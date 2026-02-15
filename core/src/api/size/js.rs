@@ -138,7 +138,7 @@ impl JsSize {
     /// ```
     #[must_use]
     pub fn to_json(&self) -> String {
-        serde_json::to_string(&self.inner).unwrap()
+        serde_json::to_string(&self.inner).expect("Size should always serialize to JSON")
     }
 
     /// Returns true if a Size equals another.

@@ -114,7 +114,11 @@ impl Rect {
 
     #[must_use]
     pub fn center(&self) -> Point {
-        self.top_left + self.size.try_div(2).unwrap()
+        self.top_left
+            + self
+                .size
+                .try_div(2)
+                .expect("dividing a Size by 2 should never fail")
     }
 
     #[must_use]

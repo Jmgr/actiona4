@@ -175,7 +175,7 @@ impl JsPoint {
     /// ```
     #[must_use]
     pub fn to_json(&self) -> String {
-        serde_json::to_string(&self.inner).unwrap()
+        serde_json::to_string(&self.inner).expect("Point should always serialize to JSON")
     }
 
     /// Returns true if this Point is at the origin, (0, 0).

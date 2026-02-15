@@ -1,6 +1,6 @@
 use color_eyre::eyre::Context;
 use convert_case::{Case, Casing};
-use rquickjs::{Class, Ctx, IntoJs, Object, class::JsClass};
+use rquickjs::{Class, Ctx, Exception, IntoJs, Object, class::JsClass};
 use serde::{Deserialize, Serialize};
 use serde_name::trace_name;
 use strum::IntoEnumIterator;
@@ -178,10 +178,15 @@ where
     let obj = Object::new(ctx.clone())?;
     for v in E::iter() {
         // Serialize variant to serde's canonical string (honors rename/rename_all)
-        let key = serde_plain::to_string(&v).unwrap();
+        let key = serde_plain::to_string(&v).map_err(|err| {
+            Exception::throw_message(ctx, &format!("Failed to serialize enum variant: {err}"))
+        })?;
 
         // Set both the property name and the value to that canonical string
         obj.set(&key, key.clone())?;
     }
-    target.set(trace_name::<E>().unwrap(), obj)
+    let name = trace_name::<E>().ok_or_else(|| {
+        Exception::throw_message(ctx, "Failed to derive enum trace name for registration")
+    })?;
+    target.set(name, obj)
 }

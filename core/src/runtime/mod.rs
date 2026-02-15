@@ -524,8 +524,7 @@ impl Runtime {
 
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
-            .build()
-            .unwrap();
+            .build()?;
 
         let unhandled_exceptions = tokio_runtime.block_on(async move {
             Self::run_impl(f, cancellation_token, task_tracker, None, runtime_options).await
@@ -648,7 +647,9 @@ impl Runtime {
 
     #[must_use]
     pub const fn tauri_app(&self) -> &AppHandle {
-        self.app_handle.as_ref().unwrap()
+        self.app_handle
+            .as_ref()
+            .expect("tauri_app() requires Runtime to be initialized with a Tauri app handle")
     }
 
     #[must_use]
@@ -680,7 +681,7 @@ impl Runtime {
             },
             RuntimeOptions::default(),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("Runtime::test failed: {error:?}"));
     }
 
     pub fn test_with_ui<F, Fut>(f: F)
@@ -697,7 +698,7 @@ impl Runtime {
             RuntimeOptions::default(),
             tauri::generate_context!(),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("Runtime::test_with_ui failed: {error:?}"));
 
         assert!(
             unhandled_exceptions.is_empty(),
@@ -718,7 +719,7 @@ impl Runtime {
             },
             RuntimeOptions::default(),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("Runtime::test_with_script_engine failed: {error:?}"));
 
         assert!(
             unhandled_exceptions.is_empty(),
@@ -732,7 +733,8 @@ impl Runtime {
     }
 
     pub fn wait_at_end(&self) -> WaitAtEnd {
-        WaitAtEnd::from_repr(self.wait_at_end.load(Ordering::Relaxed)).unwrap()
+        WaitAtEnd::from_repr(self.wait_at_end.load(Ordering::Relaxed))
+            .unwrap_or(WaitAtEnd::Automatic)
     }
 
     pub fn increase_background_tasks_counter(&self) {

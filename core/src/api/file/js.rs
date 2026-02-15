@@ -244,12 +244,16 @@ impl JsFile {
         bytes: TypedArray<'_, u8>,
     ) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
+        let bytes = bytes
+            .as_bytes()
+            .ok_or(CommonError::DetachedArrayBuffer)
+            .into_js_result(&ctx)?;
 
         opened_file
             .file
             .lock()
             .await
-            .write(bytes.as_bytes().unwrap())
+            .write(bytes)
             .await
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
         opened_file.file.lock().await.flush().await?;
@@ -530,6 +534,7 @@ impl JsFile {
 
     #[qjs(skip)]
     async fn set_times(
+        ctx: &Ctx<'_>,
         opened_file: &OpenedFile,
         times: FileTimes,
         task_tracker: TaskTracker,
@@ -543,7 +548,7 @@ impl JsFile {
                 Result::<_>::Ok(())
             })
             .await
-            .unwrap()
+            .map_err(|err| Exception::throw_message(ctx, &format!("Task join error: {err}")))?
     }
 
     /// Sets the last modification time of the file.
@@ -553,6 +558,7 @@ impl JsFile {
         let system_time = system_time_from_date(ctx.clone(), date)?;
 
         Self::set_times(
+            &ctx,
             opened_file,
             FileTimes::new().set_modified(system_time),
             ctx.user_data().task_tracker(),
@@ -578,6 +584,7 @@ impl JsFile {
         let system_time = system_time_from_date(ctx.clone(), date)?;
 
         Self::set_times(
+            &ctx,
             opened_file,
             FileTimes::new().set_accessed(system_time),
             ctx.user_data().task_tracker(),
@@ -614,6 +621,7 @@ impl JsFile {
             let opened_file = self.opened_file(&ctx.clone())?;
 
             Self::set_times(
+                &ctx,
                 opened_file,
                 FileTimes::new().set_created(system_time),
                 task_tracker,

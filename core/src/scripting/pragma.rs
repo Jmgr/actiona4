@@ -27,7 +27,7 @@ pub fn parse_pragmas(script: &str) -> Pragmas {
         }
 
         // Strip the "//" prefix and check for pragma
-        let comment = trimmed.strip_prefix("//").unwrap();
+        let comment = &trimmed[2..];
 
         // Support both `//@actiona noglobals` and `// @actiona noglobals`
         let comment = comment.trim_start();

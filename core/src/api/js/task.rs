@@ -16,7 +16,9 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
 };
 
-use rquickjs::{Ctx, Function, IntoJs, Object, Promise, Result, Value, atom::PredefinedAtom};
+use rquickjs::{
+    Ctx, Exception, Function, IntoJs, Object, Promise, Result, Value, atom::PredefinedAtom,
+};
 use tokio::{select, sync::watch};
 use tokio_util::sync::CancellationToken;
 
@@ -54,9 +56,11 @@ where
     R: IntoJs<'js> + 'js,
     T: IntoToken,
 {
-    let promise_object = task_with_token_impl(ctx, token, future)?;
+    let promise_object = task_with_token_impl(ctx.clone(), token, future)?;
 
-    Ok(promise_object.as_promise().unwrap().clone())
+    promise_object.as_promise().cloned().ok_or_else(|| {
+        Exception::throw_message(&ctx, "Task implementation did not return a Promise")
+    })
 }
 
 fn task_with_token_impl<'js, R, Fut, F, T>(

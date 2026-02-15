@@ -129,7 +129,7 @@ impl ReplHelper {
         Ok((1, matches))
     }
 
-    fn complete_js(&self, _input: &str) -> rustyline::Result<(usize, Vec<Pair>)> {
+    const fn complete_js(&self, _input: &str) -> rustyline::Result<(usize, Vec<Pair>)> {
         Ok((0, Vec::new())) // TODO
     }
 }
@@ -260,13 +260,16 @@ fn setup_highlighting() -> (SyntaxSet, Theme, SyntaxReference) {
     let syntax_set = two_face::syntax::extra_no_newlines();
     let theme_set = two_face::theme::extra();
     let theme = theme_set.get(two_face::theme::EmbeddedThemeName::Nord);
-    let syntax_reference = if let Some(syntax_reference) = syntax_set.find_syntax_by_extension("ts")
-    {
-        syntax_reference.clone()
-    } else {
-        warn!("TypeScript syntax definition not found, falling back to plain text highlighting");
-        syntax_set.find_syntax_plain_text().clone()
-    };
+    let syntax_reference = syntax_set.find_syntax_by_extension("ts").map_or_else(
+        || {
+            warn!(
+                extension = "ts",
+                "typescript syntax definition not found, falling back to plain text highlighting"
+            );
+            syntax_set.find_syntax_plain_text().clone()
+        },
+        Clone::clone,
+    );
 
     (syntax_set, theme.clone(), syntax_reference)
 }
