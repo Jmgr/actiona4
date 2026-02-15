@@ -37,6 +37,13 @@ impl<'js> FromParam<'js> for JsRectLike {
         let value = params.arg();
 
         if let Some(x) = value.as_number() {
+            if params.len() < 3 {
+                return Err(rquickjs::Error::new_from_js_message(
+                    "number",
+                    "Rect",
+                    "Expected (x, y, width, height), got too few arguments",
+                ));
+            }
             let y = params
                 .arg()
                 .as_number()

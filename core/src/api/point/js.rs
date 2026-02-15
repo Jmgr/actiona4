@@ -31,6 +31,13 @@ impl<'js> FromParam<'js> for JsPointLike {
         // Otherwise accept a Point instance or an object with x/y.
         let value = params.arg();
         if let Some(x) = value.as_number() {
+            if params.is_empty() {
+                return Err(rquickjs::Error::new_from_js_message(
+                    "number",
+                    "Point",
+                    "Expected (x, y) coordinates, got a single number",
+                ));
+            }
             let second_arg = params.arg();
             let y = second_arg
                 .as_number()

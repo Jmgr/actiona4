@@ -30,6 +30,13 @@ impl<'js> FromParam<'js> for JsSizeLike {
         let value = params.arg();
 
         if let Some(width) = value.as_number() {
+            if params.is_empty() {
+                return Err(rquickjs::Error::new_from_js_message(
+                    "number",
+                    "Size",
+                    "Expected (width, height), got a single number",
+                ));
+            }
             let height = params
                 .arg()
                 .as_number()

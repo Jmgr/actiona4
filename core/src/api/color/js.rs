@@ -33,6 +33,13 @@ impl<'js> FromParam<'js> for JsColorLike {
         let arg_count = params.len();
         let value = params.arg();
         if value.is_number() {
+            if arg_count < 3 {
+                return Err(rquickjs::Error::new_from_js_message(
+                    "number",
+                    "Color",
+                    "Expected (r, g, b[, a]), got too few arguments",
+                ));
+            }
             let r: u8 = value.get()?;
             let g: u8 = params.arg().get()?;
             let b: u8 = params.arg().get()?;

@@ -18,6 +18,7 @@ Select rect on screen
 
 Update
 - show notification if new version
+- Update fallback: check website if new version 
 
 - check we don't await without a cancellation token
 
