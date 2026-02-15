@@ -52,6 +52,15 @@ const config: Config = {
   ],
   plugins: [
     [
+      "@easyops-cn/docusaurus-search-local",
+      {
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: true,
+        hashed: true,
+      },
+    ],
+    [
       "docusaurus-plugin-typedoc",
       {
         plugin: [
@@ -106,6 +115,7 @@ const config: Config = {
           label: "GitHub",
           position: "right",
         },
+        { type: "search", position: "right" },
       ],
     },
     footer: {
