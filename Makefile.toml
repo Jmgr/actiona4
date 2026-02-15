@@ -74,3 +74,53 @@ dependencies = ["install-tauri-cli"]
 script_runner = "bash"
 script_extension = "sh"
 script = ["cargo tauri build --bundles appimage"]
+
+[tasks.release-run]
+description = "Build the actiona-run binary in release mode."
+command = "cargo"
+args = ["build", "-p", "run", "--release", "--bin", "actiona-run"]
+
+[tasks.release-run-console]
+condition = { platforms = ["windows"] }
+description = "Build the actiona-run-console binary in release mode (Windows only)."
+command = "cargo"
+args = [
+    "build",
+    "-p",
+    "run",
+    "--release",
+    "--bin",
+    "actiona-run-console",
+    "--features",
+    "windows-console-bin",
+]
+
+[tasks.release]
+description = "Build release binaries, including actiona-run-console on Windows."
+dependencies = ["release-run", "release-run-console"]
+
+[tasks.sign]
+condition = { platforms = ["windows"] }
+description = "Sign actiona-run release executables with signtool (Windows only)."
+command = "signtool"
+args = [
+    "sign",
+    "/d",
+    "Actiona",
+    "/du",
+    "https://actiona.app",
+    "/fd",
+    "sha256",
+    "/tr",
+    "http://timestamp.comodoca.com",
+    "/td",
+    "sha256",
+    "/as",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}\\target\\release\\actiona-run.exe",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}\\target\\release\\actiona-run-console.exe",
+]
+
+[tasks.release-signed]
+condition = { platforms = ["windows"] }
+description = "Build and sign actiona-run release executables (Windows only)."
+dependencies = ["release", "sign"]
