@@ -320,6 +320,8 @@ only works on Windows
 > `optional` **resident**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 If `true`, keep notification resident until explicitly dismissed.
+Also automatically sets the timeout to never expire unless an explicit
+timeout is provided.
 
 #### Default Value
 

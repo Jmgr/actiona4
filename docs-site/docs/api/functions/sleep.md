@@ -14,6 +14,7 @@ await sleep("1s");
 // Wait 1 hour
 await sleep("1h");
 ```
+Numeric values are interpreted as milliseconds.
 
 ## Parameters
 
