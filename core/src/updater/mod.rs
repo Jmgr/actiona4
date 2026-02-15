@@ -150,7 +150,7 @@ impl Updater {
                             info!("Updater result saved");
 
                             // Check again tomorrow
-                            Duration::days(24)
+                            Duration::days(1)
                         }
                         Err(err) => {
                             warn!("update check failed: {err}");
