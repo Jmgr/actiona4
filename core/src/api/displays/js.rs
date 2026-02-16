@@ -2,6 +2,7 @@ use itertools::Itertools;
 use rquickjs::atom::PredefinedAtom;
 use rquickjs::{
     Ctx, JsLifetime, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
 };
 use tracing::instrument;
@@ -15,7 +16,7 @@ use crate::{
         rect::js::JsRect,
     },
     runtime::{self, WithUserData},
-    types::display::display_with_type,
+    types::display::{DisplayFields, display_with_type},
 };
 
 /// The global displays singleton for querying connected monitors and screens.
