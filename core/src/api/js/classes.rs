@@ -12,6 +12,7 @@ use crate::{IntoJsResult, runtime::WithUserData};
 ///
 /// In normal mode this is `ctx.globals()`. In `no_globals` mode this is
 /// the `actiona` namespace object stored on globals.
+/// @skip
 #[must_use]
 pub fn registration_target<'js>(ctx: &Ctx<'js>) -> Object<'js> {
     if ctx.user_data().no_globals() {
