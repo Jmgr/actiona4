@@ -13,6 +13,8 @@ rustflags = ["-C", "link-arg=-fuse-ld=mold", "-C", "target-cpu=x86-64-v2"]
 
 [env]
 RUST_TEST_THREADS = "1"
+VCPKGRS_TRIPLET = "x64-windows-static"
+OPENCV_CMAKE_ARGS = "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release"
 
 [alias]
 format = ["make", "format"]
