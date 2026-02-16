@@ -21,7 +21,7 @@ use rustyline::{
     highlight::{CmdKind, Highlighter, MatchingBracketHighlighter},
     validate::{ValidationContext, ValidationResult, Validator},
 };
-use tokio::{fs, runtime::Handle};
+use tokio::{fs, runtime::Handle, select, signal};
 use tokio_util::sync::CancellationToken;
 use tracing::{instrument, warn};
 use two_face::re_exports::syntect::{
@@ -337,39 +337,54 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                     continue;
                 }
 
-                let value = script_engine
-                    .eval_async_fn::<Option<String>>(&line, |value| {
-                        Ok(if value.is_undefined() {
-                            None // TODO: print objects
-                        } else if value.is_promise() {
-                            Some(format!(
-                                "{} (hint: call `await {line}`)",
-                                value.to_string_coerced()?
-                            ))
-                        } else {
-                            Some(value.to_string_coerced()?)
-                        })
-                    })
+                // Create a per-expression cancellation token so Ctrl+C cancels
+                // only the current expression, not the entire runtime.
+                let expr_token = CancellationToken::new();
+                script_engine
+                    .set_scoped_cancellation_token(Some(expr_token.clone()))
                     .await;
 
+                let eval_future = script_engine.eval_async_fn::<Option<String>>(&line, |value| {
+                    Ok(if value.is_undefined() {
+                        None // TODO: print objects
+                    } else if value.is_promise() {
+                        Some(format!(
+                            "{} (hint: call `await {line}`)",
+                            value.to_string_coerced()?
+                        ))
+                    } else {
+                        Some(value.to_string_coerced()?)
+                    })
+                });
+
+                let value = select! {
+                    result = eval_future => Some(result),
+                    _ = signal::ctrl_c() => {
+                        expr_token.cancel();
+                        None
+                    }
+                };
+
+                script_engine.set_scoped_cancellation_token(None).await;
+
                 match value {
-                    Ok(Some(value)) => {
+                    Some(Ok(Some(value))) => {
                         println!("{value}");
                     }
-                    Ok(None) => {
+                    Some(Ok(None)) => {
                         if likely_print_without_newline(&line) {
                             println!();
                         }
                     }
-                    Err(err) => {
+                    Some(Err(err)) => {
                         if !scripting::try_emit_script_diagnostic(&err, &line) {
                             eprintln!("{err}");
                         }
                     }
-                }
-
-                if cancellation_token.is_cancelled() {
-                    break;
+                    None => {
+                        // Ctrl+C interrupted the expression
+                        println!();
+                    }
                 }
             }
             Err(ReadlineError::Interrupted) => {

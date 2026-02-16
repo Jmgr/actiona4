@@ -161,6 +161,7 @@ pub fn run_cli() -> Result<()> {
         #[cfg(unix)]
         display_name: args.display.clone(),
         no_globals,
+        install_ctrl_c_handler: !args.command.is_repl(),
     };
 
     Runtime::run_with_ui(

@@ -95,6 +95,10 @@ impl<'js> WithUserData for Ctx<'js> {
 pub(crate) struct JsUserData {
     displays: Displays,
     cancellation_token: CancellationToken,
+    /// An optional scoped token (e.g. per-REPL-expression) whose children are
+    /// cancelled independently of the root token. When set, `child_cancellation_token`
+    /// returns a child of this token instead of the root one.
+    scoped_cancellation_token: Mutex<Option<CancellationToken>>,
     rng: SharedRng,
     task_tracker: TaskTracker,
     app_handle: Option<AppHandle>,
@@ -113,7 +117,16 @@ impl JsUserData {
     }
 
     pub(crate) fn child_cancellation_token(&self) -> CancellationToken {
-        self.cancellation_token.child_token()
+        let scoped = self.scoped_cancellation_token.lock();
+        if let Some(token) = scoped.as_ref() {
+            token.child_token()
+        } else {
+            self.cancellation_token.child_token()
+        }
+    }
+
+    pub(crate) fn set_scoped_cancellation_token(&self, token: Option<CancellationToken>) {
+        *self.scoped_cancellation_token.lock() = token;
     }
 
     pub(crate) fn rng(&self) -> SharedRng {
@@ -177,7 +190,7 @@ pub enum WaitAtEnd {
     No,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct RuntimeOptions {
     #[cfg(unix)]
     pub display_name: Option<String>,
@@ -185,6 +198,22 @@ pub struct RuntimeOptions {
     /// When true, all Actiona API objects are placed under an `actiona` namespace
     /// instead of the global scope.
     pub no_globals: bool,
+
+    /// When false, the runtime will not install a Ctrl+C signal handler that
+    /// cancels the root cancellation token. The caller is responsible for
+    /// handling Ctrl+C (e.g. the REPL manages it per-expression).
+    pub install_ctrl_c_handler: bool,
+}
+
+impl Default for RuntimeOptions {
+    fn default() -> Self {
+        Self {
+            #[cfg(unix)]
+            display_name: None,
+            no_globals: false,
+            install_ctrl_c_handler: true,
+        }
+    }
 }
 
 #[derive_where(Debug)]
@@ -312,6 +341,7 @@ impl Runtime {
                 ctx.store_userdata(JsUserData::new(
                     displays,
                     cancellation_token.clone(),
+                    Mutex::new(None),
                     local_rng,
                     task_tracker.clone(),
                     app_handle,
@@ -545,15 +575,17 @@ impl Runtime {
         F: FnOnce(Arc<Self>, ScriptEngine) -> Fut + Send + 'static,
         Fut: Future<Output = Result<()>> + Send + 'static,
     {
-        let local_cancellation_token = cancellation_token.clone();
-        task_tracker.spawn(async move {
-            select! {
-                _ = signal::ctrl_c() => {
-                    local_cancellation_token.cancel();
-                },
-                _ = local_cancellation_token.cancelled() => {},
-            }
-        });
+        if runtime_options.install_ctrl_c_handler {
+            let local_cancellation_token = cancellation_token.clone();
+            task_tracker.spawn(async move {
+                select! {
+                    _ = signal::ctrl_c() => {
+                        local_cancellation_token.cancel();
+                    },
+                    _ = local_cancellation_token.cancelled() => {},
+                }
+            });
+        }
 
         let (runtime, script_engine) = Self::new(
             cancellation_token.clone(),

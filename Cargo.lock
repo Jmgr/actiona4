@@ -5823,6 +5823,7 @@ dependencies = [
  "rquickjs",
  "rustyline",
  "shell-words",
+ "strum",
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",

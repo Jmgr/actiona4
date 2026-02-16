@@ -20,9 +20,10 @@ use swc_common::{
     errors::{ColorConfig, Handler},
     sync::Lrc,
 };
+use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
-use crate::scripting::typescript::TsToJs;
+use crate::{runtime::WithUserData, scripting::typescript::TsToJs};
 
 pub mod callbacks;
 pub mod pragma;
@@ -639,6 +640,17 @@ impl Engine {
                 CaughtError::Value(value) => Err(eyre!("script value: {value:?}")),
             },
         }
+    }
+
+    /// Sets (or clears) a scoped cancellation token on the JS context.
+    /// When set, JS tasks spawned via `task_with_token` will use children of this
+    /// token instead of the root runtime token, allowing per-expression cancellation.
+    pub async fn set_scoped_cancellation_token(&self, token: Option<CancellationToken>) {
+        self.context
+            .with(move |ctx| {
+                ctx.user_data().set_scoped_cancellation_token(token);
+            })
+            .await;
     }
 
     pub async fn idle(&self) -> Vec<UnhandledException> {

@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueHint};
+use strum::EnumIs;
 
 /// Run Actiona 4 automation scripts from the command line.
 ///
@@ -9,7 +10,7 @@ use clap::{Parser, Subcommand, ValueHint};
 /// - `actiona-run eval "console.log('hello')"`
 /// - `actiona-run repl`
 /// - `actiona-run init ./my-script`
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, EnumIs)]
 #[command(verbatim_doc_comment)]
 pub enum Commands {
     /// 🤖 runs a script (default)
