@@ -198,7 +198,7 @@ impl Topic for KeyboardTextTopic {
 pub fn keysym_to_key(keysym: Keysym) -> Key {
     match keysym {
         Keysym::KP_Add => Key::Add,
-        Keysym::Alt_L => Key::Alt,
+        Keysym::Alt_L | Keysym::Alt_R => Key::Alt,
         Keysym::BackSpace => Key::Backspace,
         Keysym::Begin => Key::Begin,
         Keysym::Break => Key::Break,
@@ -299,7 +299,7 @@ pub fn keysym_to_key(keysym: Keysym) -> Key {
         Keysym::XF86_AudioRaiseVolume => Key::VolumeUp,
         Keysym::XF86_AudioMute => Key::VolumeMute,
         Keysym::XF86_AudioMicMute => Key::MicMute,
-        Keysym::Super_L => Key::Meta,
+        Keysym::Super_L | Keysym::Super_R => Key::Meta,
         other => other
             .key_char()
             .map_or_else(|| Key::Other(other.into()), Key::Unicode),

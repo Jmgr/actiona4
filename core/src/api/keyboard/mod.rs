@@ -83,6 +83,10 @@ impl Keyboard {
             return Ok(());
         }
 
+        // Expand generic modifier keys (e.g. Control -> {LControl, RControl}) so that
+        // either the left or right physical key satisfies the requirement.
+        let keys = expand_generic_modifiers(keys);
+
         let guard = self.runtime.keyboard_keys();
         let mut receiver = guard.subscribe();
         let mut pressed_keys = HashSet::with_capacity(keys.len());
@@ -93,21 +97,24 @@ impl Keyboard {
                 continue;
             }
 
+            // Normalize the incoming key so that e.g. LControl matches a Control requirement
+            let key = normalize_to_generic_modifier(event.key);
+
             // Ignore keys that are not part of the list
-            if !keys.contains(&event.key) {
+            if !keys.contains(&key) {
                 continue;
             }
 
             // Remove released keys
             if event.direction.is_release() {
-                pressed_keys.remove(&event.key);
+                pressed_keys.remove(&key);
                 continue;
             }
 
-            pressed_keys.insert(event.key);
+            pressed_keys.insert(key);
 
             if exclusive {
-                if pressed_keys == *keys {
+                if pressed_keys == keys {
                     return Ok(());
                 }
             } else if keys.is_subset(&pressed_keys) {
@@ -115,6 +122,30 @@ impl Keyboard {
             }
         }
     }
+}
+
+/// Map left/right physical modifier keys to their generic counterpart.
+/// Keys that are not side-specific modifiers are returned unchanged.
+fn normalize_to_generic_modifier(key: Key) -> Key {
+    match key {
+        Key::LControl | Key::RControl => Key::Control,
+        Key::LShift | Key::RShift => Key::Shift,
+        Key::LMenu => Key::Alt,
+        #[cfg(target_os = "windows")]
+        Key::RMenu => Key::Alt,
+        _ => key,
+    }
+}
+
+/// Expand generic modifier keys in the set into their generic form only.
+/// For example, if the set contains `Key::Control`, it stays as `Key::Control`
+/// (and incoming events are normalized via [`normalize_to_generic_modifier`]).
+/// If the set contains `Key::LControl` specifically, it is replaced by the
+/// generic `Key::Control` so that either physical key can satisfy it.
+fn expand_generic_modifiers(keys: &HashSet<Key>) -> HashSet<Key> {
+    keys.iter()
+        .map(|key| normalize_to_generic_modifier(*key))
+        .collect()
 }
 
 #[cfg(test)]
