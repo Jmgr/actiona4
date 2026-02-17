@@ -15,7 +15,7 @@ use crate::{
         rect::js::JsRect,
     },
     runtime::{self, WithUserData},
-    types::display::{DisplayFields, display_with_type},
+    types::display::display_with_type,
 };
 
 /// The global displays singleton for querying connected monitors and screens.

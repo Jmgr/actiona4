@@ -143,6 +143,14 @@ impl KeyboardInputDispatcher {
     }
 
     fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool) -> bool {
+        // VK_PACKET events are synthesized Unicode characters (from SendInput with
+        // KEYEVENTF_UNICODE). They don't represent physical keys and their
+        // press/release pairing is unreliable (especially for surrogate pairs),
+        // so skip repeat tracking for them entirely.
+        if key_id.vk_code == VK_PACKET.0 as u32 {
+            return false;
+        }
+
         let mut pressed_keys = self.pressed_keys.lock();
         if is_pressed {
             if !pressed_keys.insert(*key_id) {
