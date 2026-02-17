@@ -1,4 +1,7 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{
+    fmt::{Debug, Display},
+    sync::Arc,
+};
 
 use color_eyre::Result;
 use derive_more::{Constructor, Deref, DerefMut};
@@ -18,7 +21,7 @@ use crate::{
         rect::{Rect, rect},
         size::size,
     },
-    types::input::Direction,
+    types::{display::DisplayFields, input::Direction},
 };
 
 pub trait Signal<T>: Send + Sync + 'static {
@@ -254,6 +257,23 @@ pub struct DisplayInfo {
     pub frequency: f32,
     /// Whether the screen is the main screen
     pub is_primary: bool,
+}
+
+impl Display for DisplayInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("id", self.id)
+            .display("name", &self.name)
+            .display("friendly_name", &self.friendly_name)
+            .display("rect", self.rect)
+            .display("width_mm", self.width_mm)
+            .display("height_mm", self.height_mm)
+            .display("rotation", self.rotation)
+            .display("scale_factor", self.scale_factor)
+            .display("frequency", self.frequency)
+            .display("is_primary", self.is_primary)
+            .finish(f)
+    }
 }
 
 impl From<display_info::DisplayInfo> for DisplayInfo {

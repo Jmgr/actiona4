@@ -73,6 +73,10 @@ impl Keyboard {
         self.implementation.is_key_pressed(key).await
     }
 
+    pub async fn get_pressed_keys(&self) -> Result<Vec<Key>> {
+        self.implementation.get_pressed_keys().await
+    }
+
     pub async fn wait_for_keys(
         &self,
         keys: &HashSet<Key>,

@@ -11,7 +11,7 @@ use rquickjs::{
 };
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, EnumString};
-use tracing::instrument;
+use tracing::{debug, instrument};
 
 use crate::{
     IntoJsResult,
@@ -198,6 +198,27 @@ impl JsKeyboard {
         })?;
 
         self.inner.is_key_pressed(key).await.into_js_result(&ctx)
+    }
+
+    /// Returns the list of keys that are currently pressed.
+    pub async fn get_pressed_keys(&self, ctx: Ctx<'_>) -> Result<Vec<JsKey>> {
+        let keys = self.inner.get_pressed_keys().await.into_js_result(&ctx)?;
+
+        Ok(keys
+            .into_iter()
+            .filter_map(|enigo_key| {
+                let key = JsKey::try_from(enigo_key);
+
+                match key {
+                    Ok(key) => Some(key),
+                    Err(err) => {
+                        debug!("no JsKey for {:?}: {}", enigo_key, err);
+
+                        None
+                    }
+                }
+            })
+            .collect())
     }
 
     /// Waits until the specified keys are all pressed simultaneously.
@@ -1012,6 +1033,7 @@ impl<'js> FromJs<'js> for JsKey {
     }
 }
 
+#[derive(Debug, Display)]
 pub enum KeyError {
     Unsupported,
 }

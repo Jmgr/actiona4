@@ -550,11 +550,17 @@ fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool, keystate: &K
     }
 }
 
-#[derive(Debug, Deref)]
-struct Keystate([u8; 256]);
+pub(crate) fn vk_to_enigo_key_with_snapshot(vk_code: u32, keystate: &Keystate) -> Key {
+    vk_to_enigo_key(vk_code, 0, false, keystate)
+}
 
-fn get_keystate() -> Keystate {
-    let mut keystate = [0u8; 256];
+const KEYSTATE_SIZE: usize = 256;
+
+#[derive(Debug, Deref)]
+pub(crate) struct Keystate([u8; KEYSTATE_SIZE]);
+
+pub(crate) fn get_keystate() -> Keystate {
+    let mut keystate = [0u8; KEYSTATE_SIZE];
 
     for &mod_vk in [
         VK_SHIFT,
