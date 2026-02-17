@@ -1,4 +1,4 @@
-#![cfg_attr(windows, windows_subsystem = "console")]
+#![cfg_attr(windows, windows_subsystem = "windows")]
 
 use color_eyre::Result;
 

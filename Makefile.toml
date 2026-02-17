@@ -90,9 +90,9 @@ args = [
     "run",
     "--release",
     "--bin",
-    "actiona-run-console",
+    "actiona-runw",
     "--features",
-    "windows-console-bin",
+    "windows-bin",
 ]
 
 [tasks.release]

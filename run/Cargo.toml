@@ -16,13 +16,13 @@ name = "actiona-run"
 path = "src/bin/actiona-run.rs"
 
 [[bin]]
-name = "actiona-run-console"
-path = "src/windows/actiona-run-console.rs"
-required-features = ["windows-console-bin"]
+name = "actiona-runw"
+path = "src/windows/actiona-runw.rs"
+required-features = ["windows-bin"]
 
 [features]
 default = []
-windows-console-bin = []
+windows-bin = []
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [

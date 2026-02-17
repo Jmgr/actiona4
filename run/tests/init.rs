@@ -1,9 +1,9 @@
 use std::process::Command;
 
 fn cargo_bin() -> Command {
-    #[cfg(all(windows, feature = "windows-console-bin"))]
-    let exe = env!("CARGO_BIN_EXE_actiona-run-console");
-    #[cfg(any(not(windows), all(windows, not(feature = "windows-console-bin"))))]
+    #[cfg(all(windows, feature = "windows-bin"))]
+    let exe = env!("CARGO_BIN_EXE_actiona-runw");
+    #[cfg(any(not(windows), all(windows, not(feature = "windows-bin"))))]
     let exe = env!("CARGO_BIN_EXE_actiona-run");
 
     Command::new(exe)
