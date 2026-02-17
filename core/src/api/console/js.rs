@@ -87,7 +87,7 @@ impl JsConsole {
         format!("'{escaped}'")
     }
 
-    fn print_value<'js>(ctx: &Ctx<'js>, value: Value<'js>) -> String {
+    pub(crate) fn print_value<'js>(ctx: &Ctx<'js>, value: Value<'js>) -> String {
         use rquickjs::*;
 
         match value.type_of() {

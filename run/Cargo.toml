@@ -46,6 +46,7 @@ indicatif.workspace = true
 rquickjs.workspace = true
 rustyline.workspace = true
 shell-words.workspace = true
+strum.workspace = true
 tauri.workspace = true
 tauri-plugin-dialog.workspace = true
 time.workspace = true
@@ -55,7 +56,6 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 two-face.workspace = true
 versions.workspace = true
-strum.workspace = true
 
 [build-dependencies]
 built.workspace = true
@@ -63,8 +63,8 @@ cfg_aliases.workspace = true
 clap = { workspace = true, features = ["env"] }
 clap_complete.workspace = true
 flate2.workspace = true
-tauri-build.workspace = true
 strum.workspace = true
+tauri-build.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

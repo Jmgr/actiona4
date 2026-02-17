@@ -118,6 +118,7 @@ impl JsUserData {
 
     pub(crate) fn child_cancellation_token(&self) -> CancellationToken {
         let scoped = self.scoped_cancellation_token.lock();
+        #[allow(clippy::option_if_let_else)]
         if let Some(token) = scoped.as_ref() {
             token.child_token()
         } else {

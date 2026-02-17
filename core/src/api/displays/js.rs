@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use rquickjs::atom::PredefinedAtom;
 use rquickjs::{
     Ctx, JsLifetime, Result,
     atom::PredefinedAtom,

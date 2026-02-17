@@ -69,6 +69,12 @@ impl<'js> JsValueToString for Value<'js> {
     }
 }
 
+#[must_use]
+pub fn format_js_value_for_console(value: Value<'_>) -> String {
+    let ctx = value.ctx().clone();
+    api::console::js::JsConsole::print_value(&ctx, value)
+}
+
 #[macro_export]
 macro_rules! newtype {
     // --- Internal Rule ---

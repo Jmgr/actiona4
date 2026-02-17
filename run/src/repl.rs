@@ -4,7 +4,7 @@ use std::{
 };
 
 use actiona_core::{
-    JsValueToString,
+    format_js_value_for_console,
     scripting::{self, Engine},
 };
 use clap::{CommandFactory, Parser};
@@ -346,14 +346,12 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
 
                 let eval_future = script_engine.eval_async_fn::<Option<String>>(&line, |value| {
                     Ok(if value.is_undefined() {
-                        None // TODO: print objects
+                        None
                     } else if value.is_promise() {
-                        Some(format!(
-                            "{} (hint: call `await {line}`)",
-                            value.to_string_coerced()?
-                        ))
+                        let rendered = format_js_value_for_console(value.clone());
+                        Some(format!("{} (hint: call `await {line}`)", rendered))
                     } else {
-                        Some(value.to_string_coerced()?)
+                        Some(format_js_value_for_console(value))
                     })
                 });
 

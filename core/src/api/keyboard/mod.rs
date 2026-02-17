@@ -130,7 +130,7 @@ impl Keyboard {
 
 /// Map left/right physical modifier keys to their generic counterpart.
 /// Keys that are not side-specific modifiers are returned unchanged.
-fn normalize_to_generic_modifier(key: Key) -> Key {
+const fn normalize_to_generic_modifier(key: Key) -> Key {
     match key {
         Key::LControl | Key::RControl => Key::Control,
         Key::LShift | Key::RShift => Key::Shift,

@@ -12,6 +12,7 @@ Find Image:
  - display_with_type should that use the Display impl?
  - cargo run eval "await displays.all()" => should display like a print()
  - cargo run eval "displays.all()" => should not need await? Maybe fixed by ^
+ - windows: attachconsole all the time?
 
  Displays
  - add all()

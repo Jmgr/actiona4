@@ -12,6 +12,7 @@ use std::{ffi::OsString, path::Path, sync::Arc};
 
 use actiona_core::{
     config::Config,
+    format_js_value_for_console,
     runtime::{Runtime, RuntimeOptions, WaitAtEnd},
     scripting,
     scripting::pragma::parse_pragmas,
@@ -195,11 +196,24 @@ pub fn run_cli() -> Result<()> {
                 }
                 Commands::Eval { code } => {
                     let code = code.join("\n");
+                    let value = script_engine.eval_async_fn::<Option<String>>(&code, |value| {
+                        Ok(if value.is_undefined() {
+                            None
+                        } else if value.is_promise() {
+                            let rendered = format_js_value_for_console(value.clone());
+                            Some(format!("{rendered} (hint: wrap with `await (...)`)"))
+                        } else {
+                            Some(format_js_value_for_console(value))
+                        })
+                    });
 
-                    if let Err(err) = script_engine.eval_async::<()>(&code).await
-                        && !scripting::try_emit_script_diagnostic(&err, &code)
-                    {
-                        eprintln!("Error: {err}");
+                    match value.await {
+                        Ok(Some(value)) => println!("{value}"),
+                        Ok(None) => {}
+                        Err(err) if !scripting::try_emit_script_diagnostic(&err, &code) => {
+                            eprintln!("Error: {err}");
+                        }
+                        Err(_) => {}
                     }
                 }
                 Commands::Repl { .. } => {

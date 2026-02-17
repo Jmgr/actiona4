@@ -10,7 +10,7 @@ use strum::EnumIs;
 /// - `actiona-run eval "console.log('hello')"`
 /// - `actiona-run repl`
 /// - `actiona-run init ./my-script`
-#[derive(Debug, Subcommand, EnumIs)]
+#[derive(Debug, EnumIs, Subcommand)]
 #[command(verbatim_doc_comment)]
 pub enum Commands {
     /// 🤖 runs a script (default)
