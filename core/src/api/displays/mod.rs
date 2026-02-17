@@ -3,6 +3,7 @@ use std::sync::Arc;
 use color_eyre::eyre::eyre;
 
 pub type Result<T> = color_eyre::Result<T>;
+use itertools::Itertools;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 
@@ -145,6 +146,11 @@ impl Displays {
                     .cmp(&right_display_info.rect.surface())
             })
             .cloned())
+    }
+
+    pub async fn all(&self) -> Result<Vec<DisplayInfo>> {
+        let displays_infos = self.displays_info.wait_get().await?;
+        Ok(displays_infos.iter().cloned().collect_vec())
     }
 }
 

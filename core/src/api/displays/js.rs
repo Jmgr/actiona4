@@ -1,3 +1,5 @@
+use itertools::Itertools;
+use rquickjs::atom::PredefinedAtom;
 use rquickjs::{
     Ctx, JsLifetime, Result,
     class::{Trace, Tracer},
@@ -13,6 +15,7 @@ use crate::{
         rect::js::JsRect,
     },
     runtime::{self, WithUserData},
+    types::display::display_with_type,
 };
 
 /// The global displays singleton for querying connected monitors and screens.
@@ -163,6 +166,19 @@ impl JsDisplays {
             .into_js_result(&ctx)?
             .map(|display_info| display_info.into()))
     }
+
+    /// Returns all displays.
+    /// @readonly
+    pub async fn all<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .all()
+            .await
+            .into_js_result(&ctx)?
+            .into_iter()
+            .map(|display_info| display_info.into())
+            .collect_vec())
+    }
 }
 
 /// Information about a connected display, including its name, geometry,
@@ -276,6 +292,13 @@ impl JsDisplayInfo {
     #[must_use]
     pub const fn is_primary(&self) -> bool {
         self.inner.is_primary
+    }
+
+    /// Returns a string representation of the display.
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Display", &self.inner)
     }
 }
 

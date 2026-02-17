@@ -8,6 +8,13 @@ Find Image:
  4) UI to test parameters and display results on screen (transparent target icon?)
  
  - High DPI?
+ - should run `init` always overwrite files?
+ - display_with_type should that use the Display impl?
+ - cargo run eval "await displays.all()" => should display like a print()
+ - cargo run eval "displays.all()" => should not need await? Maybe fixed by ^
+
+ Displays
+ - add all()
 
  Mouse:
 - record
