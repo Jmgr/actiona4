@@ -303,6 +303,10 @@ fn init_tracing() {
 mod tests {
     use std::ffi::OsString;
 
+    use clap::{Parser, error::ErrorKind};
+
+    use crate::args::Args;
+
     use super::maybe_insert_default_run;
 
     #[test]
@@ -337,7 +341,7 @@ mod tests {
     fn respects_top_level_options_before_default_subcommand() {
         let args = vec![
             OsString::from("actiona-run"),
-            OsString::from("--disable-updates"),
+            OsString::from("--update-check"),
             OsString::from("false"),
             OsString::from("script.ts"),
         ];
@@ -345,13 +349,24 @@ mod tests {
         let args = maybe_insert_default_run(args);
         assert_eq!(
             args,
-            vec![
-                "actiona-run",
-                "--disable-updates",
-                "false",
-                "run",
-                "script.ts"
-            ]
+            vec!["actiona-run", "--update-check", "false", "run", "script.ts"]
         );
+    }
+
+    #[test]
+    fn keeps_version_flag_without_default_subcommand() {
+        let args = vec![OsString::from("actiona-run"), OsString::from("--version")];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(args, vec!["actiona-run", "--version"]);
+    }
+
+    #[test]
+    fn parses_version_flag() {
+        let args = vec![OsString::from("actiona-run"), OsString::from("--version")];
+        let args = maybe_insert_default_run(args);
+
+        let err = Args::try_parse_from(args).expect_err("`--version` should trigger Clap exit");
+        assert_eq!(err.kind(), ErrorKind::DisplayVersion);
     }
 }

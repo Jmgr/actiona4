@@ -66,6 +66,7 @@ pub enum Commands {
 }
 
 #[derive(Debug, Parser)]
+#[command(name = "actiona-run", version)]
 pub struct Args {
     #[command(subcommand)]
     pub command: Commands,
