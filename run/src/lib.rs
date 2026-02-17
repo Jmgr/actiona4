@@ -281,7 +281,8 @@ fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usiz
 }
 
 fn init_tracing() {
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn"));
+    let filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new("warn,enigo::platform::x11=off"));
 
     let stdout_layer = tracing_subscriber::fmt::layer()
         // Keep command output deterministic on stdout (e.g. scripts/tests) by
