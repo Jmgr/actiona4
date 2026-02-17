@@ -24,8 +24,7 @@ use tracing_subscriber::{
 };
 #[cfg(windows)]
 use windows::{
-    Wdk::System::SystemServices::RtlGetVersion,
-    Win32::System::{Console::AttachConsole, SystemInformation::OSVERSIONINFOW},
+    Wdk::System::SystemServices::RtlGetVersion, Win32::System::SystemInformation::OSVERSIONINFOW,
 };
 
 use crate::{
@@ -84,21 +83,6 @@ pub fn run_cli() -> Result<()> {
             eprintln!(
                 "Warning: Unable to determine your version of Windows. Actiona is only supported on Windows 10 1607 or newer."
             )
-        }
-    }
-
-    // When built as a Windows GUI app (windows_subsystem = "windows"), stdout/stderr
-    // are not connected. Attach to the parent console so CLI-only commands can print.
-    #[cfg(windows)]
-    if matches!(
-        args.command,
-        Commands::Update
-            | Commands::Completions { .. }
-            | Commands::Init { .. }
-            | Commands::Config { .. }
-    ) {
-        unsafe {
-            _ = AttachConsole(u32::MAX);
         }
     }
 
