@@ -80,9 +80,9 @@ description = "Build the actiona-run binary in release mode."
 command = "cargo"
 args = ["build", "-p", "run", "--release", "--bin", "actiona-run"]
 
-[tasks.release-run-console]
+[tasks.release-runw]
 condition = { platforms = ["windows"] }
-description = "Build the actiona-run-console binary in release mode (Windows only)."
+description = "Build the actiona-runw binary in release mode (Windows only)."
 command = "cargo"
 args = [
     "build",
@@ -96,8 +96,8 @@ args = [
 ]
 
 [tasks.release]
-description = "Build release binaries, including actiona-run-console on Windows."
-dependencies = ["release-run", "release-run-console"]
+description = "Build release binaries, including actiona-runw on Windows."
+dependencies = ["release-run", "release-runw"]
 
 [tasks.sign]
 condition = { platforms = ["windows"] }
@@ -117,7 +117,7 @@ args = [
     "sha256",
     "/as",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}\\target\\release\\actiona-run.exe",
-    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}\\target\\release\\actiona-run-console.exe",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}\\target\\release\\actiona-runw.exe",
 ]
 
 [tasks.release-signed]
