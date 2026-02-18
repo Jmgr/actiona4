@@ -451,7 +451,10 @@ impl Mouse {
         let duration = if options.speed < 0. {
             return Err(eyre!("speed must be greater than zero"));
         } else {
-            Duration::from_secs_f64(distance / options.speed)
+            let duration = Duration::try_from_secs_f64(distance / options.speed)
+                .map_err(|_| eyre!("invalid speed: {}", options.speed))?;
+
+            duration
         };
 
         if options.interval.0.is_zero() {

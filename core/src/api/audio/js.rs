@@ -37,7 +37,7 @@ use crate::{
 /// ```
 ///
 /// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsPlaySoundOptions {
     /// Volume to play the sound at
     /// @default `1.0`
@@ -66,6 +66,20 @@ pub struct JsPlaySoundOptions {
     /// Abort signal to cancel the sound playback.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
+}
+
+impl Default for JsPlaySoundOptions {
+    fn default() -> Self {
+        Self {
+            volume: 1.0,
+            playback_rate: 1.0,
+            paused: false,
+            r#loop: false,
+            fade_in: None,
+            fade_out: None,
+            signal: None,
+        }
+    }
 }
 
 impl JsPlaySoundOptions {
@@ -252,8 +266,8 @@ impl JsPlayingSound {
 
     /// @skip
     #[qjs(set, rename = "volume")]
-    pub fn set_volume(&mut self, volume: f32) {
-        self.inner.set_volume(volume);
+    pub fn set_volume(&mut self, ctx: Ctx<'_>, volume: f32) -> Result<()> {
+        self.inner.set_volume(volume).into_js_result(&ctx)
     }
 
     /// @skip
@@ -265,8 +279,10 @@ impl JsPlayingSound {
 
     /// @skip
     #[qjs(set, rename = "playbackRate")]
-    pub fn set_playback_rate(&mut self, playback_rate: f32) {
-        self.inner.set_playback_rate(playback_rate);
+    pub fn set_playback_rate(&mut self, ctx: Ctx<'_>, playback_rate: f32) -> Result<()> {
+        self.inner
+            .set_playback_rate(playback_rate)
+            .into_js_result(&ctx)
     }
 
     /// The total duration of the sound in seconds, or `undefined` if unknown.

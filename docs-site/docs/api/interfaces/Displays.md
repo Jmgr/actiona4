@@ -20,6 +20,18 @@ const smallest = await displays.smallest();
 
 ## Methods
 
+### all()
+
+> **all**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DisplayInfo`](DisplayInfo.md)[]\>
+
+Returns all displays.
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DisplayInfo`](DisplayInfo.md)[]\>
+
+***
+
 ### fromDeviceName()
 
 > **fromDeviceName**(`name`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>

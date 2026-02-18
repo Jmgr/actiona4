@@ -42,7 +42,6 @@
 - [inspect](functions/inspect.md)
 - [print](functions/print.md)
 - [println](functions/println.md)
-- [registrationTarget](functions/registrationTarget.md)
 - [sleep](functions/sleep.md)
 
 ## Directory

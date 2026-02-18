@@ -1,6 +1,6 @@
 use std::{fs::File, path::Path, sync::Arc, time::Duration};
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::ensure};
 use macros::FromJsObject;
 use once_cell::sync::OnceCell;
 use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
@@ -16,6 +16,7 @@ pub mod js;
 pub struct PlayingSound {
     sink: Arc<Sink>,
     duration: Option<Duration>,
+    source_sample_rate: u32,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
 }
@@ -38,8 +39,10 @@ impl PlayingSound {
         self.sink.stop();
     }
 
-    pub fn set_volume(&self, volume: f32) {
+    pub fn set_volume(&self, volume: f32) -> Result<()> {
+        validate_volume(volume)?;
         self.sink.set_volume(volume);
+        Ok(())
     }
 
     #[must_use]
@@ -47,8 +50,10 @@ impl PlayingSound {
         self.sink.volume()
     }
 
-    pub fn set_playback_rate(&self, playback_rate: f32) {
+    pub fn set_playback_rate(&self, playback_rate: f32) -> Result<()> {
+        validate_playback_rate(playback_rate, self.source_sample_rate)?;
         self.sink.set_speed(playback_rate);
+        Ok(())
     }
 
     #[must_use]
@@ -161,6 +166,11 @@ impl Audio {
         let file = File::open(path)?;
         let mut source: Box<dyn Source<Item = f32> + Send> = Box::new(Decoder::try_from(file)?);
         let duration = source.total_duration();
+        let source_sample_rate = source.sample_rate();
+        let source_channels = source.channels();
+        validate_source_format(source_sample_rate, source_channels)?;
+        validate_volume(options.volume)?;
+        validate_playback_rate(options.playback_rate, source_sample_rate)?;
         let sink = Sink::connect_new(output_stream.mixer());
 
         sink.set_volume(options.volume);
@@ -187,6 +197,7 @@ impl Audio {
         Ok(PlayingSound {
             sink: Arc::new(sink),
             duration,
+            source_sample_rate,
             cancellation_token: self.cancellation_token.clone(),
             task_tracker: self.task_tracker.clone(),
         })
@@ -203,5 +214,78 @@ impl Audio {
         playing_sound.wait_finished(cancellation_token).await;
 
         Ok(())
+    }
+}
+
+fn validate_source_format(sample_rate: u32, channels: u16) -> Result<()> {
+    ensure!(
+        sample_rate > 0,
+        "audio stream reports invalid sample rate: 0"
+    );
+    ensure!(
+        channels > 0,
+        "audio stream reports invalid channel count: 0"
+    );
+    Ok(())
+}
+
+fn validate_volume(volume: f32) -> Result<()> {
+    ensure!(volume.is_finite(), "audio volume must be a finite number");
+    ensure!(
+        volume >= 0.0,
+        "audio volume must be greater than or equal to 0"
+    );
+    Ok(())
+}
+
+fn validate_playback_rate(playback_rate: f32, source_sample_rate: u32) -> Result<()> {
+    ensure!(
+        playback_rate.is_finite(),
+        "audio playback rate must be a finite number"
+    );
+    ensure!(
+        playback_rate > 0.0,
+        "audio playback rate must be greater than 0"
+    );
+
+    let effective_sample_rate = source_sample_rate as f32 * playback_rate;
+    ensure!(
+        effective_sample_rate >= 1.0,
+        "audio playback rate is too small for this source sample rate"
+    );
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{validate_playback_rate, validate_volume};
+
+    #[test]
+    fn validate_volume_accepts_valid_values() {
+        assert!(validate_volume(0.0).is_ok());
+        assert!(validate_volume(1.0).is_ok());
+    }
+
+    #[test]
+    fn validate_volume_rejects_invalid_values() {
+        assert!(validate_volume(-0.1).is_err());
+        assert!(validate_volume(f32::NAN).is_err());
+        assert!(validate_volume(f32::INFINITY).is_err());
+    }
+
+    #[test]
+    fn validate_playback_rate_accepts_valid_values() {
+        assert!(validate_playback_rate(1.0, 44_100).is_ok());
+        assert!(validate_playback_rate(2.0, 48_000).is_ok());
+    }
+
+    #[test]
+    fn validate_playback_rate_rejects_invalid_values() {
+        assert!(validate_playback_rate(0.0, 44_100).is_err());
+        assert!(validate_playback_rate(-1.0, 44_100).is_err());
+        assert!(validate_playback_rate(f32::NAN, 44_100).is_err());
+        assert!(validate_playback_rate(f32::INFINITY, 44_100).is_err());
+        assert!(validate_playback_rate(1.0e-8, 44_100).is_err());
     }
 }

@@ -21,6 +21,18 @@ await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
 
 ## Methods
 
+### getPressedKeys()
+
+> **getPressedKeys**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Key`](../enumerations/Key.md)[]\>
+
+Returns the list of keys that are currently pressed.
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Key`](../enumerations/Key.md)[]\>
+
+***
+
 ### isKeyPressed()
 
 > **isKeyPressed**(`key`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>

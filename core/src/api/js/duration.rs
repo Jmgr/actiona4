@@ -28,8 +28,13 @@ impl<'js> FromJs<'js> for JsDuration {
             })?
         } else {
             let milliseconds = f64::from_js(ctx, value)?;
-
-            Duration::from_secs_f64(milliseconds / 1_000.0)
+            let seconds = milliseconds / 1_000.0;
+            Duration::try_from_secs_f64(seconds).map_err(|_| {
+                Exception::throw_message(
+                    ctx,
+                    "Invalid duration: expected a finite number of milliseconds >= 0",
+                )
+            })?
         }))
     }
 }
@@ -71,6 +76,22 @@ mod tests {
     fn from_js_duration_invalid_suffix() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine.eval_async::<JsDuration>("\"10q\"").await;
+            assert!(result.is_err());
+        });
+    }
+
+    #[test]
+    fn from_js_duration_invalid_float_nan() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine.eval_async::<JsDuration>("Number.NaN").await;
+            assert!(result.is_err());
+        });
+    }
+
+    #[test]
+    fn from_js_duration_invalid_float_negative() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine.eval_async::<JsDuration>("-1").await;
             assert!(result.is_err());
         });
     }

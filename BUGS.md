@@ -1,0 +1,1 @@
+- many JS classes don't implement ToString

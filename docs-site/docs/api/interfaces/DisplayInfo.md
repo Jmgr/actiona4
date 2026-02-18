@@ -90,3 +90,15 @@ The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
 > `readonly` **widthMm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The physical width of the display in millimeters.
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of the display.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

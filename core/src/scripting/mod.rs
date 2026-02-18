@@ -687,8 +687,15 @@ mod tests {
 
     #[rquickjs::methods]
     impl Helper {
-        async fn sleep(secs: f64) -> rquickjs::Result<()> {
-            tokio::time::sleep(Duration::from_secs_f64(secs)).await;
+        async fn sleep(ctx: Ctx<'_>, secs: f64) -> rquickjs::Result<()> {
+            let duration = Duration::try_from_secs_f64(secs).map_err(|_| {
+                Exception::throw_message(
+                    &ctx,
+                    "Invalid duration: expected a finite number of seconds greater or equal to 0",
+                )
+            })?;
+
+            tokio::time::sleep(duration).await;
             Ok(())
         }
 

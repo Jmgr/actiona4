@@ -3727,6 +3727,10 @@ declare interface DisplayInfo {
      * Whether this is the primary (main) display.
      */
     readonly isPrimary: boolean;
+    /**
+     * Returns a string representation of the display.
+     */
+    toString(): string;
 }
 /**
  * Options for `File.open()`.
