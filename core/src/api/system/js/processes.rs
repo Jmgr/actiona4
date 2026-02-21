@@ -544,6 +544,7 @@ impl JsProcessInfo {
     PartialEq,
     Serialize,
 )]
+#[serde(rename = "ProcessStatus")]
 pub enum JsProcessStatus {
     Idle,
     Run,

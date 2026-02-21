@@ -237,6 +237,7 @@ impl JsDisk {
     PartialEq,
     Serialize,
 )]
+#[serde(rename = "DiskKind")]
 pub enum JsDiskKind {
     /// Hard disk drive
     HDD,

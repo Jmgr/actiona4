@@ -64,6 +64,7 @@ impl<'js> SingletonClass<'js> for JsMouse {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
         register_enum::<JsButton>(ctx)?;
         register_enum::<JsAxis>(ctx)?;
+        register_enum::<JsTween>(ctx)?;
 
         Ok(())
     }

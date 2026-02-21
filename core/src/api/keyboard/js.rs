@@ -18,7 +18,7 @@ use crate::{
     IntoJsResult,
     api::js::{
         abort_controller::JsAbortSignal,
-        classes::{SingletonClass, registration_target},
+        classes::{SingletonClass, register_enum, registration_target},
         task::task_with_token,
     },
     runtime::Runtime,
@@ -54,6 +54,7 @@ impl<'js> Trace<'js> for super::Keyboard {
     PartialEq,
     Serialize,
 )]
+#[serde(rename = "Direction")]
 pub enum JsDirection {
     // TODO: same as mouse?
     Press,
@@ -104,6 +105,8 @@ impl<'js> Trace<'js> for JsKeyboard {
 
 impl SingletonClass<'_> for JsKeyboard {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
+        register_enum::<JsDirection>(ctx)?;
+
         // Register the Key class first, then add enum variants as static properties.
         // Both JsKey and JsStandardKey use the name "Key", so we must define the class
         // first and then set enum properties on its constructor object.

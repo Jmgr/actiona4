@@ -84,6 +84,7 @@ impl JsStartProcessOptions {
     PartialEq,
     Serialize,
 )]
+#[serde(rename = "Signal")]
 pub enum JsSignal {
     /// `SIGHUP` - hang up; often used to request config reload.
     Hup,
