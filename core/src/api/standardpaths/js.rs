@@ -43,6 +43,14 @@ impl JsStandardPaths {
         self.inner.home().as_ref().map(|path| path.to_string())
     }
 
+    /// Temporary directory
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn temp(&self) -> Option<String> {
+        self.inner.temp().as_ref().map(|path| path.to_string())
+    }
+
     /// Music directory
     /// @get
     #[qjs(get)]

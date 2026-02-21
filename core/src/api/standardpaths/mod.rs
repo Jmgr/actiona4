@@ -27,6 +27,7 @@ impl Display for StandardPaths {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         DisplayFields::default()
             .display_if_some("home", &self.home())
+            .display_if_some("temp", &self.temp())
             .display_if_some("cache", &self.cache())
             .display_if_some("downloads", &self.downloads())
             .display_if_some("desktop", &self.desktop())
@@ -45,6 +46,12 @@ impl StandardPaths {
     #[must_use]
     pub fn home(&self) -> OptionalPath {
         self.base.as_ref().map(|base| base.home_dir()).into()
+    }
+
+    #[must_use]
+    pub fn temp(&self) -> OptionalPath {
+        let temp_dir = std::env::temp_dir();
+        Some(temp_dir.as_path()).into()
     }
 
     #[must_use]

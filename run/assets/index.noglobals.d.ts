@@ -6632,6 +6632,10 @@ interface StandardPaths {
      */
     readonly home?: string;
     /**
+     * Temporary directory
+     */
+    readonly temp?: string;
+    /**
      * Music directory
      */
     readonly music?: string;
