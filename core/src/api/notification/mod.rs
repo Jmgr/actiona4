@@ -1,9 +1,12 @@
-use std::time::Duration;
+use std::{fmt::Display, time::Duration};
 
 use color_eyre::Result;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
-use crate::api::{image::Image, point::Point};
+use crate::{
+    api::{image::Image, point::Point},
+    types::display::DisplayFields,
+};
 
 pub mod js;
 pub mod platform;
@@ -172,6 +175,12 @@ pub struct Notification {
     inner: platform::Notification,
 }
 
+impl Display for Notification {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default().finish(f)
+    }
+}
+
 impl Notification {
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {
         let inner = self.inner.show(options).await?;
@@ -185,6 +194,12 @@ impl Notification {
 
 pub struct NotificationHandle {
     inner: platform::NotificationHandle,
+}
+
+impl Display for NotificationHandle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default().finish(f)
+    }
 }
 
 impl NotificationHandle {

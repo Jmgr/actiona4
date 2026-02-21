@@ -305,9 +305,8 @@ mod tests {
 
     use clap::{Parser, error::ErrorKind};
 
-    use crate::args::Args;
-
     use super::maybe_insert_default_run;
+    use crate::args::Args;
 
     #[test]
     fn defaults_to_run_for_script_path() {

@@ -179,6 +179,12 @@ impl JsDisplays {
             .map(|display_info| display_info.into())
             .collect_vec())
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Displays", &self.inner)
+    }
 }
 
 /// Information about a connected display, including its name, geometry,

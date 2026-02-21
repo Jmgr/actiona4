@@ -1,10 +1,10 @@
-use std::{borrow::Cow, sync::Arc};
+use std::{borrow::Cow, fmt::Display, sync::Arc};
 
 use color_eyre::{
     Result,
     eyre::{Error, eyre},
 };
-use derive_more::Constructor;
+use derive_more::{Constructor, Display};
 use macros::FromJsObject;
 use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
@@ -31,7 +31,7 @@ use crate::{
         rect::Rect,
     },
     error::CommonError,
-    types::su32::Su32,
+    types::{display::DisplayFields, su32::Su32},
 };
 
 mod common;
@@ -182,6 +182,16 @@ pub struct Match {
     pub score: f64,
 }
 
+impl Display for Match {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("position", self.position)
+            .display("rect", self.rect)
+            .display("score", self.score)
+            .finish(f)
+    }
+}
+
 impl Match {
     /// Returns a new Match with position and rect offset by the given origin point.
     #[must_use]
@@ -217,7 +227,7 @@ impl Image {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, EnumIs, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Display, EnumIs, Eq, PartialEq)]
 pub enum FindImageStage {
     Capturing,
     #[default]
@@ -233,6 +243,15 @@ pub enum FindImageStage {
 pub struct FindImageProgress {
     pub stage: FindImageStage,
     pub percent: u8,
+}
+
+impl Display for FindImageProgress {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("stage", self.stage)
+            .display("percent", self.percent)
+            .finish(f)
+    }
 }
 
 impl FindImageProgress {

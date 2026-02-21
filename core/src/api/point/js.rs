@@ -259,7 +259,7 @@ impl JsPoint {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("Point", format!("{}, {}", self.inner.x, self.inner.y))
+        display_with_type("Point", self.inner)
     }
 
     /// Clones this Point.

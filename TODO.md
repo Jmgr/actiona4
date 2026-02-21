@@ -11,9 +11,6 @@ Find Image:
  - should run `init` always overwrite files?
  - display_with_type should that use the Display impl?
 
- Displays
- - add all()
-
  Mouse:
 - record
 - drag and drop?
@@ -27,9 +24,7 @@ Update
 
 - check we don't await without a cancellation token
 
-// TODO: check all errors
 // TODO: check all token cancellation return a Cancelled error
-// TODO: check all unwraps
 // TODO: display a tray icon, enabled by default when waitAtEnd is true
 // TODO: enigo::set_dpi_awareness()
 /*

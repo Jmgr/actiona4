@@ -1,4 +1,4 @@
-use std::{fs::File, path::Path, sync::Arc, time::Duration};
+use std::{fmt::Display, fs::File, path::Path, sync::Arc, time::Duration};
 
 use color_eyre::{Result, eyre::ensure};
 use macros::FromJsObject;
@@ -8,13 +8,14 @@ use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
 
-use crate::api::js::duration::JsDuration;
+use crate::{api::js::duration::JsDuration, types::display::DisplayFields};
 
 pub mod js;
 
 #[derive(Clone)]
 pub struct PlayingSound {
     sink: Arc<Sink>,
+    filename: Option<String>,
     duration: Option<Duration>,
     source_sample_rate: u32,
     cancellation_token: CancellationToken,
@@ -81,6 +82,14 @@ impl PlayingSound {
     }
 }
 
+impl Display for PlayingSound {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display_if_some("filename", &self.filename)
+            .finish(f)
+    }
+}
+
 /// Play sound options
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
@@ -141,6 +150,12 @@ pub struct Audio {
     task_tracker: TaskTracker,
 }
 
+impl Display for Audio {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default().finish(f)
+    }
+}
+
 impl Audio {
     pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Result<Self> {
         let output_stream = Arc::new(OutputStreamCell::default());
@@ -196,6 +211,7 @@ impl Audio {
 
         Ok(PlayingSound {
             sink: Arc::new(sink),
+            filename: path.file_name().map(|n| n.to_string_lossy().into_owned()),
             duration,
             source_sample_rate,
             cancellation_token: self.cancellation_token.clone(),
@@ -248,7 +264,8 @@ fn validate_playback_rate(playback_rate: f32, source_sample_rate: u32) -> Result
         "audio playback rate must be greater than 0"
     );
 
-    let effective_sample_rate = source_sample_rate as f32 * playback_rate;
+    #[allow(clippy::as_conversions)]
+    let effective_sample_rate = source_sample_rate as f64 * playback_rate as f64;
     ensure!(
         effective_sample_rate >= 1.0,
         "audio playback rate is too small for this source sample rate"

@@ -199,10 +199,7 @@ impl JsSize {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type(
-            "Size",
-            format!("{}, {}", self.inner.width, self.inner.height),
-        )
+        display_with_type("Size", self.inner)
     }
 
     /// Clones this Size.

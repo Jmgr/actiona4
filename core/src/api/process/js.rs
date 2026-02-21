@@ -25,7 +25,10 @@ use crate::{
     },
     cancel_on,
     runtime::WithUserData,
-    types::{display::display_with_type, pid::Pid},
+    types::{
+        display::{DisplayFields, display_with_type},
+        pid::Pid,
+    },
 };
 
 /// Options for starting a process.
@@ -275,6 +278,7 @@ impl JsProcess {
             let (exit_code, stdout, stderr) = process_result.into_parts();
 
             Ok(JsProcessExitResult {
+                pid: None,
                 exit_code,
                 stdout: Some(stdout),
                 stderr: Some(stderr),
@@ -353,7 +357,7 @@ impl JsProcess {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Process".to_string()
+        display_with_type("Process", &self.inner)
     }
 }
 
@@ -564,6 +568,7 @@ impl JsProcessHandle {
     pub fn finished<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
         let child = self.child.clone();
         let token = self.cancellation_token.clone();
+        let pid = self.pid;
 
         task_with_token(ctx, token, async move |ctx, cancel_token| {
             let mut child = child.lock().await;
@@ -579,6 +584,7 @@ impl JsProcessHandle {
             };
 
             Ok(JsProcessExitResult {
+                pid: Some(pid),
                 exit_code: status.code(),
                 stdout: None,
                 stderr: None,
@@ -589,7 +595,12 @@ impl JsProcessHandle {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("ProcessHandle", format!("pid: {}", self.pid))
+        display_with_type(
+            "ProcessHandle",
+            DisplayFields::default()
+                .display("pid", self.pid)
+                .finish_as_string(),
+        )
     }
 }
 
@@ -610,6 +621,7 @@ impl JsProcessHandle {
 #[derive(Clone, Debug, JsLifetime)]
 #[rquickjs::class(rename = "ProcessExitResult")]
 pub struct JsProcessExitResult {
+    pid: Option<u32>,
     exit_code: Option<i32>,
     stdout: Option<String>,
     stderr: Option<String>,
@@ -623,6 +635,14 @@ impl<'js> Trace<'js> for JsProcessExitResult {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsProcessExitResult {
+    /// The process ID. Only available when using `handle.finished`.
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn pid(&self) -> Option<u32> {
+        self.pid
+    }
+
     /// The exit code of the process. `undefined` if the process was killed by a signal.
     /// @get
     #[qjs(get)]
@@ -652,7 +672,10 @@ impl JsProcessExitResult {
     pub fn to_string_js(&self) -> String {
         display_with_type(
             "ProcessExitResult",
-            format!("exitCode: {:?}", self.exit_code),
+            DisplayFields::default()
+                .display_if_some("pid", &self.pid)
+                .display_if_some("exitCode", &self.exit_code)
+                .finish_as_string(),
         )
     }
 }

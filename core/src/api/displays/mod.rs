@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Display, sync::Arc};
 
 use color_eyre::eyre::eyre;
 
@@ -15,7 +15,10 @@ use crate::{
         events::{DisplayInfo, DisplayInfoVec},
         shared_rng::SharedRng,
     },
-    types::su32::Su32,
+    types::{
+        display::{DisplayFields, display_list},
+        su32::Su32,
+    },
 };
 
 pub mod js;
@@ -24,6 +27,17 @@ pub mod js;
 pub struct Displays {
     task_tracker: TaskTracker,
     displays_info: AsyncResource<DisplayInfoVec>,
+}
+
+impl Display for Displays {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.displays_info.try_get() {
+            Some(info) => DisplayFields::default()
+                .display("displays", display_list(info.as_slice()))
+                .finish(f),
+            None => DisplayFields::default().finish(f),
+        }
+    }
 }
 
 impl Displays {

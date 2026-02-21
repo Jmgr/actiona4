@@ -125,6 +125,12 @@ pub struct ProcessRunner {
     task_tracker: TaskTracker,
 }
 
+impl Display for ProcessRunner {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        DisplayFields::default().finish(f)
+    }
+}
+
 impl ProcessRunner {
     #[must_use]
     pub const fn new(task_tracker: TaskTracker) -> Self {

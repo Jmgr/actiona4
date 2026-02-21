@@ -508,20 +508,11 @@ impl JsColor {
         *self == other
     }
 
-    /// Returns a string representation of the color: `"Color(r, g, b, a)"`.
+    /// Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type(
-            "Color",
-            format!(
-                "{}, {}, {}, {}",
-                self.get_r(),
-                self.get_g(),
-                self.get_b(),
-                self.get_a()
-            ),
-        )
+        display_with_type("Color", self.inner)
     }
 
     /// Returns a copy of this color.
@@ -663,7 +654,7 @@ mod tests {
             assert!(!result);
 
             let result = script_engine.eval::<String>("c.toString()").await.unwrap();
-            assert_eq!(result, "Color(255, 10, 11, 12)");
+            assert_eq!(result, "Color(r: 255, g: 10, b: 11, a: 12)");
 
             let result = script_engine
                 .eval::<bool>("c.clone().equals(c)")
@@ -688,7 +679,7 @@ mod tests {
         color.set_a(8);
 
         assert!(color.equals(JsColor::new(5, 6, 7, 8)));
-        assert_eq!(color.to_string_js(), "Color(5, 6, 7, 8)");
+        assert_eq!(color.to_string_js(), "Color(r: 5, g: 6, b: 7, a: 8)");
         assert_eq!(color.clone_js(), color);
     }
 

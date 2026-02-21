@@ -3,6 +3,7 @@ use std::path::Path;
 use macros::FromJsObject;
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -20,6 +21,7 @@ use crate::{
             task::{task, task_with_token},
         },
     },
+    types::display::display_with_type,
 };
 
 /// Options for playing a sound file.
@@ -196,6 +198,12 @@ impl JsAudio {
                 .into_js_result(&ctx)
         })
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Audio", &self.inner)
+    }
 }
 
 /// A handle to an actively playing sound, allowing control over playback.
@@ -312,5 +320,11 @@ impl JsPlayingSound {
             local_sound.wait_finished(token).await;
             Ok(())
         })
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("PlayingSound", &self.inner)
     }
 }

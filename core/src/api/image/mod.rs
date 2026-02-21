@@ -1,4 +1,4 @@
-use std::{io::Cursor, ops::DerefMut, path::Path, sync::Arc};
+use std::{fmt::Display, io::Cursor, ops::DerefMut, path::Path, sync::Arc};
 
 use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
 use arc_swap::ArcSwapOption;
@@ -32,7 +32,7 @@ use crate::{
         rect::{Rect, rect},
         size::size,
     },
-    types::{si32::Si32, su32::su32},
+    types::{display::DisplayFields, si32::Si32, su32::su32},
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -206,6 +206,15 @@ pub struct Image {
 
     #[deref(ignore)]
     template: Cache<Template>,
+}
+
+impl Display for Image {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("width", self.inner.width())
+            .display("height", self.inner.height())
+            .finish(f)
+    }
 }
 
 impl DerefMut for Image {

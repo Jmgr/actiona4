@@ -5,6 +5,7 @@ use enigo::Key;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
     Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Object, Promise, Result, Value,
+    atom::PredefinedAtom,
     class::{JsClass, Readable, Trace, Tracer},
     function::Constructor,
     prelude::Opt,
@@ -21,6 +22,7 @@ use crate::{
         task::task_with_token,
     },
     runtime::Runtime,
+    types::display::display_with_type,
 };
 
 impl<'js> Trace<'js> for super::Keyboard {
@@ -261,6 +263,12 @@ impl JsKeyboard {
                 .await
                 .into_js_result(&ctx)
         })
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Keyboard", &self.inner)
     }
 }
 

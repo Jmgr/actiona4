@@ -574,13 +574,7 @@ impl JsMatch {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type(
-            "Match",
-            format!(
-                "{}, {}, {}",
-                self.inner.position, self.inner.rect, self.inner.score
-            ),
-        )
+        display_with_type("Match", self.inner)
     }
 
     /// Clones this Match.
@@ -717,6 +711,12 @@ impl JsFindImageProgress {
     #[must_use]
     pub const fn finished(&self) -> bool {
         self.inner.stage.is_finished()
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("FindImageProgress", self.inner)
     }
 }
 
@@ -865,11 +865,11 @@ impl JsImage {
         *self == other
     }
 
-    /// Returns a string representation of this image as `Image(width, height)`.
+    /// Returns a string representation of this image.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("Image", format!("{}, {}", self.width(), self.height()))
+        display_with_type("Image", &self.inner)
     }
 
     /// Clones this image.

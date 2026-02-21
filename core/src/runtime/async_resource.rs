@@ -31,6 +31,12 @@ impl<T> AsyncResource<T> {
         self.notify.notify_waiters();
     }
 
+    /// Returns the current value if available, without waiting.
+    #[must_use]
+    pub fn try_get(&self) -> Option<Arc<T>> {
+        self.value.load_full()
+    }
+
     /// Waits until the resource is available.
     /// Returns an error if cancelled.
     pub async fn wait_get(&self) -> Result<Arc<T>> {

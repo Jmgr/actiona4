@@ -1,9 +1,10 @@
-use std::sync::Arc;
+use std::{fmt::Display, sync::Arc};
 
 use self::platform::WindowsHandler;
 use crate::{
     api::{point::Point, rect::Rect, size::Size},
     runtime::Runtime,
+    types::display::DisplayFields,
 };
 
 pub mod js;
@@ -20,6 +21,12 @@ pub struct Windows {
 
     #[cfg(windows)]
     handler: Arc<platform::win::WindowsWindowHandler>,
+}
+
+impl Display for Windows {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default().finish(f)
+    }
 }
 
 impl Windows {

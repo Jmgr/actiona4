@@ -2484,6 +2484,7 @@ interface Audio {
      * ```
      */
     playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
+    toString(): string;
 }
 /**
  * @category Audio
@@ -2544,6 +2545,7 @@ interface PlayingSound {
      * Stops the sound permanently.
      */
     stop(): void;
+    toString(): string;
 }
 /**
  * Options for waiting until clipboard content changes.
@@ -3376,7 +3378,7 @@ class Color {
      */
     equals(other: Color): boolean;
     /**
-     * Returns a string representation of the color: `"Color(r, g, b, a)"`.
+     * Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
      */
     toString(): string;
     /**
@@ -3669,6 +3671,7 @@ interface Displays {
      * Returns all displays.
      */
     all(): Promise<readonly DisplayInfo[]>;
+    toString(): string;
 }
 /**
  * @category Displays
@@ -4348,6 +4351,7 @@ interface FindImageProgress {
      * Whether the operation has finished.
      */
     readonly finished: boolean;
+    toString(): string;
 }
 /**
  * An image that can be loaded, created, manipulated, and saved.
@@ -4425,7 +4429,7 @@ class Image {
      */
     equals(other: Image): boolean;
     /**
-     * Returns a string representation of this image as `Image(width, height)`.
+     * Returns a string representation of this image.
      */
     toString(): string;
     /**
@@ -5021,6 +5025,7 @@ interface Keyboard {
      * ```
      */
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
+    toString(): string;
 }
 /**
  * @category Keyboard
@@ -5129,6 +5134,7 @@ interface Mouse {
      * Releases a mouse button.
      */
     release(button?: Button): Promise<void>;
+    toString(): string;
 }
 /**
  * @category Mouse
@@ -5590,6 +5596,7 @@ interface Notification {
      * @platform only works on Linux
      */
     capabilities(): Promise<string[]>;
+    toString(): string;
 }
 /**
  * @category Notification
@@ -5651,6 +5658,7 @@ interface NotificationHandle {
      * ```
      */
     waitUntilClosed(options?: WaitForActionOptions): Task<void>;
+    toString(): string;
 }
 /**
  * Utilities for manipulating file paths. All methods are static.
@@ -6129,6 +6137,10 @@ interface ProcessHandle {
  * @category Process
  */
 interface ProcessExitResult {
+    /**
+     * The process ID. Only available when using `handle.finished`.
+     */
+    readonly pid?: number;
     /**
      * The exit code of the process. `undefined` if the process was killed by a signal.
      */
@@ -6981,6 +6993,7 @@ interface System {
     sleep(): Promise<void>;
     open(path: string, withApp?: string): Promise<void>;
     openPath(path: string, withApp?: string): Promise<void>;
+    toString(): string;
 }
 /**
  * @category System
@@ -8041,6 +8054,7 @@ interface Windows {
      * ```
      */
     findAt(x: number, y: number): Promise<readonly WindowHandle[]>;
+    toString(): string;
 }
 /**
  * @category Windows

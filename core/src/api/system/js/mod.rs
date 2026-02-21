@@ -3,6 +3,7 @@ use std::path::Path;
 use human_units::{FormatSize, si::Prefix};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
+    atom::PredefinedAtom,
     class::Trace,
     prelude::{Func, Opt},
 };
@@ -21,6 +22,7 @@ use crate::{
             },
         },
     },
+    types::display::display_with_type,
 };
 
 pub mod cpu;
@@ -192,6 +194,12 @@ impl JsSystem {
         System::open_path(Path::new(&path), with_app.as_deref()).into_js_result(&ctx)?;
 
         Ok(())
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("System", &self.inner)
     }
 }
 

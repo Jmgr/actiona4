@@ -250,16 +250,7 @@ impl JsRect {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type(
-            "Rect",
-            format!(
-                "{}, {}, {}, {}",
-                self.inner.top_left.x,
-                self.inner.top_left.y,
-                self.inner.size.width,
-                self.inner.size.height
-            ),
-        )
+        display_with_type("Rect", self.inner)
     }
 
     /// Clones this Rect.

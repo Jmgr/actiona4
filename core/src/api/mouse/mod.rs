@@ -1,5 +1,5 @@
 use std::{
-    fmt::Debug,
+    fmt::{Debug, Display},
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -27,7 +27,7 @@ use crate::{
     },
     error::CommonError,
     runtime::{events::MouseButtonEvent, shared_rng::SharedRng},
-    types::input::Direction,
+    types::{display::DisplayFields, input::Direction},
 };
 
 pub(crate) mod platform;
@@ -282,6 +282,12 @@ pub struct Mouse {
     pressed_buttons: Arc<Mutex<IndexSet<Button>>>,
 }
 
+impl Display for Mouse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default().finish(f)
+    }
+}
+
 impl Mouse {
     #[instrument(skip_all)]
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
@@ -451,10 +457,8 @@ impl Mouse {
         let duration = if options.speed < 0. {
             return Err(eyre!("speed must be greater than zero"));
         } else {
-            let duration = Duration::try_from_secs_f64(distance / options.speed)
-                .map_err(|_| eyre!("invalid speed: {}", options.speed))?;
-
-            duration
+            Duration::try_from_secs_f64(distance / options.speed)
+                .map_err(|_| eyre!("invalid speed: {}", options.speed))?
         };
 
         if options.interval.0.is_zero() {

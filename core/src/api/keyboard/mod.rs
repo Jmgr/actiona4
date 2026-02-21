@@ -1,4 +1,4 @@
-use std::{collections::HashSet, sync::Arc};
+use std::{collections::HashSet, fmt::Display, sync::Arc};
 
 use color_eyre::Result;
 use enigo::{Direction, Enigo, Key};
@@ -16,13 +16,19 @@ use platform::win::KeyboardImpl;
 #[cfg(unix)]
 use platform::x11::KeyboardImpl;
 
-use crate::{cancel_on, runtime::Runtime};
+use crate::{cancel_on, runtime::Runtime, types::display::DisplayFields};
 
 #[derive(Clone, Debug)]
 pub struct Keyboard {
     runtime: Arc<Runtime>,
     enigo: Arc<Mutex<Enigo>>,
     implementation: KeyboardImpl,
+}
+
+impl Display for Keyboard {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default().finish(f)
+    }
 }
 
 impl Keyboard {

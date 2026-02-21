@@ -4,6 +4,7 @@ use macros::{FromJsObject, FromSerde, IntoSerde};
 use parking_lot::Mutex;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Promise, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -29,6 +30,7 @@ use crate::{
         point::js::JsPoint,
     },
     runtime::WithUserData,
+    types::display::display_with_type,
 };
 
 #[derive(
@@ -808,6 +810,12 @@ impl JsNotification {
     pub async fn capabilities(&self, ctx: Ctx<'_>) -> Result<Vec<String>> {
         super::Notification::capabilities().into_js_result(&ctx)
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Notification", &self.inner)
+    }
 }
 
 /// Options for waiting on a notification action or close event.
@@ -954,6 +962,16 @@ impl JsNotificationHandle {
                 .map(|_| ())
                 .into_js_result(&ctx)
         })
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        let inner = self.inner.lock();
+        inner.as_deref().map_or_else(
+            || display_with_type("NotificationHandle", "(consumed)"),
+            |handle| display_with_type("NotificationHandle", handle),
+        )
     }
 }
 

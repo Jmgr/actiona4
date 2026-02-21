@@ -253,6 +253,12 @@ impl JsWindows {
 
         Ok(windows)
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Windows", &self.inner)
+    }
 }
 
 /// A handle to a specific desktop window.

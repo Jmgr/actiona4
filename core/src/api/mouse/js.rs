@@ -3,6 +3,7 @@ use std::{sync::Arc, time::Duration};
 use macros::FromJsObject;
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -21,6 +22,7 @@ use crate::{
         point::js::{JsPoint, JsPointLike},
     },
     runtime::{Runtime, WithUserData},
+    types::display::display_with_type,
 };
 
 impl<'js> Trace<'js> for super::Mouse {
@@ -317,6 +319,12 @@ impl JsMouse {
         self.inner
             .release(button.map(|button| button))
             .into_js_result(&ctx)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Mouse", &self.inner)
     }
 }
 
