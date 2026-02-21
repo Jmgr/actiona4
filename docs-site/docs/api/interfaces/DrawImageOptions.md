@@ -5,7 +5,7 @@ Options for drawing an image onto another image.
 ```ts
 // Draw only a portion of the source image
 canvas.drawImage(0, 0, sprite, {
-sourceRect: new Rect(0, 0, 32, 32)
+  sourceRect: new Rect(0, 0, 32, 32)
 });
 ```
 

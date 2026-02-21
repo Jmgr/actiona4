@@ -6,10 +6,10 @@ Disk I/O statistics (bytes).
 const disks = await system.storage.listDisks();
 const disk = disks[0];
 if (disk) {
-println(
-formatBytes(disk.usage.read.total),
-formatBytes(disk.usage.written.delta),
-);
+  println(
+    formatBytes(disk.usage.read.total),
+    formatBytes(disk.usage.written.delta),
+  );
 }
 ```
 

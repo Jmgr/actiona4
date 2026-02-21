@@ -6,7 +6,7 @@ A process information entry.
 const processes = await system.processes.list();
 const process = processes[0];
 if (process) {
-println(process.pid, process.name, process.status);
+  println(process.pid, process.name, process.status);
 }
 ```
 

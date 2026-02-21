@@ -8,14 +8,14 @@ const file = await File.open("data.txt");
 
 // Create a new file for writing
 const file = await File.open("out.txt", {
-write: true,
-createNew: true,
+    write: true,
+    createNew: true,
 });
 
 // Append to an existing file
 const file = await File.open("log.txt", {
-write: true,
-append: true,
+    write: true,
+    append: true,
 });
 ```
 

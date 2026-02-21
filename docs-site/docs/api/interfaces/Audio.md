@@ -57,8 +57,8 @@ await audio.playFileAndWait("alert.wav");
 // With a fade out and abort signal
 const controller = new AbortController();
 await audio.playFileAndWait("long-track.mp3", {
-fadeOut: 1000,
-signal: controller.signal,
+    fadeOut: 1000,
+    signal: controller.signal,
 });
 ```
 
@@ -75,3 +75,13 @@ signal: controller.signal,
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

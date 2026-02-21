@@ -4,9 +4,9 @@ Options for smooth mouse movement.
 
 ```ts
 await mouse.move(500, 300, {
-speed: 1000,
-tween: Tween.SineOut,
-targetRandomness: 5
+  speed: 1000,
+  tween: Tween.SineOut,
+  targetRandomness: 5
 });
 ```
 

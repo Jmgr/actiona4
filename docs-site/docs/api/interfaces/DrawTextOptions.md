@@ -5,9 +5,9 @@ Options for drawing text on an image.
 ```ts
 // Draw large, centered text
 image.drawText(100, 50, "Hello", fontPath, Color.White, {
-fontSize: 32,
-horizontalAlign: TextHorizontalAlign.Center,
-verticalAlign: TextVerticalAlign.Middle
+  fontSize: 32,
+  horizontalAlign: TextHorizontalAlign.Center,
+  verticalAlign: TextVerticalAlign.Middle
 });
 ```
 

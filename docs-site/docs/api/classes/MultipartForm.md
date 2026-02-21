@@ -7,8 +7,8 @@ const form = new MultipartForm();
 form.addText("title", "My Upload");
 form.addFile("file", "/path/to/file.txt");
 const result = await web.downloadText("https://example.com/upload", {
-method: Method.Post,
-multipart: form,
+  method: Method.Post,
+  multipart: form,
 });
 ```
 

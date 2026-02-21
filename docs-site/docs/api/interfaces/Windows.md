@@ -6,7 +6,7 @@ Manages desktop windows: enumerate, focus, move, resize, and close windows.
 // Get all windows
 const allWindows = await windows.all();
 for (const win of allWindows) {
-println(await win.title());
+    println(await win.title());
 }
 ```
 
@@ -21,7 +21,7 @@ await win.setSize(800, 600);
 // Find and close a window by title
 const matches = await windows.find({ title: new Wildcard("*Notepad*") });
 for (const win of matches) {
-await win.close();
+    await win.close();
 }
 ```
 
@@ -137,3 +137,13 @@ const atOrigin = await windows.findAt(0, 0);
 ##### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

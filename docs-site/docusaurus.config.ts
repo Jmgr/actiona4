@@ -41,7 +41,6 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          editUrl: "https://github.com/Jmgr/actiona4",
         },
         blog: false,
         theme: {

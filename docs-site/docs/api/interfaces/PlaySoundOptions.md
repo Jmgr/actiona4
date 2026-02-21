@@ -8,9 +8,9 @@ audio.playFile("sound.wav");
 
 // Play at half volume, looping, with a fade in
 audio.playFile("music.mp3", {
-volume: 0.5,
-loop: true,
-fadeIn: 2000,
+    volume: 0.5,
+    loop: true,
+    fadeIn: 2000,
 });
 ```
 

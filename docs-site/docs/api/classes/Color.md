@@ -1285,7 +1285,7 @@ Color.Red.equals(new Color(255, 0, 0)); // true
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of the color: `"Color(r, g, b, a)"`.
+Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
 
 #### Returns
 

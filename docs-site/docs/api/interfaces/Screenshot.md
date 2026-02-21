@@ -158,7 +158,7 @@ const match = await screenshot.findImageOnDisplay(0, template);
 ```ts
 const task = screenshot.findImageOnDisplay(0, template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -196,7 +196,7 @@ const matches = await screenshot.findImageOnDisplayAll(0, template);
 ```ts
 const task = screenshot.findImageOnDisplayAll(0, template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```
@@ -236,7 +236,7 @@ const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -272,7 +272,7 @@ const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -324,7 +324,7 @@ const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```
@@ -360,7 +360,7 @@ const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 ```ts
 const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```

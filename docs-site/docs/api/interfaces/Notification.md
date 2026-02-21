@@ -35,3 +35,13 @@ Shows a desktop notification.
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`NotificationHandle`](NotificationHandle.md)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

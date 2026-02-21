@@ -5,9 +5,9 @@ Stages of a find image operation.
 ```ts
 const task = source.findImage(template);
 for await (const progress of task) {
-if (progress.stage === FindImageStage.Matching) {
-println(`Matching: ${formatPercent(progress.percent)}`);
-}
+  if (progress.stage === FindImageStage.Matching) {
+    println(`Matching: ${formatPercent(progress.percent)}`);
+  }
 }
 ```
 

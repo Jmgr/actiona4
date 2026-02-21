@@ -6,7 +6,7 @@ The result of a process that has finished.
 const handle = await process.start("ls");
 const result = await handle.finished;
 if (result.exitCode === 0) {
-println("success");
+    println("success");
 }
 ```
 
@@ -22,6 +22,14 @@ println(result.stdout);
 > `readonly` `optional` **exitCode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The exit code of the process. [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if the process was killed by a signal.
+
+***
+
+### pid?
+
+> `readonly` `optional` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+The process ID. Only available when using `handle.finished`.
 
 ***
 

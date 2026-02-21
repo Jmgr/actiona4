@@ -11,12 +11,12 @@ const result = await Ui.messageBox("Hello, world!");
 
 ```ts
 const result = await Ui.messageBox("Delete this file?", {
-title: "Confirm",
-buttons: MessageBoxButtons.yesNo(),
-icon: MessageBoxIcon.Warning,
+  title: "Confirm",
+  buttons: MessageBoxButtons.yesNo(),
+  icon: MessageBoxIcon.Warning,
 });
 if (result === MessageBoxResult.Yes) {
-println("Confirmed");
+  println("Confirmed");
 }
 ```
 

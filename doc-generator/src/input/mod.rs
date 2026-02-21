@@ -38,13 +38,13 @@ newtype!(pub Comments, Vec<String>);
 
 impl Comments {
     pub fn trimmed(mut self) -> Self {
-        // Remove leading empty strings
-        while self.first().is_some_and(|s| s.is_empty()) {
+        // Remove leading empty/whitespace-only lines
+        while self.first().is_some_and(|s| s.trim().is_empty()) {
             self.remove(0);
         }
 
-        // Remove trailing empty strings
-        while self.last().is_some_and(|s| s.is_empty()) {
+        // Remove trailing empty/whitespace-only lines
+        while self.last().is_some_and(|s| s.trim().is_empty()) {
             self.pop();
         }
 
@@ -583,7 +583,9 @@ fn process_rustdoc(
         ));
     };
 
-    let lines = rustdoc.lines().map(|line| line.trim());
+    // Keep leading whitespace in comments (e.g. markdown/code block indentation),
+    // while still normalizing trailing spaces.
+    let lines = rustdoc.lines().map(str::trim_end);
     let mut comments = Vec::new();
 
     // Current instructions; will be reset if we encounter an overload instruction
@@ -597,13 +599,14 @@ fn process_rustdoc(
     let mut has_overload = false;
 
     for line in lines {
-        let is_instruction = line.starts_with("@");
+        let line_without_prefix_whitespace = line.trim_start();
+        let is_instruction = line_without_prefix_whitespace.starts_with("@");
         if !is_instruction {
             comments.push(line.to_string());
             continue;
         }
 
-        let instruction = parse_instruction(line)?;
+        let instruction = parse_instruction(line_without_prefix_whitespace)?;
 
         if let Instruction::Overload = instruction {
             check_instruction(&Instruction::Overload, &context)?;
@@ -886,10 +889,10 @@ mod tests {
     fn test_both() {
         let rustdoc = r#"Some comment
 
-        Another comment
+Another comment
 
-        @constructor
-        @skip"#;
+@constructor
+@skip"#;
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Method).unwrap();
         assert_eq!(
@@ -912,19 +915,19 @@ mod tests {
     fn test_overloading() {
         let rustdoc = r#"Constructor.
 
-            @constructor
+@constructor
 
-            @overload
-            Comment for the first overload
-            @param x?: number // X coordinate
-            @param y: number = 42 // Y coordinate
+@overload
+Comment for the first overload
+@param x?: number // X coordinate
+@param y: number = 42 // Y coordinate
 
-            @overload
-            @param o: {x: number, y: number} // Object containing the x and y coordinates
+@overload
+@param o: {x: number, y: number} // Object containing the x and y coordinates
 
-            @overload
-            Comment for the last overload
-            @param p: Point // Other point"#;
+@overload
+Comment for the last overload
+@param p: Point // Other point"#;
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Method).unwrap();
         assert_eq!(comments, vec!["Constructor.".to_string()].into());

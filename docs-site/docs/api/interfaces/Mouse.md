@@ -16,8 +16,8 @@ await mouse.click({ button: Button.Right, position: { x: 100, y: 200 } });
 ```ts
 // Smooth movement with custom tween
 await mouse.move(800, 600, {
-speed: 1500,
-tween: Tween.BounceOut
+  speed: 1500,
+  tween: Tween.BounceOut
 });
 ```
 
@@ -298,3 +298,13 @@ Moves the mouse cursor by the given offset (relative coordinates).
 ##### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

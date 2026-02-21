@@ -6,8 +6,8 @@ rotation, scale factor, and refresh rate.
 ```ts
 const info = await displays.fromName("HDMI-1");
 if (info) {
-println(info.friendlyName, info.rect, formatFrequency(info.frequency));
-println("Primary:", info.isPrimary);
+    println(info.friendlyName, info.rect, formatFrequency(info.frequency));
+    println("Primary:", info.isPrimary);
 }
 ```
 

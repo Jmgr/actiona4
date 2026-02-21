@@ -58,7 +58,7 @@ function sleep(duration: number | string): Task<void>;
  * 
  * ```ts
  * if (errorCondition) {
- * exit();
+ *   exit();
  * }
  * ```
  * @category Core
@@ -180,7 +180,7 @@ enum Interpolation {
  * 
  * ```ts
  * image.drawText(100, 50, "Centered", fontPath, Color.Black, {
- * horizontalAlign: TextHorizontalAlign.Center
+ *   horizontalAlign: TextHorizontalAlign.Center
  * });
  * ```
  * @category Image
@@ -197,7 +197,7 @@ enum TextHorizontalAlign {
  * 
  * ```ts
  * image.drawText(50, 100, "Middle", fontPath, Color.Black, {
- * verticalAlign: TextVerticalAlign.Middle
+ *   verticalAlign: TextVerticalAlign.Middle
  * });
  * ```
  * @category Image
@@ -215,9 +215,9 @@ enum TextVerticalAlign {
  * ```ts
  * const task = source.findImage(template);
  * for await (const progress of task) {
- * if (progress.stage === FindImageStage.Matching) {
- * println(`Matching: ${formatPercent(progress.percent)}`);
- * }
+ *   if (progress.stage === FindImageStage.Matching) {
+ *     println(`Matching: ${formatPercent(progress.percent)}`);
+ *   }
  * }
  * ```
  * @category Image
@@ -1956,7 +1956,7 @@ enum Signal {
  * const processes = await system.processes.list();
  * const process = processes[0];
  * if (process && process.status === ProcessStatus.Run) {
- * println("process is running");
+ *   println("process is running");
  * }
  * ```
  * @category System
@@ -1997,7 +1997,7 @@ enum ProcessStatus {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk && disk.kind === DiskKind.SSD) {
- * println("SSD");
+ *   println("SSD");
  * }
  * ```
  * 
@@ -2397,9 +2397,9 @@ const app: App;
  * 
  * // Play at half volume, looping, with a fade in
  * audio.playFile("music.mp3", {
- * volume: 0.5,
- * loop: true,
- * fadeIn: 2000,
+ *     volume: 0.5,
+ *     loop: true,
+ *     fadeIn: 2000,
  * });
  * ```
  * @category Audio
@@ -2478,8 +2478,8 @@ interface Audio {
      * // With a fade out and abort signal
      * const controller = new AbortController();
      * await audio.playFileAndWait("long-track.mp3", {
-     * fadeOut: 1000,
-     * signal: controller.signal,
+     *     fadeOut: 1000,
+     *     signal: controller.signal,
      * });
      * ```
      */
@@ -2559,8 +2559,8 @@ interface PlayingSound {
  * 
  * // Wait up to 1 second for a clipboard change
  * await Concurrency.race([
- * clipboard.waitForChanged(),
- * sleep("1s"),
+ *   clipboard.waitForChanged(),
+ *   sleep("1s"),
  * ]);
  * ```
  * @category Clipboard
@@ -3480,7 +3480,7 @@ const console: Console;
  * ```ts
  * const entries = await Directory.listEntries("/home/user");
  * for (const entry of entries) {
- * println(entry.fileName, entry.isFile, entry.size);
+ *     println(entry.fileName, entry.isFile, entry.size);
  * }
  * ```
  * @category Directory
@@ -3532,9 +3532,9 @@ interface DirectoryOptions {
  * 
  * ```ts
  * const entries = await Directory.listEntries("/tmp", {
- * sort: false,
- * absolutePath: false,
- * fetchSize: true,
+ *   sort: false,
+ *   absolutePath: false,
+ *   fetchSize: true,
  * });
  * ```
  * @category Directory
@@ -3566,7 +3566,7 @@ interface DirectoryListOptions {
  * // List entries in a directory
  * const entries = await Directory.listEntries("/tmp/my/nested/dir");
  * for (const entry of entries) {
- * println(entry.fileName, entry.isFile ? "file" : "dir");
+ *     println(entry.fileName, entry.isFile ? "file" : "dir");
  * }
  * 
  * // Remove a directory tree
@@ -3608,7 +3608,7 @@ class Directory {
      * 
      * // Skip size fetching for faster listing
      * const entries = await Directory.listEntries("/home/user/docs", {
-     * fetchSize: false,
+     *     fetchSize: false,
      * });
      * ```
      */
@@ -3684,8 +3684,8 @@ const displays: Displays;
  * ```ts
  * const info = await displays.fromName("HDMI-1");
  * if (info) {
- * println(info.friendlyName, info.rect, formatFrequency(info.frequency));
- * println("Primary:", info.isPrimary);
+ *     println(info.friendlyName, info.rect, formatFrequency(info.frequency));
+ *     println("Primary:", info.isPrimary);
  * }
  * ```
  * @category Displays
@@ -3745,14 +3745,14 @@ interface DisplayInfo {
  * 
  * // Create a new file for writing
  * const file = await File.open("out.txt", {
- * write: true,
- * createNew: true,
+ *     write: true,
+ *     createNew: true,
  * });
  * 
  * // Append to an existing file
  * const file = await File.open("log.txt", {
- * write: true,
- * append: true,
+ *     write: true,
+ *     append: true,
  * });
  * ```
  * @category File
@@ -3833,19 +3833,19 @@ class File {
      * ```js
      * // Open a file for reading
      * let file = await File.open("my_file.txt", {
-     * read: true,
+     *     read: true,
      * });
      * 
      * // Create a new file for writing.
      * let file = await File.open("my_file.txt", {
-     * write: true,
-     * createNew: true,
+     *     write: true,
+     *     createNew: true,
      * });
      * 
      * // Append to an existing file.
      * let file = await File.open("my_file.txt", {
-     * write: true,
-     * append: true,
+     *     write: true,
+     *     append: true,
      * });
      * ```
      */
@@ -3974,7 +3974,7 @@ class File {
      * 
      * ```ts
      * if (await File.exists("config.json")) {
-     * const text = await File.readText("config.json");
+     *     const text = await File.readText("config.json");
      * }
      * ```
      */
@@ -4015,13 +4015,13 @@ class File {
  * 
  * ```ts
  * if (await Filesystem.exists("/tmp/myfile.txt")) {
- * println("exists!");
+ *     println("exists!");
  * }
  * 
  * if (await Filesystem.isFile("/tmp/myfile.txt")) {
- * println("it's a file");
+ *     println("it's a file");
  * } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
- * println("it's a directory");
+ *     println("it's a directory");
  * }
  * ```
  * @category Filesystem
@@ -4141,7 +4141,7 @@ interface BlurOptions {
  * ```ts
  * // Draw only a portion of the source image
  * canvas.drawImage(0, 0, sprite, {
- * sourceRect: new Rect(0, 0, 32, 32)
+ *   sourceRect: new Rect(0, 0, 32, 32)
  * });
  * ```
  * @category Image
@@ -4208,9 +4208,9 @@ interface DrawingOptions {
  * ```ts
  * // Draw large, centered text
  * image.drawText(100, 50, "Hello", fontPath, Color.White, {
- * fontSize: 32,
- * horizontalAlign: TextHorizontalAlign.Center,
- * verticalAlign: TextVerticalAlign.Middle
+ *   fontSize: 32,
+ *   horizontalAlign: TextHorizontalAlign.Center,
+ *   verticalAlign: TextVerticalAlign.Middle
  * });
  * ```
  * @category Image
@@ -4291,8 +4291,8 @@ interface FindImageOptions {
  * const template = await Image.load("button.png");
  * const match = await source.findImage(template);
  * if (match) {
- * println(`Found at ${match.position} with score ${match.score}`);
- * println(`Bounding rect: ${match.rect}`);
+ *   println(`Found at ${match.position} with score ${match.score}`);
+ *   println(`Bounding rect: ${match.rect}`);
  * }
  * ```
  * @category Image
@@ -4331,8 +4331,8 @@ interface Match {
  * ```ts
  * const task = source.findImage(template);
  * for await (const progress of task) {
- * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
- * if (progress.finished) break;
+ *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+ *   if (progress.finished) break;
  * }
  * const result = await task;
  * ```
@@ -4366,8 +4366,8 @@ interface FindImageProgress {
  * // Create, manipulate, and save
  * let image = new Image(200, 100);
  * image.fill(Color.White)
- * .drawCircle(100, 50, 30, Color.Red)
- * .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
+ *      .drawCircle(100, 50, 30, Color.Red)
+ *      .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
  * await image.save("output.png");
  * ```
  * 
@@ -4375,8 +4375,8 @@ interface FindImageProgress {
  * // Load, transform, and save
  * let photo = await Image.load("photo.png");
  * photo.resize(800, 600, { keepAspectRatio: true })
- * .adjustBrightness(10)
- * .adjustContrast(5);
+ *      .adjustBrightness(10)
+ *      .adjustContrast(5);
  * await photo.save("photo_edited.png");
  * ```
  * 
@@ -4386,7 +4386,7 @@ interface FindImageProgress {
  * const button = await Image.load("button.png");
  * const match = await screen.findImage(button, { matchThreshold: 0.9 });
  * if (match) {
- * println(`Button found at ${match.position}`);
+ *   println(`Button found at ${match.position}`);
  * }
  * ```
  * @category Image
@@ -4394,6 +4394,7 @@ interface FindImageProgress {
 class Image {
     readonly width: number;
     readonly height: number;
+    readonly size: Size;
     /**
      * Returns a Rect representing this image.
      */
@@ -4821,7 +4822,7 @@ class Image {
      * ```ts
      * const match = await source.findImage(template);
      * if (match) {
-     * println(`Found at ${match.position} with score ${match.score}`);
+     *   println(`Found at ${match.position} with score ${match.score}`);
      * }
      * ```
      * 
@@ -4829,7 +4830,7 @@ class Image {
      * // Track progress while searching
      * const task = source.findImage(template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -4843,7 +4844,7 @@ class Image {
      * ```ts
      * const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
      * for (const match of matches) {
-     * println(`Found at ${match.position}`);
+     *   println(`Found at ${match.position}`);
      * }
      * ```
      * 
@@ -4851,7 +4852,7 @@ class Image {
      * // Track progress while searching
      * const task = source.findImageAll(template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -4918,8 +4919,8 @@ interface Concurrency {
      * ```ts
      * // Resolve with the first successful result.
      * const result = await Concurrency.race([
-     * sleep("200ms").then(() => "fast"),
-     * sleep("1s").then(() => "slow"),
+     *   sleep("200ms").then(() => "fast"),
+     *   sleep("1s").then(() => "slow"),
      * ]);
      * // result === "fast"
      * ```
@@ -4927,8 +4928,8 @@ interface Concurrency {
      * ```ts
      * // Use race to implement a timeout.
      * const result = await Concurrency.race([
-     * fetchData(),
-     * sleep("5s").then(() => { throw new Error("Timeout"); })
+     *   fetchData(),
+     *   sleep("5s").then(() => { throw new Error("Timeout"); })
      * ]);
      * ```
      * 
@@ -4936,20 +4937,20 @@ interface Concurrency {
      * // Rejections also win the race.
      * // Here the error is thrown quickly and the slower task is cancelled.
      * try {
-     * await Concurrency.race([
-     * sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
-     * sleep("2s"),
-     * ]);
+     *   await Concurrency.race([
+     *     sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
+     *     sleep("2s"),
+     *   ]);
      * } catch (e) {
-     * console.println(e); // Error: Failed quickly
+     *   console.println(e); // Error: Failed quickly
      * }
      * ```
      * 
      * ```ts
      * // You can cancel the race task itself.
      * const t = Concurrency.race([
-     * sleep("5s"),
-     * sleep("8s"),
+     *   sleep("5s"),
+     *   sleep("8s"),
      * ]);
      * t.cancel();
      * await t; // throws "Error: Cancelled"
@@ -5019,8 +5020,8 @@ interface Keyboard {
      * // Wait for exactly these keys and no others, with abort support
      * const controller = new AbortController();
      * await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
-     * exclusive: true,
-     * signal: controller.signal
+     *   exclusive: true,
+     *   signal: controller.signal
      * });
      * ```
      */
@@ -5069,8 +5070,8 @@ interface WaitForKeysOptions {
  * ```ts
  * // Smooth movement with custom tween
  * await mouse.move(800, 600, {
- * speed: 1500,
- * tween: Tween.BounceOut
+ *   speed: 1500,
+ *   tween: Tween.BounceOut
  * });
  * ```
  * @category Mouse
@@ -5933,7 +5934,7 @@ interface StartProcessOptions {
  * ```ts
  * const handle = process.start("echo", { args: ["hello world"] });
  * for await (const line of handle.stdout) {
- * println(line);
+ *     println(line);
  * }
  * const result = await handle.finished;
  * println(result.exitCode);
@@ -5957,7 +5958,7 @@ interface Process {
      * ```ts
      * const handle = process.start("echo", { args: ["hello world"] });
      * for await (const line of handle.stdout) {
-     * println(line);
+     *     println(line);
      * }
      * const result = await handle.finished;
      * println(result.exitCode);
@@ -5968,7 +5969,7 @@ interface Process {
      * await handle.write("hello\n");
      * await handle.closeStdin();
      * for await (const line of handle.stdout) {
-     * println(line);
+     *     println(line);
      * }
      * await handle.finished;
      * ```
@@ -6035,7 +6036,7 @@ const process: Process;
  * ```ts
  * const handle = await process.start("echo", { args: ["hello"] });
  * for await (const line of handle.stdout) {
- * println(line);
+ *     println(line);
  * }
  * const result = await handle.finished;
  * println(result.exitCode);
@@ -6053,7 +6054,7 @@ interface ProcessHandle {
      * ```ts
      * const handle = await process.start("echo", { args: ["hello"] });
      * for await (const line of handle.stdout) {
-     * println(line);
+     *     println(line);
      * }
      * ```
      */
@@ -6064,7 +6065,7 @@ interface ProcessHandle {
      * ```ts
      * const handle = await process.start("my-command");
      * for await (const line of handle.stderr) {
-     * println(`error: ${line}`);
+     *     println(`error: ${line}`);
      * }
      * ```
      */
@@ -6126,7 +6127,7 @@ interface ProcessHandle {
  * const handle = await process.start("ls");
  * const result = await handle.finished;
  * if (result.exitCode === 0) {
- * println("success");
+ *     println("success");
  * }
  * ```
  * 
@@ -6427,7 +6428,7 @@ interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -6443,7 +6444,7 @@ interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -6459,7 +6460,7 @@ interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -6475,7 +6476,7 @@ interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -6491,7 +6492,7 @@ interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnDisplay(0, template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
@@ -6507,7 +6508,7 @@ interface Screenshot {
      * ```ts
      * const task = screenshot.findImageOnDisplayAll(0, template);
      * for await (const progress of task) {
-     * println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
@@ -6693,10 +6694,10 @@ const standard_paths: StandardPaths;
  * const freqs = await system.cpu.frequencies();
  * 
  * println(
- * system.cpu.logicalCoreCount,
- * formatPercent(globalUsage),
- * formatPercent(core0Usage),
- * formatFrequency(freqs[0]),
+ *   system.cpu.logicalCoreCount,
+ *   formatPercent(globalUsage),
+ *   formatPercent(core0Usage),
+ *   formatFrequency(freqs[0]),
  * );
  * ```
  * @category System
@@ -6820,7 +6821,7 @@ interface Motherboard {
  * const components = await system.hardware.listComponents();
  * const component = components[0];
  * if (component) {
- * println(component.label, component.temperature);
+ *   println(component.label, component.temperature);
  * }
  * ```
  * @category System
@@ -6881,10 +6882,10 @@ interface Memory {
  * ```ts
  * const usage = await system.memory.usage();
  * println(
- * formatBytes(usage.used),
- * formatBytes(usage.free),
- * formatBytes(usage.available),
- * formatBytes(usage.total),
+ *   formatBytes(usage.used),
+ *   formatBytes(usage.free),
+ *   formatBytes(usage.available),
+ *   formatBytes(usage.total),
  * );
  * ```
  * @category System
@@ -6914,11 +6915,11 @@ interface MemoryUsage {
  * ```ts
  * const limits = system.memory.cgroupLimits;
  * if (limits) {
- * println(
- * formatBytes(limits.totalMemory),
- * formatBytes(limits.freeMemory),
- * formatBytes(limits.freeSwap),
- * );
+ *   println(
+ *     formatBytes(limits.totalMemory),
+ *     formatBytes(limits.freeMemory),
+ *     formatBytes(limits.freeSwap),
+ *   );
  * }
  * ```
  * 
@@ -7042,7 +7043,7 @@ interface ListInterfacesOptions {
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
  * if (iface) {
- * println(iface.name, iface.mtu, iface.macAddress);
+ *   println(iface.name, iface.mtu, iface.macAddress);
  * }
  * ```
  * @category System
@@ -7081,8 +7082,8 @@ interface NetworkInterface {
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
  * if (iface) {
- * const counters = iface.inbound.total;
- * println(formatBytes(counters.data), counters.packets, counters.errors);
+ *   const counters = iface.inbound.total;
+ *   println(formatBytes(counters.data), counters.packets, counters.errors);
  * }
  * ```
  * @category System
@@ -7109,10 +7110,10 @@ interface Counters {
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
  * if (iface) {
- * println(
- * formatBytes(iface.inbound.total.data),
- * formatBytes(iface.inbound.delta.data),
- * );
+ *   println(
+ *     formatBytes(iface.inbound.total.data),
+ *     formatBytes(iface.inbound.delta.data),
+ *   );
  * }
  * ```
  * @category System
@@ -7198,7 +7199,7 @@ interface Os {
  * const users = await system.os.listUsers();
  * const user = users[0];
  * if (user) {
- * println(user.id, user.name, user.groupName);
+ *   println(user.id, user.name, user.groupName);
  * }
  * ```
  * @category System
@@ -7239,7 +7240,7 @@ interface User {
  * const groups = await system.os.listGroups();
  * const group = groups[0];
  * if (group) {
- * println(group.id, group.name);
+ *   println(group.id, group.name);
  * }
  * ```
  * @category System
@@ -7335,7 +7336,7 @@ interface ProcessesFindOptions {
  * const processes = await system.processes.list();
  * const process = processes[0];
  * if (process) {
- * println(process.pid, process.name, process.status);
+ *   println(process.pid, process.name, process.status);
  * }
  * ```
  * @category System
@@ -7509,13 +7510,13 @@ interface ListDisksOptions {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * println(
- * disk.name,
- * disk.kind,
- * disk.mountPoint,
- * formatBytes(disk.totalSpace),
- * formatBytes(disk.availableSpace),
- * );
+ *   println(
+ *     disk.name,
+ *     disk.kind,
+ *     disk.mountPoint,
+ *     formatBytes(disk.totalSpace),
+ *     formatBytes(disk.availableSpace),
+ *   );
  * }
  * ```
  * @category System
@@ -7566,10 +7567,10 @@ interface Disk {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * println(
- * formatBytes(disk.usage.read.total),
- * formatBytes(disk.usage.written.delta),
- * );
+ *   println(
+ *     formatBytes(disk.usage.read.total),
+ *     formatBytes(disk.usage.written.delta),
+ *   );
  * }
  * ```
  * @category System
@@ -7592,10 +7593,10 @@ interface IoStats {
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
  * if (disk) {
- * println(
- * formatBytes(disk.usage.read.total),
- * formatBytes(disk.usage.written.total),
- * );
+ *   println(
+ *     formatBytes(disk.usage.read.total),
+ *     formatBytes(disk.usage.written.total),
+ *   );
  * }
  * ```
  * @category System
@@ -7616,9 +7617,9 @@ interface DiskUsage {
  * 
  * ```ts
  * await Ui.messageBox("Delete this file?", {
- * title: "Confirm",
- * buttons: MessageBoxButtons.yesNo(),
- * icon: MessageBoxIcon.Warning,
+ *   title: "Confirm",
+ *   buttons: MessageBoxButtons.yesNo(),
+ *   icon: MessageBoxIcon.Warning,
  * });
  * ```
  * @category UI
@@ -7657,12 +7658,12 @@ interface MessageBoxOptions {
  * 
  * ```ts
  * const result = await Ui.messageBox("Delete this file?", {
- * title: "Confirm",
- * buttons: MessageBoxButtons.yesNo(),
- * icon: MessageBoxIcon.Warning,
+ *   title: "Confirm",
+ *   buttons: MessageBoxButtons.yesNo(),
+ *   icon: MessageBoxIcon.Warning,
  * });
  * if (result === MessageBoxResult.Yes) {
- * println("Confirmed");
+ *   println("Confirmed");
  * }
  * ```
  * @category UI
@@ -7733,8 +7734,8 @@ class MessageBoxButtons {
  * form.addText("title", "My Upload");
  * form.addFile("file", "/path/to/file.txt");
  * const result = await web.downloadText("https://example.com/upload", {
- * method: Method.Post,
- * multipart: form,
+ *   method: Method.Post,
+ *   multipart: form,
  * });
  * ```
  * @category Web
@@ -7835,11 +7836,11 @@ interface WebOptions {
  * ```ts
  * const task = web.download("https://example.com/file.bin");
  * for await (const progress of task) {
- * println(
- * formatBytes(progress.current),
- * formatBytes(progress.total),
- * progress.finished,
- * );
+ *   println(
+ *     formatBytes(progress.current),
+ *     formatBytes(progress.total),
+ *     progress.finished,
+ *   );
  * }
  * ```
  * @category Web
@@ -7884,7 +7885,7 @@ interface Web {
      * ```ts
      * const task = web.download("https://example.com/file.bin");
      * for await (const progress of task) {
-     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const bytes = await task;
      * ```
@@ -7900,7 +7901,7 @@ interface Web {
      * ```ts
      * const task = web.downloadText("https://example.com/data.json");
      * for await (const progress of task) {
-     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const text = await task;
      * ```
@@ -7916,7 +7917,7 @@ interface Web {
      * ```ts
      * const task = web.downloadImage("https://example.com/photo.png");
      * for await (const progress of task) {
-     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const image = await task;
      * ```
@@ -7932,7 +7933,7 @@ interface Web {
      * ```ts
      * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
      * for await (const progress of task) {
-     * println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
      * }
      * const filePath = await task;
      * ```
@@ -7986,7 +7987,7 @@ interface WindowsFindOptions {
  * // Get all windows
  * const allWindows = await windows.all();
  * for (const win of allWindows) {
- * println(await win.title());
+ *     println(await win.title());
  * }
  * ```
  * 
@@ -8001,7 +8002,7 @@ interface WindowsFindOptions {
  * // Find and close a window by title
  * const matches = await windows.find({ title: new Wildcard("*Notepad*") });
  * for (const win of matches) {
- * await win.close();
+ *     await win.close();
  * }
  * ```
  * @category Windows
@@ -8250,9 +8251,9 @@ interface HotstringOptions {
  * 
  * ```ts
  * await mouse.move(500, 300, {
- * speed: 1000,
- * tween: Tween.SineOut,
- * targetRandomness: 5
+ *   speed: 1000,
+ *   tween: Tween.SineOut,
+ *   targetRandomness: 5
  * });
  * ```
  * @category Mouse

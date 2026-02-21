@@ -5,7 +5,7 @@ Start and manage child processes.
 ```ts
 const handle = process.start("echo", { args: ["hello world"] });
 for await (const line of handle.stdout) {
-println(line);
+    println(line);
 }
 const result = await handle.finished;
 println(result.exitCode);
@@ -84,7 +84,7 @@ Starts a process and returns a `ProcessHandle` for interacting with it.
 ```ts
 const handle = process.start("echo", { args: ["hello world"] });
 for await (const line of handle.stdout) {
-println(line);
+    println(line);
 }
 const result = await handle.finished;
 println(result.exitCode);
@@ -95,7 +95,7 @@ const handle = process.start("cat");
 await handle.write("hello\n");
 await handle.closeStdin();
 for await (const line of handle.stdout) {
-println(line);
+    println(line);
 }
 await handle.finished;
 ```

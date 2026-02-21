@@ -4,7 +4,7 @@ Horizontal alignment for text drawing.
 
 ```ts
 image.drawText(100, 50, "Centered", fontPath, Color.Black, {
-horizontalAlign: TextHorizontalAlign.Center
+  horizontalAlign: TextHorizontalAlign.Center
 });
 ```
 

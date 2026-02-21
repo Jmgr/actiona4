@@ -452,7 +452,7 @@ Returns `true` if a file exists at the given path.
 
 ```ts
 if (await File.exists("config.json")) {
-const text = await File.readText("config.json");
+    const text = await File.readText("config.json");
 }
 ```
 
@@ -500,19 +500,19 @@ Example
 ```js
 // Open a file for reading
 let file = await File.open("my_file.txt", {
-read: true,
+    read: true,
 });
 
 // Create a new file for writing.
 let file = await File.open("my_file.txt", {
-write: true,
-createNew: true,
+    write: true,
+    createNew: true,
 });
 
 // Append to an existing file.
 let file = await File.open("my_file.txt", {
-write: true,
-append: true,
+    write: true,
+    append: true,
 });
 ```
 

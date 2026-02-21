@@ -9,7 +9,7 @@ await Directory.create("/tmp/my/nested/dir");
 // List entries in a directory
 const entries = await Directory.listEntries("/tmp/my/nested/dir");
 for (const entry of entries) {
-println(entry.fileName, entry.isFile ? "file" : "dir");
+    println(entry.fileName, entry.isFile ? "file" : "dir");
 }
 
 // Remove a directory tree
@@ -60,7 +60,7 @@ const entries = await Directory.listEntries("/home/user/docs");
 
 // Skip size fetching for faster listing
 const entries = await Directory.listEntries("/home/user/docs", {
-fetchSize: false,
+    fetchSize: false,
 });
 ```
 

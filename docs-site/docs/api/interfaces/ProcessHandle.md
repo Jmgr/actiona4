@@ -8,7 +8,7 @@ waiting for the process to exit or killing it.
 ```ts
 const handle = await process.start("echo", { args: ["hello"] });
 for await (const line of handle.stdout) {
-println(line);
+    println(line);
 }
 const result = await handle.finished;
 println(result.exitCode);
@@ -47,7 +47,7 @@ An async iterator that yields lines from the process's standard error.
 ```ts
 const handle = await process.start("my-command");
 for await (const line of handle.stderr) {
-println(`error: ${line}`);
+    println(`error: ${line}`);
 }
 ```
 
@@ -62,7 +62,7 @@ An async iterator that yields lines from the process's standard output.
 ```ts
 const handle = await process.start("echo", { args: ["hello"] });
 for await (const line of handle.stdout) {
-println(line);
+    println(line);
 }
 ```
 

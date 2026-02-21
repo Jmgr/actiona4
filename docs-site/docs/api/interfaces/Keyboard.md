@@ -115,6 +115,16 @@ Types the given text string using simulated key events.
 
 ***
 
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
 ### waitForKeys()
 
 > **waitForKeys**(`keys`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -129,8 +139,8 @@ await keyboard.waitForKeys([Key.Control, "s"]);
 // Wait for exactly these keys and no others, with abort support
 const controller = new AbortController();
 await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
-exclusive: true,
-signal: controller.signal
+  exclusive: true,
+  signal: controller.signal
 });
 ```
 

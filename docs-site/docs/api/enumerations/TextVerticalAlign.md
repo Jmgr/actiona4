@@ -4,7 +4,7 @@ Vertical alignment for text drawing.
 
 ```ts
 image.drawText(50, 100, "Middle", fontPath, Color.Black, {
-verticalAlign: TextVerticalAlign.Middle
+  verticalAlign: TextVerticalAlign.Middle
 });
 ```
 

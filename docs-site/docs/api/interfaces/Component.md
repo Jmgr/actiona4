@@ -6,7 +6,7 @@ A hardware component (for example a thermal sensor).
 const components = await system.hardware.listComponents();
 const component = components[0];
 if (component) {
-println(component.label, component.temperature);
+  println(component.label, component.temperature);
 }
 ```
 

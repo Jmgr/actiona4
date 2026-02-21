@@ -8,10 +8,10 @@ const core0Usage = await system.cpu.coreUsage(0);
 const freqs = await system.cpu.frequencies();
 
 println(
-system.cpu.logicalCoreCount,
-formatPercent(globalUsage),
-formatPercent(core0Usage),
-formatFrequency(freqs[0]),
+  system.cpu.logicalCoreCount,
+  formatPercent(globalUsage),
+  formatPercent(core0Usage),
+  formatFrequency(freqs[0]),
 );
 ```
 

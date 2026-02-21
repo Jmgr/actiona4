@@ -92,6 +92,14 @@ Public directory
 
 ***
 
+### temp?
+
+> `readonly` `optional` **temp**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Temporary directory
+
+***
+
 ### videos?
 
 > `readonly` `optional` **videos**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

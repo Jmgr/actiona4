@@ -7,8 +7,8 @@ Received by iterating over the async iterator returned by `findImage` or `findIm
 ```ts
 const task = source.findImage(template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-if (progress.finished) break;
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  if (progress.finished) break;
 }
 const result = await task;
 ```
@@ -36,3 +36,13 @@ Completion percentage (0-100).
 > `readonly` **stage**: [`FindImageStage`](../enumerations/FindImageStage.md)
 
 The current stage of the find image operation.
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

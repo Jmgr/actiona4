@@ -6,7 +6,7 @@ Stops the script execution immediately.
 
 ```ts
 if (errorCondition) {
-exit();
+  exit();
 }
 ```
 

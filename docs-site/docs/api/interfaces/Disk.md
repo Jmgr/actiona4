@@ -6,13 +6,13 @@ A disk device.
 const disks = await system.storage.listDisks();
 const disk = disks[0];
 if (disk) {
-println(
-disk.name,
-disk.kind,
-disk.mountPoint,
-formatBytes(disk.totalSpace),
-formatBytes(disk.availableSpace),
-);
+  println(
+    disk.name,
+    disk.kind,
+    disk.mountPoint,
+    formatBytes(disk.totalSpace),
+    formatBytes(disk.availableSpace),
+  );
 }
 ```
 

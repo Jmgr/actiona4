@@ -28,7 +28,7 @@ const bytes = await web.download("https://example.com/file.bin");
 ```ts
 const task = web.download("https://example.com/file.bin");
 for await (const progress of task) {
-println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+  println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
 }
 const bytes = await task;
 ```
@@ -62,7 +62,7 @@ const filePath = await web.downloadFile("https://example.com/file.zip");
 ```ts
 const task = web.downloadFile("https://example.com/file.zip", "/tmp");
 for await (const progress of task) {
-println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+  println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
 }
 const filePath = await task;
 ```
@@ -100,7 +100,7 @@ const image = await web.downloadImage("https://example.com/photo.png");
 ```ts
 const task = web.downloadImage("https://example.com/photo.png");
 for await (const progress of task) {
-println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+  println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
 }
 const image = await task;
 ```
@@ -134,7 +134,7 @@ const text = await web.downloadText("https://example.com/data.json");
 ```ts
 const task = web.downloadText("https://example.com/data.json");
 for await (const progress of task) {
-println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+  println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
 }
 const text = await task;
 ```

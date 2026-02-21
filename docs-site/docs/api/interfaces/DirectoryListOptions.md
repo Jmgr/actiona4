@@ -4,9 +4,9 @@ Options for `Directory.listEntries()`.
 
 ```ts
 const entries = await Directory.listEntries("/tmp", {
-sort: false,
-absolutePath: false,
-fetchSize: true,
+  sort: false,
+  absolutePath: false,
+  fetchSize: true,
 });
 ```
 

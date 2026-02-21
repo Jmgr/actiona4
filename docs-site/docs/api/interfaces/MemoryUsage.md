@@ -5,10 +5,10 @@ A memory usage snapshot.
 ```ts
 const usage = await system.memory.usage();
 println(
-formatBytes(usage.used),
-formatBytes(usage.free),
-formatBytes(usage.available),
-formatBytes(usage.total),
+  formatBytes(usage.used),
+  formatBytes(usage.free),
+  formatBytes(usage.available),
+  formatBytes(usage.total),
 );
 ```
 

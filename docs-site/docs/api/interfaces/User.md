@@ -6,7 +6,7 @@ A system user.
 const users = await system.os.listUsers();
 const user = users[0];
 if (user) {
-println(user.id, user.name, user.groupName);
+  println(user.id, user.name, user.groupName);
 }
 ```
 

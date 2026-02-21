@@ -6,8 +6,8 @@ Byte/packet/error counters.
 const interfaces = await system.network.listInterfaces();
 const iface = interfaces[0];
 if (iface) {
-const counters = iface.inbound.total;
-println(formatBytes(counters.data), counters.packets, counters.errors);
+  const counters = iface.inbound.total;
+  println(formatBytes(counters.data), counters.packets, counters.errors);
 }
 ```
 

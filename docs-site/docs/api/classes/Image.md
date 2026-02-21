@@ -12,8 +12,8 @@ that returns a new `Image` (e.g., `blur()` vs `blurred()`).
 // Create, manipulate, and save
 let image = new Image(200, 100);
 image.fill(Color.White)
-.drawCircle(100, 50, 30, Color.Red)
-.drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
+     .drawCircle(100, 50, 30, Color.Red)
+     .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
 await image.save("output.png");
 ```
 
@@ -21,8 +21,8 @@ await image.save("output.png");
 // Load, transform, and save
 let photo = await Image.load("photo.png");
 photo.resize(800, 600, { keepAspectRatio: true })
-.adjustBrightness(10)
-.adjustContrast(5);
+     .adjustBrightness(10)
+     .adjustContrast(5);
 await photo.save("photo_edited.png");
 ```
 
@@ -32,7 +32,7 @@ const screen = await Image.load("screenshot.png");
 const button = await Image.load("button.png");
 const match = await screen.findImage(button, { matchThreshold: 0.9 });
 if (match) {
-println(`Button found at ${match.position}`);
+  println(`Button found at ${match.position}`);
 }
 ```
 
@@ -76,6 +76,12 @@ let image = new Image(100, 100);
 > `readonly` **rect**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](Rect.md)\>
 
 Returns a Rect representing this image.
+
+***
+
+### size
+
+> `readonly` **size**: [`Size`](Size.md)
 
 ***
 
@@ -1511,7 +1517,7 @@ for progress updates. Returns [`undefined`](https://developer.mozilla.org/docs/W
 ```ts
 const match = await source.findImage(template);
 if (match) {
-println(`Found at ${match.position} with score ${match.score}`);
+  println(`Found at ${match.position} with score ${match.score}`);
 }
 ```
 
@@ -1519,7 +1525,7 @@ println(`Found at ${match.position} with score ${match.score}`);
 // Track progress while searching
 const task = source.findImage(template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const match = await task;
 ```
@@ -1551,7 +1557,7 @@ Returns a `ProgressTask` that can be awaited for an array of matches.
 ```ts
 const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
 for (const match of matches) {
-println(`Found at ${match.position}`);
+  println(`Found at ${match.position}`);
 }
 ```
 
@@ -1559,7 +1565,7 @@ println(`Found at ${match.position}`);
 // Track progress while searching
 const task = source.findImageAll(template);
 for await (const progress of task) {
-println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
 const matches = await task;
 ```
@@ -1944,7 +1950,7 @@ Sets the color of a pixel.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of this image as `Image(width, height)`.
+Returns a string representation of this image.
 
 #### Returns
 
