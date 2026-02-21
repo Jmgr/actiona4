@@ -17,7 +17,7 @@ arc-swap = "1.8.2"
 bimap = "0.6.3"
 bytes = "1.11.1"
 chrono = "0.4.43"
-clap = { version = "4.5.58", features = ["cargo", "derive"] }
+clap = { version = "4.5.60", features = ["cargo", "derive"] }
 clap_complete = "4.5.66"
 color-eyre = "0.6.5"
 console = "0.16.2"
@@ -43,8 +43,8 @@ enigo = { git = "https://github.com/enigo-rs/enigo.git", rev = "17fc1d5d3d2319fb
 env_logger = "0.11.9"
 eyre = "0.6.12"
 flate2 = "1.1.9"
-futures = "0.3.31"
-futures-util = "0.3.31"
+futures = "0.3.32"
+futures-util = "0.3.32"
 http-body = "1.0.1"
 http-body-util = "0.1.3"
 human-units = { version = "0.5.3", features = ["si-units"] }
@@ -64,7 +64,7 @@ imageproc = { version = "0.26.0", default-features = false, features = [
     "text",
 ] }
 indexmap = { version = "2.13.0", features = ["serde"] }
-indicatif = "0.18.3"
+indicatif = "0.18.4"
 infer = "0.19.0"
 ipnet = "2.11.0"
 itertools = "0.14.0"
@@ -93,7 +93,7 @@ reqwest = { version = "0.13.2", default-features = false, features = [
     "form",
     "query",
 ] }
-rodio = { version = "0.21.1", features = ["tracing", "symphonia"] }
+rodio = { version = "0.22.0", features = ["tracing", "symphonia"] }
 rquickjs = { version = "0.11.0", default-features = false, features = [
     "macro",
     "futures",
@@ -113,13 +113,13 @@ strum = { version = "0.27.2", features = ["derive"] }
 swc_common = { version = "18.0.1", features = ["tty-emitter", "sourcemap"] }
 swc_ecma_ast = "20.0.1"
 swc_ecma_codegen = "23.0.0"
-swc_ecma_parser = "33.0.1"
-swc_ecma_transforms_base = "36.0.1"
-swc_ecma_transforms_typescript = "40.0.0"
+swc_ecma_parser = "34.0.0"
+swc_ecma_transforms_base = "37.0.0"
+swc_ecma_transforms_typescript = "41.0.0"
 swc_sourcemap = "9.3.4"
-syn = "2.0.115"
+syn = "2.0.117"
 sys-locale = "0.3.2"
-sysinfo = "0.38.1"
+sysinfo = "0.38.2"
 system_shutdown = { version = "4.1.0" }
 tauri = { version = "2.10.2", default-features = false, features = [
     "wry",
@@ -142,7 +142,7 @@ tokio = { version = "1.49.0", features = [
     "io-util",
 ] }
 tokio-util = { version = "0.7.18", features = ["rt"] }
-toml = "1.0.1"
+toml = "1.0.3"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.22", features = [
     "env-filter",
@@ -177,7 +177,7 @@ winrt-toast-reborn = "0.3.8"
 # Unix
 libwmctl = "0.0.51"
 memfd = "0.6.5"
-memmap2 = "0.9.9"
+memmap2 = "0.9.10"
 notify-rust = { version = "4.12.0", default-features = false, features = [
     "z-with-tokio",
     "async",

@@ -3,7 +3,7 @@ use std::{fmt::Display, fs::File, path::Path, sync::Arc, time::Duration};
 use color_eyre::{Result, eyre::ensure};
 use macros::FromJsObject;
 use once_cell::sync::OnceCell;
-use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
+use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
@@ -14,7 +14,7 @@ pub mod js;
 
 #[derive(Clone)]
 pub struct PlayingSound {
-    sink: Arc<Sink>,
+    player: Arc<Player>,
     filename: Option<String>,
     duration: Option<Duration>,
     source_sample_rate: u32,
@@ -24,42 +24,42 @@ pub struct PlayingSound {
 
 impl PlayingSound {
     pub fn pause(&self) {
-        self.sink.pause();
+        self.player.pause();
     }
 
     pub fn resume(&self) {
-        self.sink.play();
+        self.player.play();
     }
 
     #[must_use]
     pub fn is_paused(&self) -> bool {
-        self.sink.is_paused()
+        self.player.is_paused()
     }
 
     pub fn stop(&self) {
-        self.sink.stop();
+        self.player.stop();
     }
 
     pub fn set_volume(&self, volume: f32) -> Result<()> {
         validate_volume(volume)?;
-        self.sink.set_volume(volume);
+        self.player.set_volume(volume);
         Ok(())
     }
 
     #[must_use]
     pub fn volume(&self) -> f32 {
-        self.sink.volume()
+        self.player.volume()
     }
 
     pub fn set_playback_rate(&self, playback_rate: f32) -> Result<()> {
         validate_playback_rate(playback_rate, self.source_sample_rate)?;
-        self.sink.set_speed(playback_rate);
+        self.player.set_speed(playback_rate);
         Ok(())
     }
 
     #[must_use]
     pub fn playback_rate(&self) -> f32 {
-        self.sink.speed()
+        self.player.speed()
     }
 
     #[must_use]
@@ -68,15 +68,15 @@ impl PlayingSound {
     }
 
     pub async fn wait_finished(&self, cancellation_token: CancellationToken) {
-        let sink = self.sink.clone();
+        let player = self.player.clone();
 
         let handle = self.task_tracker.spawn_blocking(move || {
-            sink.sleep_until_end();
+            player.sleep_until_end();
         });
 
         select! {
-            _ = self.cancellation_token.cancelled() => { self.sink.stop() },
-            _ = cancellation_token.cancelled() => { self.sink.stop() },
+            _ = self.cancellation_token.cancelled() => { self.player.stop() },
+            _ = cancellation_token.cancelled() => { self.player.stop() },
             _ = handle => {},
         }
     }
@@ -133,13 +133,13 @@ impl Default for PlaySoundOptions {
 }
 
 #[derive(Default)]
-struct OutputStreamCell(OnceCell<OutputStream>);
+struct OutputStreamCell(OnceCell<MixerDeviceSink>);
 
 impl OutputStreamCell {
-    fn get_or_try_init(&self) -> Result<&OutputStream> {
+    fn get_or_try_init(&self) -> Result<&MixerDeviceSink> {
         Ok(self
             .0
-            .get_or_try_init(OutputStreamBuilder::open_default_stream)?)
+            .get_or_try_init(DeviceSinkBuilder::open_default_sink)?)
     }
 }
 
@@ -164,7 +164,7 @@ impl Audio {
         let local_output_stream = output_stream.clone();
         task_tracker.spawn_blocking(move || {
             if let Err(err) = local_output_stream.get_or_try_init() {
-                error!("open_default_stream failed: {err}");
+                error!("local_output_stream open failed: {err}");
             }
         });
 
@@ -183,13 +183,13 @@ impl Audio {
         let duration = source.total_duration();
         let source_sample_rate = source.sample_rate();
         let source_channels = source.channels();
-        validate_source_format(source_sample_rate, source_channels)?;
+        validate_source_format(source_sample_rate.get(), source_channels.get())?;
         validate_volume(options.volume)?;
-        validate_playback_rate(options.playback_rate, source_sample_rate)?;
-        let sink = Sink::connect_new(output_stream.mixer());
+        validate_playback_rate(options.playback_rate, source_sample_rate.get())?;
+        let player = Player::connect_new(output_stream.mixer());
 
-        sink.set_volume(options.volume);
-        sink.set_speed(options.playback_rate);
+        player.set_volume(options.volume);
+        player.set_speed(options.playback_rate);
 
         if let Some(fade_in) = options.fade_in {
             source = Box::new(source.fade_in(fade_in.into()));
@@ -200,20 +200,20 @@ impl Audio {
         }
 
         if options.r#loop {
-            sink.append(source.repeat_infinite());
+            player.append(source.repeat_infinite());
         } else {
-            sink.append(source);
+            player.append(source);
         }
 
         if options.paused {
-            sink.pause();
+            player.pause();
         }
 
         Ok(PlayingSound {
-            sink: Arc::new(sink),
+            player: Arc::new(player),
             filename: path.file_name().map(|n| n.to_string_lossy().into_owned()),
             duration,
-            source_sample_rate,
+            source_sample_rate: source_sample_rate.get(),
             cancellation_token: self.cancellation_token.clone(),
             task_tracker: self.task_tracker.clone(),
         })
