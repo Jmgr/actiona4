@@ -1190,7 +1190,7 @@ dependencies = [
 
 [[package]]
 name = "core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "ab_glyph",
  "arboard",
@@ -1760,7 +1760,7 @@ dependencies = [
 
 [[package]]
 name = "doc-generator"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "built",
  "clap",
@@ -3751,7 +3751,7 @@ dependencies = [
 
 [[package]]
 name = "macros"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "convert_case 0.11.0",
  "quote",
@@ -5841,7 +5841,7 @@ checksum = "ad8388ea1a9e0ea807e442e8263a699e7edcb320ecbcd21b4fa8ff859acce3ba"
 
 [[package]]
 name = "run"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "built",
  "cfg_aliases",

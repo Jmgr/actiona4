@@ -39,7 +39,7 @@ pub fn compute_results(
             &no_array(),
         )?;
 
-        if max_val >= match_threshold.into() {
+        if max_val.is_finite() && max_val >= match_threshold.into() {
             #[allow(clippy::as_conversions)]
             return Ok(vec![Match::new(
                 max_loc.into(),
@@ -56,7 +56,7 @@ pub fn compute_results(
     let rows = match_template_result.rows();
     let cols = match_template_result.cols();
     let mut push_match = |row: i32, col: i32, match_score: f32| {
-        if match_score < match_threshold {
+        if !match_score.is_finite() || match_score < match_threshold {
             return;
         }
         let position = Point::new(col, row);
@@ -150,6 +150,10 @@ pub fn filter_results_by_color(
     for row in 0..rows {
         let row_values = result.at_row_mut::<f32>(row)?;
         for (col_idx, value) in row_values.iter_mut().enumerate() {
+            if !value.is_finite() {
+                *value = 0.0;
+                continue;
+            }
             if *value < match_threshold {
                 continue;
             }
@@ -185,4 +189,39 @@ fn channel_rms(
     };
 
     Ok(norm / normalization)
+}
+
+#[cfg(test)]
+mod tests {
+    use color_eyre::Result;
+    use opencv::{
+        core::{Mat, Size},
+        prelude::MatTraitConst,
+    };
+
+    use crate::api::image::find_image::results::compute_results;
+
+    fn f32_mat(values: &[f32], rows: i32) -> Result<Mat> {
+        let mat_boxed = Mat::from_slice(values)?;
+        let mat_reshaped = mat_boxed.reshape(1, rows)?;
+        Ok(mat_reshaped.try_clone()?)
+    }
+
+    #[test]
+    fn compute_results_ignores_non_finite_scores_find_all() {
+        let result = f32_mat(&[f32::NAN, f32::INFINITY, 0.9, 0.2], 1).unwrap();
+        let matches = compute_results(&result, Size::new(1, 1), 0.8, false, None).unwrap();
+
+        assert_eq!(matches.len(), 1);
+        assert!(matches[0].score.is_finite());
+        assert!((matches[0].score - 0.9).abs() < 1e-6);
+    }
+
+    #[test]
+    fn compute_results_ignores_non_finite_scores_find_one() {
+        let result = f32_mat(&[f32::INFINITY], 1).unwrap();
+        let matches = compute_results(&result, Size::new(1, 1), 0.0, true, None).unwrap();
+
+        assert!(matches.is_empty());
+    }
 }

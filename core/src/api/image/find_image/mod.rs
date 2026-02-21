@@ -2,7 +2,7 @@ use std::{borrow::Cow, fmt::Display, sync::Arc};
 
 use color_eyre::{
     Result,
-    eyre::{Error, eyre},
+    eyre::{Error, ensure, eyre},
 };
 use derive_more::{Constructor, Display};
 use macros::FromJsObject;
@@ -346,6 +346,18 @@ impl Source {
             return Err(CommonError::Cancelled.into());
         }
 
+        ensure!(
+            options.match_threshold.is_finite() && (0.0..=1.0).contains(&options.match_threshold),
+            "match threshold must be finite and between 0.0 and 1.0"
+        );
+
+        let source_size = self.image.lightness.0.size()?;
+        let template_size = template.image.lightness.0.size()?;
+        ensure!(
+            source_size.height >= template_size.height && source_size.width >= template_size.width,
+            "template must fit inside source image"
+        );
+
         let source_lightness = Cow::Borrowed(&self.image.lightness);
         let template_lightness = Cow::Borrowed(&template.image.lightness);
 
@@ -399,7 +411,6 @@ impl Source {
 
         progress.send_replace(FindImageProgress::new(FindImageStage::Filtering, 70));
 
-        let template_size = template.image.lightness.0.size()?;
         if options.use_colors {
             filter_results_by_color(
                 &mut result,
@@ -439,6 +450,7 @@ mod tests {
     use std::sync::Arc;
 
     use tokio::sync::watch;
+    use tokio_util::sync::CancellationToken;
     use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan};
 
     use crate::{
@@ -487,5 +499,30 @@ mod tests {
             assert_eq!(result[0].position, crate::api::point::point(1636, 233));
             assert_eq!(result[1].position, crate::api::point::point(237, 231));
         });
+    }
+
+    #[test]
+    fn test_find_image_errors_when_template_larger_than_source() {
+        let source = Image::new(8, 8);
+        let source = Arc::<Source>::try_from(&source).unwrap();
+
+        let template = Image::new(9, 9);
+        let template = Arc::<Template>::try_from(&template).unwrap();
+
+        let (progress_sender, _) = watch::channel(FindImageProgress::default());
+        let error = source
+            .find_template_all(
+                &template,
+                FindImageTemplateOptions::default(),
+                CancellationToken::new(),
+                progress_sender,
+            )
+            .unwrap_err();
+
+        assert!(
+            error
+                .to_string()
+                .contains("template must fit inside source image")
+        );
     }
 }
