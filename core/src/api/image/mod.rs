@@ -30,7 +30,7 @@ use crate::{
         image::find_image::{Source, Template},
         point::{Point, point},
         rect::{Rect, rect},
-        size::size,
+        size::{self, Size},
     },
     types::{display::DisplayFields, si32::Si32, su32::su32},
 };
@@ -372,6 +372,11 @@ impl Image {
         self.inner.height()
     }
 
+    #[must_use]
+    pub fn size(&self) -> Size {
+        size::size(self.width(), self.height())
+    }
+
     pub fn invert_mut(&mut self) {
         imageops::invert(self.inner_mut());
     }
@@ -583,7 +588,7 @@ impl Image {
 
     #[must_use]
     pub fn bounds_rect(&self) -> Rect {
-        rect(point(0, 0), size(self.width(), self.height()))
+        rect(point(0, 0), size::size(self.width(), self.height()))
     }
 
     pub fn draw_cross_mut(&mut self, position: Point, color: Color) {
@@ -1237,7 +1242,7 @@ mod tests {
     #[test]
     fn cache_reset_by_crop_mut() {
         let mut img = cached_image();
-        img.crop_mut(rect(point(0, 0), size(5, 5)));
+        img.crop_mut(rect(point(0, 0), size::size(5, 5)));
         assert_caches_cleared(&img);
     }
 
@@ -1345,7 +1350,7 @@ mod tests {
     fn cache_reset_by_draw_rectangle_mut() {
         let mut img = cached_image();
         img.draw_rectangle_mut(
-            rect(point(1, 1), size(4, 4)),
+            rect(point(1, 1), size::size(4, 4)),
             Color::new(255, 0, 0, 255),
             DrawingOptions::default(),
         )
@@ -1357,7 +1362,7 @@ mod tests {
     fn cache_reset_by_draw_rectangle_mut_hollow() {
         let mut img = cached_image();
         img.draw_rectangle_mut(
-            rect(point(1, 1), size(4, 4)),
+            rect(point(1, 1), size::size(4, 4)),
             Color::new(255, 0, 0, 255),
             DrawingOptions { hollow: true },
         )

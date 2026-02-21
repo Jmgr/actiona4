@@ -30,6 +30,7 @@ use crate::{
         },
         point::js::{JsPoint, JsPointLike},
         rect::js::{JsRect, JsRectLike},
+        size::js::JsSize,
     },
     error::CommonError,
     runtime::WithUserData,
@@ -857,6 +858,13 @@ impl JsImage {
     #[must_use]
     pub fn height(&self) -> u32 {
         self.inner.height()
+    }
+
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub fn size(&self) -> JsSize {
+        self.inner.size().into()
     }
 
     /// Returns true if this image equals another (same dimensions and pixel data).
