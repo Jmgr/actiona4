@@ -218,7 +218,7 @@ Virtual memory
 
 ### kill()
 
-> **kill**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **kill**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
 
@@ -237,7 +237,7 @@ if (proc) await proc.kill();
 
 ### sendSignal()
 
-> **sendSignal**(`signal`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **sendSignal**(`signal`: [`Signal`](../enumerations/Signal.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Send a signal to the process.
 
@@ -265,7 +265,7 @@ only works on Linux
 
 ### terminate()
 
-> **terminate**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **terminate**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
 

@@ -20,7 +20,7 @@ const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 
 ### Constructor
 
-> **new Rect**(`x`, `y`, `width`, `height`): `Rect`
+> **new Rect**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Rect`
 
 Constructor with a position and a size.
 
@@ -48,7 +48,7 @@ Constructor with a position and a size.
 
 ### Constructor
 
-> **new Rect**(`r`): `Rect`
+> **new Rect**(`r`: [`RectLike`](../type-aliases/RectLike.md)): `Rect`
 
 Constructor with anything Rect-like.
 
@@ -131,7 +131,7 @@ const copy = original.clone();
 
 ### contains()
 
-> **contains**(`point`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **contains**(`point`: [`Point`](Point.md)): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Rect contains the given point.
 
@@ -155,7 +155,7 @@ println(r.contains(new Point(150, 50))); // false
 
 ### equals()
 
-> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **equals**(`other`: `Rect`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Rect equals another.
 
@@ -179,7 +179,7 @@ println(a.equals(b)); // true
 
 ### intersection()
 
-> **intersection**(`other`): `Rect` \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+> **intersection**(`other`: `Rect`): `Rect` \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 Returns the intersection of two Rects, or undefined if they don't overlap.
 
@@ -203,7 +203,7 @@ const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 
 ### intersects()
 
-> **intersects**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **intersects**(`other`: `Rect`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if this Rect intersects with another.
 
@@ -239,7 +239,7 @@ Returns a string representation of this Rect.
 
 ### union()
 
-> **union**(`other`): `Rect`
+> **union**(`other`: `Rect`): `Rect`
 
 Returns the smallest Rect containing both this and another Rect.
 

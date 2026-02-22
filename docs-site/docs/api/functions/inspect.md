@@ -1,6 +1,6 @@
 # Function: inspect()
 
-> **inspect**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **inspect**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Pretty-prints values using an inspect-style multiline format.
 

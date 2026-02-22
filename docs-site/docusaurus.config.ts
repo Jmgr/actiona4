@@ -65,6 +65,8 @@ const config: Config = {
         plugin: [
           "typedoc-plugin-mdn-links",
           "./plugins/typedoc-plugin-intrinsic-links.mjs",
+          "./plugins/typedoc-plugin-async-badge.mjs",
+          "./plugins/typedoc-plugin-expand-options.mjs",
         ],
         entryPoints: ["../run/assets/index.d.ts"],
         tsconfig: "../run/assets/tsconfig.json",
@@ -73,6 +75,8 @@ const config: Config = {
         readme: "none",
         skipErrorChecking: true,
         suppressCommentWarningsInDeclarationFiles: true,
+        modifierTags: ["@expand", "@alpha", "@beta", "@experimental", "@internal", "@override", "@sealed", "@virtual", "@deprecated", "@hidden", "@ignore", "@showCategories", "@hideCategories"],
+        expandParameters: true,
         defaultCategory: "Misc",
         categorizeByGroup: false,
         disableSources: true,

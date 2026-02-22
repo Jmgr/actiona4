@@ -1,5 +1,7 @@
 # Interface: OpenOptions
 
+**`Expand`**
+
 Options for `File.open()`.
 
 ```ts

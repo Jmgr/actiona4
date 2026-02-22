@@ -26,7 +26,7 @@ const result = await web.downloadText("https://example.com/upload", {
 
 ### addBytes()
 
-> **addBytes**(`name`, `bytes`, `filename?`, `mimetype?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **addBytes**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Adds a byte field.
 
@@ -62,7 +62,7 @@ form.addBytes("data", bytes, "hello.bin");
 
 ### addFile()
 
-> **addFile**(`name`, `path`, `filename?`, `mimetype?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **addFile**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Adds a file field.
 
@@ -97,7 +97,7 @@ form.addFile("document", "/path/to/report.pdf");
 
 ### addText()
 
-> **addText**(`name`, `value`, `filename?`, `mimetype?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **addText**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `value`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Adds a text field.
 
@@ -127,3 +127,13 @@ form.addText("username", "john");
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

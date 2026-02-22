@@ -1,6 +1,6 @@
 # Function: formatBytes()
 
-> **formatBytes**(`bytes`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> **formatBytes**(`bytes`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Formats a byte size using human-readable units.
 

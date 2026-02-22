@@ -11,7 +11,7 @@ println(disks.length);
 
 ### listDisks()
 
-> **listDisks**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Disk`](Disk.md)[]\>
+> <span class="async-badge">async</span> **listDisks**(`options?`: [`ListDisksOptions`](ListDisksOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Disk`](Disk.md)[]\>
 
 Disks
 
@@ -20,6 +20,20 @@ Disks
 ##### options?
 
 [`ListDisksOptions`](ListDisksOptions.md)
+
+<div class="options-fields">
+
+###### rescan?
+
+> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Rescan
+
+###### Default Value
+
+`true`
+
+</div>
 
 #### Returns
 

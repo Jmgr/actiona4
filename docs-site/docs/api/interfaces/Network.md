@@ -20,7 +20,7 @@ Host name
 
 ### listInterfaces()
 
-> **listInterfaces**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`NetworkInterface`](NetworkInterface.md)[]\>
+> <span class="async-badge">async</span> **listInterfaces**(`options?`: [`ListInterfacesOptions`](ListInterfacesOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`NetworkInterface`](NetworkInterface.md)[]\>
 
 Interfaces
 
@@ -29,6 +29,20 @@ Interfaces
 ##### options?
 
 [`ListInterfacesOptions`](ListInterfacesOptions.md)
+
+<div class="options-fields">
+
+###### rescan?
+
+> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Rescan
+
+###### Default Value
+
+`true`
+
+</div>
 
 #### Returns
 

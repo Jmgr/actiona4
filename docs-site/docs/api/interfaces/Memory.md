@@ -25,7 +25,7 @@ only works on Linux
 
 ### swapUsage()
 
-> **swapUsage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
+> <span class="async-badge">async</span> **swapUsage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
 
 Swap usage
 
@@ -47,7 +47,7 @@ Swap usage
 
 ### usage()
 
-> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
+> <span class="async-badge">async</span> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
 
 Memory usage
 

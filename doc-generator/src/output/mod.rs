@@ -259,6 +259,10 @@ impl File {
                 comments.push(format!("@platform {}", enum_.platforms));
             }
 
+            if enum_.is_expand {
+                comments.push("@expand".to_string());
+            }
+
             write_comments(&comments, "", &mut output_file)?;
 
             let verbatim = enum_.verbatim.join("\n");
@@ -292,6 +296,10 @@ impl File {
         for struct_ in self.structs.iter() {
             let mut comments = struct_.comments.clone();
             add_category_comment(&mut comments, struct_.category.as_deref());
+
+            if struct_.is_options {
+                comments.push("@expand".to_string());
+            }
 
             if !struct_.platforms.is_empty() {
                 comments.push(format!("@platform {}", struct_.platforms));

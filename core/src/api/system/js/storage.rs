@@ -223,6 +223,8 @@ impl JsDisk {
 /// ```
 ///
 /// Disk kind
+///
+/// @expand
 #[derive(
     Clone,
     Copy,

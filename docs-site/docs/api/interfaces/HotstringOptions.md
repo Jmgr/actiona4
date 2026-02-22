@@ -1,5 +1,7 @@
 # Interface: HotstringOptions
 
+**`Expand`**
+
 Hotstring options
 
 ## Properties

@@ -1,5 +1,7 @@
 # Interface: WindowsFindOptions
 
+**`Expand`**
+
 Window search options.
 
 ## Properties

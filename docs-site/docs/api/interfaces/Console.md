@@ -36,7 +36,7 @@ Clears the terminal screen.
 
 ### count()
 
-> **count**(`label?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **count**(`label?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Increments and prints a counter for the given label (defaults to `"default"`).
 
@@ -59,7 +59,7 @@ console.count("loop"); // prints "loop: 2"
 
 ### error()
 
-> **error**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **error**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs an error in bold red.
 
@@ -77,7 +77,7 @@ Logs an error in bold red.
 
 ### info()
 
-> **info**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **info**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs informational values. Alias for `log`.
 
@@ -95,7 +95,7 @@ Logs informational values. Alias for `log`.
 
 ### inspect()
 
-> **inspect**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **inspect**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Pretty-prints values using an inspect-style multiline format.
 
@@ -113,7 +113,7 @@ Pretty-prints values using an inspect-style multiline format.
 
 ### log()
 
-> **log**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **log**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs values to stdout. Alias for `println`.
 
@@ -131,7 +131,7 @@ Logs values to stdout. Alias for `println`.
 
 ### print()
 
-> **print**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **print**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Prints values without a trailing newline.
 
@@ -149,7 +149,7 @@ Prints values without a trailing newline.
 
 ### println()
 
-> **println**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **println**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Prints values followed by a newline.
 
@@ -167,7 +167,7 @@ Prints values followed by a newline.
 
 ### time()
 
-> **time**(`label?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **time**(`label?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Starts a timer with the given label (defaults to `"default"`).
 
@@ -189,7 +189,7 @@ console.time("myTimer");
 
 ### timeEnd()
 
-> **timeEnd**(`label?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **timeEnd**(`label?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Stops a timer and prints the elapsed time.
 
@@ -211,9 +211,19 @@ console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
 
 ***
 
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
 ### warn()
 
-> **warn**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **warn**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Logs a warning in yellow.
 

@@ -52,7 +52,7 @@ Clones this Match.
 
 ### equals()
 
-> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **equals**(`other`: `Match`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if a Match equals another.
 

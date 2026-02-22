@@ -1,5 +1,7 @@
 # Enumeration: MessageBoxResult
 
+**`Expand`**
+
 ## Enumeration Members
 
 ### Cancel

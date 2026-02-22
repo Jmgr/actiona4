@@ -21,7 +21,7 @@ random.resetSeed();
 
 ### choice()
 
-> **choice**\<`T`\>(`array`, `fallback?`): `T`
+> **choice**\<`T`\>(`array`: `T`[], `fallback?`: `T`): `T`
 
 Chooses one random entry in an array.
 A fallback can be provided, in case the array is empty.
@@ -61,7 +61,7 @@ println(item); // "default"
 
 #### Call Signature
 
-> **integer**(`max`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **integer**(`max`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Returns an integer between 0 (inclusive) and max (inclusive)
 
@@ -77,7 +77,7 @@ Returns an integer between 0 (inclusive) and max (inclusive)
 
 #### Call Signature
 
-> **integer**(`min`, `max`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **integer**(`min`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `max`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Returns an integer between min (inclusive) and max (inclusive)
 
@@ -111,7 +111,7 @@ Returns a number between 0 (inclusive) and 1 (exclusive)
 
 #### Call Signature
 
-> **number**(`max`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **number**(`max`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Returns a number between 0 (inclusive) and max (exclusive)
 
@@ -127,7 +127,7 @@ Returns a number between 0 (inclusive) and max (exclusive)
 
 #### Call Signature
 
-> **number**(`min`, `max`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **number**(`min`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `max`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Returns a number between min (inclusive) and max (exclusive)
 
@@ -149,7 +149,7 @@ Returns a number between min (inclusive) and max (exclusive)
 
 ### position()
 
-> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
+> <span class="async-badge">async</span> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
 Returns a random position on any display.
 
@@ -182,7 +182,7 @@ random.resetSeed();
 
 ### setSeed()
 
-> **setSeed**(`seed`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **setSeed**(`seed`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the seed to a value.
 This seed is used for all random number generation. Since the random number generator is
@@ -202,3 +202,13 @@ random.setSeed(42);
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

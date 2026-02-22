@@ -210,6 +210,10 @@ impl Instructions {
             }
         })
     }
+
+    pub fn is_expand(&self) -> bool {
+        self.iter().any(|instruction| instruction.is_expand())
+    }
 }
 
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
@@ -503,6 +507,15 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Category(parameters.to_string())
         }
 
+        // @expand
+        "expand" => {
+            if !parameters.is_empty() {
+                bail!("unexpected parameters");
+            }
+
+            Instruction::Expand
+        }
+
         _ => bail!("unknown instruction {name}"),
     })
 }
@@ -559,6 +572,7 @@ const fn allowed_context_for_instruction(
             RustdocContext::Enum,
             RustdocContext::Method,
         ],
+        Expand => &[RustdocContext::Enum],
     }
 }
 

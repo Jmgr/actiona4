@@ -1,5 +1,7 @@
 # Interface: ListInterfacesOptions
 
+**`Expand`**
+
 List network interfaces options
 
 ## Properties

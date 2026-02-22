@@ -25,7 +25,7 @@ println(pid);
 
 ### kill()
 
-> **kill**(`pid`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **kill**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
 
@@ -47,7 +47,7 @@ await process.kill(1234);
 
 ### sendSignal()
 
-> **sendSignal**(`pid`, `signal`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **sendSignal**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `signal`: [`Signal`](../enumerations/Signal.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Send a signal to a process by PID.
 
@@ -77,7 +77,7 @@ only works on Linux
 
 ### start()
 
-> **start**(`command`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ProcessHandle`](ProcessHandle.md)\>
+> <span class="async-badge">async</span> **start**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ProcessHandle`](ProcessHandle.md)\>
 
 Starts a process and returns a `ProcessHandle` for interacting with it.
 
@@ -110,6 +110,56 @@ await handle.finished;
 
 [`StartProcessOptions`](StartProcessOptions.md)
 
+<div class="options-fields">
+
+###### args?
+
+> `optional` **args**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+
+Arguments to pass to the command.
+
+###### Default Value
+
+`[]`
+
+***
+
+###### env?
+
+> `optional` **env**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Environment variables for the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to kill the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### workingDirectory?
+
+> `optional` **workingDirectory**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Working directory for the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ProcessHandle`](ProcessHandle.md)\>
@@ -118,7 +168,7 @@ await handle.finished;
 
 ### startAndWait()
 
-> **startAndWait**(`command`, `options?`): [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
+> <span class="async-badge">async</span> **startAndWait**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
 
 Starts a process, waits for it to finish, and returns the exit result
 including captured stdout and stderr.
@@ -139,6 +189,56 @@ println(result.exitCode);
 
 [`StartProcessOptions`](StartProcessOptions.md)
 
+<div class="options-fields">
+
+###### args?
+
+> `optional` **args**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+
+Arguments to pass to the command.
+
+###### Default Value
+
+`[]`
+
+***
+
+###### env?
+
+> `optional` **env**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Environment variables for the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to kill the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### workingDirectory?
+
+> `optional` **workingDirectory**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Working directory for the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
@@ -147,7 +247,7 @@ println(result.exitCode);
 
 ### startDetached()
 
-> **startDetached**(`command`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+> <span class="async-badge">async</span> **startDetached**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Starts a detached process and returns its PID.
 The process will continue running after the script exits.
@@ -167,6 +267,56 @@ println(`Started server with PID: ${pid}`);
 
 [`StartProcessOptions`](StartProcessOptions.md)
 
+<div class="options-fields">
+
+###### args?
+
+> `optional` **args**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+
+Arguments to pass to the command.
+
+###### Default Value
+
+`[]`
+
+***
+
+###### env?
+
+> `optional` **env**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Environment variables for the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to kill the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### workingDirectory?
+
+> `optional` **workingDirectory**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Working directory for the process.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
@@ -175,7 +325,7 @@ println(`Started server with PID: ${pid}`);
 
 ### terminate()
 
-> **terminate**(`pid`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **terminate**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
 

@@ -12,6 +12,16 @@ const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
 
 ## Methods
 
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
 ### ok()
 
 > `static` **ok**(): `MessageBoxButtons`
@@ -38,7 +48,7 @@ Creates OK and Cancel buttons.
 
 ### okCancelCustom()
 
-> `static` **okCancelCustom**(`okLabel`, `cancelLabel`): `MessageBoxButtons`
+> `static` **okCancelCustom**(`okLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `cancelLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): `MessageBoxButtons`
 
 Creates OK and Cancel buttons with custom labels.
 
@@ -60,7 +70,7 @@ Creates OK and Cancel buttons with custom labels.
 
 ### okCustom()
 
-> `static` **okCustom**(`okLabel`): `MessageBoxButtons`
+> `static` **okCustom**(`okLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): `MessageBoxButtons`
 
 Creates an OK button with a custom label.
 
@@ -102,7 +112,7 @@ Creates Yes, No, and Cancel buttons.
 
 ### yesNoCancelCustom()
 
-> `static` **yesNoCancelCustom**(`yesLabel`, `noLabel`, `cancelLabel`): `MessageBoxButtons`
+> `static` **yesNoCancelCustom**(`yesLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `noLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `cancelLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): `MessageBoxButtons`
 
 Creates Yes, No, and Cancel buttons with custom labels.
 

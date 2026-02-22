@@ -18,9 +18,19 @@ await Directory.remove("/tmp/my");
 
 ## Methods
 
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
 ### create()
 
-> `static` **create**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **create**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`DirectoryOptions`](../interfaces/DirectoryOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Creates a directory at the given path. By default, creates parent directories
 recursively.
@@ -42,6 +52,20 @@ await Directory.create("/tmp/a/b/c", { recursive: false });
 
 [`DirectoryOptions`](../interfaces/DirectoryOptions.md)
 
+<div class="options-fields">
+
+###### recursive?
+
+> `optional` **recursive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the directories be created or removed recursively?
+
+###### Default Value
+
+`true`
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -50,7 +74,7 @@ await Directory.create("/tmp/a/b/c", { recursive: false });
 
 ### listEntries()
 
-> `static` **listEntries**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
+> <span class="async-badge">async</span> `static` **listEntries**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`DirectoryListOptions`](../interfaces/DirectoryListOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
 
 Lists all entries in a directory, returning an array of `DirectoryEntry`.
 
@@ -74,6 +98,32 @@ const entries = await Directory.listEntries("/home/user/docs", {
 
 [`DirectoryListOptions`](../interfaces/DirectoryListOptions.md)
 
+<div class="options-fields">
+
+###### fetchSize?
+
+> `optional` **fetchSize**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should each entry's size be fetched?
+
+###### Default Value
+
+`true`
+
+***
+
+###### sort?
+
+> `optional` **sort**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the entries be sorted?
+
+###### Default Value
+
+`true`
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DirectoryEntry`](../interfaces/DirectoryEntry.md)[]\>
@@ -82,7 +132,7 @@ const entries = await Directory.listEntries("/home/user/docs", {
 
 ### remove()
 
-> `static` **remove**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **remove**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`DirectoryOptions`](../interfaces/DirectoryOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Removes a directory. By default, removes all contents recursively.
 
@@ -102,6 +152,20 @@ await Directory.remove("/tmp/my/dir", { recursive: false });
 ##### options?
 
 [`DirectoryOptions`](../interfaces/DirectoryOptions.md)
+
+<div class="options-fields">
+
+###### recursive?
+
+> `optional` **recursive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the directories be created or removed recursively?
+
+###### Default Value
+
+`true`
+
+</div>
 
 #### Returns
 

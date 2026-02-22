@@ -1,5 +1,7 @@
 # Interface: StartProcessOptions
 
+**`Expand`**
+
 Options for starting a process.
 
 ## Properties

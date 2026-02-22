@@ -22,6 +22,7 @@ pub struct Enum {
     pub platforms: Platforms,
     pub verbatim: Vec<String>,
     pub default_value: Option<String>,
+    pub is_expand: bool,
 }
 
 #[derive(Clone, Debug, EnumIs, PartialEq)]
@@ -298,6 +299,7 @@ pub enum Instruction {
     ReadonlyType,
     ConstructorOnly,
     Category(String),
+    Expand,
 }
 
 pub fn strip_modules(name: &str) -> &str {

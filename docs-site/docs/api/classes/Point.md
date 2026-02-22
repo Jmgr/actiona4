@@ -21,7 +21,7 @@ println(a.add(b).toString()); // "Point(5, 8)"
 
 ### Constructor
 
-> **new Point**(`x`, `y`): `Point`
+> **new Point**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Point`
 
 Constructor with two numbers.
 
@@ -41,7 +41,7 @@ Constructor with two numbers.
 
 ### Constructor
 
-> **new Point**(`p`): `Point`
+> **new Point**(`p`: [`PointLike`](../type-aliases/PointLike.md)): `Point`
 
 Constructor with anything Point-like.
 
@@ -75,7 +75,7 @@ Y coordinate
 
 ### add()
 
-> **add**(`other`): `Point`
+> **add**(`other`: `Point`): `Point`
 
 Adds two points and returns a new Point.
 
@@ -115,7 +115,7 @@ const copy = original.clone();
 
 ### distanceTo()
 
-> **distanceTo**(`other`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **distanceTo**(`other`: `Point`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Calculates the distance between this point and another.
 
@@ -139,7 +139,7 @@ println(a.distanceTo(b)); // 5
 
 ### equals()
 
-> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **equals**(`other`: `Point`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if a Point equals another.
 
@@ -197,7 +197,7 @@ println(p.length()); // 5
 
 ### scaled()
 
-> **scaled**(`factor`): `Point`
+> **scaled**(`factor`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Point`
 
 Scales this point by a factor and returns a new Point.
 
@@ -220,7 +220,7 @@ println(p.toString()); // "Point(6, 8)"
 
 ### subtract()
 
-> **subtract**(`other`): `Point`
+> **subtract**(`other`: `Point`): `Point`
 
 Subtracts two points and returns a new Point.
 
@@ -272,7 +272,7 @@ Returns a string representation of this Point.
 
 ### distance()
 
-> `static` **distance**(`a`, `b`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `static` **distance**(`a`: `Point`, `b`: `Point`): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Computes the distance between two points.
 
@@ -301,7 +301,7 @@ println(d); // 5
 
 #### Call Signature
 
-> `static` **randomInCircle**(`center`, `radius`): `Point`
+> `static` **randomInCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Point`
 
 Returns a random point within a circle of the given radius around a center point.
 
@@ -325,7 +325,7 @@ const p = Point.randomInCircle(100, 100, 50);
 
 #### Call Signature
 
-> `static` **randomInCircle**(`x`, `y`, `radius`): `Point`
+> `static` **randomInCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Point`
 
 Returns a random point within a circle of the given radius around a center point.
 

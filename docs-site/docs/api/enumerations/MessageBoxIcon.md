@@ -1,5 +1,7 @@
 # Enumeration: MessageBoxIcon
 
+**`Expand`**
+
 ## Enumeration Members
 
 ### Error

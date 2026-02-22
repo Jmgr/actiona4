@@ -29,7 +29,7 @@ for (const win of matches) {
 
 ### activeWindow()
 
-> **activeWindow**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>\>
+> <span class="async-badge">async</span> **activeWindow**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>\>
 
 Returns the currently active (focused) window.
 
@@ -46,7 +46,7 @@ println(await win.title());
 
 ### all()
 
-> **all**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
+> <span class="async-badge">async</span> **all**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
 
 Returns all currently open windows.
 
@@ -63,7 +63,7 @@ println(`Found ${allWindows.length} windows`);
 
 ### find()
 
-> **find**(`options`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
+> <span class="async-badge">async</span> **find**(`options`: [`WindowsFindOptions`](WindowsFindOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
 
 Finds windows matching the provided criteria.
 
@@ -84,6 +84,73 @@ const exact = await windows.find({ title: "Calculator", className: "ApplicationF
 
 [`WindowsFindOptions`](WindowsFindOptions.md)
 
+<div class="options-fields">
+
+###### className?
+
+> `optional` **className**: [`NameLike`](../type-aliases/NameLike.md)
+
+Match by window class name.
+When undefined, class name is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### id?
+
+> `optional` **id**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Match by internal window ID.
+When undefined, any window ID is accepted.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### processId?
+
+> `optional` **processId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Match by window process ID.
+When undefined, any process ID is accepted.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### title?
+
+> `optional` **title**: [`NameLike`](../type-aliases/NameLike.md)
+
+Match by window title.
+When undefined, title is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### visible?
+
+> `optional` **visible**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Match by window visibility.
+When undefined, visibility is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
@@ -94,7 +161,7 @@ const exact = await windows.find({ title: "Calculator", className: "ApplicationF
 
 #### Call Signature
 
-> **findAt**(`point`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
+> <span class="async-badge">async</span> **findAt**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
 
 Finds windows whose rectangle contains the given screen point.
 
@@ -115,7 +182,7 @@ const atOrigin = await windows.findAt(0, 0);
 
 #### Call Signature
 
-> **findAt**(`x`, `y`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
+> <span class="async-badge">async</span> **findAt**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`WindowHandle`](WindowHandle.md)[]\>
 
 Finds windows whose rectangle contains the given screen point.
 

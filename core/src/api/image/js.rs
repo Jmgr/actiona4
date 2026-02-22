@@ -59,6 +59,8 @@ use crate::{
 /// // Flip vertically
 /// image.flip(FlipDirection.Vertical);
 /// ```
+///
+/// @expand
 #[serde(rename = "FlipDirection")]
 pub enum JsFlipDirection {
     Horizontal,
@@ -83,6 +85,8 @@ impl From<JsFlipDirection> for FlipDirection {
 /// // Use Lanczos3 for high-quality downscaling
 /// image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -126,6 +130,8 @@ impl From<JsResizeFilter> for ResizeFilter {
 /// // Smooth result (default)
 /// image.rotate(45, { interpolation: Interpolation.Bilinear });
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -336,6 +342,8 @@ impl From<JsDrawingOptions> for DrawingOptions {
 ///   horizontalAlign: TextHorizontalAlign.Center
 /// });
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -373,6 +381,8 @@ impl From<JsTextHorizontalAlign> for TextHorizontalAlign {
 ///   verticalAlign: TextVerticalAlign.Middle
 /// });
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -613,6 +623,8 @@ impl From<super::find_image::Match> for JsMatch {
 ///   }
 /// }
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,

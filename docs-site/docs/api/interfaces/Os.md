@@ -94,7 +94,7 @@ Version
 
 ### listGroups()
 
-> **listGroups**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
+> <span class="async-badge">async</span> **listGroups**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
 
 Groups
 
@@ -106,7 +106,7 @@ Groups
 
 ### listUsers()
 
-> **listUsers**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`User`](User.md)[]\>
+> <span class="async-badge">async</span> **listUsers**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`User`](User.md)[]\>
 
 Users
 

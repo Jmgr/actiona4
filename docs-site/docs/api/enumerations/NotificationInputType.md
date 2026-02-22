@@ -1,5 +1,7 @@
 # Enumeration: NotificationInputType
 
+**`Expand`**
+
 Input type for toast input fields.
 
 ## Platform

@@ -11,7 +11,7 @@ println(processes.length);
 
 ### find()
 
-> **find**(`options`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
+> <span class="async-badge">async</span> **find**(`options`: [`ProcessesFindOptions`](ProcessesFindOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
 
 Finds processes matching the provided criteria.
 ```ts
@@ -28,6 +28,72 @@ const exact = await system.processes.find({ pid: 12345, name: "my-app" });
 
 [`ProcessesFindOptions`](ProcessesFindOptions.md)
 
+<div class="options-fields">
+
+###### name?
+
+> `optional` **name**: [`NameLike`](../type-aliases/NameLike.md)
+
+Match by process name.
+When undefined, name is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### parentPid?
+
+> `optional` **parentPid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Match by parent process ID.
+When undefined, parent PID is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### pid?
+
+> `optional` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Match by process ID.
+When undefined, any PID is accepted.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### rescan?
+
+> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Refresh process list before filtering.
+
+###### Default Value
+
+`true`
+
+***
+
+###### status?
+
+> `optional` **status**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
+
+Match by process status.
+When undefined, status is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
@@ -36,7 +102,7 @@ const exact = await system.processes.find({ pid: 12345, name: "my-app" });
 
 ### list()
 
-> **list**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
+> <span class="async-badge">async</span> **list**(`options?`: [`ListProcessesOptions`](ListProcessesOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
 
 Lists all processes
 
@@ -45,6 +111,20 @@ Lists all processes
 ##### options?
 
 [`ListProcessesOptions`](ListProcessesOptions.md)
+
+<div class="options-fields">
+
+###### rescan?
+
+> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Rescan
+
+###### Default Value
+
+`true`
+
+</div>
 
 #### Returns
 

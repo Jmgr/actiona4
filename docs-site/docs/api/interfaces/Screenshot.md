@@ -19,7 +19,7 @@ println(pixel.toString());
 
 ### captureDisplay()
 
-> **captureDisplay**(`displayId`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+> <span class="async-badge">async</span> **captureDisplay**(`displayId`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Captures a screenshot of an entire display.
 
@@ -43,7 +43,7 @@ const image = await screenshot.captureDisplay(0);
 
 #### Call Signature
 
-> **capturePixel**(`position`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
+> <span class="async-badge">async</span> **capturePixel**(`position`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
 Captures the color of a single pixel on screen.
 
@@ -64,7 +64,7 @@ println(color.toString());
 
 #### Call Signature
 
-> **capturePixel**(`x`, `y`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
+> <span class="async-badge">async</span> **capturePixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
 Captures the color of a single pixel on screen.
 
@@ -93,7 +93,7 @@ println(color.toString());
 
 #### Call Signature
 
-> **captureRect**(`rect`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+> <span class="async-badge">async</span> **captureRect**(`rect`: [`RectLike`](../type-aliases/RectLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Captures a screenshot of a screen rectangle.
 
@@ -113,7 +113,7 @@ const image = await screenshot.captureRect(0, 0, 1920, 1080);
 
 #### Call Signature
 
-> **captureRect**(`x`, `y`, `width`, `height`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+> <span class="async-badge">async</span> **captureRect**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 Captures a screenshot of a screen rectangle.
 
@@ -147,7 +147,7 @@ const image = await screenshot.captureRect(0, 0, 1920, 1080);
 
 ### findImageOnDisplay()
 
-> **findImageOnDisplay**(`displayId`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageOnDisplay**(`displayId`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image on a display.
 
@@ -177,6 +177,81 @@ const match = await task;
 
 [`FindImageOptions`](FindImageOptions.md)
 
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
 #### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
@@ -185,7 +260,7 @@ const match = await task;
 
 ### findImageOnDisplayAll()
 
-> **findImageOnDisplayAll**(`displayId`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageOnDisplayAll**(`displayId`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds all occurrences of an image on a display.
 
@@ -215,6 +290,81 @@ const matches = await task;
 
 [`FindImageOptions`](FindImageOptions.md)
 
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
 #### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
@@ -225,7 +375,7 @@ const matches = await task;
 
 #### Call Signature
 
-> **findImageOnRect**(`rect`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageOnRect**(`rect`: [`RectLike`](../type-aliases/RectLike.md), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image on a screen rectangle.
 
@@ -255,13 +405,88 @@ const match = await task;
 
 [`FindImageOptions`](FindImageOptions.md)
 
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
 ##### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 #### Call Signature
 
-> **findImageOnRect**(`x`, `y`, `width`, `height`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageOnRect**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image on a screen rectangle.
 
@@ -302,6 +527,81 @@ const match = await task;
 ###### options?
 
 [`FindImageOptions`](FindImageOptions.md)
+
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
 
 ##### Returns
 
@@ -313,7 +613,7 @@ const match = await task;
 
 #### Call Signature
 
-> **findImageOnRectAll**(`rect`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageOnRectAll**(`rect`: [`RectLike`](../type-aliases/RectLike.md), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds all occurrences of an image on a screen rectangle.
 
@@ -343,13 +643,88 @@ const matches = await task;
 
 [`FindImageOptions`](FindImageOptions.md)
 
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
 ##### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
 
 #### Call Signature
 
-> **findImageOnRectAll**(`x`, `y`, `width`, `height`, `image`, `options?`): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageOnRectAll**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds all occurrences of an image on a screen rectangle.
 
@@ -391,6 +766,91 @@ const matches = await task;
 
 [`FindImageOptions`](FindImageOptions.md)
 
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
 ##### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

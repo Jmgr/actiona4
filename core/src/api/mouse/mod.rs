@@ -50,6 +50,8 @@ use crate::{api::point::point, runtime::Runtime};
 /// await mouse.click({ button: Button.Right });
 /// const pressed = await mouse.isPressed(Button.Left);
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -115,6 +117,8 @@ impl From<Button> for enigo::Button {
 /// await mouse.scroll(3, Axis.Vertical);
 /// await mouse.scroll(-1, Axis.Horizontal);
 /// ```
+///
+/// @expand
 pub enum Axis {
     Horizontal,
     Vertical,

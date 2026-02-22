@@ -47,6 +47,7 @@ pub struct ContentNotAvailable;
     PartialEq,
     Serialize,
 )]
+/// @expand
 pub enum ClipboardMode {
     #[default]
     Clipboard,

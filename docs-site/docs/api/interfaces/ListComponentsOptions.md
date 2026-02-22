@@ -1,5 +1,7 @@
 # Interface: ListComponentsOptions
 
+**`Expand`**
+
 List components options
 
 ## Properties

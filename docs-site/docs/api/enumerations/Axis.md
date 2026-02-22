@@ -1,5 +1,7 @@
 # Enumeration: Axis
 
+**`Expand`**
+
 Scroll axis direction.
 
 ```ts

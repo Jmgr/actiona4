@@ -95,6 +95,7 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             platforms: enum_instructions.platforms(),
             verbatim,
             default_value,
+            is_expand: enum_instructions.is_expand(),
         });
     }
 

@@ -1,5 +1,7 @@
 # Interface: DrawImageOptions
 
+**`Expand`**
+
 Options for drawing an image onto another image.
 
 ```ts

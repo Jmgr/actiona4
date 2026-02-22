@@ -1,5 +1,7 @@
 # Enumeration: FindImageStage
 
+**`Expand`**
+
 Stages of a find image operation.
 
 ```ts

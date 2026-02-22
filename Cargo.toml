@@ -77,7 +77,6 @@ once_cell = "1.21.3"
 open = "5.3.3"
 opencv = { version = "0.98.1", default-features = false, features = [
     "imgproc",
-    "imgcodecs", # TMP
 ] }
 parking_lot = "0.12.5"
 quote = "1.0.44"
@@ -123,7 +122,6 @@ sysinfo = "0.38.2"
 system_shutdown = { version = "4.1.0" }
 tauri = { version = "2.10.2", default-features = false, features = [
     "wry",
-    #"common-controls-v6", # breaks tests on Windows: TODO
     "x11",
     "tray-icon",
 ] }

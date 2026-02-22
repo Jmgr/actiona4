@@ -58,6 +58,8 @@ pub mod js;
     Serialize,
 )]
 /// HTTP request method.
+///
+/// @expand
 pub enum Method {
     #[default]
     Get,

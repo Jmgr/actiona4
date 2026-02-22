@@ -23,7 +23,7 @@ hotstrings.remove("btw");
 
 ### add()
 
-> **add**(`source`, `replacement`, `options?`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **add**(`source`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `replacement`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`Image`](../classes/Image.md) \| () => [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\> \| () => [`Image`](../classes/Image.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>, `options?`: [`HotstringOptions`](HotstringOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Registers a hotstring. When the user types `source`, it is replaced with `replacement`.
 
@@ -48,6 +48,45 @@ hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
 
 [`HotstringOptions`](HotstringOptions.md)
 
+<div class="options-fields">
+
+###### eraseKey?
+
+> `optional` **eraseKey**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Erase the key first before replacing it with the replacement content.
+
+###### Default Value
+
+`true`
+
+***
+
+###### saveRestoreClipboard?
+
+> `optional` **saveRestoreClipboard**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Try to save and restore the clipboard's contents.
+
+###### Default Value
+
+`true`
+
+***
+
+###### useClipboardForText?
+
+> `optional` **useClipboardForText**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+When replacing with text, save it to the clipboard then simulate Ctrl+V to paste.
+Replacing with an image always uses the clipboard.
+
+###### Default Value
+
+`false`
+
+</div>
+
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
@@ -56,7 +95,7 @@ hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
 
 ### remove()
 
-> **remove**(`source`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **remove**(`source`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Removes a previously registered hotstring.
 
@@ -69,3 +108,13 @@ Removes a previously registered hotstring.
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

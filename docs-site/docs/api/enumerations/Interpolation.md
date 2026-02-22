@@ -1,5 +1,7 @@
 # Enumeration: Interpolation
 
+**`Expand`**
+
 Interpolation algorithms used for image rotations.
 
 ```ts

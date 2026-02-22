@@ -1,5 +1,7 @@
 # Enumeration: Button
 
+**`Expand`**
+
 Mouse button.
 
 ```ts

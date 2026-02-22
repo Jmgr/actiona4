@@ -1,5 +1,7 @@
 # Interface: NotificationInput
 
+**`Expand`**
+
 A toast input field.
 
 ## Platform

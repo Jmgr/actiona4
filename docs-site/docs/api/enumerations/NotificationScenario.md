@@ -1,5 +1,7 @@
 # Enumeration: NotificationScenario
 
+**`Expand`**
+
 Toast notification scenario.
 
 ## Platform

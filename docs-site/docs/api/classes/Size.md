@@ -21,7 +21,7 @@ println(a.scale(2).toString()); // "Size(20, 40)"
 
 ### Constructor
 
-> **new Size**(`width`, `height`): `Size`
+> **new Size**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Size`
 
 Constructor with two numbers.
 
@@ -41,7 +41,7 @@ Constructor with two numbers.
 
 ### Constructor
 
-> **new Size**(`s`): `Size`
+> **new Size**(`s`: [`SizeLike`](../type-aliases/SizeLike.md)): `Size`
 
 Constructor with anything Size-like.
 
@@ -75,7 +75,7 @@ width
 
 ### add()
 
-> **add**(`other`): `Size`
+> **add**(`other`: `Size`): `Size`
 
 Adds two sizes and returns a new Size.
 
@@ -115,7 +115,7 @@ const copy = original.clone();
 
 ### equals()
 
-> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **equals**(`other`: `Size`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns true if a Size equals another.
 
@@ -139,7 +139,7 @@ println(a.equals(b)); // true
 
 ### scale()
 
-> **scale**(`factor`): `Size`
+> **scale**(`factor`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Size`
 
 Scales this size by a factor and returns a new Size.
 
@@ -162,7 +162,7 @@ println(s.toString()); // "Size(30, 60)"
 
 ### subtract()
 
-> **subtract**(`other`): `Size`
+> **subtract**(`other`: `Size`): `Size`
 
 Subtracts two sizes and returns a new Size.
 

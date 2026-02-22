@@ -1,5 +1,7 @@
 # Interface: DirectoryListOptions
 
+**`Expand`**
+
 Options for `Directory.listEntries()`.
 
 ```ts
@@ -11,18 +13,6 @@ const entries = await Directory.listEntries("/tmp", {
 ```
 
 ## Properties
-
-### absolutePath?
-
-> `optional` **absolutePath**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should each entry's absolute path be computed?
-
-#### Default Value
-
-`true`
-
-***
 
 ### fetchSize?
 

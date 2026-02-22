@@ -1,6 +1,6 @@
 # Function: formatFrequency()
 
-> **formatFrequency**(`frequency`): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> **formatFrequency**(`frequency`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Formats a frequency value in Hz using SI prefixes.
 

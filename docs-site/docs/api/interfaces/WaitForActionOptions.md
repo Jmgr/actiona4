@@ -1,5 +1,7 @@
 # Interface: WaitForActionOptions
 
+**`Expand`**
+
 Options for waiting on a notification action or close event.
 
 ## Properties

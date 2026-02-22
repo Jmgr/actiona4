@@ -1,6 +1,6 @@
 # Function: println()
 
-> **println**(...`args`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **println**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Prints values followed by a newline.
 

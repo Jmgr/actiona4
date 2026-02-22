@@ -1,5 +1,7 @@
 # Interface: DrawTextOptions
 
+**`Expand`**
+
 Options for drawing text on an image.
 
 ```ts

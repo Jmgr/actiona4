@@ -66,7 +66,7 @@ Sub-object for text clipboard operations.
 
 ### clear()
 
-> **clear**(`mode?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **clear**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Clears the clipboard contents.
 
@@ -83,15 +83,43 @@ await clipboard.clear(ClipboardMode.Selection);
 
 [`ClipboardMode`](../enumerations/ClipboardMode.md)
 
+<div class="options-fields">
+
+###### Clipboard
+
+> **Clipboard**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+***
+
+###### Selection
+
+> **Selection**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### Platform
+
+only works on Linux
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 ***
 
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
 ### waitForChanged()
 
-> **waitForChanged**(`options?`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **waitForChanged**(`options?`: [`WaitForChangedOptions`](WaitForChangedOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Waits until clipboard content changes.
 
@@ -107,6 +135,62 @@ await task;
 ##### options?
 
 [`WaitForChangedOptions`](WaitForChangedOptions.md)
+
+<div class="options-fields">
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Polling interval in seconds.
+
+###### Default Value
+
+`0.2`
+
+***
+
+###### mode?
+
+> `optional` **mode**: [`ClipboardMode`](../enumerations/ClipboardMode.md)
+
+<div class="options-fields">
+
+###### Clipboard
+
+> **Clipboard**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+***
+
+###### Selection
+
+> **Selection**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### Platform
+
+only works on Linux
+
+</div>
+
+Clipboard source to watch.
+
+###### Default Value
+
+`ClipboardMode.Clipboard`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the wait.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
 
 #### Returns
 

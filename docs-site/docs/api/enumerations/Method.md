@@ -1,5 +1,7 @@
 # Enumeration: Method
 
+**`Expand`**
+
 HTTP request method.
 
 ## Enumeration Members

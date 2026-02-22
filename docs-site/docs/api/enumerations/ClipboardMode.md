@@ -1,5 +1,7 @@
 # Enumeration: ClipboardMode
 
+**`Expand`**
+
 ## Enumeration Members
 
 ### Clipboard

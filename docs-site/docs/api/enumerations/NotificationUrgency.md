@@ -1,5 +1,7 @@
 # Enumeration: NotificationUrgency
 
+**`Expand`**
+
 ## Enumeration Members
 
 ### Critical

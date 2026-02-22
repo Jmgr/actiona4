@@ -33,6 +33,7 @@ use crate::{
     types::display::display_with_type,
 };
 
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -66,6 +67,7 @@ impl From<JsNotificationUrgency> for NotificationUrgency {
 /// Toast notification scenario.
 ///
 /// @platforms =windows
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -180,6 +182,7 @@ impl From<JsNotificationSound> for NotificationSound {
 /// Activation type for toast actions and headers.
 ///
 /// @platforms =windows
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -213,6 +216,7 @@ impl From<JsNotificationActivationType> for NotificationActivationType {
 /// Placement of a toast action button.
 ///
 /// @platforms =windows
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -242,6 +246,7 @@ impl From<JsNotificationActionPlacement> for NotificationActionPlacement {
 /// Style of a toast action button.
 ///
 /// @platforms =windows
+/// @expand
 #[derive(
     Clone,
     Copy,
@@ -273,6 +278,7 @@ impl From<JsNotificationButtonStyle> for NotificationButtonStyle {
 /// Input type for toast input fields.
 ///
 /// @platforms =windows
+/// @expand
 #[derive(
     Clone,
     Copy,

@@ -17,7 +17,7 @@ const pattern = new Wildcard("my_app*");
 
 ### Constructor
 
-> **new Wildcard**(`pattern`): `Wildcard`
+> **new Wildcard**(`pattern`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): `Wildcard`
 
 Constructor.
 
@@ -30,3 +30,13 @@ Constructor.
 #### Returns
 
 `Wildcard`
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

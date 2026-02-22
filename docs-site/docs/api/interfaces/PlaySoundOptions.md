@@ -1,5 +1,7 @@
 # Interface: PlaySoundOptions
 
+**`Expand`**
+
 Options for playing a sound file.
 
 ```ts

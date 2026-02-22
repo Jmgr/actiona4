@@ -11,3 +11,13 @@ const task = source.findImage(template, { signal: controller.signal });
 // Cancel from elsewhere:
 controller.abort();
 ```
+
+## Methods
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

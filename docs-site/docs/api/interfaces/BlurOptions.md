@@ -1,5 +1,7 @@
 # Interface: BlurOptions
 
+**`Expand`**
+
 Options for blurring an image.
 
 ```ts

@@ -27,6 +27,7 @@ pub mod js;
     Serialize,
 )]
 /// @category UI
+/// @expand
 pub enum MessageBoxIcon {
     #[default]
     Info,
@@ -76,6 +77,7 @@ impl From<MessageBoxButtons> for tauri_plugin_dialog::MessageDialogButtons {
     Clone, Debug, Deserialize, Display, EnumIter, Eq, FromSerde, IntoSerde, PartialEq, Serialize,
 )]
 /// @category UI
+/// @expand
 pub enum MessageBoxResult {
     Yes,
     No,

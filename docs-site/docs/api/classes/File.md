@@ -36,7 +36,7 @@ The file path
 
 ### accessedTime()
 
-> **accessedTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
+> <span class="async-badge">async</span> **accessedTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 Returns the last access time of the file.
 
@@ -74,7 +74,7 @@ This can happen if you cloned() this File.
 
 ### creationTime()
 
-> **creationTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
+> <span class="async-badge">async</span> **creationTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 Returns the creation time of the file.
 
@@ -86,7 +86,7 @@ Returns the creation time of the file.
 
 ### equals()
 
-> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **equals**(`other`: `File`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns `true` if both handles refer to the same file path.
 
@@ -116,7 +116,7 @@ Returns true if the file is open.
 
 ### mode()
 
-> **mode**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+> <span class="async-badge">async</span> **mode**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
 
@@ -132,7 +132,7 @@ does not work on Windows
 
 ### modifiedTime()
 
-> **modifiedTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
+> <span class="async-badge">async</span> **modifiedTime**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)\>
 
 Returns the last modification time of the file.
 
@@ -144,7 +144,7 @@ Returns the last modification time of the file.
 
 ### position()
 
-> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+> <span class="async-badge">async</span> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Returns the current read/write position in the file.
 
@@ -156,7 +156,7 @@ Returns the current read/write position in the file.
 
 ### readBytes()
 
-> **readBytes**(`amount?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
+> <span class="async-badge">async</span> **readBytes**(`amount?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
 
 Reads bytes from this file handle. If `amount` is given, reads exactly that many bytes;
 otherwise reads until EOF.
@@ -175,7 +175,7 @@ otherwise reads until EOF.
 
 ### readonly()
 
-> **readonly**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
+> <span class="async-badge">async</span> **readonly**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 Returns whether the file is read-only.
 
@@ -187,7 +187,7 @@ Returns whether the file is read-only.
 
 ### readText()
 
-> **readText**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+> <span class="async-badge">async</span> **readText**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 Reads the entire file as a UTF-8 string from this file handle.
 
@@ -199,7 +199,7 @@ Reads the entire file as a UTF-8 string from this file handle.
 
 ### rewind()
 
-> **rewind**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **rewind**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Rewinds the file position to the beginning.
 
@@ -211,7 +211,7 @@ Rewinds the file position to the beginning.
 
 ### setAccessedTime()
 
-> **setAccessedTime**(`date`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setAccessedTime**(`date`: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the last access time of the file.
 
@@ -229,7 +229,7 @@ Sets the last access time of the file.
 
 ### setCreationTime()
 
-> **setCreationTime**(`date`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setCreationTime**(`date`: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the creation time of the file. No-op on Linux.
 
@@ -251,7 +251,7 @@ does not work on Linux
 
 ### setMode()
 
-> **setMode**(`mode`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setMode**(`mode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the file mode.
 You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
@@ -274,7 +274,7 @@ does not work on Windows
 
 ### setModifiedTime()
 
-> **setModifiedTime**(`date`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setModifiedTime**(`date`: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets the last modification time of the file.
 
@@ -292,7 +292,7 @@ Sets the last modification time of the file.
 
 ### setPosition()
 
-> **setPosition**(`position`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setPosition**(`position`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Seeks to an absolute position in the file.
 
@@ -310,7 +310,7 @@ Seeks to an absolute position in the file.
 
 ### setReadonly()
 
-> **setReadonly**(`readonly`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setReadonly**(`readonly`: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Sets whether the file is read-only.
 
@@ -328,7 +328,7 @@ Sets whether the file is read-only.
 
 ### setRelativePosition()
 
-> **setRelativePosition**(`offset`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setRelativePosition**(`offset`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Seeks relative to the current position (can be negative).
 
@@ -346,7 +346,7 @@ Seeks relative to the current position (can be negative).
 
 ### setSize()
 
-> **setSize**(`size`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **setSize**(`size`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Truncates or extends the file to the given size in bytes.
 
@@ -364,7 +364,7 @@ Truncates or extends the file to the given size in bytes.
 
 ### size()
 
-> **size**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+> <span class="async-badge">async</span> **size**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
 Returns the file size in bytes.
 
@@ -388,7 +388,7 @@ Returns a string representation of the file handle.
 
 ### writeBytes()
 
-> **writeBytes**(`bytes`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **writeBytes**(`bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes bytes to this file handle.
 
@@ -406,7 +406,7 @@ Writes bytes to this file handle.
 
 ### writeText()
 
-> **writeText**(`text`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **writeText**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes text to this file handle.
 
@@ -424,7 +424,7 @@ Writes text to this file handle.
 
 ### copy()
 
-> `static` **copy**(`source`, `destination`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **copy**(`source`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `destination`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Copies a file from `source` to `destination`.
 
@@ -446,7 +446,7 @@ Copies a file from `source` to `destination`.
 
 ### exists()
 
-> `static` **exists**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
+> <span class="async-badge">async</span> `static` **exists**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
 
 Returns `true` if a file exists at the given path.
 
@@ -470,7 +470,7 @@ if (await File.exists("config.json")) {
 
 ### move()
 
-> `static` **move**(`source`, `destination`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **move**(`source`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `destination`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Alias for `rename`.
 
@@ -492,7 +492,7 @@ Alias for `rename`.
 
 ### open()
 
-> `static` **open**(`path`, `options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`File`\>
+> <span class="async-badge">async</span> `static` **open**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`OpenOptions`](../interfaces/OpenOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`File`\>
 
 Opens a file.
 
@@ -526,6 +526,85 @@ let file = await File.open("my_file.txt", {
 
 [`OpenOptions`](../interfaces/OpenOptions.md)
 
+<div class="options-fields">
+
+###### append?
+
+> `optional` **append**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Writing: open the file in append mode.
+Note that setting this to `true` implies setting `write` to `true`.
+
+###### Default Value
+
+`false`
+
+***
+
+###### create?
+
+> `optional` **create**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Writing: create a new file if it doesn't exist.
+Note that this only works if `write` or `append` are set to `true`.
+
+###### Default Value
+
+`false`
+
+***
+
+###### createNew?
+
+> `optional` **createNew**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Writing: always create a new file, even if one already exists.
+Note that this only works if `write` or `append` are set to `true`.
+Note that `create` and `truncate` are ignored if this is set to `true`.
+
+###### Default Value
+
+`false`
+
+***
+
+###### read?
+
+> `optional` **read**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the file be opened with read access?
+
+###### Default Value
+
+`true`
+
+***
+
+###### truncate?
+
+> `optional` **truncate**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Writing: truncate (remove all contents of) the file.
+Note that this only works if `write` is `true`.
+
+###### Default Value
+
+`false`
+
+***
+
+###### write?
+
+> `optional` **write**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the file be opened with write access?
+
+###### Default Value
+
+`false`
+
+</div>
+
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`File`\>
@@ -534,7 +613,7 @@ let file = await File.open("my_file.txt", {
 
 ### readBytes()
 
-> `static` **readBytes**(`path`, `amount?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
+> <span class="async-badge">async</span> `static` **readBytes**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `amount?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)\>
 
 Reads bytes from a file at the given path (static).
 
@@ -556,7 +635,7 @@ Reads bytes from a file at the given path (static).
 
 ### readText()
 
-> `static` **readText**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+> <span class="async-badge">async</span> `static` **readText**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
 
 Reads the entire file as a UTF-8 string (static).
 
@@ -578,7 +657,7 @@ const text = await File.readText("config.json");
 
 ### remove()
 
-> `static` **remove**(`path`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **remove**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Removes a file from the filesystem.
 
@@ -598,7 +677,7 @@ Note that there is no guarantee that the file is immediately deleted (e.g. depen
 
 ### rename()
 
-> `static` **rename**(`source`, `destination`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **rename**(`source`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `destination`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Renames (moves) a file from `source` to `destination`. Works across filesystems.
 
@@ -620,7 +699,7 @@ Renames (moves) a file from `source` to `destination`. Works across filesystems.
 
 ### writeBytes()
 
-> `static` **writeBytes**(`path`, `bytes`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **writeBytes**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes bytes to a file at the given path (static).
 
@@ -642,7 +721,7 @@ Writes bytes to a file at the given path (static).
 
 ### writeText()
 
-> `static` **writeText**(`path`, `text`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> `static` **writeText**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Writes text to a file at the given path (static).
 

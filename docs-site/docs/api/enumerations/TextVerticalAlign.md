@@ -1,5 +1,7 @@
 # Enumeration: TextVerticalAlign
 
+**`Expand`**
+
 Vertical alignment for text drawing.
 
 ```ts

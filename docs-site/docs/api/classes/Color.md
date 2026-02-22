@@ -35,7 +35,7 @@ let c = new Color(128, 255, 255, 255);
 
 ### Constructor
 
-> **new Color**(`r`, `g`, `b`, `a?`): `Color`
+> **new Color**(`r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Color`
 
 Constructor with three color channels and an alpha channel.
 
@@ -63,7 +63,7 @@ Constructor with three color channels and an alpha channel.
 
 ### Constructor
 
-> **new Color**(`c`): `Color`
+> **new Color**(`c`: [`ColorLike`](../type-aliases/ColorLike.md)): `Color`
 
 Constructor with anything Color-like.
 
@@ -1261,7 +1261,7 @@ Returns a copy of this color.
 
 ### equals()
 
-> **equals**(`other`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **equals**(`other`: `Color`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns `true` if both colors have the same r, g, b, and a values.
 

@@ -1,5 +1,7 @@
 # Interface: NotificationCustomIntHint
 
+**`Expand`**
+
 A custom integer hint for Linux notifications.
 
 ## Platform

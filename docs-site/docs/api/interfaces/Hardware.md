@@ -78,7 +78,7 @@ Version
 
 ### listComponents()
 
-> **listComponents**(`options?`): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Component`](Component.md)[]\>
+> <span class="async-badge">async</span> **listComponents**(`options?`: [`ListComponentsOptions`](ListComponentsOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Component`](Component.md)[]\>
 
 Hardware components
 
@@ -87,6 +87,20 @@ Hardware components
 ##### options?
 
 [`ListComponentsOptions`](ListComponentsOptions.md)
+
+<div class="options-fields">
+
+###### rescan?
+
+> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Rescan
+
+###### Default Value
+
+`true`
+
+</div>
 
 #### Returns
 

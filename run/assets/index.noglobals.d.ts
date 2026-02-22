@@ -127,6 +127,7 @@ function formatBytes(bytes: number): string;
  * image.flip(FlipDirection.Vertical);
  * ```
  * @category Image
+ * @expand
  */
 enum FlipDirection {
     Horizontal,
@@ -144,6 +145,7 @@ enum FlipDirection {
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
  * ```
  * @category Image
+ * @expand
  */
 enum ResizeFilter {
     Nearest,
@@ -167,6 +169,7 @@ enum ResizeFilter {
  * image.rotate(45, { interpolation: Interpolation.Bilinear });
  * ```
  * @category Image
+ * @expand
  */
 enum Interpolation {
     Nearest,
@@ -184,6 +187,7 @@ enum Interpolation {
  * });
  * ```
  * @category Image
+ * @expand
  */
 enum TextHorizontalAlign {
     Left,
@@ -201,6 +205,7 @@ enum TextHorizontalAlign {
  * });
  * ```
  * @category Image
+ * @expand
  */
 enum TextVerticalAlign {
     Top,
@@ -221,6 +226,7 @@ enum TextVerticalAlign {
  * }
  * ```
  * @category Image
+ * @expand
  */
 enum FindImageStage {
     Capturing,
@@ -250,6 +256,7 @@ enum FindImageStage {
  * await keyboard.key(Key.Return, Direction.Click);
  * ```
  * @category Keyboard
+ * @expand
  */
 enum Direction {
     Press,
@@ -1754,6 +1761,7 @@ enum KeyError {
 }
 /**
  * @category Notification
+ * @expand
  */
 enum NotificationUrgency {
     Low,
@@ -1766,6 +1774,7 @@ enum NotificationUrgency {
  * Toast notification scenario.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 enum NotificationScenario {
     Reminder,
@@ -1838,6 +1847,7 @@ enum NotificationSound {
  * Activation type for toast actions and headers.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 enum NotificationActivationType {
     Foreground,
@@ -1850,6 +1860,7 @@ enum NotificationActivationType {
  * Placement of a toast action button.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 enum NotificationActionPlacement {
     ContextMenu,
@@ -1858,6 +1869,7 @@ enum NotificationActionPlacement {
  * Style of a toast action button.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 enum NotificationButtonStyle {
     Success,
@@ -1868,6 +1880,7 @@ enum NotificationButtonStyle {
  * Input type for toast input fields.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 enum NotificationInputType {
     Text,
@@ -2003,6 +2016,7 @@ enum ProcessStatus {
  * 
  * Disk kind
  * @category System
+ * @expand
  */
 enum DiskKind {
     /**
@@ -2024,6 +2038,7 @@ enum DiskKind {
  * Should the script wait at the end of the execution?
  * @category App
  * @defaultValue `WaitAtEnd.Automatic`
+ * @expand
  */
 enum WaitAtEnd {
     /**
@@ -2044,6 +2059,7 @@ enum WaitAtEnd {
 }
 /**
  * @category Clipboard
+ * @expand
  */
 enum ClipboardMode {
     Clipboard,
@@ -2061,6 +2077,7 @@ enum ClipboardMode {
  * const pressed = await mouse.isPressed(Button.Left);
  * ```
  * @category Mouse
+ * @expand
  */
 enum Button {
     /**
@@ -2096,6 +2113,7 @@ enum Button {
  * await mouse.scroll(-1, Axis.Horizontal);
  * ```
  * @category Mouse
+ * @expand
  */
 enum Axis {
     Horizontal,
@@ -2272,6 +2290,7 @@ enum Tween {
 }
 /**
  * @category UI
+ * @expand
  */
 enum MessageBoxIcon {
     Info,
@@ -2282,6 +2301,7 @@ enum MessageBoxIcon {
 }
 /**
  * @category UI
+ * @expand
  */
 enum MessageBoxResult {
     Yes,
@@ -2295,6 +2315,7 @@ enum MessageBoxResult {
 /**
  * HTTP request method.
  * @category Web
+ * @expand
  */
 enum Method {
     Get,
@@ -2404,6 +2425,7 @@ const app: App;
  * });
  * ```
  * @category Audio
+ * @expand
  */
 interface PlaySoundOptions {
     /**
@@ -2565,6 +2587,7 @@ interface PlayingSound {
  * ]);
  * ```
  * @category Clipboard
+ * @expand
  */
 interface WaitForChangedOptions {
     /**
@@ -3527,6 +3550,7 @@ interface DirectoryEntry {
  * await Directory.remove("/tmp/a", { recursive: false });
  * ```
  * @category Directory
+ * @expand
  */
 interface DirectoryOptions {
     /**
@@ -3546,6 +3570,7 @@ interface DirectoryOptions {
  * });
  * ```
  * @category Directory
+ * @expand
  */
 interface DirectoryListOptions {
     /**
@@ -3760,6 +3785,7 @@ interface DisplayInfo {
  * });
  * ```
  * @category File
+ * @expand
  */
 interface OpenOptions {
     /**
@@ -4104,6 +4130,7 @@ const hotstrings: Hotstrings;
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
  * ```
  * @category Image
+ * @expand
  */
 interface ResizeOptions {
     /**
@@ -4128,6 +4155,7 @@ interface ResizeOptions {
  * image.blur({ sigma: 5.0 });
  * ```
  * @category Image
+ * @expand
  */
 interface BlurOptions {
     /**
@@ -4151,6 +4179,7 @@ interface BlurOptions {
  * });
  * ```
  * @category Image
+ * @expand
  */
 interface DrawImageOptions {
     /**
@@ -4174,6 +4203,7 @@ interface DrawImageOptions {
  * image.rotate(30, { defaultColor: Color.White });
  * ```
  * @category Image
+ * @expand
  */
 interface RotationOptions {
     /**
@@ -4200,6 +4230,7 @@ interface RotationOptions {
  * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
  * ```
  * @category Image
+ * @expand
  */
 interface DrawingOptions {
     /**
@@ -4220,6 +4251,7 @@ interface DrawingOptions {
  * });
  * ```
  * @category Image
+ * @expand
  */
 interface DrawTextOptions {
     /**
@@ -4255,6 +4287,7 @@ interface DrawTextOptions {
  * const match = await source.findImage(template, { signal: controller.signal });
  * ```
  * @category Image
+ * @expand
  */
 interface FindImageOptions {
     /**
@@ -5048,6 +5081,7 @@ const keyboard: Keyboard;
  * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
  * ```
  * @category Keyboard
+ * @expand
  */
 interface WaitForKeysOptions {
     /**
@@ -5156,6 +5190,7 @@ const mouse: Mouse;
  * const speed = await mouse.measureSpeed({ duration: "3s" });
  * ```
  * @category Mouse
+ * @expand
  */
 interface MeasureSpeedOptions {
     /**
@@ -5177,6 +5212,7 @@ interface MeasureSpeedOptions {
  * await mouse.click({ duration: 0.5 });
  * ```
  * @category Mouse
+ * @expand
  */
 interface ClickOptions extends PressOptions {
     /**
@@ -5207,6 +5243,7 @@ interface ClickOptions extends PressOptions {
  * await mouse.doubleClick({ delay: 0.1 });
  * ```
  * @category Mouse
+ * @expand
  */
 interface DoubleClickOptions extends ClickOptions {
     /**
@@ -5240,6 +5277,7 @@ class Wildcard {
 /**
  * A custom string hint for Linux notifications.
  * @category Notification
+ * @expand
  * @platform only works on Linux
  */
 interface NotificationCustomHint {
@@ -5255,6 +5293,7 @@ interface NotificationCustomHint {
 /**
  * A custom integer hint for Linux notifications.
  * @category Notification
+ * @expand
  * @platform only works on Linux
  */
 interface NotificationCustomIntHint {
@@ -5270,6 +5309,7 @@ interface NotificationCustomIntHint {
 /**
  * A notification action button.
  * @category Notification
+ * @expand
  */
 interface NotificationAction {
     /**
@@ -5314,6 +5354,7 @@ interface NotificationAction {
 /**
  * A notification header for grouping toasts in Action Center.
  * @category Notification
+ * @expand
  * @platform only works on Windows
  */
 interface NotificationHeader {
@@ -5333,6 +5374,7 @@ interface NotificationHeader {
 /**
  * A toast input field.
  * @category Notification
+ * @expand
  * @platform only works on Windows
  */
 interface NotificationInput {
@@ -5363,6 +5405,7 @@ interface NotificationInput {
 /**
  * A selection option for a dropdown input.
  * @category Notification
+ * @expand
  * @platform only works on Windows
  */
 interface NotificationSelection {
@@ -5378,6 +5421,7 @@ interface NotificationSelection {
 /**
  * Options for a notification.
  * @category Notification
+ * @expand
  */
 interface NotificationOptions {
     /**
@@ -5615,6 +5659,7 @@ const notification: Notification;
 /**
  * Options for waiting on a notification action or close event.
  * @category Notification
+ * @expand
  */
 interface WaitForActionOptions {
     /**
@@ -5915,6 +5960,7 @@ class Point {
 /**
  * Options for starting a process.
  * @category Process
+ * @expand
  */
 interface StartProcessOptions {
     /**
@@ -6786,6 +6832,7 @@ interface Hardware {
 /**
  * List components options
  * @category System
+ * @expand
  */
 interface ListComponentsOptions {
     /**
@@ -7040,6 +7087,7 @@ interface Network {
 /**
  * List network interfaces options
  * @category System
+ * @expand
  */
 interface ListInterfacesOptions {
     /**
@@ -7298,6 +7346,7 @@ interface Processes {
 /**
  * List processes options
  * @category System
+ * @expand
  */
 interface ListProcessesOptions {
     /**
@@ -7309,6 +7358,7 @@ interface ListProcessesOptions {
 /**
  * Process search options.
  * @category System
+ * @expand
  */
 interface ProcessesFindOptions {
     /**
@@ -7507,6 +7557,7 @@ interface Storage {
 /**
  * List disks options
  * @category System
+ * @expand
  */
 interface ListDisksOptions {
     /**
@@ -7635,6 +7686,7 @@ interface DiskUsage {
  * });
  * ```
  * @category UI
+ * @expand
  */
 interface MessageBoxOptions {
     /**
@@ -7789,6 +7841,7 @@ class MultipartForm {
 /**
  * Web request options.
  * @category Web
+ * @expand
  */
 interface WebOptions {
     /**
@@ -7964,6 +8017,7 @@ const web: Web;
 /**
  * Window search options.
  * @category Windows
+ * @expand
  */
 interface WindowsFindOptions {
     /**
@@ -8244,6 +8298,7 @@ interface WindowHandle {
 /**
  * Hotstring options
  * @category Hotstrings
+ * @expand
  */
 interface HotstringOptions {
     /**
@@ -8274,6 +8329,7 @@ interface HotstringOptions {
  * });
  * ```
  * @category Mouse
+ * @expand
  */
 interface MoveOptions {
     /**
@@ -8318,6 +8374,7 @@ interface MoveOptions {
  * await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
  * ```
  * @category Mouse
+ * @expand
  */
 interface PressOptions {
     /**

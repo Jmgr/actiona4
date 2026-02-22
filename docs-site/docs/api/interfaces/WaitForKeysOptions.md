@@ -1,5 +1,7 @@
 # Interface: WaitForKeysOptions
 
+**`Expand`**
+
 Options for waiting for key combinations.
 
 ```ts

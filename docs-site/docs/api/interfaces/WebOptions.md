@@ -1,5 +1,7 @@
 # Interface: WebOptions
 
+**`Expand`**
+
 Web request options.
 
 ## Properties

@@ -12,7 +12,7 @@ const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
 
 ### race()
 
-> **race**\<`T`\>(`promises`): [`Task`](../type-aliases/Task.md)\<[`Awaited`](https://www.typescriptlang.org/docs/handbook/utility-types.html#awaitedtype)\<`T`\>\>
+> <span class="async-badge">async</span> **race**\<`T`\>(`promises`: [`Iterable`](https://www.typescriptlang.org/docs/handbook/iterators-and-generators.html#iterable-interface)\<`T` \| `PromiseLike`\<`T`\>\>): [`Task`](../type-aliases/Task.md)\<[`Awaited`](https://www.typescriptlang.org/docs/handbook/utility-types.html#awaitedtype)\<`T`\>\>
 
 Races multiple promises, returning the result of the first one to settle.
 Losing tasks will be cancelled automatically.

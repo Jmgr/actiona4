@@ -126,6 +126,7 @@ declare function formatBytes(bytes: number): string;
  * image.flip(FlipDirection.Vertical);
  * ```
  * @category Image
+ * @expand
  */
 declare enum FlipDirection {
     Horizontal,
@@ -143,6 +144,7 @@ declare enum FlipDirection {
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
  * ```
  * @category Image
+ * @expand
  */
 declare enum ResizeFilter {
     Nearest,
@@ -166,6 +168,7 @@ declare enum ResizeFilter {
  * image.rotate(45, { interpolation: Interpolation.Bilinear });
  * ```
  * @category Image
+ * @expand
  */
 declare enum Interpolation {
     Nearest,
@@ -183,6 +186,7 @@ declare enum Interpolation {
  * });
  * ```
  * @category Image
+ * @expand
  */
 declare enum TextHorizontalAlign {
     Left,
@@ -200,6 +204,7 @@ declare enum TextHorizontalAlign {
  * });
  * ```
  * @category Image
+ * @expand
  */
 declare enum TextVerticalAlign {
     Top,
@@ -220,6 +225,7 @@ declare enum TextVerticalAlign {
  * }
  * ```
  * @category Image
+ * @expand
  */
 declare enum FindImageStage {
     Capturing,
@@ -249,6 +255,7 @@ declare enum FindImageStage {
  * await keyboard.key(Key.Return, Direction.Click);
  * ```
  * @category Keyboard
+ * @expand
  */
 declare enum Direction {
     Press,
@@ -1753,6 +1760,7 @@ declare enum KeyError {
 }
 /**
  * @category Notification
+ * @expand
  */
 declare enum NotificationUrgency {
     Low,
@@ -1765,6 +1773,7 @@ declare enum NotificationUrgency {
  * Toast notification scenario.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 declare enum NotificationScenario {
     Reminder,
@@ -1837,6 +1846,7 @@ declare enum NotificationSound {
  * Activation type for toast actions and headers.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 declare enum NotificationActivationType {
     Foreground,
@@ -1849,6 +1859,7 @@ declare enum NotificationActivationType {
  * Placement of a toast action button.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 declare enum NotificationActionPlacement {
     ContextMenu,
@@ -1857,6 +1868,7 @@ declare enum NotificationActionPlacement {
  * Style of a toast action button.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 declare enum NotificationButtonStyle {
     Success,
@@ -1867,6 +1879,7 @@ declare enum NotificationButtonStyle {
  * Input type for toast input fields.
  * @category Notification
  * @platform only works on Windows
+ * @expand
  */
 declare enum NotificationInputType {
     Text,
@@ -2002,6 +2015,7 @@ declare enum ProcessStatus {
  * 
  * Disk kind
  * @category System
+ * @expand
  */
 declare enum DiskKind {
     /**
@@ -2023,6 +2037,7 @@ declare enum DiskKind {
  * Should the script wait at the end of the execution?
  * @category App
  * @defaultValue `WaitAtEnd.Automatic`
+ * @expand
  */
 declare enum WaitAtEnd {
     /**
@@ -2043,6 +2058,7 @@ declare enum WaitAtEnd {
 }
 /**
  * @category Clipboard
+ * @expand
  */
 declare enum ClipboardMode {
     Clipboard,
@@ -2060,6 +2076,7 @@ declare enum ClipboardMode {
  * const pressed = await mouse.isPressed(Button.Left);
  * ```
  * @category Mouse
+ * @expand
  */
 declare enum Button {
     /**
@@ -2095,6 +2112,7 @@ declare enum Button {
  * await mouse.scroll(-1, Axis.Horizontal);
  * ```
  * @category Mouse
+ * @expand
  */
 declare enum Axis {
     Horizontal,
@@ -2271,6 +2289,7 @@ declare enum Tween {
 }
 /**
  * @category UI
+ * @expand
  */
 declare enum MessageBoxIcon {
     Info,
@@ -2281,6 +2300,7 @@ declare enum MessageBoxIcon {
 }
 /**
  * @category UI
+ * @expand
  */
 declare enum MessageBoxResult {
     Yes,
@@ -2294,6 +2314,7 @@ declare enum MessageBoxResult {
 /**
  * HTTP request method.
  * @category Web
+ * @expand
  */
 declare enum Method {
     Get,
@@ -2403,6 +2424,7 @@ declare const app: App;
  * });
  * ```
  * @category Audio
+ * @expand
  */
 declare interface PlaySoundOptions {
     /**
@@ -2564,6 +2586,7 @@ declare interface PlayingSound {
  * ]);
  * ```
  * @category Clipboard
+ * @expand
  */
 declare interface WaitForChangedOptions {
     /**
@@ -3526,6 +3549,7 @@ declare interface DirectoryEntry {
  * await Directory.remove("/tmp/a", { recursive: false });
  * ```
  * @category Directory
+ * @expand
  */
 declare interface DirectoryOptions {
     /**
@@ -3545,6 +3569,7 @@ declare interface DirectoryOptions {
  * });
  * ```
  * @category Directory
+ * @expand
  */
 declare interface DirectoryListOptions {
     /**
@@ -3759,6 +3784,7 @@ declare interface DisplayInfo {
  * });
  * ```
  * @category File
+ * @expand
  */
 declare interface OpenOptions {
     /**
@@ -4103,6 +4129,7 @@ declare const hotstrings: Hotstrings;
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
  * ```
  * @category Image
+ * @expand
  */
 declare interface ResizeOptions {
     /**
@@ -4127,6 +4154,7 @@ declare interface ResizeOptions {
  * image.blur({ sigma: 5.0 });
  * ```
  * @category Image
+ * @expand
  */
 declare interface BlurOptions {
     /**
@@ -4150,6 +4178,7 @@ declare interface BlurOptions {
  * });
  * ```
  * @category Image
+ * @expand
  */
 declare interface DrawImageOptions {
     /**
@@ -4173,6 +4202,7 @@ declare interface DrawImageOptions {
  * image.rotate(30, { defaultColor: Color.White });
  * ```
  * @category Image
+ * @expand
  */
 declare interface RotationOptions {
     /**
@@ -4199,6 +4229,7 @@ declare interface RotationOptions {
  * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
  * ```
  * @category Image
+ * @expand
  */
 declare interface DrawingOptions {
     /**
@@ -4219,6 +4250,7 @@ declare interface DrawingOptions {
  * });
  * ```
  * @category Image
+ * @expand
  */
 declare interface DrawTextOptions {
     /**
@@ -4254,6 +4286,7 @@ declare interface DrawTextOptions {
  * const match = await source.findImage(template, { signal: controller.signal });
  * ```
  * @category Image
+ * @expand
  */
 declare interface FindImageOptions {
     /**
@@ -5047,6 +5080,7 @@ declare const keyboard: Keyboard;
  * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
  * ```
  * @category Keyboard
+ * @expand
  */
 declare interface WaitForKeysOptions {
     /**
@@ -5155,6 +5189,7 @@ declare const mouse: Mouse;
  * const speed = await mouse.measureSpeed({ duration: "3s" });
  * ```
  * @category Mouse
+ * @expand
  */
 declare interface MeasureSpeedOptions {
     /**
@@ -5176,6 +5211,7 @@ declare interface MeasureSpeedOptions {
  * await mouse.click({ duration: 0.5 });
  * ```
  * @category Mouse
+ * @expand
  */
 declare interface ClickOptions extends PressOptions {
     /**
@@ -5206,6 +5242,7 @@ declare interface ClickOptions extends PressOptions {
  * await mouse.doubleClick({ delay: 0.1 });
  * ```
  * @category Mouse
+ * @expand
  */
 declare interface DoubleClickOptions extends ClickOptions {
     /**
@@ -5239,6 +5276,7 @@ declare class Wildcard {
 /**
  * A custom string hint for Linux notifications.
  * @category Notification
+ * @expand
  * @platform only works on Linux
  */
 declare interface NotificationCustomHint {
@@ -5254,6 +5292,7 @@ declare interface NotificationCustomHint {
 /**
  * A custom integer hint for Linux notifications.
  * @category Notification
+ * @expand
  * @platform only works on Linux
  */
 declare interface NotificationCustomIntHint {
@@ -5269,6 +5308,7 @@ declare interface NotificationCustomIntHint {
 /**
  * A notification action button.
  * @category Notification
+ * @expand
  */
 declare interface NotificationAction {
     /**
@@ -5313,6 +5353,7 @@ declare interface NotificationAction {
 /**
  * A notification header for grouping toasts in Action Center.
  * @category Notification
+ * @expand
  * @platform only works on Windows
  */
 declare interface NotificationHeader {
@@ -5332,6 +5373,7 @@ declare interface NotificationHeader {
 /**
  * A toast input field.
  * @category Notification
+ * @expand
  * @platform only works on Windows
  */
 declare interface NotificationInput {
@@ -5362,6 +5404,7 @@ declare interface NotificationInput {
 /**
  * A selection option for a dropdown input.
  * @category Notification
+ * @expand
  * @platform only works on Windows
  */
 declare interface NotificationSelection {
@@ -5377,6 +5420,7 @@ declare interface NotificationSelection {
 /**
  * Options for a notification.
  * @category Notification
+ * @expand
  */
 declare interface NotificationOptions {
     /**
@@ -5614,6 +5658,7 @@ declare const notification: Notification;
 /**
  * Options for waiting on a notification action or close event.
  * @category Notification
+ * @expand
  */
 declare interface WaitForActionOptions {
     /**
@@ -5914,6 +5959,7 @@ declare class Point {
 /**
  * Options for starting a process.
  * @category Process
+ * @expand
  */
 declare interface StartProcessOptions {
     /**
@@ -6785,6 +6831,7 @@ declare interface Hardware {
 /**
  * List components options
  * @category System
+ * @expand
  */
 declare interface ListComponentsOptions {
     /**
@@ -7039,6 +7086,7 @@ declare interface Network {
 /**
  * List network interfaces options
  * @category System
+ * @expand
  */
 declare interface ListInterfacesOptions {
     /**
@@ -7297,6 +7345,7 @@ declare interface Processes {
 /**
  * List processes options
  * @category System
+ * @expand
  */
 declare interface ListProcessesOptions {
     /**
@@ -7308,6 +7357,7 @@ declare interface ListProcessesOptions {
 /**
  * Process search options.
  * @category System
+ * @expand
  */
 declare interface ProcessesFindOptions {
     /**
@@ -7506,6 +7556,7 @@ declare interface Storage {
 /**
  * List disks options
  * @category System
+ * @expand
  */
 declare interface ListDisksOptions {
     /**
@@ -7634,6 +7685,7 @@ declare interface DiskUsage {
  * });
  * ```
  * @category UI
+ * @expand
  */
 declare interface MessageBoxOptions {
     /**
@@ -7788,6 +7840,7 @@ declare class MultipartForm {
 /**
  * Web request options.
  * @category Web
+ * @expand
  */
 declare interface WebOptions {
     /**
@@ -7963,6 +8016,7 @@ declare const web: Web;
 /**
  * Window search options.
  * @category Windows
+ * @expand
  */
 declare interface WindowsFindOptions {
     /**
@@ -8243,6 +8297,7 @@ declare interface WindowHandle {
 /**
  * Hotstring options
  * @category Hotstrings
+ * @expand
  */
 declare interface HotstringOptions {
     /**
@@ -8273,6 +8328,7 @@ declare interface HotstringOptions {
  * });
  * ```
  * @category Mouse
+ * @expand
  */
 declare interface MoveOptions {
     /**
@@ -8317,6 +8373,7 @@ declare interface MoveOptions {
  * await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
  * ```
  * @category Mouse
+ * @expand
  */
 declare interface PressOptions {
     /**

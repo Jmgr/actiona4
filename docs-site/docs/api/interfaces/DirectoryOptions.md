@@ -1,5 +1,7 @@
 # Interface: DirectoryOptions
 
+**`Expand`**
+
 Options for `Directory.create()` and `Directory.remove()`.
 
 ```ts

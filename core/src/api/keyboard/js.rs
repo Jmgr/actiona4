@@ -40,6 +40,8 @@ impl<'js> Trace<'js> for super::Keyboard {
 /// // Press and release in one action
 /// await keyboard.key(Key.Return, Direction.Click);
 /// ```
+///
+/// @expand
 #[derive(
     Clone,
     Copy,

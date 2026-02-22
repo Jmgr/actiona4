@@ -1,5 +1,7 @@
 # Interface: ClickOptions
 
+**`Expand`**
+
 Options for clicking a mouse button.
 
 ```ts
