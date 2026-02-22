@@ -134,10 +134,6 @@ pub struct JsDirectoryListOptions {
     /// @default `true`
     pub sort: bool,
 
-    /// Should each entry's absolute path be computed?
-    /// @default `true`
-    pub absolute_path: bool,
-
     /// Should each entry's size be fetched?
     /// @default `true`
     pub fetch_size: bool,
@@ -147,7 +143,6 @@ impl Default for JsDirectoryListOptions {
     fn default() -> Self {
         Self {
             sort: true,
-            absolute_path: true,
             fetch_size: true,
         }
     }
@@ -267,16 +262,10 @@ impl JsDirectory {
                     )
                 });
 
-            let path = if options.absolute_path {
-                fs::canonicalize(entry.path()).await?
-            } else {
-                entry.path()
-            }
-            .to_string_lossy()
-            .to_string();
+            let path = entry.path().to_string_lossy().to_string();
 
             let size = if options.fetch_size {
-                let metadata = fs::metadata(entry.path()).await?;
+                let metadata = fs::symlink_metadata(entry.path()).await?;
                 metadata.len()
             } else {
                 0
