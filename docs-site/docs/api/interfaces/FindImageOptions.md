@@ -1,6 +1,5 @@
 # Interface: FindImageOptions
 
-**`Expand`**
 
 Options for finding an image within another image.
 

@@ -1,6 +1,5 @@
 # Enumeration: TextHorizontalAlign
 
-**`Expand`**
 
 Horizontal alignment for text drawing.
 

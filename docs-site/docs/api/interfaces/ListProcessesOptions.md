@@ -1,6 +1,5 @@
 # Interface: ListProcessesOptions
 
-**`Expand`**
 
 List processes options
 

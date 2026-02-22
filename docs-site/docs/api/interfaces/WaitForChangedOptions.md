@@ -1,6 +1,5 @@
 # Interface: WaitForChangedOptions
 
-**`Expand`**
 
 Options for waiting until clipboard content changes.
 

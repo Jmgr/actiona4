@@ -1,6 +1,5 @@
 # Enumeration: NotificationButtonStyle
 
-**`Expand`**
 
 Style of a toast action button.
 

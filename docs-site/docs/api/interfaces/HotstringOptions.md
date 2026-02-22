@@ -1,6 +1,5 @@
 # Interface: HotstringOptions
 
-**`Expand`**
 
 Hotstring options
 

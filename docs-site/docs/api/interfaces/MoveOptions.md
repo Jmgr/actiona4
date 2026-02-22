@@ -1,6 +1,5 @@
 # Interface: MoveOptions
 
-**`Expand`**
 
 Options for smooth mouse movement.
 

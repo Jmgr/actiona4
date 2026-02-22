@@ -1,6 +1,5 @@
 # Enumeration: NotificationScenario
 
-**`Expand`**
 
 Toast notification scenario.
 

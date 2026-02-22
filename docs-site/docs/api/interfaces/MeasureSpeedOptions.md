@@ -1,6 +1,5 @@
 # Interface: MeasureSpeedOptions
 
-**`Expand`**
 
 Options for measuring mouse movement speed.
 

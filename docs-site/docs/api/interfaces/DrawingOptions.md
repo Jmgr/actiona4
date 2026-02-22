@@ -1,6 +1,5 @@
 # Interface: DrawingOptions
 
-**`Expand`**
 
 Options for drawing shapes on an image.
 

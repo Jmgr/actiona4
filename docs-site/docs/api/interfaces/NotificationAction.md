@@ -1,6 +1,5 @@
 # Interface: NotificationAction
 
-**`Expand`**
 
 A notification action button.
 

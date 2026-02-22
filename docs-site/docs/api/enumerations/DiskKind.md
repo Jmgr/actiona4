@@ -1,6 +1,5 @@
 # Enumeration: DiskKind
 
-**`Expand`**
 
 Disk kind values.
 

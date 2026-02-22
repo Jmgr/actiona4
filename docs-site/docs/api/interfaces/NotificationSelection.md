@@ -1,6 +1,5 @@
 # Interface: NotificationSelection
 
-**`Expand`**
 
 A selection option for a dropdown input.
 

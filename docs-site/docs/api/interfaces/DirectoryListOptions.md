@@ -1,6 +1,5 @@
 # Interface: DirectoryListOptions
 
-**`Expand`**
 
 Options for `Directory.listEntries()`.
 

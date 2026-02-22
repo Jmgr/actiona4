@@ -1,6 +1,5 @@
 # Enumeration: NotificationActivationType
 
-**`Expand`**
 
 Activation type for toast actions and headers.
 

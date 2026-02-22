@@ -1,6 +1,5 @@
 # Enumeration: NotificationUrgency
 
-**`Expand`**
 
 ## Enumeration Members
 

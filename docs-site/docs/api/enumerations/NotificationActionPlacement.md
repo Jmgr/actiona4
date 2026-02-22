@@ -1,6 +1,5 @@
 # Enumeration: NotificationActionPlacement
 
-**`Expand`**
 
 Placement of a toast action button.
 

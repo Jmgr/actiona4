@@ -1,6 +1,5 @@
 # Enumeration: MessageBoxIcon
 
-**`Expand`**
 
 ## Enumeration Members
 

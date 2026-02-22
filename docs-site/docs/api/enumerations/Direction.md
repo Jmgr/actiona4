@@ -1,6 +1,5 @@
 # Enumeration: Direction
 
-**`Expand`**
 
 Direction for key press/release actions.
 

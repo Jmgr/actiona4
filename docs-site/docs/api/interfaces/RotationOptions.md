@@ -1,6 +1,5 @@
 # Interface: RotationOptions
 
-**`Expand`**
 
 Options for rotating an image.
 

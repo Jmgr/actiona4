@@ -1,6 +1,5 @@
 # Interface: NotificationHeader
 
-**`Expand`**
 
 A notification header for grouping toasts in Action Center.
 

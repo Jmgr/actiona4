@@ -1,6 +1,5 @@
 # Enumeration: FlipDirection
 
-**`Expand`**
 
 Direction to flip an image.
 

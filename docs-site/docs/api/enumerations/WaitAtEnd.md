@@ -1,6 +1,5 @@
 # Enumeration: WaitAtEnd
 
-**`Expand`**
 
 Should the script wait at the end of the execution?
 

@@ -1,6 +1,5 @@
 # Interface: MessageBoxOptions
 
-**`Expand`**
 
 Message box options.
 

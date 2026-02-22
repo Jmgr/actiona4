@@ -1,6 +1,5 @@
 # Interface: DoubleClickOptions
 
-**`Expand`**
 
 Options for double-clicking a mouse button.
 

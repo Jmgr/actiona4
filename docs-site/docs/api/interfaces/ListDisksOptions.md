@@ -1,6 +1,5 @@
 # Interface: ListDisksOptions
 
-**`Expand`**
 
 List disks options
 

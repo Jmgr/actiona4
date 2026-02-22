@@ -1,6 +1,5 @@
 # Interface: ResizeOptions
 
-**`Expand`**
 
 Options for resizing an image.
 

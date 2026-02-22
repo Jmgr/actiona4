@@ -1,6 +1,5 @@
 # Interface: NotificationOptions
 
-**`Expand`**
 
 Options for a notification.
 

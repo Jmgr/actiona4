@@ -1,6 +1,5 @@
 # Enumeration: MessageBoxResult
 
-**`Expand`**
 
 ## Enumeration Members
 

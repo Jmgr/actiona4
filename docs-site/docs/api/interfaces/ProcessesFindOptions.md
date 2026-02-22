@@ -1,6 +1,5 @@
 # Interface: ProcessesFindOptions
 
-**`Expand`**
 
 Process search options.
 

@@ -1,6 +1,5 @@
 # Interface: NotificationCustomHint
 
-**`Expand`**
 
 A custom string hint for Linux notifications.
 

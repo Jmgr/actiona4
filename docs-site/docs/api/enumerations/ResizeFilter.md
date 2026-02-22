@@ -1,6 +1,5 @@
 # Enumeration: ResizeFilter
 
-**`Expand`**
 
 Resize filter algorithms.
 

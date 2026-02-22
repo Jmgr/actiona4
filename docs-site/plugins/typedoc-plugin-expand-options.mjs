@@ -1,12 +1,21 @@
 // TypeDoc local plugin: inlines @expand-tagged interface/enum members
 // directly into parameter sections, so users don't have to click through.
-import { MarkdownPageEvent, MarkdownRendererEvent } from "typedoc-plugin-markdown";
+import {
+  MarkdownPageEvent,
+  MarkdownRendererEvent,
+} from "typedoc-plugin-markdown";
 import { ReflectionKind } from "typedoc";
 import * as fs from "fs";
 import * as path from "path";
 
 const PROPERTIES_MARKER = "\n## Properties\n\n";
 const ENUM_MEMBERS_MARKER = "\n## Enumeration Members\n\n";
+const EXPAND_BADGE_RE = /\n\*\*`Expand`\*\*\n\n/g;
+
+/** Remove rendered @expand modifier badges from generated markdown pages. */
+function stripExpandBadge(contents) {
+  return contents.replace(EXPAND_BADGE_RE, "\n\n");
+}
 
 /** Extract the Properties or Enumeration Members section from a page's markdown content. */
 function extractProperties(contents) {
@@ -65,7 +74,13 @@ function demoteHeadings(content, delta) {
  * We look for these inside options-fields divs and append enum members after
  * the property's content block (before the next *** separator or heading).
  */
-function inlineEnumPropsInOptions(content, expandNames, expandedContent, fromDir, toDir) {
+function inlineEnumPropsInOptions(
+  content,
+  expandNames,
+  expandedContent,
+  fromDir,
+  toDir,
+) {
   if (expandNames.size === 0) return content;
 
   // Match a property blockquote line whose type is solely an @expand enum link.
@@ -108,7 +123,9 @@ export function load(app) {
     const visit = (refl) => {
       if (
         refl.kindOf(
-          ReflectionKind.Interface | ReflectionKind.TypeAlias | ReflectionKind.Enum,
+          ReflectionKind.Interface |
+            ReflectionKind.TypeAlias |
+            ReflectionKind.Enum,
         ) &&
         refl.comment?.hasModifier("@expand")
       ) {
@@ -123,6 +140,7 @@ export function load(app) {
 
   app.renderer.on(MarkdownPageEvent.END, (page) => {
     if (!page.contents || expandNames.size === 0) return;
+    page.contents = stripExpandBadge(page.contents);
 
     // If this page is an @expand interface, extract its properties block
     const pageName = path.basename(page.filename, ".md");

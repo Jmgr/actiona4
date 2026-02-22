@@ -1,6 +1,5 @@
 # Interface: PressOptions
 
-**`Expand`**
 
 Options for pressing (and holding) a mouse button.
 

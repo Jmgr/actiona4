@@ -1,6 +1,5 @@
 # Enumeration: Method
 
-**`Expand`**
 
 HTTP request method.
 
