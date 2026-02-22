@@ -1,4 +1,4 @@
-use rquickjs::{Ctx, JsLifetime, class::Trace};
+use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
 use tokio::fs;
 
 use crate::api::js::classes::HostClass;
@@ -62,6 +62,12 @@ impl JsFilesystem {
         fs::metadata(path)
             .await
             .is_ok_and(|metadata| metadata.is_symlink())
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Filesystem".to_string()
     }
 }
 

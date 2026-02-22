@@ -5,12 +5,16 @@
 
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{Constructor, FromParam, ParamRequirement, ParamsAccessor},
 };
 use wildmatch::WildMatch;
 
-use crate::api::{ResultExt, js::classes::ValueClass};
+use crate::{
+    api::{ResultExt, js::classes::ValueClass},
+    types::display::{DisplayFields, display_with_type},
+};
 
 /// A wildcard pattern for matching strings.
 ///
@@ -62,6 +66,17 @@ impl JsWildcard {
             pattern: pattern.clone(),
             inner: WildMatch::new(&pattern),
         })
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type(
+            "Wildcard",
+            DisplayFields::default()
+                .display("pattern", &self.pattern)
+                .finish_as_string(),
+        )
     }
 }
 
@@ -150,7 +165,7 @@ impl<'js> FromParam<'js> for JsNameLike<'js> {
 
 #[cfg(test)]
 mod tests {
-    use rquickjs::{Ctx, JsLifetime, class::Trace};
+    use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
 
     use super::{JsNameLike, JsWildcard};
     use crate::{
@@ -173,6 +188,12 @@ mod tests {
             text: String,
         ) -> rquickjs::Result<bool> {
             name.0.matches(&ctx, &text)
+        }
+
+        #[qjs(rename = PredefinedAtom::ToString)]
+        #[must_use]
+        pub fn to_string_js(&self) -> String {
+            "Test".to_string()
         }
     }
 

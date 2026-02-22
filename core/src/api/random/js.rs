@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use rquickjs::{
     Array, Ctx, Exception, JsLifetime, Result, Value,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::{Opt, Rest},
 };
@@ -205,6 +206,12 @@ impl JsRandom {
         let value = array.get(index)?;
 
         Ok(value)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Random".to_string()
     }
 }
 

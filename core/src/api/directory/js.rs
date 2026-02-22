@@ -1,10 +1,13 @@
 use std::{fmt::Debug, path::PathBuf};
 
 use macros::FromJsObject;
-use rquickjs::{Ctx, JsLifetime, Result, class::Trace, prelude::Opt};
+use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 use tokio::fs::{self};
 
-use crate::api::js::classes::{HostClass, register_host_class};
+use crate::{
+    api::js::classes::{HostClass, register_host_class},
+    types::display::{DisplayFields, display_with_type},
+};
 
 /// An entry returned by `Directory.listEntries()`, representing a file, directory,
 /// or symlink within a directory.
@@ -76,6 +79,22 @@ impl JsDirectoryEntry {
     #[must_use]
     pub const fn size(&self) -> u64 {
         self.size
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type(
+            "DirectoryEntry",
+            DisplayFields::default()
+                .display("path", &self.path)
+                .display("fileName", &self.file_name)
+                .display("isFile", self.is_file)
+                .display("isDirectory", self.is_directory)
+                .display("isSymlink", self.is_symlink)
+                .display("size", self.size)
+                .finish_as_string(),
+        )
     }
 }
 
@@ -278,6 +297,12 @@ impl JsDirectory {
         }
 
         Ok(result)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Directory".to_string()
     }
 }
 

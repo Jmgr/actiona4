@@ -7,6 +7,7 @@ use mime::Mime;
 use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderName, HeaderValue};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Promise, Result, TypedArray,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::Opt,
 };
@@ -29,6 +30,7 @@ use crate::{
         web::{Body, FormField, MultipartField, MultipartValue, Progress, WebOptions},
     },
     error::CommonError,
+    types::display::{DisplayFields, display_list, display_with_type},
 };
 
 pub type JsMethod = super::Method;
@@ -158,6 +160,17 @@ impl JsMultipartForm {
             mimetype,
         });
         Ok(())
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type(
+            "MultipartForm",
+            DisplayFields::default()
+                .display("fields", display_list(self.fields.as_slice()))
+                .finish_as_string(),
+        )
     }
 }
 
@@ -356,6 +369,19 @@ impl JsWebProgress {
     #[must_use]
     pub const fn finished(&self) -> bool {
         self.finished
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type(
+            "WebProgress",
+            DisplayFields::default()
+                .display("total", self.total)
+                .display("current", self.current)
+                .display("finished", self.finished)
+                .finish_as_string(),
+        )
     }
 }
 
@@ -566,6 +592,12 @@ impl JsWeb {
                     .into_js_result(&ctx)
             },
         )
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Web".to_string()
     }
 }
 

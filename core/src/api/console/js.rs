@@ -5,6 +5,7 @@ use humantime::format_duration;
 use itertools::Itertools;
 use rquickjs::{
     Exception, JsLifetime, Result, Value,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -525,6 +526,12 @@ impl JsConsole {
         let value = self.counters.entry(label.clone()).or_default();
         *value += 1;
         println!("{label}: {value}");
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Console".to_string()
     }
 }
 

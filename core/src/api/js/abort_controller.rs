@@ -1,4 +1,4 @@
-use rquickjs::{Ctx, JsLifetime, class::Trace};
+use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
 use tokio_util::sync::CancellationToken;
 
 use crate::{
@@ -37,6 +37,15 @@ impl JsAbortSignal {
     #[must_use]
     pub fn into_token(self) -> CancellationToken {
         self.token
+    }
+}
+
+#[rquickjs::methods]
+impl JsAbortSignal {
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "AbortSignal".to_string()
     }
 }
 
@@ -96,6 +105,12 @@ impl JsAbortController {
         JsAbortSignal {
             token: self.token.child_token(),
         }
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "AbortController".to_string()
     }
 }
 

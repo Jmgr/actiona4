@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::Opt,
 };
@@ -245,6 +246,12 @@ impl JsScreenshot {
                 Ok(results.into_iter().map(JsMatch::from).collect::<Vec<_>>())
             },
         )
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Screenshot".to_string()
     }
 }
 

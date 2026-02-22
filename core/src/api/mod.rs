@@ -61,9 +61,9 @@ pub(crate) mod test_helpers {
     };
 
     use rand::RngExt;
-    use rquickjs::{JsLifetime, class::Trace};
+    use rquickjs::{JsLifetime, atom::PredefinedAtom, class::Trace};
 
-    use crate::api::js::classes::ValueClass;
+    use crate::{api::js::classes::ValueClass, types::display::display_with_type};
 
     pub fn random_name() -> String {
         use rand::distr::Alphanumeric;
@@ -108,6 +108,12 @@ pub(crate) mod test_helpers {
 
         pub fn value(&self) -> u64 {
             self.count
+        }
+
+        #[qjs(rename = PredefinedAtom::ToString)]
+        #[must_use]
+        pub fn to_string_js(&self) -> String {
+            display_with_type("Counter", self.count)
         }
     }
 }

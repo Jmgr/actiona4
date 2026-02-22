@@ -1,4 +1,5 @@
 use std::{
+    fmt,
     io::Cursor,
     path::{Path, PathBuf},
     sync::{
@@ -37,6 +38,7 @@ use crate::{
     api::{image::Image, js::task::IsDone},
     cancel_on,
     sized_body::{BoxError, SizedBody},
+    types::display::{DisplayFields, display_with_type},
 };
 
 pub mod js;
@@ -118,6 +120,29 @@ pub enum MultipartValue {
     Text(String),
     File(PathBuf),
     Bytes(Bytes),
+}
+
+impl fmt::Display for MultipartValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Text(text) => write!(f, "{}", display_with_type("Text", text)),
+            Self::File(path) => write!(f, "{}", display_with_type("File", path.display())),
+            Self::Bytes(bytes) => {
+                write!(f, "{}", display_with_type("Bytes", bytes.len()))
+            }
+        }
+    }
+}
+
+impl fmt::Display for MultipartField {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        DisplayFields::default()
+            .display("name", &self.name)
+            .display("value", &self.value)
+            .display_if_some("filename", &self.filename)
+            .display_if_some("mimetype", &self.mimetype.as_ref().map(|m| m.as_ref()))
+            .finish(f)
+    }
 }
 
 #[derive(Clone, Default)]

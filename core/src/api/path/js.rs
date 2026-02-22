@@ -1,6 +1,6 @@
 use std::path::{self, Path, PathBuf};
 
-use rquickjs::{Ctx, JsLifetime, class::Trace, prelude::Rest};
+use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace, prelude::Rest};
 
 use crate::api::js::classes::HostClass;
 
@@ -160,6 +160,12 @@ impl JsPath {
         }
 
         path.to_string_lossy().into_owned()
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Path".to_string()
     }
 }
 

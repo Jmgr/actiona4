@@ -3,6 +3,7 @@ use std::{fmt::Debug, time::Duration};
 use macros::FromJsObject;
 use rquickjs::{
     JsLifetime, Promise, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::*,
 };
@@ -235,6 +236,12 @@ impl JsClipboard {
                 .into_js_result(&ctx)
         })
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Clipboard".to_string()
+    }
 }
 
 /// Provides text clipboard operations.
@@ -273,6 +280,12 @@ impl JsClipboardText {
     /// Gets the clipboard text content.
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_text(*mode).into_js_result(&ctx)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "ClipboardText".to_string()
     }
 }
 
@@ -323,6 +336,12 @@ impl JsClipboardImage {
 
         Ok(image.into())
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "ClipboardImage".to_string()
+    }
 }
 
 /// Provides file list clipboard operations.
@@ -369,6 +388,12 @@ impl JsClipboardFileList {
     /// @readonly
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<Vec<String>> {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "ClipboardFileList".to_string()
     }
 }
 
@@ -421,6 +446,12 @@ impl JsClipboardHtml {
     /// Gets the clipboard HTML content.
     pub async fn get(&self, ctx: Ctx<'_>, mode: Opt<JsClipboardMode>) -> Result<String> {
         self.inner.get_html(*mode).into_js_result(&ctx)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "ClipboardHtml".to_string()
     }
 }
 

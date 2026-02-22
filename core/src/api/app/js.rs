@@ -2,6 +2,7 @@ use std::{collections::BTreeMap, sync::Arc};
 
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
 };
 use tracing::instrument;
@@ -164,6 +165,12 @@ impl JsApp {
         std::env::current_exe()
             .map(|dir| dir.to_string_lossy().to_string())
             .into_js_result(&ctx)
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "App".to_string()
     }
 }
 

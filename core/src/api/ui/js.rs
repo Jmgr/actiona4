@@ -1,6 +1,7 @@
 use macros::FromJsObject;
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::Opt,
 };
@@ -132,6 +133,12 @@ impl JsUi {
                 .into_js_result(&ctx)
         })
     }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Ui".to_string()
+    }
 }
 
 /// Button configurations for message boxes.
@@ -241,5 +248,11 @@ impl JsMessageBoxButtons {
         Self {
             inner: MessageBoxButtons::YesNoCancelCustom(yes_label, no_label, cancel_label),
         }
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "MessageBoxButtons".to_string()
     }
 }

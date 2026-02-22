@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use rquickjs::{
     Coerced, Ctx, JsLifetime, Result, Value,
+    atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::Opt,
 };
@@ -106,6 +107,12 @@ impl JsHotstrings {
     /// Removes a previously registered hotstring.
     pub fn remove(&self, source: String) {
         self.inner.remove(&source);
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        "Hotstrings".to_string()
     }
 }
 
