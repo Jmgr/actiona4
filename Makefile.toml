@@ -105,14 +105,17 @@ description = "Sign actiona-run release executables with signtool (Windows only)
 command = "signtool"
 args = [
     "sign",
+    "/v",
     "/d",
     "Actiona",
     "/du",
     "https://actiona.app",
     "/fd",
     "sha256",
+    "/sha1",
+    "77DCCEE2A1B432AA2E361B49C620C85D994AB6D3",
     "/tr",
-    "http://timestamp.comodoca.com",
+    "http://timestamp.sectigo.com",
     "/td",
     "sha256",
     "/as",
