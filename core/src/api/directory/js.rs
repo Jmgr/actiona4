@@ -248,7 +248,7 @@ impl JsDirectory {
         options: Opt<JsDirectoryListOptions>,
     ) -> Result<Vec<JsDirectoryEntry>> {
         let options = options.unwrap_or_default();
-        let dir_path = PathBuf::from(path);
+        let dir_path = fs::canonicalize(PathBuf::from(path)).await?;
         let mut read_dir = fs::read_dir(&dir_path).await?;
         let mut result = Vec::new();
 
