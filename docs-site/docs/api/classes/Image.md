@@ -1531,17 +1531,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -1575,17 +1581,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -1665,17 +1677,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -1709,17 +1727,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -1791,17 +1815,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -1835,17 +1865,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -1929,17 +1965,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -1973,17 +2015,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -2364,11 +2412,15 @@ Flip the image.
 
 > **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FlipDirection.Horizontal`
+
 ***
 
 ###### Vertical
 
 > **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Vertical`
 
 </div>
 
@@ -2396,11 +2448,15 @@ Flip the image and returns a new image.
 
 > **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FlipDirection.Horizontal`
+
 ***
 
 ###### Vertical
 
 > **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Vertical`
 
 </div>
 
@@ -2536,11 +2592,15 @@ Resizes this image.
 
 > **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Cubic`
+
 ***
 
 ###### Gaussian
 
 > **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Gaussian`
 
 ***
 
@@ -2548,17 +2608,23 @@ Resizes this image.
 
 > **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Lanczos3`
+
 ***
 
 ###### Linear
 
 > **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Linear`
+
 ***
 
 ###### Nearest
 
 > **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Nearest`
 
 </div>
 
@@ -2620,11 +2686,15 @@ Returns a resized version of this image.
 
 > **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Cubic`
+
 ***
 
 ###### Gaussian
 
 > **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Gaussian`
 
 ***
 
@@ -2632,17 +2702,23 @@ Returns a resized version of this image.
 
 > **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Lanczos3`
+
 ***
 
 ###### Linear
 
 > **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Linear`
+
 ***
 
 ###### Nearest
 
 > **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Nearest`
 
 </div>
 
@@ -2726,17 +2802,23 @@ Default color, used if the rotation triggers more pixels to be displayed
 
 > **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Interpolation.Bicubic`
+
 ***
 
 ###### Bilinear
 
 > **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Interpolation.Bilinear`
+
 ***
 
 ###### Nearest
 
 > **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Nearest`
 
 </div>
 
@@ -2808,17 +2890,23 @@ Default color, used if the rotation triggers more pixels to be displayed
 
 > **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Interpolation.Bicubic`
+
 ***
 
 ###### Bilinear
 
 > **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Interpolation.Bilinear`
+
 ***
 
 ###### Nearest
 
 > **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Nearest`
 
 </div>
 
@@ -4208,17 +4296,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -4252,17 +4346,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -4342,17 +4442,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -4386,17 +4492,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -4468,17 +4580,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -4512,17 +4630,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 
@@ -4606,17 +4730,23 @@ Font size in pixels.
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ###### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
 
 </div>
 
@@ -4650,17 +4780,23 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 > **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Bottom`
+
 ***
 
 ###### Middle
 
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextVerticalAlign.Middle`
+
 ***
 
 ###### Top
 
 > **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
 
 </div>
 

@@ -18,11 +18,15 @@ image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
 
 > **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Cubic`
+
 ***
 
 ### Gaussian
 
 > **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Gaussian`
 
 ***
 
@@ -30,14 +34,20 @@ image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
 
 > **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Lanczos3`
+
 ***
 
 ### Linear
 
 > **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ResizeFilter.Linear`
+
 ***
 
 ### Nearest
 
 > **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Nearest`

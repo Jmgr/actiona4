@@ -19,11 +19,15 @@ for await (const progress of task) {
 
 > **Capturing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FindImageStage.Capturing`
+
 ***
 
 ### ComputingResults
 
 > **ComputingResults**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FindImageStage.ComputingResults`
 
 ***
 
@@ -31,11 +35,15 @@ for await (const progress of task) {
 
 > **Downscaling**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FindImageStage.Downscaling`
+
 ***
 
 ### Filtering
 
 > **Filtering**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FindImageStage.Filtering`
 
 ***
 
@@ -43,14 +51,20 @@ for await (const progress of task) {
 
 > **Finished**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FindImageStage.Finished`
+
 ***
 
 ### Matching
 
 > **Matching**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FindImageStage.Matching`
+
 ***
 
 ### Preparing
 
 > **Preparing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FindImageStage.Preparing`

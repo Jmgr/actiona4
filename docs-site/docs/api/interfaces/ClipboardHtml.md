@@ -32,11 +32,15 @@ Gets the clipboard HTML content.
 
 > **Clipboard**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ClipboardMode.Clipboard`
+
 ***
 
 ###### Selection
 
 > **Selection**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ClipboardMode.Selection`
 
 ###### Platform
 
@@ -76,11 +80,15 @@ Sets the clipboard HTML content, with an optional plain-text alternative.
 
 > **Clipboard**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ClipboardMode.Clipboard`
+
 ***
 
 ###### Selection
 
 > **Selection**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ClipboardMode.Selection`
 
 ###### Platform
 

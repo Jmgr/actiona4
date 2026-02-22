@@ -14,11 +14,15 @@ only works on Windows
 
 > **Alarm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationScenario.Alarm`
+
 ***
 
 ### IncomingCall
 
 > **IncomingCall**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationScenario.IncomingCall`
 
 ***
 
@@ -26,8 +30,12 @@ only works on Windows
 
 > **Reminder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationScenario.Reminder`
+
 ***
 
 ### Urgent
 
 > **Urgent**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationScenario.Urgent`

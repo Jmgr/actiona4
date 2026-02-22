@@ -16,14 +16,20 @@ image.drawText(100, 50, "Centered", fontPath, Color.Black, {
 
 > **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Center`
+
 ***
 
 ### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`TextHorizontalAlign.Left`
+
 ***
 
 ### Right
 
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`

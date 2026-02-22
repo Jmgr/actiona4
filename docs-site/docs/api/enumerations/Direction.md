@@ -20,14 +20,20 @@ await keyboard.key(Key.Return, Direction.Click);
 
 > **Click**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Direction.Click`
+
 ***
 
 ### Press
 
 > **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Direction.Press`
+
 ***
 
 ### Release
 
 > **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Direction.Release`

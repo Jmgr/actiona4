@@ -14,8 +14,12 @@ only works on Windows
 
 > **Selection**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationInputType.Selection`
+
 ***
 
 ### Text
 
 > **Text**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationInputType.Text`

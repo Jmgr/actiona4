@@ -416,11 +416,15 @@ only works on Linux
 
 > **Alarm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationScenario.Alarm`
+
 ***
 
 ###### IncomingCall
 
 > **IncomingCall**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationScenario.IncomingCall`
 
 ***
 
@@ -428,11 +432,15 @@ only works on Linux
 
 > **Reminder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationScenario.Reminder`
+
 ***
 
 ###### Urgent
 
 > **Urgent**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationScenario.Urgent`
 
 </div>
 
@@ -627,17 +635,23 @@ only works on Linux
 
 > **Critical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationUrgency.Critical`
+
 ***
 
 ###### Low
 
 > **Low**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationUrgency.Low`
+
 ***
 
 ###### Normal
 
 > **Normal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationUrgency.Normal`
 
 </div>
 

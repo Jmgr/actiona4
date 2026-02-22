@@ -242,12 +242,15 @@ impl JsDisk {
 #[serde(rename = "DiskKind")]
 pub enum JsDiskKind {
     /// Hard disk drive
+    /// `DiskKind.HDD`
     HDD,
 
     /// Solid-state drive
+    /// `DiskKind.SSD`
     SSD,
 
     /// Unknown drive kind
+    /// `DiskKind.Unknown`
     Unknown,
 }
 

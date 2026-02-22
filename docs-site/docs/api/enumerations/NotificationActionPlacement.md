@@ -13,3 +13,5 @@ only works on Windows
 ### ContextMenu
 
 > **ContextMenu**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationActionPlacement.ContextMenu`

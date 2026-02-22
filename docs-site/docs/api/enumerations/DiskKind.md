@@ -21,6 +21,7 @@ Disk kind
 > **Hdd**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hard disk drive
+`DiskKind.HDD`
 
 ***
 
@@ -29,6 +30,7 @@ Hard disk drive
 > **Ssd**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Solid-state drive
+`DiskKind.SSD`
 
 ***
 
@@ -37,3 +39,4 @@ Solid-state drive
 > **Unknown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Unknown drive kind
+`DiskKind.Unknown`

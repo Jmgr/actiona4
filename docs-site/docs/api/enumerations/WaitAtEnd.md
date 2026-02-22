@@ -16,6 +16,7 @@ Should the script wait at the end of the execution?
 
 Automatically decide if the script should wait.
 Setting hotstrings will have the script wait.
+`WaitAtEnd.Automatic`
 
 ***
 
@@ -24,6 +25,7 @@ Setting hotstrings will have the script wait.
 > **No**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Never wait.
+`WaitAtEnd.No`
 
 ***
 
@@ -32,3 +34,4 @@ Never wait.
 > **Yes**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Always wait.
+`WaitAtEnd.Yes`

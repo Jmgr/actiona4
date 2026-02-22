@@ -75,17 +75,23 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 > **Click**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Direction.Click`
+
 ***
 
 ###### Press
 
 > **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Direction.Press`
+
 ***
 
 ###### Release
 
 > **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Direction.Release`
 
 </div>
 
@@ -117,17 +123,23 @@ Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
 > **Click**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Direction.Click`
+
 ***
 
 ###### Press
 
 > **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Direction.Press`
+
 ***
 
 ###### Release
 
 > **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Direction.Release`
 
 </div>
 

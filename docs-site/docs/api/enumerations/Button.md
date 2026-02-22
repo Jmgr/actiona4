@@ -16,6 +16,7 @@ const pressed = await mouse.isPressed(Button.Left);
 > **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
+`Button.Back`
 
 ***
 
@@ -24,6 +25,7 @@ Back button
 > **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
+`Button.Forward`
 
 ***
 
@@ -32,6 +34,7 @@ Forward button
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
+`Button.Left`
 
 ***
 
@@ -40,6 +43,7 @@ Left button
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
+`Button.Middle`
 
 ***
 
@@ -48,3 +52,4 @@ Middle button
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button
+`Button.Right`

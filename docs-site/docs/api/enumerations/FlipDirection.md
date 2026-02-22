@@ -18,8 +18,12 @@ image.flip(FlipDirection.Vertical);
 
 > **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`FlipDirection.Horizontal`
+
 ***
 
 ### Vertical
 
 > **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Vertical`

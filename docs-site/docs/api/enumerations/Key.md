@@ -17,6 +17,7 @@ await keyboard.key("a", Direction.Click);
 > **A**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'A'
+`Key.A`
 
 ***
 
@@ -25,6 +26,7 @@ Letter key 'A'
 > **AbntC1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Brazilian ABNT keyboard key C1
+`Key.AbntC1`
 
 #### Platform
 
@@ -37,6 +39,7 @@ only works on Windows
 > **AbntC2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Brazilian ABNT keyboard key C2
+`Key.AbntC2`
 
 #### Platform
 
@@ -49,6 +52,7 @@ only works on Windows
 > **Accept**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME “Accept” / commit conversion
+`Key.Accept`
 
 #### Platform
 
@@ -61,6 +65,7 @@ only works on Windows
 > **Add**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad '+' (addition) key
+`Key.Add`
 
 ***
 
@@ -69,6 +74,7 @@ Numpad '+' (addition) key
 > **Alt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Alt (Alternate) modifier key
+`Key.Alt`
 
 ***
 
@@ -77,6 +83,7 @@ Alt (Alternate) modifier key
 > **Apps**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Application/Menu key
+`Key.Apps`
 
 #### Platform
 
@@ -89,6 +96,7 @@ only works on Windows
 > **Attention**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Attention key (legacy/rare)
+`Key.Attention`
 
 #### Platform
 
@@ -101,6 +109,7 @@ only works on Windows
 > **B**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'B'
+`Key.B`
 
 ***
 
@@ -109,6 +118,7 @@ Letter key 'B'
 > **Backspace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Backspace / Delete-previous-character
+`Key.Backspace`
 
 ***
 
@@ -117,6 +127,7 @@ Backspace / Delete-previous-character
 > **Begin**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Begin key
+`Key.Begin`
 
 #### Platform
 
@@ -129,6 +140,7 @@ only works on Linux
 > **Break**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Break key (X11/Linux)
+`Key.Break`
 
 #### Platform
 
@@ -141,6 +153,7 @@ only works on Linux
 > **BrowserBack**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Back
+`Key.BrowserBack`
 
 #### Platform
 
@@ -153,6 +166,7 @@ only works on Windows
 > **BrowserFavorites**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Favorites
+`Key.BrowserFavorites`
 
 #### Platform
 
@@ -165,6 +179,7 @@ only works on Windows
 > **BrowserForward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Forward
+`Key.BrowserForward`
 
 #### Platform
 
@@ -177,6 +192,7 @@ only works on Windows
 > **BrowserHome**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Home
+`Key.BrowserHome`
 
 #### Platform
 
@@ -189,6 +205,7 @@ only works on Windows
 > **BrowserRefresh**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Refresh
+`Key.BrowserRefresh`
 
 #### Platform
 
@@ -201,6 +218,7 @@ only works on Windows
 > **BrowserSearch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Search
+`Key.BrowserSearch`
 
 #### Platform
 
@@ -213,6 +231,7 @@ only works on Windows
 > **BrowserStop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Browser Stop
+`Key.BrowserStop`
 
 #### Platform
 
@@ -225,6 +244,7 @@ only works on Windows
 > **C**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'C'
+`Key.C`
 
 ***
 
@@ -233,6 +253,7 @@ Letter key 'C'
 > **Cancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Cancel key (legacy)
+`Key.Cancel`
 
 ***
 
@@ -241,6 +262,7 @@ Cancel key (legacy)
 > **CapsLock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Caps Lock toggle
+`Key.CapsLock`
 
 ***
 
@@ -249,6 +271,7 @@ Caps Lock toggle
 > **Clear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Clear key
+`Key.Clear`
 
 ***
 
@@ -257,6 +280,7 @@ Clear key
 > **Control**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Control (Ctrl) modifier key
+`Key.Control`
 
 ***
 
@@ -265,6 +289,7 @@ Control (Ctrl) modifier key
 > **Convert**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Convert (start/confirm conversion)
+`Key.Convert`
 
 #### Platform
 
@@ -277,6 +302,7 @@ only works on Windows
 > **CursorSelect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Cursor Select (CRSel)
+`Key.CursorSelect`
 
 #### Platform
 
@@ -289,6 +315,7 @@ only works on Windows
 > **D**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'D'
+`Key.D`
 
 ***
 
@@ -297,6 +324,7 @@ Letter key 'D'
 > **DbeAlphanumeric**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: switch to alphanumeric
+`Key.DBEAlphanumeric`
 
 #### Platform
 
@@ -309,6 +337,7 @@ only works on Windows
 > **DbeCodeinput**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: code input mode
+`Key.DBECodeinput`
 
 #### Platform
 
@@ -321,6 +350,7 @@ only works on Windows
 > **DbeDetermineString**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: determine string
+`Key.DBEDetermineString`
 
 #### Platform
 
@@ -333,6 +363,7 @@ only works on Windows
 > **DbeEnterDlgConversionMode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: enter dialog conversion mode
+`Key.DBEEnterDLGConversionMode`
 
 #### Platform
 
@@ -345,6 +376,7 @@ only works on Windows
 > **DbeEnterImeConfigMode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: open configuration
+`Key.DBEEnterIMEConfigMode`
 
 #### Platform
 
@@ -357,6 +389,7 @@ only works on Windows
 > **DbeEnterWordRegisterMode**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: word register mode
+`Key.DBEEnterWordRegisterMode`
 
 #### Platform
 
@@ -369,6 +402,7 @@ only works on Windows
 > **DbeFlushString**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: flush/reset composition string
+`Key.DBEFlushString`
 
 #### Platform
 
@@ -381,6 +415,7 @@ only works on Windows
 > **DbeHiragana**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Hiragana
+`Key.DBEHiragana`
 
 #### Platform
 
@@ -393,6 +428,7 @@ only works on Windows
 > **DbeKatakana**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Katakana
+`Key.DBEKatakana`
 
 #### Platform
 
@@ -405,6 +441,7 @@ only works on Windows
 > **DbeNoCodepoint**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: no code point
+`Key.DBENoCodepoint`
 
 #### Platform
 
@@ -417,6 +454,7 @@ only works on Windows
 > **DbeNoRoman**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: no roman
+`Key.DBENoRoman`
 
 #### Platform
 
@@ -429,6 +467,7 @@ only works on Windows
 > **DbeRoman**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Roman
+`Key.DBERoman`
 
 #### Platform
 
@@ -441,6 +480,7 @@ only works on Windows
 > **DbesbcsChar**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: SBCS character
+`Key.DBESBCSChar`
 
 #### Platform
 
@@ -453,6 +493,7 @@ only works on Windows
 > **DbesChar**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: SBCS/Special char
+`Key.DBESChar`
 
 #### Platform
 
@@ -465,6 +506,7 @@ only works on Windows
 > **Decimal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad decimal point '.'
+`Key.Decimal`
 
 ***
 
@@ -473,6 +515,7 @@ Numpad decimal point '.'
 > **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Delete / Forward delete
+`Key.Delete`
 
 ***
 
@@ -481,6 +524,7 @@ Delete / Forward delete
 > **Divide**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad divide '/'
+`Key.Divide`
 
 ***
 
@@ -489,6 +533,7 @@ Numpad divide '/'
 > **DownArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Down
+`Key.DownArrow`
 
 ***
 
@@ -497,6 +542,7 @@ Arrow: Down
 > **E**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'E'
+`Key.E`
 
 ***
 
@@ -505,6 +551,7 @@ Letter key 'E'
 > **End**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 End key
+`Key.End`
 
 ***
 
@@ -513,6 +560,7 @@ End key
 > **Ereof**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Erase EOF
+`Key.Ereof`
 
 #### Platform
 
@@ -525,6 +573,7 @@ only works on Windows
 > **Escape**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Escape key
+`Key.Escape`
 
 ***
 
@@ -533,6 +582,7 @@ Escape key
 > **Execute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Execute key
+`Key.Execute`
 
 ***
 
@@ -541,6 +591,7 @@ Execute key
 > **Exsel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Extend Selection (ExSel)
+`Key.Exsel`
 
 #### Platform
 
@@ -553,6 +604,7 @@ only works on Windows
 > **F**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'F'
+`Key.F`
 
 ***
 
@@ -561,6 +613,7 @@ Letter key 'F'
 > **F1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F1
+`Key.F1`
 
 ***
 
@@ -569,6 +622,7 @@ Function key F1
 > **F10**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F10
+`Key.F10`
 
 ***
 
@@ -577,6 +631,7 @@ Function key F10
 > **F11**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F11
+`Key.F11`
 
 ***
 
@@ -585,6 +640,7 @@ Function key F11
 > **F12**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F12
+`Key.F12`
 
 ***
 
@@ -593,6 +649,7 @@ Function key F12
 > **F13**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F13
+`Key.F13`
 
 ***
 
@@ -601,6 +658,7 @@ Function key F13
 > **F14**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F14
+`Key.F14`
 
 ***
 
@@ -609,6 +667,7 @@ Function key F14
 > **F15**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F15
+`Key.F15`
 
 ***
 
@@ -617,6 +676,7 @@ Function key F15
 > **F16**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F16
+`Key.F16`
 
 ***
 
@@ -625,6 +685,7 @@ Function key F16
 > **F17**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F17
+`Key.F17`
 
 ***
 
@@ -633,6 +694,7 @@ Function key F17
 > **F18**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F18
+`Key.F18`
 
 ***
 
@@ -641,6 +703,7 @@ Function key F18
 > **F19**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F19
+`Key.F19`
 
 ***
 
@@ -649,6 +712,7 @@ Function key F19
 > **F2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F2
+`Key.F2`
 
 ***
 
@@ -657,6 +721,7 @@ Function key F2
 > **F20**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F20
+`Key.F20`
 
 ***
 
@@ -665,6 +730,7 @@ Function key F20
 > **F21**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F21
+`Key.F21`
 
 ***
 
@@ -673,6 +739,7 @@ Function key F21
 > **F22**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F22
+`Key.F22`
 
 ***
 
@@ -681,6 +748,7 @@ Function key F22
 > **F23**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F23
+`Key.F23`
 
 ***
 
@@ -689,6 +757,7 @@ Function key F23
 > **F24**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F24
+`Key.F24`
 
 ***
 
@@ -697,6 +766,7 @@ Function key F24
 > **F25**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F25
+`Key.F25`
 
 #### Platform
 
@@ -709,6 +779,7 @@ only works on Linux
 > **F26**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F26
+`Key.F26`
 
 #### Platform
 
@@ -721,6 +792,7 @@ only works on Linux
 > **F27**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F27
+`Key.F27`
 
 #### Platform
 
@@ -733,6 +805,7 @@ only works on Linux
 > **F28**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F28
+`Key.F28`
 
 #### Platform
 
@@ -745,6 +818,7 @@ only works on Linux
 > **F29**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F29
+`Key.F29`
 
 #### Platform
 
@@ -757,6 +831,7 @@ only works on Linux
 > **F3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F3
+`Key.F3`
 
 ***
 
@@ -765,6 +840,7 @@ Function key F3
 > **F30**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F30
+`Key.F30`
 
 #### Platform
 
@@ -777,6 +853,7 @@ only works on Linux
 > **F31**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F31
+`Key.F31`
 
 #### Platform
 
@@ -789,6 +866,7 @@ only works on Linux
 > **F32**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F32
+`Key.F32`
 
 #### Platform
 
@@ -801,6 +879,7 @@ only works on Linux
 > **F33**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F33
+`Key.F33`
 
 #### Platform
 
@@ -813,6 +892,7 @@ only works on Linux
 > **F34**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F34
+`Key.F34`
 
 #### Platform
 
@@ -825,6 +905,7 @@ only works on Linux
 > **F35**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F35
+`Key.F35`
 
 #### Platform
 
@@ -837,6 +918,7 @@ only works on Linux
 > **F4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F4
+`Key.F4`
 
 ***
 
@@ -845,6 +927,7 @@ Function key F4
 > **F5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F5
+`Key.F5`
 
 ***
 
@@ -853,6 +936,7 @@ Function key F5
 > **F6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F6
+`Key.F6`
 
 ***
 
@@ -861,6 +945,7 @@ Function key F6
 > **F7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F7
+`Key.F7`
 
 ***
 
@@ -869,6 +954,7 @@ Function key F7
 > **F8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F8
+`Key.F8`
 
 ***
 
@@ -877,6 +963,7 @@ Function key F8
 > **F9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F9
+`Key.F9`
 
 ***
 
@@ -885,6 +972,7 @@ Function key F9
 > **Final**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Final (end conversion)
+`Key.Final`
 
 #### Platform
 
@@ -897,6 +985,7 @@ only works on Windows
 > **Find**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Find key
+`Key.Find`
 
 #### Platform
 
@@ -909,6 +998,7 @@ only works on Linux
 > **G**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'G'
+`Key.G`
 
 ***
 
@@ -917,6 +1007,7 @@ Letter key 'G'
 > **GamepadA**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: A button
+`Key.GamepadA`
 
 #### Platform
 
@@ -929,6 +1020,7 @@ only works on Windows
 > **GamepadB**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: B button
+`Key.GamepadB`
 
 #### Platform
 
@@ -941,6 +1033,7 @@ only works on Windows
 > **GamepadDPadDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Down
+`Key.GamepadDPadDown`
 
 #### Platform
 
@@ -953,6 +1046,7 @@ only works on Windows
 > **GamepadDPadLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Left
+`Key.GamepadDPadLeft`
 
 #### Platform
 
@@ -965,6 +1059,7 @@ only works on Windows
 > **GamepadDPadRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Right
+`Key.GamepadDPadRight`
 
 #### Platform
 
@@ -977,6 +1072,7 @@ only works on Windows
 > **GamepadDPadUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: D-Pad Up
+`Key.GamepadDPadUp`
 
 #### Platform
 
@@ -989,6 +1085,7 @@ only works on Windows
 > **GamepadLeftShoulder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left shoulder (L1)
+`Key.GamepadLeftShoulder`
 
 #### Platform
 
@@ -1001,6 +1098,7 @@ only works on Windows
 > **GamepadLeftThumbstickButton**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick button (L3)
+`Key.GamepadLeftThumbstickButton`
 
 #### Platform
 
@@ -1013,6 +1111,7 @@ only works on Windows
 > **GamepadLeftThumbstickDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick down
+`Key.GamepadLeftThumbstickDown`
 
 #### Platform
 
@@ -1025,6 +1124,7 @@ only works on Windows
 > **GamepadLeftThumbstickLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick left
+`Key.GamepadLeftThumbstickLeft`
 
 #### Platform
 
@@ -1037,6 +1137,7 @@ only works on Windows
 > **GamepadLeftThumbstickRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick right
+`Key.GamepadLeftThumbstickRight`
 
 #### Platform
 
@@ -1049,6 +1150,7 @@ only works on Windows
 > **GamepadLeftThumbstickUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left thumbstick up
+`Key.GamepadLeftThumbstickUp`
 
 #### Platform
 
@@ -1061,6 +1163,7 @@ only works on Windows
 > **GamepadLeftTrigger**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Left trigger (L2)
+`Key.GamepadLeftTrigger`
 
 #### Platform
 
@@ -1073,6 +1176,7 @@ only works on Windows
 > **GamepadMenu**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Menu / Start
+`Key.GamepadMenu`
 
 #### Platform
 
@@ -1085,6 +1189,7 @@ only works on Windows
 > **GamepadRightShoulder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right shoulder (R1)
+`Key.GamepadRightShoulder`
 
 #### Platform
 
@@ -1097,6 +1202,7 @@ only works on Windows
 > **GamepadRightThumbstickButton**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick button (R3)
+`Key.GamepadRightThumbstickButton`
 
 #### Platform
 
@@ -1109,6 +1215,7 @@ only works on Windows
 > **GamepadRightThumbstickDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick down
+`Key.GamepadRightThumbstickDown`
 
 #### Platform
 
@@ -1121,6 +1228,7 @@ only works on Windows
 > **GamepadRightThumbstickLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick left
+`Key.GamepadRightThumbstickLeft`
 
 #### Platform
 
@@ -1133,6 +1241,7 @@ only works on Windows
 > **GamepadRightThumbstickRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick right
+`Key.GamepadRightThumbstickRight`
 
 #### Platform
 
@@ -1145,6 +1254,7 @@ only works on Windows
 > **GamepadRightThumbstickUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right thumbstick up
+`Key.GamepadRightThumbstickUp`
 
 #### Platform
 
@@ -1157,6 +1267,7 @@ only works on Windows
 > **GamepadRightTrigger**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Right trigger (R2)
+`Key.GamepadRightTrigger`
 
 #### Platform
 
@@ -1169,6 +1280,7 @@ only works on Windows
 > **GamepadView**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: View / Back
+`Key.GamepadView`
 
 #### Platform
 
@@ -1181,6 +1293,7 @@ only works on Windows
 > **GamepadX**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: X button
+`Key.GamepadX`
 
 #### Platform
 
@@ -1193,6 +1306,7 @@ only works on Windows
 > **GamepadY**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Gamepad: Y button
+`Key.GamepadY`
 
 #### Platform
 
@@ -1205,6 +1319,7 @@ only works on Windows
 > **H**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'H'
+`Key.H`
 
 ***
 
@@ -1213,6 +1328,7 @@ Letter key 'H'
 > **Hangeul**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hangeul toggle (Korean layout)
+`Key.Hangeul`
 
 #### Platform
 
@@ -1225,6 +1341,7 @@ only works on Windows
 > **Hangul**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hangul toggle (Korean layout)
+`Key.Hangul`
 
 ***
 
@@ -1233,6 +1350,7 @@ Hangul toggle (Korean layout)
 > **Hanja**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Hanja toggle (Chinese characters on Korean layout)
+`Key.Hanja`
 
 ***
 
@@ -1241,6 +1359,7 @@ Hanja toggle (Chinese characters on Korean layout)
 > **Help**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Help key
+`Key.Help`
 
 ***
 
@@ -1249,6 +1368,7 @@ Help key
 > **Home**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Home key
+`Key.Home`
 
 ***
 
@@ -1257,6 +1377,7 @@ Home key
 > **I**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'I'
+`Key.I`
 
 ***
 
@@ -1265,6 +1386,7 @@ Letter key 'I'
 > **Ico00**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ICO (legacy) key 00
+`Key.Ico00`
 
 #### Platform
 
@@ -1277,6 +1399,7 @@ only works on Windows
 > **IcoClear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ICO (legacy) Clear
+`Key.IcoClear`
 
 #### Platform
 
@@ -1289,6 +1412,7 @@ only works on Windows
 > **IcoHelp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ICO (legacy) Help
+`Key.IcoHelp`
 
 #### Platform
 
@@ -1301,6 +1425,7 @@ only works on Windows
 > **ImeOff**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Off (disable IME)
+`Key.IMEOff`
 
 #### Platform
 
@@ -1313,6 +1438,7 @@ only works on Windows
 > **ImeOn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME On (enable IME)
+`Key.IMEOn`
 
 #### Platform
 
@@ -1325,6 +1451,7 @@ only works on Windows
 > **Insert**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Insert key
+`Key.Insert`
 
 ***
 
@@ -1333,6 +1460,7 @@ Insert key
 > **J**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'J'
+`Key.J`
 
 ***
 
@@ -1341,6 +1469,7 @@ Letter key 'J'
 > **Junja**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Junja mode
+`Key.Junja`
 
 #### Platform
 
@@ -1353,6 +1482,7 @@ only works on Windows
 > **K**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'K'
+`Key.K`
 
 ***
 
@@ -1361,6 +1491,7 @@ Letter key 'K'
 > **Kana**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME: Kana mode
+`Key.Kana`
 
 #### Platform
 
@@ -1373,6 +1504,7 @@ only works on Windows
 > **Kanji**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Kanji toggle (Japanese layout)
+`Key.Kanji`
 
 ***
 
@@ -1381,6 +1513,7 @@ Kanji toggle (Japanese layout)
 > **L**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'L'
+`Key.L`
 
 ***
 
@@ -1389,6 +1522,7 @@ Letter key 'L'
 > **LaunchApp1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch application 1
+`Key.LaunchApp1`
 
 #### Platform
 
@@ -1401,6 +1535,7 @@ only works on Windows
 > **LaunchApp2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch application 2
+`Key.LaunchApp2`
 
 #### Platform
 
@@ -1413,6 +1548,7 @@ only works on Windows
 > **LaunchMail**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch default mail client
+`Key.LaunchMail`
 
 #### Platform
 
@@ -1425,6 +1561,7 @@ only works on Windows
 > **LaunchMediaSelect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Launch media selector
+`Key.LaunchMediaSelect`
 
 #### Platform
 
@@ -1437,6 +1574,7 @@ only works on Windows
 > **LeftAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Alt/Menu
+`Key.LeftAlt`
 
 ***
 
@@ -1445,6 +1583,7 @@ Left Alt/Menu
 > **LeftArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Left
+`Key.LeftArrow`
 
 ***
 
@@ -1453,6 +1592,7 @@ Arrow: Left
 > **LeftControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Control
+`Key.LeftControl`
 
 ***
 
@@ -1461,6 +1601,7 @@ Left Control
 > **LeftShift**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Shift
+`Key.LeftShift`
 
 ***
 
@@ -1469,6 +1610,7 @@ Left Shift
 > **LeftWindows**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left Windows / Super key
+`Key.LeftWindows`
 
 #### Platform
 
@@ -1481,6 +1623,7 @@ only works on Windows
 > **Linefeed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Line Feed key
+`Key.Linefeed`
 
 #### Platform
 
@@ -1493,6 +1636,7 @@ only works on Linux
 > **M**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'M'
+`Key.M`
 
 ***
 
@@ -1501,6 +1645,7 @@ Letter key 'M'
 > **MediaNextTrack**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Next media track
+`Key.MediaNextTrack`
 
 ***
 
@@ -1509,6 +1654,7 @@ Next media track
 > **MediaPlayPause**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Play/Pause media
+`Key.MediaPlayPause`
 
 ***
 
@@ -1517,6 +1663,7 @@ Play/Pause media
 > **MediaPrevTrack**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Previous media track
+`Key.MediaPrevTrack`
 
 ***
 
@@ -1525,6 +1672,7 @@ Previous media track
 > **MediaStop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Stop media
+`Key.MediaStop`
 
 ***
 
@@ -1533,6 +1681,7 @@ Stop media
 > **Meta**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Meta key (also known as "windows", "super", and "command")
+`Key.Meta`
 
 ***
 
@@ -1541,6 +1690,7 @@ Meta key (also known as "windows", "super", and "command")
 > **MicrophoneMute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Microphone mute
+`Key.MicrophoneMute`
 
 #### Platform
 
@@ -1553,6 +1703,7 @@ only works on Linux
 > **ModeChange**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME mode change
+`Key.ModeChange`
 
 ***
 
@@ -1561,6 +1712,7 @@ IME mode change
 > **Multiply**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad multiply '*'
+`Key.Multiply`
 
 ***
 
@@ -1569,6 +1721,7 @@ Numpad multiply '*'
 > **N**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'N'
+`Key.N`
 
 ***
 
@@ -1577,6 +1730,7 @@ Letter key 'N'
 > **NavigationAccept**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Accept/OK (UWP)
+`Key.NavigationAccept`
 
 #### Platform
 
@@ -1589,6 +1743,7 @@ only works on Windows
 > **NavigationCancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Cancel/Back (UWP)
+`Key.NavigationCancel`
 
 #### Platform
 
@@ -1601,6 +1756,7 @@ only works on Windows
 > **NavigationDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Down (UWP)
+`Key.NavigationDown`
 
 #### Platform
 
@@ -1613,6 +1769,7 @@ only works on Windows
 > **NavigationLeft**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Left (UWP)
+`Key.NavigationLeft`
 
 #### Platform
 
@@ -1625,6 +1782,7 @@ only works on Windows
 > **NavigationMenu**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Menu (UWP)
+`Key.NavigationMenu`
 
 #### Platform
 
@@ -1637,6 +1795,7 @@ only works on Windows
 > **NavigationRight**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Right (UWP)
+`Key.NavigationRight`
 
 #### Platform
 
@@ -1649,6 +1808,7 @@ only works on Windows
 > **NavigationUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: Up (UWP)
+`Key.NavigationUp`
 
 #### Platform
 
@@ -1661,6 +1821,7 @@ only works on Windows
 > **NavigationView**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Navigation: View (UWP)
+`Key.NavigationView`
 
 #### Platform
 
@@ -1673,6 +1834,7 @@ only works on Windows
 > **NoName**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 NoName key (reserved)
+`Key.NoName`
 
 #### Platform
 
@@ -1685,6 +1847,7 @@ only works on Windows
 > **NonConvert**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Non-Convert (cancel conversion)
+`Key.NonConvert`
 
 #### Platform
 
@@ -1697,6 +1860,7 @@ only works on Windows
 > **None**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Placeholder "no key"
+`Key.None`
 
 #### Platform
 
@@ -1709,6 +1873,7 @@ only works on Windows
 > **Num0**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '0' key (not numpad)
+`Key.Num0`
 
 ***
 
@@ -1717,6 +1882,7 @@ Top-row digit '0' key (not numpad)
 > **Num1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '1' key (not numpad)
+`Key.Num1`
 
 ***
 
@@ -1725,6 +1891,7 @@ Top-row digit '1' key (not numpad)
 > **Num2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '2' key (not numpad)
+`Key.Num2`
 
 ***
 
@@ -1733,6 +1900,7 @@ Top-row digit '2' key (not numpad)
 > **Num3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '3' key (not numpad)
+`Key.Num3`
 
 ***
 
@@ -1741,6 +1909,7 @@ Top-row digit '3' key (not numpad)
 > **Num4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '4' key (not numpad)
+`Key.Num4`
 
 ***
 
@@ -1749,6 +1918,7 @@ Top-row digit '4' key (not numpad)
 > **Num5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '5' key (not numpad)
+`Key.Num5`
 
 ***
 
@@ -1757,6 +1927,7 @@ Top-row digit '5' key (not numpad)
 > **Num6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '6' key (not numpad)
+`Key.Num6`
 
 ***
 
@@ -1765,6 +1936,7 @@ Top-row digit '6' key (not numpad)
 > **Num7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '7' key (not numpad)
+`Key.Num7`
 
 ***
 
@@ -1773,6 +1945,7 @@ Top-row digit '7' key (not numpad)
 > **Num8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '8' key (not numpad)
+`Key.Num8`
 
 ***
 
@@ -1781,6 +1954,7 @@ Top-row digit '8' key (not numpad)
 > **Num9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Top-row digit '9' key (not numpad)
+`Key.Num9`
 
 ***
 
@@ -1789,6 +1963,7 @@ Top-row digit '9' key (not numpad)
 > **Numlock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Num Lock toggle
+`Key.Numlock`
 
 ***
 
@@ -1797,6 +1972,7 @@ Num Lock toggle
 > **Numpad0**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '0'
+`Key.Numpad0`
 
 ***
 
@@ -1805,6 +1981,7 @@ Numpad digit '0'
 > **Numpad1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '1'
+`Key.Numpad1`
 
 ***
 
@@ -1813,6 +1990,7 @@ Numpad digit '1'
 > **Numpad2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '2'
+`Key.Numpad2`
 
 ***
 
@@ -1821,6 +1999,7 @@ Numpad digit '2'
 > **Numpad3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '3'
+`Key.Numpad3`
 
 ***
 
@@ -1829,6 +2008,7 @@ Numpad digit '3'
 > **Numpad4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '4'
+`Key.Numpad4`
 
 ***
 
@@ -1837,6 +2017,7 @@ Numpad digit '4'
 > **Numpad5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '5'
+`Key.Numpad5`
 
 ***
 
@@ -1845,6 +2026,7 @@ Numpad digit '5'
 > **Numpad6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '6'
+`Key.Numpad6`
 
 ***
 
@@ -1853,6 +2035,7 @@ Numpad digit '6'
 > **Numpad7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '7'
+`Key.Numpad7`
 
 ***
 
@@ -1861,6 +2044,7 @@ Numpad digit '7'
 > **Numpad8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '8'
+`Key.Numpad8`
 
 ***
 
@@ -1869,6 +2053,7 @@ Numpad digit '8'
 > **Numpad9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad digit '9'
+`Key.Numpad9`
 
 ***
 
@@ -1877,6 +2062,7 @@ Numpad digit '9'
 > **NumpadEnter**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad Enter
+`Key.NumpadEnter`
 
 ***
 
@@ -1885,6 +2071,7 @@ Numpad Enter
 > **O**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'O'
+`Key.O`
 
 ***
 
@@ -1893,6 +2080,7 @@ Letter key 'O'
 > **Oem1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 1
+`Key.OEM1`
 
 #### Platform
 
@@ -1905,6 +2093,7 @@ only works on Windows
 > **Oem102**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 102 (angle bracket/pipe on some layouts)
+`Key.OEM102`
 
 #### Platform
 
@@ -1917,6 +2106,7 @@ only works on Windows
 > **Oem2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 2
+`Key.OEM2`
 
 #### Platform
 
@@ -1929,6 +2119,7 @@ only works on Windows
 > **Oem3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 3 (backtick/tilde on some layouts)
+`Key.OEM3`
 
 #### Platform
 
@@ -1941,6 +2132,7 @@ only works on Windows
 > **Oem4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 4 (left bracket on some layouts)
+`Key.OEM4`
 
 #### Platform
 
@@ -1953,6 +2145,7 @@ only works on Windows
 > **Oem5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 5 (right bracket on some layouts)
+`Key.OEM5`
 
 #### Platform
 
@@ -1965,6 +2158,7 @@ only works on Windows
 > **Oem6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 6 (semicolon on some layouts)
+`Key.OEM6`
 
 #### Platform
 
@@ -1977,6 +2171,7 @@ only works on Windows
 > **Oem7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 7 (quote on some layouts)
+`Key.OEM7`
 
 #### Platform
 
@@ -1989,6 +2184,7 @@ only works on Windows
 > **Oem8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM specific key 8
+`Key.OEM8`
 
 #### Platform
 
@@ -2001,6 +2197,7 @@ only works on Windows
 > **OemAttn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Attention
+`Key.OEMAttn`
 
 #### Platform
 
@@ -2013,6 +2210,7 @@ only works on Windows
 > **OemAuto**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Auto
+`Key.OEMAuto`
 
 #### Platform
 
@@ -2025,6 +2223,7 @@ only works on Windows
 > **OemAx**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Ax
+`Key.OEMAx`
 
 #### Platform
 
@@ -2037,6 +2236,7 @@ only works on Windows
 > **OemBacktab**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Backtab (reverse Tab)
+`Key.OEMBacktab`
 
 #### Platform
 
@@ -2049,6 +2249,7 @@ only works on Windows
 > **OemClear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Clear
+`Key.OEMClear`
 
 #### Platform
 
@@ -2061,6 +2262,7 @@ only works on Windows
 > **OemComma**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Comma ','
+`Key.OEMComma`
 
 #### Platform
 
@@ -2073,6 +2275,7 @@ only works on Windows
 > **OemCopy**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Copy
+`Key.OEMCopy`
 
 #### Platform
 
@@ -2085,6 +2288,7 @@ only works on Windows
 > **OemCusel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Cusel
+`Key.OEMCusel`
 
 #### Platform
 
@@ -2097,6 +2301,7 @@ only works on Windows
 > **OemEnlw**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Enlw
+`Key.OEMEnlw`
 
 #### Platform
 
@@ -2109,6 +2314,7 @@ only works on Windows
 > **OemFinish**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Finish
+`Key.OEMFinish`
 
 #### Platform
 
@@ -2121,6 +2327,7 @@ only works on Windows
 > **OemfjJisho**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Jisho (dictionary)
+`Key.OEMFJJisho`
 
 #### Platform
 
@@ -2133,6 +2340,7 @@ only works on Windows
 > **OemfjLoya**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Loya
+`Key.OEMFJLoya`
 
 #### Platform
 
@@ -2145,6 +2353,7 @@ only works on Windows
 > **OemfjMasshou**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Masshou
+`Key.OEMFJMasshou`
 
 #### Platform
 
@@ -2157,6 +2366,7 @@ only works on Windows
 > **OemfjRoya**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Roya
+`Key.OEMFJRoya`
 
 #### Platform
 
@@ -2169,6 +2379,7 @@ only works on Windows
 > **OemfjTouroku**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM FJ Touroku
+`Key.OEMFJTouroku`
 
 #### Platform
 
@@ -2181,6 +2392,7 @@ only works on Windows
 > **OemJump**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Jump
+`Key.OEMJump`
 
 #### Platform
 
@@ -2193,6 +2405,7 @@ only works on Windows
 > **OemMinus**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Minus '-'
+`Key.OEMMinus`
 
 #### Platform
 
@@ -2205,6 +2418,7 @@ only works on Windows
 > **OemnecEqual**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM NEC Equal '='
+`Key.OEMNECEqual`
 
 #### Platform
 
@@ -2217,6 +2431,7 @@ only works on Windows
 > **Oempa1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM PA1
+`Key.OEMPA1`
 
 #### Platform
 
@@ -2229,6 +2444,7 @@ only works on Windows
 > **Oempa2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM PA2
+`Key.OEMPA2`
 
 #### Platform
 
@@ -2241,6 +2457,7 @@ only works on Windows
 > **Oempa3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM PA3
+`Key.OEMPA3`
 
 #### Platform
 
@@ -2253,6 +2470,7 @@ only works on Windows
 > **OemPeriod**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Period '.'
+`Key.OEMPeriod`
 
 #### Platform
 
@@ -2265,6 +2483,7 @@ only works on Windows
 > **OemPlus**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Plus '+'
+`Key.OEMPlus`
 
 #### Platform
 
@@ -2277,6 +2496,7 @@ only works on Windows
 > **OemReset**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Reset
+`Key.OEMReset`
 
 #### Platform
 
@@ -2289,6 +2509,7 @@ only works on Windows
 > **OemWsctrl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 OEM Wsctrl
+`Key.OEMWsctrl`
 
 #### Platform
 
@@ -2301,6 +2522,7 @@ only works on Windows
 > **Option**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Same as Alt
+`Key.Option`
 
 ***
 
@@ -2309,6 +2531,7 @@ Same as Alt
 > **P**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'P'
+`Key.P`
 
 ***
 
@@ -2317,6 +2540,7 @@ Letter key 'P'
 > **Pa1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 PA1 key
+`Key.PA1`
 
 #### Platform
 
@@ -2329,6 +2553,7 @@ only works on Windows
 > **Packet**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Packet key (used to pass Unicode chars)
+`Key.Packet`
 
 #### Platform
 
@@ -2341,6 +2566,7 @@ only works on Windows
 > **PageDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Page Down
+`Key.PageDown`
 
 ***
 
@@ -2349,6 +2575,7 @@ Page Down
 > **PageUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Page Up
+`Key.PageUp`
 
 ***
 
@@ -2357,6 +2584,7 @@ Page Up
 > **Pause**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Pause key
+`Key.Pause`
 
 ***
 
@@ -2365,6 +2593,7 @@ Pause key
 > **Play**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Media Play
+`Key.Play`
 
 #### Platform
 
@@ -2377,6 +2606,7 @@ only works on Windows
 > **PrintScreen**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Screenshot
+`Key.PrintScreen`
 
 ***
 
@@ -2385,6 +2615,7 @@ Screenshot
 > **Processkey**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 IME Process key
+`Key.Processkey`
 
 #### Platform
 
@@ -2397,6 +2628,7 @@ only works on Windows
 > **Q**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'Q'
+`Key.Q`
 
 ***
 
@@ -2405,6 +2637,7 @@ Letter key 'Q'
 > **R**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'R'
+`Key.R`
 
 ***
 
@@ -2413,6 +2646,7 @@ Letter key 'R'
 > **Redo**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Redo
+`Key.Redo`
 
 #### Platform
 
@@ -2425,6 +2659,7 @@ only works on Linux
 > **Return**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Enter / Return
+`Key.Return`
 
 ***
 
@@ -2433,6 +2668,7 @@ Enter / Return
 > **RightAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Alt/Menu
+`Key.RightAlt`
 
 #### Platform
 
@@ -2445,6 +2681,7 @@ only works on Windows
 > **RightArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Right
+`Key.RightArrow`
 
 ***
 
@@ -2453,6 +2690,7 @@ Arrow: Right
 > **RightControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Control
+`Key.RightControl`
 
 ***
 
@@ -2461,6 +2699,7 @@ Right Control
 > **RightShift**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Shift
+`Key.RightShift`
 
 ***
 
@@ -2469,6 +2708,7 @@ Right Shift
 > **RightWindows**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right Windows / Super key
+`Key.RightWindows`
 
 #### Platform
 
@@ -2481,6 +2721,7 @@ only works on Windows
 > **S**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'S'
+`Key.S`
 
 ***
 
@@ -2489,6 +2730,7 @@ Letter key 'S'
 > **ScriptSwitch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Script switch
+`Key.ScriptSwitch`
 
 #### Platform
 
@@ -2501,6 +2743,7 @@ only works on Linux
 > **Scroll**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scroll key (legacy)
+`Key.Scroll`
 
 #### Platform
 
@@ -2513,6 +2756,7 @@ only works on Windows
 > **ScrollLock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scroll Lock
+`Key.ScrollLock`
 
 #### Platform
 
@@ -2525,6 +2769,7 @@ only works on Linux
 > **Select**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Select key
+`Key.Select`
 
 ***
 
@@ -2533,6 +2778,7 @@ Select key
 > **Separator**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad separator (locale-dependent)
+`Key.Separator`
 
 #### Platform
 
@@ -2545,6 +2791,7 @@ only works on Windows
 > **Shift**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Shift modifier
+`Key.Shift`
 
 ***
 
@@ -2553,6 +2800,7 @@ Shift modifier
 > **ShiftLock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Shift Lock
+`Key.ShiftLock`
 
 #### Platform
 
@@ -2565,6 +2813,7 @@ only works on Linux
 > **Sleep**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 System Sleep
+`Key.Sleep`
 
 #### Platform
 
@@ -2577,6 +2826,7 @@ only works on Windows
 > **Space**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Spacebar
+`Key.Space`
 
 ***
 
@@ -2585,6 +2835,7 @@ Spacebar
 > **Subtract**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Numpad '-' (subtract)
+`Key.Subtract`
 
 ***
 
@@ -2593,6 +2844,7 @@ Numpad '-' (subtract)
 > **SysReq**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 System Request (SysRq)
+`Key.SysReq`
 
 #### Platform
 
@@ -2605,6 +2857,7 @@ only works on Linux
 > **T**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'T'
+`Key.T`
 
 ***
 
@@ -2613,6 +2866,7 @@ Letter key 'T'
 > **Tab**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Tab / focus next
+`Key.Tab`
 
 ***
 
@@ -2621,6 +2875,7 @@ Tab / focus next
 > **U**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'U'
+`Key.U`
 
 ***
 
@@ -2629,6 +2884,7 @@ Letter key 'U'
 > **Undo**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Undo
+`Key.Undo`
 
 #### Platform
 
@@ -2641,6 +2897,7 @@ only works on Linux
 > **UpArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Arrow: Up
+`Key.UpArrow`
 
 ***
 
@@ -2649,6 +2906,7 @@ Arrow: Up
 > **V**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'V'
+`Key.V`
 
 ***
 
@@ -2657,6 +2915,7 @@ Letter key 'V'
 > **VolumeDown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume down
+`Key.VolumeDown`
 
 ***
 
@@ -2665,6 +2924,7 @@ Volume down
 > **VolumeMute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume mute
+`Key.VolumeMute`
 
 ***
 
@@ -2673,6 +2933,7 @@ Volume mute
 > **VolumeUp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume up
+`Key.VolumeUp`
 
 ***
 
@@ -2681,6 +2942,7 @@ Volume up
 > **W**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'W'
+`Key.W`
 
 ***
 
@@ -2689,6 +2951,7 @@ Letter key 'W'
 > **X**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'X'
+`Key.X`
 
 ***
 
@@ -2697,6 +2960,7 @@ Letter key 'X'
 > **Y**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'Y'
+`Key.Y`
 
 ***
 
@@ -2705,6 +2969,7 @@ Letter key 'Y'
 > **Z**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'Z'
+`Key.Z`
 
 ***
 
@@ -2713,6 +2978,7 @@ Letter key 'Z'
 > **Zoom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Zoom key
+`Key.Zoom`
 
 #### Platform
 

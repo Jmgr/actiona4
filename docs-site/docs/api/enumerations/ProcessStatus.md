@@ -16,11 +16,15 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **Dead**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.Dead`
+
 ***
 
 ### Idle
 
 > **Idle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Idle`
 
 ***
 
@@ -28,11 +32,15 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **LockBlocked**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.LockBlocked`
+
 ***
 
 ### Parked
 
 > **Parked**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Parked`
 
 ***
 
@@ -40,11 +48,15 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **Run**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.Run`
+
 ***
 
 ### Sleep
 
 > **Sleep**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Sleep`
 
 ***
 
@@ -52,11 +64,15 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **Stop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.Stop`
+
 ***
 
 ### Suspended
 
 > **Suspended**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Suspended`
 
 ***
 
@@ -64,11 +80,15 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **Tracing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.Tracing`
+
 ***
 
 ### UninterruptibleDiskSleep
 
 > **UninterruptibleDiskSleep**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.UninterruptibleDiskSleep`
 
 ***
 
@@ -76,11 +96,15 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **Unknown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.Unknown`
+
 ***
 
 ### Wakekill
 
 > **Wakekill**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Wakekill`
 
 ***
 
@@ -88,8 +112,12 @@ if (process && process.status === ProcessStatus.Run) {
 
 > **Waking**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`ProcessStatus.Waking`
+
 ***
 
 ### Zombie
 
 > **Zombie**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Zombie`

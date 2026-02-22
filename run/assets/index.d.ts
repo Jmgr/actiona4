@@ -129,8 +129,14 @@ declare function formatBytes(bytes: number): string;
  * @expand
  */
 declare enum FlipDirection {
+    /**
+     * `FlipDirection.Horizontal`
+     */
     Horizontal,
 
+    /**
+     * `FlipDirection.Vertical`
+     */
     Vertical,
 }
 /**
@@ -147,14 +153,29 @@ declare enum FlipDirection {
  * @expand
  */
 declare enum ResizeFilter {
+    /**
+     * `ResizeFilter.Nearest`
+     */
     Nearest,
 
+    /**
+     * `ResizeFilter.Linear`
+     */
     Linear,
 
+    /**
+     * `ResizeFilter.Cubic`
+     */
     Cubic,
 
+    /**
+     * `ResizeFilter.Gaussian`
+     */
     Gaussian,
 
+    /**
+     * `ResizeFilter.Lanczos3`
+     */
     Lanczos3,
 }
 /**
@@ -171,10 +192,19 @@ declare enum ResizeFilter {
  * @expand
  */
 declare enum Interpolation {
+    /**
+     * `Interpolation.Nearest`
+     */
     Nearest,
 
+    /**
+     * `Interpolation.Bilinear`
+     */
     Bilinear,
 
+    /**
+     * `Interpolation.Bicubic`
+     */
     Bicubic,
 }
 /**
@@ -189,10 +219,19 @@ declare enum Interpolation {
  * @expand
  */
 declare enum TextHorizontalAlign {
+    /**
+     * `TextHorizontalAlign.Left`
+     */
     Left,
 
+    /**
+     * `TextHorizontalAlign.Center`
+     */
     Center,
 
+    /**
+     * `TextHorizontalAlign.Right`
+     */
     Right,
 }
 /**
@@ -207,10 +246,19 @@ declare enum TextHorizontalAlign {
  * @expand
  */
 declare enum TextVerticalAlign {
+    /**
+     * `TextVerticalAlign.Top`
+     */
     Top,
 
+    /**
+     * `TextVerticalAlign.Middle`
+     */
     Middle,
 
+    /**
+     * `TextVerticalAlign.Bottom`
+     */
     Bottom,
 }
 /**
@@ -228,18 +276,39 @@ declare enum TextVerticalAlign {
  * @expand
  */
 declare enum FindImageStage {
+    /**
+     * `FindImageStage.Capturing`
+     */
     Capturing,
 
+    /**
+     * `FindImageStage.Preparing`
+     */
     Preparing,
 
+    /**
+     * `FindImageStage.Downscaling`
+     */
     Downscaling,
 
+    /**
+     * `FindImageStage.Matching`
+     */
     Matching,
 
+    /**
+     * `FindImageStage.Filtering`
+     */
     Filtering,
 
+    /**
+     * `FindImageStage.ComputingResults`
+     */
     ComputingResults,
 
+    /**
+     * `FindImageStage.Finished`
+     */
     Finished,
 }
 /**
@@ -258,10 +327,19 @@ declare enum FindImageStage {
  * @expand
  */
 declare enum Direction {
+    /**
+     * `Direction.Press`
+     */
     Press,
 
+    /**
+     * `Direction.Release`
+     */
     Release,
 
+    /**
+     * `Direction.Click`
+     */
     Click,
 }
 /**
@@ -279,1475 +357,1741 @@ declare enum Direction {
 declare enum Key {
     /**
      * Top-row digit '0' key (not numpad)
+     * `Key.Num0`
      */
     Num0,
 
     /**
      * Top-row digit '1' key (not numpad)
+     * `Key.Num1`
      */
     Num1,
 
     /**
      * Top-row digit '2' key (not numpad)
+     * `Key.Num2`
      */
     Num2,
 
     /**
      * Top-row digit '3' key (not numpad)
+     * `Key.Num3`
      */
     Num3,
 
     /**
      * Top-row digit '4' key (not numpad)
+     * `Key.Num4`
      */
     Num4,
 
     /**
      * Top-row digit '5' key (not numpad)
+     * `Key.Num5`
      */
     Num5,
 
     /**
      * Top-row digit '6' key (not numpad)
+     * `Key.Num6`
      */
     Num6,
 
     /**
      * Top-row digit '7' key (not numpad)
+     * `Key.Num7`
      */
     Num7,
 
     /**
      * Top-row digit '8' key (not numpad)
+     * `Key.Num8`
      */
     Num8,
 
     /**
      * Top-row digit '9' key (not numpad)
+     * `Key.Num9`
      */
     Num9,
 
     /**
      * Letter key 'A'
+     * `Key.A`
      */
     A,
 
     /**
      * Letter key 'B'
+     * `Key.B`
      */
     B,
 
     /**
      * Letter key 'C'
+     * `Key.C`
      */
     C,
 
     /**
      * Letter key 'D'
+     * `Key.D`
      */
     D,
 
     /**
      * Letter key 'E'
+     * `Key.E`
      */
     E,
 
     /**
      * Letter key 'F'
+     * `Key.F`
      */
     F,
 
     /**
      * Letter key 'G'
+     * `Key.G`
      */
     G,
 
     /**
      * Letter key 'H'
+     * `Key.H`
      */
     H,
 
     /**
      * Letter key 'I'
+     * `Key.I`
      */
     I,
 
     /**
      * Letter key 'J'
+     * `Key.J`
      */
     J,
 
     /**
      * Letter key 'K'
+     * `Key.K`
      */
     K,
 
     /**
      * Letter key 'L'
+     * `Key.L`
      */
     L,
 
     /**
      * Letter key 'M'
+     * `Key.M`
      */
     M,
 
     /**
      * Letter key 'N'
+     * `Key.N`
      */
     N,
 
     /**
      * Letter key 'O'
+     * `Key.O`
      */
     O,
 
     /**
      * Letter key 'P'
+     * `Key.P`
      */
     P,
 
     /**
      * Letter key 'Q'
+     * `Key.Q`
      */
     Q,
 
     /**
      * Letter key 'R'
+     * `Key.R`
      */
     R,
 
     /**
      * Letter key 'S'
+     * `Key.S`
      */
     S,
 
     /**
      * Letter key 'T'
+     * `Key.T`
      */
     T,
 
     /**
      * Letter key 'U'
+     * `Key.U`
      */
     U,
 
     /**
      * Letter key 'V'
+     * `Key.V`
      */
     V,
 
     /**
      * Letter key 'W'
+     * `Key.W`
      */
     W,
 
     /**
      * Letter key 'X'
+     * `Key.X`
      */
     X,
 
     /**
      * Letter key 'Y'
+     * `Key.Y`
      */
     Y,
 
     /**
      * Letter key 'Z'
+     * `Key.Z`
      */
     Z,
 
     /**
      * Brazilian ABNT keyboard key C1
+     * `Key.AbntC1`
      * @platform only works on Windows
      */
     AbntC1,
 
     /**
      * Brazilian ABNT keyboard key C2
+     * `Key.AbntC2`
      * @platform only works on Windows
      */
     AbntC2,
 
     /**
      * IME “Accept” / commit conversion
+     * `Key.Accept`
      * @platform only works on Windows
      */
     Accept,
 
     /**
      * Numpad '+' (addition) key
+     * `Key.Add`
      */
     Add,
 
     /**
      * Alt (Alternate) modifier key
+     * `Key.Alt`
      */
     Alt,
 
     /**
      * Application/Menu key
+     * `Key.Apps`
      * @platform only works on Windows
      */
     Apps,
 
     /**
      * Attention key (legacy/rare)
+     * `Key.Attention`
      * @platform only works on Windows
      */
     Attention,
 
     /**
      * Backspace / Delete-previous-character
+     * `Key.Backspace`
      */
     Backspace,
 
     /**
      * Break key (X11/Linux)
+     * `Key.Break`
      * @platform only works on Linux
      */
     Break,
 
     /**
      * Begin key
+     * `Key.Begin`
      * @platform only works on Linux
      */
     Begin,
 
     /**
      * Browser Back
+     * `Key.BrowserBack`
      * @platform only works on Windows
      */
     BrowserBack,
 
     /**
      * Browser Favorites
+     * `Key.BrowserFavorites`
      * @platform only works on Windows
      */
     BrowserFavorites,
 
     /**
      * Browser Forward
+     * `Key.BrowserForward`
      * @platform only works on Windows
      */
     BrowserForward,
 
     /**
      * Browser Home
+     * `Key.BrowserHome`
      * @platform only works on Windows
      */
     BrowserHome,
 
     /**
      * Browser Refresh
+     * `Key.BrowserRefresh`
      * @platform only works on Windows
      */
     BrowserRefresh,
 
     /**
      * Browser Search
+     * `Key.BrowserSearch`
      * @platform only works on Windows
      */
     BrowserSearch,
 
     /**
      * Browser Stop
+     * `Key.BrowserStop`
      * @platform only works on Windows
      */
     BrowserStop,
 
     /**
      * Cancel key (legacy)
+     * `Key.Cancel`
      */
     Cancel,
 
     /**
      * Caps Lock toggle
+     * `Key.CapsLock`
      */
     CapsLock,
 
     /**
      * Clear key
+     * `Key.Clear`
      */
     Clear,
 
     /**
      * Control (Ctrl) modifier key
+     * `Key.Control`
      */
     Control,
 
     /**
      * IME Convert (start/confirm conversion)
+     * `Key.Convert`
      * @platform only works on Windows
      */
     Convert,
 
     /**
      * Cursor Select (CRSel)
+     * `Key.CursorSelect`
      * @platform only works on Windows
      */
     CursorSelect,
 
     /**
      * IME: switch to alphanumeric
+     * `Key.DBEAlphanumeric`
      * @platform only works on Windows
      */
     DbeAlphanumeric,
 
     /**
      * IME: code input mode
+     * `Key.DBECodeinput`
      * @platform only works on Windows
      */
     DbeCodeinput,
 
     /**
      * IME: determine string
+     * `Key.DBEDetermineString`
      * @platform only works on Windows
      */
     DbeDetermineString,
 
     /**
      * IME: enter dialog conversion mode
+     * `Key.DBEEnterDLGConversionMode`
      * @platform only works on Windows
      */
     DbeEnterDlgConversionMode,
 
     /**
      * IME: open configuration
+     * `Key.DBEEnterIMEConfigMode`
      * @platform only works on Windows
      */
     DbeEnterImeConfigMode,
 
     /**
      * IME: word register mode
+     * `Key.DBEEnterWordRegisterMode`
      * @platform only works on Windows
      */
     DbeEnterWordRegisterMode,
 
     /**
      * IME: flush/reset composition string
+     * `Key.DBEFlushString`
      * @platform only works on Windows
      */
     DbeFlushString,
 
     /**
      * IME: Hiragana
+     * `Key.DBEHiragana`
      * @platform only works on Windows
      */
     DbeHiragana,
 
     /**
      * IME: Katakana
+     * `Key.DBEKatakana`
      * @platform only works on Windows
      */
     DbeKatakana,
 
     /**
      * IME: no code point
+     * `Key.DBENoCodepoint`
      * @platform only works on Windows
      */
     DbeNoCodepoint,
 
     /**
      * IME: no roman
+     * `Key.DBENoRoman`
      * @platform only works on Windows
      */
     DbeNoRoman,
 
     /**
      * IME: Roman
+     * `Key.DBERoman`
      * @platform only works on Windows
      */
     DbeRoman,
 
     /**
      * IME: SBCS character
+     * `Key.DBESBCSChar`
      * @platform only works on Windows
      */
     DbesbcsChar,
 
     /**
      * IME: SBCS/Special char
+     * `Key.DBESChar`
      * @platform only works on Windows
      */
     DbesChar,
 
     /**
      * Numpad decimal point '.'
+     * `Key.Decimal`
      */
     Decimal,
 
     /**
      * Delete / Forward delete
+     * `Key.Delete`
      */
     Delete,
 
     /**
      * Numpad divide '/'
+     * `Key.Divide`
      */
     Divide,
 
     /**
      * Arrow: Down
+     * `Key.DownArrow`
      */
     DownArrow,
 
     /**
      * End key
+     * `Key.End`
      */
     End,
 
     /**
      * Erase EOF
+     * `Key.Ereof`
      * @platform only works on Windows
      */
     Ereof,
 
     /**
      * Escape key
+     * `Key.Escape`
      */
     Escape,
 
     /**
      * Execute key
+     * `Key.Execute`
      */
     Execute,
 
     /**
      * Extend Selection (ExSel)
+     * `Key.Exsel`
      * @platform only works on Windows
      */
     Exsel,
 
     /**
      * Function key F1
+     * `Key.F1`
      */
     F1,
 
     /**
      * Function key F2
+     * `Key.F2`
      */
     F2,
 
     /**
      * Function key F3
+     * `Key.F3`
      */
     F3,
 
     /**
      * Function key F4
+     * `Key.F4`
      */
     F4,
 
     /**
      * Function key F5
+     * `Key.F5`
      */
     F5,
 
     /**
      * Function key F6
+     * `Key.F6`
      */
     F6,
 
     /**
      * Function key F7
+     * `Key.F7`
      */
     F7,
 
     /**
      * Function key F8
+     * `Key.F8`
      */
     F8,
 
     /**
      * Function key F9
+     * `Key.F9`
      */
     F9,
 
     /**
      * Function key F10
+     * `Key.F10`
      */
     F10,
 
     /**
      * Function key F11
+     * `Key.F11`
      */
     F11,
 
     /**
      * Function key F12
+     * `Key.F12`
      */
     F12,
 
     /**
      * Function key F13
+     * `Key.F13`
      */
     F13,
 
     /**
      * Function key F14
+     * `Key.F14`
      */
     F14,
 
     /**
      * Function key F15
+     * `Key.F15`
      */
     F15,
 
     /**
      * Function key F16
+     * `Key.F16`
      */
     F16,
 
     /**
      * Function key F17
+     * `Key.F17`
      */
     F17,
 
     /**
      * Function key F18
+     * `Key.F18`
      */
     F18,
 
     /**
      * Function key F19
+     * `Key.F19`
      */
     F19,
 
     /**
      * Function key F20
+     * `Key.F20`
      */
     F20,
 
     /**
      * Function key F21
+     * `Key.F21`
      */
     F21,
 
     /**
      * Function key F22
+     * `Key.F22`
      */
     F22,
 
     /**
      * Function key F23
+     * `Key.F23`
      */
     F23,
 
     /**
      * Function key F24
+     * `Key.F24`
      */
     F24,
 
     /**
      * Function key F25
+     * `Key.F25`
      * @platform only works on Linux
      */
     F25,
 
     /**
      * Function key F26
+     * `Key.F26`
      * @platform only works on Linux
      */
     F26,
 
     /**
      * Function key F27
+     * `Key.F27`
      * @platform only works on Linux
      */
     F27,
 
     /**
      * Function key F28
+     * `Key.F28`
      * @platform only works on Linux
      */
     F28,
 
     /**
      * Function key F29
+     * `Key.F29`
      * @platform only works on Linux
      */
     F29,
 
     /**
      * Function key F30
+     * `Key.F30`
      * @platform only works on Linux
      */
     F30,
 
     /**
      * Function key F31
+     * `Key.F31`
      * @platform only works on Linux
      */
     F31,
 
     /**
      * Function key F32
+     * `Key.F32`
      * @platform only works on Linux
      */
     F32,
 
     /**
      * Function key F33
+     * `Key.F33`
      * @platform only works on Linux
      */
     F33,
 
     /**
      * Function key F34
+     * `Key.F34`
      * @platform only works on Linux
      */
     F34,
 
     /**
      * Function key F35
+     * `Key.F35`
      * @platform only works on Linux
      */
     F35,
 
     /**
      * IME Final (end conversion)
+     * `Key.Final`
      * @platform only works on Windows
      */
     Final,
 
     /**
      * Find key
+     * `Key.Find`
      * @platform only works on Linux
      */
     Find,
 
     /**
      * Gamepad: A button
+     * `Key.GamepadA`
      * @platform only works on Windows
      */
     GamepadA,
 
     /**
      * Gamepad: B button
+     * `Key.GamepadB`
      * @platform only works on Windows
      */
     GamepadB,
 
     /**
      * Gamepad: D-Pad Down
+     * `Key.GamepadDPadDown`
      * @platform only works on Windows
      */
     GamepadDPadDown,
 
     /**
      * Gamepad: D-Pad Left
+     * `Key.GamepadDPadLeft`
      * @platform only works on Windows
      */
     GamepadDPadLeft,
 
     /**
      * Gamepad: D-Pad Right
+     * `Key.GamepadDPadRight`
      * @platform only works on Windows
      */
     GamepadDPadRight,
 
     /**
      * Gamepad: D-Pad Up
+     * `Key.GamepadDPadUp`
      * @platform only works on Windows
      */
     GamepadDPadUp,
 
     /**
      * Gamepad: Left shoulder (L1)
+     * `Key.GamepadLeftShoulder`
      * @platform only works on Windows
      */
     GamepadLeftShoulder,
 
     /**
      * Gamepad: Left thumbstick button (L3)
+     * `Key.GamepadLeftThumbstickButton`
      * @platform only works on Windows
      */
     GamepadLeftThumbstickButton,
 
     /**
      * Gamepad: Left thumbstick down
+     * `Key.GamepadLeftThumbstickDown`
      * @platform only works on Windows
      */
     GamepadLeftThumbstickDown,
 
     /**
      * Gamepad: Left thumbstick left
+     * `Key.GamepadLeftThumbstickLeft`
      * @platform only works on Windows
      */
     GamepadLeftThumbstickLeft,
 
     /**
      * Gamepad: Left thumbstick right
+     * `Key.GamepadLeftThumbstickRight`
      * @platform only works on Windows
      */
     GamepadLeftThumbstickRight,
 
     /**
      * Gamepad: Left thumbstick up
+     * `Key.GamepadLeftThumbstickUp`
      * @platform only works on Windows
      */
     GamepadLeftThumbstickUp,
 
     /**
      * Gamepad: Left trigger (L2)
+     * `Key.GamepadLeftTrigger`
      * @platform only works on Windows
      */
     GamepadLeftTrigger,
 
     /**
      * Gamepad: Menu / Start
+     * `Key.GamepadMenu`
      * @platform only works on Windows
      */
     GamepadMenu,
 
     /**
      * Gamepad: Right shoulder (R1)
+     * `Key.GamepadRightShoulder`
      * @platform only works on Windows
      */
     GamepadRightShoulder,
 
     /**
      * Gamepad: Right thumbstick button (R3)
+     * `Key.GamepadRightThumbstickButton`
      * @platform only works on Windows
      */
     GamepadRightThumbstickButton,
 
     /**
      * Gamepad: Right thumbstick down
+     * `Key.GamepadRightThumbstickDown`
      * @platform only works on Windows
      */
     GamepadRightThumbstickDown,
 
     /**
      * Gamepad: Right thumbstick left
+     * `Key.GamepadRightThumbstickLeft`
      * @platform only works on Windows
      */
     GamepadRightThumbstickLeft,
 
     /**
      * Gamepad: Right thumbstick right
+     * `Key.GamepadRightThumbstickRight`
      * @platform only works on Windows
      */
     GamepadRightThumbstickRight,
 
     /**
      * Gamepad: Right thumbstick up
+     * `Key.GamepadRightThumbstickUp`
      * @platform only works on Windows
      */
     GamepadRightThumbstickUp,
 
     /**
      * Gamepad: Right trigger (R2)
+     * `Key.GamepadRightTrigger`
      * @platform only works on Windows
      */
     GamepadRightTrigger,
 
     /**
      * Gamepad: View / Back
+     * `Key.GamepadView`
      * @platform only works on Windows
      */
     GamepadView,
 
     /**
      * Gamepad: X button
+     * `Key.GamepadX`
      * @platform only works on Windows
      */
     GamepadX,
 
     /**
      * Gamepad: Y button
+     * `Key.GamepadY`
      * @platform only works on Windows
      */
     GamepadY,
 
     /**
      * Hangeul toggle (Korean layout)
+     * `Key.Hangeul`
      * @platform only works on Windows
      */
     Hangeul,
 
     /**
      * Hangul toggle (Korean layout)
+     * `Key.Hangul`
      */
     Hangul,
 
     /**
      * Hanja toggle (Chinese characters on Korean layout)
+     * `Key.Hanja`
      */
     Hanja,
 
     /**
      * Help key
+     * `Key.Help`
      */
     Help,
 
     /**
      * Home key
+     * `Key.Home`
      */
     Home,
 
     /**
      * ICO (legacy) key 00
+     * `Key.Ico00`
      * @platform only works on Windows
      */
     Ico00,
 
     /**
      * ICO (legacy) Clear
+     * `Key.IcoClear`
      * @platform only works on Windows
      */
     IcoClear,
 
     /**
      * ICO (legacy) Help
+     * `Key.IcoHelp`
      * @platform only works on Windows
      */
     IcoHelp,
 
     /**
      * IME Off (disable IME)
+     * `Key.IMEOff`
      * @platform only works on Windows
      */
     ImeOff,
 
     /**
      * IME On (enable IME)
+     * `Key.IMEOn`
      * @platform only works on Windows
      */
     ImeOn,
 
     /**
      * Insert key
+     * `Key.Insert`
      */
     Insert,
 
     /**
      * IME: Junja mode
+     * `Key.Junja`
      * @platform only works on Windows
      */
     Junja,
 
     /**
      * IME: Kana mode
+     * `Key.Kana`
      * @platform only works on Windows
      */
     Kana,
 
     /**
      * Kanji toggle (Japanese layout)
+     * `Key.Kanji`
      */
     Kanji,
 
     /**
      * Launch application 1
+     * `Key.LaunchApp1`
      * @platform only works on Windows
      */
     LaunchApp1,
 
     /**
      * Launch application 2
+     * `Key.LaunchApp2`
      * @platform only works on Windows
      */
     LaunchApp2,
 
     /**
      * Launch default mail client
+     * `Key.LaunchMail`
      * @platform only works on Windows
      */
     LaunchMail,
 
     /**
      * Launch media selector
+     * `Key.LaunchMediaSelect`
      * @platform only works on Windows
      */
     LaunchMediaSelect,
 
     /**
      * Left Control
+     * `Key.LeftControl`
      */
     LeftControl,
 
     /**
      * Arrow: Left
+     * `Key.LeftArrow`
      */
     LeftArrow,
 
     /**
      * Line Feed key
+     * `Key.Linefeed`
      * @platform only works on Linux
      */
     Linefeed,
 
     /**
      * Left Alt/Menu
+     * `Key.LeftAlt`
      */
     LeftAlt,
 
     /**
      * Left Shift
+     * `Key.LeftShift`
      */
     LeftShift,
 
     /**
      * Left Windows / Super key
+     * `Key.LeftWindows`
      * @platform only works on Windows
      */
     LeftWindows,
 
     /**
      * Next media track
+     * `Key.MediaNextTrack`
      */
     MediaNextTrack,
 
     /**
      * Play/Pause media
+     * `Key.MediaPlayPause`
      */
     MediaPlayPause,
 
     /**
      * Previous media track
+     * `Key.MediaPrevTrack`
      */
     MediaPrevTrack,
 
     /**
      * Stop media
+     * `Key.MediaStop`
      */
     MediaStop,
 
     /**
      * Meta key (also known as "windows", "super", and "command")
+     * `Key.Meta`
      */
     Meta,
 
     /**
      * IME mode change
+     * `Key.ModeChange`
      */
     ModeChange,
 
     /**
      * Numpad multiply '*'
+     * `Key.Multiply`
      */
     Multiply,
 
     /**
      * Navigation: Accept/OK (UWP)
+     * `Key.NavigationAccept`
      * @platform only works on Windows
      */
     NavigationAccept,
 
     /**
      * Navigation: Cancel/Back (UWP)
+     * `Key.NavigationCancel`
      * @platform only works on Windows
      */
     NavigationCancel,
 
     /**
      * Navigation: Down (UWP)
+     * `Key.NavigationDown`
      * @platform only works on Windows
      */
     NavigationDown,
 
     /**
      * Navigation: Left (UWP)
+     * `Key.NavigationLeft`
      * @platform only works on Windows
      */
     NavigationLeft,
 
     /**
      * Navigation: Menu (UWP)
+     * `Key.NavigationMenu`
      * @platform only works on Windows
      */
     NavigationMenu,
 
     /**
      * Navigation: Right (UWP)
+     * `Key.NavigationRight`
      * @platform only works on Windows
      */
     NavigationRight,
 
     /**
      * Navigation: Up (UWP)
+     * `Key.NavigationUp`
      * @platform only works on Windows
      */
     NavigationUp,
 
     /**
      * Navigation: View (UWP)
+     * `Key.NavigationView`
      * @platform only works on Windows
      */
     NavigationView,
 
     /**
      * NoName key (reserved)
+     * `Key.NoName`
      * @platform only works on Windows
      */
     NoName,
 
     /**
      * IME Non-Convert (cancel conversion)
+     * `Key.NonConvert`
      * @platform only works on Windows
      */
     NonConvert,
 
     /**
      * Placeholder "no key"
+     * `Key.None`
      * @platform only works on Windows
      */
     None,
 
     /**
      * Num Lock toggle
+     * `Key.Numlock`
      */
     Numlock,
 
     /**
      * Numpad digit '0'
+     * `Key.Numpad0`
      */
     Numpad0,
 
     /**
      * Numpad digit '1'
+     * `Key.Numpad1`
      */
     Numpad1,
 
     /**
      * Numpad digit '2'
+     * `Key.Numpad2`
      */
     Numpad2,
 
     /**
      * Numpad digit '3'
+     * `Key.Numpad3`
      */
     Numpad3,
 
     /**
      * Numpad digit '4'
+     * `Key.Numpad4`
      */
     Numpad4,
 
     /**
      * Numpad digit '5'
+     * `Key.Numpad5`
      */
     Numpad5,
 
     /**
      * Numpad digit '6'
+     * `Key.Numpad6`
      */
     Numpad6,
 
     /**
      * Numpad digit '7'
+     * `Key.Numpad7`
      */
     Numpad7,
 
     /**
      * Numpad digit '8'
+     * `Key.Numpad8`
      */
     Numpad8,
 
     /**
      * Numpad digit '9'
+     * `Key.Numpad9`
      */
     Numpad9,
 
     /**
      * Numpad Enter
+     * `Key.NumpadEnter`
      */
     NumpadEnter,
 
     /**
      * OEM specific key 1
+     * `Key.OEM1`
      * @platform only works on Windows
      */
     Oem1,
 
     /**
      * OEM specific key 102 (angle bracket/pipe on some layouts)
+     * `Key.OEM102`
      * @platform only works on Windows
      */
     Oem102,
 
     /**
      * OEM specific key 2
+     * `Key.OEM2`
      * @platform only works on Windows
      */
     Oem2,
 
     /**
      * OEM specific key 3 (backtick/tilde on some layouts)
+     * `Key.OEM3`
      * @platform only works on Windows
      */
     Oem3,
 
     /**
      * OEM specific key 4 (left bracket on some layouts)
+     * `Key.OEM4`
      * @platform only works on Windows
      */
     Oem4,
 
     /**
      * OEM specific key 5 (right bracket on some layouts)
+     * `Key.OEM5`
      * @platform only works on Windows
      */
     Oem5,
 
     /**
      * OEM specific key 6 (semicolon on some layouts)
+     * `Key.OEM6`
      * @platform only works on Windows
      */
     Oem6,
 
     /**
      * OEM specific key 7 (quote on some layouts)
+     * `Key.OEM7`
      * @platform only works on Windows
      */
     Oem7,
 
     /**
      * OEM specific key 8
+     * `Key.OEM8`
      * @platform only works on Windows
      */
     Oem8,
 
     /**
      * OEM Attention
+     * `Key.OEMAttn`
      * @platform only works on Windows
      */
     OemAttn,
 
     /**
      * OEM Auto
+     * `Key.OEMAuto`
      * @platform only works on Windows
      */
     OemAuto,
 
     /**
      * OEM Ax
+     * `Key.OEMAx`
      * @platform only works on Windows
      */
     OemAx,
 
     /**
      * OEM Backtab (reverse Tab)
+     * `Key.OEMBacktab`
      * @platform only works on Windows
      */
     OemBacktab,
 
     /**
      * OEM Clear
+     * `Key.OEMClear`
      * @platform only works on Windows
      */
     OemClear,
 
     /**
      * OEM Comma ','
+     * `Key.OEMComma`
      * @platform only works on Windows
      */
     OemComma,
 
     /**
      * OEM Copy
+     * `Key.OEMCopy`
      * @platform only works on Windows
      */
     OemCopy,
 
     /**
      * OEM Cusel
+     * `Key.OEMCusel`
      * @platform only works on Windows
      */
     OemCusel,
 
     /**
      * OEM Enlw
+     * `Key.OEMEnlw`
      * @platform only works on Windows
      */
     OemEnlw,
 
     /**
      * OEM Finish
+     * `Key.OEMFinish`
      * @platform only works on Windows
      */
     OemFinish,
 
     /**
      * OEM FJ Jisho (dictionary)
+     * `Key.OEMFJJisho`
      * @platform only works on Windows
      */
     OemfjJisho,
 
     /**
      * OEM FJ Loya
+     * `Key.OEMFJLoya`
      * @platform only works on Windows
      */
     OemfjLoya,
 
     /**
      * OEM FJ Masshou
+     * `Key.OEMFJMasshou`
      * @platform only works on Windows
      */
     OemfjMasshou,
 
     /**
      * OEM FJ Roya
+     * `Key.OEMFJRoya`
      * @platform only works on Windows
      */
     OemfjRoya,
 
     /**
      * OEM FJ Touroku
+     * `Key.OEMFJTouroku`
      * @platform only works on Windows
      */
     OemfjTouroku,
 
     /**
      * OEM Jump
+     * `Key.OEMJump`
      * @platform only works on Windows
      */
     OemJump,
 
     /**
      * OEM Minus '-'
+     * `Key.OEMMinus`
      * @platform only works on Windows
      */
     OemMinus,
 
     /**
      * OEM NEC Equal '='
+     * `Key.OEMNECEqual`
      * @platform only works on Windows
      */
     OemnecEqual,
 
     /**
      * OEM PA1
+     * `Key.OEMPA1`
      * @platform only works on Windows
      */
     Oempa1,
 
     /**
      * OEM PA2
+     * `Key.OEMPA2`
      * @platform only works on Windows
      */
     Oempa2,
 
     /**
      * OEM PA3
+     * `Key.OEMPA3`
      * @platform only works on Windows
      */
     Oempa3,
 
     /**
      * OEM Period '.'
+     * `Key.OEMPeriod`
      * @platform only works on Windows
      */
     OemPeriod,
 
     /**
      * OEM Plus '+'
+     * `Key.OEMPlus`
      * @platform only works on Windows
      */
     OemPlus,
 
     /**
      * OEM Reset
+     * `Key.OEMReset`
      * @platform only works on Windows
      */
     OemReset,
 
     /**
      * OEM Wsctrl
+     * `Key.OEMWsctrl`
      * @platform only works on Windows
      */
     OemWsctrl,
 
     /**
      * Same as Alt
+     * `Key.Option`
      */
     Option,
 
     /**
      * PA1 key
+     * `Key.PA1`
      * @platform only works on Windows
      */
     Pa1,
 
     /**
      * Packet key (used to pass Unicode chars)
+     * `Key.Packet`
      * @platform only works on Windows
      */
     Packet,
 
     /**
      * Page Down
+     * `Key.PageDown`
      */
     PageDown,
 
     /**
      * Page Up
+     * `Key.PageUp`
      */
     PageUp,
 
     /**
      * Pause key
+     * `Key.Pause`
      */
     Pause,
 
     /**
      * Media Play
+     * `Key.Play`
      * @platform only works on Windows
      */
     Play,
 
     /**
      * Screenshot
+     * `Key.PrintScreen`
      */
     PrintScreen,
 
     /**
      * IME Process key
+     * `Key.Processkey`
      * @platform only works on Windows
      */
     Processkey,
 
     /**
      * Right Control
+     * `Key.RightControl`
      */
     RightControl,
 
     /**
      * Redo
+     * `Key.Redo`
      * @platform only works on Linux
      */
     Redo,
 
     /**
      * Enter / Return
+     * `Key.Return`
      */
     Return,
 
     /**
      * Arrow: Right
+     * `Key.RightArrow`
      */
     RightArrow,
 
     /**
      * Right Alt/Menu
+     * `Key.RightAlt`
      * @platform only works on Windows
      */
     RightAlt,
 
     /**
      * Right Shift
+     * `Key.RightShift`
      */
     RightShift,
 
     /**
      * Right Windows / Super key
+     * `Key.RightWindows`
      * @platform only works on Windows
      */
     RightWindows,
 
     /**
      * Scroll key (legacy)
+     * `Key.Scroll`
      * @platform only works on Windows
      */
     Scroll,
 
     /**
      * Scroll Lock
+     * `Key.ScrollLock`
      * @platform only works on Linux
      */
     ScrollLock,
 
     /**
      * Select key
+     * `Key.Select`
      */
     Select,
 
     /**
      * Script switch
+     * `Key.ScriptSwitch`
      * @platform only works on Linux
      */
     ScriptSwitch,
 
     /**
      * Numpad separator (locale-dependent)
+     * `Key.Separator`
      * @platform only works on Windows
      */
     Separator,
 
     /**
      * Shift modifier
+     * `Key.Shift`
      */
     Shift,
 
     /**
      * Shift Lock
+     * `Key.ShiftLock`
      * @platform only works on Linux
      */
     ShiftLock,
 
     /**
      * System Sleep
+     * `Key.Sleep`
      * @platform only works on Windows
      */
     Sleep,
 
     /**
      * Spacebar
+     * `Key.Space`
      */
     Space,
 
     /**
      * Numpad '-' (subtract)
+     * `Key.Subtract`
      */
     Subtract,
 
     /**
      * System Request (SysRq)
+     * `Key.SysReq`
      * @platform only works on Linux
      */
     SysReq,
 
     /**
      * Tab / focus next
+     * `Key.Tab`
      */
     Tab,
 
     /**
      * Undo
+     * `Key.Undo`
      * @platform only works on Linux
      */
     Undo,
 
     /**
      * Arrow: Up
+     * `Key.UpArrow`
      */
     UpArrow,
 
     /**
      * Volume down
+     * `Key.VolumeDown`
      */
     VolumeDown,
 
     /**
      * Volume mute
+     * `Key.VolumeMute`
      */
     VolumeMute,
 
     /**
      * Volume up
+     * `Key.VolumeUp`
      */
     VolumeUp,
 
     /**
      * Microphone mute
+     * `Key.MicrophoneMute`
      * @platform only works on Linux
      */
     MicrophoneMute,
 
     /**
      * Zoom key
+     * `Key.Zoom`
      * @platform only works on Windows
      */
     Zoom,
@@ -1763,10 +2107,19 @@ declare enum KeyError {
  * @expand
  */
 declare enum NotificationUrgency {
+    /**
+     * `NotificationUrgency.Low`
+     */
     Low,
 
+    /**
+     * `NotificationUrgency.Normal`
+     */
     Normal,
 
+    /**
+     * `NotificationUrgency.Critical`
+     */
     Critical,
 }
 /**
@@ -1776,12 +2129,24 @@ declare enum NotificationUrgency {
  * @expand
  */
 declare enum NotificationScenario {
+    /**
+     * `NotificationScenario.Reminder`
+     */
     Reminder,
 
+    /**
+     * `NotificationScenario.Alarm`
+     */
     Alarm,
 
+    /**
+     * `NotificationScenario.IncomingCall`
+     */
     IncomingCall,
 
+    /**
+     * `NotificationScenario.Urgent`
+     */
     Urgent,
 }
 /**
@@ -1790,56 +2155,134 @@ declare enum NotificationScenario {
  * @platform only works on Windows
  */
 declare enum NotificationSound {
+    /**
+     * `NotificationSound.Default`
+     */
     Default,
 
+    /**
+     * `NotificationSound.IM`
+     */
     Im,
 
+    /**
+     * `NotificationSound.Mail`
+     */
     Mail,
 
+    /**
+     * `NotificationSound.Reminder`
+     */
     Reminder,
 
+    /**
+     * `NotificationSound.SMS`
+     */
     Sms,
 
+    /**
+     * `NotificationSound.None`
+     */
     None,
 
+    /**
+     * `NotificationSound.LoopingAlarm`
+     */
     LoopingAlarm,
 
+    /**
+     * `NotificationSound.LoopingAlarm2`
+     */
     LoopingAlarm2,
 
+    /**
+     * `NotificationSound.LoopingAlarm3`
+     */
     LoopingAlarm3,
 
+    /**
+     * `NotificationSound.LoopingAlarm4`
+     */
     LoopingAlarm4,
 
+    /**
+     * `NotificationSound.LoopingAlarm5`
+     */
     LoopingAlarm5,
 
+    /**
+     * `NotificationSound.LoopingAlarm6`
+     */
     LoopingAlarm6,
 
+    /**
+     * `NotificationSound.LoopingAlarm7`
+     */
     LoopingAlarm7,
 
+    /**
+     * `NotificationSound.LoopingAlarm8`
+     */
     LoopingAlarm8,
 
+    /**
+     * `NotificationSound.LoopingAlarm9`
+     */
     LoopingAlarm9,
 
+    /**
+     * `NotificationSound.LoopingAlarm10`
+     */
     LoopingAlarm10,
 
+    /**
+     * `NotificationSound.LoopingCall`
+     */
     LoopingCall,
 
+    /**
+     * `NotificationSound.LoopingCall2`
+     */
     LoopingCall2,
 
+    /**
+     * `NotificationSound.LoopingCall3`
+     */
     LoopingCall3,
 
+    /**
+     * `NotificationSound.LoopingCall4`
+     */
     LoopingCall4,
 
+    /**
+     * `NotificationSound.LoopingCall5`
+     */
     LoopingCall5,
 
+    /**
+     * `NotificationSound.LoopingCall6`
+     */
     LoopingCall6,
 
+    /**
+     * `NotificationSound.LoopingCall7`
+     */
     LoopingCall7,
 
+    /**
+     * `NotificationSound.LoopingCall8`
+     */
     LoopingCall8,
 
+    /**
+     * `NotificationSound.LoopingCall9`
+     */
     LoopingCall9,
 
+    /**
+     * `NotificationSound.LoopingCall10`
+     */
     LoopingCall10,
 }
 /**
@@ -1849,10 +2292,19 @@ declare enum NotificationSound {
  * @expand
  */
 declare enum NotificationActivationType {
+    /**
+     * `NotificationActivationType.Foreground`
+     */
     Foreground,
 
+    /**
+     * `NotificationActivationType.Background`
+     */
     Background,
 
+    /**
+     * `NotificationActivationType.Protocol`
+     */
     Protocol,
 }
 /**
@@ -1862,6 +2314,9 @@ declare enum NotificationActivationType {
  * @expand
  */
 declare enum NotificationActionPlacement {
+    /**
+     * `NotificationActionPlacement.ContextMenu`
+     */
     ContextMenu,
 }
 /**
@@ -1871,8 +2326,14 @@ declare enum NotificationActionPlacement {
  * @expand
  */
 declare enum NotificationButtonStyle {
+    /**
+     * `NotificationButtonStyle.Success`
+     */
     Success,
 
+    /**
+     * `NotificationButtonStyle.Critical`
+     */
     Critical,
 }
 /**
@@ -1882,8 +2343,14 @@ declare enum NotificationButtonStyle {
  * @expand
  */
 declare enum NotificationInputType {
+    /**
+     * `NotificationInputType.Text`
+     */
     Text,
 
+    /**
+     * `NotificationInputType.Selection`
+     */
     Selection,
 }
 /**
@@ -1898,66 +2365,79 @@ declare enum NotificationInputType {
 declare enum Signal {
     /**
      * `SIGHUP` - hang up; often used to request config reload.
+     * `Signal.Hup`
      */
     Hup,
 
     /**
      * `SIGINT` - interrupt (like Ctrl-C).
+     * `Signal.Int`
      */
     Int,
 
     /**
      * `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
+     * `Signal.Quit`
      */
     Quit,
 
     /**
      * `SIGTERM` - polite termination request.
+     * `Signal.Term`
      */
     Term,
 
     /**
      * `SIGKILL` - force kill immediately.
+     * `Signal.Kill`
      */
     Kill,
 
     /**
      * `SIGSTOP` - stop/suspend execution immediately.
+     * `Signal.Stop`
      */
     Stop,
 
     /**
      * `SIGTSTP` - terminal stop (like Ctrl-Z).
+     * `Signal.Tstp`
      */
     Tstp,
 
     /**
      * `SIGCONT` - continue a stopped process.
+     * `Signal.Cont`
      */
     Cont,
 
     /**
      * `SIGTTIN` - background process attempted terminal input.
+     * `Signal.Ttin`
      */
     Ttin,
 
     /**
      * `SIGTTOU` - background process attempted terminal output.
+     * `Signal.Ttou`
      */
     Ttou,
 
     /**
      * `SIGWINCH` - terminal window size changed.
+     * `Signal.Winch`
      */
     Winch,
 
     /**
      * `SIGUSR1` - user-defined signal 1.
+     * `Signal.Usr1`
      */
     Usr1,
 
     /**
      * `SIGUSR2` - user-defined signal 2.
+     * `Signal.Usr2`
      */
     Usr2,
 }
@@ -1974,32 +2454,74 @@ declare enum Signal {
  * @category System
  */
 declare enum ProcessStatus {
+    /**
+     * `ProcessStatus.Idle`
+     */
     Idle,
 
+    /**
+     * `ProcessStatus.Run`
+     */
     Run,
 
+    /**
+     * `ProcessStatus.Sleep`
+     */
     Sleep,
 
+    /**
+     * `ProcessStatus.Stop`
+     */
     Stop,
 
+    /**
+     * `ProcessStatus.Zombie`
+     */
     Zombie,
 
+    /**
+     * `ProcessStatus.Tracing`
+     */
     Tracing,
 
+    /**
+     * `ProcessStatus.Dead`
+     */
     Dead,
 
+    /**
+     * `ProcessStatus.Wakekill`
+     */
     Wakekill,
 
+    /**
+     * `ProcessStatus.Waking`
+     */
     Waking,
 
+    /**
+     * `ProcessStatus.Parked`
+     */
     Parked,
 
+    /**
+     * `ProcessStatus.LockBlocked`
+     */
     LockBlocked,
 
+    /**
+     * `ProcessStatus.UninterruptibleDiskSleep`
+     */
     UninterruptibleDiskSleep,
 
+    /**
+     * `ProcessStatus.Suspended`
+     */
     Suspended,
 
+    /**
+     * `ProcessStatus.Unknown`
+     */
     Unknown,
 }
 /**
@@ -2020,16 +2542,19 @@ declare enum ProcessStatus {
 declare enum DiskKind {
     /**
      * Hard disk drive
+     * `DiskKind.HDD`
      */
     Hdd,
 
     /**
      * Solid-state drive
+     * `DiskKind.SSD`
      */
     Ssd,
 
     /**
      * Unknown drive kind
+     * `DiskKind.Unknown`
      */
     Unknown,
 }
@@ -2043,16 +2568,19 @@ declare enum WaitAtEnd {
     /**
      * Automatically decide if the script should wait.
      * Setting hotstrings will have the script wait.
+     * `WaitAtEnd.Automatic`
      */
     Automatic,
 
     /**
      * Always wait.
+     * `WaitAtEnd.Yes`
      */
     Yes,
 
     /**
      * Never wait.
+     * `WaitAtEnd.No`
      */
     No,
 }
@@ -2061,9 +2589,13 @@ declare enum WaitAtEnd {
  * @expand
  */
 declare enum ClipboardMode {
+    /**
+     * `ClipboardMode.Clipboard`
+     */
     Clipboard,
 
     /**
+     * `ClipboardMode.Selection`
      * @platform only works on Linux
      */
     Selection,
@@ -2081,26 +2613,31 @@ declare enum ClipboardMode {
 declare enum Button {
     /**
      * Left button
+     * `Button.Left`
      */
     Left,
 
     /**
      * Middle button
+     * `Button.Middle`
      */
     Middle,
 
     /**
      * Right button
+     * `Button.Right`
      */
     Right,
 
     /**
      * Back button
+     * `Button.Back`
      */
     Back,
 
     /**
      * Forward button
+     * `Button.Forward`
      */
     Forward,
 }
@@ -2115,8 +2652,14 @@ declare enum Button {
  * @expand
  */
 declare enum Axis {
+    /**
+     * `Axis.Horizontal`
+     */
     Horizontal,
 
+    /**
+     * `Axis.Vertical`
+     */
     Vertical,
 }
 /**
@@ -2134,156 +2677,187 @@ declare enum Axis {
 declare enum Tween {
     /**
      * Starts slowly, then accelerates with an overshoot.
+     * `Tween.BackIn`
      */
     BackIn,
 
     /**
      * Starts and ends with an overshoot, accelerating in between.
+     * `Tween.BackInOut`
      */
     BackInOut,
 
     /**
      * Starts quickly, then decelerates with an overshoot.
+     * `Tween.BackOut`
      */
     BackOut,
 
     /**
      * Starts by bouncing off the start point.
+     * `Tween.BounceIn`
      */
     BounceIn,
 
     /**
      * Bounces at both the start and end points.
+     * `Tween.BounceInOut`
      */
     BounceInOut,
 
     /**
      * Ends with a bounce effect.
+     * `Tween.BounceOut`
      */
     BounceOut,
 
     /**
      * Starts slowly and accelerates in a circular motion.
+     * `Tween.CircIn`
      */
     CircIn,
 
     /**
      * Starts and ends slowly with a circular motion.
+     * `Tween.CircInOut`
      */
     CircInOut,
 
     /**
      * Ends slowly with a circular motion.
+     * `Tween.CircOut`
      */
     CircOut,
 
     /**
      * Starts slowly and accelerates cubically.
+     * `Tween.CubicIn`
      */
     CubicIn,
 
     /**
      * Starts and ends slowly with a cubic acceleration.
+     * `Tween.CubicInOut`
      */
     CubicInOut,
 
     /**
      * Ends slowly with a cubic deceleration.
+     * `Tween.CubicOut`
      */
     CubicOut,
 
     /**
      * Starts with an elastic effect, overshooting the target.
+     * `Tween.ElasticIn`
      */
     ElasticIn,
 
     /**
      * Starts and ends with an elastic effect.
+     * `Tween.ElasticInOut`
      */
     ElasticInOut,
 
     /**
      * Ends with an elastic effect, overshooting the target.
+     * `Tween.ElasticOut`
      */
     ElasticOut,
 
     /**
      * Starts slowly and accelerates exponentially.
+     * `Tween.ExpoIn`
      */
     ExpoIn,
 
     /**
      * Starts and ends slowly with an exponential acceleration.
+     * `Tween.ExpoInOut`
      */
     ExpoInOut,
 
     /**
      * Ends slowly with an exponential deceleration.
+     * `Tween.ExpoOut`
      */
     ExpoOut,
 
     /**
      * A linear tween with no acceleration or deceleration.
+     * `Tween.Linear`
      */
     Linear,
 
     /**
      * Starts slowly and accelerates quadratically.
+     * `Tween.QuadIn`
      */
     QuadIn,
 
     /**
      * Starts and ends slowly with a quadratic acceleration.
+     * `Tween.QuadInOut`
      */
     QuadInOut,
 
     /**
      * Ends slowly with a quadratic deceleration.
+     * `Tween.QuadOut`
      */
     QuadOut,
 
     /**
      * Starts slowly and accelerates quartically.
+     * `Tween.QuartIn`
      */
     QuartIn,
 
     /**
      * Starts and ends slowly with a quartic acceleration.
+     * `Tween.QuartInOut`
      */
     QuartInOut,
 
     /**
      * Ends slowly with a quartic deceleration.
+     * `Tween.QuartOut`
      */
     QuartOut,
 
     /**
      * Starts slowly and accelerates quintically.
+     * `Tween.QuintIn`
      */
     QuintIn,
 
     /**
      * Starts and ends slowly with a quintic acceleration.
+     * `Tween.QuintInOut`
      */
     QuintInOut,
 
     /**
      * Ends slowly with a quintic deceleration.
+     * `Tween.QuintOut`
      */
     QuintOut,
 
     /**
      * Starts slowly and accelerates sinusoidally.
+     * `Tween.SineIn`
      */
     SineIn,
 
     /**
      * Starts and ends slowly with a sinusoidal acceleration.
+     * `Tween.SineInOut`
      */
     SineInOut,
 
     /**
      * Ends slowly with a sinusoidal deceleration.
+     * `Tween.SineOut`
      */
     SineOut,
 }
@@ -2292,10 +2866,19 @@ declare enum Tween {
  * @expand
  */
 declare enum MessageBoxIcon {
+    /**
+     * `MessageBoxIcon.Info`
+     */
     Info,
 
+    /**
+     * `MessageBoxIcon.Warning`
+     */
     Warning,
 
+    /**
+     * `MessageBoxIcon.Error`
+     */
     Error,
 }
 /**
@@ -2303,12 +2886,24 @@ declare enum MessageBoxIcon {
  * @expand
  */
 declare enum MessageBoxResult {
+    /**
+     * `MessageBoxResult.Yes`
+     */
     Yes,
 
+    /**
+     * `MessageBoxResult.No`
+     */
     No,
 
+    /**
+     * `MessageBoxResult.Ok`
+     */
     Ok,
 
+    /**
+     * `MessageBoxResult.Cancel`
+     */
     Cancel,
 }
 /**
@@ -2317,22 +2912,49 @@ declare enum MessageBoxResult {
  * @expand
  */
 declare enum Method {
+    /**
+     * `Method.Get`
+     */
     Get,
 
+    /**
+     * `Method.Post`
+     */
     Post,
 
+    /**
+     * `Method.Put`
+     */
     Put,
 
+    /**
+     * `Method.Delete`
+     */
     Delete,
 
+    /**
+     * `Method.Head`
+     */
     Head,
 
+    /**
+     * `Method.Options`
+     */
     Options,
 
+    /**
+     * `Method.Connect`
+     */
     Connect,
 
+    /**
+     * `Method.Patch`
+     */
     Patch,
 
+    /**
+     * `Method.Trace`
+     */
     Trace,
 }
 /**

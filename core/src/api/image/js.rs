@@ -63,7 +63,9 @@ use crate::{
 /// @expand
 #[serde(rename = "FlipDirection")]
 pub enum JsFlipDirection {
+    /// `FlipDirection.Horizontal`
     Horizontal,
+    /// `FlipDirection.Vertical`
     Vertical,
 }
 
@@ -102,10 +104,15 @@ impl From<JsFlipDirection> for FlipDirection {
 )]
 #[serde(rename = "ResizeFilter")]
 pub enum JsResizeFilter {
+    /// `ResizeFilter.Nearest`
     Nearest,
+    /// `ResizeFilter.Linear`
     Linear,
+    /// `ResizeFilter.Cubic`
     Cubic,
+    /// `ResizeFilter.Gaussian`
     Gaussian,
+    /// `ResizeFilter.Lanczos3`
     Lanczos3,
 }
 
@@ -147,8 +154,11 @@ impl From<JsResizeFilter> for ResizeFilter {
 )]
 #[serde(rename = "Interpolation")]
 pub enum JsInterpolation {
+    /// `Interpolation.Nearest`
     Nearest,
+    /// `Interpolation.Bilinear`
     Bilinear,
+    /// `Interpolation.Bicubic`
     Bicubic,
 }
 
@@ -359,8 +369,11 @@ impl From<JsDrawingOptions> for DrawingOptions {
 )]
 #[serde(rename = "TextHorizontalAlign")]
 pub enum JsTextHorizontalAlign {
+    /// `TextHorizontalAlign.Left`
     Left,
+    /// `TextHorizontalAlign.Center`
     Center,
+    /// `TextHorizontalAlign.Right`
     Right,
 }
 
@@ -398,8 +411,11 @@ impl From<JsTextHorizontalAlign> for TextHorizontalAlign {
 )]
 #[serde(rename = "TextVerticalAlign")]
 pub enum JsTextVerticalAlign {
+    /// `TextVerticalAlign.Top`
     Top,
+    /// `TextVerticalAlign.Middle`
     Middle,
+    /// `TextVerticalAlign.Bottom`
     Bottom,
 }
 
@@ -640,12 +656,19 @@ impl From<super::find_image::Match> for JsMatch {
 )]
 #[serde(rename = "FindImageStage")]
 pub enum JsFindImageStage {
+    /// `FindImageStage.Capturing`
     Capturing,
+    /// `FindImageStage.Preparing`
     Preparing,
+    /// `FindImageStage.Downscaling`
     Downscaling,
+    /// `FindImageStage.Matching`
     Matching,
+    /// `FindImageStage.Filtering`
     Filtering,
+    /// `FindImageStage.ComputingResults`
     ComputingResults,
+    /// `FindImageStage.Finished`
     Finished,
 }
 

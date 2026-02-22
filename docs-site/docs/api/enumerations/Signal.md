@@ -17,6 +17,7 @@ only works on Linux
 > **Cont**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGCONT` - continue a stopped process.
+`Signal.Cont`
 
 ***
 
@@ -25,6 +26,7 @@ only works on Linux
 > **Hup**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGHUP` - hang up; often used to request config reload.
+`Signal.Hup`
 
 ***
 
@@ -33,6 +35,7 @@ only works on Linux
 > **Int**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGINT` - interrupt (like Ctrl-C).
+`Signal.Int`
 
 ***
 
@@ -41,6 +44,7 @@ only works on Linux
 > **Kill**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGKILL` - force kill immediately.
+`Signal.Kill`
 
 ***
 
@@ -49,6 +53,7 @@ only works on Linux
 > **Quit**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
+`Signal.Quit`
 
 ***
 
@@ -57,6 +62,7 @@ only works on Linux
 > **Stop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGSTOP` - stop/suspend execution immediately.
+`Signal.Stop`
 
 ***
 
@@ -65,6 +71,7 @@ only works on Linux
 > **Term**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGTERM` - polite termination request.
+`Signal.Term`
 
 ***
 
@@ -73,6 +80,7 @@ only works on Linux
 > **Tstp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGTSTP` - terminal stop (like Ctrl-Z).
+`Signal.Tstp`
 
 ***
 
@@ -81,6 +89,7 @@ only works on Linux
 > **Ttin**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGTTIN` - background process attempted terminal input.
+`Signal.Ttin`
 
 ***
 
@@ -89,6 +98,7 @@ only works on Linux
 > **Ttou**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGTTOU` - background process attempted terminal output.
+`Signal.Ttou`
 
 ***
 
@@ -97,6 +107,7 @@ only works on Linux
 > **Usr1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGUSR1` - user-defined signal 1.
+`Signal.Usr1`
 
 ***
 
@@ -105,6 +116,7 @@ only works on Linux
 > **Usr2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGUSR2` - user-defined signal 2.
+`Signal.Usr2`
 
 ***
 
@@ -113,3 +125,4 @@ only works on Linux
 > **Winch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGWINCH` - terminal window size changed.
+`Signal.Winch`

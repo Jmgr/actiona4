@@ -14,8 +14,12 @@ only works on Windows
 
 > **Critical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`NotificationButtonStyle.Critical`
+
 ***
 
 ### Success
 
 > **Success**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationButtonStyle.Success`

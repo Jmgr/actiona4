@@ -59,8 +59,11 @@ impl<'js> Trace<'js> for super::Keyboard {
 #[serde(rename = "Direction")]
 pub enum JsDirection {
     // TODO: same as mouse?
+    /// `Direction.Press`
     Press,
+    /// `Direction.Release`
     Release,
+    /// `Direction.Click`
     Click,
 }
 
@@ -305,689 +308,958 @@ impl JsKeyboard {
 /// @rename Key
 pub enum JsStandardKey {
     /// Top-row digit '0' key (not numpad)
+    /// `Key.Num0`
     Num0,
     /// Top-row digit '1' key (not numpad)
+    /// `Key.Num1`
     Num1,
     /// Top-row digit '2' key (not numpad)
+    /// `Key.Num2`
     Num2,
     /// Top-row digit '3' key (not numpad)
+    /// `Key.Num3`
     Num3,
     /// Top-row digit '4' key (not numpad)
+    /// `Key.Num4`
     Num4,
     /// Top-row digit '5' key (not numpad)
+    /// `Key.Num5`
     Num5,
     /// Top-row digit '6' key (not numpad)
+    /// `Key.Num6`
     Num6,
     /// Top-row digit '7' key (not numpad)
+    /// `Key.Num7`
     Num7,
     /// Top-row digit '8' key (not numpad)
+    /// `Key.Num8`
     Num8,
     /// Top-row digit '9' key (not numpad)
+    /// `Key.Num9`
     Num9,
     /// Letter key 'A'
+    /// `Key.A`
     A,
     /// Letter key 'B'
+    /// `Key.B`
     B,
     /// Letter key 'C'
+    /// `Key.C`
     C,
     /// Letter key 'D'
+    /// `Key.D`
     D,
     /// Letter key 'E'
+    /// `Key.E`
     E,
     /// Letter key 'F'
+    /// `Key.F`
     F,
     /// Letter key 'G'
+    /// `Key.G`
     G,
     /// Letter key 'H'
+    /// `Key.H`
     H,
     /// Letter key 'I'
+    /// `Key.I`
     I,
     /// Letter key 'J'
+    /// `Key.J`
     J,
     /// Letter key 'K'
+    /// `Key.K`
     K,
     /// Letter key 'L'
+    /// `Key.L`
     L,
     /// Letter key 'M'
+    /// `Key.M`
     M,
     /// Letter key 'N'
+    /// `Key.N`
     N,
     /// Letter key 'O'
+    /// `Key.O`
     O,
     /// Letter key 'P'
+    /// `Key.P`
     P,
     /// Letter key 'Q'
+    /// `Key.Q`
     Q,
     /// Letter key 'R'
+    /// `Key.R`
     R,
     /// Letter key 'S'
+    /// `Key.S`
     S,
     /// Letter key 'T'
+    /// `Key.T`
     T,
     /// Letter key 'U'
+    /// `Key.U`
     U,
     /// Letter key 'V'
+    /// `Key.V`
     V,
     /// Letter key 'W'
+    /// `Key.W`
     W,
     /// Letter key 'X'
+    /// `Key.X`
     X,
     /// Letter key 'Y'
+    /// `Key.Y`
     Y,
     /// Letter key 'Z'
+    /// `Key.Z`
     Z,
     /// Brazilian ABNT keyboard key C1
     /// @platforms =windows
+    /// `Key.AbntC1`
     AbntC1,
     /// Brazilian ABNT keyboard key C2
     /// @platforms =windows
+    /// `Key.AbntC2`
     AbntC2,
     /// IME “Accept” / commit conversion
     /// @platforms =windows
+    /// `Key.Accept`
     Accept,
     /// Numpad '+' (addition) key
+    /// `Key.Add`
     Add,
     /// Alt (Alternate) modifier key
+    /// `Key.Alt`
     Alt,
     /// Application/Menu key
     /// @platforms =windows
+    /// `Key.Apps`
     Apps,
     /// Attention key (legacy/rare)
     /// @platforms =windows
+    /// `Key.Attention`
     Attention,
     /// Backspace / Delete-previous-character
+    /// `Key.Backspace`
     Backspace,
     /// Break key (X11/Linux)
     /// @platforms =linux
+    /// `Key.Break`
     Break,
     /// Begin key
     /// @platforms =linux
+    /// `Key.Begin`
     Begin,
     /// Browser Back
     /// @platforms =windows
+    /// `Key.BrowserBack`
     BrowserBack,
     /// Browser Favorites
     /// @platforms =windows
+    /// `Key.BrowserFavorites`
     BrowserFavorites,
     /// Browser Forward
     /// @platforms =windows
+    /// `Key.BrowserForward`
     BrowserForward,
     /// Browser Home
     /// @platforms =windows
+    /// `Key.BrowserHome`
     BrowserHome,
     /// Browser Refresh
     /// @platforms =windows
+    /// `Key.BrowserRefresh`
     BrowserRefresh,
     /// Browser Search
     /// @platforms =windows
+    /// `Key.BrowserSearch`
     BrowserSearch,
     /// Browser Stop
     /// @platforms =windows
+    /// `Key.BrowserStop`
     BrowserStop,
     /// Cancel key (legacy)
+    /// `Key.Cancel`
     Cancel,
     /// Caps Lock toggle
+    /// `Key.CapsLock`
     CapsLock,
     /// Clear key
+    /// `Key.Clear`
     Clear,
     /// Control (Ctrl) modifier key
+    /// `Key.Control`
     Control,
     /// IME Convert (start/confirm conversion)
     /// @platforms =windows
+    /// `Key.Convert`
     Convert,
     /// Cursor Select (CRSel)
     /// @platforms =windows
+    /// `Key.CursorSelect`
     CursorSelect,
     /// IME: switch to alphanumeric
     /// @platforms =windows
+    /// `Key.DBEAlphanumeric`
     DBEAlphanumeric,
     /// IME: code input mode
     /// @platforms =windows
+    /// `Key.DBECodeinput`
     DBECodeinput,
     /// IME: determine string
     /// @platforms =windows
+    /// `Key.DBEDetermineString`
     DBEDetermineString,
     /// IME: enter dialog conversion mode
     /// @platforms =windows
+    /// `Key.DBEEnterDLGConversionMode`
     DBEEnterDLGConversionMode,
     /// IME: open configuration
     /// @platforms =windows
+    /// `Key.DBEEnterIMEConfigMode`
     DBEEnterIMEConfigMode,
     /// IME: word register mode
     /// @platforms =windows
+    /// `Key.DBEEnterWordRegisterMode`
     DBEEnterWordRegisterMode,
     /// IME: flush/reset composition string
     /// @platforms =windows
+    /// `Key.DBEFlushString`
     DBEFlushString,
     /// IME: Hiragana
     /// @platforms =windows
+    /// `Key.DBEHiragana`
     DBEHiragana,
     /// IME: Katakana
     /// @platforms =windows
+    /// `Key.DBEKatakana`
     DBEKatakana,
     /// IME: no code point
     /// @platforms =windows
+    /// `Key.DBENoCodepoint`
     DBENoCodepoint,
     /// IME: no roman
     /// @platforms =windows
+    /// `Key.DBENoRoman`
     DBENoRoman,
     /// IME: Roman
     /// @platforms =windows
+    /// `Key.DBERoman`
     DBERoman,
     /// IME: SBCS character
     /// @platforms =windows
+    /// `Key.DBESBCSChar`
     DBESBCSChar,
     /// IME: SBCS/Special char
     /// @platforms =windows
+    /// `Key.DBESChar`
     DBESChar,
     /// Numpad decimal point '.'
+    /// `Key.Decimal`
     Decimal,
     /// Delete / Forward delete
+    /// `Key.Delete`
     Delete,
     /// Numpad divide '/'
+    /// `Key.Divide`
     Divide,
     /// Arrow: Down
+    /// `Key.DownArrow`
     DownArrow,
     /// End key
+    /// `Key.End`
     End,
     /// Erase EOF
     /// @platforms =windows
+    /// `Key.Ereof`
     Ereof,
     /// Escape key
+    /// `Key.Escape`
     Escape,
     /// Execute key
+    /// `Key.Execute`
     Execute,
     /// Extend Selection (ExSel)
     /// @platforms =windows
+    /// `Key.Exsel`
     Exsel,
     /// Function key F1
+    /// `Key.F1`
     F1,
     /// Function key F2
+    /// `Key.F2`
     F2,
     /// Function key F3
+    /// `Key.F3`
     F3,
     /// Function key F4
+    /// `Key.F4`
     F4,
     /// Function key F5
+    /// `Key.F5`
     F5,
     /// Function key F6
+    /// `Key.F6`
     F6,
     /// Function key F7
+    /// `Key.F7`
     F7,
     /// Function key F8
+    /// `Key.F8`
     F8,
     /// Function key F9
+    /// `Key.F9`
     F9,
     /// Function key F10
+    /// `Key.F10`
     F10,
     /// Function key F11
+    /// `Key.F11`
     F11,
     /// Function key F12
+    /// `Key.F12`
     F12,
     /// Function key F13
+    /// `Key.F13`
     F13,
     /// Function key F14
+    /// `Key.F14`
     F14,
     /// Function key F15
+    /// `Key.F15`
     F15,
     /// Function key F16
+    /// `Key.F16`
     F16,
     /// Function key F17
+    /// `Key.F17`
     F17,
     /// Function key F18
+    /// `Key.F18`
     F18,
     /// Function key F19
+    /// `Key.F19`
     F19,
     /// Function key F20
+    /// `Key.F20`
     F20,
     /// Function key F21
+    /// `Key.F21`
     F21,
     /// Function key F22
+    /// `Key.F22`
     F22,
     /// Function key F23
+    /// `Key.F23`
     F23,
     /// Function key F24
+    /// `Key.F24`
     F24,
     /// Function key F25
     /// @platforms =linux
+    /// `Key.F25`
     F25,
     /// Function key F26
     /// @platforms =linux
+    /// `Key.F26`
     F26,
     /// Function key F27
     /// @platforms =linux
+    /// `Key.F27`
     F27,
     /// Function key F28
     /// @platforms =linux
+    /// `Key.F28`
     F28,
     /// Function key F29
     /// @platforms =linux
+    /// `Key.F29`
     F29,
     /// Function key F30
     /// @platforms =linux
+    /// `Key.F30`
     F30,
     /// Function key F31
     /// @platforms =linux
+    /// `Key.F31`
     F31,
     /// Function key F32
     /// @platforms =linux
+    /// `Key.F32`
     F32,
     /// Function key F33
     /// @platforms =linux
+    /// `Key.F33`
     F33,
     /// Function key F34
     /// @platforms =linux
+    /// `Key.F34`
     F34,
     /// Function key F35
     /// @platforms =linux
+    /// `Key.F35`
     F35,
     /// IME Final (end conversion)
     /// @platforms =windows
+    /// `Key.Final`
     Final,
     /// Find key
     /// @platforms =linux
+    /// `Key.Find`
     Find,
     /// Gamepad: A button
     /// @platforms =windows
+    /// `Key.GamepadA`
     GamepadA,
     /// Gamepad: B button
     /// @platforms =windows
+    /// `Key.GamepadB`
     GamepadB,
     /// Gamepad: D-Pad Down
     /// @platforms =windows
+    /// `Key.GamepadDPadDown`
     GamepadDPadDown,
     /// Gamepad: D-Pad Left
     /// @platforms =windows
+    /// `Key.GamepadDPadLeft`
     GamepadDPadLeft,
     /// Gamepad: D-Pad Right
     /// @platforms =windows
+    /// `Key.GamepadDPadRight`
     GamepadDPadRight,
     /// Gamepad: D-Pad Up
     /// @platforms =windows
+    /// `Key.GamepadDPadUp`
     GamepadDPadUp,
     /// Gamepad: Left shoulder (L1)
     /// @platforms =windows
+    /// `Key.GamepadLeftShoulder`
     GamepadLeftShoulder,
     /// Gamepad: Left thumbstick button (L3)
     /// @platforms =windows
+    /// `Key.GamepadLeftThumbstickButton`
     GamepadLeftThumbstickButton,
     /// Gamepad: Left thumbstick down
     /// @platforms =windows
+    /// `Key.GamepadLeftThumbstickDown`
     GamepadLeftThumbstickDown,
     /// Gamepad: Left thumbstick left
     /// @platforms =windows
+    /// `Key.GamepadLeftThumbstickLeft`
     GamepadLeftThumbstickLeft,
     /// Gamepad: Left thumbstick right
     /// @platforms =windows
+    /// `Key.GamepadLeftThumbstickRight`
     GamepadLeftThumbstickRight,
     /// Gamepad: Left thumbstick up
     /// @platforms =windows
+    /// `Key.GamepadLeftThumbstickUp`
     GamepadLeftThumbstickUp,
     /// Gamepad: Left trigger (L2)
     /// @platforms =windows
+    /// `Key.GamepadLeftTrigger`
     GamepadLeftTrigger,
     /// Gamepad: Menu / Start
     /// @platforms =windows
+    /// `Key.GamepadMenu`
     GamepadMenu,
     /// Gamepad: Right shoulder (R1)
     /// @platforms =windows
+    /// `Key.GamepadRightShoulder`
     GamepadRightShoulder,
     /// Gamepad: Right thumbstick button (R3)
     /// @platforms =windows
+    /// `Key.GamepadRightThumbstickButton`
     GamepadRightThumbstickButton,
     /// Gamepad: Right thumbstick down
     /// @platforms =windows
+    /// `Key.GamepadRightThumbstickDown`
     GamepadRightThumbstickDown,
     /// Gamepad: Right thumbstick left
     /// @platforms =windows
+    /// `Key.GamepadRightThumbstickLeft`
     GamepadRightThumbstickLeft,
     /// Gamepad: Right thumbstick right
     /// @platforms =windows
+    /// `Key.GamepadRightThumbstickRight`
     GamepadRightThumbstickRight,
     /// Gamepad: Right thumbstick up
     /// @platforms =windows
+    /// `Key.GamepadRightThumbstickUp`
     GamepadRightThumbstickUp,
     /// Gamepad: Right trigger (R2)
     /// @platforms =windows
+    /// `Key.GamepadRightTrigger`
     GamepadRightTrigger,
     /// Gamepad: View / Back
     /// @platforms =windows
+    /// `Key.GamepadView`
     GamepadView,
     /// Gamepad: X button
     /// @platforms =windows
+    /// `Key.GamepadX`
     GamepadX,
     /// Gamepad: Y button
     /// @platforms =windows
+    /// `Key.GamepadY`
     GamepadY,
     /// Hangeul toggle (Korean layout)
     /// @platforms =windows
+    /// `Key.Hangeul`
     Hangeul,
     /// Hangul toggle (Korean layout)
+    /// `Key.Hangul`
     Hangul,
     /// Hanja toggle (Chinese characters on Korean layout)
+    /// `Key.Hanja`
     Hanja,
     /// Help key
+    /// `Key.Help`
     Help,
     /// Home key
+    /// `Key.Home`
     Home,
     /// ICO (legacy) key 00
     /// @platforms =windows
+    /// `Key.Ico00`
     Ico00,
     /// ICO (legacy) Clear
     /// @platforms =windows
+    /// `Key.IcoClear`
     IcoClear,
     /// ICO (legacy) Help
     /// @platforms =windows
+    /// `Key.IcoHelp`
     IcoHelp,
     /// IME Off (disable IME)
     /// @platforms =windows
+    /// `Key.IMEOff`
     IMEOff,
     /// IME On (enable IME)
     /// @platforms =windows
+    /// `Key.IMEOn`
     IMEOn,
     /// Insert key
+    /// `Key.Insert`
     Insert,
     /// IME: Junja mode
     /// @platforms =windows
+    /// `Key.Junja`
     Junja,
     /// IME: Kana mode
     /// @platforms =windows
+    /// `Key.Kana`
     Kana,
     /// Kanji toggle (Japanese layout)
+    /// `Key.Kanji`
     Kanji,
     /// Launch application 1
     /// @platforms =windows
+    /// `Key.LaunchApp1`
     LaunchApp1,
     /// Launch application 2
     /// @platforms =windows
+    /// `Key.LaunchApp2`
     LaunchApp2,
     /// Launch default mail client
     /// @platforms =windows
+    /// `Key.LaunchMail`
     LaunchMail,
     /// Launch media selector
     /// @platforms =windows
+    /// `Key.LaunchMediaSelect`
     LaunchMediaSelect,
     /// Left Control
+    /// `Key.LeftControl`
     LeftControl,
     /// Arrow: Left
+    /// `Key.LeftArrow`
     LeftArrow,
     /// Line Feed key
     /// @platforms =linux
+    /// `Key.Linefeed`
     Linefeed,
     /// Left Alt/Menu
+    /// `Key.LeftAlt`
     LeftAlt,
     /// Left Shift
+    /// `Key.LeftShift`
     LeftShift,
     /// Left Windows / Super key
     /// @platforms =windows
+    /// `Key.LeftWindows`
     LeftWindows,
     /// Next media track
+    /// `Key.MediaNextTrack`
     MediaNextTrack,
     /// Play/Pause media
+    /// `Key.MediaPlayPause`
     MediaPlayPause,
     /// Previous media track
+    /// `Key.MediaPrevTrack`
     MediaPrevTrack,
     /// Stop media
+    /// `Key.MediaStop`
     MediaStop,
     /// Meta key (also known as "windows", "super", and "command")
+    /// `Key.Meta`
     Meta,
     /// IME mode change
+    /// `Key.ModeChange`
     ModeChange,
     /// Numpad multiply '*'
+    /// `Key.Multiply`
     Multiply,
     /// Navigation: Accept/OK (UWP)
     /// @platforms =windows
+    /// `Key.NavigationAccept`
     NavigationAccept,
     /// Navigation: Cancel/Back (UWP)
     /// @platforms =windows
+    /// `Key.NavigationCancel`
     NavigationCancel,
     /// Navigation: Down (UWP)
     /// @platforms =windows
+    /// `Key.NavigationDown`
     NavigationDown,
     /// Navigation: Left (UWP)
     /// @platforms =windows
+    /// `Key.NavigationLeft`
     NavigationLeft,
     /// Navigation: Menu (UWP)
     /// @platforms =windows
+    /// `Key.NavigationMenu`
     NavigationMenu,
     /// Navigation: Right (UWP)
     /// @platforms =windows
+    /// `Key.NavigationRight`
     NavigationRight,
     /// Navigation: Up (UWP)
     /// @platforms =windows
+    /// `Key.NavigationUp`
     NavigationUp,
     /// Navigation: View (UWP)
     /// @platforms =windows
+    /// `Key.NavigationView`
     NavigationView,
     /// NoName key (reserved)
     /// @platforms =windows
+    /// `Key.NoName`
     NoName,
     /// IME Non-Convert (cancel conversion)
     /// @platforms =windows
+    /// `Key.NonConvert`
     NonConvert,
     /// Placeholder "no key"
     /// @platforms =windows
+    /// `Key.None`
     None,
     /// Num Lock toggle
+    /// `Key.Numlock`
     Numlock,
     /// Numpad digit '0'
+    /// `Key.Numpad0`
     Numpad0,
     /// Numpad digit '1'
+    /// `Key.Numpad1`
     Numpad1,
     /// Numpad digit '2'
+    /// `Key.Numpad2`
     Numpad2,
     /// Numpad digit '3'
+    /// `Key.Numpad3`
     Numpad3,
     /// Numpad digit '4'
+    /// `Key.Numpad4`
     Numpad4,
     /// Numpad digit '5'
+    /// `Key.Numpad5`
     Numpad5,
     /// Numpad digit '6'
+    /// `Key.Numpad6`
     Numpad6,
     /// Numpad digit '7'
+    /// `Key.Numpad7`
     Numpad7,
     /// Numpad digit '8'
+    /// `Key.Numpad8`
     Numpad8,
     /// Numpad digit '9'
+    /// `Key.Numpad9`
     Numpad9,
     /// Numpad Enter
+    /// `Key.NumpadEnter`
     NumpadEnter,
     /// OEM specific key 1
     /// @platforms =windows
+    /// `Key.OEM1`
     OEM1,
     /// OEM specific key 102 (angle bracket/pipe on some layouts)
     /// @platforms =windows
+    /// `Key.OEM102`
     OEM102,
     /// OEM specific key 2
     /// @platforms =windows
+    /// `Key.OEM2`
     OEM2,
     /// OEM specific key 3 (backtick/tilde on some layouts)
     /// @platforms =windows
+    /// `Key.OEM3`
     OEM3,
     /// OEM specific key 4 (left bracket on some layouts)
     /// @platforms =windows
+    /// `Key.OEM4`
     OEM4,
     /// OEM specific key 5 (right bracket on some layouts)
     /// @platforms =windows
+    /// `Key.OEM5`
     OEM5,
     /// OEM specific key 6 (semicolon on some layouts)
     /// @platforms =windows
+    /// `Key.OEM6`
     OEM6,
     /// OEM specific key 7 (quote on some layouts)
     /// @platforms =windows
+    /// `Key.OEM7`
     OEM7,
     /// OEM specific key 8
     /// @platforms =windows
+    /// `Key.OEM8`
     OEM8,
     /// OEM Attention
     /// @platforms =windows
+    /// `Key.OEMAttn`
     OEMAttn,
     /// OEM Auto
     /// @platforms =windows
+    /// `Key.OEMAuto`
     OEMAuto,
     /// OEM Ax
     /// @platforms =windows
+    /// `Key.OEMAx`
     OEMAx,
     /// OEM Backtab (reverse Tab)
     /// @platforms =windows
+    /// `Key.OEMBacktab`
     OEMBacktab,
     /// OEM Clear
     /// @platforms =windows
+    /// `Key.OEMClear`
     OEMClear,
     /// OEM Comma ','
     /// @platforms =windows
+    /// `Key.OEMComma`
     OEMComma,
     /// OEM Copy
     /// @platforms =windows
+    /// `Key.OEMCopy`
     OEMCopy,
     /// OEM Cusel
     /// @platforms =windows
+    /// `Key.OEMCusel`
     OEMCusel,
     /// OEM Enlw
     /// @platforms =windows
+    /// `Key.OEMEnlw`
     OEMEnlw,
     /// OEM Finish
     /// @platforms =windows
+    /// `Key.OEMFinish`
     OEMFinish,
     /// OEM FJ Jisho (dictionary)
     /// @platforms =windows
+    /// `Key.OEMFJJisho`
     OEMFJJisho,
     /// OEM FJ Loya
     /// @platforms =windows
+    /// `Key.OEMFJLoya`
     OEMFJLoya,
     /// OEM FJ Masshou
     /// @platforms =windows
+    /// `Key.OEMFJMasshou`
     OEMFJMasshou,
     /// OEM FJ Roya
     /// @platforms =windows
+    /// `Key.OEMFJRoya`
     OEMFJRoya,
     /// OEM FJ Touroku
     /// @platforms =windows
+    /// `Key.OEMFJTouroku`
     OEMFJTouroku,
     /// OEM Jump
     /// @platforms =windows
+    /// `Key.OEMJump`
     OEMJump,
     /// OEM Minus '-'
     /// @platforms =windows
+    /// `Key.OEMMinus`
     OEMMinus,
     /// OEM NEC Equal '='
     /// @platforms =windows
+    /// `Key.OEMNECEqual`
     OEMNECEqual,
     /// OEM PA1
     /// @platforms =windows
+    /// `Key.OEMPA1`
     OEMPA1,
     /// OEM PA2
     /// @platforms =windows
+    /// `Key.OEMPA2`
     OEMPA2,
     /// OEM PA3
     /// @platforms =windows
+    /// `Key.OEMPA3`
     OEMPA3,
     /// OEM Period '.'
     /// @platforms =windows
+    /// `Key.OEMPeriod`
     OEMPeriod,
     /// OEM Plus '+'
     /// @platforms =windows
+    /// `Key.OEMPlus`
     OEMPlus,
     /// OEM Reset
     /// @platforms =windows
+    /// `Key.OEMReset`
     OEMReset,
     /// OEM Wsctrl
     /// @platforms =windows
+    /// `Key.OEMWsctrl`
     OEMWsctrl,
     /// Same as Alt
+    /// `Key.Option`
     Option,
     /// PA1 key
     /// @platforms =windows
+    /// `Key.PA1`
     PA1,
     /// Packet key (used to pass Unicode chars)
     /// @platforms =windows
+    /// `Key.Packet`
     Packet,
     /// Page Down
+    /// `Key.PageDown`
     PageDown,
     /// Page Up
+    /// `Key.PageUp`
     PageUp,
     /// Pause key
+    /// `Key.Pause`
     Pause,
     /// Media Play
     /// @platforms =windows
+    /// `Key.Play`
     Play,
     /// Screenshot
+    /// `Key.PrintScreen`
     PrintScreen,
     /// IME Process key
     /// @platforms =windows
+    /// `Key.Processkey`
     Processkey,
     /// Right Control
+    /// `Key.RightControl`
     RightControl,
     /// Redo
     /// @platforms =linux
+    /// `Key.Redo`
     Redo,
     /// Enter / Return
+    /// `Key.Return`
     Return,
     /// Arrow: Right
+    /// `Key.RightArrow`
     RightArrow,
     /// Right Alt/Menu
     /// @platforms =windows
+    /// `Key.RightAlt`
     RightAlt,
     /// Right Shift
+    /// `Key.RightShift`
     RightShift,
     /// Right Windows / Super key
     /// @platforms =windows
+    /// `Key.RightWindows`
     RightWindows,
     /// Scroll key (legacy)
     /// @platforms =windows
+    /// `Key.Scroll`
     Scroll,
     /// Scroll Lock
     /// @platforms =linux
+    /// `Key.ScrollLock`
     ScrollLock,
     /// Select key
+    /// `Key.Select`
     Select,
     /// Script switch
     /// @platforms =linux
+    /// `Key.ScriptSwitch`
     ScriptSwitch,
     /// Numpad separator (locale-dependent)
     /// @platforms =windows
+    /// `Key.Separator`
     Separator,
     /// Shift modifier
+    /// `Key.Shift`
     Shift,
     /// Shift Lock
     /// @platforms =linux
+    /// `Key.ShiftLock`
     ShiftLock,
     /// System Sleep
     /// @platforms =windows
+    /// `Key.Sleep`
     Sleep,
     /// Spacebar
+    /// `Key.Space`
     Space,
     /// Numpad '-' (subtract)
+    /// `Key.Subtract`
     Subtract,
     /// System Request (SysRq)
     /// @platforms =linux
+    /// `Key.SysReq`
     SysReq,
     /// Tab / focus next
+    /// `Key.Tab`
     Tab,
     /// Undo
     /// @platforms =linux
+    /// `Key.Undo`
     Undo,
     /// Arrow: Up
+    /// `Key.UpArrow`
     UpArrow,
     /// Volume down
+    /// `Key.VolumeDown`
     VolumeDown,
     /// Volume mute
+    /// `Key.VolumeMute`
     VolumeMute,
     /// Volume up
+    /// `Key.VolumeUp`
     VolumeUp,
     /// Microphone mute
     /// @platforms =linux
+    /// `Key.MicrophoneMute`
     MicrophoneMute,
     /// Zoom key
     /// @platforms =windows
+    /// `Key.Zoom`
     Zoom,
 }
 
 /// @skip
 #[derive(Clone, Copy, Debug, Display, Eq, Hash, JsLifetime, PartialEq)]
 pub enum JsKey {
+    /// `Key.Standard`
     Standard(JsStandardKey),
+    /// `Key.Unicode`
     Unicode(char),
+    /// `Key.Other`
     Other(u32),
 }
 

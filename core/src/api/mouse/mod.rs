@@ -67,20 +67,24 @@ use crate::{api::point::point, runtime::Runtime};
     Serialize,
 )]
 pub enum Button {
-    // TODO: should that ^ be Trace?
     /// Left button
+    /// `Button.Left`
     Left,
 
     /// Middle button
+    /// `Button.Middle`
     Middle,
 
     /// Right button
+    /// `Button.Right`
     Right,
 
     /// Back button
+    /// `Button.Back`
     Back,
 
     /// Forward button
+    /// `Button.Forward`
     Forward,
 }
 
@@ -120,7 +124,9 @@ impl From<Button> for enigo::Button {
 ///
 /// @expand
 pub enum Axis {
+    /// `Axis.Horizontal`
     Horizontal,
+    /// `Axis.Vertical`
     Vertical,
 }
 
@@ -160,76 +166,107 @@ impl From<Axis> for enigo::Axis {
 )]
 pub enum Tween {
     /// Starts slowly, then accelerates with an overshoot.
+    /// `Tween.BackIn`
     BackIn,
     /// Starts and ends with an overshoot, accelerating in between.
+    /// `Tween.BackInOut`
     BackInOut,
     /// Starts quickly, then decelerates with an overshoot.
+    /// `Tween.BackOut`
     BackOut,
 
     /// Starts by bouncing off the start point.
+    /// `Tween.BounceIn`
     BounceIn,
     /// Bounces at both the start and end points.
+    /// `Tween.BounceInOut`
     BounceInOut,
     /// Ends with a bounce effect.
+    /// `Tween.BounceOut`
     BounceOut,
 
     /// Starts slowly and accelerates in a circular motion.
+    /// `Tween.CircIn`
     CircIn,
     /// Starts and ends slowly with a circular motion.
+    /// `Tween.CircInOut`
     CircInOut,
     /// Ends slowly with a circular motion.
+    /// `Tween.CircOut`
     CircOut,
 
     /// Starts slowly and accelerates cubically.
+    /// `Tween.CubicIn`
     CubicIn,
     /// Starts and ends slowly with a cubic acceleration.
+    /// `Tween.CubicInOut`
     CubicInOut,
     /// Ends slowly with a cubic deceleration.
+    /// `Tween.CubicOut`
     CubicOut,
 
     /// Starts with an elastic effect, overshooting the target.
+    /// `Tween.ElasticIn`
     ElasticIn,
     /// Starts and ends with an elastic effect.
+    /// `Tween.ElasticInOut`
     ElasticInOut,
     /// Ends with an elastic effect, overshooting the target.
+    /// `Tween.ElasticOut`
     ElasticOut,
 
     /// Starts slowly and accelerates exponentially.
+    /// `Tween.ExpoIn`
     ExpoIn,
     /// Starts and ends slowly with an exponential acceleration.
+    /// `Tween.ExpoInOut`
     ExpoInOut,
     /// Ends slowly with an exponential deceleration.
+    /// `Tween.ExpoOut`
     ExpoOut,
 
     /// A linear tween with no acceleration or deceleration.
+    /// `Tween.Linear`
     Linear,
 
     /// Starts slowly and accelerates quadratically.
+    /// `Tween.QuadIn`
     QuadIn,
     /// Starts and ends slowly with a quadratic acceleration.
+    /// `Tween.QuadInOut`
     QuadInOut,
     /// Ends slowly with a quadratic deceleration.
+    /// `Tween.QuadOut`
     QuadOut,
 
     /// Starts slowly and accelerates quartically.
+    /// `Tween.QuartIn`
     QuartIn,
     /// Starts and ends slowly with a quartic acceleration.
+    /// `Tween.QuartInOut`
     QuartInOut,
     /// Ends slowly with a quartic deceleration.
+    /// `Tween.QuartOut`
     QuartOut,
 
     /// Starts slowly and accelerates quintically.
+    /// `Tween.QuintIn`
     QuintIn,
     /// Starts and ends slowly with a quintic acceleration.
+    /// `Tween.QuintInOut`
     QuintInOut,
     /// Ends slowly with a quintic deceleration.
+    /// `Tween.QuintOut`
     QuintOut,
 
     /// Starts slowly and accelerates sinusoidally.
+    /// `Tween.SineIn`
     SineIn,
     /// Starts and ends slowly with a sinusoidal acceleration.
+    /// `Tween.SineInOut`
     SineInOut,
     /// Ends slowly with a sinusoidal deceleration.
+    /// `Tween.SineOut`
     SineOut,
 }
 

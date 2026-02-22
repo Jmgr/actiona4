@@ -62,14 +62,23 @@ pub mod js;
 /// @expand
 pub enum Method {
     #[default]
+    /// `Method.Get`
     Get,
+    /// `Method.Post`
     Post,
+    /// `Method.Put`
     Put,
+    /// `Method.Delete`
     Delete,
+    /// `Method.Head`
     Head,
+    /// `Method.Options`
     Options,
+    /// `Method.Connect`
     Connect,
+    /// `Method.Patch`
     Patch,
+    /// `Method.Trace`
     Trace,
 }
 

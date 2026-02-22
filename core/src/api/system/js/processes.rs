@@ -546,19 +546,33 @@ impl JsProcessInfo {
 )]
 #[serde(rename = "ProcessStatus")]
 pub enum JsProcessStatus {
+    /// `ProcessStatus.Idle`
     Idle,
+    /// `ProcessStatus.Run`
     Run,
+    /// `ProcessStatus.Sleep`
     Sleep,
+    /// `ProcessStatus.Stop`
     Stop,
+    /// `ProcessStatus.Zombie`
     Zombie,
+    /// `ProcessStatus.Tracing`
     Tracing,
+    /// `ProcessStatus.Dead`
     Dead,
+    /// `ProcessStatus.Wakekill`
     Wakekill,
+    /// `ProcessStatus.Waking`
     Waking,
+    /// `ProcessStatus.Parked`
     Parked,
+    /// `ProcessStatus.LockBlocked`
     LockBlocked,
+    /// `ProcessStatus.UninterruptibleDiskSleep`
     UninterruptibleDiskSleep,
+    /// `ProcessStatus.Suspended`
     Suspended,
+    /// `ProcessStatus.Unknown`
     Unknown,
 }
 

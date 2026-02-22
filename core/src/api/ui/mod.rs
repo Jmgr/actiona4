@@ -30,8 +30,11 @@ pub mod js;
 /// @expand
 pub enum MessageBoxIcon {
     #[default]
+    /// `MessageBoxIcon.Info`
     Info,
+    /// `MessageBoxIcon.Warning`
     Warning,
+    /// `MessageBoxIcon.Error`
     Error,
 }
 
@@ -79,9 +82,13 @@ impl From<MessageBoxButtons> for tauri_plugin_dialog::MessageDialogButtons {
 /// @category UI
 /// @expand
 pub enum MessageBoxResult {
+    /// `MessageBoxResult.Yes`
     Yes,
+    /// `MessageBoxResult.No`
     No,
+    /// `MessageBoxResult.Ok`
     Ok,
+    /// `MessageBoxResult.Cancel`
     Cancel,
 }
 

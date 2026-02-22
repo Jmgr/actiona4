@@ -15,8 +15,12 @@ await mouse.scroll(-1, Axis.Horizontal);
 
 > **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Axis.Horizontal`
+
 ***
 
 ### Vertical
 
 > **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Axis.Vertical`

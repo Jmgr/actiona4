@@ -183,12 +183,15 @@ pub enum WaitAtEnd {
     /// Automatically decide if the script should wait.
     /// Setting hotstrings will have the script wait.
     #[default]
+    /// `WaitAtEnd.Automatic`
     Automatic,
 
     /// Always wait.
+    /// `WaitAtEnd.Yes`
     Yes,
 
     /// Never wait.
+    /// `WaitAtEnd.No`
     No,
 }
 

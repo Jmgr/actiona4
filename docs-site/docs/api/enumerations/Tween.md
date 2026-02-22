@@ -17,6 +17,7 @@ await mouse.move(100, 100, { tween: Tween.Linear });
 > **BackIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly, then accelerates with an overshoot.
+`Tween.BackIn`
 
 ***
 
@@ -25,6 +26,7 @@ Starts slowly, then accelerates with an overshoot.
 > **BackInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends with an overshoot, accelerating in between.
+`Tween.BackInOut`
 
 ***
 
@@ -33,6 +35,7 @@ Starts and ends with an overshoot, accelerating in between.
 > **BackOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts quickly, then decelerates with an overshoot.
+`Tween.BackOut`
 
 ***
 
@@ -41,6 +44,7 @@ Starts quickly, then decelerates with an overshoot.
 > **BounceIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts by bouncing off the start point.
+`Tween.BounceIn`
 
 ***
 
@@ -49,6 +53,7 @@ Starts by bouncing off the start point.
 > **BounceInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Bounces at both the start and end points.
+`Tween.BounceInOut`
 
 ***
 
@@ -57,6 +62,7 @@ Bounces at both the start and end points.
 > **BounceOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends with a bounce effect.
+`Tween.BounceOut`
 
 ***
 
@@ -65,6 +71,7 @@ Ends with a bounce effect.
 > **CircIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates in a circular motion.
+`Tween.CircIn`
 
 ***
 
@@ -73,6 +80,7 @@ Starts slowly and accelerates in a circular motion.
 > **CircInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a circular motion.
+`Tween.CircInOut`
 
 ***
 
@@ -81,6 +89,7 @@ Starts and ends slowly with a circular motion.
 > **CircOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a circular motion.
+`Tween.CircOut`
 
 ***
 
@@ -89,6 +98,7 @@ Ends slowly with a circular motion.
 > **CubicIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates cubically.
+`Tween.CubicIn`
 
 ***
 
@@ -97,6 +107,7 @@ Starts slowly and accelerates cubically.
 > **CubicInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a cubic acceleration.
+`Tween.CubicInOut`
 
 ***
 
@@ -105,6 +116,7 @@ Starts and ends slowly with a cubic acceleration.
 > **CubicOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a cubic deceleration.
+`Tween.CubicOut`
 
 ***
 
@@ -113,6 +125,7 @@ Ends slowly with a cubic deceleration.
 > **ElasticIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts with an elastic effect, overshooting the target.
+`Tween.ElasticIn`
 
 ***
 
@@ -121,6 +134,7 @@ Starts with an elastic effect, overshooting the target.
 > **ElasticInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends with an elastic effect.
+`Tween.ElasticInOut`
 
 ***
 
@@ -129,6 +143,7 @@ Starts and ends with an elastic effect.
 > **ElasticOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends with an elastic effect, overshooting the target.
+`Tween.ElasticOut`
 
 ***
 
@@ -137,6 +152,7 @@ Ends with an elastic effect, overshooting the target.
 > **ExpoIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates exponentially.
+`Tween.ExpoIn`
 
 ***
 
@@ -145,6 +161,7 @@ Starts slowly and accelerates exponentially.
 > **ExpoInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with an exponential acceleration.
+`Tween.ExpoInOut`
 
 ***
 
@@ -153,6 +170,7 @@ Starts and ends slowly with an exponential acceleration.
 > **ExpoOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with an exponential deceleration.
+`Tween.ExpoOut`
 
 ***
 
@@ -161,6 +179,7 @@ Ends slowly with an exponential deceleration.
 > **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 A linear tween with no acceleration or deceleration.
+`Tween.Linear`
 
 ***
 
@@ -169,6 +188,7 @@ A linear tween with no acceleration or deceleration.
 > **QuadIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates quadratically.
+`Tween.QuadIn`
 
 ***
 
@@ -177,6 +197,7 @@ Starts slowly and accelerates quadratically.
 > **QuadInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a quadratic acceleration.
+`Tween.QuadInOut`
 
 ***
 
@@ -185,6 +206,7 @@ Starts and ends slowly with a quadratic acceleration.
 > **QuadOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a quadratic deceleration.
+`Tween.QuadOut`
 
 ***
 
@@ -193,6 +215,7 @@ Ends slowly with a quadratic deceleration.
 > **QuartIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates quartically.
+`Tween.QuartIn`
 
 ***
 
@@ -201,6 +224,7 @@ Starts slowly and accelerates quartically.
 > **QuartInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a quartic acceleration.
+`Tween.QuartInOut`
 
 ***
 
@@ -209,6 +233,7 @@ Starts and ends slowly with a quartic acceleration.
 > **QuartOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a quartic deceleration.
+`Tween.QuartOut`
 
 ***
 
@@ -217,6 +242,7 @@ Ends slowly with a quartic deceleration.
 > **QuintIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates quintically.
+`Tween.QuintIn`
 
 ***
 
@@ -225,6 +251,7 @@ Starts slowly and accelerates quintically.
 > **QuintInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a quintic acceleration.
+`Tween.QuintInOut`
 
 ***
 
@@ -233,6 +260,7 @@ Starts and ends slowly with a quintic acceleration.
 > **QuintOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a quintic deceleration.
+`Tween.QuintOut`
 
 ***
 
@@ -241,6 +269,7 @@ Ends slowly with a quintic deceleration.
 > **SineIn**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts slowly and accelerates sinusoidally.
+`Tween.SineIn`
 
 ***
 
@@ -249,6 +278,7 @@ Starts slowly and accelerates sinusoidally.
 > **SineInOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts and ends slowly with a sinusoidal acceleration.
+`Tween.SineInOut`
 
 ***
 
@@ -257,3 +287,4 @@ Starts and ends slowly with a sinusoidal acceleration.
 > **SineOut**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Ends slowly with a sinusoidal deceleration.
+`Tween.SineOut`

@@ -87,42 +87,55 @@ impl JsStartProcessOptions {
 #[serde(rename = "Signal")]
 pub enum JsSignal {
     /// `SIGHUP` - hang up; often used to request config reload.
+    /// `Signal.Hup`
     Hup,
 
     /// `SIGINT` - interrupt (like Ctrl-C).
+    /// `Signal.Int`
     Int,
 
     /// `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
+    /// `Signal.Quit`
     Quit,
 
     /// `SIGTERM` - polite termination request.
+    /// `Signal.Term`
     Term,
 
     /// `SIGKILL` - force kill immediately.
+    /// `Signal.Kill`
     Kill,
 
     /// `SIGSTOP` - stop/suspend execution immediately.
+    /// `Signal.Stop`
     Stop,
 
     /// `SIGTSTP` - terminal stop (like Ctrl-Z).
+    /// `Signal.Tstp`
     Tstp,
 
     /// `SIGCONT` - continue a stopped process.
+    /// `Signal.Cont`
     Cont,
 
     /// `SIGTTIN` - background process attempted terminal input.
+    /// `Signal.Ttin`
     Ttin,
 
     /// `SIGTTOU` - background process attempted terminal output.
+    /// `Signal.Ttou`
     Ttou,
 
     /// `SIGWINCH` - terminal window size changed.
+    /// `Signal.Winch`
     Winch,
 
     /// `SIGUSR1` - user-defined signal 1.
+    /// `Signal.Usr1`
     Usr1,
 
     /// `SIGUSR2` - user-defined signal 2.
+    /// `Signal.Usr2`
     Usr2,
 }
 

@@ -50,9 +50,11 @@ pub struct ContentNotAvailable;
 /// @expand
 pub enum ClipboardMode {
     #[default]
+    /// `ClipboardMode.Clipboard`
     Clipboard,
 
     /// @platforms =linux
+    /// `ClipboardMode.Selection`
     Selection,
 }
 

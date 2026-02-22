@@ -60,6 +60,7 @@ Number of times to click.
 > **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
+`Button.Back`
 
 ***
 
@@ -68,6 +69,7 @@ Back button
 > **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
+`Button.Forward`
 
 ***
 
@@ -76,6 +78,7 @@ Forward button
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
+`Button.Left`
 
 ***
 
@@ -84,6 +87,7 @@ Left button
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
+`Button.Middle`
 
 ***
 
@@ -92,6 +96,7 @@ Middle button
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button
+`Button.Right`
 
 </div>
 
@@ -222,6 +227,7 @@ Number of times to click.
 > **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
+`Button.Back`
 
 ***
 
@@ -230,6 +236,7 @@ Back button
 > **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
+`Button.Forward`
 
 ***
 
@@ -238,6 +245,7 @@ Forward button
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
+`Button.Left`
 
 ***
 
@@ -246,6 +254,7 @@ Left button
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
+`Button.Middle`
 
 ***
 
@@ -254,6 +263,7 @@ Middle button
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button
+`Button.Right`
 
 </div>
 
@@ -386,6 +396,7 @@ Returns whether a mouse button is currently pressed.
 > **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
+`Button.Back`
 
 ***
 
@@ -394,6 +405,7 @@ Back button
 > **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
+`Button.Forward`
 
 ***
 
@@ -402,6 +414,7 @@ Forward button
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
+`Button.Left`
 
 ***
 
@@ -410,6 +423,7 @@ Left button
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
+`Button.Middle`
 
 ***
 
@@ -418,6 +432,7 @@ Middle button
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button
+`Button.Right`
 
 </div>
 
@@ -712,6 +727,7 @@ Presses and holds a mouse button.
 > **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
+`Button.Back`
 
 ***
 
@@ -720,6 +736,7 @@ Back button
 > **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
+`Button.Forward`
 
 ***
 
@@ -728,6 +745,7 @@ Forward button
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
+`Button.Left`
 
 ***
 
@@ -736,6 +754,7 @@ Left button
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
+`Button.Middle`
 
 ***
 
@@ -744,6 +763,7 @@ Middle button
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button
+`Button.Right`
 
 </div>
 
@@ -804,6 +824,7 @@ Releases a mouse button.
 > **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Back button
+`Button.Back`
 
 ***
 
@@ -812,6 +833,7 @@ Back button
 > **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Forward button
+`Button.Forward`
 
 ***
 
@@ -820,6 +842,7 @@ Forward button
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Left button
+`Button.Left`
 
 ***
 
@@ -828,6 +851,7 @@ Left button
 > **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Middle button
+`Button.Middle`
 
 ***
 
@@ -836,6 +860,7 @@ Middle button
 > **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Right button
+`Button.Right`
 
 </div>
 
@@ -867,11 +892,15 @@ Scrolls the mouse wheel by the given amount.
 
 > **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Axis.Horizontal`
+
 ***
 
 ###### Vertical
 
 > **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Axis.Vertical`
 
 </div>
 

@@ -49,8 +49,11 @@ use crate::{
 )]
 #[serde(rename = "NotificationUrgency")]
 pub enum JsNotificationUrgency {
+    /// `NotificationUrgency.Low`
     Low,
+    /// `NotificationUrgency.Normal`
     Normal,
+    /// `NotificationUrgency.Critical`
     Critical,
 }
 
@@ -83,9 +86,13 @@ impl From<JsNotificationUrgency> for NotificationUrgency {
 )]
 #[serde(rename = "NotificationScenario")]
 pub enum JsNotificationScenario {
+    /// `NotificationScenario.Reminder`
     Reminder,
+    /// `NotificationScenario.Alarm`
     Alarm,
+    /// `NotificationScenario.IncomingCall`
     IncomingCall,
+    /// `NotificationScenario.Urgent`
     Urgent,
 }
 
@@ -118,31 +125,57 @@ impl From<JsNotificationScenario> for NotificationScenario {
 )]
 #[serde(rename = "NotificationSound")]
 pub enum JsNotificationSound {
+    /// `NotificationSound.Default`
     Default,
+    /// `NotificationSound.IM`
     IM,
+    /// `NotificationSound.Mail`
     Mail,
+    /// `NotificationSound.Reminder`
     Reminder,
+    /// `NotificationSound.SMS`
     SMS,
+    /// `NotificationSound.None`
     None,
+    /// `NotificationSound.LoopingAlarm`
     LoopingAlarm,
+    /// `NotificationSound.LoopingAlarm2`
     LoopingAlarm2,
+    /// `NotificationSound.LoopingAlarm3`
     LoopingAlarm3,
+    /// `NotificationSound.LoopingAlarm4`
     LoopingAlarm4,
+    /// `NotificationSound.LoopingAlarm5`
     LoopingAlarm5,
+    /// `NotificationSound.LoopingAlarm6`
     LoopingAlarm6,
+    /// `NotificationSound.LoopingAlarm7`
     LoopingAlarm7,
+    /// `NotificationSound.LoopingAlarm8`
     LoopingAlarm8,
+    /// `NotificationSound.LoopingAlarm9`
     LoopingAlarm9,
+    /// `NotificationSound.LoopingAlarm10`
     LoopingAlarm10,
+    /// `NotificationSound.LoopingCall`
     LoopingCall,
+    /// `NotificationSound.LoopingCall2`
     LoopingCall2,
+    /// `NotificationSound.LoopingCall3`
     LoopingCall3,
+    /// `NotificationSound.LoopingCall4`
     LoopingCall4,
+    /// `NotificationSound.LoopingCall5`
     LoopingCall5,
+    /// `NotificationSound.LoopingCall6`
     LoopingCall6,
+    /// `NotificationSound.LoopingCall7`
     LoopingCall7,
+    /// `NotificationSound.LoopingCall8`
     LoopingCall8,
+    /// `NotificationSound.LoopingCall9`
     LoopingCall9,
+    /// `NotificationSound.LoopingCall10`
     LoopingCall10,
 }
 
@@ -198,8 +231,11 @@ impl From<JsNotificationSound> for NotificationSound {
 )]
 #[serde(rename = "NotificationActivationType")]
 pub enum JsNotificationActivationType {
+    /// `NotificationActivationType.Foreground`
     Foreground,
+    /// `NotificationActivationType.Background`
     Background,
+    /// `NotificationActivationType.Protocol`
     Protocol,
 }
 
@@ -232,6 +268,7 @@ impl From<JsNotificationActivationType> for NotificationActivationType {
 )]
 #[serde(rename = "NotificationActionPlacement")]
 pub enum JsNotificationActionPlacement {
+    /// `NotificationActionPlacement.ContextMenu`
     ContextMenu,
 }
 
@@ -262,7 +299,9 @@ impl From<JsNotificationActionPlacement> for NotificationActionPlacement {
 )]
 #[serde(rename = "NotificationButtonStyle")]
 pub enum JsNotificationButtonStyle {
+    /// `NotificationButtonStyle.Success`
     Success,
+    /// `NotificationButtonStyle.Critical`
     Critical,
 }
 
@@ -294,7 +333,9 @@ impl From<JsNotificationButtonStyle> for NotificationButtonStyle {
 )]
 #[serde(rename = "NotificationInputType")]
 pub enum JsNotificationInputType {
+    /// `NotificationInputType.Text`
     Text,
+    /// `NotificationInputType.Selection`
     Selection,
 }
 

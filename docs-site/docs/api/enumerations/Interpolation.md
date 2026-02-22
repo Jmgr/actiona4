@@ -18,14 +18,20 @@ image.rotate(45, { interpolation: Interpolation.Bilinear });
 
 > **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Interpolation.Bicubic`
+
 ***
 
 ### Bilinear
 
 > **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
+`Interpolation.Bilinear`
+
 ***
 
 ### Nearest
 
 > **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Nearest`
