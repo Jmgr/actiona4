@@ -40,7 +40,9 @@ Gets the clipboard image content.
 
 ###### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 </div>
 
@@ -84,7 +86,9 @@ Sets the clipboard image content.
 
 ###### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 </div>
 

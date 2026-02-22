@@ -20,7 +20,9 @@ Group ID
 
 #### Platform
 
-does not work on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Windows"><span class="platform-badge__label">Windows</span></span>
+</div>
 
 ***
 
@@ -32,7 +34,9 @@ Group name
 
 #### Platform
 
-does not work on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Windows"><span class="platform-badge__label">Windows</span></span>
+</div>
 
 ***
 

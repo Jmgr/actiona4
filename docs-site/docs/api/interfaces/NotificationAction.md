@@ -18,7 +18,9 @@ Action type string (Windows-specific, e.g. for protocol activation).
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -34,7 +36,9 @@ Activation type for this action.
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -50,7 +54,9 @@ Visual style of the button.
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -74,7 +80,9 @@ ID of the input element this action is associated with.
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -98,4 +106,6 @@ Placement of this action button.
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>

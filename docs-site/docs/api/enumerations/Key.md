@@ -30,7 +30,9 @@ Brazilian ABNT keyboard key C1
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -43,7 +45,9 @@ Brazilian ABNT keyboard key C2
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -56,7 +60,9 @@ IME “Accept” / commit conversion
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -87,7 +93,9 @@ Application/Menu key
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -100,7 +108,9 @@ Attention key (legacy/rare)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -131,7 +141,9 @@ Begin key
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -144,7 +156,9 @@ Break key (X11/Linux)
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -157,7 +171,9 @@ Browser Back
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -170,7 +186,9 @@ Browser Favorites
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -183,7 +201,9 @@ Browser Forward
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -196,7 +216,9 @@ Browser Home
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -209,7 +231,9 @@ Browser Refresh
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -222,7 +246,9 @@ Browser Search
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -235,7 +261,9 @@ Browser Stop
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -293,7 +321,9 @@ IME Convert (start/confirm conversion)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -306,7 +336,9 @@ Cursor Select (CRSel)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -328,7 +360,9 @@ IME: switch to alphanumeric
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -341,7 +375,9 @@ IME: code input mode
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -354,7 +390,9 @@ IME: determine string
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -367,7 +405,9 @@ IME: enter dialog conversion mode
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -380,7 +420,9 @@ IME: open configuration
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -393,7 +435,9 @@ IME: word register mode
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -406,7 +450,9 @@ IME: flush/reset composition string
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -419,7 +465,9 @@ IME: Hiragana
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -432,7 +480,9 @@ IME: Katakana
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -445,7 +495,9 @@ IME: no code point
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -458,7 +510,9 @@ IME: no roman
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -471,7 +525,9 @@ IME: Roman
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -484,7 +540,9 @@ IME: SBCS character
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -497,7 +555,9 @@ IME: SBCS/Special char
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -564,7 +624,9 @@ Erase EOF
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -595,7 +657,9 @@ Extend Selection (ExSel)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -770,7 +834,9 @@ Function key F25
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -783,7 +849,9 @@ Function key F26
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -796,7 +864,9 @@ Function key F27
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -809,7 +879,9 @@ Function key F28
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -822,7 +894,9 @@ Function key F29
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -844,7 +918,9 @@ Function key F30
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -857,7 +933,9 @@ Function key F31
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -870,7 +948,9 @@ Function key F32
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -883,7 +963,9 @@ Function key F33
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -896,7 +978,9 @@ Function key F34
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -909,7 +993,9 @@ Function key F35
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -976,7 +1062,9 @@ IME Final (end conversion)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -989,7 +1077,9 @@ Find key
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -1011,7 +1101,9 @@ Gamepad: A button
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1024,7 +1116,9 @@ Gamepad: B button
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1037,7 +1131,9 @@ Gamepad: D-Pad Down
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1050,7 +1146,9 @@ Gamepad: D-Pad Left
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1063,7 +1161,9 @@ Gamepad: D-Pad Right
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1076,7 +1176,9 @@ Gamepad: D-Pad Up
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1089,7 +1191,9 @@ Gamepad: Left shoulder (L1)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1102,7 +1206,9 @@ Gamepad: Left thumbstick button (L3)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1115,7 +1221,9 @@ Gamepad: Left thumbstick down
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1128,7 +1236,9 @@ Gamepad: Left thumbstick left
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1141,7 +1251,9 @@ Gamepad: Left thumbstick right
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1154,7 +1266,9 @@ Gamepad: Left thumbstick up
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1167,7 +1281,9 @@ Gamepad: Left trigger (L2)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1180,7 +1296,9 @@ Gamepad: Menu / Start
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1193,7 +1311,9 @@ Gamepad: Right shoulder (R1)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1206,7 +1326,9 @@ Gamepad: Right thumbstick button (R3)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1219,7 +1341,9 @@ Gamepad: Right thumbstick down
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1232,7 +1356,9 @@ Gamepad: Right thumbstick left
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1245,7 +1371,9 @@ Gamepad: Right thumbstick right
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1258,7 +1386,9 @@ Gamepad: Right thumbstick up
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1271,7 +1401,9 @@ Gamepad: Right trigger (R2)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1284,7 +1416,9 @@ Gamepad: View / Back
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1297,7 +1431,9 @@ Gamepad: X button
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1310,7 +1446,9 @@ Gamepad: Y button
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1332,7 +1470,9 @@ Hangeul toggle (Korean layout)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1390,7 +1530,9 @@ ICO (legacy) key 00
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1403,7 +1545,9 @@ ICO (legacy) Clear
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1416,7 +1560,9 @@ ICO (legacy) Help
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1429,7 +1575,9 @@ IME Off (disable IME)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1442,7 +1590,9 @@ IME On (enable IME)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1473,7 +1623,9 @@ IME: Junja mode
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1495,7 +1647,9 @@ IME: Kana mode
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1526,7 +1680,9 @@ Launch application 1
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1539,7 +1695,9 @@ Launch application 2
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1552,7 +1710,9 @@ Launch default mail client
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1565,7 +1725,9 @@ Launch media selector
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1614,7 +1776,9 @@ Left Windows / Super key
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1627,7 +1791,9 @@ Line Feed key
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -1694,7 +1860,9 @@ Microphone mute
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -1734,7 +1902,9 @@ Navigation: Accept/OK (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1747,7 +1917,9 @@ Navigation: Cancel/Back (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1760,7 +1932,9 @@ Navigation: Down (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1773,7 +1947,9 @@ Navigation: Left (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1786,7 +1962,9 @@ Navigation: Menu (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1799,7 +1977,9 @@ Navigation: Right (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1812,7 +1992,9 @@ Navigation: Up (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1825,7 +2007,9 @@ Navigation: View (UWP)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1838,7 +2022,9 @@ NoName key (reserved)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1851,7 +2037,9 @@ IME Non-Convert (cancel conversion)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -1864,7 +2052,9 @@ Placeholder "no key"
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2084,7 +2274,9 @@ OEM specific key 1
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2097,7 +2289,9 @@ OEM specific key 102 (angle bracket/pipe on some layouts)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2110,7 +2304,9 @@ OEM specific key 2
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2123,7 +2319,9 @@ OEM specific key 3 (backtick/tilde on some layouts)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2136,7 +2334,9 @@ OEM specific key 4 (left bracket on some layouts)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2149,7 +2349,9 @@ OEM specific key 5 (right bracket on some layouts)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2162,7 +2364,9 @@ OEM specific key 6 (semicolon on some layouts)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2175,7 +2379,9 @@ OEM specific key 7 (quote on some layouts)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2188,7 +2394,9 @@ OEM specific key 8
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2201,7 +2409,9 @@ OEM Attention
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2214,7 +2424,9 @@ OEM Auto
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2227,7 +2439,9 @@ OEM Ax
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2240,7 +2454,9 @@ OEM Backtab (reverse Tab)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2253,7 +2469,9 @@ OEM Clear
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2266,7 +2484,9 @@ OEM Comma ','
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2279,7 +2499,9 @@ OEM Copy
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2292,7 +2514,9 @@ OEM Cusel
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2305,7 +2529,9 @@ OEM Enlw
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2318,7 +2544,9 @@ OEM Finish
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2331,7 +2559,9 @@ OEM FJ Jisho (dictionary)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2344,7 +2574,9 @@ OEM FJ Loya
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2357,7 +2589,9 @@ OEM FJ Masshou
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2370,7 +2604,9 @@ OEM FJ Roya
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2383,7 +2619,9 @@ OEM FJ Touroku
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2396,7 +2634,9 @@ OEM Jump
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2409,7 +2649,9 @@ OEM Minus '-'
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2422,7 +2664,9 @@ OEM NEC Equal '='
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2435,7 +2679,9 @@ OEM PA1
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2448,7 +2694,9 @@ OEM PA2
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2461,7 +2709,9 @@ OEM PA3
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2474,7 +2724,9 @@ OEM Period '.'
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2487,7 +2739,9 @@ OEM Plus '+'
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2500,7 +2754,9 @@ OEM Reset
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2513,7 +2769,9 @@ OEM Wsctrl
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2544,7 +2802,9 @@ PA1 key
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2557,7 +2817,9 @@ Packet key (used to pass Unicode chars)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2597,7 +2859,9 @@ Media Play
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2619,7 +2883,9 @@ IME Process key
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2650,7 +2916,9 @@ Redo
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -2672,7 +2940,9 @@ Right Alt/Menu
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2712,7 +2982,9 @@ Right Windows / Super key
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2734,7 +3006,9 @@ Script switch
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -2747,7 +3021,9 @@ Scroll key (legacy)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2760,7 +3036,9 @@ Scroll Lock
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -2782,7 +3060,9 @@ Numpad separator (locale-dependent)
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2804,7 +3084,9 @@ Shift Lock
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -2817,7 +3099,9 @@ System Sleep
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ***
 
@@ -2848,7 +3132,9 @@ System Request (SysRq)
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -2888,7 +3174,9 @@ Undo
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -2982,4 +3270,6 @@ Zoom key
 
 #### Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>

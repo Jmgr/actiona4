@@ -60,7 +60,9 @@ Effective group ID
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -72,7 +74,9 @@ Effective user ID
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -108,7 +112,9 @@ Group ID
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 
@@ -259,7 +265,9 @@ if (proc) await proc.sendSignal(Signal.Term);
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 

@@ -71,7 +71,9 @@ await process.sendSignal(1234, Signal.Term);
 
 #### Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ***
 

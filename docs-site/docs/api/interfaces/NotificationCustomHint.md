@@ -6,7 +6,9 @@ A custom string hint for Linux notifications.
 
 ## Platform
 
-only works on Linux
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+</div>
 
 ## Properties
 

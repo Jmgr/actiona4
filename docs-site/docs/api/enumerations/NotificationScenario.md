@@ -6,7 +6,9 @@ Toast notification scenario.
 
 ## Platform
 
-only works on Windows
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+</div>
 
 ## Enumeration Members
 

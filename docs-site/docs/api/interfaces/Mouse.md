@@ -442,7 +442,9 @@ Right button
 
 #### Platform
 
-does not work on Wayland
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -698,7 +700,9 @@ Returns the current mouse cursor position.
 
 #### Platform
 
-does not work on Wayland
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
