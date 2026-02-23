@@ -2,13 +2,15 @@ use std::{
     fmt::Display,
     fs::File,
     path::Path,
-    sync::{Arc, Weak},
+    sync::{
+        Arc, Weak,
+        atomic::{AtomicUsize, Ordering},
+    },
     time::Duration,
 };
 
 use color_eyre::{Result, eyre::ensure};
 use macros::FromJsObject;
-use once_cell::sync::OnceCell;
 use parking_lot::Mutex;
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
 use tokio::{
@@ -16,7 +18,6 @@ use tokio::{
     sync::{Notify, futures::Notified},
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::error;
 
 use crate::{api::js::duration::JsDuration, types::display::DisplayFields};
 
@@ -174,19 +175,60 @@ impl Default for PlaySoundOptions {
 }
 
 #[derive(Default)]
-struct OutputStreamCell(OnceCell<MixerDeviceSink>);
+struct OutputStreamCell(Mutex<Option<MixerDeviceSink>>);
 
 impl OutputStreamCell {
-    fn get_or_try_init(&self) -> Result<&MixerDeviceSink> {
-        Ok(self
-            .0
-            .get_or_try_init(DeviceSinkBuilder::open_default_sink)?)
+    fn create_player(&self) -> Result<Player> {
+        let mut output_stream = self.0.lock();
+
+        if output_stream.is_none() {
+            *output_stream = Some(DeviceSinkBuilder::open_default_sink()?);
+        }
+
+        let output_stream = output_stream
+            .as_ref()
+            .expect("output stream should be initialized");
+
+        Ok(Player::connect_new(output_stream.mixer()))
+    }
+
+    fn clear_if_idle(
+        &self,
+        playing_sounds_tracker: &PlayingSoundsTracker,
+        inflight_play_requests: &AtomicUsize,
+    ) {
+        if inflight_play_requests.load(Ordering::Acquire) == 0
+            && !playing_sounds_tracker.has_playing_sounds()
+        {
+            self.0.lock().take();
+        }
+    }
+
+    #[cfg(test)]
+    fn is_initialized(&self) -> bool {
+        self.0.lock().is_some()
+    }
+}
+
+struct InflightPlayGuard(Arc<AtomicUsize>);
+
+impl InflightPlayGuard {
+    fn new(counter: Arc<AtomicUsize>) -> Self {
+        counter.fetch_add(1, Ordering::AcqRel);
+        Self(counter)
+    }
+}
+
+impl Drop for InflightPlayGuard {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::AcqRel);
     }
 }
 
 #[derive(Clone)]
 pub struct Audio {
     output_stream: Arc<OutputStreamCell>,
+    inflight_play_requests: Arc<AtomicUsize>,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
     playing_sounds_tracker: Arc<PlayingSoundsTracker>,
@@ -205,17 +247,33 @@ impl Audio {
         playing_sounds_tracker: Arc<PlayingSoundsTracker>,
     ) -> Result<Self> {
         let output_stream = Arc::new(OutputStreamCell::default());
+        let inflight_play_requests = Arc::new(AtomicUsize::new(0));
 
-        // Delayed initialization
-        let local_output_stream = output_stream.clone();
-        task_tracker.spawn_blocking(move || {
-            if let Err(err) = local_output_stream.get_or_try_init() {
-                error!("local_output_stream open failed: {err}");
-            }
-        });
+        // If audio goes idle, drop the stream so background backend errors from an
+        // otherwise-unused stream do not surface in long-lived sessions (e.g. REPL).
+        {
+            let local_output_stream = output_stream.clone();
+            let local_tracker = playing_sounds_tracker.clone();
+            let local_cancellation_token = cancellation_token.clone();
+            let local_inflight = inflight_play_requests.clone();
+
+            task_tracker.spawn(async move {
+                loop {
+                    select! {
+                        _ = local_cancellation_token.cancelled() => break,
+                        _ = local_tracker.notified() => {
+                            local_output_stream.clear_if_idle(&local_tracker, &local_inflight);
+                        },
+                    }
+                }
+            });
+        }
 
         Ok(Self {
+            // Open the audio sink lazily when a sound is first played. This avoids
+            // spawning an idle output stream in sessions that never use audio (e.g. REPL).
             output_stream,
+            inflight_play_requests,
             cancellation_token,
             task_tracker,
             playing_sounds_tracker,
@@ -223,7 +281,7 @@ impl Audio {
     }
 
     pub fn play_file(&self, path: &Path, options: PlaySoundOptions) -> Result<PlayingSound> {
-        let output_stream = self.output_stream.get_or_try_init()?;
+        let _inflight_play_guard = InflightPlayGuard::new(self.inflight_play_requests.clone());
 
         let file = File::open(path)?;
         let mut source: Box<dyn Source<Item = f32> + Send> = Box::new(Decoder::try_from(file)?);
@@ -233,7 +291,7 @@ impl Audio {
         validate_source_format(source_sample_rate.get(), source_channels.get())?;
         validate_volume(options.volume)?;
         validate_playback_rate(options.playback_rate, source_sample_rate.get())?;
-        let player = Player::connect_new(output_stream.mixer());
+        let player = self.output_stream.create_player()?;
 
         player.set_volume(options.volume);
         player.set_speed(options.playback_rate);
@@ -369,6 +427,17 @@ mod tests {
         )
         .unwrap();
         (audio, tracker)
+    }
+
+    #[tokio::test]
+    async fn new_does_not_initialize_output_stream() {
+        let tracker = Arc::new(PlayingSoundsTracker::default());
+        let audio = Audio::new(CancellationToken::new(), TaskTracker::new(), tracker).unwrap();
+
+        assert!(
+            !audio.output_stream.is_initialized(),
+            "output stream should stay uninitialized until first playback"
+        );
     }
 
     /// Play a sound and wait for it to finish — the tracker should see no playing sounds after.

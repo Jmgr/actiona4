@@ -1,8 +1,4 @@
-After running the repl for 3 min, this appeared:
-
-2026-02-23T22:41:40.990138Z ERROR rodio::stream: 153: audio stream error: Buffer underrun/overrun occurred.
-
-I was not playing any sound.
+On Linux when the runtime starts the whole os micro-freezes
 
 
 
