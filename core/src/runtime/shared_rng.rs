@@ -23,6 +23,7 @@ impl Default for SharedRng {
 }
 
 impl SharedRng {
+    #[must_use]
     pub fn from_seed(seed: u64) -> Self {
         Self(Arc::new(Mutex::new(ChaCha8Rng::seed_from_u64(seed))))
     }

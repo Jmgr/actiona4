@@ -10,11 +10,9 @@ use image::{
 };
 use imageproc::{
     drawing::{
-        draw_cross, draw_cross_mut, draw_filled_circle, draw_filled_circle_mut,
-        draw_filled_ellipse, draw_filled_ellipse_mut, draw_filled_rect, draw_filled_rect_mut,
-        draw_hollow_circle, draw_hollow_circle_mut, draw_hollow_ellipse, draw_hollow_ellipse_mut,
-        draw_hollow_rect, draw_hollow_rect_mut, draw_line_segment, draw_line_segment_mut,
-        draw_text_mut, text_size,
+        draw_cross_mut, draw_filled_circle_mut, draw_filled_ellipse_mut, draw_filled_rect_mut,
+        draw_hollow_circle_mut, draw_hollow_ellipse_mut, draw_hollow_rect_mut,
+        draw_line_segment_mut, draw_text_mut, text_size,
     },
     geometric_transformations::{self, rotate, rotate_about_center},
     rect::Rect as ImgRect,
@@ -591,41 +589,53 @@ impl Image {
         rect(point(0, 0), size::size(self.width(), self.height()))
     }
 
+    /// Draw onto a transparent scratch image, then overlay it onto `self`.
+    ///
+    /// This ensures each destination pixel is alpha-composited exactly once,
+    /// even if the underlying `imageproc` routine visits the same pixel
+    /// multiple times internally (e.g. filled circle scan-line artifacts).
+    fn draw_via_scratch<F>(&mut self, f: F)
+    where
+        F: FnOnce(&mut RgbaImage),
+    {
+        let mut scratch = RgbaImage::new(self.inner.width(), self.inner.height());
+        f(&mut scratch);
+        imageops::overlay(&mut self.inner, &scratch, 0, 0);
+        self.source.reset();
+        self.template.reset();
+    }
+
     pub fn draw_cross_mut(&mut self, position: Point, color: Color) {
         let rgba: image::Rgba<u8> = color.into();
-        draw_cross_mut(self.inner_mut(), rgba, position.x.into(), position.y.into());
+        self.draw_via_scratch(|s| {
+            draw_cross_mut(s, rgba, position.x.into(), position.y.into());
+        });
     }
 
     #[must_use]
     pub fn with_cross(&self, position: Point, color: Color) -> Self {
-        let rgba: image::Rgba<u8> = color.into();
-        Self::from_rgba8(draw_cross(
-            &self.inner,
-            rgba,
-            position.x.into(),
-            position.y.into(),
-        ))
+        let mut clone = self.clone();
+        clone.draw_cross_mut(position, color);
+        clone
     }
 
     pub fn draw_line_mut(&mut self, start: Point, end: Point, color: Color) {
         let rgba: image::Rgba<u8> = color.into();
-        draw_line_segment_mut(
-            self.inner_mut(),
-            (start.x.into(), start.y.into()),
-            (end.x.into(), end.y.into()),
-            rgba,
-        );
+        self.draw_via_scratch(|s| {
+            draw_line_segment_mut(
+                s,
+                (start.x.into(), start.y.into()),
+                (end.x.into(), end.y.into()),
+                rgba,
+            );
+        });
     }
 
     #[must_use]
     pub fn with_line(&self, start: Point, end: Point, color: Color) -> Self {
-        let rgba: image::Rgba<u8> = color.into();
-        Self::from_rgba8(draw_line_segment(
-            &self.inner,
-            (start.x.into(), start.y.into()),
-            (end.x.into(), end.y.into()),
-            rgba,
-        ))
+        let mut clone = self.clone();
+        clone.draw_line_mut(start, end, color);
+        clone
     }
 
     pub fn draw_circle_mut(
@@ -636,12 +646,13 @@ impl Image {
         options: DrawingOptions,
     ) {
         let rgba: image::Rgba<u8> = color.into();
-        let inner = self.inner_mut();
-        if options.hollow {
-            draw_hollow_circle_mut(inner, (center.x.into(), center.y.into()), radius, rgba);
-        } else {
-            draw_filled_circle_mut(inner, (center.x.into(), center.y.into()), radius, rgba);
-        }
+        self.draw_via_scratch(|s| {
+            if options.hollow {
+                draw_hollow_circle_mut(s, (center.x.into(), center.y.into()), radius, rgba);
+            } else {
+                draw_filled_circle_mut(s, (center.x.into(), center.y.into()), radius, rgba);
+            }
+        });
     }
 
     #[must_use]
@@ -652,24 +663,9 @@ impl Image {
         color: Color,
         options: DrawingOptions,
     ) -> Self {
-        let rgba: image::Rgba<u8> = color.into();
-        let image = if options.hollow {
-            draw_hollow_circle(
-                &self.inner,
-                (center.x.into(), center.y.into()),
-                radius,
-                rgba,
-            )
-        } else {
-            draw_filled_circle(
-                &self.inner,
-                (center.x.into(), center.y.into()),
-                radius,
-                rgba,
-            )
-        };
-
-        Self::from_rgba8(image)
+        let mut clone = self.clone();
+        clone.draw_circle_mut(center, radius, color, options);
+        clone
     }
 
     pub fn draw_ellipse_mut(
@@ -682,12 +678,13 @@ impl Image {
     ) {
         let rgba: image::Rgba<u8> = color.into();
         let center_tuple = (center.x.into(), center.y.into());
-        let inner = self.inner_mut();
-        if options.hollow {
-            draw_hollow_ellipse_mut(inner, center_tuple, width_radius, height_radius, rgba);
-        } else {
-            draw_filled_ellipse_mut(inner, center_tuple, width_radius, height_radius, rgba);
-        }
+        self.draw_via_scratch(|s| {
+            if options.hollow {
+                draw_hollow_ellipse_mut(s, center_tuple, width_radius, height_radius, rgba);
+            } else {
+                draw_filled_ellipse_mut(s, center_tuple, width_radius, height_radius, rgba);
+            }
+        });
     }
 
     #[must_use]
@@ -699,26 +696,9 @@ impl Image {
         color: Color,
         options: DrawingOptions,
     ) -> Self {
-        let rgba: image::Rgba<u8> = color.into();
-        let image = if options.hollow {
-            draw_hollow_ellipse(
-                &self.inner,
-                (center.x.into(), center.y.into()),
-                width_radius,
-                height_radius,
-                rgba,
-            )
-        } else {
-            draw_filled_ellipse(
-                &self.inner,
-                (center.x.into(), center.y.into()),
-                width_radius,
-                height_radius,
-                rgba,
-            )
-        };
-
-        Self::from_rgba8(image)
+        let mut clone = self.clone();
+        clone.draw_ellipse_mut(center, width_radius, height_radius, color, options);
+        clone
     }
 
     pub fn draw_rectangle_mut(
@@ -729,14 +709,13 @@ impl Image {
     ) -> Result<()> {
         let img_rect: ImgRect = rect.try_into().map_err(|err| eyre!("{err}"))?;
         let rgba: image::Rgba<u8> = color.into();
-        let inner = self.inner_mut();
-
-        if options.hollow {
-            draw_hollow_rect_mut(inner, img_rect, rgba);
-        } else {
-            draw_filled_rect_mut(inner, img_rect, rgba);
-        }
-
+        self.draw_via_scratch(|s| {
+            if options.hollow {
+                draw_hollow_rect_mut(s, img_rect, rgba);
+            } else {
+                draw_filled_rect_mut(s, img_rect, rgba);
+            }
+        });
         Ok(())
     }
 
@@ -746,15 +725,9 @@ impl Image {
         color: Color,
         options: DrawingOptions,
     ) -> Result<Self> {
-        let img_rect: ImgRect = rect.try_into().map_err(|err| eyre!("{err}"))?;
-        let rgba: image::Rgba<u8> = color.into();
-        let image = if options.hollow {
-            draw_hollow_rect(&self.inner, img_rect, rgba)
-        } else {
-            draw_filled_rect(&self.inner, img_rect, rgba)
-        };
-
-        Ok(Self::from_rgba8(image))
+        let mut clone = self.clone();
+        clone.draw_rectangle_mut(rect, color, options)?;
+        Ok(clone)
     }
 
     pub fn draw_image_mut(
@@ -943,31 +916,32 @@ impl Image {
         let mut current_y = position.y + vertical_offset;
 
         let color_pixel: image::Rgba<u8> = color.into();
-        let canvas = image.inner_mut();
 
-        for (line, &width) in lines.iter().zip(&line_widths) {
-            let width_i32: i32 = Si32::from(su32(width)).into();
-            let horizontal_offset = match options.horizontal_align {
-                TextHorizontalAlign::Left => 0,
-                TextHorizontalAlign::Center => -(width_i32 / 2),
-                TextHorizontalAlign::Right => -width_i32,
-            };
-            let line_x = position.x + horizontal_offset;
+        image.draw_via_scratch(|s| {
+            for (line, &width) in lines.iter().zip(&line_widths) {
+                let width_i32: i32 = Si32::from(su32(width)).into();
+                let horizontal_offset = match options.horizontal_align {
+                    TextHorizontalAlign::Left => 0,
+                    TextHorizontalAlign::Center => -(width_i32 / 2),
+                    TextHorizontalAlign::Right => -width_i32,
+                };
+                let line_x = position.x + horizontal_offset;
 
-            if !line.is_empty() {
-                draw_text_mut(
-                    canvas,
-                    color_pixel,
-                    line_x.into(),
-                    current_y.into(),
-                    scale,
-                    font,
-                    line,
-                );
+                if !line.is_empty() {
+                    draw_text_mut(
+                        s,
+                        color_pixel,
+                        line_x.into(),
+                        current_y.into(),
+                        scale,
+                        font,
+                        line,
+                    );
+                }
+
+                current_y += line_step_i32;
             }
-
-            current_y += line_step_i32;
-        }
+        });
 
         Ok(())
     }
@@ -1397,6 +1371,43 @@ mod tests {
         let _rgba = img.as_rgba8();
         assert!(img.has_cached_source());
         assert!(img.has_cached_template());
+    }
+
+    #[test]
+    fn draw_rectangle_blends_semi_transparent_color() {
+        // White opaque background
+        let mut img = Image::from_rgba8(RgbaImage::from_pixel(10, 10, Rgba([255, 255, 255, 255])));
+        // Draw a semi-transparent black rectangle over the whole image
+        img.draw_rectangle_mut(
+            rect(point(0, 0), size::size(10, 10)),
+            Color::new(0, 0, 0, 128),
+            DrawingOptions::default(),
+        )
+        .unwrap();
+
+        // If blending is correct the pixels must be gray, not black with a=128.
+        // Standard alpha compositing: out = src_a/255 * src + (1 - src_a/255) * dst
+        // = 128/255 * 0 + 127/255 * 255 ≈ 127
+        let pixel = img.as_rgba8().get_pixel(5, 5);
+        assert_ne!(
+            *pixel,
+            Rgba([0, 0, 0, 128]),
+            "pixel was overwritten, not blended"
+        );
+        // Alpha should be near-opaque after compositing two opaque-ish pixels
+        assert!(
+            pixel.0[3] >= 254,
+            "result alpha should be near 255, got {}",
+            pixel.0[3]
+        );
+        // All channels should be in the gray range (roughly 127)
+        for ch in 0..3 {
+            assert!(
+                pixel.0[ch] > 100 && pixel.0[ch] < 160,
+                "channel {ch} = {} is not in the expected blended range",
+                pixel.0[ch]
+            );
+        }
     }
 
     #[test]

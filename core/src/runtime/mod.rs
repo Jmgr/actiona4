@@ -322,6 +322,7 @@ impl Runtime {
             clipboard: clipboard.clone(),
         });
 
+        #[allow(clippy::option_if_let_else)]
         let rng = match options.seed {
             Some(seed) => SharedRng::from_seed(seed),
             None => SharedRng::default(),

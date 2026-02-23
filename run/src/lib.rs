@@ -278,9 +278,7 @@ fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usiz
         // Keep matching logic aligned with the existing parser behavior:
         // exact `-x` / `--long` matches only.
         long.is_some_and(|l| flag.strip_prefix("--") == Some(l))
-            || short.is_some_and(|s| {
-                flag.len() == 2 && flag.starts_with('-') && flag.ends_with(s)
-            })
+            || short.is_some_and(|s| flag.len() == 2 && flag.starts_with('-') && flag.ends_with(s))
     };
 
     let top_takes_value = |flag: &str| -> bool {

@@ -314,9 +314,7 @@ When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecial
 
 ###### Default Value
 
-```ts
-all printable ASCII characters
-```
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) (all printable ASCII characters)
 
 </div>
 
@@ -329,6 +327,23 @@ all printable ASCII characters
 ### toString()
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### uuid()
+
+> **uuid**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a random UUID (v4).
+
+```ts
+const id = random.uuid();
+println(id); // e.g. "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+```
 
 #### Returns
 

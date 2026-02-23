@@ -6849,7 +6849,7 @@ interface RandomStringOptions {
      * Possible characters to pick from.
      * Can contain any Unicode grapheme cluster.
      * When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
-     * @defaultValue all printable ASCII characters
+     * @defaultValue `undefined` (all printable ASCII characters)
      */
     characters?: string;
     /**

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use clap::{Args as ClapArgs, Parser, Subcommand, ValueHint};
 use strum::EnumIs;
 
-#[derive(Clone, Debug, ClapArgs)]
+#[derive(ClapArgs, Clone, Debug)]
 pub struct RunArgs {
     /// Seed the random number generator for deterministic runs
     #[arg(long)]

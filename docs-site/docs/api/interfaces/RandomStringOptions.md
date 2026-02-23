@@ -59,6 +59,4 @@ When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecial
 
 #### Default Value
 
-```ts
-all printable ASCII characters
-```
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) (all printable ASCII characters)
