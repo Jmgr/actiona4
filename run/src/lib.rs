@@ -147,6 +147,7 @@ pub fn run_cli() -> Result<()> {
         display_name: args.display.clone(),
         no_globals,
         install_ctrl_c_handler: !args.command.is_repl(),
+        show_tray_icon: !args.command.is_repl(),
     };
 
     Runtime::run_with_ui(

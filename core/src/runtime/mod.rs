@@ -209,6 +209,9 @@ pub struct RuntimeOptions {
     /// cancels the root cancellation token. The caller is responsible for
     /// handling Ctrl+C (e.g. the REPL manages it per-expression).
     pub install_ctrl_c_handler: bool,
+
+    /// Whether to create the system tray icon and menu.
+    pub show_tray_icon: bool,
 }
 
 impl Default for RuntimeOptions {
@@ -218,6 +221,7 @@ impl Default for RuntimeOptions {
             display_name: None,
             no_globals: false,
             install_ctrl_c_handler: true,
+            show_tray_icon: true,
         }
     }
 }
@@ -471,10 +475,14 @@ impl Runtime {
 
         let local_cancellation_token = cancellation_token.clone();
         let local_task_tracker = task_tracker.clone();
+        let is_shutting_down = Arc::new(AtomicBool::new(false));
+        let setup_is_shutting_down = is_shutting_down.clone();
+        let show_tray_icon = runtime_options.show_tray_icon;
         let app = tauri::Builder::default()
             .plugin(tauri_plugin_dialog::init())
             .setup(move |app| {
                 let app_handle = app.handle().clone();
+                let task_is_shutting_down = setup_is_shutting_down.clone();
 
                 tauri::async_runtime::spawn(async move {
                     let unhandled_exceptions = Self::run_impl(
@@ -486,54 +494,58 @@ impl Runtime {
                     )
                     .await;
 
-                    app_handle.exit(0);
+                    // If shutdown was already initiated (e.g. tray "Quit"), avoid
+                    // issuing a second exit request after webviews are gone.
+                    if !task_is_shutting_down.swap(true, Ordering::Relaxed) {
+                        app_handle.exit(0);
+                    }
 
                     let _ = result_sender.send(unhandled_exceptions);
                 });
 
-                let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-                let show = MenuItem::with_id(app, "show", "Show Info", true, None::<&str>)?;
-                let menu = Menu::with_items(app, &[&show, &quit])?;
+                if show_tray_icon {
+                    let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+                    let show = MenuItem::with_id(app, "show", "Show Info", true, None::<&str>)?;
+                    let menu = Menu::with_items(app, &[&show, &quit])?;
 
-                let mut tray_builder = TrayIconBuilder::new();
-                if let Some(icon) = app.default_window_icon() {
-                    tray_builder = tray_builder.icon(icon.clone());
+                    let mut tray_builder = TrayIconBuilder::new();
+                    if let Some(icon) = app.default_window_icon() {
+                        tray_builder = tray_builder.icon(icon.clone());
+                    }
+
+                    let _tray = tray_builder
+                        .tooltip("Actiona 4 daemon") // hover text
+                        .menu(&menu)
+                        .show_menu_on_left_click(true) // default is true; set to false if you want left-click to do something else
+                        .on_menu_event(|app, event| match event.id.as_ref() {
+                            "quit" => app.exit(0),
+                            "show" => {
+                                println!("Tray -> Show Info clicked");
+                                // do something: emit an event, open a window, etc.
+                            }
+                            _ => {}
+                        })
+                        .on_tray_icon_event(|_tray, event| {
+                            if let TrayIconEvent::Click {
+                                button: MouseButton::Left,
+                                button_state: MouseButtonState::Up,
+                                ..
+                            } = event
+                            {
+                                // left click released; you could toggle a window here instead of showing the menu
+                                println!("Left click on tray");
+                            }
+                        })
+                        .build(app)?;
                 }
-
-                let _tray = tray_builder
-                    .tooltip("Actiona 4 daemon") // hover text
-                    .menu(&menu)
-                    .show_menu_on_left_click(true) // default is true; set to false if you want left-click to do something else
-                    .on_menu_event(|app, event| match event.id.as_ref() {
-                        "quit" => app.exit(0),
-                        "show" => {
-                            println!("Tray -> Show Info clicked");
-                            // do something: emit an event, open a window, etc.
-                        }
-                        _ => {}
-                    })
-                    .on_tray_icon_event(|_tray, event| {
-                        if let TrayIconEvent::Click {
-                            button: MouseButton::Left,
-                            button_state: MouseButtonState::Up,
-                            ..
-                        } = event
-                        {
-                            // left click released; you could toggle a window here instead of showing the menu
-                            println!("Left click on tray");
-                        }
-                    })
-                    .build(app)?;
 
                 Ok(())
             })
             .build(tauri_context)?;
 
-        let is_shutting_down = AtomicBool::new(false);
-
         app.run_return(move |app_handle, event| {
             if let tauri::RunEvent::ExitRequested { api, .. } = event {
-                if is_shutting_down.swap(true, Ordering::AcqRel) {
+                if is_shutting_down.swap(true, Ordering::Relaxed) {
                     // We are already shutting down, don't prevent it.
                     return;
                 }
