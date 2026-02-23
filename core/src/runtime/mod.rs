@@ -212,6 +212,10 @@ pub struct RuntimeOptions {
 
     /// Whether to create the system tray icon and menu.
     pub show_tray_icon: bool,
+
+    /// Seed for the shared random number generator.
+    /// When set, random-dependent APIs become deterministic.
+    pub seed: Option<u64>,
 }
 
 impl Default for RuntimeOptions {
@@ -222,6 +226,7 @@ impl Default for RuntimeOptions {
             no_globals: false,
             install_ctrl_c_handler: true,
             show_tray_icon: true,
+            seed: None,
         }
     }
 }
@@ -317,7 +322,10 @@ impl Runtime {
             clipboard: clipboard.clone(),
         });
 
-        let rng = SharedRng::default();
+        let rng = match options.seed {
+            Some(seed) => SharedRng::from_seed(seed),
+            None => SharedRng::default(),
+        };
 
         let app = JsApp::new(runtime.clone());
         let mouse = JsMouse::new(runtime.clone()).await?;

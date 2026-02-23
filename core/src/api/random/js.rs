@@ -32,7 +32,7 @@ pub struct JsRandomStringOptions {
     /// Possible characters to pick from.
     /// Can contain any Unicode grapheme cluster.
     /// When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
-    /// @default all printable ASCII characters
+    /// @default `undefined` (all printable ASCII characters)
     pub characters: Option<String>,
 
     /// Include digits `0-9` in the default character set.

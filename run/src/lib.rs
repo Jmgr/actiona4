@@ -130,16 +130,23 @@ pub fn run_cli() -> Result<()> {
 
     // Determine no_globals before creating the runtime, since it affects registration.
     let no_globals = match &args.command {
-        Commands::Run { filepath } => {
+        Commands::Run { filepath, .. } => {
             let script = std::fs::read_to_string(filepath).context("reading input file")?;
             parse_pragmas(&script).no_globals
         }
-        Commands::Eval { code } => {
+        Commands::Eval { code, .. } => {
             let code = code.join("\n");
             parse_pragmas(&code).no_globals
         }
-        Commands::Repl { no_globals } => *no_globals,
+        Commands::Repl { no_globals, .. } => *no_globals,
         _ => false,
+    };
+
+    let seed = match &args.command {
+        Commands::Run { run_args, .. }
+        | Commands::Eval { run_args, .. }
+        | Commands::Repl { run_args, .. } => run_args.seed,
+        _ => None,
     };
 
     let runtime_options = RuntimeOptions {
@@ -148,6 +155,7 @@ pub fn run_cli() -> Result<()> {
         no_globals,
         install_ctrl_c_handler: !args.command.is_repl(),
         show_tray_icon: !args.command.is_repl(),
+        seed,
     };
 
     Runtime::run_with_ui(
@@ -163,7 +171,7 @@ pub fn run_cli() -> Result<()> {
             .await?;
 
             match &args.command {
-                Commands::Run { filepath } => {
+                Commands::Run { filepath, .. } => {
                     init::ensure_index_dts(filepath)?;
 
                     let script: String = tokio::fs::read_to_string(&filepath)
@@ -179,7 +187,7 @@ pub fn run_cli() -> Result<()> {
                         eprintln!("Error: {err}");
                     }
                 }
-                Commands::Eval { code } => {
+                Commands::Eval { code, .. } => {
                     let code = code.join("\n");
                     let value = script_engine.eval_async_fn::<Option<String>>(&code, |value| {
                         Ok(if value.is_undefined() {
@@ -248,18 +256,49 @@ fn maybe_insert_default_run(mut args: Vec<OsString>) -> Vec<OsString> {
 }
 
 fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usize> {
-    // Build a set of flags that consume a following value.
-    let value_flags: Vec<(Option<char>, Option<&str>)> = cmd
+    // Top-level flags and which of them consume a following value.
+    let top_level_flags: Vec<(Option<char>, Option<&str>, bool)> = cmd
         .get_arguments()
-        .filter(|a| a.get_action().takes_values())
-        .map(|a| (a.get_short(), a.get_long()))
+        .map(|a| (a.get_short(), a.get_long(), a.get_action().takes_values()))
         .collect();
 
-    let takes_value = |flag: &str| -> bool {
-        value_flags.iter().any(|(short, long)| {
-            long.is_some_and(|l| flag == format!("--{l}"))
-                || short.is_some_and(|s| flag == format!("-{s}"))
+    // Flags defined on the default `run` subcommand. If one of those appears
+    // before a subcommand, we inject `run` before that flag.
+    let run_flags: Vec<(Option<char>, Option<&str>)> = cmd
+        .get_subcommands()
+        .find(|subcommand| subcommand.get_name() == "run")
+        .map(|run| {
+            run.get_arguments()
+                .map(|a| (a.get_short(), a.get_long()))
+                .collect()
         })
+        .unwrap_or_default();
+
+    let flag_matches = |flag: &str, short: Option<char>, long: Option<&str>| {
+        // Keep matching logic aligned with the existing parser behavior:
+        // exact `-x` / `--long` matches only.
+        long.is_some_and(|l| flag.strip_prefix("--") == Some(l))
+            || short.is_some_and(|s| {
+                flag.len() == 2 && flag.starts_with('-') && flag.ends_with(s)
+            })
+    };
+
+    let top_takes_value = |flag: &str| -> bool {
+        top_level_flags
+            .iter()
+            .any(|(short, long, takes_value)| *takes_value && flag_matches(flag, *short, *long))
+    };
+
+    let is_top_level_flag = |flag: &str| -> bool {
+        top_level_flags
+            .iter()
+            .any(|(short, long, _)| flag_matches(flag, *short, *long))
+    };
+
+    let is_run_flag = |flag: &str| -> bool {
+        run_flags
+            .iter()
+            .any(|(short, long)| flag_matches(flag, *short, *long))
     };
 
     let mut index = 1;
@@ -271,7 +310,21 @@ fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usiz
         }
 
         if arg.starts_with('-') {
-            index += if takes_value(&arg) { 2 } else { 1 };
+            if top_takes_value(&arg) {
+                index += 2;
+                continue;
+            }
+
+            if is_top_level_flag(&arg) {
+                index += 1;
+                continue;
+            }
+
+            if is_run_flag(&arg) {
+                return Some(index);
+            }
+
+            index += 1;
             continue;
         }
 
@@ -354,6 +407,48 @@ mod tests {
     }
 
     #[test]
+    fn inserts_run_before_run_seed_option() {
+        let args = vec![
+            OsString::from("actiona-run"),
+            OsString::from("--seed"),
+            OsString::from("42"),
+            OsString::from("script.ts"),
+        ];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(
+            args,
+            vec!["actiona-run", "run", "--seed", "42", "script.ts"]
+        );
+    }
+
+    #[test]
+    fn inserts_run_after_top_level_options_and_before_run_seed_option() {
+        let args = vec![
+            OsString::from("actiona-run"),
+            OsString::from("--update-check"),
+            OsString::from("false"),
+            OsString::from("--seed"),
+            OsString::from("42"),
+            OsString::from("script.ts"),
+        ];
+
+        let args = maybe_insert_default_run(args);
+        assert_eq!(
+            args,
+            vec![
+                "actiona-run",
+                "--update-check",
+                "false",
+                "run",
+                "--seed",
+                "42",
+                "script.ts"
+            ]
+        );
+    }
+
+    #[test]
     fn keeps_version_flag_without_default_subcommand() {
         let args = vec![OsString::from("actiona-run"), OsString::from("--version")];
 
@@ -368,5 +463,58 @@ mod tests {
 
         let err = Args::try_parse_from(args).expect_err("`--version` should trigger Clap exit");
         assert_eq!(err.kind(), ErrorKind::DisplayVersion);
+    }
+
+    #[test]
+    fn parses_default_run_with_seed() {
+        let args = vec![
+            OsString::from("actiona-run"),
+            OsString::from("--seed"),
+            OsString::from("42"),
+            OsString::from("script.ts"),
+        ];
+        let args = maybe_insert_default_run(args);
+
+        let parsed = Args::try_parse_from(args).expect("parse args");
+
+        match parsed.command {
+            crate::args::Commands::Run { filepath, run_args } => {
+                assert_eq!(filepath, std::path::PathBuf::from("script.ts"));
+                assert_eq!(run_args.seed, Some(42));
+            }
+            other => panic!("expected run command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parses_eval_with_seed() {
+        let parsed =
+            Args::try_parse_from(["actiona-run", "eval", "--seed", "123", "console.log('hi')"])
+                .expect("parse args");
+
+        match parsed.command {
+            crate::args::Commands::Eval { code, run_args } => {
+                assert_eq!(run_args.seed, Some(123));
+                assert_eq!(code, vec!["console.log('hi')"]);
+            }
+            other => panic!("expected eval command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parses_repl_with_seed() {
+        let parsed =
+            Args::try_parse_from(["actiona-run", "repl", "--seed", "99"]).expect("parse args");
+
+        match parsed.command {
+            crate::args::Commands::Repl {
+                no_globals,
+                run_args,
+            } => {
+                assert!(!no_globals);
+                assert_eq!(run_args.seed, Some(99));
+            }
+            other => panic!("expected repl command, got {other:?}"),
+        }
     }
 }

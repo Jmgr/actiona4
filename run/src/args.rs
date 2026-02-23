@@ -1,7 +1,14 @@
 use std::path::PathBuf;
 
-use clap::{Parser, Subcommand, ValueHint};
+use clap::{Args as ClapArgs, Parser, Subcommand, ValueHint};
 use strum::EnumIs;
+
+#[derive(Clone, Debug, ClapArgs)]
+pub struct RunArgs {
+    /// Seed the random number generator for deterministic runs
+    #[arg(long)]
+    pub seed: Option<u64>,
+}
 
 /// Run Actiona 4 automation scripts from the command line.
 ///
@@ -18,6 +25,9 @@ pub enum Commands {
         /// file path to the script
         #[arg(value_hint = ValueHint::FilePath)]
         filepath: PathBuf,
+
+        #[command(flatten)]
+        run_args: RunArgs,
     },
 
     /// 🧪 evaluates code
@@ -25,6 +35,9 @@ pub enum Commands {
         /// the code to evaluate
         #[arg(trailing_var_arg = true)]
         code: Vec<String>,
+
+        #[command(flatten)]
+        run_args: RunArgs,
     },
 
     /// 💻 starts the interactive terminal (REPL)
@@ -32,6 +45,9 @@ pub enum Commands {
         /// Use the `actiona` namespace instead of globals
         #[arg(long)]
         no_globals: bool,
+
+        #[command(flatten)]
+        run_args: RunArgs,
     },
 
     /// ⚙️ initializes a new script project
