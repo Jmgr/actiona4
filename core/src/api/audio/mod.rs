@@ -1,16 +1,57 @@
-use std::{fmt::Display, fs::File, path::Path, sync::Arc, time::Duration};
+use std::{
+    fmt::Display,
+    fs::File,
+    path::Path,
+    sync::{Arc, Weak},
+    time::Duration,
+};
 
 use color_eyre::{Result, eyre::ensure};
 use macros::FromJsObject;
 use once_cell::sync::OnceCell;
+use parking_lot::Mutex;
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
-use tokio::select;
+use tokio::{
+    select,
+    sync::{Notify, futures::Notified},
+};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
 
 use crate::{api::js::duration::JsDuration, types::display::DisplayFields};
 
 pub mod js;
+
+/// Tracks active players so the runner can wait for all sounds to finish.
+/// Held by both `Audio` (to register players) and `Runtime` (to query).
+#[derive(Debug, Default)]
+pub struct PlayingSoundsTracker {
+    players: Mutex<Vec<Weak<Player>>>,
+    notify: Notify,
+}
+
+impl PlayingSoundsTracker {
+    /// Returns true if any registered player still has audio queued.
+    pub fn has_playing_sounds(&self) -> bool {
+        let mut players = self.players.lock();
+
+        players.retain(|weak| weak.upgrade().is_some_and(|player| !player.empty()));
+
+        !players.is_empty()
+    }
+
+    fn register(&self, player: Weak<Player>) {
+        self.players.lock().push(player);
+    }
+
+    pub fn notified(&self) -> Notified<'_> {
+        self.notify.notified()
+    }
+
+    pub fn notify_finished(&self) {
+        self.notify.notify_waiters();
+    }
+}
 
 #[derive(Clone)]
 pub struct PlayingSound {
@@ -148,6 +189,7 @@ pub struct Audio {
     output_stream: Arc<OutputStreamCell>,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
+    playing_sounds_tracker: Arc<PlayingSoundsTracker>,
 }
 
 impl Display for Audio {
@@ -157,7 +199,11 @@ impl Display for Audio {
 }
 
 impl Audio {
-    pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Result<Self> {
+    pub fn new(
+        cancellation_token: CancellationToken,
+        task_tracker: TaskTracker,
+        playing_sounds_tracker: Arc<PlayingSoundsTracker>,
+    ) -> Result<Self> {
         let output_stream = Arc::new(OutputStreamCell::default());
 
         // Delayed initialization
@@ -172,6 +218,7 @@ impl Audio {
             output_stream,
             cancellation_token,
             task_tracker,
+            playing_sounds_tracker,
         })
     }
 
@@ -209,8 +256,28 @@ impl Audio {
             player.pause();
         }
 
+        let player = Arc::new(player);
+
+        self.playing_sounds_tracker
+            .register(Arc::downgrade(&player));
+
+        // Stop the player if the runtime is cancelled (fire-and-forget path).
+        let cancel_player = player.clone();
+        let cancel_token = self.cancellation_token.clone();
+        self.task_tracker.spawn(async move {
+            cancel_token.cancelled().await;
+            cancel_player.stop();
+        });
+
+        let local_player = player.clone();
+        let local_tracker = self.playing_sounds_tracker.clone();
+        self.task_tracker.spawn_blocking(move || {
+            local_player.sleep_until_end();
+            local_tracker.notify_finished();
+        });
+
         Ok(PlayingSound {
-            player: Arc::new(player),
+            player,
             filename: path.file_name().map(|n| n.to_string_lossy().into_owned()),
             duration,
             source_sample_rate: source_sample_rate.get(),
@@ -276,7 +343,161 @@ fn validate_playback_rate(playback_rate: f32, source_sample_rate: u32) -> Result
 
 #[cfg(test)]
 mod tests {
-    use super::{validate_playback_rate, validate_volume};
+    use std::{
+        path::PathBuf,
+        sync::Arc,
+        time::{Duration, Instant},
+    };
+
+    use tokio::time::sleep;
+    use tokio_util::{sync::CancellationToken, task::TaskTracker};
+
+    use super::{
+        Audio, PlaySoundOptions, PlayingSoundsTracker, validate_playback_rate, validate_volume,
+    };
+
+    fn test_mp3() -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../tests/test.mp3")
+    }
+
+    fn make_audio() -> (Audio, Arc<PlayingSoundsTracker>) {
+        let tracker = Arc::new(PlayingSoundsTracker::default());
+        let audio = Audio::new(
+            CancellationToken::new(),
+            TaskTracker::new(),
+            tracker.clone(),
+        )
+        .unwrap();
+        (audio, tracker)
+    }
+
+    /// Play a sound and wait for it to finish — the tracker should see no playing sounds after.
+    #[tokio::test]
+    #[ignore]
+    async fn play_file_and_wait_finishes() {
+        let (audio, tracker) = make_audio();
+        let sound = audio
+            .play_file(&test_mp3(), PlaySoundOptions::default())
+            .unwrap();
+        assert!(tracker.has_playing_sounds());
+        sound.wait_finished(CancellationToken::new()).await;
+        assert!(!tracker.has_playing_sounds());
+    }
+
+    /// play_file_and_wait resolves only after the sound ends.
+    #[tokio::test]
+    #[ignore]
+    async fn play_file_and_wait_blocks_for_duration() {
+        let (audio, _tracker) = make_audio();
+        let start = Instant::now();
+        audio
+            .play_file_and_wait(
+                &test_mp3(),
+                PlaySoundOptions::default(),
+                CancellationToken::new(),
+            )
+            .await
+            .unwrap();
+        assert!(
+            start.elapsed().as_millis() >= 900,
+            "sound finished too early"
+        );
+    }
+
+    /// Stopping a sound makes the tracker consider it done.
+    #[tokio::test]
+    #[ignore]
+    async fn stop_clears_tracker() {
+        let (audio, tracker) = make_audio();
+        let sound = audio
+            .play_file(&test_mp3(), PlaySoundOptions::default())
+            .unwrap();
+        assert!(tracker.has_playing_sounds());
+        sound.stop();
+        // sleep_until_end wakes within ~5ms after stop(); give it a moment
+        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        assert!(!tracker.has_playing_sounds());
+    }
+
+    /// Cancelling via the token stops the sound and wakes the notify.
+    #[tokio::test]
+    #[ignore]
+    async fn cancellation_token_stops_playback() {
+        let token = CancellationToken::new();
+        let tracker = Arc::new(PlayingSoundsTracker::default());
+        let audio = Audio::new(token.clone(), TaskTracker::new(), tracker.clone()).unwrap();
+        let _sound = audio
+            .play_file(&test_mp3(), PlaySoundOptions::default())
+            .unwrap();
+        assert!(tracker.has_playing_sounds());
+        token.cancel();
+        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        assert!(!tracker.has_playing_sounds());
+    }
+
+    /// Two sounds playing concurrently: tracker stays active until both finish.
+    #[tokio::test]
+    #[ignore]
+    async fn two_sounds_tracker_waits_for_both() {
+        let (audio, tracker) = make_audio();
+        let _s1 = audio
+            .play_file(&test_mp3(), PlaySoundOptions::default())
+            .unwrap();
+        sleep(Duration::from_millis(250)).await;
+        let _s2 = audio
+            .play_file(&test_mp3(), PlaySoundOptions::default())
+            .unwrap();
+        assert!(tracker.has_playing_sounds());
+        // Wait for both via notify loop
+        while tracker.has_playing_sounds() {
+            tracker.notified().await;
+        }
+        assert!(!tracker.has_playing_sounds());
+    }
+
+    /// JS integration: `await audio.playFileAndWait(...)` resolves after playback ends.
+    #[test]
+    #[ignore]
+    fn js_play_file_and_wait() {
+        use crate::runtime::Runtime;
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let path = test_mp3();
+            let start = Instant::now();
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"await audio.playFileAndWait({:?})"#,
+                    path.display()
+                ))
+                .await
+                .unwrap();
+            assert!(
+                start.elapsed().as_millis() >= 900,
+                "sound finished too early"
+            );
+        });
+    }
+
+    /// JS integration: fire-and-forget `audio.playFile(...)` — the runner exits only after
+    /// the sound finishes (WaitAtEnd::Automatic via the playing sounds tracker).
+    #[test]
+    #[ignore]
+    fn js_play_file_runner_waits() {
+        use crate::runtime::Runtime;
+        let start = Instant::now();
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let path = test_mp3();
+            // Fire and forget — do not await
+            script_engine
+                .eval_async::<()>(&format!(r#"audio.playFile({:?})"#, path.display()))
+                .await
+                .unwrap();
+        });
+        // The runner should have waited for the sound to finish before returning
+        assert!(
+            start.elapsed().as_millis() >= 900,
+            "runner exited before sound finished"
+        );
+    }
 
     #[test]
     fn validate_volume_accepts_valid_values() {

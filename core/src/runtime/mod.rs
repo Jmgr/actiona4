@@ -34,7 +34,7 @@ use crate::runtime::win::events::input::{
 use crate::{
     api::{
         app::js::JsApp,
-        audio::js::JsAudio,
+        audio::{PlayingSoundsTracker, js::JsAudio},
         clipboard::{Clipboard, js::JsClipboard},
         color::js::JsColor,
         console::js::JsConsole,
@@ -67,6 +67,7 @@ use crate::{
         web::js::JsWeb,
         windows::js::JsWindows,
     },
+    cancel_on,
     runtime::{events::Guard, shared_rng::SharedRng},
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
@@ -235,6 +236,7 @@ pub struct Runtime {
     app_handle: Option<AppHandle>,
     wait_at_end: AtomicU8,
     background_tasks_counter: AtomicU64,
+    playing_sounds_tracker: Arc<PlayingSoundsTracker>,
 
     #[derive_where(skip)]
     clipboard: Clipboard,
@@ -307,6 +309,7 @@ impl Runtime {
             #[allow(clippy::as_conversions)]
             wait_at_end: AtomicU8::new(WaitAtEnd::default() as u8),
             background_tasks_counter: AtomicU64::new(0),
+            playing_sounds_tracker: Arc::new(PlayingSoundsTracker::default()),
             clipboard: clipboard.clone(),
         });
 
@@ -325,7 +328,11 @@ impl Runtime {
             task_tracker.clone(),
             cancellation_token.clone(),
         );
-        let audio = JsAudio::new(cancellation_token.clone(), task_tracker.clone())?;
+        let audio = JsAudio::new(
+            cancellation_token.clone(),
+            task_tracker.clone(),
+            runtime.playing_sounds_tracker.clone(),
+        )?;
         let process = JsProcess::new(task_tracker.clone());
         let notification = JsNotification::default();
         let standard_paths = JsStandardPaths::default();
@@ -602,15 +609,26 @@ impl Runtime {
 
         f(runtime.clone(), script_engine.clone()).await?;
 
-        // TODO: wait if there is a sound playing
         let wait_at_end = runtime.wait_at_end();
         info!(
             "Wait at end: {}, background tasks: {}",
             wait_at_end,
             runtime.has_background_tasks()
         );
-        if wait_at_end.is_yes() || (wait_at_end.is_automatic() && runtime.has_background_tasks()) {
+        if wait_at_end.is_yes() {
             cancellation_token.cancelled().await;
+        } else if wait_at_end.is_automatic() && runtime.has_background_tasks() {
+            while cancel_on(
+                &cancellation_token,
+                runtime.playing_sounds_tracker.notified(),
+            )
+            .await
+            .is_ok()
+            {
+                if !runtime.has_background_tasks() {
+                    break;
+                }
+            }
         }
 
         let unhandled_exceptions = script_engine.idle().await;
@@ -785,14 +803,17 @@ impl Runtime {
             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |old| {
                 old.checked_sub(1)
             })
-            .is_err()
+            .is_ok()
         {
+            self.playing_sounds_tracker.notify_finished();
+        } else {
             warn!("trying to decrement background_tasks_counter below 0");
         }
     }
 
     fn has_background_tasks(&self) -> bool {
         self.background_tasks_counter.load(Ordering::Relaxed) > 0
+            || self.playing_sounds_tracker.has_playing_sounds()
     }
 }
 
@@ -904,7 +925,7 @@ mod tests {
                 const gen = TestGenerator();
                 for await (const ev of gen) {
                     print(ev);
-                }
+                } // TODO
                 /*
                 test_singleton_struct.string = "foo";
                 test_singleton_struct.integer = 42;

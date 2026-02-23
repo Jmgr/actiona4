@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 
 use macros::FromJsObject;
 use rquickjs::{
@@ -13,7 +13,7 @@ use tracing::instrument;
 use crate::{
     IntoJsResult,
     api::{
-        audio::{Audio, PlayingSound},
+        audio::{Audio, PlayingSound, PlayingSoundsTracker},
         js::{
             abort_controller::JsAbortSignal,
             classes::{HostClass, SingletonClass, register_host_class},
@@ -138,9 +138,10 @@ impl JsAudio {
     pub fn new(
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
+        playing_sounds_tracker: Arc<PlayingSoundsTracker>,
     ) -> color_eyre::Result<Self> {
         Ok(Self {
-            inner: Audio::new(cancellation_token, task_tracker)?,
+            inner: Audio::new(cancellation_token, task_tracker, playing_sounds_tracker)?,
         })
     }
 }
