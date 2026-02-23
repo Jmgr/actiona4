@@ -76,8 +76,8 @@ impl<'js> FromParam<'js> for JsSizeLike {
 /// ```ts
 /// const a = new Size(10, 20);
 /// const b = new Size(5, 10);
-/// println(a.add(b).toString()); // "Size(15, 30)"
-/// println(a.scale(2).toString()); // "Size(20, 40)"
+/// println(a.add(b)); // "Size(15, 30)"
+/// println(a.scale(2)); // "Size(20, 40)"
 /// ```
 ///
 /// @prop width: number // width
@@ -164,7 +164,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const sum = new Size(10, 20).add(new Size(5, 10));
-    /// println(sum.toString()); // "Size(15, 30)"
+    /// println(sum); // "Size(15, 30)"
     /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
@@ -175,7 +175,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const diff = new Size(100, 50).subtract(new Size(30, 20));
-    /// println(diff.toString()); // "Size(70, 30)"
+    /// println(diff); // "Size(70, 30)"
     /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
@@ -186,7 +186,7 @@ impl JsSize {
     ///
     /// ```ts
     /// const s = new Size(10, 20).scale(3);
-    /// println(s.toString()); // "Size(30, 60)"
+    /// println(s); // "Size(30, 60)"
     /// ```
     pub fn scale<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
         self.inner

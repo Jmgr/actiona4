@@ -10,7 +10,7 @@ const text = await web.downloadText("https://example.com/data.json");
 
 ```ts
 const image = await web.downloadImage("https://example.com/photo.png");
-println(image.size().toString());
+println(image.size());
 ```
 
 ## Methods

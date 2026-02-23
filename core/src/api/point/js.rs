@@ -77,7 +77,7 @@ impl<'js> FromParam<'js> for JsPointLike {
 /// const a = new Point(1, 2);
 /// const b = new Point(4, 6);
 /// println(a.distanceTo(b)); // 5
-/// println(a.add(b).toString()); // "Point(5, 8)"
+/// println(a.add(b)); // "Point(5, 8)"
 /// ```
 ///
 /// @prop x: number // X coordinate
@@ -224,7 +224,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const sum = new Point(1, 2).add(new Point(3, 4));
-    /// println(sum.toString()); // "Point(4, 6)"
+    /// println(sum); // "Point(4, 6)"
     /// ```
     #[must_use]
     pub fn add(&self, other: Self) -> Self {
@@ -235,7 +235,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const diff = new Point(5, 7).subtract(new Point(2, 3));
-    /// println(diff.toString()); // "Point(3, 4)"
+    /// println(diff); // "Point(3, 4)"
     /// ```
     #[must_use]
     pub fn subtract(&self, other: Self) -> Self {
@@ -246,7 +246,7 @@ impl JsPoint {
     ///
     /// ```ts
     /// const p = new Point(3, 4).scaled(2);
-    /// println(p.toString()); // "Point(6, 8)"
+    /// println(p); // "Point(6, 8)"
     /// ```
     pub fn scaled<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
         self.inner

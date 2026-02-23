@@ -57,6 +57,40 @@ println(item); // "default"
 
 ***
 
+### color()
+
+> **color**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Color`](../classes/Color.md)\>
+
+Returns a random color with full opacity.
+
+```ts
+const c = random.color();
+println(c); // Color(r: ?, g: ?, b: ?, a: 255)
+```
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Color`](../classes/Color.md)\>
+
+***
+
+### colorWithAlpha()
+
+> **colorWithAlpha**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Color`](../classes/Color.md)\>
+
+Returns a random color including a random alpha channel.
+
+```ts
+const c = random.colorWithAlpha();
+println(c); // Color(r: ?, g: ?, b: ?, a: ?)
+```
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Color`](../classes/Color.md)\>
+
+***
+
 ### integer()
 
 #### Call Signature
@@ -155,7 +189,7 @@ Returns a random position on any display.
 
 ```ts
 const pos = await random.position();
-println(pos.toString());
+println(pos);
 ```
 
 #### Returns
@@ -202,6 +236,93 @@ random.setSeed(42);
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### string()
+
+> **string**(`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`RandomStringOptions`](RandomStringOptions.md)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a random string of the given length.
+
+```ts
+const token = random.string(16);
+```
+
+```ts
+const code = random.string(8, { characters: "ABCDEF0123456789" });
+```
+
+#### Parameters
+
+##### length
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### options?
+
+[`RandomStringOptions`](RandomStringOptions.md)
+
+<div class="options-fields">
+
+###### allowLetters?
+
+> `optional` **allowLetters**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Include letters `A-Z` and `a-z` in the default character set.
+Ignored when `characters` is specified.
+
+###### Default Value
+
+`true`
+
+***
+
+###### allowNumbers?
+
+> `optional` **allowNumbers**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Include digits `0-9` in the default character set.
+Ignored when `characters` is specified.
+
+###### Default Value
+
+`true`
+
+***
+
+###### allowSpecialCharacters?
+
+> `optional` **allowSpecialCharacters**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Include printable ASCII non-alphanumeric characters in the default character set.
+Ignored when `characters` is specified.
+
+###### Default Value
+
+`true`
+
+***
+
+###### characters?
+
+> `optional` **characters**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Possible characters to pick from.
+Can contain any Unicode grapheme cluster.
+When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
+
+###### Default Value
+
+```ts
+all printable ASCII characters
+```
+
+</div>
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 

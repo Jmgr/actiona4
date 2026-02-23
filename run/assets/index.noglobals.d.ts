@@ -3410,7 +3410,7 @@ interface ClipboardHtml {
  * // Read and modify channels
  * const c = new Color(10, 20, 30);
  * c.r = 100;
- * println(c.toString()); // "Color(100, 20, 30, 255)"
+ * println(c); // "Color(100, 20, 30, 255)"
  * 
  * // Compare colors
  * Color.Red.equals(new Color(255, 0, 0)); // true
@@ -6445,7 +6445,7 @@ class Path {
  * const a = new Point(1, 2);
  * const b = new Point(4, 6);
  * println(a.distanceTo(b)); // 5
- * println(a.add(b).toString()); // "Point(5, 8)"
+ * println(a.add(b)); // "Point(5, 8)"
  * ```
  * @category Point
  */
@@ -6543,7 +6543,7 @@ class Point {
      * 
      * ```ts
      * const sum = new Point(1, 2).add(new Point(3, 4));
-     * println(sum.toString()); // "Point(4, 6)"
+     * println(sum); // "Point(4, 6)"
      * ```
      */
     add(other: Point): Point;
@@ -6552,7 +6552,7 @@ class Point {
      * 
      * ```ts
      * const diff = new Point(5, 7).subtract(new Point(2, 3));
-     * println(diff.toString()); // "Point(3, 4)"
+     * println(diff); // "Point(3, 4)"
      * ```
      */
     subtract(other: Point): Point;
@@ -6561,7 +6561,7 @@ class Point {
      * 
      * ```ts
      * const p = new Point(3, 4).scaled(2);
-     * println(p.toString()); // "Point(6, 8)"
+     * println(p); // "Point(6, 8)"
      * ```
      */
     scaled(factor: number): Point;
@@ -6835,6 +6835,43 @@ interface ProcessExitResult {
     toString(): string;
 }
 /**
+ * Options for generating random strings.
+ * 
+ * ```ts
+ * const token = random.string(32);
+ * const pin = random.string(6, { characters: "0123456789" });
+ * ```
+ * @category Random
+ * @expand
+ */
+interface RandomStringOptions {
+    /**
+     * Possible characters to pick from.
+     * Can contain any Unicode grapheme cluster.
+     * When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
+     * @defaultValue all printable ASCII characters
+     */
+    characters?: string;
+    /**
+     * Include digits `0-9` in the default character set.
+     * Ignored when `characters` is specified.
+     * @defaultValue `true`
+     */
+    allowNumbers?: boolean;
+    /**
+     * Include letters `A-Z` and `a-z` in the default character set.
+     * Ignored when `characters` is specified.
+     * @defaultValue `true`
+     */
+    allowLetters?: boolean;
+    /**
+     * Include printable ASCII non-alphanumeric characters in the default character set.
+     * Ignored when `characters` is specified.
+     * @defaultValue `true`
+     */
+    allowSpecialCharacters?: boolean;
+}
+/**
  * Random number generator.
  * 
  * Provides methods for generating random numbers, integers, positions, and choices.
@@ -6898,10 +6935,49 @@ interface Random {
      * 
      * ```ts
      * const pos = await random.position();
-     * println(pos.toString());
+     * println(pos);
      * ```
      */
     position(): Promise<Readonly<Point>>;
+    /**
+     * Returns a random color with full opacity.
+     * 
+     * ```ts
+     * const c = random.color();
+     * println(c); // Color(r: ?, g: ?, b: ?, a: 255)
+     * ```
+     */
+    color(): Readonly<Color>;
+    /**
+     * Returns a random color including a random alpha channel.
+     * 
+     * ```ts
+     * const c = random.colorWithAlpha();
+     * println(c); // Color(r: ?, g: ?, b: ?, a: ?)
+     * ```
+     */
+    colorWithAlpha(): Readonly<Color>;
+    /**
+     * Returns a random string of the given length.
+     * 
+     * ```ts
+     * const token = random.string(16);
+     * ```
+     * 
+     * ```ts
+     * const code = random.string(8, { characters: "ABCDEF0123456789" });
+     * ```
+     */
+    string(length: number, options?: RandomStringOptions): string;
+    /**
+     * Returns a random UUID (v4).
+     * 
+     * ```ts
+     * const id = random.uuid();
+     * println(id); // e.g. "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+     * ```
+     */
+    uuid(): string;
     /**
      * Chooses one random entry in an array.
      * A fallback can be provided, in case the array is empty.
@@ -7045,12 +7121,12 @@ class Rect {
  * 
  * ```ts
  * const image = await screenshot.captureDisplay(0);
- * println(image.size().toString());
+ * println(image.size());
  * ```
  * 
  * ```ts
  * const pixel = await screenshot.capturePixel(100, 100);
- * println(pixel.toString());
+ * println(pixel);
  * ```
  * @category Screenshot
  */
@@ -7084,7 +7160,7 @@ interface Screenshot {
      * 
      * ```ts
      * const color = await screenshot.capturePixel(100, 200);
-     * println(color.toString());
+     * println(color);
      * ```
      */
     capturePixel(position: PointLike): Promise<Color>;
@@ -7093,7 +7169,7 @@ interface Screenshot {
      * 
      * ```ts
      * const color = await screenshot.capturePixel(100, 200);
-     * println(color.toString());
+     * println(color);
      * ```
      */
     capturePixel(x: number, y: number): Promise<Color>;
@@ -7213,8 +7289,8 @@ const screenshot: Screenshot;
  * ```ts
  * const a = new Size(10, 20);
  * const b = new Size(5, 10);
- * println(a.add(b).toString()); // "Size(15, 30)"
- * println(a.scale(2).toString()); // "Size(20, 40)"
+ * println(a.add(b)); // "Size(15, 30)"
+ * println(a.scale(2)); // "Size(20, 40)"
  * ```
  * @category Size
  */
@@ -7259,7 +7335,7 @@ class Size {
      * 
      * ```ts
      * const sum = new Size(10, 20).add(new Size(5, 10));
-     * println(sum.toString()); // "Size(15, 30)"
+     * println(sum); // "Size(15, 30)"
      * ```
      */
     add(other: Size): Size;
@@ -7268,7 +7344,7 @@ class Size {
      * 
      * ```ts
      * const diff = new Size(100, 50).subtract(new Size(30, 20));
-     * println(diff.toString()); // "Size(70, 30)"
+     * println(diff); // "Size(70, 30)"
      * ```
      */
     subtract(other: Size): Size;
@@ -7277,7 +7353,7 @@ class Size {
      * 
      * ```ts
      * const s = new Size(10, 20).scale(3);
-     * println(s.toString()); // "Size(30, 60)"
+     * println(s); // "Size(30, 60)"
      * ```
      */
     scale(factor: number): Size;
@@ -8561,7 +8637,7 @@ interface WebProgress {
  * 
  * ```ts
  * const image = await web.downloadImage("https://example.com/photo.png");
- * println(image.size().toString());
+ * println(image.size());
  * ```
  * @category Web
  */

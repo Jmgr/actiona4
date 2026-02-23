@@ -18,7 +18,7 @@ const blue = Color.Blue;
 // Read and modify channels
 const c = new Color(10, 20, 30);
 c.r = 100;
-println(c.toString()); // "Color(100, 20, 30, 255)"
+println(c); // "Color(100, 20, 30, 255)"
 
 // Compare colors
 Color.Red.equals(new Color(255, 0, 0)); // true

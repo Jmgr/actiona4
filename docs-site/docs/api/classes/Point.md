@@ -14,7 +14,7 @@ const p3 = new Point(p1);
 const a = new Point(1, 2);
 const b = new Point(4, 6);
 println(a.distanceTo(b)); // 5
-println(a.add(b).toString()); // "Point(5, 8)"
+println(a.add(b)); // "Point(5, 8)"
 ```
 
 ## Constructors
@@ -81,7 +81,7 @@ Adds two points and returns a new Point.
 
 ```ts
 const sum = new Point(1, 2).add(new Point(3, 4));
-println(sum.toString()); // "Point(4, 6)"
+println(sum); // "Point(4, 6)"
 ```
 
 #### Parameters
@@ -203,7 +203,7 @@ Scales this point by a factor and returns a new Point.
 
 ```ts
 const p = new Point(3, 4).scaled(2);
-println(p.toString()); // "Point(6, 8)"
+println(p); // "Point(6, 8)"
 ```
 
 #### Parameters
@@ -226,7 +226,7 @@ Subtracts two points and returns a new Point.
 
 ```ts
 const diff = new Point(5, 7).subtract(new Point(2, 3));
-println(diff.toString()); // "Point(3, 4)"
+println(diff); // "Point(3, 4)"
 ```
 
 #### Parameters

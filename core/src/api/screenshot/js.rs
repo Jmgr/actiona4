@@ -37,12 +37,12 @@ impl<'js> Trace<'js> for super::Screenshot {
 ///
 /// ```ts
 /// const image = await screenshot.captureDisplay(0);
-/// println(image.size().toString());
+/// println(image.size());
 /// ```
 ///
 /// ```ts
 /// const pixel = await screenshot.capturePixel(100, 100);
-/// println(pixel.toString());
+/// println(pixel);
 /// ```
 ///
 /// @singleton
@@ -95,7 +95,7 @@ impl JsScreenshot {
     ///
     /// ```ts
     /// const color = await screenshot.capturePixel(100, 200);
-    /// println(color.toString());
+    /// println(color);
     /// ```
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         Ok(self

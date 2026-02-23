@@ -168,6 +168,7 @@
 ## Random
 
 - [Random](interfaces/Random.md)
+- [RandomStringOptions](interfaces/RandomStringOptions.md)
 - [random](variables/random.md)
 
 ## Rect

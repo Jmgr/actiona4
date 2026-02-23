@@ -7,12 +7,12 @@ as well as finding images on screen.
 
 ```ts
 const image = await screenshot.captureDisplay(0);
-println(image.size().toString());
+println(image.size());
 ```
 
 ```ts
 const pixel = await screenshot.capturePixel(100, 100);
-println(pixel.toString());
+println(pixel);
 ```
 
 ## Methods
@@ -49,7 +49,7 @@ Captures the color of a single pixel on screen.
 
 ```ts
 const color = await screenshot.capturePixel(100, 200);
-println(color.toString());
+println(color);
 ```
 
 ##### Parameters
@@ -70,7 +70,7 @@ Captures the color of a single pixel on screen.
 
 ```ts
 const color = await screenshot.capturePixel(100, 200);
-println(color.toString());
+println(color);
 ```
 
 ##### Parameters

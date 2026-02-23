@@ -395,7 +395,7 @@ impl JsWebProgress {
 ///
 /// ```ts
 /// const image = await web.downloadImage("https://example.com/photo.png");
-/// println(image.size().toString());
+/// println(image.size());
 /// ```
 ///
 /// @singleton
