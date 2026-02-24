@@ -3,7 +3,7 @@
 The result of a process that has finished.
 
 ```ts
-const handle = await process.start("ls");
+const handle = process.start("ls");
 const result = await handle.finished;
 if (result.exitCode === 0) {
     println("success");

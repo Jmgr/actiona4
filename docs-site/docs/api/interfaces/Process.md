@@ -79,7 +79,7 @@ await process.sendSignal(1234, Signal.Term);
 
 ### start()
 
-> <span class="async-badge">async</span> **start**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ProcessHandle`](ProcessHandle.md)\>
+> **start**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`ProcessHandle`](ProcessHandle.md)
 
 Starts a process and returns a `ProcessHandle` for interacting with it.
 
@@ -164,7 +164,7 @@ Working directory for the process.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ProcessHandle`](ProcessHandle.md)\>
+[`ProcessHandle`](ProcessHandle.md)
 
 ***
 

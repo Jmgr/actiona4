@@ -6656,7 +6656,7 @@ interface Process {
      * await handle.finished;
      * ```
      */
-    start(command: string, options?: StartProcessOptions): Promise<ProcessHandle>;
+    start(command: string, options?: StartProcessOptions): ProcessHandle;
     /**
      * Starts a process, waits for it to finish, and returns the exit result
      * including captured stdout and stderr.
@@ -6716,7 +6716,7 @@ const process: Process;
  * waiting for the process to exit or killing it.
  * 
  * ```ts
- * const handle = await process.start("echo", { args: ["hello"] });
+ * const handle = process.start("echo", { args: ["hello"] });
  * for await (const line of handle.stdout) {
  *     println(line);
  * }
@@ -6734,7 +6734,7 @@ interface ProcessHandle {
      * An async iterator that yields lines from the process's standard output.
      * 
      * ```ts
-     * const handle = await process.start("echo", { args: ["hello"] });
+     * const handle = process.start("echo", { args: ["hello"] });
      * for await (const line of handle.stdout) {
      *     println(line);
      * }
@@ -6745,7 +6745,7 @@ interface ProcessHandle {
      * An async iterator that yields lines from the process's standard error.
      * 
      * ```ts
-     * const handle = await process.start("my-command");
+     * const handle = process.start("my-command");
      * for await (const line of handle.stderr) {
      *     println(`error: ${line}`);
      * }
@@ -6756,7 +6756,7 @@ interface ProcessHandle {
      * A promise that resolves with the exit result when the process finishes.
      * 
      * ```ts
-     * const handle = await process.start("ls");
+     * const handle = process.start("ls");
      * const result = await handle.finished;
      * println(result.exitCode);
      * ```
@@ -6766,7 +6766,7 @@ interface ProcessHandle {
      * Write data to the process's stdin.
      * 
      * ```ts
-     * const handle = await process.start("cat");
+     * const handle = process.start("cat");
      * await handle.write("hello\n");
      * ```
      */
@@ -6776,7 +6776,7 @@ interface ProcessHandle {
      * which is necessary for programs that read until EOF (like `cat`).
      * 
      * ```ts
-     * const handle = await process.start("cat");
+     * const handle = process.start("cat");
      * await handle.write("hello\n");
      * await handle.closeStdin();
      * ```
@@ -6786,7 +6786,7 @@ interface ProcessHandle {
      * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
      * 
      * ```ts
-     * const handle = await process.start("sleep", { args: ["100"] });
+     * const handle = process.start("sleep", { args: ["100"] });
      * await handle.kill();
      * ```
      */
@@ -6795,7 +6795,7 @@ interface ProcessHandle {
      * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
      * 
      * ```ts
-     * const handle = await process.start("sleep", { args: ["100"] });
+     * const handle = process.start("sleep", { args: ["100"] });
      * await handle.terminate();
      * ```
      */
@@ -6806,7 +6806,7 @@ interface ProcessHandle {
  * The result of a process that has finished.
  * 
  * ```ts
- * const handle = await process.start("ls");
+ * const handle = process.start("ls");
  * const result = await handle.finished;
  * if (result.exitCode === 0) {
  *     println("success");
