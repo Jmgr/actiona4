@@ -5,11 +5,11 @@ use std::{
 
 use actiona_core::{
     format_js_value_for_console,
-    scripting::{self, Engine},
+    scripting::{self, Engine, is_js_identifier_continue, is_js_identifier_start},
 };
 use clap::{CommandFactory, Parser};
 use color_eyre::{
-    Result,
+    Report, Result,
     owo_colors::{self, OwoColorize},
 };
 use directories::BaseDirs;
@@ -378,6 +378,12 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                         if !scripting::try_emit_script_diagnostic(&err, &line) {
                             eprintln!("{err}");
                         }
+
+                        if let Some(receiver) =
+                            missing_await_promise_receiver_hint(&script_engine, &line, &err).await
+                        {
+                            eprintln!("(hint: call `await {receiver}`)");
+                        }
                     }
                     None => {
                         // Ctrl+C interrupted the expression
@@ -429,6 +435,92 @@ fn likely_print_without_newline(line: &str) -> bool {
             .next_back()
             .is_none_or(|c| !(c.is_ascii_alphanumeric() || c == '_' || c == '$'))
     })
+}
+
+async fn missing_await_promise_receiver_hint(
+    script_engine: &Engine,
+    line: &str,
+    err: &Report,
+) -> Option<String> {
+    if !is_plain_not_a_function_error(err) {
+        return None;
+    }
+
+    let receiver = extract_simple_member_call_receiver(line)?;
+    let receiver_name = receiver.to_string();
+    let lookup_name = receiver_name.clone();
+    let is_promise = script_engine
+        .with(move |ctx| {
+            // `let` bindings in the REPL are lexical bindings and may not exist on `globalThis`.
+            // Evaluate the identifier directly so we can detect both lexical and global bindings.
+            let value = match ctx.eval::<Value, _>(lookup_name.as_str()) {
+                Ok(value) => value,
+                Err(_) => return Ok(false),
+            };
+            Ok(value.is_promise())
+        })
+        .await
+        .ok()?;
+
+    is_promise.then_some(receiver_name)
+}
+
+fn is_plain_not_a_function_error(err: &Report) -> bool {
+    err.to_string()
+        .lines()
+        .next()
+        .is_some_and(|line| line.trim() == "TypeError: not a function")
+}
+
+fn extract_simple_member_call_receiver(line: &str) -> Option<&str> {
+    for (open_paren_idx, ch) in line.char_indices() {
+        if ch != '(' {
+            continue;
+        }
+
+        let method_end = trim_trailing_whitespace(line, open_paren_idx);
+        let (method_start, _) = parse_identifier_ending_at(line, method_end)?;
+        let before_method = trim_trailing_whitespace(line, method_start);
+        let (dot_idx, dot) = line[..before_method].char_indices().next_back()?;
+        if dot != '.' {
+            continue;
+        }
+
+        let receiver_end = trim_trailing_whitespace(line, dot_idx);
+        let (receiver_start, receiver_end) = parse_identifier_ending_at(line, receiver_end)?;
+        return Some(&line[receiver_start..receiver_end]);
+    }
+
+    None
+}
+
+fn trim_trailing_whitespace(line: &str, mut end: usize) -> usize {
+    while let Some((idx, ch)) = line[..end].char_indices().next_back() {
+        if ch.is_whitespace() {
+            end = idx;
+        } else {
+            break;
+        }
+    }
+    end
+}
+
+fn parse_identifier_ending_at(line: &str, end: usize) -> Option<(usize, usize)> {
+    let (mut start, last) = line[..end].char_indices().next_back()?;
+    if !is_js_identifier_continue(last) {
+        return None;
+    }
+
+    while let Some((idx, ch)) = line[..start].char_indices().next_back() {
+        if is_js_identifier_continue(ch) {
+            start = idx;
+        } else {
+            break;
+        }
+    }
+
+    let first = line[start..end].chars().next()?;
+    is_js_identifier_start(first).then_some((start, end))
 }
 
 fn validate_repl_input<'js>(
@@ -513,4 +605,46 @@ fn is_likely_incomplete(code: &str, message: &str) -> bool {
     }
 
     balance > 0
+}
+
+#[cfg(test)]
+mod tests {
+    use actiona_core::scripting::Engine;
+
+    use super::{extract_simple_member_call_receiver, missing_await_promise_receiver_hint};
+
+    #[test]
+    fn extract_simple_member_call_receiver_from_method_call() {
+        let line = "image.drawCircle(50, 50, 50, new Color(0, 0, 0, 128))";
+        assert_eq!(extract_simple_member_call_receiver(line), Some("image"));
+    }
+
+    #[test]
+    fn extract_simple_member_call_receiver_ignores_non_member_call() {
+        let line = "drawCircle(50, 50, 50)";
+        assert_eq!(extract_simple_member_call_receiver(line), None);
+    }
+
+    #[test]
+    fn extract_simple_member_call_receiver_handles_spaces() {
+        let line = "image . drawCircle (50)";
+        assert_eq!(extract_simple_member_call_receiver(line), Some("image"));
+    }
+
+    #[tokio::test]
+    async fn missing_await_promise_receiver_hint_detects_lexical_binding() {
+        let engine = Engine::new().await.expect("engine should initialize");
+        engine
+            .eval::<()>("let image = Promise.resolve({});")
+            .await
+            .expect("setup script should succeed");
+
+        let err = engine
+            .eval::<()>("image.drawCircle(50);")
+            .await
+            .expect_err("calling missing method on Promise should fail");
+
+        let hint = missing_await_promise_receiver_hint(&engine, "image.drawCircle(50)", &err).await;
+        assert_eq!(hint.as_deref(), Some("image"));
+    }
 }

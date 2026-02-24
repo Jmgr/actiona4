@@ -273,6 +273,7 @@ fn find_closest_identifier_range(
 }
 
 fn find_closest_call_identifier_range(line: &str, reported_col: usize) -> Option<(usize, usize)> {
+    let mut best_non_constructor: Option<(usize, usize, usize)> = None;
     let mut best_match: Option<(usize, usize, usize)> = None;
     for (start_byte, ch) in line.char_indices() {
         if !is_js_identifier_start(ch) {
@@ -314,13 +315,30 @@ fn find_closest_call_identifier_range(line: &str, reported_col: usize) -> Option
         let end_col_exclusive = start_col + line[start_byte..ident_end_byte].chars().count();
         let distance = column_distance_to_identifier(reported_col, start_col, end_col_exclusive);
         let candidate = (distance, start_byte, ident_end_byte);
+        let is_constructor = is_constructor_call(line, start_byte);
 
         if best_match.is_none_or(|current| candidate < current) {
             best_match = Some(candidate);
         }
+        if !is_constructor && best_non_constructor.is_none_or(|current| candidate < current) {
+            best_non_constructor = Some(candidate);
+        }
     }
 
-    best_match.map(|(_, start_byte, end_byte)| (start_byte, end_byte))
+    best_non_constructor
+        .or(best_match)
+        .map(|(_, start_byte, end_byte)| (start_byte, end_byte))
+}
+
+fn is_constructor_call(line: &str, start_byte: usize) -> bool {
+    let prefix = line[..start_byte].trim_end_matches(char::is_whitespace);
+    let Some(before_new) = prefix.strip_suffix("new") else {
+        return false;
+    };
+    before_new
+        .chars()
+        .next_back()
+        .is_none_or(|ch| !is_js_identifier_continue(ch))
 }
 
 const fn column_distance_to_identifier(
@@ -353,11 +371,13 @@ fn is_valid_js_identifier(identifier: &str) -> bool {
     is_js_identifier_start(first) && chars.all(is_js_identifier_continue)
 }
 
-fn is_js_identifier_start(ch: char) -> bool {
+#[must_use]
+pub fn is_js_identifier_start(ch: char) -> bool {
     ch == '$' || ch == '_' || ch.is_alphabetic()
 }
 
-fn is_js_identifier_continue(ch: char) -> bool {
+#[must_use]
+pub fn is_js_identifier_continue(ch: char) -> bool {
     ch == '$' || ch == '_' || ch.is_alphanumeric()
 }
 
@@ -1149,6 +1169,20 @@ await doWork();
     }
 
     #[test]
+    fn closest_call_identifier_range_prefers_non_constructor() {
+        let line = "image.drawCircle(50, 50, 50, new Color(0, 0, 0, 128))";
+        let color_start = line.find("Color").expect("line should contain Color");
+        let draw_start = line
+            .find("drawCircle")
+            .expect("line should contain drawCircle");
+
+        assert_eq!(
+            find_closest_call_identifier_range(line, color_start),
+            Some((draw_start, draw_start + "drawCircle".len()))
+        );
+    }
+
+    #[test]
     fn runtime_primary_span_highlights_reference_identifier() {
         let runtime_error = RuntimeScriptError::new(
             "ReferenceError: mouse2 is not defined".to_string(),
@@ -1192,5 +1226,28 @@ await doWork();
             .expect("span should be mappable to source snippet");
 
         assert_eq!(snippet, "save");
+    }
+
+    #[test]
+    fn runtime_primary_span_highlights_not_a_function_method_not_constructor_argument() {
+        let runtime_error = RuntimeScriptError::new(
+            "TypeError: not a function".to_string(),
+            vec![CallStackFrame {
+                function: String::new(),
+                file: "script".to_string(),
+                line: 1,
+                col: 34,
+            }],
+        );
+        let source = "image.drawCircle(50, 50, 50, new Color(0, 0, 0, 128))";
+
+        let (cm, _) = new_tty_handler();
+        let span = runtime_primary_span(&runtime_error, source, &cm)
+            .expect("runtime span should be produced");
+        let snippet = cm
+            .span_to_snippet(span)
+            .expect("span should be mappable to source snippet");
+
+        assert_eq!(snippet, "drawCircle");
     }
 }
