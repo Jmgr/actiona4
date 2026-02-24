@@ -41,6 +41,7 @@ pub trait DisplayCapture: Debug + Send + Sync + 'static {
 #[derive(Debug)]
 pub struct ScreenshotImplBase<D: DisplayCapture> {
     runtime: Arc<Runtime>,
+    displays: Displays,
     display_map: AsyncResource<HashMap<u32, Arc<D>>>,
 }
 
@@ -48,15 +49,12 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
     pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Arc<Self>> {
         let screenshot_impl = Arc::new(Self {
             runtime: runtime.clone(),
+            displays: displays.clone(),
             display_map: AsyncResource::new(runtime.cancellation_token()),
         });
 
         let local_screenshot_impl = screenshot_impl.clone();
         runtime.task_tracker().spawn(async move {
-            if let Err(err) = local_screenshot_impl.wait_and_update(&displays).await {
-                error!("error getting displays info: {err}");
-            }
-
             loop {
                 if displays.changed().await.is_err() {
                     break;
@@ -92,6 +90,11 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
     }
 
     async fn get_display(&self, display_id: u32) -> Result<Arc<D>> {
+        if self.display_map.try_get().is_none()
+            && let Err(err) = self.wait_and_update(&self.displays).await
+        {
+            error!("error getting displays info: {err}");
+        }
         let display_map = self.display_map.wait_get().await?;
         display_map
             .get(&display_id)

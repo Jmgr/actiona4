@@ -45,18 +45,21 @@ impl Displays {
     pub fn new(cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Result<Self> {
         let displays_info = AsyncResource::new(cancellation_token);
 
-        let displays = Self {
+        Ok(Self {
             task_tracker,
             displays_info,
-        };
+        })
+    }
 
-        displays.refresh();
-
-        Ok(displays)
+    async fn get_info(&self) -> Result<Arc<DisplayInfoVec>> {
+        if self.displays_info.try_get().is_none() {
+            self.refresh();
+        }
+        self.displays_info.wait_get().await
     }
 
     pub async fn random_point(&self, rng: SharedRng) -> Result<Point> {
-        let displays_info = self.displays_info.wait_get().await?;
+        let displays_info = self.get_info().await?;
         // Total area across all displays (skip zero-area just in case)
         let mut total_area = Su32::ZERO;
         for display_info in displays_info.iter() {
@@ -99,7 +102,7 @@ impl Displays {
     }
 
     pub async fn primary_display(&self) -> Result<DisplayInfo> {
-        let displays_info = self.displays_info.wait_get().await?;
+        let displays_info = self.get_info().await?;
         displays_info
             .iter()
             .find(|display| display.is_primary)
@@ -108,7 +111,7 @@ impl Displays {
     }
 
     pub async fn wait_get_info(&self) -> Result<Arc<DisplayInfoVec>> {
-        self.displays_info.wait_get().await
+        self.get_info().await
     }
 
     pub async fn changed(&self) -> Result<()> {
@@ -128,7 +131,7 @@ impl Displays {
     }
 
     pub async fn from_point(&self, point: Point) -> Result<Option<DisplayInfo>> {
-        let displays_info = self.displays_info.wait_get().await?;
+        let displays_info = self.get_info().await?;
 
         Ok(displays_info
             .iter()
@@ -137,7 +140,7 @@ impl Displays {
     }
 
     pub async fn smallest(&self) -> Result<Option<DisplayInfo>> {
-        let displays_infos = self.displays_info.wait_get().await?;
+        let displays_infos = self.get_info().await?;
         Ok(displays_infos
             .iter()
             .min_by(|left_display_info, right_display_info| {
@@ -150,7 +153,7 @@ impl Displays {
     }
 
     pub async fn largest(&self) -> Result<Option<DisplayInfo>> {
-        let displays_infos = self.displays_info.wait_get().await?;
+        let displays_infos = self.get_info().await?;
         Ok(displays_infos
             .iter()
             .max_by(|left_display_info, right_display_info| {
@@ -163,7 +166,7 @@ impl Displays {
     }
 
     pub async fn all(&self) -> Result<Vec<DisplayInfo>> {
-        let displays_infos = self.displays_info.wait_get().await?;
+        let displays_infos = self.get_info().await?;
         Ok(displays_infos.iter().cloned().collect_vec())
     }
 }
