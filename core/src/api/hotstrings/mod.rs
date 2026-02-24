@@ -364,6 +364,19 @@ impl Hotstrings {
             self.runtime.decrease_background_tasks_counter();
         }
     }
+
+    pub fn clear(&self) {
+        let mut hotstrings = self.hotstrings.lock();
+
+        if hotstrings.is_empty() {
+            return;
+        }
+
+        hotstrings.clear();
+
+        self.max_graphemes.store(0, Ordering::Relaxed);
+        self.runtime.decrease_background_tasks_counter();
+    }
 }
 
 fn grapheme_prefix_len(left: &str, right: &str) -> usize {

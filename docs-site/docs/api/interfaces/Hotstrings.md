@@ -93,6 +93,18 @@ Replacing with an image always uses the clipboard.
 
 ***
 
+### clear()
+
+> **clear**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Removes all registered hotstrings.
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
 ### remove()
 
 > **remove**(`source`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

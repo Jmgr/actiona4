@@ -109,6 +109,11 @@ impl JsHotstrings {
         self.inner.remove(&source);
     }
 
+    /// Removes all registered hotstrings.
+    pub fn clear(&self) {
+        self.inner.clear();
+    }
+
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
