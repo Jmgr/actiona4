@@ -40,7 +40,7 @@ impl MouseImpl {
 
 #[allow(unsafe_code)]
 impl MouseImplTrait for MouseImpl {
-    async fn is_button_pressed(&self, button: Button) -> Result<bool> {
+    fn is_button_pressed(&self, button: Button) -> Result<bool> {
         #[allow(clippy::as_conversions)] // i16 → u16 bitwise check, not a numeric conversion
         Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000u16 != 0 })
     }

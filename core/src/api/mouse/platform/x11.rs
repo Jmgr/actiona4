@@ -3,7 +3,8 @@ use std::sync::Arc;
 use color_eyre::{Result, eyre::eyre};
 use tokio::select;
 use tokio_util::sync::CancellationToken;
-use x11rb_async::protocol::xinput::{Device, DeviceType, xi_query_device, xi_query_pointer};
+use x11rb::protocol::xinput::ConnectionExt as SyncConnectionExt;
+use x11rb_async::protocol::xinput::{Device, DeviceType, xi_query_device};
 
 use super::{Button, MouseImplTrait};
 use crate::{
@@ -55,18 +56,15 @@ impl MouseImpl {
 }
 
 impl MouseImplTrait for MouseImpl {
-    async fn is_button_pressed(&self, button: Button) -> Result<bool> {
+    fn is_button_pressed(&self, button: Button) -> Result<bool> {
         let x11_connection = self.runtime.platform().x11_connection();
         let master_pointer_device_id = self.master_pointer_device_id;
 
-        let cookie = xi_query_pointer(
-            x11_connection.async_connection(),
-            x11_connection.screen().root,
-            master_pointer_device_id,
-        )
-        .await?;
-
-        let buttons = cookie.reply().await?.buttons;
+        let buttons = x11_connection
+            .sync_connection()
+            .xinput_xi_query_pointer(x11_connection.screen().root, master_pointer_device_id)?
+            .reply()?
+            .buttons;
 
         let mask = buttons
             .first()

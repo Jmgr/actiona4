@@ -118,8 +118,8 @@ impl From<Button> for enigo::Button {
 /// Scroll axis direction.
 ///
 /// ```ts
-/// await mouse.scroll(3, Axis.Vertical);
-/// await mouse.scroll(-1, Axis.Horizontal);
+/// mouse.scroll(3, Axis.Vertical);
+/// mouse.scroll(-1, Axis.Horizontal);
 /// ```
 ///
 /// @expand
@@ -340,8 +340,8 @@ impl Mouse {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub async fn is_pressed(&self, button: Button) -> Result<bool> {
-        self.implementation.is_button_pressed(button).await
+    pub fn is_pressed(&self, button: Button) -> Result<bool> {
+        self.implementation.is_button_pressed(button)
     }
 
     #[instrument(skip(self), err, ret)]
@@ -733,10 +733,10 @@ impl Mouse {
 ///
 /// ```ts
 /// // Press the right button at a specific position
-/// await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+/// mouse.press({ button: Button.Right, position: new Point(100, 200) });
 ///
 /// // Press at coordinates using PointLike shorthand
-/// await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
+/// mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
 /// ```
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]

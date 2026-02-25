@@ -15,13 +15,13 @@ use crate::runtime::platform::win::events::input::keyboard::{
 pub struct KeyboardImpl {}
 
 impl KeyboardImpl {
-    pub async fn is_key_pressed(&self, key: Key) -> Result<bool> {
+    pub fn is_key_pressed(&self, key: Key) -> Result<bool> {
         let key = VIRTUAL_KEY::try_from(key).map_err(|err| eyre!("invalid key: {err}"))?;
 
         Ok(is_virtual_key_pressed(key))
     }
 
-    pub async fn get_pressed_keys(&self) -> Result<Vec<Key>> {
+    pub fn get_pressed_keys(&self) -> Result<Vec<Key>> {
         let keystate = get_keystate();
         let keys: HashSet<Key> = (0u16..=255)
             .filter(|&vk| !skip_virtual_key(vk))

@@ -143,7 +143,7 @@ impl JsSystem {
         JsStorage::new(self.inner.storage())
     }
 
-    pub async fn shutdown(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
+    pub fn shutdown(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
         let force = force.unwrap_or_default();
 
         System::shutdown(force).into_js_result(&ctx)?;
@@ -151,7 +151,7 @@ impl JsSystem {
         Ok(())
     }
 
-    pub async fn reboot(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
+    pub fn reboot(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
         let force = force.unwrap_or_default();
 
         System::reboot(force).into_js_result(&ctx)?;
@@ -159,7 +159,7 @@ impl JsSystem {
         Ok(())
     }
 
-    pub async fn logout(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
+    pub fn logout(&self, ctx: Ctx<'_>, force: Opt<bool>) -> Result<()> {
         let force = force.unwrap_or_default();
 
         System::logout(force).into_js_result(&ctx)?;
@@ -167,25 +167,25 @@ impl JsSystem {
         Ok(())
     }
 
-    pub async fn hibernate(&self, ctx: Ctx<'_>) -> Result<()> {
+    pub fn hibernate(&self, ctx: Ctx<'_>) -> Result<()> {
         System::hibernate().into_js_result(&ctx)?;
 
         Ok(())
     }
 
-    pub async fn sleep(&self, ctx: Ctx<'_>) -> Result<()> {
+    pub fn sleep(&self, ctx: Ctx<'_>) -> Result<()> {
         System::sleep().into_js_result(&ctx)?;
 
         Ok(())
     }
 
-    pub async fn open(&self, ctx: Ctx<'_>, path: String, with_app: Opt<String>) -> Result<()> {
+    pub fn open(&self, ctx: Ctx<'_>, path: String, with_app: Opt<String>) -> Result<()> {
         System::open(path.as_ref(), with_app.as_deref()).into_js_result(&ctx)?;
 
         Ok(())
     }
 
-    pub async fn open_path(
+    pub fn open_path(
         &self,
         ctx: Ctx<'_>,
         path: String,

@@ -2,7 +2,7 @@ use std::{collections::HashSet, sync::Arc};
 
 use color_eyre::Result;
 use enigo::Key;
-use x11rb_async::{
+use x11rb::{
     connection::Connection, protocol::xproto::ConnectionExt, rust_connection::RustConnection,
 };
 use xkeysym::Keysym;
@@ -19,32 +19,30 @@ impl KeyboardImpl {
         Ok(Self { runtime })
     }
 
-    pub async fn is_key_pressed(&self, key: Key) -> Result<bool> {
+    pub fn is_key_pressed(&self, key: Key) -> Result<bool> {
         let x11_connection = self.runtime.platform().x11_connection();
-        let connection = x11_connection.async_connection();
+        let connection = x11_connection.sync_connection();
         let keysym: Keysym = key.into();
-        let keycode = keysym_to_keycode(connection, keysym).await?;
+        let keycode = keysym_to_keycode(connection, keysym)?;
 
         let Some(keycode) = keycode else {
             return Ok(false);
         };
 
-        is_key_pressed(connection, keycode).await
+        is_key_pressed(connection, keycode)
     }
 
-    pub async fn get_pressed_keys(&self) -> Result<Vec<Key>> {
+    pub fn get_pressed_keys(&self) -> Result<Vec<Key>> {
         let x11_connection = self.runtime.platform().x11_connection();
-        let connection = x11_connection.async_connection();
+        let connection = x11_connection.sync_connection();
         let setup = connection.setup();
         let min = setup.min_keycode;
         let max = setup.max_keycode;
 
-        let query_keymap = connection.query_keymap().await?.reply().await?;
+        let query_keymap = connection.query_keymap()?.reply()?;
         let mapping = connection
-            .get_keyboard_mapping(min, max - min + 1)
-            .await?
-            .reply()
-            .await?;
+            .get_keyboard_mapping(min, max - min + 1)?
+            .reply()?;
 
         let keys: HashSet<Key> = mapping
             .keysyms
@@ -64,15 +62,13 @@ impl KeyboardImpl {
     }
 }
 
-async fn keysym_to_keycode(connection: &RustConnection, keysym: Keysym) -> Result<Option<u8>> {
+fn keysym_to_keycode(connection: &RustConnection, keysym: Keysym) -> Result<Option<u8>> {
     let setup = connection.setup();
     let min = setup.min_keycode;
     let max = setup.max_keycode;
     let mapping = connection
-        .get_keyboard_mapping(min, max - min + 1)
-        .await?
-        .reply()
-        .await?;
+        .get_keyboard_mapping(min, max - min + 1)?
+        .reply()?;
 
     for (i, syms) in mapping
         .keysyms
@@ -86,8 +82,8 @@ async fn keysym_to_keycode(connection: &RustConnection, keysym: Keysym) -> Resul
     Ok(None)
 }
 
-async fn is_key_pressed(connection: &RustConnection, keycode: u8) -> Result<bool> {
-    let reply = connection.query_keymap().await?.reply().await?;
+fn is_key_pressed(connection: &RustConnection, keycode: u8) -> Result<bool> {
+    let reply = connection.query_keymap()?.reply()?;
     Ok(is_keycode_pressed(&reply.keys, keycode))
 }
 

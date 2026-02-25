@@ -471,9 +471,9 @@ impl JsProcessInfo {
     /// // Force-stop a specific PID if it is still running.
     /// const targetPid = 12345;
     /// const proc = (await system.processes.find({ pid: targetPid }))[0];
-    /// if (proc) await proc.kill();
+    /// if (proc) proc.kill();
     /// ```
-    pub async fn kill(&self, ctx: Ctx<'_>) -> Result<()> {
+    pub fn kill(&self, ctx: Ctx<'_>) -> Result<()> {
         crate::api::process::kill_by_pid(self.inner.pid()).into_js_result(&ctx)
     }
 
@@ -483,9 +483,9 @@ impl JsProcessInfo {
     /// // Ask a specific PID to shut down cleanly.
     /// const targetPid = 12345;
     /// const proc = (await system.processes.find({ pid: targetPid }))[0];
-    /// if (proc) await proc.terminate();
+    /// if (proc) proc.terminate();
     /// ```
-    pub async fn terminate(&self, ctx: Ctx<'_>) -> Result<()> {
+    pub fn terminate(&self, ctx: Ctx<'_>) -> Result<()> {
         crate::api::process::terminate_by_pid(self.inner.pid()).into_js_result(&ctx)
     }
 
@@ -494,11 +494,11 @@ impl JsProcessInfo {
     /// ```ts
     /// const targetPid = 12345;
     /// const proc = (await system.processes.find({ pid: targetPid }))[0];
-    /// if (proc) await proc.sendSignal(Signal.Term);
+    /// if (proc) proc.sendSignal(Signal.Term);
     /// ```
     ///
     /// @platforms =linux
-    pub async fn send_signal(&self, ctx: Ctx<'_>, signal: JsSignal) -> Result<()> {
+    pub fn send_signal(&self, ctx: Ctx<'_>, signal: JsSignal) -> Result<()> {
         #[cfg(unix)]
         {
             crate::api::process::send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)

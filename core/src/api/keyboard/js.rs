@@ -33,12 +33,12 @@ impl<'js> Trace<'js> for super::Keyboard {
 ///
 /// ```ts
 /// // Press and hold a key
-/// await keyboard.key(Key.Shift, Direction.Press);
+/// keyboard.key(Key.Shift, Direction.Press);
 /// // Release it
-/// await keyboard.key(Key.Shift, Direction.Release);
+/// keyboard.key(Key.Shift, Direction.Release);
 ///
 /// // Press and release in one action
-/// await keyboard.key(Key.Return, Direction.Click);
+/// keyboard.key(Key.Return, Direction.Click);
 /// ```
 ///
 /// @expand
@@ -83,14 +83,14 @@ impl From<JsDirection> for enigo::Direction {
 ///
 /// ```ts
 /// // Type text
-/// await keyboard.text("Hello, world!");
+/// keyboard.text("Hello, world!");
 /// ```
 ///
 /// ```ts
 /// // Press a key combination (Ctrl+C)
-/// await keyboard.key(Key.Control, Direction.Press);
-/// await keyboard.key("c", Direction.Click);
-/// await keyboard.key(Key.Control, Direction.Release);
+/// keyboard.key(Key.Control, Direction.Press);
+/// keyboard.key("c", Direction.Click);
+/// keyboard.key(Key.Control, Direction.Release);
 /// ```
 ///
 /// ```ts
@@ -164,7 +164,7 @@ pub struct JsWaitForKeysOptions {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsKeyboard {
     /// Types the given text string using simulated key events.
-    pub async fn text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
+    pub fn text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
         self.inner.text(&text).into_js_result(&ctx)?;
 
         Ok(())
@@ -175,7 +175,7 @@ impl JsKeyboard {
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
     /// @param direction: Direction
-    pub async fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
+    pub fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
         let key = key.try_into().map_err(|_| {
             Exception::throw_message(
                 &ctx,
@@ -189,7 +189,7 @@ impl JsKeyboard {
     }
 
     /// Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
-    pub async fn raw(&self, ctx: Ctx<'_>, keycode: u16, direction: JsDirection) -> Result<()> {
+    pub fn raw(&self, ctx: Ctx<'_>, keycode: u16, direction: JsDirection) -> Result<()> {
         self.inner
             .raw(keycode, direction.into())
             .into_js_result(&ctx)?;
@@ -199,7 +199,7 @@ impl JsKeyboard {
 
     /// Returns whether a key is currently pressed.
     /// @param key: Key | string | number
-    pub async fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
+    pub fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = key.try_into().map_err(|_| {
             Exception::throw_message(
                 &ctx,
@@ -207,12 +207,12 @@ impl JsKeyboard {
             )
         })?;
 
-        self.inner.is_key_pressed(key).await.into_js_result(&ctx)
+        self.inner.is_key_pressed(key).into_js_result(&ctx)
     }
 
     /// Returns the list of keys that are currently pressed.
-    pub async fn get_pressed_keys(&self, ctx: Ctx<'_>) -> Result<Vec<JsKey>> {
-        let keys = self.inner.get_pressed_keys().await.into_js_result(&ctx)?;
+    pub fn get_pressed_keys(&self, ctx: Ctx<'_>) -> Result<Vec<JsKey>> {
+        let keys = self.inner.get_pressed_keys().into_js_result(&ctx)?;
 
         Ok(keys
             .into_iter()
@@ -301,8 +301,8 @@ impl JsKeyboard {
 /// or a raw keycode number wherever a `Key` is expected.
 ///
 /// ```ts
-/// await keyboard.key(Key.Return, Direction.Click);
-/// await keyboard.key("a", Direction.Click);
+/// keyboard.key(Key.Return, Direction.Click);
+/// keyboard.key("a", Direction.Click);
 /// ```
 #[serde(rename = "Key")]
 /// @rename Key
@@ -2589,7 +2589,7 @@ mod tests {
                     r#"
                     while(true) {
                         await sleep("1s");
-                        console.println("hello", await keyboard.isKeyPressed(Key.A));
+                        console.println("hello", keyboard.isKeyPressed(Key.A));
                     }
                 "#,
                 )

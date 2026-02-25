@@ -167,7 +167,7 @@ impl From<JsSignal> for Signal {
 /// for await (const line of handle.stdout) {
 ///     println(line);
 /// }
-/// const result = await handle.finished;
+/// const result = await handle.closed;
 /// println(result.exitCode);
 /// ```
 ///
@@ -177,7 +177,7 @@ impl From<JsSignal> for Signal {
 /// ```
 ///
 /// ```ts
-/// const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
+/// const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
 /// println(pid);
 /// ```
 ///
@@ -220,7 +220,7 @@ impl JsProcess {
     /// for await (const line of handle.stdout) {
     ///     println(line);
     /// }
-    /// const result = await handle.finished;
+    /// const result = await handle.closed;
     /// println(result.exitCode);
     /// ```
     ///
@@ -231,7 +231,7 @@ impl JsProcess {
     /// for await (const line of handle.stdout) {
     ///     println(line);
     /// }
-    /// await handle.finished;
+    /// await handle.closed;
     /// ```
     pub fn start<'js>(
         &self,
@@ -304,10 +304,10 @@ impl JsProcess {
     /// The process will continue running after the script exits.
     ///
     /// ```ts
-    /// const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
+    /// const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
     /// println(`Started server with PID: ${pid}`);
     /// ```
-    pub async fn start_detached(
+    pub fn start_detached(
         &self,
         ctx: Ctx<'_>,
         command: String,
@@ -327,9 +327,9 @@ impl JsProcess {
     /// Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
     ///
     /// ```ts
-    /// await process.kill(1234);
+    /// process.kill(1234);
     /// ```
-    pub async fn kill(&self, ctx: Ctx<'_>, pid: u32) -> Result<()> {
+    pub fn kill(&self, ctx: Ctx<'_>, pid: u32) -> Result<()> {
         let pid = Pid::try_from(pid).into_js_result(&ctx)?;
         super::kill_by_pid(pid).into_js_result(&ctx)
     }
@@ -337,9 +337,9 @@ impl JsProcess {
     /// Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
     ///
     /// ```ts
-    /// await process.terminate(1234);
+    /// process.terminate(1234);
     /// ```
-    pub async fn terminate(&self, ctx: Ctx<'_>, pid: u32) -> Result<()> {
+    pub fn terminate(&self, ctx: Ctx<'_>, pid: u32) -> Result<()> {
         let pid = Pid::try_from(pid).into_js_result(&ctx)?;
         super::terminate_by_pid(pid).into_js_result(&ctx)
     }
@@ -347,11 +347,11 @@ impl JsProcess {
     /// Send a signal to a process by PID.
     ///
     /// ```ts
-    /// await process.sendSignal(1234, Signal.Term);
+    /// process.sendSignal(1234, Signal.Term);
     /// ```
     ///
     /// @platforms =linux
-    pub async fn send_signal(&self, ctx: Ctx<'_>, pid: u32, signal: JsSignal) -> Result<()> {
+    pub fn send_signal(&self, ctx: Ctx<'_>, pid: u32, signal: JsSignal) -> Result<()> {
         #[cfg(unix)]
         {
             let pid = Pid::try_from(pid).into_js_result(&ctx)?;
@@ -385,7 +385,7 @@ impl JsProcess {
 /// for await (const line of handle.stdout) {
 ///     println(line);
 /// }
-/// const result = await handle.finished;
+/// const result = await handle.closed;
 /// println(result.exitCode);
 /// ```
 #[derive(JsLifetime)]
@@ -550,36 +550,36 @@ impl JsProcessHandle {
     ///
     /// ```ts
     /// const handle = process.start("sleep", { args: ["100"] });
-    /// await handle.kill();
+    /// handle.kill();
     /// ```
-    pub async fn kill(&self, ctx: Ctx<'_>) -> Result<()> {
-        let mut child = self.child.lock().await;
-        child.kill().await.into_js_result(&ctx)
+    pub fn kill(&self, ctx: Ctx<'_>) -> Result<()> {
+        let pid = Pid::try_from(self.pid).into_js_result(&ctx)?;
+        super::kill_by_pid(pid).into_js_result(&ctx)
     }
 
     /// Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
     ///
     /// ```ts
     /// const handle = process.start("sleep", { args: ["100"] });
-    /// await handle.terminate();
+    /// handle.terminate();
     /// ```
-    pub async fn terminate(&self, ctx: Ctx<'_>) -> Result<()> {
+    pub fn terminate(&self, ctx: Ctx<'_>) -> Result<()> {
         let pid = Pid::try_from(self.pid).into_js_result(&ctx)?;
         super::terminate_by_pid(pid).into_js_result(&ctx)
     }
 
-    /// A promise that resolves with the exit result when the process finishes.
+    /// A promise that resolves with the exit result when the process closes.
     ///
     /// ```ts
     /// const handle = process.start("ls");
-    /// const result = await handle.finished;
+    /// const result = await handle.closed;
     /// println(result.exitCode);
     /// ```
     ///
     /// @get
     /// @returns Task<ProcessExitResult>
     #[qjs(get)]
-    pub fn finished<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
+    pub fn closed<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
         let child = self.child.clone();
         let token = self.cancellation_token.clone();
         let pid = self.pid;
@@ -622,7 +622,7 @@ impl JsProcessHandle {
 ///
 /// ```ts
 /// const handle = process.start("ls");
-/// const result = await handle.finished;
+/// const result = await handle.closed;
 /// if (result.exitCode === 0) {
 ///     println("success");
 /// }
@@ -649,7 +649,7 @@ impl<'js> Trace<'js> for JsProcessExitResult {
 
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsProcessExitResult {
-    /// The process ID. Only available when using `handle.finished`.
+    /// The process ID. Only available when using `handle.closed`.
     /// @get
     #[qjs(get)]
     #[must_use]
@@ -747,11 +747,11 @@ mod tests {
 
     /// Returns a short detached command.
     #[cfg(unix)]
-    const SHORT_DETACHED: &str = r#"await process.startDetached("sleep", { args: ["0.1"] })"#;
+    const SHORT_DETACHED: &str = r#"process.startDetached("sleep", { args: ["0.1"] })"#;
 
     #[cfg(windows)]
     const SHORT_DETACHED: &str =
-        r#"await process.startDetached("ping", { args: ["-n", "1", "127.0.0.1"] })"#;
+        r#"process.startDetached("ping", { args: ["-n", "1", "127.0.0.1"] })"#;
 
     #[test]
     fn test_start_echo() {
@@ -765,7 +765,7 @@ mod tests {
                 for await (const line of handle.stdout) {{
                     output += line;
                 }}
-                await handle.finished;
+                await handle.closed;
                 output
                 "#
                 ))
@@ -794,7 +794,7 @@ mod tests {
                 for await (const line of handle.stdout) {{
                     output += line;
                 }}
-                await handle.finished;
+                await handle.closed;
                 output
                 "#
                 ))
@@ -813,7 +813,7 @@ mod tests {
                 .eval_async::<i32>(&format!(
                     r#"
                 const handle = {cmd};
-                const result = await handle.finished;
+                const result = await handle.closed;
                 result.exitCode
                 "#
                 ))
@@ -841,7 +841,7 @@ mod tests {
                 for await (const line of handle.stderr) {{
                     output += line;
                 }}
-                await handle.finished;
+                await handle.closed;
                 output
                 "#
                 ))
@@ -859,8 +859,8 @@ mod tests {
                 .eval_async::<()>(&format!(
                     r#"
                 const handle = {LONG_SLEEP};
-                await handle.kill();
-                await handle.finished;
+                handle.kill();
+                await handle.closed;
                 "#
                 ))
                 .await
@@ -894,7 +894,7 @@ mod tests {
                     r#"
                 const handle = {cmd};
                 const pid = handle.pid;
-                await handle.finished;
+                await handle.closed;
                 pid
                 "#
                 ))
@@ -971,8 +971,8 @@ mod tests {
                 .eval_async::<()>(&format!(
                     r#"
                 const handle = {LONG_SLEEP};
-                await handle.terminate();
-                await handle.finished;
+                handle.terminate();
+                await handle.closed;
                 "#
                 ))
                 .await
@@ -990,8 +990,8 @@ mod tests {
                     r#"
                 const handle = process.start("charmap");
                 await sleep("2s");
-                await handle.terminate();
-                await handle.finished;
+                handle.terminate();
+                await handle.closed;
                 "#,
                 ),
             )

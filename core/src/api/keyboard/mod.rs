@@ -75,12 +75,12 @@ impl Keyboard {
         Ok(())
     }
 
-    pub async fn is_key_pressed(&self, key: Key) -> Result<bool> {
-        self.implementation.is_key_pressed(key).await
+    pub fn is_key_pressed(&self, key: Key) -> Result<bool> {
+        self.implementation.is_key_pressed(key)
     }
 
-    pub async fn get_pressed_keys(&self) -> Result<Vec<Key>> {
-        self.implementation.get_pressed_keys().await
+    pub fn get_pressed_keys(&self) -> Result<Vec<Key>> {
+        self.implementation.get_pressed_keys()
     }
 
     pub async fn wait_for_keys(

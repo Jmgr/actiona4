@@ -854,7 +854,7 @@ impl JsNotification {
     /// Server capabilities.
     ///
     /// @platforms =linux
-    pub async fn capabilities(&self, ctx: Ctx<'_>) -> Result<Vec<String>> {
+    pub fn capabilities(&self, ctx: Ctx<'_>) -> Result<Vec<String>> {
         super::Notification::capabilities().into_js_result(&ctx)
     }
 

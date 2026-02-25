@@ -11,7 +11,7 @@ pub use super::Button;
 use crate::{api::mouse::ButtonConditions, runtime::events::MouseButtonEvent};
 
 pub trait MouseImplTrait {
-    async fn is_button_pressed(&self, button: Button) -> Result<bool>;
+    fn is_button_pressed(&self, button: Button) -> Result<bool>;
     async fn wait_for_button(
         &self,
         conditions: ButtonConditions,
