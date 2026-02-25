@@ -6,8 +6,8 @@ Use as constants on the `Key` class. You can also pass a single character string
 or a raw keycode number wherever a `Key` is expected.
 
 ```ts
-await keyboard.key(Key.Return, Direction.Click);
-await keyboard.key("a", Direction.Click);
+keyboard.key(Key.Return, Direction.Click);
+keyboard.key("a", Direction.Click);
 ```
 
 ## Enumeration Members

@@ -379,7 +379,7 @@ Abort signal to cancel the click.
 
 ### isPressed()
 
-> <span class="async-badge">async</span> **isPressed**(`button`: [`Button`](../enumerations/Button.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
+> **isPressed**(`button`: [`Button`](../enumerations/Button.md)): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns whether a mouse button is currently pressed.
 
@@ -438,7 +438,7 @@ Right button
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 #### Platform
 
@@ -690,13 +690,13 @@ Easing function used for the movement.
 
 ### position()
 
-> <span class="async-badge">async</span> **position**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
+> **position**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
 
 Returns the current mouse cursor position.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
 
 #### Platform
 
@@ -708,7 +708,7 @@ Returns the current mouse cursor position.
 
 ### press()
 
-> <span class="async-badge">async</span> **press**(`options?`: [`PressOptions`](PressOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **press**(`options?`: [`PressOptions`](PressOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Presses and holds a mouse button.
 
@@ -805,13 +805,13 @@ Whether the position is relative to the current cursor position.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### release()
 
-> <span class="async-badge">async</span> **release**(`button?`: [`Button`](../enumerations/Button.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **release**(`button?`: [`Button`](../enumerations/Button.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Releases a mouse button.
 
@@ -870,13 +870,13 @@ Right button
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### scroll()
 
-> <span class="async-badge">async</span> **scroll**(`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `axis?`: [`Axis`](../enumerations/Axis.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **scroll**(`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `axis?`: [`Axis`](../enumerations/Axis.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Scrolls the mouse wheel by the given amount.
 
@@ -910,7 +910,7 @@ Scrolls the mouse wheel by the given amount.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
@@ -918,7 +918,7 @@ Scrolls the mouse wheel by the given amount.
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **setPosition**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **setPosition**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the mouse cursor position instantly (absolute coordinates).
 
@@ -930,11 +930,11 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **setPosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **setPosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the mouse cursor position instantly (absolute coordinates).
 
@@ -950,7 +950,7 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
@@ -958,7 +958,7 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **setRelativePosition**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **setRelativePosition**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Moves the mouse cursor by the given offset (relative coordinates).
 
@@ -970,11 +970,11 @@ Moves the mouse cursor by the given offset (relative coordinates).
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **setRelativePosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **setRelativePosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Moves the mouse cursor by the given offset (relative coordinates).
 
@@ -990,7 +990,7 @@ Moves the mouse cursor by the given offset (relative coordinates).
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

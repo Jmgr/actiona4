@@ -6618,7 +6618,7 @@ interface StartProcessOptions {
  * for await (const line of handle.stdout) {
  *     println(line);
  * }
- * const result = await handle.finished;
+ * const result = await handle.closed;
  * println(result.exitCode);
  * ```
  * 
@@ -6642,7 +6642,7 @@ interface Process {
      * for await (const line of handle.stdout) {
      *     println(line);
      * }
-     * const result = await handle.finished;
+     * const result = await handle.closed;
      * println(result.exitCode);
      * ```
      * 
@@ -6653,7 +6653,7 @@ interface Process {
      * for await (const line of handle.stdout) {
      *     println(line);
      * }
-     * await handle.finished;
+     * await handle.closed;
      * ```
      */
     start(command: string, options?: StartProcessOptions): ProcessHandle;
@@ -6720,7 +6720,7 @@ const process: Process;
  * for await (const line of handle.stdout) {
  *     println(line);
  * }
- * const result = await handle.finished;
+ * const result = await handle.closed;
  * println(result.exitCode);
  * ```
  * @category Process
@@ -6753,15 +6753,15 @@ interface ProcessHandle {
      */
     readonly stderr: AsyncIterableIterator<string>;
     /**
-     * A promise that resolves with the exit result when the process finishes.
+     * A promise that resolves with the exit result when the process closes.
      * 
      * ```ts
      * const handle = process.start("ls");
-     * const result = await handle.finished;
+     * const result = await handle.closed;
      * println(result.exitCode);
      * ```
      */
-    readonly finished: Task<ProcessExitResult>;
+    readonly closed: Task<ProcessExitResult>;
     /**
      * Write data to the process's stdin.
      * 
@@ -6787,10 +6787,10 @@ interface ProcessHandle {
      * 
      * ```ts
      * const handle = process.start("sleep", { args: ["100"] });
-     * await handle.kill();
+     * handle.kill();
      * ```
      */
-    kill(): Promise<void>;
+    kill(): void;
     /**
      * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
      * 
@@ -6807,7 +6807,7 @@ interface ProcessHandle {
  * 
  * ```ts
  * const handle = process.start("ls");
- * const result = await handle.finished;
+ * const result = await handle.closed;
  * if (result.exitCode === 0) {
  *     println("success");
  * }
@@ -6821,7 +6821,7 @@ interface ProcessHandle {
  */
 interface ProcessExitResult {
     /**
-     * The process ID. Only available when using `handle.finished`.
+     * The process ID. Only available when using `handle.closed`.
      */
     readonly pid?: number;
     /**

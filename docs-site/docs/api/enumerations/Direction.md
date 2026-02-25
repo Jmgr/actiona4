@@ -5,12 +5,12 @@ Direction for key press/release actions.
 
 ```ts
 // Press and hold a key
-await keyboard.key(Key.Shift, Direction.Press);
+keyboard.key(Key.Shift, Direction.Press);
 // Release it
-await keyboard.key(Key.Shift, Direction.Release);
+keyboard.key(Key.Shift, Direction.Release);
 
 // Press and release in one action
-await keyboard.key(Key.Return, Direction.Click);
+keyboard.key(Key.Return, Direction.Click);
 ```
 
 ## Enumeration Members

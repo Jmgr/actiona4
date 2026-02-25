@@ -7,24 +7,24 @@ is accessed through a dedicated sub-object.
 
 ```ts
 // Copy and paste text
-await clipboard.text.set("Hello, world!");
-const text = await clipboard.text.get();
+clipboard.text.set("Hello, world!");
+const text = clipboard.text.get();
 
 // Copy and paste an image
 const img = display.screenshot();
-await clipboard.image.set(img);
+clipboard.image.set(img);
 
 // Work with file lists
-await clipboard.fileList.set(["/path/to/file.txt"]);
+clipboard.fileList.set(["/path/to/file.txt"]);
 
 // HTML content with alt text fallback
-await clipboard.html.set("<b>bold</b>", "bold");
+clipboard.html.set("<b>bold</b>", "bold");
 
 // Clear the clipboard
-await clipboard.clear();
+clipboard.clear();
 
 // On Linux, use the selection clipboard
-await clipboard.text.set("selected", ClipboardMode.Selection);
+clipboard.text.set("selected", ClipboardMode.Selection);
 
 // Wait until clipboard content changes
 await clipboard.waitForChanged();
@@ -66,15 +66,15 @@ Sub-object for text clipboard operations.
 
 ### clear()
 
-> <span class="async-badge">async</span> **clear**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **clear**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Clears the clipboard contents.
 
 ```ts
-await clipboard.clear();
+clipboard.clear();
 
 // On Linux, clear the selection clipboard
-await clipboard.clear(ClipboardMode.Selection);
+clipboard.clear(ClipboardMode.Selection);
 ```
 
 #### Parameters
@@ -109,7 +109,7 @@ await clipboard.clear(ClipboardMode.Selection);
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

@@ -4,19 +4,19 @@ Provides HTML clipboard operations.
 
 ```ts
 // Set HTML with a plain-text fallback
-await clipboard.html.set("<b>bold</b>", "bold");
+clipboard.html.set("<b>bold</b>", "bold");
 
 // Set HTML without a fallback
-await clipboard.html.set("<em>italic</em>");
+clipboard.html.set("<em>italic</em>");
 
-const html = await clipboard.html.get();
+const html = clipboard.html.get();
 ```
 
 ## Methods
 
 ### get()
 
-> <span class="async-badge">async</span> **get**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+> **get**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Gets the clipboard HTML content.
 
@@ -52,13 +52,13 @@ Gets the clipboard HTML content.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
 ### set()
 
-> <span class="async-badge">async</span> **set**(`html`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `altText?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **set**(`html`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `altText?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the clipboard HTML content, with an optional plain-text alternative.
 
@@ -102,7 +102,7 @@ Sets the clipboard HTML content, with an optional plain-text alternative.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

@@ -6617,7 +6617,7 @@ declare interface StartProcessOptions {
  * for await (const line of handle.stdout) {
  *     println(line);
  * }
- * const result = await handle.finished;
+ * const result = await handle.closed;
  * println(result.exitCode);
  * ```
  * 
@@ -6641,7 +6641,7 @@ declare interface Process {
      * for await (const line of handle.stdout) {
      *     println(line);
      * }
-     * const result = await handle.finished;
+     * const result = await handle.closed;
      * println(result.exitCode);
      * ```
      * 
@@ -6652,7 +6652,7 @@ declare interface Process {
      * for await (const line of handle.stdout) {
      *     println(line);
      * }
-     * await handle.finished;
+     * await handle.closed;
      * ```
      */
     start(command: string, options?: StartProcessOptions): ProcessHandle;
@@ -6719,7 +6719,7 @@ declare const process: Process;
  * for await (const line of handle.stdout) {
  *     println(line);
  * }
- * const result = await handle.finished;
+ * const result = await handle.closed;
  * println(result.exitCode);
  * ```
  * @category Process
@@ -6752,15 +6752,15 @@ declare interface ProcessHandle {
      */
     readonly stderr: AsyncIterableIterator<string>;
     /**
-     * A promise that resolves with the exit result when the process finishes.
+     * A promise that resolves with the exit result when the process closes.
      * 
      * ```ts
      * const handle = process.start("ls");
-     * const result = await handle.finished;
+     * const result = await handle.closed;
      * println(result.exitCode);
      * ```
      */
-    readonly finished: Task<ProcessExitResult>;
+    readonly closed: Task<ProcessExitResult>;
     /**
      * Write data to the process's stdin.
      * 
@@ -6786,10 +6786,10 @@ declare interface ProcessHandle {
      * 
      * ```ts
      * const handle = process.start("sleep", { args: ["100"] });
-     * await handle.kill();
+     * handle.kill();
      * ```
      */
-    kill(): Promise<void>;
+    kill(): void;
     /**
      * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
      * 
@@ -6806,7 +6806,7 @@ declare interface ProcessHandle {
  * 
  * ```ts
  * const handle = process.start("ls");
- * const result = await handle.finished;
+ * const result = await handle.closed;
  * if (result.exitCode === 0) {
  *     println("success");
  * }
@@ -6820,7 +6820,7 @@ declare interface ProcessHandle {
  */
 declare interface ProcessExitResult {
     /**
-     * The process ID. Only available when using `handle.finished`.
+     * The process ID. Only available when using `handle.closed`.
      */
     readonly pid?: number;
     /**

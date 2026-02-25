@@ -224,7 +224,7 @@ Virtual memory
 
 ### kill()
 
-> <span class="async-badge">async</span> **kill**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **kill**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
 
@@ -232,25 +232,25 @@ Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
 // Force-stop a specific PID if it is still running.
 const targetPid = 12345;
 const proc = (await system.processes.find({ pid: targetPid }))[0];
-if (proc) await proc.kill();
+if (proc) proc.kill();
 ```
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### sendSignal()
 
-> <span class="async-badge">async</span> **sendSignal**(`signal`: [`Signal`](../enumerations/Signal.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **sendSignal**(`signal`: [`Signal`](../enumerations/Signal.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Send a signal to the process.
 
 ```ts
 const targetPid = 12345;
 const proc = (await system.processes.find({ pid: targetPid }))[0];
-if (proc) await proc.sendSignal(Signal.Term);
+if (proc) proc.sendSignal(Signal.Term);
 ```
 
 #### Parameters
@@ -261,7 +261,7 @@ if (proc) await proc.sendSignal(Signal.Term);
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Platform
 
@@ -273,7 +273,7 @@ if (proc) await proc.sendSignal(Signal.Term);
 
 ### terminate()
 
-> <span class="async-badge">async</span> **terminate**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **terminate**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
 
@@ -281,12 +281,12 @@ Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
 // Ask a specific PID to shut down cleanly.
 const targetPid = 12345;
 const proc = (await system.processes.find({ pid: targetPid }))[0];
-if (proc) await proc.terminate();
+if (proc) proc.terminate();
 ```
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

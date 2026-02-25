@@ -4,8 +4,8 @@
 Scroll axis direction.
 
 ```ts
-await mouse.scroll(3, Axis.Vertical);
-await mouse.scroll(-1, Axis.Horizontal);
+mouse.scroll(3, Axis.Vertical);
+mouse.scroll(-1, Axis.Horizontal);
 ```
 
 ## Enumeration Members

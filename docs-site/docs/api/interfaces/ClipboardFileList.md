@@ -3,15 +3,15 @@
 Provides file list clipboard operations.
 
 ```ts
-await clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
-const files = await clipboard.fileList.get();
+clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
+const files = clipboard.fileList.get();
 ```
 
 ## Methods
 
 ### get()
 
-> <span class="async-badge">async</span> **get**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]\>
+> **get**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Gets the clipboard file list content.
 
@@ -47,13 +47,13 @@ Gets the clipboard file list content.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]\>
+readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 ***
 
 ### set()
 
-> <span class="async-badge">async</span> **set**(`fileList`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[], `mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **set**(`fileList`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[], `mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the clipboard file list content.
 
@@ -93,7 +93,7 @@ Sets the clipboard file list content.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

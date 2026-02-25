@@ -7,7 +7,7 @@ const handle = process.start("echo", { args: ["hello world"] });
 for await (const line of handle.stdout) {
     println(line);
 }
-const result = await handle.finished;
+const result = await handle.closed;
 println(result.exitCode);
 ```
 
@@ -17,7 +17,7 @@ println(result.stdout);
 ```
 
 ```ts
-const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
+const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
 println(pid);
 ```
 
@@ -25,12 +25,12 @@ println(pid);
 
 ### kill()
 
-> <span class="async-badge">async</span> **kill**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **kill**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
 
 ```ts
-await process.kill(1234);
+process.kill(1234);
 ```
 
 #### Parameters
@@ -41,18 +41,18 @@ await process.kill(1234);
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### sendSignal()
 
-> <span class="async-badge">async</span> **sendSignal**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `signal`: [`Signal`](../enumerations/Signal.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **sendSignal**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `signal`: [`Signal`](../enumerations/Signal.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Send a signal to a process by PID.
 
 ```ts
-await process.sendSignal(1234, Signal.Term);
+process.sendSignal(1234, Signal.Term);
 ```
 
 #### Parameters
@@ -67,7 +67,7 @@ await process.sendSignal(1234, Signal.Term);
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Platform
 
@@ -88,7 +88,7 @@ const handle = process.start("echo", { args: ["hello world"] });
 for await (const line of handle.stdout) {
     println(line);
 }
-const result = await handle.finished;
+const result = await handle.closed;
 println(result.exitCode);
 ```
 
@@ -99,7 +99,7 @@ await handle.closeStdin();
 for await (const line of handle.stdout) {
     println(line);
 }
-await handle.finished;
+await handle.closed;
 ```
 
 #### Parameters
@@ -249,13 +249,13 @@ Working directory for the process.
 
 ### startDetached()
 
-> <span class="async-badge">async</span> **startDetached**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+> **startDetached**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Starts a detached process and returns its PID.
 The process will continue running after the script exits.
 
 ```ts
-const pid = await process.startDetached("my-server", { args: ["--port", "8080"] });
+const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
 println(`Started server with PID: ${pid}`);
 ```
 
@@ -321,18 +321,18 @@ Working directory for the process.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
 ### terminate()
 
-> <span class="async-badge">async</span> **terminate**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **terminate**(`pid`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
 
 ```ts
-await process.terminate(1234);
+process.terminate(1234);
 ```
 
 #### Parameters
@@ -343,7 +343,7 @@ await process.terminate(1234);
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

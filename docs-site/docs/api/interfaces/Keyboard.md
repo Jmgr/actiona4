@@ -4,14 +4,14 @@ Controls keyboard input: typing text, pressing keys, and waiting for key combina
 
 ```ts
 // Type text
-await keyboard.text("Hello, world!");
+keyboard.text("Hello, world!");
 ```
 
 ```ts
 // Press a key combination (Ctrl+C)
-await keyboard.key(Key.Control, Direction.Press);
-await keyboard.key("c", Direction.Click);
-await keyboard.key(Key.Control, Direction.Release);
+keyboard.key(Key.Control, Direction.Press);
+keyboard.key("c", Direction.Click);
+keyboard.key(Key.Control, Direction.Release);
 ```
 
 ```ts
@@ -23,19 +23,19 @@ await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
 
 ### getPressedKeys()
 
-> <span class="async-badge">async</span> **getPressedKeys**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Key`](../enumerations/Key.md)[]\>
+> **getPressedKeys**(): [`Key`](../enumerations/Key.md)[]
 
 Returns the list of keys that are currently pressed.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Key`](../enumerations/Key.md)[]\>
+[`Key`](../enumerations/Key.md)[]
 
 ***
 
 ### isKeyPressed()
 
-> <span class="async-badge">async</span> **isKeyPressed**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
+> **isKeyPressed**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns whether a key is currently pressed.
 
@@ -47,13 +47,13 @@ Returns whether a key is currently pressed.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\>
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
 ### key()
 
-> <span class="async-badge">async</span> **key**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md), `direction`: [`Direction`](../enumerations/Direction.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **key**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md), `direction`: [`Direction`](../enumerations/Direction.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Presses, releases, or clicks a key.
 
@@ -97,13 +97,13 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### raw()
 
-> <span class="async-badge">async</span> **raw**(`keycode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `direction`: [`Direction`](../enumerations/Direction.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **raw**(`keycode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `direction`: [`Direction`](../enumerations/Direction.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
@@ -145,13 +145,13 @@ Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### text()
 
-> <span class="async-badge">async</span> **text**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **text**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Types the given text string using simulated key events.
 
@@ -163,7 +163,7 @@ Types the given text string using simulated key events.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

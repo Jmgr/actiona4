@@ -4,15 +4,15 @@ Provides image clipboard operations.
 
 ```ts
 const img = display.screenshot();
-await clipboard.image.set(img);
-const clipped = await clipboard.image.get();
+clipboard.image.set(img);
+const clipped = clipboard.image.get();
 ```
 
 ## Methods
 
 ### get()
 
-> <span class="async-badge">async</span> **get**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+> **get**(`mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Image`](../classes/Image.md)
 
 Gets the clipboard image content.
 
@@ -48,13 +48,13 @@ Gets the clipboard image content.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+[`Image`](../classes/Image.md)
 
 ***
 
 ### set()
 
-> <span class="async-badge">async</span> **set**(`image`: [`Image`](../classes/Image.md), `mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **set**(`image`: [`Image`](../classes/Image.md), `mode?`: [`ClipboardMode`](../enumerations/ClipboardMode.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Sets the clipboard image content.
 
@@ -94,7 +94,7 @@ Sets the clipboard image content.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

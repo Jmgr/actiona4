@@ -178,10 +178,7 @@ mod tests {
             loop {
                 sleep(Duration::from_secs(1)).await;
 
-                println!(
-                    "pressed: {}",
-                    keyboard.is_key_pressed(Key::Return).await.unwrap()
-                );
+                println!("pressed: {}", keyboard.is_key_pressed(Key::Return).unwrap());
             }
         });
     }

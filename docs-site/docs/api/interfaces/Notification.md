@@ -6,13 +6,13 @@ The global notification singleton for sending desktop notifications.
 
 ### capabilities()
 
-> <span class="async-badge">async</span> **capabilities**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]\>
+> **capabilities**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Server capabilities.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]\>
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 #### Platform
 

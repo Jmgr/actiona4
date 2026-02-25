@@ -10,21 +10,21 @@ const handle = process.start("echo", { args: ["hello"] });
 for await (const line of handle.stdout) {
     println(line);
 }
-const result = await handle.finished;
+const result = await handle.closed;
 println(result.exitCode);
 ```
 
 ## Properties
 
-### finished
+### closed
 
-> `readonly` **finished**: [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
+> `readonly` **closed**: [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
 
-A promise that resolves with the exit result when the process finishes.
+A promise that resolves with the exit result when the process closes.
 
 ```ts
 const handle = process.start("ls");
-const result = await handle.finished;
+const result = await handle.closed;
 println(result.exitCode);
 ```
 
@@ -89,35 +89,35 @@ await handle.closeStdin();
 
 ### kill()
 
-> <span class="async-badge">async</span> **kill**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **kill**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
 
 ```ts
 const handle = process.start("sleep", { args: ["100"] });
-await handle.kill();
+handle.kill();
 ```
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
 ### terminate()
 
-> <span class="async-badge">async</span> **terminate**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **terminate**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
 
 ```ts
 const handle = process.start("sleep", { args: ["100"] });
-await handle.terminate();
+handle.terminate();
 ```
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

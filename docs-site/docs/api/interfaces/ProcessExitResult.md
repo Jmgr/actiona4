@@ -4,7 +4,7 @@ The result of a process that has finished.
 
 ```ts
 const handle = process.start("ls");
-const result = await handle.finished;
+const result = await handle.closed;
 if (result.exitCode === 0) {
     println("success");
 }
@@ -29,7 +29,7 @@ The exit code of the process. [`undefined`](https://developer.mozilla.org/docs/W
 
 > `readonly` `optional` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-The process ID. Only available when using `handle.finished`.
+The process ID. Only available when using `handle.closed`.
 
 ***
 

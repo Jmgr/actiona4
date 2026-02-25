@@ -5,10 +5,10 @@ Options for pressing (and holding) a mouse button.
 
 ```ts
 // Press the right button at a specific position
-await mouse.press({ button: Button.Right, position: new Point(100, 200) });
+mouse.press({ button: Button.Right, position: new Point(100, 200) });
 
 // Press at coordinates using PointLike shorthand
-await mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
+mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
 ```
 
 ## Extended by
