@@ -17,7 +17,9 @@ use std::sync::{
 };
 
 use rquickjs::{
-    Ctx, Exception, Function, IntoJs, Object, Promise, Result, Value, atom::PredefinedAtom,
+    Ctx, Exception, Function, IntoJs, Object, Promise, Result, Value,
+    atom::PredefinedAtom,
+    prelude::{Opt, This},
 };
 use tokio::{select, sync::watch};
 use tokio_util::sync::CancellationToken;
@@ -83,7 +85,10 @@ where
 
     let promise = Promise::wrap_future(&ctx, fut)?;
 
-    let cancel_fn = Function::new(ctx.clone(), move || token.cancel())?;
+    let cancel_fn = Function::new(ctx.clone(), {
+        let token = token.clone();
+        move || token.cancel()
+    })?;
 
     let promise_object = promise
         .as_object()
@@ -91,6 +96,33 @@ where
         .clone();
 
     promise_object.set("cancel", cancel_fn)?;
+
+    // Override .then() so chained promises inherit cancel.
+    // We capture only the CancellationToken (a pure-Rust value) to avoid creating
+    // a GC-invisible cycle between JS Function objects stored in Rust closures.
+    let then_fn = Function::new(ctx.clone(), {
+        move |ctx: Ctx<'js>,
+              this: This<Object<'js>>,
+              on_fulfilled: Opt<Value<'js>>,
+              on_rejected: Opt<Value<'js>>| {
+            // Get the original Promise.prototype.then from the object's prototype.
+            let proto: Object = this
+                .0
+                .get_prototype()
+                .ok_or_else(|| rquickjs::Error::new_from_js("object", "prototype"))?;
+            let original_then: Function = proto.get(PredefinedAtom::Then)?;
+            let chained: Object =
+                original_then.call((This(this.0), on_fulfilled.0, on_rejected.0))?;
+            // Attach a fresh cancel function backed by the same token.
+            let cancel = Function::new(ctx, {
+                let token = token.clone();
+                move || token.cancel()
+            })?;
+            chained.set("cancel", cancel)?;
+            Ok::<Object<'js>, rquickjs::Error>(chained)
+        }
+    })?;
+    promise_object.set(PredefinedAtom::Then, then_fn)?;
 
     Ok(promise_object)
 }
