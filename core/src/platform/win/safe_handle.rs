@@ -135,7 +135,9 @@ impl Handle for KindWinEventHook {
         !raw.is_invalid()
     }
     fn close(raw: Self::Raw) -> windows_result::Result<()> {
-        unsafe { UnhookWinEvent(raw) };
+        unsafe {
+            let _ = UnhookWinEvent(raw);
+        };
         Ok(())
     }
 }

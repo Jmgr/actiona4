@@ -16,12 +16,12 @@ use windows::{
         Foundation::{ERROR_CLASS_ALREADY_EXISTS, HWND, LPARAM, LRESULT, WPARAM},
         System::{LibraryLoader::GetModuleHandleW, Threading::GetCurrentThreadId},
         UI::{
-            Accessibility::{EVENT_OBJECT_DESTROY, SetWinEventHook, WINEVENT_OUTOFCONTEXT},
+            Accessibility::{HWINEVENTHOOK, SetWinEventHook},
             WindowsAndMessaging::{
                 CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
-                GetMessageW, MSG, OBJID_WINDOW, PostQuitMessage, PostThreadMessageW,
-                RegisterClassW, TranslateMessage, WINDOW_EX_STYLE, WM_DESTROY, WM_DISPLAYCHANGE,
-                WM_QUIT, WNDCLASSW, WS_POPUP,
+                EVENT_OBJECT_DESTROY, GetMessageW, MSG, OBJID_WINDOW, PostQuitMessage,
+                PostThreadMessageW, RegisterClassW, TranslateMessage, WINDOW_EX_STYLE,
+                WINEVENT_OUTOFCONTEXT, WM_DESTROY, WM_DISPLAYCHANGE, WM_QUIT, WNDCLASSW, WS_POPUP,
             },
         },
     },

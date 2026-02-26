@@ -148,7 +148,6 @@ impl WindowsHandler for WindowsWindowHandler {
         ))
     }
 
-    // TODO: untested
     fn close(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
@@ -166,7 +165,6 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(process_id)
     }
 
-    // TODO: untested
     fn rect(&self, id: WindowId) -> Result<Rect> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let mut win_rect = RECT::default();
@@ -184,7 +182,6 @@ impl WindowsHandler for WindowsWindowHandler {
         ))
     }
 
-    // TODO: untested
     fn set_active(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
@@ -197,7 +194,6 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    // TODO: untested
     fn minimize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
@@ -210,7 +206,6 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    // TODO: untested
     fn maximize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
@@ -245,7 +240,6 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(self.rect(id)?.top_left())
     }
 
-    // TODO: untested
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
@@ -264,12 +258,10 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    // TODO: untested
     fn size(&self, id: WindowId) -> Result<Size> {
         Ok(self.rect(id)?.size())
     }
 
-    // TODO: untested
     fn is_active(&self, id: WindowId) -> Result<bool> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let foreground = unsafe { GetForegroundWindow() };
@@ -281,7 +273,6 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(foreground == *handle)
     }
 
-    // TODO: untested
     fn active_window(&self) -> Result<WindowId> {
         let foreground = unsafe { GetForegroundWindow() };
         if foreground.0.is_null() {
@@ -306,34 +297,10 @@ impl WindowsHandler for WindowsWindowHandler {
 
         loop {
             let event = cancel_on(&cancellation_token, receiver.recv()).await??;
-
-            if let WindowEvent::Closed(handle) = event {
-                if handle == target {
-                    return Ok(());
-                }
+            let WindowEvent::Closed(handle) = event;
+            if handle == target {
+                return Ok(());
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_subsystem() {
-        let handler = WindowsWindowHandler::default();
-        println!(
-            "{:?}",
-            handler
-                .all()
-                .unwrap()
-                .into_iter()
-                .filter(|id| handler.is_visible(*id).unwrap())
-                .map(|id| handler.title(id).unwrap())
-                .filter(|name| !name.is_empty())
-                .collect::<Vec<String>>()
-                .join(", ")
-        );
     }
 }
