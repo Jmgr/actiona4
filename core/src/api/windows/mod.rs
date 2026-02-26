@@ -1,5 +1,7 @@
 use std::{fmt::Display, sync::Arc};
 
+use tokio_util::sync::CancellationToken;
+
 use self::platform::WindowsHandler;
 use crate::{
     api::{point::Point, rect::Rect, size::Size},
@@ -21,6 +23,8 @@ pub struct Windows {
 
     #[cfg(windows)]
     handler: Arc<platform::win::WindowsWindowHandler>,
+
+    runtime: Arc<Runtime>,
 }
 
 impl Display for Windows {
@@ -35,15 +39,16 @@ impl Windows {
         #[cfg(unix)]
         {
             Self {
-                handler: Arc::new(platform::x11::X11WindowHandler::new(runtime)),
+                handler: Arc::new(platform::x11::X11WindowHandler::new(runtime.clone())),
+                runtime,
             }
         }
 
         #[cfg(windows)]
         {
-            let _ = runtime;
             Self {
                 handler: Arc::new(platform::win::WindowsWindowHandler::default()),
+                runtime,
             }
         }
     }
@@ -110,5 +115,20 @@ impl Windows {
 
     pub fn is_active(&self, id: WindowId) -> Result<bool> {
         self.handler.is_active(id)
+    }
+
+    #[must_use]
+    pub fn runtime(&self) -> Arc<Runtime> {
+        self.runtime.clone()
+    }
+
+    pub async fn wait_for_closed(
+        &self,
+        id: WindowId,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
+        self.handler
+            .wait_for_closed(id, self.runtime.clone(), cancellation_token)
+            .await
     }
 }

@@ -344,10 +344,7 @@ mod tests {
     #[ignore]
     fn test_position() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let mut position: JsPoint = script_engine
-                .eval_async("mouse.position()")
-                .await
-                .unwrap();
+            let mut position: JsPoint = script_engine.eval_async("mouse.position()").await.unwrap();
             position = point(position.get_x() + 5, position.get_y() + 5).into();
 
             script_engine
@@ -376,10 +373,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            let new_position: JsPoint = script_engine
-                .eval_async("mouse.position()")
-                .await
-                .unwrap();
+            let new_position: JsPoint = script_engine.eval_async("mouse.position()").await.unwrap();
             assert_eq!(position, new_position);
         });
     }

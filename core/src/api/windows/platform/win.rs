@@ -3,11 +3,13 @@
 use std::{
     fmt::Debug,
     hash::{Hash, Hasher},
+    sync::Arc,
 };
 
 use color_eyre::eyre::eyre;
 use derive_more::Deref;
 use parking_lot::Mutex;
+use tokio_util::sync::CancellationToken;
 use windows::Win32::{
     Foundation::{HWND, LPARAM, RECT, WPARAM},
     System::StationsAndDesktops::{
@@ -29,7 +31,12 @@ use crate::{
         size::Size,
         windows::platform::{Registry, Result, WindowId, WindowsHandler},
     },
+    cancel_on,
     platform::win::safe_handle::SafeDesktopHandle,
+    runtime::{
+        Runtime,
+        platform::win::events::{WindowEvent, WindowHandle as WinWindowHandle},
+    },
     types::su32::Su32,
 };
 
@@ -283,6 +290,29 @@ impl WindowsHandler for WindowsWindowHandler {
 
         let window = WindowHandle(foreground);
         Ok(self.inner.lock().get_or_insert(window))
+    }
+
+    async fn wait_for_closed(
+        &self,
+        id: WindowId,
+        runtime: Arc<Runtime>,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
+        let hwnd = **self.inner.lock().get_handle(id)?;
+
+        #[allow(clippy::as_conversions)]
+        let target = WinWindowHandle(hwnd.0 as isize);
+        let mut receiver = runtime.platform().subscribe_window_events();
+
+        loop {
+            let event = cancel_on(&cancellation_token, receiver.recv()).await??;
+
+            if let WindowEvent::Closed(handle) = event {
+                if handle == target {
+                    return Ok(());
+                }
+            }
+        }
     }
 }
 

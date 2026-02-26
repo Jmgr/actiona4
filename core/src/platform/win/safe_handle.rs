@@ -6,7 +6,10 @@ use tracing::error;
 use windows::Win32::{
     Foundation::{CloseHandle, HANDLE, HWND},
     System::StationsAndDesktops::{CloseDesktop, HDESK},
-    UI::WindowsAndMessaging::{DestroyWindow, HHOOK, UnhookWindowsHookEx},
+    UI::{
+        Accessibility::{HWINEVENTHOOK, UnhookWinEvent},
+        WindowsAndMessaging::{DestroyWindow, HHOOK, UnhookWindowsHookEx},
+    },
 };
 
 pub trait Handle {
@@ -123,3 +126,18 @@ impl Handle for KindWindow {
 }
 pub type SafeWindowHandle = Safe<KindWindow>;
 unsafe impl Send for SafeWindowHandle {}
+
+pub struct KindWinEventHook;
+impl Handle for KindWinEventHook {
+    type Raw = HWINEVENTHOOK;
+    const NAME: &'static str = "UnhookWinEvent";
+    fn is_valid(raw: Self::Raw) -> bool {
+        !raw.is_invalid()
+    }
+    fn close(raw: Self::Raw) -> windows_result::Result<()> {
+        unsafe { UnhookWinEvent(raw) };
+        Ok(())
+    }
+}
+pub type SafeWinEventHook = Safe<KindWinEventHook>;
+unsafe impl Send for SafeWinEventHook {}

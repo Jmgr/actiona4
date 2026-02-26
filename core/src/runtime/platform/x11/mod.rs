@@ -14,7 +14,10 @@ use tokio_util::{
     task::TaskTracker,
 };
 use tracing::{error, info, instrument};
-use x11rb::protocol::xinput::{Device, DeviceType, EventMask, XIEventMask};
+use x11rb::protocol::{
+    xinput::{Device, DeviceType, EventMask, XIEventMask},
+    xproto::EventMask as XprotoEventMask,
+};
 use x11rb_async::{
     connection::Connection,
     protocol::{
@@ -26,7 +29,7 @@ use x11rb_async::{
             BoolCtrl, ConnectionExt, ControlsNotifyEvent, EventType, MapPart, SelectEventsAux,
             get_controls,
         },
-        xproto::get_keyboard_control,
+        xproto::{ChangeWindowAttributesAux, ConnectionExt as XprotoConnectionExt, get_keyboard_control},
     },
 };
 use xkbcommon::xkb::{
@@ -135,6 +138,16 @@ impl Runtime {
                 }],
             )
             .await?;
+
+            // Subscribe to SUBSTRUCTURE_NOTIFY on the root so we receive DestroyNotify
+            // for all top-level windows without per-window registration.
+            connection
+                .change_window_attributes(
+                    root_window,
+                    &ChangeWindowAttributesAux::new()
+                        .event_mask(XprotoEventMask::SUBSTRUCTURE_NOTIFY),
+                )
+                .await?;
         }
 
         // Make sure RandR is available
@@ -415,6 +428,7 @@ impl Runtime {
                         displays.refresh();
                     }
                     Event::DestroyNotify(e) => {
+                        info!("DestroyNotify: event={:#x} window={:#x}", e.event, e.window);
                         let handle = libwmctl::window(e.window).into();
                         _ = local_window_event_sender.send(WindowEvent::Closed(handle));
                     }

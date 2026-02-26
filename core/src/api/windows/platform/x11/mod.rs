@@ -7,10 +7,14 @@ use std::{
 use derive_more::{Deref, From};
 use libwmctl::{Position, Shape, active, windows};
 use parking_lot::Mutex;
+use tokio_util::sync::CancellationToken;
 use x11rb::{
     connection::Connection,
-    protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt, EventMask},
+    protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt as _, EventMask},
     rust_connection::RustConnection,
+};
+use x11rb_async::protocol::xproto::{
+    ChangeWindowAttributesAux, ConnectionExt as AsyncConnectionExt, EventMask as AsyncEventMask,
 };
 
 use crate::{
@@ -20,6 +24,7 @@ use crate::{
         size::{Size, try_size},
         windows::platform::{Registry, Result, WindowId, WindowsHandler},
     },
+    cancel_on,
     runtime::Runtime,
     types::{
         si32::si32,
@@ -226,6 +231,65 @@ impl WindowsHandler for X11WindowHandler {
         let window = WindowHandle(active());
         Ok(self.inner.lock().get_or_insert(window))
     }
+
+    async fn wait_for_closed(
+        &self,
+        id: WindowId,
+        runtime: Arc<Runtime>,
+        cancellation_token: CancellationToken,
+    ) -> Result<()> {
+        use tracing::info;
+        let window_id = self.inner.lock().get_handle(id)?.0.id;
+        info!("wait_for_closed: waiting for window {:#x}", window_id);
+
+        // Subscribe before doing anything async so we cannot miss an event that
+        // arrives between here and the first recv() call.
+        let mut receiver = runtime.platform().subscribe_window_events();
+
+        // Subscribe to STRUCTURE_NOTIFY on the specific client window so that the
+        // event loop receives DestroyNotify for that exact window ID.  With only
+        // SUBSTRUCTURE_NOTIFY on root, DestroyNotify arrives for the WM frame
+        // (a different window ID) rather than the client window, so the ID
+        // comparison below would never match.
+        let x11_connection = runtime.platform().x11_connection();
+        let async_conn = x11_connection.async_connection();
+        // Ignore errors: the window may already be gone.
+        let _ = async_conn
+            .change_window_attributes(
+                window_id,
+                &ChangeWindowAttributesAux::new()
+                    .event_mask(AsyncEventMask::STRUCTURE_NOTIFY),
+            )
+            .await;
+
+        // Use the same async connection for the existence check so the request
+        // is ordered after change_window_attributes on the same socket.  A sync
+        // connection check would race with the async connection: the server could
+        // process the sync request before the STRUCTURE_NOTIFY registration, then
+        // destroy the window, and we would never receive the DestroyNotify.
+        let still_alive = match async_conn.get_window_attributes(window_id).await {
+            Ok(cookie) => cookie.reply().await.is_ok(),
+            Err(_) => false,
+        };
+        if !still_alive {
+            info!("wait_for_closed: window {:#x} already gone", window_id);
+            return Ok(());
+        }
+
+        loop {
+            let event = cancel_on(&cancellation_token, receiver.recv()).await??;
+
+            if let events::WindowEvent::Closed(closed_handle) = &event {
+                info!("wait_for_closed: got Closed for {:#x}, waiting for {:#x}", closed_handle.id, window_id);
+            }
+
+            if let events::WindowEvent::Closed(closed_handle) = event
+                && closed_handle.id == window_id
+            {
+                return Ok(());
+            }
+        }
+    }
 }
 
 #[derive(Default)]
@@ -244,27 +308,6 @@ impl X11WindowHandler {
             runtime,
         }
     }
-
-    // TODO: subscribe to a window, would be used in WaitForClosed for a window or something like that
-    /*
-    async fn subscribe(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.get_handle(id)?.clone();
-        let platform = self.runtime.platform();
-        let x11_connection = platform.x11_connection();
-
-        let connection = x11_connection.async_connection();
-        use x11rb_async::protocol::xproto::ConnectionExt;
-        connection
-            .change_window_attributes(
-                handle.id,
-                &ChangeWindowAttributesAux::new().event_mask(EventMask::STRUCTURE_NOTIFY),
-            )
-            .await?;
-        x11rb_async::connection::Connection::flush(connection).await?;
-
-        Ok(())
-    }
-    */
 
     fn frame_extents(
         &self,

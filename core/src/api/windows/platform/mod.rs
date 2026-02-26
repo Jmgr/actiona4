@@ -1,8 +1,12 @@
-use std::{collections::HashSet, hash::Hash};
+use std::{collections::HashSet, hash::Hash, sync::Arc};
 
 use bimap::BiMap;
+use tokio_util::sync::CancellationToken;
 
-use crate::api::{point::Point, rect::Rect, size::Size};
+use crate::{
+    api::{point::Point, rect::Rect, size::Size},
+    runtime::Runtime,
+};
 
 #[cfg(unix)]
 pub mod x11;
@@ -28,6 +32,7 @@ impl WindowId {
 
 pub type Result<T> = color_eyre::Result<T>;
 
+#[allow(async_fn_in_trait)]
 pub trait WindowsHandler {
     fn all(&self) -> Result<Vec<WindowId>>;
     fn is_visible(&self, id: WindowId) -> Result<bool>;
@@ -45,6 +50,12 @@ pub trait WindowsHandler {
     fn size(&self, id: WindowId) -> Result<Size>;
     fn is_active(&self, id: WindowId) -> Result<bool>;
     fn active_window(&self) -> Result<WindowId>;
+    async fn wait_for_closed(
+        &self,
+        id: WindowId,
+        runtime: Arc<Runtime>,
+        cancellation_token: CancellationToken,
+    ) -> Result<()>;
 }
 
 #[derive(Debug)]

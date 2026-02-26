@@ -319,12 +319,7 @@ impl JsClipboardImage {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsClipboardImage {
     /// Sets the clipboard image content.
-    pub fn set(
-        &self,
-        ctx: Ctx<'_>,
-        image: JsImage,
-        mode: Opt<JsClipboardMode>,
-    ) -> Result<()> {
+    pub fn set(&self, ctx: Ctx<'_>, image: JsImage, mode: Opt<JsClipboardMode>) -> Result<()> {
         self.inner
             .set_image(image.into_inner(), *mode)
             .into_js_result(&ctx)

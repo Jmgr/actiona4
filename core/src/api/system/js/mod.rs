@@ -185,12 +185,7 @@ impl JsSystem {
         Ok(())
     }
 
-    pub fn open_path(
-        &self,
-        ctx: Ctx<'_>,
-        path: String,
-        with_app: Option<String>,
-    ) -> Result<()> {
+    pub fn open_path(&self, ctx: Ctx<'_>, path: String, with_app: Option<String>) -> Result<()> {
         System::open_path(Path::new(&path), with_app.as_deref()).into_js_result(&ctx)?;
 
         Ok(())

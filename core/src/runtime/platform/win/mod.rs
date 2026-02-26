@@ -8,18 +8,21 @@ use std::{
 use color_eyre::Result;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
-use tokio::sync::oneshot;
+use tokio::sync::{broadcast, oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 use windows::{
     Win32::{
         Foundation::{ERROR_CLASS_ALREADY_EXISTS, HWND, LPARAM, LRESULT, WPARAM},
         System::{LibraryLoader::GetModuleHandleW, Threading::GetCurrentThreadId},
-        UI::WindowsAndMessaging::{
-            CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
-            GetMessageW, MSG, PostQuitMessage, PostThreadMessageW, RegisterClassW,
-            TranslateMessage, WINDOW_EX_STYLE, WM_DESTROY, WM_DISPLAYCHANGE, WM_QUIT, WNDCLASSW,
-            WS_POPUP,
+        UI::{
+            Accessibility::{EVENT_OBJECT_DESTROY, SetWinEventHook, WINEVENT_OUTOFCONTEXT},
+            WindowsAndMessaging::{
+                CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
+                GetMessageW, MSG, OBJID_WINDOW, PostQuitMessage, PostThreadMessageW,
+                RegisterClassW, TranslateMessage, WINDOW_EX_STYLE, WM_DESTROY, WM_DISPLAYCHANGE,
+                WM_QUIT, WNDCLASSW, WS_POPUP,
+            },
         },
     },
     core::{Error, PCWSTR, w},
@@ -28,13 +31,16 @@ use windows::{
 use crate::{
     api::displays::Displays,
     cancel_on,
-    platform::win::safe_handle::SafeWindowHandle,
+    platform::win::safe_handle::{SafeWinEventHook, SafeWindowHandle},
     runtime::{
         events::Guard,
         platform::win::{
-            events::input::{
-                keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
-                mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},
+            events::{
+                WindowEvent,
+                input::{
+                    keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
+                    mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},
+                },
             },
             notification::ensure_notification_registration,
         },
@@ -65,8 +71,34 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
     LRESULT(0)
 }
 
+#[allow(unsafe_code, clippy::as_conversions)]
+extern "system" fn win_event_proc(
+    _hook: HWINEVENTHOOK,
+    event: u32,
+    hwnd: HWND,
+    id_object: i32,
+    id_child: i32,
+    _id_event_thread: u32,
+    _dwms_event_time: u32,
+) {
+    // Filter to top-level window destroy events only.
+    if event != EVENT_OBJECT_DESTROY || id_object != OBJID_WINDOW.0 || id_child != 0 {
+        return;
+    }
+
+    let Some(runtime) = RUNTIME.lock().upgrade() else {
+        return;
+    };
+
+    use events::WindowHandle;
+    _ = runtime
+        .window_event_sender
+        .send(WindowEvent::Closed(WindowHandle(hwnd.0 as isize)));
+}
+
 struct DisplayRunner {
     _window: SafeWindowHandle,
+    _win_event_hook: SafeWinEventHook,
 }
 
 impl MessagePumpRunner for DisplayRunner {
@@ -112,8 +144,21 @@ impl MessagePumpRunner for DisplayRunner {
             return Err(Error::from_thread().into());
         }
 
+        let hook = unsafe {
+            SetWinEventHook(
+                EVENT_OBJECT_DESTROY,
+                EVENT_OBJECT_DESTROY,
+                None,
+                Some(win_event_proc),
+                0,
+                0,
+                WINEVENT_OUTOFCONTEXT,
+            )
+        };
+
         Ok(Self {
             _window: SafeWindowHandle::try_new(hwnd)?,
+            _win_event_hook: SafeWinEventHook::try_new(hook)?,
         })
     }
 
@@ -133,6 +178,7 @@ pub struct Runtime {
     keyboard_input_dispatcher: Arc<KeyboardInputDispatcher>,
     _message_pump: SafeMessagePump,
     displays: Displays,
+    window_event_sender: broadcast::Sender<WindowEvent>,
 }
 
 #[allow(unsafe_code)]
@@ -157,6 +203,8 @@ impl Runtime {
         let keyboard_input_dispatcher =
             KeyboardInputDispatcher::new(cancellation_token.clone(), task_tracker.clone()).await?;
 
+        let (window_event_sender, _) = broadcast::channel(1024);
+
         Ok(Arc::new_cyclic(|me| {
             *RUNTIME.lock() = me.clone();
 
@@ -165,6 +213,7 @@ impl Runtime {
                 keyboard_input_dispatcher,
                 _message_pump: message_pump,
                 displays,
+                window_event_sender,
             }
         }))
     }
@@ -187,6 +236,11 @@ impl Runtime {
     #[must_use]
     pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
         self.keyboard_input_dispatcher.subscribe_keyboard_text()
+    }
+
+    #[must_use]
+    pub fn subscribe_window_events(&self) -> broadcast::Receiver<WindowEvent> {
+        self.window_event_sender.subscribe()
     }
 }
 

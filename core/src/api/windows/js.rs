@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use rquickjs::{
-    Ctx, JsLifetime, Result, Value,
+    Ctx, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
 };
@@ -11,7 +11,10 @@ use crate::{
     IntoJsResult,
     api::{
         ResultExt,
-        js::classes::{HostClass, SingletonClass, register_host_class},
+        js::{
+            classes::{HostClass, SingletonClass, register_host_class},
+            task::task,
+        },
         name::js::JsName,
         point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
@@ -163,6 +166,17 @@ impl JsWindows {
         })
     }
 
+    /// Returns the currently active (focused) window. Alias for `activeWindow()`.
+    ///
+    /// ```ts
+    /// const win = windows.foregroundWindow();
+    /// println(win.title());
+    /// ```
+    /// @readonly
+    pub fn foreground_window(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
+        self.active_window(ctx)
+    }
+
     /// Finds windows matching the provided criteria.
     ///
     /// `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
@@ -199,21 +213,27 @@ impl JsWindows {
             }
 
             if let Some(filter_process_id) = options.process_id {
-                let process_id = self.inner.process_id(id).into_js_result(&ctx)?;
+                let Ok(process_id) = self.inner.process_id(id) else {
+                    continue;
+                };
                 if process_id != filter_process_id {
                     continue;
                 }
             }
 
             if let Some(title) = options.title.as_ref() {
-                let window_title = self.inner.title(id).into_js_result(&ctx)?;
+                let Ok(window_title) = self.inner.title(id) else {
+                    continue;
+                };
                 if !title.inner().matches(&ctx, &window_title)? {
                     continue;
                 }
             }
 
             if let Some(class_name) = options.class_name.as_ref() {
-                let window_class_name = self.inner.classname(id).into_js_result(&ctx)?;
+                let Ok(window_class_name) = self.inner.classname(id) else {
+                    continue;
+                };
                 if !class_name.inner().matches(&ctx, &window_class_name)? {
                     continue;
                 }
@@ -352,6 +372,15 @@ impl JsWindowHandle {
         self.inner.set_active(self.id).into_js_result(&ctx)
     }
 
+    /// Makes this window the active (focused) window. Alias for `setActive()`.
+    ///
+    /// ```ts
+    /// win.setForeground();
+    /// ```
+    pub fn set_foreground(&self, ctx: Ctx<'_>) -> Result<()> {
+        self.set_active(ctx)
+    }
+
     /// Minimizes this window.
     ///
     /// ```ts
@@ -423,6 +452,28 @@ impl JsWindowHandle {
     /// ```
     pub fn is_active(&self, ctx: Ctx<'_>) -> Result<bool> {
         self.inner.is_active(self.id).into_js_result(&ctx)
+    }
+
+    /// A promise that resolves when the window is closed.
+    ///
+    /// ```ts
+    /// const win = windows.activeWindow();
+    /// await win.closed;
+    /// ```
+    ///
+    /// @get
+    /// @returns Task<void>
+    #[qjs(get)]
+    pub fn closed<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
+        let inner = self.inner.clone();
+        let id = self.id;
+
+        task(ctx, async move |ctx, cancel_token| {
+            inner
+                .wait_for_closed(id, cancel_token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 
     /// Returns a string representation of this window handle.
@@ -515,6 +566,68 @@ mod tests {
                     console.log(`pid: ${pid}, class: ${cls}`);
                     "#,
                 )
+                .await
+                .unwrap();
+        });
+    }
+
+    // Helper JS snippet: spawns xeyes and polls until its window appears.
+    // xeyes does not set _NET_WM_PID, so we find it by className.
+    // libwmctl returns the second WM_CLASS field ("XEyes"), not the instance name.
+    // The before/after count check guards against a pre-existing xeyes instance.
+    const XEYES_SETUP: &str = r#"
+        const beforeCount = windows.find({ className: /^XEyes$/ }).length;
+        process.startDetached("xeyes");
+
+        let win = null;
+        for (let i = 0; i < 50; i++) {
+            await sleep(100);
+            const found = windows.find({ className: /^XEyes$/ });
+            if (found.length > beforeCount) {
+                win = found[found.length - 1];
+                break;
+            }
+        }
+        if (!win) throw new Error("xeyes window did not appear");
+    "#;
+
+    /// Spawns xeyes, waits for it to appear in the window list, then closes it
+    /// and checks that `win.closed` resolves. Requires `xeyes` to be installed.
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_window_closed() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                    {XEYES_SETUP}
+                    win.close();
+                    await win.closed;
+                    "#
+                ))
+                .await
+                .unwrap();
+        });
+    }
+
+    /// Subscribes to `closed` before calling `close()` — verifies no event is
+    /// missed in the gap between subscription setup and the DestroyNotify event.
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_closed_subscribe_before_close() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                    {XEYES_SETUP}
+                    // Subscribe first, then close — the promise must still resolve
+                    const closedPromise = win.closed;
+                    win.close();
+                    await closedPromise;
+                    "#
+                ))
                 .await
                 .unwrap();
         });
