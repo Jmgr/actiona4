@@ -64,7 +64,6 @@ pub struct X11WindowHandler {
 }
 
 impl WindowsHandler for X11WindowHandler {
-    // tested
     fn all(&self) -> Result<Vec<WindowId>> {
         let windows = windows(false)?;
 
@@ -85,7 +84,6 @@ impl WindowsHandler for X11WindowHandler {
         })
     }
 
-    // tested
     fn title(&self, id: WindowId) -> Result<String> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         Ok(handle.name()?)
@@ -96,7 +94,6 @@ impl WindowsHandler for X11WindowHandler {
         Ok(handle.class()?)
     }
 
-    // TODO: untested
     fn close(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
@@ -123,7 +120,6 @@ impl WindowsHandler for X11WindowHandler {
         Ok(Su32::from(handle.pid()?).into())
     }
 
-    // tested
     fn rect(&self, id: WindowId) -> Result<Rect> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
@@ -148,7 +144,6 @@ impl WindowsHandler for X11WindowHandler {
         ))
     }
 
-    // tested
     fn set_active(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
@@ -172,20 +167,38 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
-    // TODO: untested
     fn minimize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let platform = self.runtime.platform();
         let x11_connection = platform.x11_connection();
         let connection = x11_connection.sync_connection();
+        let geometry = connection.get_geometry(handle.id)?.reply()?;
+        let root = geometry.root;
+        let wm_change_state = connection
+            .intern_atom(false, b"WM_CHANGE_STATE")?
+            .reply()?
+            .atom;
 
-        connection.unmap_window(handle.id)?;
+        // ICCCM WM_STATE values: 1 = NormalState, 3 = IconicState.
+        // WM_CHANGE_STATE expects one of these in data[0]; use IconicState for minimize.
+        const ICCCM_WM_STATE_ICONIC: u32 = 3;
+
+        connection.send_event(
+            false,
+            root,
+            EventMask::SUBSTRUCTURE_REDIRECT | EventMask::SUBSTRUCTURE_NOTIFY,
+            ClientMessageEvent::new(
+                32,
+                handle.id,
+                wm_change_state,
+                [ICCCM_WM_STATE_ICONIC, 0, 0, 0, 0],
+            ),
+        )?;
         connection.flush()?;
 
         Ok(())
     }
 
-    // TODO: untested
     fn maximize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         handle.maximize()?;
@@ -200,7 +213,6 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
-    // tested
     fn position(&self, id: WindowId) -> Result<Point> {
         Ok(self.rect(id)?.top_left())
     }
@@ -213,7 +225,6 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
-    // tested
     fn size(&self, id: WindowId) -> Result<Size> {
         Ok(self.rect(id)?.size())
     }
@@ -226,7 +237,6 @@ impl WindowsHandler for X11WindowHandler {
         Ok(window == handle) // TODO: return an error if the window doesn't exist anymore
     }
 
-    // tested
     fn active_window(&self) -> Result<WindowId> {
         let window = WindowHandle(active());
         Ok(self.inner.lock().get_or_insert(window))
@@ -257,8 +267,7 @@ impl WindowsHandler for X11WindowHandler {
         let _ = async_conn
             .change_window_attributes(
                 window_id,
-                &ChangeWindowAttributesAux::new()
-                    .event_mask(AsyncEventMask::STRUCTURE_NOTIFY),
+                &ChangeWindowAttributesAux::new().event_mask(AsyncEventMask::STRUCTURE_NOTIFY),
             )
             .await;
 
@@ -280,7 +289,10 @@ impl WindowsHandler for X11WindowHandler {
             let event = cancel_on(&cancellation_token, receiver.recv()).await??;
 
             if let events::WindowEvent::Closed(closed_handle) = &event {
-                info!("wait_for_closed: got Closed for {:#x}, waiting for {:#x}", closed_handle.id, window_id);
+                info!(
+                    "wait_for_closed: got Closed for {:#x}, waiting for {:#x}",
+                    closed_handle.id, window_id
+                );
             }
 
             if let events::WindowEvent::Closed(closed_handle) = event
@@ -354,48 +366,3 @@ impl X11WindowHandler {
         }))
     }
 }
-
-/*
-#[cfg(test)]
-mod tests {
-    use std::{thread::sleep, time::Duration};
-
-    use super::*;
-
-    #[test]
-    #[ignore]
-    fn test_active_window() {
-        Runtime::test(async move |runtime| {
-            //let mut handler = X11WindowHandler::new(runtime.clone());
-            /*
-            let result = handler
-                .all()
-                .unwrap()
-                .into_iter()
-                .map(|id| (id, handler.title(id).unwrap()))
-                .filter(|(_, title)| title.contains("domains"))
-                .collect::<Vec<(WindowId, String)>>();
-            let (window, _) = result.first().unwrap();
-            handler.set_active(*window).unwrap();
-            */
-            //let window = handler.active_window().unwrap();
-            //let mouse = Mouse::new(runtime).await.unwrap();
-            //handler.subscribe(window).await.unwrap();
-            loop {
-                /*
-                let title = handler.title(window).unwrap();
-                let rect = handler.rect(window).unwrap();
-                println!(
-                    "{title} rect:{} bottom:{} mouse:{}",
-                    rect,
-                    rect.bottom_right(),
-                    mouse.position().unwrap(),
-                );
-                */
-                //println!("{:?}", handler.is_active(window));
-                sleep(Duration::from_secs(1));
-            }
-        });
-    }
-}
-*/

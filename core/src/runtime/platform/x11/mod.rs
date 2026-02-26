@@ -29,7 +29,9 @@ use x11rb_async::{
             BoolCtrl, ConnectionExt, ControlsNotifyEvent, EventType, MapPart, SelectEventsAux,
             get_controls,
         },
-        xproto::{ChangeWindowAttributesAux, ConnectionExt as XprotoConnectionExt, get_keyboard_control},
+        xproto::{
+            ChangeWindowAttributesAux, ConnectionExt as XprotoConnectionExt, get_keyboard_control,
+        },
     },
 };
 use xkbcommon::xkb::{

@@ -8800,6 +8800,15 @@ interface Windows {
      */
     activeWindow(): Readonly<WindowHandle>;
     /**
+     * Returns the currently active (focused) window. Alias for `activeWindow()`.
+     * 
+     * ```ts
+     * const win = windows.foregroundWindow();
+     * println(win.title());
+     * ```
+     */
+    foregroundWindow(): Readonly<WindowHandle>;
+    /**
      * Finds windows matching the provided criteria.
      * 
      * `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
@@ -8853,6 +8862,15 @@ const windows: Windows;
  * @category Windows
  */
 interface WindowHandle {
+    /**
+     * A promise that resolves when the window is closed.
+     * 
+     * ```ts
+     * const win = windows.activeWindow();
+     * await win.closed;
+     * ```
+     */
+    readonly closed: Task<void>;
     /**
      * Returns whether this window is visible.
      * 
@@ -8910,6 +8928,14 @@ interface WindowHandle {
      * ```
      */
     setActive(): void;
+    /**
+     * Makes this window the active (focused) window. Alias for `setActive()`.
+     * 
+     * ```ts
+     * win.setForeground();
+     * ```
+     */
+    setForeground(): void;
     /**
      * Minimizes this window.
      * 
