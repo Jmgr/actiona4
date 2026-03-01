@@ -5857,6 +5857,74 @@ interface Mouse {
      */
     doubleClick(options?: DoubleClickOptions): Task<void>;
     /**
+     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+     * 
+     * ```ts
+     * // Drag an element from one position to another
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+     * ```
+     * 
+     * ```ts
+     * // Drag with custom speed and right button
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+     *   button: Button.Right,
+     *   speed: 500,
+     * });
+     * ```
+     */
+    dragAndDrop(start: PointLike, end: PointLike, options?: DragOptions): Task<void>;
+    /**
+     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+     * 
+     * ```ts
+     * // Drag an element from one position to another
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+     * ```
+     * 
+     * ```ts
+     * // Drag with custom speed and right button
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+     *   button: Button.Right,
+     *   speed: 500,
+     * });
+     * ```
+     */
+    dragAndDrop(start: PointLike, x: number, y: number, options?: DragOptions): Task<void>;
+    /**
+     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+     * 
+     * ```ts
+     * // Drag an element from one position to another
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+     * ```
+     * 
+     * ```ts
+     * // Drag with custom speed and right button
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+     *   button: Button.Right,
+     *   speed: 500,
+     * });
+     * ```
+     */
+    dragAndDrop(x: number, y: number, end: PointLike, options?: DragOptions): Task<void>;
+    /**
+     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+     * 
+     * ```ts
+     * // Drag an element from one position to another
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+     * ```
+     * 
+     * ```ts
+     * // Drag with custom speed and right button
+     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+     *   button: Button.Right,
+     *   speed: 500,
+     * });
+     * ```
+     */
+    dragAndDrop(x1: number, y1: number, x2: number, y2: number, options?: DragOptions): Task<void>;
+    /**
      * Presses and holds a mouse button.
      */
     press(options?: PressOptions): void;
@@ -6103,6 +6171,25 @@ interface DoubleClickOptions extends ClickOptions {
      * @defaultValue `0.25`
      */
     delay?: number | string;
+}
+/**
+ * Options for drag and drop operations.
+ * 
+ * ```ts
+ * await mouse.dragAndDrop({ x: 100, y: 100 }, { x: 500, y: 500 }, {
+ *   speed: 500,
+ *   tween: Tween.Linear,
+ * });
+ * ```
+ * @category Mouse
+ * @expand
+ */
+interface DragOptions extends MoveOptions {
+    /**
+     * Mouse button to use for dragging.
+     * @defaultValue `Button.Left`
+     */
+    button?: Button;
 }
 /**
  * A wildcard pattern for matching strings.

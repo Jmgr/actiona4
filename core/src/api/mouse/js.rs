@@ -344,6 +344,35 @@ impl JsDoubleClickOptions {
     }
 }
 
+/// Options for drag and drop operations.
+///
+/// ```ts
+/// await mouse.dragAndDrop({ x: 100, y: 100 }, { x: 500, y: 500 }, {
+///   speed: 500,
+///   tween: Tween.Linear,
+/// });
+/// ```
+/// @extends MoveOptions
+/// @options
+#[derive(Clone, Copy, Debug, FromJsObject)]
+pub struct JsDragOptions {
+    /// @skip
+    pub move_options: super::MoveOptions,
+
+    /// Mouse button to use for dragging.
+    /// @default `Button.Left`
+    pub button: super::Button,
+}
+
+impl Default for JsDragOptions {
+    fn default() -> Self {
+        Self {
+            move_options: super::MoveOptions::default(),
+            button: super::Button::Left,
+        }
+    }
+}
+
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsMouse {
     /// Returns whether a mouse button is currently pressed.
@@ -456,6 +485,51 @@ impl JsMouse {
             local_mouse
                 .double_click(options.into_inner(), token)
                 .await
+                .into_js_result(&ctx)
+        })
+    }
+
+    /// Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+    ///
+    /// ```ts
+    /// // Drag an element from one position to another
+    /// await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+    /// ```
+    ///
+    /// ```ts
+    /// // Drag with custom speed and right button
+    /// await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+    ///   button: Button.Right,
+    ///   speed: 500,
+    /// });
+    /// ```
+    /// @returns Task<void>
+    pub fn drag_and_drop<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        start: JsPointLike,
+        end: JsPointLike,
+        options: Opt<JsDragOptions>,
+    ) -> Result<Promise<'js>> {
+        let local_mouse = self.inner.clone();
+        let options = options.0.unwrap_or_default();
+
+        task(ctx, async move |ctx, token| {
+            local_mouse
+                .press(super::PressOptions {
+                    button: options.button,
+                    position: Some(start.0.into()),
+                    relative_position: false,
+                })
+                .into_js_result(&ctx)?;
+
+            local_mouse
+                .move_(end.0, token, options.move_options, ctx.user_data().rng())
+                .await
+                .into_js_result(&ctx)?;
+
+            local_mouse
+                .release(Some(options.button))
                 .into_js_result(&ctx)
         })
     }
