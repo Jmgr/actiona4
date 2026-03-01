@@ -43,6 +43,7 @@ Note: do not stage any changes.
 
 * never use single letter names for variables
 * prefer `use` instructions over specifying the full path for a type (when it is not ambiguous)
+* use cancel_on instead of a manual select! when it makes the code simpler
 
 ## Definition of done
 

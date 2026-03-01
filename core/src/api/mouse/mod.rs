@@ -26,7 +26,10 @@ use crate::{
         point::{js::JsPoint, try_point},
     },
     error::CommonError,
-    runtime::{events::MouseButtonEvent, shared_rng::SharedRng},
+    runtime::{
+        events::{MouseButtonEvent, MouseScrollEvent},
+        shared_rng::SharedRng,
+    },
     types::{display::DisplayFields, input::Direction},
 };
 
@@ -318,11 +321,17 @@ pub struct ButtonConditions {
     direction: Option<Direction>,
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct ScrollConditions {
+    pub axis: Option<Axis>,
+}
+
 #[derive(Clone, Debug)]
 pub struct Mouse {
     enigo: Arc<Mutex<Enigo>>,
     implementation: MouseImpl,
     pressed_buttons: Arc<Mutex<IndexSet<Button>>>,
+    runtime: Arc<Runtime>,
 }
 
 impl Display for Mouse {
@@ -336,8 +345,9 @@ impl Mouse {
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self {
             enigo: runtime.enigo(),
-            implementation: MouseImpl::new(runtime).await?,
+            implementation: MouseImpl::new(runtime.clone()).await?,
             pressed_buttons: Arc::new(Mutex::new(Default::default())),
+            runtime,
         })
     }
 
@@ -355,6 +365,39 @@ impl Mouse {
         self.implementation
             .wait_for_button(conditions, cancellation_token)
             .await
+    }
+
+    #[instrument(skip(self), err, ret)]
+    pub async fn wait_for_scroll(
+        &self,
+        conditions: ScrollConditions,
+        cancellation_token: CancellationToken,
+    ) -> Result<MouseScrollEvent> {
+        let guard = self.runtime.mouse_scroll();
+        let mut receiver = guard.subscribe();
+        let runtime_cancellation_token = self.runtime.cancellation_token();
+
+        loop {
+            let event = select! {
+                _ = runtime_cancellation_token.cancelled() => { break; }
+                _ = cancellation_token.cancelled() => { break; }
+                event = receiver.recv() => { event }
+            };
+
+            let Ok(event) = event else {
+                break;
+            };
+
+            if event.is_injected {
+                continue;
+            }
+
+            if conditions.axis.is_none_or(|axis| axis == event.axis) {
+                return Ok(event);
+            }
+        }
+
+        Err(CommonError::Cancelled.into())
     }
 
     #[instrument(skip(self), err, ret)]

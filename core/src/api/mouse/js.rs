@@ -15,19 +15,23 @@ use crate::{
     api::{
         js::{
             abort_controller::JsAbortSignal,
-            classes::{SingletonClass, register_enum},
+            classes::{HostClass, SingletonClass, register_enum, register_host_class},
             duration::JsDuration,
             event_handle::{HandleId, JsEventHandle},
             task::{task, task_with_token},
         },
         mouse::{
+            ButtonConditions, ScrollConditions,
             click_triggers::{ClickTriggers, OnButtonOptions},
             scroll_triggers::ScrollTriggers,
         },
         point::js::{JsPoint, JsPointLike},
     },
     runtime::{Runtime, WithUserData},
-    types::display::display_with_type,
+    types::{
+        display::{DisplayFields, display_with_type},
+        input::Direction,
+    },
 };
 
 impl<'js> Trace<'js> for super::Mouse {
@@ -72,6 +76,7 @@ impl<'js> SingletonClass<'js> for JsMouse {
         register_enum::<JsButton>(ctx)?;
         register_enum::<JsAxis>(ctx)?;
         register_enum::<JsTween>(ctx)?;
+        register_host_class::<JsScrollEvent>(ctx)?;
 
         Ok(())
     }
@@ -173,6 +178,82 @@ pub struct JsMeasureSpeedOptions {
     /// Abort signal to cancel the measurement.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
+}
+
+/// Options for `waitForButton`.
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsWaitForButtonOptions {
+    /// Mouse button to wait for. If not specified, waits for any button.
+    /// @default `undefined`
+    pub button: Option<JsButton>,
+
+    /// Abort signal to cancel the wait.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Options for `waitForScroll`.
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsWaitForScrollOptions {
+    /// Scroll axis to wait for. If not specified, waits for any axis.
+    /// @default `undefined`
+    pub axis: Option<JsAxis>,
+
+    /// Abort signal to cancel the wait.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// The result of a `waitForScroll` call.
+///
+/// ```ts
+/// const event = await mouse.waitForScroll();
+/// console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+/// ```
+#[derive(Clone, Debug, JsLifetime)]
+#[rquickjs::class(rename = "ScrollEvent")]
+pub struct JsScrollEvent {
+    axis: JsAxis,
+    length: i32,
+}
+
+impl<'js> HostClass<'js> for JsScrollEvent {}
+
+impl<'js> Trace<'js> for JsScrollEvent {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+#[rquickjs::methods(rename_all = "camelCase")]
+impl JsScrollEvent {
+    /// The scroll axis.
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn axis(&self) -> JsAxis {
+        self.axis
+    }
+
+    /// The scroll amount. Positive values scroll down/right, negative values scroll up/left.
+    /// @get
+    #[qjs(get)]
+    #[must_use]
+    pub const fn length(&self) -> i32 {
+        self.length
+    }
+
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type(
+            "ScrollEvent",
+            DisplayFields::default()
+                .display("axis", self.axis)
+                .display("length", self.length)
+                .finish_as_string(),
+        )
+    }
 }
 
 /// Options for clicking a mouse button.
@@ -391,6 +472,85 @@ impl JsMouse {
         self.inner
             .release(button.map(|button| button))
             .into_js_result(&ctx)
+    }
+
+    /// Waits until a mouse button is pressed.
+    ///
+    /// ```ts
+    /// // Wait for any button press
+    /// const button = await mouse.waitForButton();
+    /// ```
+    ///
+    /// ```ts
+    /// // Wait for left button with abort support
+    /// const controller = new AbortController();
+    /// const button = await mouse.waitForButton({
+    ///   button: Button.Left,
+    ///   signal: controller.signal
+    /// });
+    /// ```
+    /// @param options?: WaitForButtonOptions
+    /// @returns Task<Button>
+    pub fn wait_for_button<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<JsWaitForButtonOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let conditions = ButtonConditions {
+            button: options.button,
+            direction: Some(Direction::Press),
+        };
+        let local_mouse = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            let event = local_mouse
+                .wait_for_button(conditions, token)
+                .await
+                .into_js_result(&ctx)?;
+            event.button.into_js(&ctx)
+        })
+    }
+
+    /// Waits until the mouse wheel is scrolled.
+    ///
+    /// ```ts
+    /// // Wait for any scroll event
+    /// const event = await mouse.waitForScroll();
+    /// console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+    /// ```
+    ///
+    /// ```ts
+    /// // Wait for vertical scroll with abort support
+    /// const controller = new AbortController();
+    /// const event = await mouse.waitForScroll({
+    ///   axis: Axis.Vertical,
+    ///   signal: controller.signal
+    /// });
+    /// ```
+    /// @param options?: WaitForScrollOptions
+    /// @returns Task<ScrollEvent>
+    pub fn wait_for_scroll<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<JsWaitForScrollOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let conditions = ScrollConditions { axis: options.axis };
+        let local_mouse = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            let event = local_mouse
+                .wait_for_scroll(conditions, token)
+                .await
+                .into_js_result(&ctx)?;
+            Ok(JsScrollEvent {
+                axis: event.axis,
+                length: event.length,
+            })
+        })
     }
 
     /// Registers a listener that fires when a mouse button is pressed.
@@ -621,6 +781,40 @@ mod tests {
                 .eval_async::<()>("mouse.scroll(-1, Axis.Horizontal)")
                 .await
                 .unwrap();
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_wait_for_button_js() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Press any mouse button...");
+                    const button = await mouse.waitForButton();
+                    console.println(`Button pressed: ${button}`);
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_wait_for_scroll() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Scroll the mouse wheel...");
+                    const event = await mouse.waitForScroll();
+                    console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+                "#,
+                )
+                .await;
         });
     }
 

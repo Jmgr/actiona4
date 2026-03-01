@@ -5864,6 +5864,43 @@ declare interface Mouse {
      */
     release(button?: Button): void;
     /**
+     * Waits until a mouse button is pressed.
+     * 
+     * ```ts
+     * // Wait for any button press
+     * const button = await mouse.waitForButton();
+     * ```
+     * 
+     * ```ts
+     * // Wait for left button with abort support
+     * const controller = new AbortController();
+     * const button = await mouse.waitForButton({
+     *   button: Button.Left,
+     *   signal: controller.signal
+     * });
+     * ```
+     */
+    waitForButton(options?: WaitForButtonOptions): Task<Button>;
+    /**
+     * Waits until the mouse wheel is scrolled.
+     * 
+     * ```ts
+     * // Wait for any scroll event
+     * const event = await mouse.waitForScroll();
+     * console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+     * ```
+     * 
+     * ```ts
+     * // Wait for vertical scroll with abort support
+     * const controller = new AbortController();
+     * const event = await mouse.waitForScroll({
+     *   axis: Axis.Vertical,
+     *   signal: controller.signal
+     * });
+     * ```
+     */
+    waitForScroll(options?: WaitForScrollOptions): Task<ScrollEvent>;
+    /**
      * Registers a listener that fires when a mouse button is pressed.
      * 
      * ```ts
@@ -5963,6 +6000,60 @@ declare interface MeasureSpeedOptions {
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
+}
+/**
+ * Options for `waitForButton`.
+ * @category Mouse
+ * @expand
+ */
+declare interface WaitForButtonOptions {
+    /**
+     * Mouse button to wait for. If not specified, waits for any button.
+     * @defaultValue `undefined`
+     */
+    button?: Button;
+    /**
+     * Abort signal to cancel the wait.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Options for `waitForScroll`.
+ * @category Mouse
+ * @expand
+ */
+declare interface WaitForScrollOptions {
+    /**
+     * Scroll axis to wait for. If not specified, waits for any axis.
+     * @defaultValue `undefined`
+     */
+    axis?: Axis;
+    /**
+     * Abort signal to cancel the wait.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * The result of a `waitForScroll` call.
+ * 
+ * ```ts
+ * const event = await mouse.waitForScroll();
+ * console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+ * ```
+ * @category Mouse
+ */
+declare interface ScrollEvent {
+    /**
+     * The scroll axis.
+     */
+    readonly axis: Axis;
+    /**
+     * The scroll amount. Positive values scroll down/right, negative values scroll up/left.
+     */
+    readonly length: number;
+    toString(): string;
 }
 /**
  * Options for clicking a mouse button.
