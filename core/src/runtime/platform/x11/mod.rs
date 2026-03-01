@@ -53,7 +53,7 @@ use crate::{
         events::{Guard, KeyboardKeyEvent, KeyboardTextEvent, MouseButtonEvent, TopicWrapper},
         platform::x11::events::input::{
             ActivationCounter, InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic,
-            MouseMoveTopic, keysym_to_key,
+            MouseMoveTopic, MouseScrollTopic, keysym_to_key, scroll_event_from_x11_button,
         },
     },
     types::input::Direction,
@@ -62,15 +62,15 @@ use crate::{
 pub mod events;
 
 impl Button {
-    fn from_event(detail: u32) -> Result<Self> {
-        Ok(match detail {
-            1 => Self::Left,
-            2 => Self::Middle,
-            3 => Self::Right,
-            8 => Self::Back,
-            9 => Self::Forward,
-            _ => return Err(eyre!("unknown button event detail: {detail}")),
-        })
+    const fn from_event(detail: u32) -> Option<Self> {
+        match detail {
+            1 => Some(Self::Left),
+            2 => Some(Self::Middle),
+            3 => Some(Self::Right),
+            8 => Some(Self::Back),
+            9 => Some(Self::Forward),
+            _ => None,
+        }
     }
 }
 
@@ -81,6 +81,7 @@ pub struct Runtime {
     atoms: AtomCollection,
     mouse_buttons_topic: TopicWrapper<MouseButtonsTopic>,
     mouse_move_topic: TopicWrapper<MouseMoveTopic>,
+    mouse_scroll_topic: TopicWrapper<MouseScrollTopic>,
     keyboard_keys_topic: TopicWrapper<KeyboardKeysTopic>,
     keyboard_text_topic: TopicWrapper<KeyboardTextTopic>,
     window_event_sender: broadcast::Sender<WindowEvent>,
@@ -233,13 +234,19 @@ impl Runtime {
         );
 
         let input_mask = InputMask::new(x11_connection.clone()).await?;
+        let mouse_activation_counter = ActivationCounter::default();
         let mouse_buttons_topic = TopicWrapper::new(
-            MouseButtonsTopic::new(input_mask.clone()),
+            MouseButtonsTopic::new(input_mask.clone(), mouse_activation_counter.clone()),
             cancellation_token.clone(),
             task_tracker.clone(),
         );
         let mouse_move_topic = TopicWrapper::new(
             MouseMoveTopic::new(input_mask.clone()),
+            cancellation_token.clone(),
+            task_tracker.clone(),
+        );
+        let mouse_scroll_topic = TopicWrapper::new(
+            MouseScrollTopic::new(input_mask.clone(), mouse_activation_counter),
             cancellation_token.clone(),
             task_tracker.clone(),
         );
@@ -260,6 +267,7 @@ impl Runtime {
         let local_x11_connection = x11_connection.clone();
         let local_mouse_buttons_topic = mouse_buttons_topic.clone();
         let local_mouse_move_topic = mouse_move_topic.clone();
+        let local_mouse_scroll_topic = mouse_scroll_topic.clone();
         let local_keyboard_keys_topic = keyboard_keys_topic.clone();
         let local_keyboard_text_topic = keyboard_text_topic.clone();
         let local_window_event_sender = window_event_sender.clone();
@@ -295,20 +303,31 @@ impl Runtime {
                         input_devices.refresh().await?;
                     }
                     Event::XinputRawButtonPress(event) => {
-                        let button = Button::from_event(event.detail)?;
-                        local_mouse_buttons_topic.publish(MouseButtonEvent {
-                            button,
-                            direction: Direction::Press,
-                            is_injected: input_devices.is_xtest_pointer(event.sourceid),
-                        });
+                        let is_injected = input_devices.is_xtest_pointer(event.sourceid);
+                        if let Some(scroll_event) =
+                            scroll_event_from_x11_button(event.detail, is_injected)
+                        {
+                            local_mouse_scroll_topic.publish(scroll_event);
+                        } else if let Some(button) = Button::from_event(event.detail) {
+                            local_mouse_buttons_topic.publish(MouseButtonEvent {
+                                button,
+                                direction: Direction::Press,
+                                is_injected,
+                            });
+                        }
                     }
                     Event::XinputRawButtonRelease(event) => {
-                        let button = Button::from_event(event.detail)?;
-                        local_mouse_buttons_topic.publish(MouseButtonEvent {
-                            button,
-                            direction: Direction::Release,
-                            is_injected: input_devices.is_xtest_pointer(event.sourceid),
-                        });
+                        let is_injected = input_devices.is_xtest_pointer(event.sourceid);
+                        // Scroll button releases carry no useful data; ignore them.
+                        if scroll_event_from_x11_button(event.detail, is_injected).is_none()
+                            && let Some(button) = Button::from_event(event.detail)
+                        {
+                            local_mouse_buttons_topic.publish(MouseButtonEvent {
+                                button,
+                                direction: Direction::Release,
+                                is_injected,
+                            });
+                        }
                     }
                     Event::XinputMotion(event) => {
                         local_mouse_move_topic.publish(point(event.root_x, event.root_y)); // TODO: injected?
@@ -447,6 +466,7 @@ impl Runtime {
             atoms,
             mouse_buttons_topic,
             mouse_move_topic,
+            mouse_scroll_topic,
             keyboard_keys_topic,
             keyboard_text_topic,
             window_event_sender,
@@ -477,6 +497,11 @@ impl Runtime {
     #[must_use]
     pub fn mouse_move(&self) -> Guard<MouseMoveTopic> {
         self.mouse_move_topic.subscribe()
+    }
+
+    #[must_use]
+    pub fn mouse_scroll(&self) -> Guard<MouseScrollTopic> {
+        self.mouse_scroll_topic.subscribe()
     }
 
     #[must_use]

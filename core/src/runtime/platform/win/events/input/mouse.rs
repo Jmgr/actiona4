@@ -18,11 +18,14 @@ use windows::Win32::{
 };
 
 use crate::{
-    api::{mouse::Button, point::point},
+    api::{
+        mouse::{Axis, Button},
+        point::point,
+    },
     runtime::{
         events::{
-            AllSignals, Guard, LatestOnlySignals, MouseButtonEvent, MouseMoveEvent, Topic,
-            TopicWrapper,
+            AllSignals, Guard, LatestOnlySignals, MouseButtonEvent, MouseMoveEvent,
+            MouseScrollEvent, Topic, TopicWrapper,
         },
         platform::win::{
             SafeMessagePump,
@@ -55,6 +58,7 @@ impl HookSpec for MouseHook {
 pub struct MouseInputDispatcher {
     mouse_buttons: TopicWrapper<MouseButtonsTopic>,
     mouse_move: TopicWrapper<MouseMoveTopic>,
+    mouse_scroll: TopicWrapper<MouseScrollTopic>,
     subscribers: AtomicUsize,
     message_pump: SafeMessagePump,
 }
@@ -89,6 +93,13 @@ impl MouseInputDispatcher {
                     cancellation_token.clone(),
                     task_tracker.clone(),
                 ),
+                mouse_scroll: TopicWrapper::new(
+                    MouseScrollTopic {
+                        dispatcher: me.clone(),
+                    },
+                    cancellation_token.clone(),
+                    task_tracker.clone(),
+                ),
                 subscribers: AtomicUsize::new(0),
                 message_pump,
             }
@@ -105,12 +116,21 @@ impl MouseInputDispatcher {
         self.mouse_move.subscribe()
     }
 
+    #[must_use]
+    pub fn subscribe_mouse_scroll(&self) -> Guard<MouseScrollTopic> {
+        self.mouse_scroll.subscribe()
+    }
+
     pub fn publish_mouse_buttons(&self, value: <MouseButtonsTopic as Topic>::T) {
         self.mouse_buttons.publish(value);
     }
 
     pub fn publish_mouse_move(&self, value: <MouseMoveTopic as Topic>::T) {
         self.mouse_move.publish(value);
+    }
+
+    pub fn publish_mouse_scroll(&self, value: <MouseScrollTopic as Topic>::T) {
+        self.mouse_scroll.publish(value);
     }
 
     async fn on_start(&self) -> Result<()> {
@@ -176,6 +196,30 @@ impl Topic for MouseMoveTopic {
     }
 }
 
+#[derive(Debug, Default)]
+pub struct MouseScrollTopic {
+    dispatcher: Weak<MouseInputDispatcher>,
+}
+
+impl Topic for MouseScrollTopic {
+    type T = MouseScrollEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_start().await?;
+        }
+        Ok(())
+    }
+
+    async fn on_stop(&self) -> Result<()> {
+        if let Some(dispatcher) = self.dispatcher.upgrade() {
+            dispatcher.on_stop().await?;
+        }
+        Ok(())
+    }
+}
+
 #[allow(clippy::as_conversions)] // pointer/integer casts required by Windows hook callback
 unsafe extern "system" fn low_level_mouse_proc(
     n_code: i32,
@@ -192,6 +236,7 @@ unsafe extern "system" fn low_level_mouse_proc(
 
     let mouse_buttons = &dispatcher.mouse_buttons;
     let mouse_move = &dispatcher.mouse_move;
+    let mouse_scroll = &dispatcher.mouse_scroll;
 
     let mouse_struct = unsafe { *(l_param.0 as *const MSLLHOOKSTRUCT) };
     let injected = mouse_struct.flags & LLMHF_INJECTED == LLMHF_INJECTED;
@@ -260,10 +305,21 @@ unsafe extern "system" fn low_level_mouse_proc(
             ));
         }
         WM_MOUSEWHEEL => {
-            // TODO
+            // High word of mouseData is a signed delta; WHEEL_DELTA == 120.
+            // Positive delta = scrolled away from user (up); we treat down/right as positive.
+            let wheel_delta = (mouse_struct.mouseData >> 16) as i16;
+            let length = -(i32::from(wheel_delta) / 120);
+            if length != 0 {
+                mouse_scroll.publish(MouseScrollEvent::new(Axis::Vertical, length, injected));
+            }
         }
         WM_MOUSEHWHEEL => {
-            // TODO
+            // Positive delta = scrolled right.
+            let wheel_delta = (mouse_struct.mouseData >> 16) as i16;
+            let length = i32::from(wheel_delta) / 120;
+            if length != 0 {
+                mouse_scroll.publish(MouseScrollEvent::new(Axis::Horizontal, length, injected));
+            }
         }
         _ => {}
     };

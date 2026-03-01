@@ -2,7 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use macros::FromJsObject;
 use rquickjs::{
-    Ctx, JsLifetime, Promise, Result,
+    Ctx, Exception, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::*,
@@ -17,7 +17,12 @@ use crate::{
             abort_controller::JsAbortSignal,
             classes::{SingletonClass, register_enum},
             duration::JsDuration,
+            event_handle::{HandleId, JsEventHandle},
             task::{task, task_with_token},
+        },
+        mouse::{
+            click_triggers::{ClickTriggers, OnButtonOptions},
+            scroll_triggers::ScrollTriggers,
         },
         point::js::{JsPoint, JsPointLike},
     },
@@ -58,6 +63,8 @@ pub type JsTween = super::Tween;
 #[rquickjs::class(rename = "Mouse")]
 pub struct JsMouse {
     inner: super::Mouse,
+    click_triggers: ClickTriggers,
+    scroll_triggers: ScrollTriggers,
 }
 
 impl<'js> SingletonClass<'js> for JsMouse {
@@ -74,18 +81,82 @@ impl<'js> Trace<'js> for JsMouse {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
+impl<'js> Trace<'js> for ClickTriggers {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl<'js> Trace<'js> for ScrollTriggers {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
 impl JsMouse {
     /// @skip
     #[instrument(skip_all)]
     pub async fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
+        let click_triggers = ClickTriggers::new(
+            runtime.clone(),
+            runtime.task_tracker(),
+            runtime.cancellation_token(),
+        );
+        let scroll_triggers = ScrollTriggers::new(
+            runtime.clone(),
+            runtime.task_tracker(),
+            runtime.cancellation_token(),
+        );
+
         Ok(Self {
             inner: super::Mouse::new(runtime).await?,
+            click_triggers,
+            scroll_triggers,
         })
     }
 }
 
 pub type JsMoveOptions = super::MoveOptions;
 pub type JsPressOptions = super::PressOptions;
+
+/// Options for `onButton`.
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsOnButtonOptions {
+    /// Require exactly this button and no others to be pressed simultaneously.
+    /// @default `false`
+    pub exclusive: bool,
+
+    /// Abort signal to automatically cancel this listener when signalled.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl From<JsOnButtonOptions> for OnButtonOptions {
+    fn from(options: JsOnButtonOptions) -> Self {
+        Self {
+            exclusive: options.exclusive,
+        }
+    }
+}
+
+/// Options for `onScroll`.
+/// @options
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsOnScrollOptions {
+    /// Axis to listen on.
+    /// @default `Axis.Vertical`
+    pub axis: super::Axis,
+
+    /// Abort signal to automatically cancel this listener when signalled.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl Default for JsOnScrollOptions {
+    fn default() -> Self {
+        Self {
+            axis: super::Axis::Vertical,
+            signal: None,
+        }
+    }
+}
 
 /// Options for measuring mouse movement speed.
 ///
@@ -322,10 +393,125 @@ impl JsMouse {
             .into_js_result(&ctx)
     }
 
+    /// Registers a listener that fires when a mouse button is pressed.
+    ///
+    /// ```ts
+    /// const handle = mouse.onButton(Button.Left, () => {
+    ///   console.println("Left button pressed!");
+    /// });
+    /// // ... later:
+    /// handle.cancel();
+    /// ```
+    ///
+    /// @param button: Button
+    /// @param callback: () => void | Promise<void>
+    /// @param options?: OnButtonOptions
+    /// @returns EventHandle
+    pub fn on_button<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        button: JsButton,
+        callback: Value<'js>,
+        options: Opt<JsOnButtonOptions>,
+    ) -> Result<JsEventHandle> {
+        let Some(function) = callback.as_function() else {
+            return Err(Exception::throw_type(&ctx, "callback must be a function"));
+        };
+
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let button_options = options.into();
+        let id = HandleId::default();
+        let user_data = ctx.user_data();
+        let function_key = user_data.callbacks().register(&ctx, function.clone());
+        let context = user_data.script_engine().context();
+        self.click_triggers
+            .add(id, button, context, function_key, button_options);
+
+        let handle = JsEventHandle::new(id, Arc::new(self.click_triggers.clone()));
+        Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
+
+        Ok(handle)
+    }
+
+    /// Registers a listener that fires when the mouse wheel is scrolled.
+    ///
+    /// ```ts
+    /// const handle = mouse.onScroll((length) => {
+    ///   console.println(`Scrolled ${length} units`);
+    /// });
+    /// // ... later:
+    /// handle.cancel();
+    /// ```
+    ///
+    /// ```ts
+    /// // Listen for horizontal scroll only
+    /// const handle = mouse.onScroll((length) => {
+    ///   console.println(`Horizontal scroll: ${length}`);
+    /// }, { axis: Axis.Horizontal });
+    /// ```
+    ///
+    /// @param callback: (length: number) => void | Promise<void>
+    /// @param options?: OnScrollOptions
+    /// @returns EventHandle
+    pub fn on_scroll<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        callback: Value<'js>,
+        options: Opt<JsOnScrollOptions>,
+    ) -> Result<JsEventHandle> {
+        let Some(function) = callback.as_function() else {
+            return Err(Exception::throw_type(&ctx, "callback must be a function"));
+        };
+
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let id = HandleId::default();
+        let user_data = ctx.user_data();
+        let function_key = user_data.callbacks().register(&ctx, function.clone());
+        let context = user_data.script_engine().context();
+        self.scroll_triggers
+            .add(id, options.axis, context, function_key);
+
+        let handle = JsEventHandle::new(id, Arc::new(self.scroll_triggers.clone()));
+        Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
+
+        Ok(handle)
+    }
+
+    /// Unregisters all event handles registered on this mouse instance.
+    ///
+    /// ```ts
+    /// mouse.onButton(Button.Left, () => console.println("left"));
+    /// mouse.clearEventHandles();
+    /// ```
+    pub fn clear_event_handles(&self) {
+        self.click_triggers.clear();
+        self.scroll_triggers.clear();
+    }
+
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
         display_with_type("Mouse", &self.inner)
+    }
+}
+
+impl JsMouse {
+    fn cancel_handle_on_signal(
+        ctx: &Ctx<'_>,
+        signal: Option<JsAbortSignal>,
+        handle: JsEventHandle,
+    ) {
+        let Some(signal) = signal else {
+            return;
+        };
+
+        let token = signal.into_token();
+        ctx.user_data().task_tracker().spawn(async move {
+            token.cancelled().await;
+            handle.cancel();
+        });
     }
 }
 
@@ -435,6 +621,55 @@ mod tests {
                 .eval_async::<()>("mouse.scroll(-1, Axis.Horizontal)")
                 .await
                 .unwrap();
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_button() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Registering mouse.onButton for left button.");
+                    console.println("Press Escape to end this manual test.");
+                    const handle = mouse.onButton(Button.Left, async () => {
+                        await sleep(250);
+                        console.println("Left button pressed");
+                    });
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    handle.cancel();
+                    console.println("END");
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_scroll() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Registering mouse.onScroll for vertical axis.");
+                    console.println("Scroll the mouse wheel or press Escape to end this manual test.");
+                    const handle = mouse.onScroll((length) => {
+                        console.println(`Vertical scroll: ${length}`);
+                    });
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    handle.cancel();
+                    console.println("END");
+                "#,
+                )
+                .await;
         });
     }
 

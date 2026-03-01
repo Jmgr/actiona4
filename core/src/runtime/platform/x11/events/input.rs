@@ -12,10 +12,11 @@ use x11rb_async::{connection::Connection, protocol::xinput::xi_select_events};
 use xkeysym::Keysym;
 
 use crate::{
-    api::point::Point,
+    api::{mouse::Axis, point::Point},
     platform::x11::X11Connection,
     runtime::events::{
-        AllSignals, KeyboardKeyEvent, KeyboardTextEvent, LatestOnlySignals, MouseButtonEvent, Topic,
+        AllSignals, KeyboardKeyEvent, KeyboardTextEvent, LatestOnlySignals, MouseButtonEvent,
+        MouseScrollEvent, Topic,
     },
 };
 
@@ -89,13 +90,23 @@ impl ActivationCounter {
     }
 }
 
+fn mouse_buttons_events() -> XIEventMask {
+    XIEventMask::RAW_BUTTON_PRESS | XIEventMask::RAW_BUTTON_RELEASE
+}
+
+async fn mouse_buttons_start(input_mask: &InputMask) -> Result<()> {
+    input_mask.set(mouse_buttons_events()).await
+}
+
+async fn mouse_buttons_stop(input_mask: &InputMask) -> Result<()> {
+    input_mask.remove(mouse_buttons_events()).await
+}
+
 #[derive(Constructor, Debug)]
 pub struct MouseButtonsTopic {
     input_mask: InputMask,
-}
-
-fn mouse_buttons_events() -> XIEventMask {
-    XIEventMask::RAW_BUTTON_PRESS | XIEventMask::RAW_BUTTON_RELEASE
+    /// Shared with `MouseScrollTopic` — both use the same `RAW_BUTTON_PRESS` mask.
+    activation_counter: ActivationCounter,
 }
 
 impl Topic for MouseButtonsTopic {
@@ -103,11 +114,68 @@ impl Topic for MouseButtonsTopic {
     type Signal = AllSignals<Self::T>;
 
     async fn on_start(&self) -> Result<()> {
-        self.input_mask.set(mouse_buttons_events()).await
+        if self.activation_counter.increment() == 0
+            && let Err(error) = mouse_buttons_start(&self.input_mask).await
+        {
+            _ = self.activation_counter.decrement();
+            return Err(error);
+        }
+        Ok(())
     }
 
     async fn on_stop(&self) -> Result<()> {
-        self.input_mask.remove(mouse_buttons_events()).await
+        if self.activation_counter.decrement() == 1
+            && let Err(error) = mouse_buttons_stop(&self.input_mask).await
+        {
+            _ = self.activation_counter.increment();
+            return Err(error);
+        }
+        Ok(())
+    }
+}
+
+/// On X11 scroll events arrive as raw button presses (buttons 4–7), so this topic shares the
+/// same `XIEventMask` and `ActivationCounter` as `MouseButtonsTopic`.
+#[derive(Constructor, Debug)]
+pub struct MouseScrollTopic {
+    input_mask: InputMask,
+    activation_counter: ActivationCounter,
+}
+
+impl Topic for MouseScrollTopic {
+    type T = MouseScrollEvent;
+    type Signal = AllSignals<Self::T>;
+
+    async fn on_start(&self) -> Result<()> {
+        if self.activation_counter.increment() == 0
+            && let Err(error) = mouse_buttons_start(&self.input_mask).await
+        {
+            _ = self.activation_counter.decrement();
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    async fn on_stop(&self) -> Result<()> {
+        if self.activation_counter.decrement() == 1
+            && let Err(error) = mouse_buttons_stop(&self.input_mask).await
+        {
+            _ = self.activation_counter.increment();
+            return Err(error);
+        }
+        Ok(())
+    }
+}
+
+/// Convert an X11 raw button detail to a `MouseScrollEvent`, if it is a scroll button (4–7).
+#[must_use]
+pub const fn scroll_event_from_x11_button(detail: u32, is_injected: bool) -> Option<MouseScrollEvent> {
+    match detail {
+        4 => Some(MouseScrollEvent::new(Axis::Vertical, -1, is_injected)),
+        5 => Some(MouseScrollEvent::new(Axis::Vertical, 1, is_injected)),
+        6 => Some(MouseScrollEvent::new(Axis::Horizontal, -1, is_injected)),
+        7 => Some(MouseScrollEvent::new(Axis::Horizontal, 1, is_injected)),
+        _ => None,
     }
 }
 

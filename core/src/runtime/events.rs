@@ -16,7 +16,7 @@ use tracing::{error, warn};
 
 use crate::{
     api::{
-        mouse::Button,
+        mouse::{Axis, Button},
         point::{Point, point},
         rect::{Rect, rect},
         size::size,
@@ -230,6 +230,13 @@ pub struct MouseButtonEvent {
 #[derive(Clone, Constructor, Debug, Default)]
 pub struct MouseMoveEvent {
     pub position: Point,
+    pub is_injected: bool,
+}
+
+#[derive(Clone, Constructor, Debug)]
+pub struct MouseScrollEvent {
+    pub axis: Axis,
+    pub length: i32,
     pub is_injected: bool,
 }
 

@@ -39,7 +39,9 @@ use crate::{
                 WindowEvent,
                 input::{
                     keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
-                    mouse::{MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic},
+                    mouse::{
+                        MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic, MouseScrollTopic,
+                    },
                 },
             },
             notification::ensure_notification_registration,
@@ -226,6 +228,11 @@ impl Runtime {
     #[must_use]
     pub fn mouse_move(&self) -> Guard<MouseMoveTopic> {
         self.mouse_input_dispatcher.subscribe_mouse_move()
+    }
+
+    #[must_use]
+    pub fn mouse_scroll(&self) -> Guard<MouseScrollTopic> {
+        self.mouse_input_dispatcher.subscribe_mouse_scroll()
     }
 
     #[must_use]

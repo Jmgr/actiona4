@@ -11,16 +11,17 @@ Find Image:
 Solve // TODOs
 Create an installer for Windows
 
+Keyboard:
+- record & playbac
+
  Mouse:
-- record
+- record & playback
 - drag and drop?
+- pressButton should be press, release, click
 
 Select rect on screen
 - https://github.com/neXromancers/hacksaw/tree/master
-
-Hotstrings
-- merge into keyboard
-
+- 
 Update
 - show notification if new version
 - Update fallback: check website if new version 

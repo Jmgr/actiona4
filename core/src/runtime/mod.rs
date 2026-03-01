@@ -24,12 +24,12 @@ use tracing::{error, info, instrument, warn};
 
 #[cfg(unix)]
 use crate::runtime::platform::x11::events::input::{
-    KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic,
+    KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic, MouseScrollTopic,
 };
 #[cfg(windows)]
 use crate::runtime::win::events::input::{
     keyboard::KeyboardKeysTopic, keyboard::KeyboardTextTopic, mouse::MouseButtonsTopic,
-    mouse::MouseMoveTopic,
+    mouse::MouseMoveTopic, mouse::MouseScrollTopic,
 };
 use crate::{
     api::{
@@ -623,6 +623,12 @@ impl Runtime {
         )
         .await?;
 
+        let js_runtime = script_engine.context().runtime().clone();
+        let drive_token = cancellation_token.clone();
+        task_tracker.spawn(async move {
+            _ = cancel_on(&drive_token, js_runtime.drive()).await;
+        });
+
         f(runtime.clone(), script_engine.clone()).await?;
 
         let wait_at_end = runtime.wait_at_end();
@@ -689,6 +695,11 @@ impl Runtime {
     #[must_use]
     pub fn mouse_move(&self) -> Guard<MouseMoveTopic> {
         self.platform().mouse_move()
+    }
+
+    #[must_use]
+    pub fn mouse_scroll(&self) -> Guard<MouseScrollTopic> {
+        self.platform().mouse_scroll()
     }
 
     #[must_use]

@@ -30,7 +30,9 @@ use crate::{
     types::{display::DisplayFields, input::Direction},
 };
 
+mod click_triggers;
 pub(crate) mod platform;
+mod scroll_triggers;
 
 pub mod js;
 

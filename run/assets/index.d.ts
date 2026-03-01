@@ -5863,12 +5863,86 @@ declare interface Mouse {
      * Releases a mouse button.
      */
     release(button?: Button): void;
+    /**
+     * Registers a listener that fires when a mouse button is pressed.
+     * 
+     * ```ts
+     * const handle = mouse.onButton(Button.Left, () => {
+     *   console.println("Left button pressed!");
+     * });
+     * // ... later:
+     * handle.cancel();
+     * ```
+     */
+    onButton(button: Button, callback: () => void | Promise<void>, options?: OnButtonOptions): EventHandle;
+    /**
+     * Registers a listener that fires when the mouse wheel is scrolled.
+     * 
+     * ```ts
+     * const handle = mouse.onScroll((length) => {
+     *   console.println(`Scrolled ${length} units`);
+     * });
+     * // ... later:
+     * handle.cancel();
+     * ```
+     * 
+     * ```ts
+     * // Listen for horizontal scroll only
+     * const handle = mouse.onScroll((length) => {
+     *   console.println(`Horizontal scroll: ${length}`);
+     * }, { axis: Axis.Horizontal });
+     * ```
+     */
+    onScroll(callback: (length: number) => void | Promise<void>, options?: OnScrollOptions): EventHandle;
+    /**
+     * Unregisters all event handles registered on this mouse instance.
+     * 
+     * ```ts
+     * mouse.onButton(Button.Left, () => console.println("left"));
+     * mouse.clearEventHandles();
+     * ```
+     */
+    clearEventHandles(): void;
     toString(): string;
 }
 /**
  * @category Mouse
  */
 declare const mouse: Mouse;
+/**
+ * Options for `onButton`.
+ * @category Mouse
+ * @expand
+ */
+declare interface OnButtonOptions {
+    /**
+     * Require exactly this button and no others to be pressed simultaneously.
+     * @defaultValue `false`
+     */
+    exclusive?: boolean;
+    /**
+     * Abort signal to automatically cancel this listener when signalled.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Options for `onScroll`.
+ * @category Mouse
+ * @expand
+ */
+declare interface OnScrollOptions {
+    /**
+     * Axis to listen on.
+     * @defaultValue `Axis.Vertical`
+     */
+    axis?: Axis;
+    /**
+     * Abort signal to automatically cancel this listener when signalled.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
 /**
  * Options for measuring mouse movement speed.
  * 

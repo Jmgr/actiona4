@@ -216,6 +216,68 @@ impl Callbacks {
         }
     }
 
+    /// Call a registered function synchronously with a single argument within the current JS context.
+    ///
+    /// Same guarantees as `call_sync`, but passes one argument to the callback.
+    pub fn call_sync_with_arg<'js>(
+        &self,
+        ctx: &Ctx<'js>,
+        function_key: FunctionKey,
+        arg: Value<'js>,
+    ) {
+        let function = {
+            let functions = self.functions.lock();
+            functions.get(function_key).cloned()
+        };
+        let Some(function) = function else {
+            warn!(
+                ?function_key,
+                "call_sync_with_arg: callback function is not registered"
+            );
+            return;
+        };
+        let function = match function.restore(ctx) {
+            Ok(function) => function,
+            Err(error) => {
+                warn!(
+                    ?function_key,
+                    error = %error,
+                    "call_sync_with_arg: failed to restore callback function"
+                );
+                return;
+            }
+        };
+        let arg_slice = [arg];
+        let mut args = Args::new(ctx.clone(), 1);
+        if let Err(error) = args.push_args(arg_slice.iter()) {
+            warn!(
+                ?function_key,
+                error = %error,
+                "call_sync_with_arg: failed to push argument"
+            );
+            return;
+        }
+        match function.call_arg::<Value<'_>>(args) {
+            Ok(result) => {
+                if let Some(promise) = result.as_promise() {
+                    let promise = promise.clone();
+                    ctx.spawn(async move {
+                        if let Err(error) = promise.into_future::<Value<'_>>().await {
+                            warn!(
+                                ?function_key,
+                                error = %error,
+                                "call_sync_with_arg: async callback failed"
+                            );
+                        }
+                    });
+                }
+            }
+            Err(error) => {
+                warn!(?function_key, error = %error, "call_sync_with_arg: callback failed");
+            }
+        }
+    }
+
     /// Call a registered function synchronously within the current JS context.
     ///
     /// Unlike `call`, this executes directly without going through the callback worker, so it
@@ -273,7 +335,7 @@ impl Callbacks {
     /// This is the first phase of the split-call pattern that avoids yielding inside
     /// `async_with!`. Call this synchronously within a non-yielding `async_with!` closure,
     /// then `.await` the returned receiver **outside** any `async_with!`, and finally call
-    /// [`retrieve_result`] inside another non-yielding `async_with!`.
+    /// `retrieve_result` inside another non-yielding `async_with!`.
     ///
     /// Returns `None` if the callback worker is not running.
     pub(crate) fn prepare_call<'js>(
@@ -310,7 +372,7 @@ impl Callbacks {
     /// Retrieve the result of a completed callback call.
     ///
     /// This is the third phase of the split-call pattern. Call this inside a non-yielding
-    /// `async_with!` closure after the receiver from [`prepare_call`] has resolved.
+    /// `async_with!` closure after the receiver from `prepare_call` has resolved.
     pub(crate) fn retrieve_result<'js>(
         &self,
         ctx: &Ctx<'js>,
