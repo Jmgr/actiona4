@@ -9,8 +9,11 @@ use tracing::instrument;
 pub(crate) mod platform;
 
 pub mod js;
+mod key_triggers;
+mod text_replacements;
 
 pub use enigo::Coordinate;
+use key_triggers::KeyExt;
 #[cfg(windows)]
 use platform::win::KeyboardImpl;
 #[cfg(unix)]
@@ -86,16 +89,16 @@ impl Keyboard {
     pub async fn wait_for_keys(
         &self,
         keys: &HashSet<Key>,
-        exclusive: bool, // TODO: options
+        exclusive: bool,
         cancellation_token: CancellationToken,
     ) -> Result<()> {
         if keys.is_empty() {
             return Ok(());
         }
 
-        // Expand generic modifier keys (e.g. Control -> {LControl, RControl}) so that
-        // either the left or right physical key satisfies the requirement.
-        let keys = expand_generic_modifiers(keys);
+        // Normalize any physical modifier keys to their generic form (e.g. LControl -> Control),
+        // matching how incoming events are normalized before comparison.
+        let keys: HashSet<Key> = keys.iter().map(|key| key.normalize()).collect();
 
         let guard = self.runtime.keyboard_keys();
         let mut receiver = guard.subscribe();
@@ -108,9 +111,9 @@ impl Keyboard {
             }
 
             // Normalize the incoming key so that e.g. LControl matches a Control requirement
-            let key = normalize_to_generic_modifier(event.key);
+            let key = event.key.normalize();
 
-            // Ignore keys that are not part of the list
+            // Ignore keys that are not part of the awaited set.
             if !keys.contains(&key) {
                 continue;
             }
@@ -119,9 +122,9 @@ impl Keyboard {
             if event.direction.is_release() {
                 pressed_keys.remove(&key);
                 continue;
+            } else {
+                pressed_keys.insert(key);
             }
-
-            pressed_keys.insert(key);
 
             if exclusive {
                 if pressed_keys == keys {
@@ -132,30 +135,6 @@ impl Keyboard {
             }
         }
     }
-}
-
-/// Map left/right physical modifier keys to their generic counterpart.
-/// Keys that are not side-specific modifiers are returned unchanged.
-const fn normalize_to_generic_modifier(key: Key) -> Key {
-    match key {
-        Key::LControl | Key::RControl => Key::Control,
-        Key::LShift | Key::RShift => Key::Shift,
-        Key::LMenu => Key::Alt,
-        #[cfg(target_os = "windows")]
-        Key::RMenu => Key::Alt,
-        _ => key,
-    }
-}
-
-/// Expand generic modifier keys in the set into their generic form only.
-/// For example, if the set contains `Key::Control`, it stays as `Key::Control`
-/// (and incoming events are normalized via [`normalize_to_generic_modifier`]).
-/// If the set contains `Key::LControl` specifically, it is replaced by the
-/// generic `Key::Control` so that either physical key can satisfy it.
-fn expand_generic_modifiers(keys: &HashSet<Key>) -> HashSet<Key> {
-    keys.iter()
-        .map(|key| normalize_to_generic_modifier(*key))
-        .collect()
 }
 
 #[cfg(test)]

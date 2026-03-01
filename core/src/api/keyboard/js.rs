@@ -4,7 +4,7 @@ use derive_more::Display;
 use enigo::Key;
 use macros::{FromJsObject, FromSerde, IntoSerde};
 use rquickjs::{
-    Class, Ctx, Exception, FromJs, IntoJs, JsLifetime, Object, Promise, Result, Value,
+    Class, Coerced, Ctx, Exception, FromJs, IntoJs, JsLifetime, Object, Promise, Result, Value,
     atom::PredefinedAtom,
     class::{JsClass, Readable, Trace, Tracer},
     function::Constructor,
@@ -12,16 +12,25 @@ use rquickjs::{
 };
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, EnumString};
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{debug, instrument};
 
+use super::{
+    key_triggers::{KeyTriggers, OnKeysOptions},
+    text_replacements::{OnTextOptions, Replacement, TextReplacements},
+};
 use crate::{
     IntoJsResult,
-    api::js::{
-        abort_controller::JsAbortSignal,
-        classes::{SingletonClass, register_enum, registration_target},
-        task::task_with_token,
+    api::{
+        image::js::JsImage,
+        js::{
+            abort_controller::JsAbortSignal,
+            classes::{SingletonClass, register_enum, register_host_class, registration_target},
+            event_handle::{HandleId, JsEventHandle},
+            task::task_with_token,
+        },
     },
-    runtime::Runtime,
+    runtime::{Runtime, WithUserData},
     types::display::display_with_type,
 };
 
@@ -79,7 +88,8 @@ impl From<JsDirection> for enigo::Direction {
     }
 }
 
-/// Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
+/// Controls keyboard input: typing text, pressing keys, waiting for key combinations,
+/// and registering text or key event listeners.
 ///
 /// ```ts
 /// // Type text
@@ -97,20 +107,42 @@ impl From<JsDirection> for enigo::Direction {
 /// // Wait for a key combination
 /// await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
 /// ```
+///
+/// ```ts
+/// // Replace typed text
+/// const h = keyboard.onText("btw", "by the way");
+/// h.cancel(); // unregister
+/// ```
+///
+/// ```ts
+/// // Run a callback when a key combo is pressed
+/// const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => console.println("triggered!"));
+/// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Keyboard")]
 pub struct JsKeyboard {
     inner: super::Keyboard,
+    text_replacements: TextReplacements,
+    key_triggers: KeyTriggers,
 }
 
 impl<'js> Trace<'js> for JsKeyboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
+impl<'js> Trace<'js> for TextReplacements {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl<'js> Trace<'js> for KeyTriggers {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
 impl SingletonClass<'_> for JsKeyboard {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         register_enum::<JsDirection>(ctx)?;
+        register_host_class::<JsEventHandle>(ctx)?;
 
         // Register the Key class first, then add enum variants as static properties.
         // Both JsKey and JsStandardKey use the name "Key", so we must define the class
@@ -136,14 +168,70 @@ impl SingletonClass<'_> for JsKeyboard {
 impl JsKeyboard {
     /// @skip
     #[instrument(skip_all)]
-    pub fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
+    pub fn new(
+        runtime: Arc<Runtime>,
+        task_tracker: TaskTracker,
+        cancellation_token: CancellationToken,
+    ) -> super::Result<Self> {
+        let text_replacements = TextReplacements::new(
+            runtime.clone(),
+            task_tracker.clone(),
+            cancellation_token.clone(),
+        );
+        let key_triggers = KeyTriggers::new(runtime.clone(), task_tracker, cancellation_token);
         Ok(Self {
             inner: super::Keyboard::new(runtime)?,
+            text_replacements,
+            key_triggers,
         })
     }
 }
 
-/// Options for waiting for key combinations.
+/// Options for `onText`.
+/// @options
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsOnTextOptions {
+    /// Erase the typed text before inserting the replacement.
+    /// Set to `false` to trigger an action without replacing the typed text.
+    /// @default `true`
+    pub erase: bool,
+
+    /// When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
+    /// Replacing with an image always uses the clipboard.
+    /// @default `false`
+    pub use_clipboard_for_text: bool,
+
+    /// Save and restore the clipboard contents around a clipboard-based replacement.
+    /// @default `true`
+    pub save_restore_clipboard: bool,
+
+    /// Abort signal to automatically cancel this listener when signalled.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
+}
+
+impl Default for JsOnTextOptions {
+    fn default() -> Self {
+        Self {
+            erase: true,
+            use_clipboard_for_text: false,
+            save_restore_clipboard: true,
+            signal: None,
+        }
+    }
+}
+
+impl From<JsOnTextOptions> for OnTextOptions {
+    fn from(options: JsOnTextOptions) -> Self {
+        Self {
+            erase: options.erase,
+            use_clipboard_for_text: options.use_clipboard_for_text,
+            save_restore_clipboard: options.save_restore_clipboard,
+        }
+    }
+}
+
+/// Options for key-based methods: `onKey`, `onKeys`, and `waitForKeys`.
 ///
 /// ```ts
 /// // Wait for exactly Ctrl+S and no other keys
@@ -151,14 +239,22 @@ impl JsKeyboard {
 /// ```
 /// @options
 #[derive(Clone, Debug, Default, FromJsObject)]
-pub struct JsWaitForKeysOptions {
-    /// Wait for exactly these keys and no other
+pub struct JsKeysOptions {
+    /// Require exactly these keys and no others to be pressed simultaneously.
     /// @default `false`
     pub exclusive: bool,
 
-    /// Abort signal to cancel the wait.
+    /// Abort signal to cancel the operation.
     /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
+}
+
+impl From<JsKeysOptions> for OnKeysOptions {
+    fn from(options: JsKeysOptions) -> Self {
+        Self {
+            exclusive: options.exclusive,
+        }
+    }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
@@ -251,7 +347,7 @@ impl JsKeyboard {
         &self,
         ctx: Ctx<'js>,
         keys: Vec<JsKey>,
-        options: Opt<JsWaitForKeysOptions>,
+        options: Opt<JsKeysOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
@@ -273,10 +369,187 @@ impl JsKeyboard {
         })
     }
 
+    /// Registers a listener that fires when the specified text is typed.
+    ///
+    /// By default the typed text is erased and replaced with `handler`. Pass
+    /// `{ erase: false }` to trigger an action without replacing the text.
+    ///
+    /// `handler` can be a string, an `Image`, or a callback returning either.
+    /// A callback that returns nothing (void) fires without inserting anything.
+    ///
+    /// ```ts
+    /// // Simple text replacement
+    /// const h = keyboard.onText("btw", "by the way");
+    ///
+    /// // Dynamic replacement via callback
+    /// const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
+    ///
+    /// // Trigger only — don't erase the typed text
+    /// const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
+    ///
+    /// h.cancel(); // unregister
+    /// ```
+    ///
+    /// @param text: string
+    /// @param handler: string | Image | (() => string | Image | void | Promise<string | Image | void>)
+    /// @param options?: OnTextOptions
+    /// @returns EventHandle
+    pub fn on_text<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        text: String,
+        handler: Value<'js>,
+        options: Opt<JsOnTextOptions>,
+    ) -> Result<JsEventHandle> {
+        if text.is_empty() {
+            return Err(Exception::throw_type(&ctx, "text must not be empty"));
+        }
+
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let id = HandleId::default();
+
+        let replacement = if let Some(func) = handler.as_function() {
+            let user_data = ctx.user_data();
+            let function_key = user_data.callbacks().register(&ctx, func.clone());
+            Replacement::JsCallback((user_data.script_engine().context(), function_key))
+        } else if let Ok(image) = handler.get::<JsImage>() {
+            Replacement::Image(image.into_inner())
+        } else {
+            Replacement::Text(handler.get::<Coerced<String>>()?.0)
+        };
+
+        self.text_replacements
+            .add(id, &text, replacement, options.into());
+
+        let handle = JsEventHandle::new(id, Arc::new(self.text_replacements.clone()));
+
+        Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
+
+        Ok(handle)
+    }
+
+    /// Registers a listener that fires when a single key is pressed.
+    ///
+    /// ```ts
+    /// const h = keyboard.onKey(Key.F5, () => console.println("F5 pressed!"));
+    /// h.cancel();
+    /// ```
+    ///
+    /// @param key: Key | string | number
+    /// @param callback: () => void | Promise<void>
+    /// @param options?: KeysOptions
+    /// @returns EventHandle
+    pub fn on_key<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        key: JsKey,
+        callback: Value<'js>,
+        options: Opt<JsKeysOptions>,
+    ) -> Result<JsEventHandle> {
+        let enigo_key = Key::try_from(key)
+            .map_err(|_| Exception::throw_message(&ctx, &format!("key {key} is not supported")))?;
+        self.register_key_trigger(ctx, vec![enigo_key], callback, options)
+    }
+
+    /// Registers a listener that fires when all specified keys are pressed simultaneously.
+    ///
+    /// ```ts
+    /// const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => {
+    ///   console.println("Ctrl+Alt+T pressed!");
+    /// });
+    ///
+    /// // Require exactly these keys and no others
+    /// const h2 = keyboard.onKeys([Key.Control, "s"], () => save(), { exclusive: true });
+    ///
+    /// h.cancel();
+    /// ```
+    ///
+    /// @param keys: (Key | string | number)[]
+    /// @param callback: () => void | Promise<void>
+    /// @param options?: KeysOptions
+    /// @returns EventHandle
+    pub fn on_keys<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        keys: Vec<JsKey>,
+        callback: Value<'js>,
+        options: Opt<JsKeysOptions>,
+    ) -> Result<JsEventHandle> {
+        let enigo_keys = keys
+            .into_iter()
+            .map(|key| {
+                Key::try_from(key).map_err(|_| {
+                    Exception::throw_message(&ctx, &format!("key {key} is not supported"))
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+        self.register_key_trigger(ctx, enigo_keys, callback, options)
+    }
+
+    /// Unregisters all event handles registered on this keyboard instance.
+    ///
+    /// ```ts
+    /// keyboard.onText("btw", "by the way");
+    /// keyboard.onKeys([Key.Control, "s"], () => save());
+    /// keyboard.clearEventHandles(); // removes both
+    /// ```
+    pub fn clear_event_handles(&self) {
+        self.text_replacements.clear();
+        self.key_triggers.clear();
+    }
+
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
         display_with_type("Keyboard", &self.inner)
+    }
+}
+
+impl JsKeyboard {
+    fn register_key_trigger<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        keys: Vec<Key>,
+        callback: Value<'js>,
+        options: Opt<JsKeysOptions>,
+    ) -> Result<JsEventHandle> {
+        if keys.is_empty() {
+            return Err(Exception::throw_type(&ctx, "keys must not be empty"));
+        }
+
+        let Some(func) = callback.as_function() else {
+            return Err(Exception::throw_type(&ctx, "callback must be a function"));
+        };
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let id = HandleId::default();
+        let user_data = ctx.user_data();
+        let function_key = user_data.callbacks().register(&ctx, func.clone());
+        let context = user_data.script_engine().context();
+        self.key_triggers
+            .add(id, keys, context, function_key, options.into());
+
+        let handle = JsEventHandle::new(id, Arc::new(self.key_triggers.clone()));
+        Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
+
+        Ok(handle)
+    }
+
+    fn cancel_handle_on_signal(
+        ctx: &Ctx<'_>,
+        signal: Option<JsAbortSignal>,
+        handle: JsEventHandle,
+    ) {
+        let Some(signal) = signal else {
+            return;
+        };
+
+        let token = signal.into_token();
+        ctx.user_data().task_tracker().spawn(async move {
+            token.cancelled().await;
+            handle.cancel();
+        });
     }
 }
 
@@ -2608,6 +2881,89 @@ mod tests {
                     r#"
                     await keyboard.waitForKeys(["a", "z"]);
                     //console.println("key", key);
+                    console.println("END");
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_text() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Registering keyboard.onText handlers.");
+                    console.println("Type `btw` to replace it, and `hello` to trigger a callback without erase.");
+                    console.println("Press Escape to end this manual test.");
+
+                    const replacementHandle = keyboard.onText("btw", "by the way");
+                    const callbackHandle = keyboard.onText(
+                        "hello",
+                        () => console.println("onText callback fired"),
+                        { erase: false },
+                    );
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    replacementHandle.cancel();
+                    callbackHandle.cancel();
+                    console.println("END");
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_key() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Registering keyboard.onKey for F8.");
+                    console.println("Press Escape to end this manual test.");
+                    const handle = keyboard.onKey(Key.F8, async () => {await sleep(250); console.println("F8 pressed");});
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    handle.cancel();
+                    console.println("END");
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_keys_and_clear_event_handles() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Registering keyboard.onKeys handlers.");
+                    console.println("Try Ctrl+Alt+T and Ctrl+S (exclusive).");
+                    console.println("Press Escape to end this manual test.");
+
+                    keyboard.onKeys([Key.Control, Key.Alt, "t"], () => {
+                        console.println("Ctrl+Alt+T fired");
+                    });
+                    keyboard.onKeys(
+                        [Key.Control, "s"],
+                        () => console.println("Ctrl+S exclusive fired"),
+                        { exclusive: true },
+                    );
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    keyboard.clearEventHandles();
                     console.println("END");
                 "#,
                 )

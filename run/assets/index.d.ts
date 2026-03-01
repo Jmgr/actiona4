@@ -4698,53 +4698,6 @@ declare class Filesystem {
     toString(): string;
 }
 /**
- * The global hotstrings singleton for registering text-replacement triggers.
- * 
- * When the user types a registered source string, it is automatically replaced
- * with the specified replacement (text, callback, or image).
- * 
- * ```ts
- * // Simple text replacement
- * hotstrings.add("btw", "by the way");
- * 
- * // Dynamic replacement via callback
- * hotstrings.add("time", () => new Date().toLocaleTimeString());
- * 
- * // Async callback
- * hotstrings.add("rand", async () => "" + random.integer(0, 99999));
- * 
- * // Remove a hotstring
- * hotstrings.remove("btw");
- * ```
- * @category Hotstrings
- */
-declare interface Hotstrings {
-    /**
-     * Registers a hotstring. When the user types `source`, it is replaced with `replacement`.
-     * 
-     * The replacement can be a string, an `Image`, or a callback returning either.
-     * 
-     * ```ts
-     * // With options: don't erase the typed key
-     * hotstrings.add("sig", "Best regards,\nJohn", { eraseKey: false });
-     * ```
-     */
-    add(source: string, replacement: string | (() => string | Promise<string>) | Image | (() => Image | Promise<Image>), options?: HotstringOptions): void;
-    /**
-     * Removes a previously registered hotstring.
-     */
-    remove(source: string): void;
-    /**
-     * Removes all registered hotstrings.
-     */
-    clear(): void;
-    toString(): string;
-}
-/**
- * @category Hotstrings
- */
-declare const hotstrings: Hotstrings;
-/**
  * Options for resizing an image.
  * 
  * ```ts
@@ -5632,7 +5585,25 @@ declare interface Concurrency {
     race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
 }
 /**
- * Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
+ * A handle to a registered event listener. Call `.cancel()` to unregister it.
+ * 
+ * ```ts
+ * const handle = keyboard.onText("btw", "by the way");
+ * // ... later:
+ * handle.cancel();
+ * ```
+ * @category Keyboard
+ */
+declare interface EventHandle {
+    /**
+     * Unregisters this event listener.
+     */
+    cancel(): void;
+    toString(): string;
+}
+/**
+ * Controls keyboard input: typing text, pressing keys, waiting for key combinations,
+ * and registering text or key event listeners.
  * 
  * ```ts
  * // Type text
@@ -5649,6 +5620,17 @@ declare interface Concurrency {
  * ```ts
  * // Wait for a key combination
  * await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
+ * ```
+ * 
+ * ```ts
+ * // Replace typed text
+ * const h = keyboard.onText("btw", "by the way");
+ * h.cancel(); // unregister
+ * ```
+ * 
+ * ```ts
+ * // Run a callback when a key combo is pressed
+ * const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => console.println("triggered!"));
  * ```
  * @category Keyboard
  */
@@ -5692,6 +5674,63 @@ declare interface Keyboard {
      * ```
      */
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
+    /**
+     * Registers a listener that fires when the specified text is typed.
+     * 
+     * By default the typed text is erased and replaced with `handler`. Pass
+     * `{ erase: false }` to trigger an action without replacing the text.
+     * 
+     * `handler` can be a string, an `Image`, or a callback returning either.
+     * A callback that returns nothing (void) fires without inserting anything.
+     * 
+     * ```ts
+     * // Simple text replacement
+     * const h = keyboard.onText("btw", "by the way");
+     * 
+     * // Dynamic replacement via callback
+     * const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
+     * 
+     * // Trigger only — don't erase the typed text
+     * const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
+     * 
+     * h.cancel(); // unregister
+     * ```
+     */
+    onText(text: string, handler: string | Image | (() => string | Image | void | Promise<string | Image | void>), options?: OnTextOptions): EventHandle;
+    /**
+     * Registers a listener that fires when a single key is pressed.
+     * 
+     * ```ts
+     * const h = keyboard.onKey(Key.F5, () => console.println("F5 pressed!"));
+     * h.cancel();
+     * ```
+     */
+    onKey(key: Key | string | number, callback: () => void | Promise<void>, options?: KeysOptions): EventHandle;
+    /**
+     * Registers a listener that fires when all specified keys are pressed simultaneously.
+     * 
+     * ```ts
+     * const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => {
+     *   console.println("Ctrl+Alt+T pressed!");
+     * });
+     * 
+     * // Require exactly these keys and no others
+     * const h2 = keyboard.onKeys([Key.Control, "s"], () => save(), { exclusive: true });
+     * 
+     * h.cancel();
+     * ```
+     */
+    onKeys(keys: (Key | string | number)[], callback: () => void | Promise<void>, options?: KeysOptions): EventHandle;
+    /**
+     * Unregisters all event handles registered on this keyboard instance.
+     * 
+     * ```ts
+     * keyboard.onText("btw", "by the way");
+     * keyboard.onKeys([Key.Control, "s"], () => save());
+     * keyboard.clearEventHandles(); // removes both
+     * ```
+     */
+    clearEventHandles(): void;
     toString(): string;
 }
 /**
@@ -5699,7 +5738,36 @@ declare interface Keyboard {
  */
 declare const keyboard: Keyboard;
 /**
- * Options for waiting for key combinations.
+ * Options for `onText`.
+ * @category Keyboard
+ * @expand
+ */
+declare interface OnTextOptions {
+    /**
+     * Erase the typed text before inserting the replacement.
+     * Set to `false` to trigger an action without replacing the typed text.
+     * @defaultValue `true`
+     */
+    erase?: boolean;
+    /**
+     * When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
+     * Replacing with an image always uses the clipboard.
+     * @defaultValue `false`
+     */
+    useClipboardForText?: boolean;
+    /**
+     * Save and restore the clipboard contents around a clipboard-based replacement.
+     * @defaultValue `true`
+     */
+    saveRestoreClipboard?: boolean;
+    /**
+     * Abort signal to automatically cancel this listener when signalled.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Options for key-based methods: `onKey`, `onKeys`, and `waitForKeys`.
  * 
  * ```ts
  * // Wait for exactly Ctrl+S and no other keys
@@ -5708,14 +5776,14 @@ declare const keyboard: Keyboard;
  * @category Keyboard
  * @expand
  */
-declare interface WaitForKeysOptions {
+declare interface KeysOptions {
     /**
-     * Wait for exactly these keys and no other
+     * Require exactly these keys and no others to be pressed simultaneously.
      * @defaultValue `false`
      */
     exclusive?: boolean;
     /**
-     * Abort signal to cancel the wait.
+     * Abort signal to cancel the operation.
      * @defaultValue `undefined`
      */
     signal?: AbortSignal;
@@ -9021,29 +9089,6 @@ declare interface WindowHandle {
      * Returns a string representation of this window handle.
      */
     toString(): string;
-}
-/**
- * Hotstring options
- * @category Hotstrings
- * @expand
- */
-declare interface HotstringOptions {
-    /**
-     * Erase the key first before replacing it with the replacement content.
-     * @defaultValue `true`
-     */
-    eraseKey?: boolean;
-    /**
-     * When replacing with text, save it to the clipboard then simulate Ctrl+V to paste.
-     * Replacing with an image always uses the clipboard.
-     * @defaultValue `false`
-     */
-    useClipboardForText?: boolean;
-    /**
-     * Try to save and restore the clipboard's contents.
-     * @defaultValue `true`
-     */
-    saveRestoreClipboard?: boolean;
 }
 /**
  * Options for smooth mouse movement.

@@ -9,7 +9,6 @@ pub mod directory;
 pub mod displays;
 pub mod file;
 pub mod filesystem;
-pub mod hotstrings;
 pub mod image;
 pub mod js;
 pub mod keyboard;

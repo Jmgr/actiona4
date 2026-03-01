@@ -3,5 +3,6 @@ pub mod classes;
 pub mod concurrency;
 pub mod date;
 pub mod duration;
+pub mod event_handle;
 pub mod global;
 pub mod task;

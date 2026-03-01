@@ -42,7 +42,6 @@ use crate::{
         displays::{Displays, js::JsDisplays},
         file::js::JsFile,
         filesystem::js::JsFilesystem,
-        hotstrings::js::JsHotstrings,
         image::{find_image, js::JsImage},
         js::{
             abort_controller::{JsAbortController, JsAbortSignal},
@@ -330,17 +329,16 @@ impl Runtime {
 
         let app = JsApp::new(runtime.clone());
         let mouse = JsMouse::new(runtime.clone()).await?;
-        let keyboard = JsKeyboard::new(runtime.clone())?;
+        let keyboard = JsKeyboard::new(
+            runtime.clone(),
+            task_tracker.clone(),
+            cancellation_token.clone(),
+        )?;
         let console = JsConsole::default();
         let js_displays = JsDisplays::new(displays.clone())?;
         let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
         let clipboard = JsClipboard::new(clipboard);
         let system = JsSystem::new(task_tracker.clone()).await?;
-        let hotstrings = JsHotstrings::new(
-            runtime.clone(),
-            task_tracker.clone(),
-            cancellation_token.clone(),
-        );
         let audio = JsAudio::new(
             cancellation_token.clone(),
             task_tracker.clone(),
@@ -391,7 +389,6 @@ impl Runtime {
                     clipboard,
                     task_tracker,
                     system,
-                    hotstrings,
                     audio,
                     process,
                     notification,
@@ -419,7 +416,6 @@ impl Runtime {
         clipboard: JsClipboard,
         task_tracker: TaskTracker,
         system: JsSystem,
-        hotstrings: JsHotstrings,
         audio: JsAudio,
         process: JsProcess,
         notification: JsNotification,
@@ -458,7 +454,6 @@ impl Runtime {
         register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
         register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
         register_singleton_class::<JsSystem>(&ctx, system)?;
-        register_singleton_class::<JsHotstrings>(&ctx, hotstrings)?;
         register_singleton_class::<JsAudio>(&ctx, audio)?;
         register_singleton_class::<JsProcess>(&ctx, process)?;
         register_singleton_class::<JsNotification>(&ctx, notification)?;

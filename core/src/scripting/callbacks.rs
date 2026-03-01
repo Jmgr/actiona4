@@ -216,6 +216,58 @@ impl Callbacks {
         }
     }
 
+    /// Call a registered function synchronously within the current JS context.
+    ///
+    /// Unlike [`call`], this executes directly without going through the callback worker, so it
+    /// does not yield inside an `async_with!` block. This preserves the rquickjs scheduler's
+    /// queue waker registration, which `call` would otherwise overwrite.
+    ///
+    /// If the callback returns a Promise it is spawned into the scheduler for background
+    /// execution.
+    pub fn call_sync<'js>(&self, ctx: &Ctx<'js>, function_key: FunctionKey) {
+        let function = {
+            let functions = self.functions.lock();
+            functions.get(function_key).cloned()
+        };
+        let Some(function) = function else {
+            warn!(
+                ?function_key,
+                "call_sync: callback function is not registered"
+            );
+            return;
+        };
+        let function = match function.restore(ctx) {
+            Ok(function) => function,
+            Err(error) => {
+                warn!(
+                    ?function_key,
+                    error = %error,
+                    "call_sync: failed to restore callback function"
+                );
+                return;
+            }
+        };
+        match function.call_arg::<Value<'_>>(Args::new(ctx.clone(), 0)) {
+            Ok(result) => {
+                if let Some(promise) = result.as_promise() {
+                    let promise = promise.clone();
+                    ctx.spawn(async move {
+                        if let Err(error) = promise.into_future::<Value<'_>>().await {
+                            warn!(
+                                ?function_key,
+                                error = %error,
+                                "call_sync: async callback failed"
+                            );
+                        }
+                    });
+                }
+            }
+            Err(error) => {
+                warn!(?function_key, error = %error, "call_sync: callback failed");
+            }
+        }
+    }
+
     pub fn register<'js>(&self, ctx: &Ctx<'js>, function: Function<'js>) -> FunctionKey {
         let mut functions = self.functions.lock();
         let key = functions.insert(Persistent::save(ctx, function));

@@ -8,7 +8,6 @@ use derive_where::derive_where;
 use enigo::{Direction, Key, Keyboard};
 use indexmap::IndexMap;
 use itertools::Itertools;
-use macros::FromJsObject;
 use parking_lot::Mutex;
 use rquickjs::{AsyncContext, Coerced, async_with};
 use tokio::select;
@@ -17,15 +16,16 @@ use tracing::warn;
 use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
-    api::image::{Image, js::JsImage},
+    api::{
+        image::{Image, js::JsImage},
+        js::event_handle::{HandleId, HandleRegistry},
+    },
     runtime::{
         Runtime, WithUserData,
         events::{KeyboardKeyEvent, KeyboardTextEvent},
     },
     scripting::callbacks::FunctionKey,
 };
-
-pub mod js;
 
 #[derive(Clone)]
 #[derive_where(Debug)]
@@ -35,52 +35,72 @@ pub enum Replacement {
     JsCallback(#[derive_where(skip)] (AsyncContext, FunctionKey)),
 }
 
-/// Hotstring options
+/// Options for `onText`.
 /// @options
-#[derive(Clone, Copy, Debug, FromJsObject)]
-pub struct HotstringOptions {
-    /// Erase the key first before replacing it with the replacement content.
+#[derive(Clone, Copy, Debug)]
+pub struct OnTextOptions {
+    /// Erase the typed text before inserting the replacement.
+    /// Set to `false` to trigger an action without replacing the typed text.
     /// @default `true`
-    pub erase_key: bool,
+    pub erase: bool,
 
-    /// When replacing with text, save it to the clipboard then simulate Ctrl+V to paste.
+    /// When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
     /// Replacing with an image always uses the clipboard.
     /// @default `false`
     pub use_clipboard_for_text: bool,
 
-    /// Try to save and restore the clipboard's contents.
+    /// Save and restore the clipboard contents around a clipboard-based replacement.
     /// @default `true`
     pub save_restore_clipboard: bool,
 }
 
-impl Default for HotstringOptions {
+impl Default for OnTextOptions {
     fn default() -> Self {
         Self {
-            erase_key: true,
+            erase: true,
             use_clipboard_for_text: false,
             save_restore_clipboard: true,
         }
     }
 }
 
+/// One registered handler for a given text trigger.
+struct TextHandler {
+    id: HandleId,
+    replacement: Replacement,
+    options: OnTextOptions,
+}
+
+impl std::fmt::Debug for TextHandler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TextHandler")
+            .field("id", &self.id)
+            .field("options", &self.options)
+            .finish_non_exhaustive()
+    }
+}
+
+/// Registry: sorted longest-first by trigger string, each entry has ≥1 handlers.
+type Registry = IndexMap<String, Vec<TextHandler>>;
+
 #[derive(Clone, Debug)]
-pub struct Hotstrings {
-    hotstrings: Arc<Mutex<IndexMap<String, (Replacement, HotstringOptions)>>>,
+pub struct TextReplacements {
+    registry: Arc<Mutex<Registry>>,
     max_graphemes: Arc<AtomicUsize>,
     runtime: Arc<Runtime>,
 }
 
-impl Hotstrings {
+impl TextReplacements {
     pub fn new(
         runtime: Arc<Runtime>,
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
-        let hotstrings = Arc::new(Mutex::new(IndexMap::default()));
+        let registry: Arc<Mutex<Registry>> = Arc::new(Mutex::new(IndexMap::default()));
         let max_graphemes = Arc::new(AtomicUsize::new(0));
 
         let local_runtime = runtime.clone();
-        let local_hotstrings = hotstrings.clone();
+        let local_registry = registry.clone();
         let local_max_graphemes = max_graphemes.clone();
 
         task_tracker.spawn(async move {
@@ -95,17 +115,11 @@ impl Hotstrings {
                 select! {
                     _ = cancellation_token.cancelled() => { break; }
                     text = text_receiver.recv() => {
-                        let Ok(text) = text else {
-                            break;
-                        };
-
-                        Self::on_text(text, &mut buffer, local_max_graphemes.clone(), local_hotstrings.clone(), local_runtime.clone()).await?;
+                        let Ok(text) = text else { break; };
+                        Self::on_text(text, &mut buffer, local_max_graphemes.clone(), local_registry.clone(), local_runtime.clone()).await?;
                     },
                     key = keys_receiver.recv() => {
-                        let Ok(key) = key else {
-                            break;
-                        };
-
+                        let Ok(key) = key else { break; };
                         Self::on_key(key, &mut buffer).await?;
                     },
                 }
@@ -115,7 +129,7 @@ impl Hotstrings {
         });
 
         Self {
-            hotstrings,
+            registry,
             max_graphemes,
             runtime,
         }
@@ -125,13 +139,11 @@ impl Hotstrings {
         if event.is_injected || event.direction.is_release() {
             return Ok(());
         }
-
         match event.key {
             Key::Backspace => buffer.pop(),
             Key::LeftArrow | Key::RightArrow | Key::UpArrow | Key::DownArrow => buffer.clear(),
             _ => {}
         }
-
         Ok(())
     }
 
@@ -139,137 +151,125 @@ impl Hotstrings {
         event: KeyboardTextEvent,
         buffer: &mut StringRingBuffer,
         max_graphemes: Arc<AtomicUsize>,
-        hotstrings: Arc<Mutex<IndexMap<String, (Replacement, HotstringOptions)>>>,
+        registry: Arc<Mutex<Registry>>,
         runtime: Arc<Runtime>,
     ) -> Result<()> {
         if event.is_injected {
             return Ok(());
         }
 
-        // No hotstrings
-        let max_graphemes = max_graphemes.load(Ordering::Relaxed);
-
-        if max_graphemes == 0 {
+        let max_graphemes_val = max_graphemes.load(Ordering::Relaxed);
+        if max_graphemes_val == 0 {
             buffer.clear();
             return Ok(());
         }
 
-        let (key, replacement, options) = {
-            let hotstrings = hotstrings.lock();
+        buffer.add_char_and_set_max_graphemes(event.character, max_graphemes_val);
 
-            let key_char = event.character;
-            buffer.add_char_and_set_max_graphemes(key_char, max_graphemes);
-
-            // Look for the longest match
-            let hotstring = hotstrings
+        // Collect all handlers for the longest matching trigger.
+        // The registry is sorted longest-first, so `.find()` gives that trigger directly.
+        let matches: Vec<(String, Replacement, OnTextOptions)> = {
+            let reg = registry.lock();
+            let Some((trigger, handlers)) = reg
                 .iter()
-                .find(|(key, _)| buffer.value().ends_with(*key));
-
-            let Some((key, (replacement, options))) = hotstring else {
-                // No match
+                .find(|(trigger, _)| buffer.value().ends_with(trigger.as_str()))
+            else {
                 return Ok(());
             };
 
-            (key.clone(), replacement.clone(), *options)
+            handlers
+                .iter()
+                .map(|handler| {
+                    (
+                        trigger.clone(),
+                        handler.replacement.clone(),
+                        handler.options,
+                    )
+                })
+                .collect()
         };
 
-        enum ReplacementData {
-            Text(String),
-            Image(Image),
-        }
-
-        let (backspaces, replacement_data) = match replacement {
-            Replacement::Text(text) => {
-                let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
-                let backspaces = key.graphemes(true).count() - grapheme_prefix_len;
-                let text = text.graphemes(true).collect_vec();
-                let suffix = text[grapheme_prefix_len..].concat();
-
-                (backspaces, ReplacementData::Text(suffix))
-            }
-            Replacement::Image(image) => {
-                (key.graphemes(true).count(), ReplacementData::Image(image))
-            }
-            Replacement::JsCallback((context, function_key)) => {
-                let key_for_callback = key.clone();
-                let replacement_data = async_with!(context => |ctx| {
-                    let user_data = ctx.user_data();
-                    let callbacks = user_data.callbacks();
-                    let result = match callbacks.call(&ctx, function_key, Vec::new()).await {
-                        Ok(result) => result,
-                        Err(error) => {
-                            warn!(
-                                key = %key_for_callback,
-                                ?function_key,
-                                error = %error,
-                                fallback = %key_for_callback,
-                                "hotstring callback failed; keeping typed text"
-                            );
-                            // Keep the typed text unchanged if callback execution fails.
-                            return ReplacementData::Text(key_for_callback.clone());
-                        }
-                    };
-                    #[allow(clippy::option_if_let_else)]
-                    if let Ok(image) = result.get::<JsImage>() {
-                        ReplacementData::Image(image.into_inner())
-                    } else {
-                        match result.get::<Coerced<String>>() {
-                            Ok(text) => ReplacementData::Text(text.0),
+        for (trigger, replacement, options) in matches {
+            let replacement_data = match replacement {
+                Replacement::Text(text) => ReplacementData::Text(text),
+                Replacement::Image(image) => ReplacementData::Image(image),
+                Replacement::JsCallback((context, function_key)) => {
+                    let trigger_for_callback = trigger.clone();
+                    let callback_outcome = async_with!(context => |ctx| {
+                        let user_data = ctx.user_data();
+                        let callbacks = user_data.callbacks();
+                        let value = match callbacks.call(&ctx, function_key, Vec::new()).await {
+                            Ok(value) => value,
                             Err(error) => {
                                 warn!(
-                                    key = %key_for_callback,
+                                    trigger = %trigger_for_callback,
                                     ?function_key,
                                     error = %error,
-                                    fallback = %key_for_callback,
-                                    "hotstring callback did not return image or string; keeping typed text"
+                                    "onText callback failed; keeping typed text"
                                 );
-                                ReplacementData::Text(key_for_callback.clone())
+                                return CallbackOutcome::KeepTypedText;
+                            }
+                        };
+
+                        if value.is_undefined() || value.is_null() {
+                            // void return — callback ran, nothing to insert.
+                            return CallbackOutcome::Apply(ReplacementData::None);
+                        }
+
+                        if let Ok(image) = value.get::<JsImage>() {
+                            return CallbackOutcome::Apply(ReplacementData::Image(image.into_inner()));
+                        }
+
+                        match value.get::<Coerced<String>>() {
+                            Ok(text) => CallbackOutcome::Apply(ReplacementData::Text(text.0)),
+                            Err(error) => {
+                                warn!(
+                                    trigger = %trigger_for_callback,
+                                    ?function_key,
+                                    error = %error,
+                                    "onText callback did not return image, string, or void; keeping typed text"
+                                );
+                                CallbackOutcome::KeepTypedText
                             }
                         }
-                    }
-                })
-                .await;
+                    })
+                    .await;
 
-                match replacement_data {
-                    ReplacementData::Text(text) => {
-                        // TODO: remove copy paste
-                        let grapheme_prefix_len = grapheme_prefix_len(&key, &text);
-                        let backspaces = key.graphemes(true).count() - grapheme_prefix_len; // + 1; // We add 1 for the trigger char
-                        let text = text.graphemes(true).collect_vec();
-                        let suffix = text[grapheme_prefix_len..].concat();
+                    let CallbackOutcome::Apply(replacement_data) = callback_outcome else {
+                        continue;
+                    };
 
-                        (backspaces, ReplacementData::Text(suffix))
-                    }
-                    ReplacementData::Image(image) => {
-                        (key.graphemes(true).count(), ReplacementData::Image(image))
-                    }
+                    replacement_data
                 }
-            }
-        };
+            };
+            let (backspaces, replacement_data) =
+                replacement_plan(&trigger, replacement_data, options.erase);
 
-        {
             let enigo = runtime.enigo();
             let mut enigo = enigo.lock();
 
-            if options.erase_key {
-                for _ in 0..backspaces {
-                    enigo.key(Key::Backspace, Direction::Click)?;
-                }
+            // The text event can arrive before the physical key is fully released.
+            // Releasing the trigger character first avoids dropped characters in the
+            // replacement when it contains the same key (e.g. "btw" -> "by the way").
+            let _ = enigo.key(Key::Unicode(event.character), Direction::Release);
+
+            for _ in 0..backspaces {
+                enigo.key(Key::Backspace, Direction::Click)?;
             }
 
             match replacement_data {
-                ReplacementData::Text(replacement) => {
+                ReplacementData::None => {}
+                ReplacementData::Text(text) => {
                     if options.use_clipboard_for_text {
                         let clipboard = runtime.clipboard();
-
-                        let data = if options.save_restore_clipboard {
+                        let saved = if options.save_restore_clipboard {
                             match clipboard.save(None) {
                                 Ok(data) => Some(data),
                                 Err(error) => {
                                     warn!(
-                                        key = %key,
+                                        trigger = %trigger,
                                         error = %error,
-                                        "failed to save clipboard before text hotstring replacement"
+                                        "failed to save clipboard before text replacement"
                                     );
                                     None
                                 }
@@ -277,105 +277,118 @@ impl Hotstrings {
                         } else {
                             None
                         };
-
-                        // Copy the text to the clipboard
-                        clipboard.set_text(&replacement, None)?;
-
-                        // Paste it
+                        clipboard.set_text(&text, None)?;
                         enigo.key(Key::Control, Direction::Press)?;
                         enigo.key(Key::Unicode('v'), Direction::Press)?;
                         enigo.key(Key::Unicode('v'), Direction::Release)?;
                         enigo.key(Key::Control, Direction::Release)?;
-
-                        if let Some(data) = data
+                        if let Some(data) = saved
                             && let Err(error) = clipboard.restore(data, None)
                         {
                             warn!(
-                                key = %key,
+                                trigger = %trigger,
                                 error = %error,
-                                "failed to restore clipboard after text hotstring replacement"
+                                "failed to restore clipboard after text replacement"
                             );
                         }
                     } else {
-                        // Write the replacement
-                        enigo.text(&replacement)?;
+                        enigo.text(&text)?;
                     }
                 }
-                ReplacementData::Image(dynamic_image) => {
+                ReplacementData::Image(image) => {
                     let clipboard = runtime.clipboard();
-
-                    let data = if options.save_restore_clipboard {
+                    let saved = if options.save_restore_clipboard {
                         Some(clipboard.save(None)?)
                     } else {
                         None
                     };
-
-                    // Copy the image to the clipboard
-                    clipboard.set_image(dynamic_image, None)?;
-
-                    // Paste it
+                    clipboard.set_image(image, None)?;
                     enigo.key(Key::Control, Direction::Press)?;
                     enigo.key(Key::Unicode('v'), Direction::Press)?;
                     enigo.key(Key::Unicode('v'), Direction::Release)?;
                     enigo.key(Key::Control, Direction::Release)?;
-
-                    if let Some(data) = data {
+                    if let Some(data) = saved {
                         clipboard.restore(data, None)?;
                     }
                 }
             }
-        };
+        }
 
-        // Clear the buffer to prevent firing again
         buffer.clear();
-
         Ok(())
     }
 
-    pub fn add(&self, key: &str, replacement: Replacement, options: HotstringOptions) {
-        let mut hotstrings = self.hotstrings.lock();
+    pub fn add(
+        &self,
+        id: HandleId,
+        trigger: &str,
+        replacement: Replacement,
+        options: OnTextOptions,
+    ) {
+        let mut reg = self.registry.lock();
+        let was_empty = reg.is_empty();
 
-        // Make sure hotstrings are sorted by key length in decreasing order.
-        hotstrings.insert_sorted_by(key.to_string(), (replacement, options), |a, _, b, _| {
-            b.graphemes(true).count().cmp(&a.graphemes(true).count())
-        });
+        let is_new_trigger = !reg.contains_key(trigger);
+        reg.entry(trigger.to_string())
+            .or_default()
+            .push(TextHandler {
+                id,
+                replacement,
+                options,
+            });
 
-        let max_graphemes = hotstrings
+        // Keep the IndexMap sorted longest-first only when a new trigger key was added.
+        if is_new_trigger {
+            reg.sort_by(|a, _, b, _| b.graphemes(true).count().cmp(&a.graphemes(true).count()));
+        }
+
+        let max = reg
             .keys()
             .map(|key| key.graphemes(true).count())
             .max()
-            .expect("hotstrings should contain at least one entry");
+            .unwrap_or(0);
+        self.max_graphemes.store(max, Ordering::Relaxed);
 
-        self.max_graphemes.store(max_graphemes, Ordering::Relaxed);
-
-        if hotstrings.len() == 1 {
+        if was_empty {
             self.runtime.increase_background_tasks_counter();
         }
     }
 
-    pub fn remove(&self, key: &str) {
-        let mut hotstrings = self.hotstrings.lock();
+    pub fn remove(&self, id: HandleId) {
+        let mut reg = self.registry.lock();
+        let was_empty = reg.is_empty();
 
-        hotstrings.shift_remove(key);
+        reg.retain(|_, handlers| {
+            handlers.retain(|h| h.id != id);
+            !handlers.is_empty()
+        });
 
-        self.max_graphemes.store(0, Ordering::Relaxed);
+        let max = reg
+            .keys()
+            .map(|key| key.graphemes(true).count())
+            .max()
+            .unwrap_or(0);
+        self.max_graphemes.store(max, Ordering::Relaxed);
 
-        if hotstrings.is_empty() {
+        if !was_empty && reg.is_empty() {
             self.runtime.decrease_background_tasks_counter();
         }
     }
 
     pub fn clear(&self) {
-        let mut hotstrings = self.hotstrings.lock();
-
-        if hotstrings.is_empty() {
+        let mut reg = self.registry.lock();
+        if reg.is_empty() {
             return;
         }
-
-        hotstrings.clear();
-
+        reg.clear();
         self.max_graphemes.store(0, Ordering::Relaxed);
         self.runtime.decrease_background_tasks_counter();
+    }
+}
+
+impl HandleRegistry for TextReplacements {
+    fn remove_handle(&self, id: HandleId) {
+        self.remove(id);
     }
 }
 
@@ -384,6 +397,39 @@ fn grapheme_prefix_len(left: &str, right: &str) -> usize {
         .zip(right.graphemes(true))
         .take_while(|(a, b)| a == b)
         .count()
+}
+
+enum ReplacementData {
+    Text(String),
+    Image(Image),
+    None,
+}
+
+enum CallbackOutcome {
+    Apply(ReplacementData),
+    KeepTypedText,
+}
+
+fn replacement_plan(
+    trigger: &str,
+    replacement_data: ReplacementData,
+    erase: bool,
+) -> (usize, ReplacementData) {
+    if !erase {
+        return (0, replacement_data);
+    }
+
+    let trigger_grapheme_count = trigger.graphemes(true).count();
+    match replacement_data {
+        ReplacementData::Text(text) => {
+            let common_prefix_len = grapheme_prefix_len(trigger, &text);
+            let backspaces = trigger_grapheme_count.saturating_sub(common_prefix_len);
+            let suffix = text.graphemes(true).skip(common_prefix_len).collect();
+            (backspaces, ReplacementData::Text(suffix))
+        }
+        ReplacementData::Image(image) => (trigger_grapheme_count, ReplacementData::Image(image)),
+        ReplacementData::None => (trigger_grapheme_count, ReplacementData::None),
+    }
 }
 
 #[derive(Debug, Default)]
@@ -429,7 +475,6 @@ impl StringRingBuffer {
         if self.buffer.is_empty() {
             return;
         }
-        // Find the start byte index and the grapheme slice of the last cluster.
         let (start, _) = match self.buffer.grapheme_indices(true).next_back() {
             Some(pair) => pair,
             None => return,
@@ -450,11 +495,9 @@ impl StringRingBuffer {
             self.buffer.clear();
             return;
         }
-
         if self.buffer.graphemes(true).count() <= self.max_graphemes {
             return;
         }
-
         let mut graphemes = self.buffer.graphemes(true).collect_vec();
         graphemes.drain(0..(graphemes.len() - self.max_graphemes));
         self.buffer = graphemes.concat();
@@ -463,11 +506,6 @@ impl StringRingBuffer {
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
-
-    use image::ImageReader;
-    use tokio::time::sleep;
-    use tracing_test::traced_test;
     use unicode_segmentation::UnicodeSegmentation;
 
     use super::*;
@@ -483,25 +521,19 @@ mod tests {
     #[test]
     fn ascii_basic() {
         let mut ring_buffer = StringRingBuffer::new(3);
-
         ring_buffer.add_str("abc");
         assert_eq!(ring_buffer.value(), "abc");
-
         ring_buffer.add_char('d');
         assert_eq!(ring_buffer.value(), "bcd");
-
         ring_buffer.add_str("ef");
         assert_eq!(ring_buffer.value(), "def");
     }
 
     #[test]
     fn combining_mark_counts_as_one_grapheme() {
-        // 'e' + COMBINING CIRCUMFLEX ACCENT -> "ê" as one grapheme
         let mut ring_buffer = StringRingBuffer::new(1);
-
         let composed = "e\u{0302}";
         assert_eq!(composed.graphemes(true).count(), 1);
-
         ring_buffer.add_str(composed);
         assert_eq!(ring_buffer.value().graphemes(true).count(), 1);
         assert_eq!(ring_buffer.value(), composed);
@@ -509,46 +541,35 @@ mod tests {
 
     #[test]
     fn emoji_with_skin_tone_is_one_grapheme() {
-        // 👍🏽 is a single grapheme (base + modifier)
         let mut ring_buffer = StringRingBuffer::new(1);
         let grapheme = "👍🏽";
         assert_eq!(grapheme.graphemes(true).count(), 1);
-
         ring_buffer.add_str(grapheme);
         assert_eq!(ring_buffer.value(), grapheme);
-
-        // Add another grapheme and ensure old one is dropped when max=1
         ring_buffer.add_str("A");
         assert_eq!(ring_buffer.value(), "A");
     }
 
     #[test]
     fn zwj_sequence_is_one_grapheme() {
-        // Family emoji is a ZWJ sequence: still one grapheme
         let mut ring_buffer = StringRingBuffer::new(2);
         let emoji = "👨‍👩‍👧‍👦";
         assert_eq!(emoji.graphemes(true).count(), 1);
-
         ring_buffer.add_str(emoji);
         ring_buffer.add_str("X");
-        // Keep last 2 graphemes: [family, X]
         assert_eq!(ring_buffer.value(), format!("{emoji}X"));
     }
 
     #[test]
     fn flag_is_one_grapheme_two_scalars() {
-        // 🇬🇧 is two regional indicators but one grapheme
         let mut ring_buffer = StringRingBuffer::new(2);
         let flag = "🇬🇧";
         assert_eq!(flag.chars().count(), 2);
         assert_eq!(flag.graphemes(true).count(), 1);
-
         ring_buffer.add_str("A");
         ring_buffer.add_str(flag);
         assert_eq!(ring_buffer.value(), format!("A{flag}"));
-
         ring_buffer.add_str("B");
-        // Should keep last 2 graphemes: [flag, B]
         assert_eq!(ring_buffer.value(), format!("{flag}B"));
     }
 
@@ -557,12 +578,9 @@ mod tests {
         let mut ring_buffer = StringRingBuffer::new(5);
         ring_buffer.add_str("abcde");
         assert_eq!(ring_buffer.value(), "abcde");
-
         ring_buffer.set_max_grapheme_count(2);
         assert_eq!(ring_buffer.value(), "de");
-
         ring_buffer.set_max_grapheme_count(4);
-        // Expanding doesn't bring back truncated prefix; future adds still bounded
         ring_buffer.add_str("FG");
         assert_eq!(ring_buffer.value(), "deFG");
     }
@@ -572,67 +590,8 @@ mod tests {
         let mut ring_buffer = StringRingBuffer::new(0);
         ring_buffer.add_str("whatever 👍🏽");
         assert_eq!(ring_buffer.value(), "");
-
         ring_buffer.set_max_grapheme_count(1);
         ring_buffer.add_str("X");
         assert_eq!(ring_buffer.value(), "X");
-    }
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_replacement() {
-        Runtime::test(async |runtime| {
-            let task_tracker = TaskTracker::new();
-            let cancellation_token = CancellationToken::new();
-
-            let hotstrings = Hotstrings::new(runtime, task_tracker.clone(), cancellation_token);
-            hotstrings.add(
-                ":)",
-                Replacement::Text("😀".to_string()),
-                HotstringOptions::default(),
-            );
-            hotstrings.add(
-                ":D",
-                Replacement::Text("😁".to_string()),
-                HotstringOptions::default(),
-            );
-            hotstrings.add(
-                "fire",
-                Replacement::Text("🔥".to_string()),
-                HotstringOptions::default(),
-            );
-            let image = ImageReader::open("/home/jmgr/Pictures/cat.jpeg")
-                .unwrap()
-                .decode()
-                .unwrap();
-            hotstrings.add(
-                "cat",
-                Replacement::Image(image.into()),
-                HotstringOptions::default(),
-            );
-            hotstrings.add(
-                "beaver",
-                Replacement::Text("🦫".to_string()),
-                HotstringOptions {
-                    use_clipboard_for_text: true,
-                    ..Default::default()
-                },
-            );
-            hotstrings.add(
-                // TODO: bugged
-                "<br>",
-                Replacement::Text("</br>".to_string()),
-                HotstringOptions {
-                    erase_key: false,
-                    ..Default::default()
-                },
-            );
-
-            sleep(Duration::from_secs(6000)).await;
-
-            task_tracker.close();
-            task_tracker.wait().await;
-        });
     }
 }
