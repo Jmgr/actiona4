@@ -28,6 +28,12 @@ pub struct StartProcessOptions {
     pub env: Option<HashMap<String, String>>,
 }
 
+/// Options for running a shell command.
+#[derive(Clone, Debug, Default)]
+pub struct ShellOptions {
+    pub shell: Option<String>,
+}
+
 /// The result of a process that has finished.
 #[derive(Clone, Debug)]
 pub struct ProcessExitResult {
@@ -260,6 +266,39 @@ impl ProcessRunner {
         })
     }
 
+    /// Run a command through the system shell with inherited stdio.
+    ///
+    /// Behaves like C's `system()`: the shell is launched in the current console window
+    /// if one exists, otherwise the OS opens a new one. Waits for the command to finish
+    /// and returns the exit code.
+    pub async fn shell(
+        &self,
+        command: &str,
+        options: ShellOptions,
+        cancellation_token: CancellationToken,
+    ) -> Result<Option<i32>> {
+        let (shell_binary, shell_flag) = resolve_shell(&options.shell);
+
+        let mut child = Command::new(&shell_binary)
+            .arg(&shell_flag)
+            .arg(command)
+            .stdin(std::process::Stdio::inherit())
+            .stdout(std::process::Stdio::inherit())
+            .stderr(std::process::Stdio::inherit())
+            .kill_on_drop(true)
+            .spawn()?;
+
+        let status = tokio::select! {
+            _ = cancellation_token.cancelled() => {
+                child.kill().await?;
+                child.wait().await?
+            }
+            status = child.wait() => status?,
+        };
+
+        Ok(status.code())
+    }
+
     /// Start a detached process and return only its PID.
     pub fn start_detached(&self, command: &str, options: StartProcessOptions) -> Result<Pid> {
         let mut cmd = Self::build_command(command, &options);
@@ -336,6 +375,41 @@ pub fn terminate_by_pid(pid: Pid) -> Result<()> {
         }
 
         Ok(())
+    }
+}
+
+/// Returns `(shell_binary, flag)` for the current platform.
+///
+/// On Unix the flag is always `-c`. On Windows it is chosen based on the shell name:
+/// `cmd` → `/C`, `powershell`/`pwsh` → `-Command`, anything else → `-c`.
+#[cfg(unix)]
+fn resolve_shell(override_shell: &Option<String>) -> (String, String) {
+    let shell = override_shell
+        .clone()
+        .unwrap_or_else(|| std::env::var("SHELL").unwrap_or_else(|_| "bash".to_string()));
+    (shell, "-c".to_string())
+}
+
+#[cfg(windows)]
+fn resolve_shell(override_shell: &Option<String>) -> (String, String) {
+    let shell = override_shell
+        .clone()
+        .unwrap_or_else(|| "powershell".to_string());
+    let flag = shell_flag_for(&shell);
+    (shell, flag)
+}
+
+#[cfg(windows)]
+fn shell_flag_for(shell: &str) -> String {
+    let name = std::path::Path::new(shell)
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or(shell)
+        .to_lowercase();
+    match name.as_str() {
+        "cmd" => "/C".to_string(),
+        "powershell" | "pwsh" => "-Command".to_string(),
+        _ => "-c".to_string(),
     }
 }
 

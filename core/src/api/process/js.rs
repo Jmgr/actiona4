@@ -21,7 +21,7 @@ use crate::{
             classes::{HostClass, SingletonClass, register_enum, register_host_class},
             task::task_with_token,
         },
-        process::{ProcessRunner, StartProcessOptions},
+        process::{ProcessRunner, ShellOptions, StartProcessOptions},
     },
     cancel_on,
     runtime::WithUserData,
@@ -61,6 +61,21 @@ impl JsStartProcessOptions {
             env: self.env,
         }
     }
+}
+
+/// Options for running a shell command.
+///
+/// @options
+#[derive(Clone, Debug, Default, FromJsObject)]
+pub struct JsShellOptions {
+    /// Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
+    /// On Windows defaults to `powershell`.
+    /// @default `undefined`
+    pub shell: Option<String>,
+
+    /// Abort signal to cancel the operation.
+    /// @default `undefined`
+    pub signal: Option<JsAbortSignal>,
 }
 
 /// Unix signal.
@@ -322,6 +337,50 @@ impl JsProcess {
             .into_js_result(&ctx)?;
 
         Ok(pid.into())
+    }
+
+    /// Runs a command through the system shell, similar to C's `system()` function.
+    ///
+    /// Stdio is inherited from the current process: if a console window is open the
+    /// command runs inside it; otherwise the OS opens a new console window for it.
+    ///
+    /// The default shell is platform-specific:
+    /// - **Linux** – the value of `$SHELL`, falling back to `bash`.
+    /// - **Windows** – `powershell`.
+    ///
+    /// A custom shell can be supplied via `options.shell`. On Windows the command
+    /// flag (`/C`, `-Command`, or `-c`) is inferred automatically from the shell name.
+    ///
+    /// ```ts
+    /// // Clear the screen (works on Windows with cmd/powershell and on Unix)
+    /// await process.shell("cls");
+    /// ```
+    ///
+    /// ```ts
+    /// // Use a specific shell
+    /// await process.shell("echo hello", { shell: "zsh" });
+    /// ```
+    ///
+    /// @returns Task<number | undefined>
+    pub fn shell<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        command: String,
+        options: Opt<JsShellOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let shell_options = ShellOptions {
+            shell: options.shell,
+        };
+        let inner = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, cancel_token| {
+            inner
+                .shell(&command, shell_options, cancel_token)
+                .await
+                .into_js_result(&ctx)
+        })
     }
 
     /// Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
@@ -977,6 +1036,52 @@ mod tests {
                 ))
                 .await
                 .unwrap();
+        });
+    }
+
+    /// Runs `process.shell()` with inherited stdio on Unix.
+    /// Marked `#[ignore]` because the command writes to the real terminal.
+    #[test]
+    #[ignore]
+    #[cfg(unix)]
+    fn test_shell_unix() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            // Verify exit code is forwarded correctly.
+            let exit_code = script_engine
+                .eval_async::<i32>(r#"await process.shell("exit 42")"#)
+                .await
+                .unwrap();
+            assert_eq!(exit_code, 42);
+
+            // Verify a successful command returns 0.
+            let exit_code = script_engine
+                .eval_async::<i32>(r#"await process.shell("echo hello from shell")"#)
+                .await
+                .unwrap();
+            assert_eq!(exit_code, 0);
+        });
+    }
+
+    /// Runs `process.shell()` with inherited stdio on Windows.
+    /// Marked `#[ignore]` because the command writes to the real terminal.
+    #[test]
+    #[ignore]
+    #[cfg(windows)]
+    fn test_shell_windows() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            // Verify exit code is forwarded correctly.
+            let exit_code = script_engine
+                .eval_async::<i32>(r#"await process.shell("exit 42")"#)
+                .await
+                .unwrap();
+            assert_eq!(exit_code, 42);
+
+            // Verify a successful command returns 0.
+            let exit_code = script_engine
+                .eval_async::<i32>(r#"await process.shell("echo hello from shell")"#)
+                .await
+                .unwrap();
+            assert_eq!(exit_code, 0);
         });
     }
 
