@@ -8,6 +8,9 @@ Find Image:
  4) UI to test parameters and display results on screen (transparent target icon?)
  - prevent multiple runs at the same time
 
+Solve // TODOs
+Create an installer for Windows
+
  Mouse:
 - record
 - drag and drop?

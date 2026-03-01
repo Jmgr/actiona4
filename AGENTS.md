@@ -37,6 +37,13 @@ cargo make lint
 cargo make doc
 ```
 
+Note: do not stage any changes.
+
+## Code style
+
+* never use single letter names for variables
+* prefer `use` instructions over specifying the full path for a type (when it is not ambiguous)
+
 ## Definition of done
 
 A change is complete when the following pass without error or warning:
