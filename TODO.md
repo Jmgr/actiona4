@@ -12,7 +12,7 @@ Solve // TODOs
 Create an installer for Windows
 
 Keyboard:
-- record & playbac
+- record & playback
 
  Mouse:
 - record & playback

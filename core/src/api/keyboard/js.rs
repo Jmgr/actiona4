@@ -48,9 +48,9 @@ impl<'js> Trace<'js> for super::Keyboard {
 ///
 /// ```ts
 /// // Press a key combination (Ctrl+C)
-/// keyboard.pressKey(Key.Control);
-/// keyboard.tapKey("c");
-/// keyboard.releaseKey(Key.Control);
+/// keyboard.press(Key.Control);
+/// keyboard.tap("c");
+/// keyboard.release(Key.Control);
 /// ```
 ///
 /// ```ts
@@ -221,24 +221,24 @@ impl JsKeyboard {
         Ok(())
     }
 
-    /// Presses and holds a key until `releaseKey` is called.
+    /// Presses and holds a key until `release` is called.
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    pub fn press_key(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
+    pub fn press(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
-        self.inner.press_key(key).into_js_result(&ctx)?;
+        self.inner.press(key).into_js_result(&ctx)?;
 
         Ok(())
     }
 
-    /// Releases a key previously held with `pressKey`.
+    /// Releases a key previously held with `press`.
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    pub fn release_key(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
+    pub fn release(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
-        self.inner.release_key(key).into_js_result(&ctx)?;
+        self.inner.release(key).into_js_result(&ctx)?;
 
         Ok(())
     }
@@ -247,9 +247,9 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    pub fn tap_key(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
+    pub fn tap(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
-        self.inner.tap_key(key).into_js_result(&ctx)?;
+        self.inner.tap(key).into_js_result(&ctx)?;
 
         Ok(())
     }
@@ -555,8 +555,8 @@ impl JsKeyboard {
 /// or a raw keycode number wherever a `Key` is expected.
 ///
 /// ```ts
-/// keyboard.tapKey(Key.Return);
-/// keyboard.tapKey("a");
+/// keyboard.tap(Key.Return);
+/// keyboard.tap("a");
 /// ```
 #[serde(rename = "Key")]
 /// @rename Key

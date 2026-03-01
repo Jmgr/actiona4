@@ -318,8 +318,8 @@ declare enum FindImageStage {
  * or a raw keycode number wherever a `Key` is expected.
  * 
  * ```ts
- * keyboard.tapKey(Key.Return);
- * keyboard.tapKey("a");
+ * keyboard.tap(Key.Return);
+ * keyboard.tap("a");
  * ```
  * @category Keyboard
  */
@@ -5581,9 +5581,9 @@ declare interface EventHandle {
  * 
  * ```ts
  * // Press a key combination (Ctrl+C)
- * keyboard.pressKey(Key.Control);
- * keyboard.tapKey("c");
- * keyboard.releaseKey(Key.Control);
+ * keyboard.press(Key.Control);
+ * keyboard.tap("c");
+ * keyboard.release(Key.Control);
  * ```
  * 
  * ```ts
@@ -5609,23 +5609,23 @@ declare interface Keyboard {
      */
     writeText(text: string): void;
     /**
-     * Presses and holds a key until `releaseKey` is called.
+     * Presses and holds a key until `release` is called.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
      */
-    pressKey(key: Key | string | number): void;
+    press(key: Key | string | number): void;
     /**
-     * Releases a key previously held with `pressKey`.
+     * Releases a key previously held with `press`.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
      */
-    releaseKey(key: Key | string | number): void;
+    release(key: Key | string | number): void;
     /**
      * Presses and releases a key in one action.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
      */
-    tapKey(key: Key | string | number): void;
+    tap(key: Key | string | number): void;
     /**
      * Presses and holds a raw keycode until `releaseRaw` is called.
      * 

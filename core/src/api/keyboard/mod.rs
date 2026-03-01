@@ -61,7 +61,7 @@ impl Keyboard {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn press_key(&self, key: Key) -> Result<()> {
+    pub fn press(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
         self.enigo.lock().key(key, Direction::Press)?;
@@ -70,7 +70,7 @@ impl Keyboard {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn release_key(&self, key: Key) -> Result<()> {
+    pub fn release(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
         self.enigo.lock().key(key, Direction::Release)?;
@@ -79,7 +79,7 @@ impl Keyboard {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn tap_key(&self, key: Key) -> Result<()> {
+    pub fn tap(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
         self.enigo.lock().key(key, Direction::Click)?;

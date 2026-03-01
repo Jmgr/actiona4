@@ -169,7 +169,10 @@ impl Topic for MouseScrollTopic {
 
 /// Convert an X11 raw button detail to a `MouseScrollEvent`, if it is a scroll button (4–7).
 #[must_use]
-pub const fn scroll_event_from_x11_button(detail: u32, is_injected: bool) -> Option<MouseScrollEvent> {
+pub const fn scroll_event_from_x11_button(
+    detail: u32,
+    is_injected: bool,
+) -> Option<MouseScrollEvent> {
     match detail {
         4 => Some(MouseScrollEvent::new(Axis::Vertical, -1, is_injected)),
         5 => Some(MouseScrollEvent::new(Axis::Vertical, 1, is_injected)),
