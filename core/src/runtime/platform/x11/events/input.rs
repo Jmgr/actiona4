@@ -156,15 +156,21 @@ impl Topic for KeyboardKeysTopic {
     type Signal = AllSignals<Self::T>;
 
     async fn on_start(&self) -> Result<()> {
-        if self.activation_counter.increment() == 0 {
-            keyboard_start(&self.input_mask).await?;
+        if self.activation_counter.increment() == 0
+            && let Err(error) = keyboard_start(&self.input_mask).await
+        {
+            _ = self.activation_counter.decrement();
+            return Err(error);
         }
         Ok(())
     }
 
     async fn on_stop(&self) -> Result<()> {
-        if self.activation_counter.decrement() == 1 {
-            keyboard_stop(&self.input_mask).await?;
+        if self.activation_counter.decrement() == 1
+            && let Err(error) = keyboard_stop(&self.input_mask).await
+        {
+            _ = self.activation_counter.increment();
+            return Err(error);
         }
         Ok(())
     }
@@ -181,15 +187,21 @@ impl Topic for KeyboardTextTopic {
     type Signal = AllSignals<Self::T>;
 
     async fn on_start(&self) -> Result<()> {
-        if self.activation_counter.increment() == 0 {
-            keyboard_start(&self.input_mask).await?;
+        if self.activation_counter.increment() == 0
+            && let Err(error) = keyboard_start(&self.input_mask).await
+        {
+            _ = self.activation_counter.decrement();
+            return Err(error);
         }
         Ok(())
     }
 
     async fn on_stop(&self) -> Result<()> {
-        if self.activation_counter.decrement() == 1 {
-            keyboard_stop(&self.input_mask).await?;
+        if self.activation_counter.decrement() == 1
+            && let Err(error) = keyboard_stop(&self.input_mask).await
+        {
+            _ = self.activation_counter.increment();
+            return Err(error);
         }
         Ok(())
     }

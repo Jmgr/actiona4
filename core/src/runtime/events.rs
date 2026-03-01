@@ -12,7 +12,7 @@ use tokio::{
     sync::{broadcast, mpsc, watch},
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::error;
+use tracing::{error, warn};
 
 use crate::{
     api::{
@@ -126,7 +126,8 @@ impl<T: Topic + 'static> TopicWrapper<T> {
 
         let local_topic = topic.clone();
         task_tracker.spawn(async move {
-            let mut count: usize = 0;
+            let mut subscriber_count: usize = 0;
+            let mut topic_started = false;
             loop {
                 let command = select! {
                     _ = cancellation_token.cancelled() => { break; }
@@ -139,23 +140,38 @@ impl<T: Topic + 'static> TopicWrapper<T> {
 
                 match command {
                     SubscribersChange::Increment => {
-                        if count == 0
-                            && let Err(err) = local_topic.on_start().await
-                        {
-                            error!("{}", err); // TODO: improve this
+                        subscriber_count += 1;
+
+                        if !topic_started {
+                            match local_topic.on_start().await {
+                                Ok(()) => {
+                                    topic_started = true;
+                                }
+                                Err(err) => {
+                                    // Keep subscriber accounting consistent even if startup fails.
+                                    // This avoids unbalanced decrement handling on drop.
+                                    error!("{}", err); // TODO: improve this
+                                }
+                            }
+                        }
+                    }
+                    SubscribersChange::Decrement => {
+                        if subscriber_count == 0 {
+                            warn!(
+                                "received subscriber decrement while count is already zero; ignoring"
+                            );
                             continue;
                         }
 
-                        count += 1;
-                    }
-                    SubscribersChange::Decrement => {
-                        if count == 1
-                            && let Err(err) = local_topic.on_stop().await
-                        {
-                            error!("{}", err);
-                        }
+                        subscriber_count -= 1;
 
-                        count -= 1;
+                        if subscriber_count == 0 && topic_started {
+                            if let Err(err) = local_topic.on_stop().await {
+                                error!("{}", err);
+                            }
+
+                            topic_started = false;
+                        }
                     }
                 }
             }
