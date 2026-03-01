@@ -207,6 +207,23 @@ readonly [`WindowHandle`](WindowHandle.md)[]
 
 ***
 
+### foregroundWindow()
+
+> **foregroundWindow**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
+
+Returns the currently active (focused) window. Alias for `activeWindow()`.
+
+```ts
+const win = windows.foregroundWindow();
+println(win.title());
+```
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
+
+***
+
 ### toString()
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

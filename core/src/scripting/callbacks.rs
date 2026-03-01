@@ -218,7 +218,7 @@ impl Callbacks {
 
     /// Call a registered function synchronously within the current JS context.
     ///
-    /// Unlike [`call`], this executes directly without going through the callback worker, so it
+    /// Unlike `call`, this executes directly without going through the callback worker, so it
     /// does not yield inside an `async_with!` block. This preserves the rquickjs scheduler's
     /// queue waker registration, which `call` would otherwise overwrite.
     ///
@@ -311,14 +311,24 @@ impl Callbacks {
     ///
     /// This is the third phase of the split-call pattern. Call this inside a non-yielding
     /// `async_with!` closure after the receiver from [`prepare_call`] has resolved.
-    pub(crate) fn retrieve_result<'js>(&self, ctx: &Ctx<'js>, call_id: CallKey) -> Result<Value<'js>> {
+    pub(crate) fn retrieve_result<'js>(
+        &self,
+        ctx: &Ctx<'js>,
+        call_id: CallKey,
+    ) -> Result<Value<'js>> {
         let mut calls = self.calls.lock();
         let call = calls.remove(call_id).ok_or_else(|| {
-            warn!(?call_id, "retrieve_result: callback call state not found after worker completion");
+            warn!(
+                ?call_id,
+                "retrieve_result: callback call state not found after worker completion"
+            );
             Exception::throw_message(ctx, "Callback call state not found")
         })?;
         let result = call.result.ok_or_else(|| {
-            warn!(?call_id, "retrieve_result: callback call completed without a result");
+            warn!(
+                ?call_id,
+                "retrieve_result: callback call completed without a result"
+            );
             Exception::throw_message(ctx, "Callback call completed without a result")
         })?;
         result.restore(ctx)

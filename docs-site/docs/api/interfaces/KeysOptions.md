@@ -1,7 +1,7 @@
-# Interface: WaitForKeysOptions
+# Interface: KeysOptions
 
 
-Options for waiting for key combinations.
+Options for key-based methods: `onKey`, `onKeys`, and `waitForKeys`.
 
 ```ts
 // Wait for exactly Ctrl+S and no other keys
@@ -14,7 +14,7 @@ await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
 
 > `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Wait for exactly these keys and no other
+Require exactly these keys and no others to be pressed simultaneously.
 
 #### Default Value
 
@@ -26,7 +26,7 @@ Wait for exactly these keys and no other
 
 > `optional` **signal**: [`AbortSignal`](AbortSignal.md)
 
-Abort signal to cancel the wait.
+Abort signal to cancel the operation.
 
 #### Default Value
 

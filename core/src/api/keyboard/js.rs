@@ -25,7 +25,7 @@ use crate::{
         image::js::JsImage,
         js::{
             abort_controller::JsAbortSignal,
-            classes::{SingletonClass, register_enum, register_host_class, registration_target},
+            classes::{SingletonClass, register_host_class, registration_target},
             event_handle::{HandleId, JsEventHandle},
             task::task_with_token,
         },
@@ -38,69 +38,19 @@ impl<'js> Trace<'js> for super::Keyboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-/// Direction for key press/release actions.
-///
-/// ```ts
-/// // Press and hold a key
-/// keyboard.key(Key.Shift, Direction.Press);
-/// // Release it
-/// keyboard.key(Key.Shift, Direction.Release);
-///
-/// // Press and release in one action
-/// keyboard.key(Key.Return, Direction.Click);
-/// ```
-///
-/// @expand
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Deserialize,
-    Display,
-    EnumIter,
-    Eq,
-    FromSerde,
-    Hash,
-    IntoSerde,
-    PartialEq,
-    Serialize,
-)]
-#[serde(rename = "Direction")]
-pub enum JsDirection {
-    // TODO: same as mouse?
-    /// `Direction.Press`
-    Press,
-    /// `Direction.Release`
-    Release,
-    /// `Direction.Click`
-    Click,
-}
-
-impl From<JsDirection> for enigo::Direction {
-    fn from(value: JsDirection) -> Self {
-        use JsDirection::*;
-
-        match value {
-            Press => Self::Press,
-            Release => Self::Release,
-            Click => Self::Click,
-        }
-    }
-}
-
 /// Controls keyboard input: typing text, pressing keys, waiting for key combinations,
 /// and registering text or key event listeners.
 ///
 /// ```ts
 /// // Type text
-/// keyboard.text("Hello, world!");
+/// keyboard.writeText("Hello, world!");
 /// ```
 ///
 /// ```ts
 /// // Press a key combination (Ctrl+C)
-/// keyboard.key(Key.Control, Direction.Press);
-/// keyboard.key("c", Direction.Click);
-/// keyboard.key(Key.Control, Direction.Release);
+/// keyboard.pressKey(Key.Control);
+/// keyboard.tapKey("c");
+/// keyboard.releaseKey(Key.Control);
 /// ```
 ///
 /// ```ts
@@ -141,7 +91,6 @@ impl<'js> Trace<'js> for KeyTriggers {
 
 impl SingletonClass<'_> for JsKeyboard {
     fn register_dependencies(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
-        register_enum::<JsDirection>(ctx)?;
         register_host_class::<JsEventHandle>(ctx)?;
 
         // Register the Key class first, then add enum variants as static properties.
@@ -183,6 +132,12 @@ impl JsKeyboard {
             inner: super::Keyboard::new(runtime)?,
             text_replacements,
             key_triggers,
+        })
+    }
+
+    fn parse_key(ctx: &Ctx<'_>, key: JsKey) -> Result<Key> {
+        key.try_into().map_err(|_| {
+            Exception::throw_message(ctx, &format!("key {key} is not supported on this platform"))
         })
     }
 }
@@ -260,35 +215,66 @@ impl From<JsKeysOptions> for OnKeysOptions {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsKeyboard {
     /// Types the given text string using simulated key events.
-    pub fn text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
+    pub fn write_text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
         self.inner.text(&text).into_js_result(&ctx)?;
 
         Ok(())
     }
 
-    /// Presses, releases, or clicks a key.
+    /// Presses and holds a key until `releaseKey` is called.
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    /// @param direction: Direction
-    pub fn key(&self, ctx: Ctx<'_>, key: JsKey, direction: JsDirection) -> Result<()> {
-        let key = key.try_into().map_err(|_| {
-            Exception::throw_message(
-                &ctx,
-                &format!("key {key} is not supported on this platform"),
-            )
-        })?;
-
-        self.inner.key(key, direction.into()).into_js_result(&ctx)?;
+    pub fn press_key(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
+        let key = Self::parse_key(&ctx, key)?;
+        self.inner.press_key(key).into_js_result(&ctx)?;
 
         Ok(())
     }
 
-    /// Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
-    pub fn raw(&self, ctx: Ctx<'_>, keycode: u16, direction: JsDirection) -> Result<()> {
-        self.inner
-            .raw(keycode, direction.into())
-            .into_js_result(&ctx)?;
+    /// Releases a key previously held with `pressKey`.
+    ///
+    /// Accepts a `Key` constant, a single character string, or a raw keycode number.
+    /// @param key: Key | string | number
+    pub fn release_key(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
+        let key = Self::parse_key(&ctx, key)?;
+        self.inner.release_key(key).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    /// Presses and releases a key in one action.
+    ///
+    /// Accepts a `Key` constant, a single character string, or a raw keycode number.
+    /// @param key: Key | string | number
+    pub fn tap_key(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
+        let key = Self::parse_key(&ctx, key)?;
+        self.inner.tap_key(key).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    /// Presses and holds a raw keycode until `releaseRaw` is called.
+    ///
+    /// Use this for keys not covered by the `Key` enum.
+    pub fn press_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
+        self.inner.press_raw(keycode).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    /// Releases a raw keycode previously held with `pressRaw`.
+    pub fn release_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
+        self.inner.release_raw(keycode).into_js_result(&ctx)?;
+
+        Ok(())
+    }
+
+    /// Presses and releases a raw keycode in one action.
+    ///
+    /// Use this for keys not covered by the `Key` enum.
+    pub fn tap_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
+        self.inner.tap_raw(keycode).into_js_result(&ctx)?;
 
         Ok(())
     }
@@ -296,12 +282,7 @@ impl JsKeyboard {
     /// Returns whether a key is currently pressed.
     /// @param key: Key | string | number
     pub fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
-        let key = key.try_into().map_err(|_| {
-            Exception::throw_message(
-                &ctx,
-                &format!("key {key} is not supported on this platform"),
-            )
-        })?;
+        let key = Self::parse_key(&ctx, key)?;
 
         self.inner.is_key_pressed(key).into_js_result(&ctx)
     }
@@ -574,8 +555,8 @@ impl JsKeyboard {
 /// or a raw keycode number wherever a `Key` is expected.
 ///
 /// ```ts
-/// keyboard.key(Key.Return, Direction.Click);
-/// keyboard.key("a", Direction.Click);
+/// keyboard.tapKey(Key.Return);
+/// keyboard.tapKey("a");
 /// ```
 #[serde(rename = "Key")]
 /// @rename Key

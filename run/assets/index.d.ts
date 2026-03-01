@@ -312,45 +312,14 @@ declare enum FindImageStage {
     Finished,
 }
 /**
- * Direction for key press/release actions.
- * 
- * ```ts
- * // Press and hold a key
- * keyboard.key(Key.Shift, Direction.Press);
- * // Release it
- * keyboard.key(Key.Shift, Direction.Release);
- * 
- * // Press and release in one action
- * keyboard.key(Key.Return, Direction.Click);
- * ```
- * @category Keyboard
- * @expand
- */
-declare enum Direction {
-    /**
-     * `Direction.Press`
-     */
-    Press,
-
-    /**
-     * `Direction.Release`
-     */
-    Release,
-
-    /**
-     * `Direction.Click`
-     */
-    Click,
-}
-/**
  * Standard keyboard keys.
  * 
  * Use as constants on the `Key` class. You can also pass a single character string
  * or a raw keycode number wherever a `Key` is expected.
  * 
  * ```ts
- * keyboard.key(Key.Return, Direction.Click);
- * keyboard.key("a", Direction.Click);
+ * keyboard.tapKey(Key.Return);
+ * keyboard.tapKey("a");
  * ```
  * @category Keyboard
  */
@@ -5592,7 +5561,7 @@ declare interface Concurrency {
  * // ... later:
  * handle.cancel();
  * ```
- * @category Keyboard
+ * @category Core
  */
 declare interface EventHandle {
     /**
@@ -5607,14 +5576,14 @@ declare interface EventHandle {
  * 
  * ```ts
  * // Type text
- * keyboard.text("Hello, world!");
+ * keyboard.writeText("Hello, world!");
  * ```
  * 
  * ```ts
  * // Press a key combination (Ctrl+C)
- * keyboard.key(Key.Control, Direction.Press);
- * keyboard.key("c", Direction.Click);
- * keyboard.key(Key.Control, Direction.Release);
+ * keyboard.pressKey(Key.Control);
+ * keyboard.tapKey("c");
+ * keyboard.releaseKey(Key.Control);
  * ```
  * 
  * ```ts
@@ -5638,17 +5607,41 @@ declare interface Keyboard {
     /**
      * Types the given text string using simulated key events.
      */
-    text(text: string): void;
+    writeText(text: string): void;
     /**
-     * Presses, releases, or clicks a key.
+     * Presses and holds a key until `releaseKey` is called.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
      */
-    key(key: Key | string | number, direction: Direction): void;
+    pressKey(key: Key | string | number): void;
     /**
-     * Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
+     * Releases a key previously held with `pressKey`.
+     * 
+     * Accepts a `Key` constant, a single character string, or a raw keycode number.
      */
-    raw(keycode: number, direction: Direction): void;
+    releaseKey(key: Key | string | number): void;
+    /**
+     * Presses and releases a key in one action.
+     * 
+     * Accepts a `Key` constant, a single character string, or a raw keycode number.
+     */
+    tapKey(key: Key | string | number): void;
+    /**
+     * Presses and holds a raw keycode until `releaseRaw` is called.
+     * 
+     * Use this for keys not covered by the `Key` enum.
+     */
+    pressRaw(keycode: number): void;
+    /**
+     * Releases a raw keycode previously held with `pressRaw`.
+     */
+    releaseRaw(keycode: number): void;
+    /**
+     * Presses and releases a raw keycode in one action.
+     * 
+     * Use this for keys not covered by the `Key` enum.
+     */
+    tapRaw(keycode: number): void;
     /**
      * Returns whether a key is currently pressed.
      */

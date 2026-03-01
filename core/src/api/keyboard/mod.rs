@@ -61,19 +61,55 @@ impl Keyboard {
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn key(&self, key: Key, direction: Direction) -> Result<()> {
+    pub fn press_key(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
-        self.enigo.lock().key(key, direction)?;
+        self.enigo.lock().key(key, Direction::Press)?;
 
         Ok(())
     }
 
     #[instrument(skip(self), err, ret)]
-    pub fn raw(&self, keycode: u16, direction: Direction) -> Result<()> {
+    pub fn release_key(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
-        self.enigo.lock().raw(keycode, direction)?;
+        self.enigo.lock().key(key, Direction::Release)?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self), err, ret)]
+    pub fn tap_key(&self, key: Key) -> Result<()> {
+        use enigo::Keyboard;
+
+        self.enigo.lock().key(key, Direction::Click)?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self), err, ret)]
+    pub fn press_raw(&self, keycode: u16) -> Result<()> {
+        use enigo::Keyboard;
+
+        self.enigo.lock().raw(keycode, Direction::Press)?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self), err, ret)]
+    pub fn release_raw(&self, keycode: u16) -> Result<()> {
+        use enigo::Keyboard;
+
+        self.enigo.lock().raw(keycode, Direction::Release)?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self), err, ret)]
+    pub fn tap_raw(&self, keycode: u16) -> Result<()> {
+        use enigo::Keyboard;
+
+        self.enigo.lock().raw(keycode, Direction::Click)?;
 
         Ok(())
     }

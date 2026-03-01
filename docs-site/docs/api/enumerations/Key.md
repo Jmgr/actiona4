@@ -6,8 +6,8 @@ Use as constants on the `Key` class. You can also pass a single character string
 or a raw keycode number wherever a `Key` is expected.
 
 ```ts
-keyboard.key(Key.Return, Direction.Click);
-keyboard.key("a", Direction.Click);
+keyboard.tapKey(Key.Return);
+keyboard.tapKey("a");
 ```
 
 ## Enumeration Members

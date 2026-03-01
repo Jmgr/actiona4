@@ -1,17 +1,18 @@
 # Interface: Keyboard
 
-Controls keyboard input: typing text, pressing keys, and waiting for key combinations.
+Controls keyboard input: typing text, pressing keys, waiting for key combinations,
+and registering text or key event listeners.
 
 ```ts
 // Type text
-keyboard.text("Hello, world!");
+keyboard.writeText("Hello, world!");
 ```
 
 ```ts
 // Press a key combination (Ctrl+C)
-keyboard.key(Key.Control, Direction.Press);
-keyboard.key("c", Direction.Click);
-keyboard.key(Key.Control, Direction.Release);
+keyboard.pressKey(Key.Control);
+keyboard.tapKey("c");
+keyboard.releaseKey(Key.Control);
 ```
 
 ```ts
@@ -19,7 +20,36 @@ keyboard.key(Key.Control, Direction.Release);
 await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
 ```
 
+```ts
+// Replace typed text
+const h = keyboard.onText("btw", "by the way");
+h.cancel(); // unregister
+```
+
+```ts
+// Run a callback when a key combo is pressed
+const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => console.println("triggered!"));
+```
+
 ## Methods
+
+### clearEventHandles()
+
+> **clearEventHandles**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Unregisters all event handles registered on this keyboard instance.
+
+```ts
+keyboard.onText("btw", "by the way");
+keyboard.onKeys([Key.Control, "s"], () => save());
+keyboard.clearEventHandles(); // removes both
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
 
 ### getPressedKeys()
 
@@ -51,11 +81,228 @@ Returns whether a key is currently pressed.
 
 ***
 
-### key()
+### onKey()
 
-> **key**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md), `direction`: [`Direction`](../enumerations/Direction.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **onKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md), `callback`: () => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`KeysOptions`](KeysOptions.md)): [`EventHandle`](EventHandle.md)
 
-Presses, releases, or clicks a key.
+Registers a listener that fires when a single key is pressed.
+
+```ts
+const h = keyboard.onKey(Key.F5, () => console.println("F5 pressed!"));
+h.cancel();
+```
+
+#### Parameters
+
+##### key
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+
+##### callback
+
+() => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### options?
+
+[`KeysOptions`](KeysOptions.md)
+
+<div class="options-fields">
+
+###### exclusive?
+
+> `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Require exactly these keys and no others to be pressed simultaneously.
+
+###### Default Value
+
+`false`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the operation.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`EventHandle`](EventHandle.md)
+
+***
+
+### onKeys()
+
+> **onKeys**(`keys`: ([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[], `callback`: () => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`KeysOptions`](KeysOptions.md)): [`EventHandle`](EventHandle.md)
+
+Registers a listener that fires when all specified keys are pressed simultaneously.
+
+```ts
+const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => {
+  console.println("Ctrl+Alt+T pressed!");
+});
+
+// Require exactly these keys and no others
+const h2 = keyboard.onKeys([Key.Control, "s"], () => save(), { exclusive: true });
+
+h.cancel();
+```
+
+#### Parameters
+
+##### keys
+
+([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[]
+
+##### callback
+
+() => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### options?
+
+[`KeysOptions`](KeysOptions.md)
+
+<div class="options-fields">
+
+###### exclusive?
+
+> `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Require exactly these keys and no others to be pressed simultaneously.
+
+###### Default Value
+
+`false`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the operation.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`EventHandle`](EventHandle.md)
+
+***
+
+### onText()
+
+> **onText**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `handler`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`Image`](../classes/Image.md) \| () => [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md)\>, `options?`: [`OnTextOptions`](OnTextOptions.md)): [`EventHandle`](EventHandle.md)
+
+Registers a listener that fires when the specified text is typed.
+
+By default the typed text is erased and replaced with `handler`. Pass
+`{ erase: false }` to trigger an action without replacing the text.
+
+`handler` can be a string, an `Image`, or a callback returning either.
+A callback that returns nothing (void) fires without inserting anything.
+
+```ts
+// Simple text replacement
+const h = keyboard.onText("btw", "by the way");
+
+// Dynamic replacement via callback
+const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
+
+// Trigger only — don't erase the typed text
+const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
+
+h.cancel(); // unregister
+```
+
+#### Parameters
+
+##### text
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+##### handler
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`Image`](../classes/Image.md) | () => [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md)\>
+
+##### options?
+
+[`OnTextOptions`](OnTextOptions.md)
+
+<div class="options-fields">
+
+###### erase?
+
+> `optional` **erase**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Erase the typed text before inserting the replacement.
+Set to `false` to trigger an action without replacing the typed text.
+
+###### Default Value
+
+`true`
+
+***
+
+###### saveRestoreClipboard?
+
+> `optional` **saveRestoreClipboard**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Save and restore the clipboard contents around a clipboard-based replacement.
+
+###### Default Value
+
+`true`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to automatically cancel this listener when signalled.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useClipboardForText?
+
+> `optional` **useClipboardForText**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
+Replacing with an image always uses the clipboard.
+
+###### Default Value
+
+`false`
+
+</div>
+
+#### Returns
+
+[`EventHandle`](EventHandle.md)
+
+***
+
+### pressKey()
+
+> **pressKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Presses and holds a key until `releaseKey` is called.
 
 Accepts a `Key` constant, a single character string, or a raw keycode number.
 
@@ -65,47 +312,19 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
 
-##### direction
-
-[`Direction`](../enumerations/Direction.md)
-
-<div class="options-fields">
-
-###### Click
-
-> **Click**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Direction.Click`
-
-***
-
-###### Press
-
-> **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Direction.Press`
-
-***
-
-###### Release
-
-> **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Direction.Release`
-
-</div>
-
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
-### raw()
+### pressRaw()
 
-> **raw**(`keycode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `direction`: [`Direction`](../enumerations/Direction.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **pressRaw**(`keycode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
+Presses and holds a raw keycode until `releaseRaw` is called.
+
+Use this for keys not covered by the `Key` enum.
 
 #### Parameters
 
@@ -113,35 +332,25 @@ Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-##### direction
+#### Returns
 
-[`Direction`](../enumerations/Direction.md)
-
-<div class="options-fields">
-
-###### Click
-
-> **Click**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Direction.Click`
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 
-###### Press
+### releaseKey()
 
-> **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **releaseKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-`Direction.Press`
+Releases a key previously held with `pressKey`.
 
-***
+Accepts a `Key` constant, a single character string, or a raw keycode number.
 
-###### Release
+#### Parameters
 
-> **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+##### key
 
-`Direction.Release`
-
-</div>
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
 
 #### Returns
 
@@ -149,17 +358,57 @@ Sends a raw keycode event. Use this for keys not covered by the `Key` enum.
 
 ***
 
-### text()
+### releaseRaw()
 
-> **text**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **releaseRaw**(`keycode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Types the given text string using simulated key events.
+Releases a raw keycode previously held with `pressRaw`.
 
 #### Parameters
 
-##### text
+##### keycode
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### tapKey()
+
+> **tapKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Presses and releases a key in one action.
+
+Accepts a `Key` constant, a single character string, or a raw keycode number.
+
+#### Parameters
+
+##### key
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### tapRaw()
+
+> **tapRaw**(`keycode`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Presses and releases a raw keycode in one action.
+
+Use this for keys not covered by the `Key` enum.
+
+#### Parameters
+
+##### keycode
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
@@ -205,3 +454,21 @@ await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### writeText()
+
+> **writeText**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Types the given text string using simulated key events.
+
+#### Parameters
+
+##### text
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

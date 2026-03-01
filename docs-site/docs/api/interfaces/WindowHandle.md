@@ -12,6 +12,19 @@ println(win.isVisible());
 println(win.rect());
 ```
 
+## Properties
+
+### closed
+
+> `readonly` **closed**: [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+A promise that resolves when the window is closed.
+
+```ts
+const win = windows.activeWindow();
+await win.closed;
+```
+
 ## Methods
 
 ### className()
@@ -168,6 +181,22 @@ Makes this window the active (focused) window.
 
 ```ts
 win.setActive();
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### setForeground()
+
+> **setForeground**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Makes this window the active (focused) window. Alias for `setActive()`.
+
+```ts
+win.setForeground();
 ```
 
 #### Returns

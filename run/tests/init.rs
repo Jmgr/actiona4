@@ -130,7 +130,6 @@ const checks = [
     ["keyboard", typeof keyboard, "object"],
     ["Point", typeof Point, "function"],
     ["Key", typeof Key, "function"],
-    ["Direction", typeof Direction, "object"],
     ["Tween", typeof Tween, "object"],
     ["sleep", typeof sleep, "function"],
     ["actiona", typeof actiona, "undefined"],
@@ -170,14 +169,11 @@ const checks = [
     ["actiona.keyboard", typeof actiona.keyboard, "object"],
     ["actiona.Point", typeof actiona.Point, "function"],
     ["actiona.Key", typeof actiona.Key, "function"],
-    ["actiona.Direction", typeof actiona.Direction, "object"],
     ["actiona.Tween", typeof actiona.Tween, "object"],
     ["actiona.sleep", typeof actiona.sleep, "function"],
     ["mouse", typeof mouse, "undefined"],
     ["keyboard", typeof keyboard, "undefined"],
-    ["Direction", typeof Direction, "undefined"],
     ["Tween", typeof Tween, "undefined"],
-    ["actiona.Direction.Press", actiona.Direction.Press, "Press"],
     ["actiona.Tween.Linear", actiona.Tween.Linear, "Linear"],
 ];
 

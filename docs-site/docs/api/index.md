@@ -38,6 +38,7 @@
 - [AbortController](classes/AbortController.md)
 - [AbortSignal](interfaces/AbortSignal.md)
 - [Concurrency](interfaces/Concurrency.md)
+- [EventHandle](interfaces/EventHandle.md)
 - [exit](functions/exit.md)
 - [inspect](functions/inspect.md)
 - [print](functions/print.md)
@@ -66,12 +67,6 @@
 
 - [Filesystem](classes/Filesystem.md)
 
-## Hotstrings
-
-- [HotstringOptions](interfaces/HotstringOptions.md)
-- [Hotstrings](interfaces/Hotstrings.md)
-- [hotstrings](variables/hotstrings.md)
-
 ## Image
 
 - [FindImageStage](enumerations/FindImageStage.md)
@@ -93,11 +88,11 @@
 
 ## Keyboard
 
-- [Direction](enumerations/Direction.md)
 - [Key](enumerations/Key.md)
 - [KeyError](enumerations/KeyError.md)
 - [Keyboard](interfaces/Keyboard.md)
-- [WaitForKeysOptions](interfaces/WaitForKeysOptions.md)
+- [KeysOptions](interfaces/KeysOptions.md)
+- [OnTextOptions](interfaces/OnTextOptions.md)
 - [keyboard](variables/keyboard.md)
 
 ## Misc
