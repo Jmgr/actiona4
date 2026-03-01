@@ -233,6 +233,50 @@ impl KeyExt for Key {
             // Some layouts/reporting paths can surface Escape as a control character.
             // Canonicalize it so waitForKeys/onKey/onKeys behave consistently.
             Self::Unicode(character) if character == '\u{1b}' => Self::Escape,
+            // The Windows keyboard hook always maps physical letter/digit keys to their
+            // named enigo variants (Key::A..Key::Z, Key::Num0..Key::Num9), while JS
+            // string-based trigger registration (e.g. "t") produces Key::Unicode('t').
+            // Normalize named letter/digit keys to lowercase Unicode so both paths
+            // resolve to the same canonical form and triggers fire as expected.
+            Self::A => Self::Unicode('a'),
+            Self::B => Self::Unicode('b'),
+            Self::C => Self::Unicode('c'),
+            Self::D => Self::Unicode('d'),
+            Self::E => Self::Unicode('e'),
+            Self::F => Self::Unicode('f'),
+            Self::G => Self::Unicode('g'),
+            Self::H => Self::Unicode('h'),
+            Self::I => Self::Unicode('i'),
+            Self::J => Self::Unicode('j'),
+            Self::K => Self::Unicode('k'),
+            Self::L => Self::Unicode('l'),
+            Self::M => Self::Unicode('m'),
+            Self::N => Self::Unicode('n'),
+            Self::O => Self::Unicode('o'),
+            Self::P => Self::Unicode('p'),
+            Self::Q => Self::Unicode('q'),
+            Self::R => Self::Unicode('r'),
+            Self::S => Self::Unicode('s'),
+            Self::T => Self::Unicode('t'),
+            Self::U => Self::Unicode('u'),
+            Self::V => Self::Unicode('v'),
+            Self::W => Self::Unicode('w'),
+            Self::X => Self::Unicode('x'),
+            Self::Y => Self::Unicode('y'),
+            Self::Z => Self::Unicode('z'),
+            Self::Num0 => Self::Unicode('0'),
+            Self::Num1 => Self::Unicode('1'),
+            Self::Num2 => Self::Unicode('2'),
+            Self::Num3 => Self::Unicode('3'),
+            Self::Num4 => Self::Unicode('4'),
+            Self::Num5 => Self::Unicode('5'),
+            Self::Num6 => Self::Unicode('6'),
+            Self::Num7 => Self::Unicode('7'),
+            Self::Num8 => Self::Unicode('8'),
+            Self::Num9 => Self::Unicode('9'),
+            // Normalize uppercase ASCII letters to lowercase so that both "t" and "T"
+            // in a JS trigger produce the same canonical key.
+            Self::Unicode(c) if c.is_ascii_uppercase() => Self::Unicode(c.to_ascii_lowercase()),
             _ => self,
         }
     }

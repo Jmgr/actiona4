@@ -142,12 +142,15 @@ impl KeyboardInputDispatcher {
         self.text.subscribe()
     }
 
-    fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool) -> bool {
+    fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool, is_injected: bool) -> bool {
         // VK_PACKET events are synthesized Unicode characters (from SendInput with
         // KEYEVENTF_UNICODE). They don't represent physical keys and their
         // press/release pairing is unreliable (especially for surrogate pairs),
         // so skip repeat tracking for them entirely.
-        if key_id.vk_code == VK_PACKET.0 as u32 {
+        // Injected events are synthetic (produced by enigo / SendInput), so they
+        // don't correspond to physical key presses and must not participate in
+        // repeat tracking either.
+        if key_id.vk_code == VK_PACKET.0 as u32 || is_injected {
             return false;
         }
 
@@ -175,10 +178,9 @@ impl KeyboardInputDispatcher {
             keyboard_struct.vkCode,
             is_extended,
         );
-        let is_repeat = self.check_is_repeat(&key_id, is_pressed);
-
         let keystate = get_keystate();
         let is_injected = keyboard_struct.flags & LLKHF_INJECTED == LLKHF_INJECTED;
+        let is_repeat = self.check_is_repeat(&key_id, is_pressed, is_injected);
         let key = vk_to_enigo_key(
             keyboard_struct.vkCode,
             keyboard_struct.scanCode,

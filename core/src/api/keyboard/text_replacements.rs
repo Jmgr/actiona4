@@ -141,6 +141,7 @@ impl TextReplacements {
         }
         match event.key {
             Key::Backspace => buffer.pop(),
+            Key::Escape => buffer.clear(),
             Key::LeftArrow | Key::RightArrow | Key::UpArrow | Key::DownArrow => buffer.clear(),
             _ => {}
         }
@@ -195,10 +196,43 @@ impl TextReplacements {
                 Replacement::Image(image) => ReplacementData::Image(image),
                 Replacement::JsCallback((context, function_key)) => {
                     let trigger_for_callback = trigger.clone();
+
+                    // Phase 1: queue the call inside a non-yielding async_with! so the
+                    // rquickjs scheduler's waker is not overwritten by this task's waker.
+                    let prepare_result = async_with!(context => |ctx| {
+                        ctx.user_data()
+                            .callbacks()
+                            .prepare_call(&ctx, function_key, Vec::new())
+                    })
+                    .await;
+
+                    let Some((call_id, finished_receiver)) = prepare_result else {
+                        warn!(
+                            trigger = %trigger_for_callback,
+                            ?function_key,
+                            "onText callback worker is not running; keeping typed text"
+                        );
+                        continue;
+                    };
+
+                    // Phase 2: wait for completion outside any async_with! so the
+                    // scheduler's waker is undisturbed and waitForKeys can still resolve.
+                    if finished_receiver.await.is_err() {
+                        warn!(
+                            trigger = %trigger_for_callback,
+                            ?function_key,
+                            "onText callback worker dropped before finishing; keeping typed text"
+                        );
+                        continue;
+                    }
+
+                    // Phase 3: retrieve and process the result inside a non-yielding async_with!.
                     let callback_outcome = async_with!(context => |ctx| {
-                        let user_data = ctx.user_data();
-                        let callbacks = user_data.callbacks();
-                        let value = match callbacks.call(&ctx, function_key, Vec::new()).await {
+                        let value = match ctx
+                            .user_data()
+                            .callbacks()
+                            .retrieve_result(&ctx, call_id)
+                        {
                             Ok(value) => value,
                             Err(error) => {
                                 warn!(
@@ -251,6 +285,10 @@ impl TextReplacements {
             // The text event can arrive before the physical key is fully released.
             // Releasing the trigger character first avoids dropped characters in the
             // replacement when it contains the same key (e.g. "btw" -> "by the way").
+            // On Windows the hook sees synthetic releases as injected events, and the
+            // physical key has already been released by the time the async task runs,
+            // so this would only produce a spurious "releasing a non-pressed key" warning.
+            #[cfg(not(target_os = "windows"))]
             let _ = enigo.key(Key::Unicode(event.character), Direction::Release);
 
             for _ in 0..backspaces {

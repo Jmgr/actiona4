@@ -27,7 +27,7 @@ struct Call {
 }
 
 new_key_type! { pub struct FunctionKey; }
-new_key_type! { struct CallKey; }
+new_key_type! { pub(crate) struct CallKey; }
 
 #[derive_where(Debug)]
 pub struct Callbacks {
@@ -266,6 +266,62 @@ impl Callbacks {
                 warn!(?function_key, error = %error, "call_sync: callback failed");
             }
         }
+    }
+
+    /// Prepare a callback call without awaiting its completion.
+    ///
+    /// This is the first phase of the split-call pattern that avoids yielding inside
+    /// `async_with!`. Call this synchronously within a non-yielding `async_with!` closure,
+    /// then `.await` the returned receiver **outside** any `async_with!`, and finally call
+    /// [`retrieve_result`] inside another non-yielding `async_with!`.
+    ///
+    /// Returns `None` if the callback worker is not running.
+    pub(crate) fn prepare_call<'js>(
+        &self,
+        ctx: &Ctx<'js>,
+        function_key: FunctionKey,
+        args: Vec<Value<'js>>,
+    ) -> Option<(CallKey, oneshot::Receiver<()>)> {
+        let (finished_sender, finished_receiver) = oneshot::channel();
+        let call_id = {
+            let mut calls = self.calls.lock();
+            calls.insert(Call {
+                function_key,
+                parameters: Some(Persistent::save(ctx, args)),
+                result: None,
+                finished: Some(finished_sender),
+            })
+        };
+
+        if self.call_sender.send(call_id).is_err() {
+            warn!(
+                ?function_key,
+                ?call_id,
+                "prepare_call: failed to queue callback call because callback worker is not running"
+            );
+            let mut calls = self.calls.lock();
+            _ = calls.remove(call_id);
+            return None;
+        }
+
+        Some((call_id, finished_receiver))
+    }
+
+    /// Retrieve the result of a completed callback call.
+    ///
+    /// This is the third phase of the split-call pattern. Call this inside a non-yielding
+    /// `async_with!` closure after the receiver from [`prepare_call`] has resolved.
+    pub(crate) fn retrieve_result<'js>(&self, ctx: &Ctx<'js>, call_id: CallKey) -> Result<Value<'js>> {
+        let mut calls = self.calls.lock();
+        let call = calls.remove(call_id).ok_or_else(|| {
+            warn!(?call_id, "retrieve_result: callback call state not found after worker completion");
+            Exception::throw_message(ctx, "Callback call state not found")
+        })?;
+        let result = call.result.ok_or_else(|| {
+            warn!(?call_id, "retrieve_result: callback call completed without a result");
+            Exception::throw_message(ctx, "Callback call completed without a result")
+        })?;
+        result.restore(ctx)
     }
 
     pub fn register<'js>(&self, ctx: &Ctx<'js>, function: Function<'js>) -> FunctionKey {
