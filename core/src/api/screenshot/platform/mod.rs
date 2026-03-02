@@ -3,10 +3,13 @@ use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use color_eyre::{Result, eyre::eyre};
 use tracing::error;
 
+use super::display_selector::{DisplayName, DisplaySelector};
 use crate::{
     api::{
+        color::Color,
         displays::Displays,
-        image::{Image, find_image::Source},
+        image::{DrawImageOptions, Image, find_image::Source},
+        point::point,
         rect::Rect,
     },
     runtime::{Runtime, async_resource::AsyncResource, events::DisplayInfo},
@@ -100,6 +103,80 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
             .get(&display_id)
             .cloned()
             .ok_or_else(|| eyre!("unknown display id: {display_id}"))
+    }
+
+    /// Computes the bounding rectangle of all connected displays (the entire desktop).
+    pub async fn desktop_rect(&self) -> Result<Rect> {
+        let displays_info = self.displays.wait_get_info().await?;
+        let mut iter = displays_info.iter();
+        let first = iter.next().ok_or_else(|| eyre!("no displays found"))?;
+        Ok(iter.fold(first.rect, |acc, info| acc.union(info.rect)))
+    }
+
+    /// Resolves a `DisplaySelector` to a display ID.
+    ///
+    /// Returns an error for `DisplaySelector::Desktop` since it does not map
+    /// to a single display; use `desktop_rect` for that case instead.
+    pub async fn resolve_display_selector(&self, selector: &DisplaySelector) -> Result<u32> {
+        match selector {
+            DisplaySelector::Desktop => {
+                Err(eyre!("Desktop selector does not map to a single display"))
+            }
+            DisplaySelector::ById(id) => Ok(*id),
+            DisplaySelector::Primary => {
+                let info = self.displays.primary().await?;
+                Ok(info.id)
+            }
+            DisplaySelector::Largest => {
+                let info = self
+                    .displays
+                    .largest()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
+            DisplaySelector::Smallest => {
+                let info = self
+                    .displays
+                    .smallest()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
+            DisplaySelector::ByName(name) => {
+                let displays_info = self.displays.wait_get_info().await?;
+                let mut matching: Vec<_> = displays_info
+                    .iter()
+                    .filter(|d| name.matches(&d.friendly_name))
+                    .collect();
+                match matching.len() {
+                    0 => Err(match name {
+                        DisplayName::Literal(s) => eyre!("display not found: {s}"),
+                        DisplayName::Wildcard(w) => {
+                            eyre!("no display found matching: {}", w.to_string_js())
+                        }
+                    }),
+                    1 => Ok(matching.remove(0).id),
+                    n => Err(match name {
+                        DisplayName::Literal(s) => eyre!(
+                            "{n} displays match the name \"{s}\"; use Display.fromId() to select by ID"
+                        ),
+                        DisplayName::Wildcard(w) => eyre!(
+                            "{n} displays match the pattern \"{}\"; use a more specific pattern",
+                            w.to_string_js()
+                        ),
+                    }),
+                }
+            }
+            DisplaySelector::FromPoint(point) => {
+                let info = self
+                    .displays
+                    .from_point(*point)
+                    .await?
+                    .ok_or_else(|| eyre!("no display found at point {point}"))?;
+                Ok(info.id)
+            }
+        }
     }
 
     /// Capture a display and return an Image.

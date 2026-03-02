@@ -101,7 +101,7 @@ impl Displays {
         try_point(x, y)
     }
 
-    pub async fn primary_display(&self) -> Result<DisplayInfo> {
+    pub async fn primary(&self) -> Result<DisplayInfo> {
         let displays_info = self.get_info().await?;
         displays_info
             .iter()

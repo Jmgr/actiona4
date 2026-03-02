@@ -4,24 +4,29 @@ use color_eyre::Result;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 
+pub mod display_selector;
+pub mod js;
+pub mod search_in;
+
 mod platform;
 
-pub mod js;
-
+use display_selector::DisplaySelector;
 #[cfg(windows)]
 use platform::win::ScreenshotImpl;
 #[cfg(unix)]
 use platform::x11::ScreenshotImpl;
+use search_in::SearchIn;
 
 use super::{
     displays::Displays,
     image::{
         Image,
         find_image::{
-            FindImageProgress, FindImageStage, FindImageTemplateOptions, Match, Template,
+            FindImageProgress, FindImageStage, FindImageTemplateOptions, Match, Source, Template,
         },
     },
     rect::Rect,
+    windows::{WindowId, Windows},
 };
 use crate::{
     api::{color::Color, point::Point},
@@ -31,12 +36,14 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Screenshot {
     implementation: Arc<ScreenshotImpl>,
+    windows: Windows,
 }
 
 impl Screenshot {
-    pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Self> {
+    pub async fn new(runtime: Arc<Runtime>, displays: Displays, windows: Windows) -> Result<Self> {
         Ok(Self {
             implementation: ScreenshotImpl::new(runtime, displays).await?,
+            windows,
         })
     }
 
@@ -44,77 +51,95 @@ impl Screenshot {
         self.implementation.capture_rect(rect).await
     }
 
-    pub async fn capture_display(&self, display_id: u32) -> Result<Image> {
-        self.implementation.capture_display(display_id).await
+    /// Captures the entire virtual desktop (bounding box of all displays).
+    pub async fn capture_desktop(&self) -> Result<Image> {
+        let rect = self.implementation.desktop_rect().await?;
+        self.implementation.capture_rect(rect).await
+    }
+
+    /// Captures the display identified by the given selector.
+    ///
+    /// For `DisplaySelector::Desktop` this is equivalent to `capture_desktop`.
+    pub async fn capture_display(&self, selector: &DisplaySelector) -> Result<Image> {
+        match selector {
+            DisplaySelector::Desktop => self.capture_desktop().await,
+            other => {
+                let display_id = self.implementation.resolve_display_selector(other).await?;
+                self.implementation.capture_display(display_id).await
+            }
+        }
+    }
+
+    /// Captures the bounding rectangle of the given window.
+    pub async fn capture_window(&self, id: WindowId) -> Result<Image> {
+        let rect = self.windows.rect(id)?;
+        self.implementation.capture_rect(rect).await
     }
 
     pub async fn capture_pixel(&self, position: Point) -> Result<Color> {
         self.implementation.capture_pixel(position).await
     }
 
-    pub async fn find_image_on_rect(
+    /// Finds the best match of an image within the given search area.
+    pub async fn find_image(
         &self,
-        rect: Rect,
+        search_in: &SearchIn,
         template: &Arc<Template>,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
         progress: watch::Sender<FindImageProgress>,
     ) -> Result<Option<Match>> {
         progress.send_replace(FindImageProgress::new(FindImageStage::Capturing, 0));
-        let source = self.implementation.capture_rect_to_source(rect).await?;
-        let origin = rect.top_left;
+        let (source, area_rect) = self.capture_search_in_to_source(search_in).await?;
+        let origin = area_rect.top_left;
         let matches = source.find_template(template, options, cancellation_token, progress)?;
         Ok(matches.map(|m| m.offset(origin)))
     }
 
-    pub async fn find_image_on_rect_all(
+    /// Finds all matches of an image within the given search area.
+    pub async fn find_image_all(
         &self,
-        rect: Rect,
+        search_in: &SearchIn,
         template: &Arc<Template>,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
         progress: watch::Sender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
         progress.send_replace(FindImageProgress::new(FindImageStage::Capturing, 0));
-        let source = self.implementation.capture_rect_to_source(rect).await?;
-        let origin = rect.top_left;
+        let (source, area_rect) = self.capture_search_in_to_source(search_in).await?;
+        let origin = area_rect.top_left;
         let matches = source.find_template_all(template, options, cancellation_token, progress)?;
         Ok(matches.into_iter().map(|m| m.offset(origin)).collect())
     }
 
-    pub async fn find_image_on_display(
+    async fn capture_search_in_to_source(
         &self,
-        display_id: u32,
-        template: &Arc<Template>,
-        options: FindImageTemplateOptions,
-        cancellation_token: CancellationToken,
-        progress: watch::Sender<FindImageProgress>,
-    ) -> Result<Option<Match>> {
-        progress.send_replace(FindImageProgress::new(FindImageStage::Capturing, 0));
-        let (source, display_rect) = self
-            .implementation
-            .capture_display_to_source(display_id)
-            .await?;
-        let origin = display_rect.top_left;
-        let matches = source.find_template(template, options, cancellation_token, progress)?;
-        Ok(matches.map(|m| m.offset(origin)))
-    }
-
-    pub async fn find_image_on_display_all(
-        &self,
-        display_id: u32,
-        template: &Arc<Template>,
-        options: FindImageTemplateOptions,
-        cancellation_token: CancellationToken,
-        progress: watch::Sender<FindImageProgress>,
-    ) -> Result<Vec<Match>> {
-        progress.send_replace(FindImageProgress::new(FindImageStage::Capturing, 0));
-        let (source, display_rect) = self
-            .implementation
-            .capture_display_to_source(display_id)
-            .await?;
-        let origin = display_rect.top_left;
-        let matches = source.find_template_all(template, options, cancellation_token, progress)?;
-        Ok(matches.into_iter().map(|m| m.offset(origin)).collect())
+        search_in: &SearchIn,
+    ) -> Result<(Arc<Source>, Rect)> {
+        match search_in {
+            SearchIn::Desktop => {
+                let rect = self.implementation.desktop_rect().await?;
+                let source = self.implementation.capture_rect_to_source(rect).await?;
+                Ok((source, rect))
+            }
+            SearchIn::Display(selector) => {
+                let display_id = self
+                    .implementation
+                    .resolve_display_selector(selector)
+                    .await?;
+                self.implementation
+                    .capture_display_to_source(display_id)
+                    .await
+            }
+            SearchIn::Rect(rect) => {
+                let source = self.implementation.capture_rect_to_source(*rect).await?;
+                Ok((source, *rect))
+            }
+            SearchIn::Window(id) => {
+                let rect = self.windows.rect(*id)?;
+                let source = self.implementation.capture_rect_to_source(rect).await?;
+                Ok((source, rect))
+            }
+        }
     }
 }

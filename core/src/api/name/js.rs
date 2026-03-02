@@ -53,6 +53,12 @@ impl JsWildcard {
     pub const fn inner(&self) -> &WildMatch {
         &self.inner
     }
+
+    /// @skip
+    #[must_use]
+    pub fn pattern(&self) -> &str {
+        &self.pattern
+    }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]

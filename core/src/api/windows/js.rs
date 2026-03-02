@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
@@ -15,12 +13,12 @@ use crate::{
             classes::{HostClass, SingletonClass, register_host_class},
             task::task,
         },
+        image::js::JsImage,
         name::js::JsName,
         point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
         size::js::{JsSize, JsSizeLike},
     },
-    runtime::Runtime,
     types::display::{DisplayFields, display_with_type},
 };
 
@@ -104,6 +102,7 @@ impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
 #[rquickjs::class(rename = "Windows")]
 pub struct JsWindows {
     inner: super::Windows,
+    screenshot: crate::api::screenshot::Screenshot,
 }
 
 impl<'js> SingletonClass<'js> for JsWindows {
@@ -122,10 +121,8 @@ impl JsWindows {
     /// @skip
     #[must_use]
     #[instrument(skip_all)]
-    pub fn new(runtime: Arc<Runtime>) -> Self {
-        Self {
-            inner: super::Windows::new(runtime),
-        }
+    pub fn new(windows: super::Windows, screenshot: crate::api::screenshot::Screenshot) -> Self {
+        Self { inner: windows, screenshot }
     }
 }
 
@@ -145,6 +142,7 @@ impl JsWindows {
             .into_iter()
             .map(|id| JsWindowHandle {
                 inner: self.inner.clone(),
+                screenshot: self.screenshot.clone(),
                 id,
             })
             .collect())
@@ -162,6 +160,7 @@ impl JsWindows {
 
         Ok(JsWindowHandle {
             inner: self.inner.clone(),
+            screenshot: self.screenshot.clone(),
             id,
         })
     }
@@ -241,6 +240,7 @@ impl JsWindows {
 
             windows.push(JsWindowHandle {
                 inner: self.inner.clone(),
+                screenshot: self.screenshot.clone(),
                 id,
             });
         }
@@ -267,6 +267,7 @@ impl JsWindows {
 
             windows.push(JsWindowHandle {
                 inner: self.inner.clone(),
+                screenshot: self.screenshot.clone(),
                 id,
             });
         }
@@ -296,6 +297,7 @@ impl JsWindows {
 #[rquickjs::class(rename = "WindowHandle")]
 pub struct JsWindowHandle {
     inner: super::Windows,
+    screenshot: crate::api::screenshot::Screenshot,
     id: super::WindowId,
 }
 
@@ -303,6 +305,12 @@ impl<'js> HostClass<'js> for JsWindowHandle {}
 
 impl<'js> Trace<'js> for JsWindowHandle {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl JsWindowHandle {
+    pub(crate) const fn window_id(&self) -> super::WindowId {
+        self.id
+    }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
@@ -361,6 +369,21 @@ impl JsWindowHandle {
     /// @readonly
     pub fn rect(&self, ctx: Ctx<'_>) -> Result<JsRect> {
         Ok(self.inner.rect(self.id).into_js_result(&ctx)?.into())
+    }
+
+    /// Captures a screenshot of the window's bounding rectangle.
+    ///
+    /// ```ts
+    /// const win = windows.activeWindow();
+    /// const image = await win.capture();
+    /// ```
+    pub async fn capture(&self, ctx: Ctx<'_>) -> Result<JsImage> {
+        Ok(JsImage::new(
+            self.screenshot
+                .capture_window(self.id)
+                .await
+                .into_js_result(&ctx)?,
+        ))
     }
 
     /// Makes this window the active (focused) window.

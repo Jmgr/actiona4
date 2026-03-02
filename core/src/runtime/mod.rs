@@ -58,13 +58,13 @@ use crate::{
         process::js::JsProcess,
         random::js::JsRandom,
         rect::js::JsRect,
-        screenshot::js::JsScreenshot,
+        screenshot::{Screenshot, js::JsScreenshot},
         size::js::JsSize,
         standardpaths::js::JsStandardPaths,
         system::js::JsSystem,
         ui::js::JsUi,
         web::js::JsWeb,
-        windows::js::JsWindows,
+        windows::{Windows, js::JsWindows},
     },
     cancel_on,
     runtime::{events::Guard, shared_rng::SharedRng},
@@ -336,7 +336,10 @@ impl Runtime {
         )?;
         let console = JsConsole::default();
         let js_displays = JsDisplays::new(displays.clone())?;
-        let screenshot = JsScreenshot::new(runtime.clone(), displays.clone()).await?;
+        let windows_inner = Windows::new(runtime.clone());
+        let screenshot_inner =
+            Screenshot::new(runtime.clone(), displays.clone(), windows_inner.clone()).await?;
+        let screenshot = JsScreenshot::new(screenshot_inner.clone());
         let clipboard = JsClipboard::new(clipboard);
         let system = JsSystem::new(task_tracker.clone()).await?;
         let audio = JsAudio::new(
@@ -347,7 +350,7 @@ impl Runtime {
         let process = JsProcess::new(task_tracker.clone());
         let notification = JsNotification::default();
         let standard_paths = JsStandardPaths::default();
-        let windows = JsWindows::new(runtime.clone());
+        let windows = JsWindows::new(windows_inner, screenshot_inner);
 
         let script_engine = ScriptEngine::new().await?;
 
