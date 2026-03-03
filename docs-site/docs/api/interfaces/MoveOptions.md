@@ -1,32 +1,21 @@
-# Interface: DragOptions
+# Interface: MoveOptions
 
 
-Options for drag and drop operations.
+Options for smooth mouse movement.
 
 ```ts
-await mouse.dragAndDrop({ x: 100, y: 100 }, { x: 500, y: 500 }, {
-  speed: 500,
-  tween: Tween.Linear,
+await mouse.move(500, 300, {
+  speed: 1000,
+  tween: Tween.SineOut,
+  targetRandomness: 5
 });
 ```
 
-## Extends
+## Extended by
 
-- [`MoveOptions`](MoveOptions.md)
+- [`DragOptions`](DragOptions.md)
 
 ## Properties
-
-### button?
-
-> `optional` **button**: [`Button`](../enumerations/Button.md)
-
-Mouse button to use for dragging.
-
-#### Default Value
-
-`Button.Left`
-
-***
 
 ### interval?
 
@@ -37,10 +26,6 @@ Interval in seconds
 #### Default Value
 
 `0.01`
-
-#### Inherited from
-
-[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)
 
 ***
 
@@ -54,10 +39,6 @@ Amplitude of the Perlin noise applied to the movement path.
 
 `5`
 
-#### Inherited from
-
-[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
-
 ***
 
 ### perlinScale?
@@ -69,10 +50,6 @@ Scale of the Perlin noise applied to the movement path.
 #### Default Value
 
 `50`
-
-#### Inherited from
-
-[`MoveOptions`](MoveOptions.md).[`perlinScale`](MoveOptions.md#perlinscale)
 
 ***
 
@@ -86,10 +63,6 @@ Movement speed in pixels per second.
 
 `2000`
 
-#### Inherited from
-
-[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
-
 ***
 
 ### targetRandomness?
@@ -102,10 +75,6 @@ Random offset applied to the target position, in pixels.
 
 `0`
 
-#### Inherited from
-
-[`MoveOptions`](MoveOptions.md).[`targetRandomness`](MoveOptions.md#targetrandomness)
-
 ***
 
 ### tween?
@@ -117,7 +86,3 @@ Easing function used for the movement.
 #### Default Value
 
 `Tween.SineOut`
-
-#### Inherited from
-
-[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)

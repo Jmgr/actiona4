@@ -66,6 +66,69 @@ Number of times to click.
 
 ***
 
+###### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+***
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
+
+***
+
 ###### duration?
 
 > `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -87,6 +150,38 @@ Delay between consecutive clicks, in seconds.
 ###### Default Value
 
 `0`
+
+***
+
+###### position?
+
+> `optional` **position**: [`Point`](../classes/Point.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`position`](PressOptions.md#position)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`relativePosition`](PressOptions.md#relativeposition)
 
 ***
 
@@ -138,6 +233,69 @@ Number of times to click.
 
 ***
 
+###### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+***
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`button`](ClickOptions.md#button)
+
+***
+
 ###### delay?
 
 > `optional` **delay**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -162,7 +320,7 @@ How long to hold each click, in seconds.
 
 ###### Inherited from
 
-`DoubleClickOptions`.[`duration`](#duration)
+[`ClickOptions`](ClickOptions.md).[`duration`](ClickOptions.md#duration)
 
 ***
 
@@ -178,7 +336,39 @@ Delay between consecutive clicks, in seconds.
 
 ###### Inherited from
 
-`DoubleClickOptions`.[`interval`](#interval)
+[`ClickOptions`](ClickOptions.md).[`interval`](ClickOptions.md#interval)
+
+***
+
+###### position?
+
+> `optional` **position**: [`Point`](../classes/Point.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`position`](ClickOptions.md#position)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`relativePosition`](ClickOptions.md#relativeposition)
 
 ***
 
@@ -298,6 +488,102 @@ Mouse button to use for dragging.
 
 `Button.Left`
 
+***
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Interval in seconds
+
+###### Default Value
+
+`0.01`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)
+
+***
+
+###### perlinAmplitude?
+
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Amplitude of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`5`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
+
+***
+
+###### perlinScale?
+
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Scale of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`50`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinScale`](MoveOptions.md#perlinscale)
+
+***
+
+###### speed?
+
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Movement speed in pixels per second.
+
+###### Default Value
+
+`2000`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
+
+***
+
+###### targetRandomness?
+
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Random offset applied to the target position, in pixels.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`targetRandomness`](MoveOptions.md#targetrandomness)
+
+***
+
+###### tween?
+
+> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+
+Easing function used for the movement.
+
+###### Default Value
+
+`Tween.SineOut`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)
+
 </div>
 
 ##### Returns
@@ -400,6 +686,102 @@ Mouse button to use for dragging.
 
 `Button.Left`
 
+***
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Interval in seconds
+
+###### Default Value
+
+`0.01`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)
+
+***
+
+###### perlinAmplitude?
+
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Amplitude of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`5`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
+
+***
+
+###### perlinScale?
+
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Scale of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`50`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinScale`](MoveOptions.md#perlinscale)
+
+***
+
+###### speed?
+
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Movement speed in pixels per second.
+
+###### Default Value
+
+`2000`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
+
+***
+
+###### targetRandomness?
+
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Random offset applied to the target position, in pixels.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`targetRandomness`](MoveOptions.md#targetrandomness)
+
+***
+
+###### tween?
+
+> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+
+Easing function used for the movement.
+
+###### Default Value
+
+`Tween.SineOut`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)
+
 </div>
 
 ##### Returns
@@ -501,6 +883,102 @@ Mouse button to use for dragging.
 ###### Default Value
 
 `Button.Left`
+
+***
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Interval in seconds
+
+###### Default Value
+
+`0.01`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)
+
+***
+
+###### perlinAmplitude?
+
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Amplitude of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`5`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
+
+***
+
+###### perlinScale?
+
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Scale of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`50`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinScale`](MoveOptions.md#perlinscale)
+
+***
+
+###### speed?
+
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Movement speed in pixels per second.
+
+###### Default Value
+
+`2000`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
+
+***
+
+###### targetRandomness?
+
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Random offset applied to the target position, in pixels.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`targetRandomness`](MoveOptions.md#targetrandomness)
+
+***
+
+###### tween?
+
+> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+
+Easing function used for the movement.
+
+###### Default Value
+
+`Tween.SineOut`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)
 
 </div>
 
@@ -607,6 +1085,102 @@ Mouse button to use for dragging.
 ###### Default Value
 
 `Button.Left`
+
+***
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Interval in seconds
+
+###### Default Value
+
+`0.01`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)
+
+***
+
+###### perlinAmplitude?
+
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Amplitude of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`5`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
+
+***
+
+###### perlinScale?
+
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Scale of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`50`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`perlinScale`](MoveOptions.md#perlinscale)
+
+***
+
+###### speed?
+
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Movement speed in pixels per second.
+
+###### Default Value
+
+`2000`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
+
+***
+
+###### targetRandomness?
+
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Random offset applied to the target position, in pixels.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`targetRandomness`](MoveOptions.md#targetrandomness)
+
+***
+
+###### tween?
+
+> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+
+Easing function used for the movement.
+
+###### Default Value
+
+`Tween.SineOut`
+
+###### Inherited from
+
+[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)
 
 </div>
 
@@ -735,7 +1309,7 @@ Abort signal to cancel the measurement.
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **move**(`point`: [`PointLike`](../type-aliases/PointLike.md), `options?`: `any`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **move**(`point`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`MoveOptions`](MoveOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor smoothly to the given position.
 
@@ -747,7 +1321,81 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### options?
 
-`any`
+[`MoveOptions`](MoveOptions.md)
+
+<div class="options-fields">
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Interval in seconds
+
+###### Default Value
+
+`0.01`
+
+***
+
+###### perlinAmplitude?
+
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Amplitude of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`5`
+
+***
+
+###### perlinScale?
+
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Scale of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`50`
+
+***
+
+###### speed?
+
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Movement speed in pixels per second.
+
+###### Default Value
+
+`2000`
+
+***
+
+###### targetRandomness?
+
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Random offset applied to the target position, in pixels.
+
+###### Default Value
+
+`0`
+
+***
+
+###### tween?
+
+> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+
+Easing function used for the movement.
+
+###### Default Value
+
+`Tween.SineOut`
+
+</div>
 
 ##### Returns
 
@@ -755,7 +1403,7 @@ Moves the mouse cursor smoothly to the given position.
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **move**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: `any`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **move**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`MoveOptions`](MoveOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor smoothly to the given position.
 
@@ -771,7 +1419,81 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### options?
 
-`any`
+[`MoveOptions`](MoveOptions.md)
+
+<div class="options-fields">
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Interval in seconds
+
+###### Default Value
+
+`0.01`
+
+***
+
+###### perlinAmplitude?
+
+> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Amplitude of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`5`
+
+***
+
+###### perlinScale?
+
+> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Scale of the Perlin noise applied to the movement path.
+
+###### Default Value
+
+`50`
+
+***
+
+###### speed?
+
+> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Movement speed in pixels per second.
+
+###### Default Value
+
+`2000`
+
+***
+
+###### targetRandomness?
+
+> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Random offset applied to the target position, in pixels.
+
+###### Default Value
+
+`0`
+
+***
+
+###### tween?
+
+> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+
+Easing function used for the movement.
+
+###### Default Value
+
+`Tween.SineOut`
+
+</div>
 
 ##### Returns
 
@@ -987,7 +1709,7 @@ Returns the current mouse cursor position.
 
 ### press()
 
-> **press**(`options?`: `any`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **press**(`options?`: [`PressOptions`](PressOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Presses and holds a mouse button.
 
@@ -995,7 +1717,92 @@ Presses and holds a mouse button.
 
 ##### options?
 
-`any`
+[`PressOptions`](PressOptions.md)
+
+<div class="options-fields">
+
+###### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+***
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+***
+
+###### position?
+
+> `optional` **position**: [`Point`](../classes/Point.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+</div>
 
 #### Returns
 

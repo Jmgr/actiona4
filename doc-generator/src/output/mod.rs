@@ -19,7 +19,7 @@ fn write_comments<W: Write>(comments: &[String], prefix: &str, file: &mut W) -> 
 
     for comment in comments {
         write!(file, "{prefix}")?;
-        writeln!(file, " * {comment}")?;
+        writeln!(file, " * {}", comment.replace("*/", "*\\/"))?;
     }
 
     write!(file, "{prefix}")?;
@@ -534,6 +534,8 @@ mod tests {
         types::{File, Method, MethodOverload, Struct, Type, Variable},
     };
 
+    use super::write_comments;
+
     #[test]
     fn test_overloading() {
         let mut file = File::default();
@@ -641,5 +643,17 @@ mod tests {
             .overloads;
 
         println!("{overloads:#?}");
+    }
+
+    #[test]
+    fn test_write_comments_escapes_comment_terminators() {
+        let comments = vec!["const match = /HDMI-.*/;".to_string()];
+        let mut output = Vec::new();
+
+        write_comments(&comments, "", &mut output).unwrap();
+
+        let output = String::from_utf8(output).unwrap();
+
+        assert_eq!(output, "/**\n * const match = /HDMI-.*\\/;\n */\n");
     }
 }

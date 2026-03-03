@@ -74,7 +74,7 @@ Height
 
 ### size
 
-> **size**: `Size`
+> **size**: [`Size`](Size.md)
 
 Size
 

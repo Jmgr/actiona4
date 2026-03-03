@@ -836,6 +836,7 @@ impl<'js> SingletonClass<'js> for JsNotification {
 }
 
 impl JsNotification {
+    /// @skip
     #[must_use]
     pub const fn new(task_tracker: TaskTracker) -> Self {
         Self {

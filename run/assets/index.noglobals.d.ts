@@ -6580,7 +6580,6 @@ interface NotificationOptions {
  * @category Notification
  */
 interface Notification {
-    static new(taskTracker: TaskTracker): Notification;
     /**
      * Shows a desktop notification.
      */
@@ -7485,7 +7484,7 @@ class Rect {
  * const img = await screenshot.captureDisplay(Display.fromId(474));
  * const img = await screenshot.captureDisplay(Display.fromName("HDMI-1"));
  * const img = await screenshot.captureDisplay(Display.fromName(new Wildcard("HDMI-*")));
- * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+ * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*\/));
  * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
  * ```
  * @category Screenshot
@@ -7543,7 +7542,7 @@ class Display {
      * ```ts
      * const img = await screenshot.captureDisplay(Display.fromName("HDMI-1"));
      * const img = await screenshot.captureDisplay(Display.fromName(new Wildcard("HDMI-*")));
-     * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+     * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*\/));
      * ```
      */
     static fromName(name: NameLike): Display;
@@ -7662,7 +7661,7 @@ interface Screenshot {
      * ```ts
      * const image = await screenshot.captureDisplay(Display.primary());
      * const image = await screenshot.captureDisplay(Display.fromId(474));
-     * const image = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+     * const image = await screenshot.captureDisplay(Display.fromName(/HDMI-.*\/));
      * ```
      */
     captureDisplay(display: Display): Promise<Image>;

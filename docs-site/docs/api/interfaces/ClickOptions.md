@@ -10,7 +10,7 @@ await mouse.click({ duration: 0.5 });
 
 ## Extends
 
-- `PressOptions`
+- [`PressOptions`](PressOptions.md)
 
 ## Extended by
 
@@ -27,6 +27,22 @@ Number of times to click.
 #### Default Value
 
 `1`
+
+***
+
+### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+Mouse button to press.
+
+#### Default Value
+
+`Button.Left`
+
+#### Inherited from
+
+[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
 
 ***
 
@@ -51,6 +67,38 @@ Delay between consecutive clicks, in seconds.
 #### Default Value
 
 `0`
+
+***
+
+### position?
+
+> `optional` **position**: [`Point`](../classes/Point.md)
+
+Position to move the cursor to before pressing.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+#### Inherited from
+
+[`PressOptions`](PressOptions.md).[`position`](PressOptions.md#position)
+
+***
+
+### relativePosition?
+
+> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+#### Default Value
+
+`false`
+
+#### Inherited from
+
+[`PressOptions`](PressOptions.md).[`relativePosition`](PressOptions.md#relativeposition)
 
 ***
 
