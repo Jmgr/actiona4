@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 use color_eyre::Result;
 use opencv::core::{
     Mat, MatTraitConst, MatTraitConstManual, MatTraitManual, NORM_L2, Point, Rect, Size,
-    ToInputArray, count_non_zero, min_max_loc, no_array, norm2, norm2_def,
+    ToInputArray, count_non_zero, norm2, norm2_def,
 };
 use tracing::instrument;
 
@@ -25,33 +25,10 @@ pub fn compute_results(
     search_one: bool,
     non_maximum_suppression_radius: Option<i32>,
 ) -> Result<Vec<Match>> {
-    if search_one {
-        // Fast path for "best match only": use OpenCV's min/max finder.
-        let mut max_val = 0.;
-        let mut max_loc = Point::default();
-
-        min_max_loc(
-            &match_template_result,
-            None,
-            Some(&mut max_val),
-            None,
-            Some(&mut max_loc),
-            &no_array(),
-        )?;
-
-        if max_val.is_finite() && max_val >= match_threshold.into() {
-            #[allow(clippy::as_conversions)]
-            return Ok(vec![Match::new(
-                max_loc.into(),
-                Rect::from_point_size(max_loc, template_size).into(),
-                max_val,
-            )]);
-        }
-
-        return Ok(vec![]);
-    }
-
-    // Collect all matches above the threshold.
+    // Collect all finite matches above the threshold.
+    // For search_one we still use this path to avoid duplicating the scan logic,
+    // then just keep the best result. (OpenCV min_max_loc can return NaN/Inf for
+    // masked/flat regions, so we skip non-finite values while scanning.)
     let mut match_points = Vec::new();
     let rows = match_template_result.rows();
     let cols = match_template_result.cols();
@@ -87,8 +64,13 @@ pub fn compute_results(
         }
     }
 
-    // Sort matches by score (in descending order) so NMS keeps best-first.
+    // Sort by score descending so NMS (and search_one) keeps the best first.
     match_points.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(Ordering::Equal));
+
+    if search_one {
+        match_points.truncate(1);
+        return Ok(match_points);
+    }
 
     let matches = if let Some(non_maximum_suppression_radius) = non_maximum_suppression_radius {
         non_maximum_suppression(&match_points, non_maximum_suppression_radius)
@@ -223,5 +205,16 @@ mod tests {
         let matches = compute_results(&result, Size::new(1, 1), 0.0, true, None).unwrap();
 
         assert!(matches.is_empty());
+    }
+
+    #[test]
+    fn compute_results_find_one_picks_best_finite_score() {
+        let result = f32_mat(&[f32::INFINITY, f32::NAN, 0.4, 0.9, 0.8], 1).unwrap();
+        let matches = compute_results(&result, Size::new(1, 1), 0.8, true, None).unwrap();
+
+        assert_eq!(matches.len(), 1);
+        assert_eq!(matches[0].position.x, 3);
+        assert_eq!(matches[0].position.y, 0);
+        assert!((matches[0].score - 0.9).abs() < 1e-6);
     }
 }
