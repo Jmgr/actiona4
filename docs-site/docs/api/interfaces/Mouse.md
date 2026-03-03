@@ -23,6 +23,23 @@ await mouse.move(800, 600, {
 
 ## Methods
 
+### clearEventHandles()
+
+> **clearEventHandles**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Unregisters all event handles registered on this mouse instance.
+
+```ts
+mouse.onButton(Button.Left, () => console.println("left"));
+mouse.clearEventHandles();
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
 ### click()
 
 > <span class="async-badge">async</span> **click**(`options?`: [`ClickOptions`](ClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -49,69 +66,6 @@ Number of times to click.
 
 ***
 
-###### button?
-
-> `optional` **button**: [`Button`](../enumerations/Button.md)
-
-<div class="options-fields">
-
-###### Back
-
-> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Back button
-`Button.Back`
-
-***
-
-###### Forward
-
-> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Forward button
-`Button.Forward`
-
-***
-
-###### Left
-
-> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Left button
-`Button.Left`
-
-***
-
-###### Middle
-
-> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Middle button
-`Button.Middle`
-
-***
-
-###### Right
-
-> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Right button
-`Button.Right`
-
-</div>
-
-Mouse button to press.
-
-###### Default Value
-
-`Button.Left`
-
-###### Inherited from
-
-[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
-
-***
-
 ###### duration?
 
 > `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -133,38 +87,6 @@ Delay between consecutive clicks, in seconds.
 ###### Default Value
 
 `0`
-
-***
-
-###### position?
-
-> `optional` **position**: [`Point`](../classes/Point.md)
-
-Position to move the cursor to before pressing.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-###### Inherited from
-
-[`PressOptions`](PressOptions.md).[`position`](PressOptions.md#position)
-
-***
-
-###### relativePosition?
-
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Whether the position is relative to the current cursor position.
-
-###### Default Value
-
-`false`
-
-###### Inherited from
-
-[`PressOptions`](PressOptions.md).[`relativePosition`](PressOptions.md#relativeposition)
 
 ***
 
@@ -216,6 +138,109 @@ Number of times to click.
 
 ***
 
+###### delay?
+
+> `optional` **delay**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Delay between the two clicks, in seconds.
+
+###### Default Value
+
+`0.25`
+
+***
+
+###### duration?
+
+> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How long to hold each click, in seconds.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+`DoubleClickOptions`.[`duration`](#duration)
+
+***
+
+###### interval?
+
+> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Delay between consecutive clicks, in seconds.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+`DoubleClickOptions`.[`interval`](#interval)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the click.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`signal`](ClickOptions.md#signal)
+
+</div>
+
+#### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### dragAndDrop()
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **dragAndDrop**(`start`: [`PointLike`](../type-aliases/PointLike.md), `end`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`DragOptions`](DragOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+
+```ts
+// Drag an element from one position to another
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+```
+
+```ts
+// Drag with custom speed and right button
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+  button: Button.Right,
+  speed: 500,
+});
+```
+
+##### Parameters
+
+###### start
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### end
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### options?
+
+[`DragOptions`](DragOptions.md)
+
+<div class="options-fields">
+
 ###### button?
 
 > `optional` **button**: [`Button`](../enumerations/Button.md)
@@ -267,111 +292,325 @@ Right button
 
 </div>
 
-Mouse button to press.
+Mouse button to use for dragging.
 
 ###### Default Value
 
 `Button.Left`
 
-###### Inherited from
+</div>
 
-[`ClickOptions`](ClickOptions.md).[`button`](ClickOptions.md#button)
+##### Returns
 
-***
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-###### delay?
+#### Call Signature
 
-> `optional` **delay**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> <span class="async-badge">async</span> **dragAndDrop**(`start`: [`PointLike`](../type-aliases/PointLike.md), `x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DragOptions`](DragOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-Delay between the two clicks, in seconds.
+Presses a mouse button at `start`, moves smoothly to `end`, then releases.
 
-###### Default Value
+```ts
+// Drag an element from one position to another
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+```
 
-`0.25`
+```ts
+// Drag with custom speed and right button
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+  button: Button.Right,
+  speed: 500,
+});
+```
 
-***
+##### Parameters
 
-###### duration?
+###### start
 
-> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+[`PointLike`](../type-aliases/PointLike.md)
 
-How long to hold each click, in seconds.
+###### x
 
-###### Default Value
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`0`
+###### y
 
-###### Inherited from
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-[`ClickOptions`](ClickOptions.md).[`duration`](ClickOptions.md#duration)
+###### options?
 
-***
+[`DragOptions`](DragOptions.md)
 
-###### interval?
+<div class="options-fields">
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+###### button?
 
-Delay between consecutive clicks, in seconds.
+> `optional` **button**: [`Button`](../enumerations/Button.md)
 
-###### Default Value
+<div class="options-fields">
 
-`0`
+###### Back
 
-###### Inherited from
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-[`ClickOptions`](ClickOptions.md).[`interval`](ClickOptions.md#interval)
-
-***
-
-###### position?
-
-> `optional` **position**: [`Point`](../classes/Point.md)
-
-Position to move the cursor to before pressing.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-###### Inherited from
-
-[`ClickOptions`](ClickOptions.md).[`position`](ClickOptions.md#position)
+Back button
+`Button.Back`
 
 ***
 
-###### relativePosition?
+###### Forward
 
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Whether the position is relative to the current cursor position.
-
-###### Default Value
-
-`false`
-
-###### Inherited from
-
-[`ClickOptions`](ClickOptions.md).[`relativePosition`](ClickOptions.md#relativeposition)
+Forward button
+`Button.Forward`
 
 ***
 
-###### signal?
+###### Left
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Abort signal to cancel the click.
+Left button
+`Button.Left`
 
-###### Default Value
+***
 
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+###### Middle
 
-###### Inherited from
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-[`ClickOptions`](ClickOptions.md).[`signal`](ClickOptions.md#signal)
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
 
 </div>
 
-#### Returns
+Mouse button to use for dragging.
+
+###### Default Value
+
+`Button.Left`
+
+</div>
+
+##### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **dragAndDrop**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `end`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`DragOptions`](DragOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+
+```ts
+// Drag an element from one position to another
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+```
+
+```ts
+// Drag with custom speed and right button
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+  button: Button.Right,
+  speed: 500,
+});
+```
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### end
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### options?
+
+[`DragOptions`](DragOptions.md)
+
+<div class="options-fields">
+
+###### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+***
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+</div>
+
+Mouse button to use for dragging.
+
+###### Default Value
+
+`Button.Left`
+
+</div>
+
+##### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **dragAndDrop**(`x1`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y1`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `x2`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y2`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DragOptions`](DragOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+
+```ts
+// Drag an element from one position to another
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+```
+
+```ts
+// Drag with custom speed and right button
+await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+  button: Button.Right,
+  speed: 500,
+});
+```
+
+##### Parameters
+
+###### x1
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y1
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### x2
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y2
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DragOptions`](DragOptions.md)
+
+<div class="options-fields">
+
+###### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+***
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+</div>
+
+Mouse button to use for dragging.
+
+###### Default Value
+
+`Button.Left`
+
+</div>
+
+##### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
@@ -496,7 +735,7 @@ Abort signal to cancel the measurement.
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **move**(`point`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`MoveOptions`](MoveOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **move**(`point`: [`PointLike`](../type-aliases/PointLike.md), `options?`: `any`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor smoothly to the given position.
 
@@ -508,81 +747,7 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### options?
 
-[`MoveOptions`](MoveOptions.md)
-
-<div class="options-fields">
-
-###### interval?
-
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Interval in seconds
-
-###### Default Value
-
-`0.01`
-
-***
-
-###### perlinAmplitude?
-
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Amplitude of the Perlin noise applied to the movement path.
-
-###### Default Value
-
-`5`
-
-***
-
-###### perlinScale?
-
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Scale of the Perlin noise applied to the movement path.
-
-###### Default Value
-
-`50`
-
-***
-
-###### speed?
-
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Movement speed in pixels per second.
-
-###### Default Value
-
-`2000`
-
-***
-
-###### targetRandomness?
-
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Random offset applied to the target position, in pixels.
-
-###### Default Value
-
-`0`
-
-***
-
-###### tween?
-
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
-
-Easing function used for the movement.
-
-###### Default Value
-
-`Tween.SineOut`
-
-</div>
+`any`
 
 ##### Returns
 
@@ -590,7 +755,7 @@ Easing function used for the movement.
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **move**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`MoveOptions`](MoveOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **move**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: `any`): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Moves the mouse cursor smoothly to the given position.
 
@@ -606,81 +771,7 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### options?
 
-[`MoveOptions`](MoveOptions.md)
-
-<div class="options-fields">
-
-###### interval?
-
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Interval in seconds
-
-###### Default Value
-
-`0.01`
-
-***
-
-###### perlinAmplitude?
-
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Amplitude of the Perlin noise applied to the movement path.
-
-###### Default Value
-
-`5`
-
-***
-
-###### perlinScale?
-
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Scale of the Perlin noise applied to the movement path.
-
-###### Default Value
-
-`50`
-
-***
-
-###### speed?
-
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Movement speed in pixels per second.
-
-###### Default Value
-
-`2000`
-
-***
-
-###### targetRandomness?
-
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Random offset applied to the target position, in pixels.
-
-###### Default Value
-
-`0`
-
-***
-
-###### tween?
-
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
-
-Easing function used for the movement.
-
-###### Default Value
-
-`Tween.SineOut`
-
-</div>
+`any`
 
 ##### Returns
 
@@ -688,41 +779,25 @@ Easing function used for the movement.
 
 ***
 
-### position()
+### onButton()
 
-> **position**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
+> **onButton**(`button`: [`Button`](../enumerations/Button.md), `callback`: () => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`OnButtonOptions`](OnButtonOptions.md)): [`EventHandle`](EventHandle.md)
 
-Returns the current mouse cursor position.
+Registers a listener that fires when a mouse button is pressed.
 
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
-</div>
-
-***
-
-### press()
-
-> **press**(`options?`: [`PressOptions`](PressOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-Presses and holds a mouse button.
+```ts
+const handle = mouse.onButton(Button.Left, () => {
+  console.println("Left button pressed!");
+});
+// ... later:
+handle.cancel();
+```
 
 #### Parameters
 
-##### options?
+##### button
 
-[`PressOptions`](PressOptions.md)
-
-<div class="options-fields">
-
-###### button?
-
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+[`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -771,37 +846,156 @@ Right button
 
 </div>
 
-Mouse button to press.
+##### callback
 
-###### Default Value
+() => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-`Button.Left`
+##### options?
 
-***
+[`OnButtonOptions`](OnButtonOptions.md)
 
-###### position?
+<div class="options-fields">
 
-> `optional` **position**: [`Point`](../classes/Point.md)
+###### exclusive?
 
-Position to move the cursor to before pressing.
+> `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### relativePosition?
-
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Whether the position is relative to the current cursor position.
+Require exactly this button and no others to be pressed simultaneously.
 
 ###### Default Value
 
 `false`
 
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to automatically cancel this listener when signalled.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
 </div>
+
+#### Returns
+
+[`EventHandle`](EventHandle.md)
+
+***
+
+### onScroll()
+
+> **onScroll**(`callback`: (`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`OnScrollOptions`](OnScrollOptions.md)): [`EventHandle`](EventHandle.md)
+
+Registers a listener that fires when the mouse wheel is scrolled.
+
+```ts
+const handle = mouse.onScroll((length) => {
+  console.println(`Scrolled ${length} units`);
+});
+// ... later:
+handle.cancel();
+```
+
+```ts
+// Listen for horizontal scroll only
+const handle = mouse.onScroll((length) => {
+  console.println(`Horizontal scroll: ${length}`);
+}, { axis: Axis.Horizontal });
+```
+
+#### Parameters
+
+##### callback
+
+(`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### options?
+
+[`OnScrollOptions`](OnScrollOptions.md)
+
+<div class="options-fields">
+
+###### axis?
+
+> `optional` **axis**: [`Axis`](../enumerations/Axis.md)
+
+<div class="options-fields">
+
+###### Horizontal
+
+> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Axis.Horizontal`
+
+***
+
+###### Vertical
+
+> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Axis.Vertical`
+
+</div>
+
+Axis to listen on.
+
+###### Default Value
+
+`Axis.Vertical`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to automatically cancel this listener when signalled.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`EventHandle`](EventHandle.md)
+
+***
+
+### position()
+
+> **position**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
+
+Returns the current mouse cursor position.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
+### press()
+
+> **press**(`options?`: `any`): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Presses and holds a mouse button.
+
+#### Parameters
+
+##### options?
+
+`any`
 
 #### Returns
 
@@ -1001,3 +1195,185 @@ Moves the mouse cursor by the given offset (relative coordinates).
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### waitForButton()
+
+> <span class="async-badge">async</span> **waitForButton**(`options?`: [`WaitForButtonOptions`](WaitForButtonOptions.md)): [`Task`](../type-aliases/Task.md)\<[`Button`](../enumerations/Button.md)\>
+
+Waits until a mouse button is pressed.
+
+```ts
+// Wait for any button press
+const button = await mouse.waitForButton();
+```
+
+```ts
+// Wait for left button with abort support
+const controller = new AbortController();
+const button = await mouse.waitForButton({
+  button: Button.Left,
+  signal: controller.signal
+});
+```
+
+#### Parameters
+
+##### options?
+
+[`WaitForButtonOptions`](WaitForButtonOptions.md)
+
+<div class="options-fields">
+
+###### button?
+
+> `optional` **button**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+***
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+</div>
+
+Mouse button to wait for. If not specified, waits for any button.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the wait.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`Button`](../enumerations/Button.md)\>
+
+***
+
+### waitForScroll()
+
+> <span class="async-badge">async</span> **waitForScroll**(`options?`: [`WaitForScrollOptions`](WaitForScrollOptions.md)): [`Task`](../type-aliases/Task.md)\<[`ScrollEvent`](ScrollEvent.md)\>
+
+Waits until the mouse wheel is scrolled.
+
+```ts
+// Wait for any scroll event
+const event = await mouse.waitForScroll();
+console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+```
+
+```ts
+// Wait for vertical scroll with abort support
+const controller = new AbortController();
+const event = await mouse.waitForScroll({
+  axis: Axis.Vertical,
+  signal: controller.signal
+});
+```
+
+#### Parameters
+
+##### options?
+
+[`WaitForScrollOptions`](WaitForScrollOptions.md)
+
+<div class="options-fields">
+
+###### axis?
+
+> `optional` **axis**: [`Axis`](../enumerations/Axis.md)
+
+<div class="options-fields">
+
+###### Horizontal
+
+> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Axis.Horizontal`
+
+***
+
+###### Vertical
+
+> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Axis.Vertical`
+
+</div>
+
+Scroll axis to wait for. If not specified, waits for any axis.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the wait.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`ScrollEvent`](ScrollEvent.md)\>

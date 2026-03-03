@@ -22,6 +22,22 @@ Server capabilities.
 
 ***
 
+### new()
+
+> **new**(`taskTracker`: `TaskTracker`): `Notification`
+
+#### Parameters
+
+##### taskTracker
+
+`TaskTracker`
+
+#### Returns
+
+`Notification`
+
+***
+
 ### show()
 
 > <span class="async-badge">async</span> **show**(`options?`: [`NotificationOptions`](NotificationOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`NotificationHandle`](NotificationHandle.md)\>

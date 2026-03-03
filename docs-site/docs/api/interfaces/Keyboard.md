@@ -10,9 +10,9 @@ keyboard.writeText("Hello, world!");
 
 ```ts
 // Press a key combination (Ctrl+C)
-keyboard.pressKey(Key.Control);
-keyboard.tapKey("c");
-keyboard.releaseKey(Key.Control);
+keyboard.press(Key.Control);
+keyboard.tap("c");
+keyboard.release(Key.Control);
 ```
 
 ```ts
@@ -298,11 +298,11 @@ Replacing with an image always uses the clipboard.
 
 ***
 
-### pressKey()
+### press()
 
-> **pressKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **press**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Presses and holds a key until `releaseKey` is called.
+Presses and holds a key until `release` is called.
 
 Accepts a `Key` constant, a single character string, or a raw keycode number.
 
@@ -338,11 +338,11 @@ Use this for keys not covered by the `Key` enum.
 
 ***
 
-### releaseKey()
+### release()
 
-> **releaseKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **release**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Releases a key previously held with `pressKey`.
+Releases a key previously held with `press`.
 
 Accepts a `Key` constant, a single character string, or a raw keycode number.
 
@@ -376,9 +376,9 @@ Releases a raw keycode previously held with `pressRaw`.
 
 ***
 
-### tapKey()
+### tap()
 
-> **tapKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **tap**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Presses and releases a key in one action.
 

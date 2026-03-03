@@ -6580,6 +6580,7 @@ interface NotificationOptions {
  * @category Notification
  */
 interface Notification {
+    static new(taskTracker: TaskTracker): Notification;
     /**
      * Shows a desktop notification.
      */
@@ -6924,6 +6925,24 @@ interface StartProcessOptions {
     signal?: AbortSignal;
 }
 /**
+ * Options for running a shell command.
+ * @category Process
+ * @expand
+ */
+interface ShellOptions {
+    /**
+     * Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
+     * On Windows defaults to `powershell`.
+     * @defaultValue `undefined`
+     */
+    shell?: string;
+    /**
+     * Abort signal to cancel the operation.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
  * Start and manage child processes.
  * 
  * ```ts
@@ -6991,6 +7010,30 @@ interface Process {
      * ```
      */
     startDetached(command: string, options?: StartProcessOptions): number;
+    /**
+     * Runs a command through the system shell, similar to C's `system()` function.
+     * 
+     * Stdio is inherited from the current process: if a console window is open the
+     * command runs inside it; otherwise the OS opens a new console window for it.
+     * 
+     * The default shell is platform-specific:
+     * - **Linux** – the value of `$SHELL`, falling back to `bash`.
+     * - **Windows** – `powershell`.
+     * 
+     * A custom shell can be supplied via `options.shell`. On Windows the command
+     * flag (`/C`, `-Command`, or `-c`) is inferred automatically from the shell name.
+     * 
+     * ```ts
+     * // Clear the screen (works on Windows with cmd/powershell and on Unix)
+     * await process.shell("cls");
+     * ```
+     * 
+     * ```ts
+     * // Use a specific shell
+     * await process.shell("echo hello", { shell: "zsh" });
+     * ```
+     */
+    shell(command: string, options?: ShellOptions): Task<number | undefined>;
     /**
      * Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
      * 
@@ -7431,13 +7474,170 @@ class Rect {
     union(other: Rect): Rect;
 }
 /**
- * Screenshot capture and image search.
+ * A display selector resolved at capture or search time.
  * 
- * Provides methods to capture screen regions, displays, and individual pixels,
- * as well as finding images on screen.
+ * Use the static factory methods to create a `Display`:
  * 
  * ```ts
- * const image = await screenshot.captureDisplay(0);
+ * // Capture a specific display
+ * const img = await screenshot.captureDisplay(Display.primary());
+ * const img = await screenshot.captureDisplay(Display.largest());
+ * const img = await screenshot.captureDisplay(Display.fromId(474));
+ * const img = await screenshot.captureDisplay(Display.fromName("HDMI-1"));
+ * const img = await screenshot.captureDisplay(Display.fromName(new Wildcard("HDMI-*")));
+ * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+ * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
+ * ```
+ * @category Screenshot
+ */
+class Display {
+    private constructor();
+    /**
+     * Selects the entire desktop (the bounding rectangle of all connected displays).
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.desktop());
+     * ```
+     */
+    static desktop(): Display;
+    /**
+     * Selects the primary (main) display.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.primary());
+     * ```
+     */
+    static primary(): Display;
+    /**
+     * Selects the display with the largest area.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.largest());
+     * ```
+     */
+    static largest(): Display;
+    /**
+     * Selects the display with the smallest area.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.smallest());
+     * ```
+     */
+    static smallest(): Display;
+    /**
+     * Selects a display by its unique numeric ID.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.fromId(474));
+     * ```
+     */
+    static fromId(id: number): Display;
+    /**
+     * Selects a display by its friendly name.
+     * 
+     * Accepts a plain string (exact match), a `Wildcard` pattern, or a `RegExp`.
+     * String and wildcard names are resolved at capture time (no cache required at
+     * construction); regex names require the display cache to be available when used
+     * with `findImage`, or will wait for it with `captureDisplay`.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.fromName("HDMI-1"));
+     * const img = await screenshot.captureDisplay(Display.fromName(new Wildcard("HDMI-*")));
+     * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+     * ```
+     */
+    static fromName(name: NameLike): Display;
+    /**
+     * Selects the display that contains the given point.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
+     * ```
+     */
+    static fromPoint(point: PointLike): Display;
+    /**
+     * Selects the display that contains the given point.
+     * 
+     * ```ts
+     * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
+     * ```
+     */
+    static fromPoint(x: number, y: number): Display;
+    toString(): string;
+}
+/**
+ * Specifies the screen area to search within for find-image operations.
+ * 
+ * ```ts
+ * // Search the entire desktop
+ * const match = await screenshot.findImage(SearchIn.desktop(), template);
+ * 
+ * // Search a specific display
+ * const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+ * 
+ * // Search a specific rectangle
+ * const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+ * ```
+ * @category Screenshot
+ */
+class SearchIn {
+    private constructor();
+    /**
+     * Searches within the entire desktop (the bounding rectangle of all connected displays).
+     * 
+     * ```ts
+     * const match = await screenshot.findImage(SearchIn.desktop(), template);
+     * ```
+     */
+    static desktop(): SearchIn;
+    /**
+     * Searches within a specific display identified by a `Display` selector.
+     * 
+     * ```ts
+     * const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+     * ```
+     */
+    static display(display: Display): SearchIn;
+    /**
+     * Searches within the given screen rectangle.
+     * 
+     * ```ts
+     * const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+     * ```
+     */
+    static rect(rect: RectLike): SearchIn;
+    /**
+     * Searches within the given screen rectangle.
+     * 
+     * ```ts
+     * const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+     * ```
+     */
+    static rect(x: number, y: number, width: number, height: number): SearchIn;
+    /**
+     * Searches within the bounding rectangle of the given window.
+     * 
+     * ```ts
+     * const win = windows.activeWindow();
+     * const match = await screenshot.findImage(SearchIn.window(win), template);
+     * ```
+     */
+    static window(handle: WindowHandle): SearchIn;
+    toString(): string;
+}
+/**
+ * Screenshot capture and image search.
+ * 
+ * Provides methods to capture the entire desktop, a specific display, a screen
+ * region, or a single pixel, as well as finding images on screen.
+ * 
+ * ```ts
+ * const image = await screenshot.captureDesktop();
+ * println(image.size());
+ * ```
+ * 
+ * ```ts
+ * const image = await screenshot.captureDisplay(Display.primary());
  * println(image.size());
  * ```
  * 
@@ -7448,6 +7648,24 @@ class Rect {
  * @category Screenshot
  */
 interface Screenshot {
+    /**
+     * Captures a screenshot of the entire desktop.
+     * 
+     * ```ts
+     * const image = await screenshot.captureDesktop();
+     * ```
+     */
+    captureDesktop(): Promise<Image>;
+    /**
+     * Captures a screenshot of the display identified by the given selector.
+     * 
+     * ```ts
+     * const image = await screenshot.captureDisplay(Display.primary());
+     * const image = await screenshot.captureDisplay(Display.fromId(474));
+     * const image = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+     * ```
+     */
+    captureDisplay(display: Display): Promise<Image>;
     /**
      * Captures a screenshot of a screen rectangle.
      * 
@@ -7465,13 +7683,14 @@ interface Screenshot {
      */
     captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
     /**
-     * Captures a screenshot of an entire display.
+     * Captures a screenshot of the bounding rectangle of the given window.
      * 
      * ```ts
-     * const image = await screenshot.captureDisplay(0);
+     * const win = windows.activeWindow();
+     * const image = await screenshot.captureWindow(win);
      * ```
      */
-    captureDisplay(displayId: number): Promise<Image>;
+    captureWindow(handle: WindowHandle): Promise<Image>;
     /**
      * Captures the color of a single pixel on screen.
      * 
@@ -7491,101 +7710,37 @@ interface Screenshot {
      */
     capturePixel(x: number, y: number): Promise<Color>;
     /**
-     * Finds the best match of an image on a screen rectangle.
+     * Finds the best match of an image within the given search area.
      * 
      * ```ts
-     * const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
+     * const match = await screenshot.findImage(SearchIn.desktop(), template);
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
+     * const task = screenshot.findImage(SearchIn.display(Display.primary()), template);
      * for await (const progress of task) {
      *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
      */
-    findImageOnRect(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    findImage(searchIn: SearchIn, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
-     * Finds the best match of an image on a screen rectangle.
+     * Finds all matches of an image within the given search area.
      * 
      * ```ts
-     * const match = await screenshot.findImageOnRect(0, 0, 1920, 1080, template);
+     * const matches = await screenshot.findImageAll(SearchIn.desktop(), image);
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageOnRect(0, 0, 1920, 1080, template);
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const match = await task;
-     * ```
-     */
-    findImageOnRect(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
-    /**
-     * Finds all occurrences of an image on a screen rectangle.
-     * 
-     * ```ts
-     * const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
-     * ```
-     * 
-     * ```ts
-     * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
+     * const task = screenshot.findImageAll(SearchIn.rect(0, 0, 1920, 1080), image);
      * for await (const progress of task) {
      *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
      */
-    findImageOnRectAll(rect: RectLike, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
-    /**
-     * Finds all occurrences of an image on a screen rectangle.
-     * 
-     * ```ts
-     * const matches = await screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
-     * ```
-     * 
-     * ```ts
-     * const task = screenshot.findImageOnRectAll(0, 0, 1920, 1080, template);
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const matches = await task;
-     * ```
-     */
-    findImageOnRectAll(x: number, y: number, width: number, height: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
-    /**
-     * Finds the best match of an image on a display.
-     * 
-     * ```ts
-     * const match = await screenshot.findImageOnDisplay(0, template);
-     * ```
-     * 
-     * ```ts
-     * const task = screenshot.findImageOnDisplay(0, template);
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const match = await task;
-     * ```
-     */
-    findImageOnDisplay(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
-    /**
-     * Finds all occurrences of an image on a display.
-     * 
-     * ```ts
-     * const matches = await screenshot.findImageOnDisplayAll(0, template);
-     * ```
-     * 
-     * ```ts
-     * const task = screenshot.findImageOnDisplayAll(0, template);
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const matches = await task;
-     * ```
-     */
-    findImageOnDisplayAll(displayId: number, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    findImageAll(searchIn: SearchIn, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
     toString(): string;
 }
 /**
@@ -9107,20 +9262,20 @@ interface Windows {
      * Returns the currently active (focused) window.
      * 
      * ```ts
-     * const win = windows.activeWindow();
+     * const win = windows.active();
      * println(win.title());
      * ```
      */
-    activeWindow(): Readonly<WindowHandle>;
+    active(): Readonly<WindowHandle>;
     /**
-     * Returns the currently active (focused) window. Alias for `activeWindow()`.
+     * Returns the currently active (focused) window. Alias for `active()`.
      * 
      * ```ts
-     * const win = windows.foregroundWindow();
+     * const win = windows.foreground();
      * println(win.title());
      * ```
      */
-    foregroundWindow(): Readonly<WindowHandle>;
+    foreground(): Readonly<WindowHandle>;
     /**
      * Finds windows matching the provided criteria.
      * 
@@ -9233,6 +9388,15 @@ interface WindowHandle {
      * ```
      */
     rect(): Readonly<Rect>;
+    /**
+     * Captures a screenshot of the window's bounding rectangle.
+     * 
+     * ```ts
+     * const win = windows.activeWindow();
+     * const image = await win.capture();
+     * ```
+     */
+    capture(): Promise<Image>;
     /**
      * Makes this window the active (focused) window.
      * 

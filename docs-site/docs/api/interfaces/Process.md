@@ -77,6 +77,75 @@ process.sendSignal(1234, Signal.Term);
 
 ***
 
+### shell()
+
+> <span class="async-badge">async</span> **shell**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`ShellOptions`](ShellOptions.md)): [`Task`](../type-aliases/Task.md)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Runs a command through the system shell, similar to C's `system()` function.
+
+Stdio is inherited from the current process: if a console window is open the
+command runs inside it; otherwise the OS opens a new console window for it.
+
+The default shell is platform-specific:
+- **Linux** – the value of `$SHELL`, falling back to `bash`.
+- **Windows** – `powershell`.
+
+A custom shell can be supplied via `options.shell`. On Windows the command
+flag (`/C`, `-Command`, or `-c`) is inferred automatically from the shell name.
+
+```ts
+// Clear the screen (works on Windows with cmd/powershell and on Unix)
+await process.shell("cls");
+```
+
+```ts
+// Use a specific shell
+await process.shell("echo hello", { shell: "zsh" });
+```
+
+#### Parameters
+
+##### command
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+##### options?
+
+[`ShellOptions`](ShellOptions.md)
+
+<div class="options-fields">
+
+###### shell?
+
+> `optional` **shell**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
+On Windows defaults to `powershell`.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the operation.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+***
+
 ### start()
 
 > **start**(`command`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`StartProcessOptions`](StartProcessOptions.md)): [`ProcessHandle`](ProcessHandle.md)

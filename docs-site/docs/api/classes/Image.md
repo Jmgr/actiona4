@@ -81,7 +81,7 @@ Returns a Rect representing this image.
 
 ### size
 
-> `readonly` **size**: [`Size`](Size.md)
+> `readonly` **size**: `Size`
 
 ***
 

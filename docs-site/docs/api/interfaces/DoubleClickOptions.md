@@ -29,22 +29,6 @@ Number of times to click.
 
 ***
 
-### button?
-
-> `optional` **button**: [`Button`](../enumerations/Button.md)
-
-Mouse button to press.
-
-#### Default Value
-
-`Button.Left`
-
-#### Inherited from
-
-[`ClickOptions`](ClickOptions.md).[`button`](ClickOptions.md#button)
-
-***
-
 ### delay?
 
 > `optional` **delay**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -69,7 +53,7 @@ How long to hold each click, in seconds.
 
 #### Inherited from
 
-[`ClickOptions`](ClickOptions.md).[`duration`](ClickOptions.md#duration)
+`DoubleClickOptions`.[`duration`](#duration)
 
 ***
 
@@ -85,39 +69,7 @@ Delay between consecutive clicks, in seconds.
 
 #### Inherited from
 
-[`ClickOptions`](ClickOptions.md).[`interval`](ClickOptions.md#interval)
-
-***
-
-### position?
-
-> `optional` **position**: [`Point`](../classes/Point.md)
-
-Position to move the cursor to before pressing.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-#### Inherited from
-
-[`ClickOptions`](ClickOptions.md).[`position`](ClickOptions.md#position)
-
-***
-
-### relativePosition?
-
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Whether the position is relative to the current cursor position.
-
-#### Default Value
-
-`false`
-
-#### Inherited from
-
-[`ClickOptions`](ClickOptions.md).[`relativePosition`](ClickOptions.md#relativeposition)
+`DoubleClickOptions`.[`interval`](#interval)
 
 ***
 
