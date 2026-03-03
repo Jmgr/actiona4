@@ -25,7 +25,7 @@ pub const AUMID: &str = "app.actiona.actiona-run";
 
 #[derive(Constructor)]
 pub struct Notification {
-    task_tracker: TaskTracker,
+    _task_tracker: TaskTracker,
 }
 
 impl Notification {
