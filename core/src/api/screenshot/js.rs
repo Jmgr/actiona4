@@ -701,7 +701,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
+    //#[ignore]
     #[traced_test]
     fn test_capture_display_from_id_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -792,6 +792,28 @@ mod tests {
                     const captureWidth = Math.max(1, Math.min(rect.width, 300));
                     const captureHeight = Math.max(1, Math.min(rect.height, 200));
                     const image = await screenshot.captureRect(rect.x, rect.y, captureWidth, captureHeight);
+                    await image.save({});
+                    "#,
+                    js_path(&output_path)
+                ))
+                .await
+                .unwrap();
+            println!("saved capture to {}", output_path.display());
+        });
+    }
+
+    #[test]
+    #[ignore]
+    #[traced_test]
+    fn test_capture_window_to_file() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            let output_path =
+                temp_dir().join(format!("actiona4_capture_window_{}.png", random_name()));
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                    const win = windows.foreground();
+                    const image = await screenshot.captureWindow(win);
                     await image.save({});
                     "#,
                     js_path(&output_path)

@@ -3,16 +3,15 @@ use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use color_eyre::{Result, eyre::eyre};
 use tracing::error;
 
-use super::display_selector::{DisplayName, DisplaySelector};
+use super::display_selector::DisplaySelector;
 use crate::{
     api::{
-        color::Color,
         displays::Displays,
-        image::{DrawImageOptions, Image, find_image::Source},
-        point::point,
+        image::{Image, find_image::Source},
         rect::Rect,
     },
     runtime::{Runtime, async_resource::AsyncResource, events::DisplayInfo},
+    types::su32::{Su32, su32},
 };
 
 mod convert;
@@ -113,6 +112,12 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
         Ok(iter.fold(first.rect, |acc, info| acc.union(info.rect)))
     }
 
+    /// Returns the bounding rectangle of each connected display.
+    pub async fn display_rects(&self) -> Result<Vec<Rect>> {
+        let displays_info = self.displays.wait_get_info().await?;
+        Ok(displays_info.iter().map(|d| d.rect).collect())
+    }
+
     /// Resolves a `DisplaySelector` to a display ID.
     ///
     /// Returns an error for `DisplaySelector::Desktop` since it does not map
@@ -143,31 +148,6 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
                     .ok_or_else(|| eyre!("no displays found"))?;
                 Ok(info.id)
             }
-            DisplaySelector::ByName(name) => {
-                let displays_info = self.displays.wait_get_info().await?;
-                let mut matching: Vec<_> = displays_info
-                    .iter()
-                    .filter(|d| name.matches(&d.friendly_name))
-                    .collect();
-                match matching.len() {
-                    0 => Err(match name {
-                        DisplayName::Literal(s) => eyre!("display not found: {s}"),
-                        DisplayName::Wildcard(w) => {
-                            eyre!("no display found matching: {}", w.to_string_js())
-                        }
-                    }),
-                    1 => Ok(matching.remove(0).id),
-                    n => Err(match name {
-                        DisplayName::Literal(s) => eyre!(
-                            "{n} displays match the name \"{s}\"; use Display.fromId() to select by ID"
-                        ),
-                        DisplayName::Wildcard(w) => eyre!(
-                            "{n} displays match the pattern \"{}\"; use a more specific pattern",
-                            w.to_string_js()
-                        ),
-                    }),
-                }
-            }
             DisplaySelector::FromPoint(point) => {
                 let info = self
                     .displays
@@ -196,5 +176,51 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
         let data = display.capture_raw().await?;
         let source = Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())?;
         Ok((source, rect))
+    }
+}
+
+/// Fills all pixels that lie outside every display rectangle with black.
+///
+/// `desktop_rect` is the bounding box of all displays; the image origin maps
+/// to `desktop_rect.top_left` in screen coordinates. Pixels outside every
+/// display are zeroed in-place (no extra allocation).
+pub fn blacken_non_display_areas(image: &mut Image, desktop_rect: Rect, display_rects: &[Rect]) {
+    let width = desktop_rect.size.width;
+
+    // Compute each display's image-coordinate coverage via intersection with the desktop rect,
+    // pre-sorted by x0 so per-row scanning needs no allocation.
+    let mut bands: Vec<(Su32, Su32, Su32, Su32)> = display_rects
+        .iter()
+        .filter_map(|&display_rect| {
+            let overlap = display_rect.intersection(desktop_rect)?;
+            let offset = overlap.top_left - desktop_rect.top_left;
+            let img_x0: Su32 = offset.x.into();
+            let img_y0: Su32 = offset.y.into();
+            let img_x1 = img_x0 + overlap.size.width;
+            let img_y1 = img_y0 + overlap.size.height;
+            Some((img_y0, img_y1, img_x0, img_x1))
+        })
+        .collect();
+    bands.sort_unstable_by_key(|&(_, _, x0, _)| x0);
+
+    let pixels: &mut [u8] = image;
+
+    for (y_idx, row) in pixels.chunks_exact_mut(usize::from(width) * 4).enumerate() {
+        let y = su32(y_idx);
+
+        // Zero out gaps between (and around) the covered x-ranges for this row.
+        let mut cursor = Su32::ZERO;
+        for &(y0, y1, x0, x1) in &bands {
+            if y < y0 || y >= y1 {
+                continue;
+            }
+            if cursor < x0 {
+                row[usize::from(cursor) * 4..usize::from(x0) * 4].fill(0);
+            }
+            cursor = cursor.max(x1);
+        }
+        if cursor < width {
+            row[usize::from(cursor) * 4..].fill(0);
+        }
     }
 }

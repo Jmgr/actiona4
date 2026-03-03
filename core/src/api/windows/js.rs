@@ -9,11 +9,11 @@ use crate::{
     IntoJsResult,
     api::{
         ResultExt,
+        image::js::JsImage,
         js::{
             classes::{HostClass, SingletonClass, register_host_class},
             task::task,
         },
-        image::js::JsImage,
         name::js::JsName,
         point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
@@ -122,7 +122,10 @@ impl JsWindows {
     #[must_use]
     #[instrument(skip_all)]
     pub fn new(windows: super::Windows, screenshot: crate::api::screenshot::Screenshot) -> Self {
-        Self { inner: windows, screenshot }
+        Self {
+            inner: windows,
+            screenshot,
+        }
     }
 }
 
@@ -151,11 +154,11 @@ impl JsWindows {
     /// Returns the currently active (focused) window.
     ///
     /// ```ts
-    /// const win = windows.activeWindow();
+    /// const win = windows.active();
     /// println(win.title());
     /// ```
     /// @readonly
-    pub fn active_window(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
+    pub fn active(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
         let id = self.inner.active_window().into_js_result(&ctx)?;
 
         Ok(JsWindowHandle {
@@ -165,15 +168,15 @@ impl JsWindows {
         })
     }
 
-    /// Returns the currently active (focused) window. Alias for `activeWindow()`.
+    /// Returns the currently active (focused) window. Alias for `active()`.
     ///
     /// ```ts
-    /// const win = windows.foregroundWindow();
+    /// const win = windows.foreground();
     /// println(win.title());
     /// ```
     /// @readonly
-    pub fn foreground_window(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
-        self.active_window(ctx)
+    pub fn foreground(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
+        self.active(ctx)
     }
 
     /// Finds windows matching the provided criteria.

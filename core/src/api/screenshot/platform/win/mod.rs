@@ -3,7 +3,7 @@ use std::sync::Arc;
 use color_eyre::Result;
 
 use self::capture::capture_rect as capture_rect_raw;
-use super::{DisplayCapture, ScreenshotImplBase};
+use super::{DisplayCapture, ScreenshotImplBase, blacken_non_display_areas};
 use crate::{
     api::{
         color::Color,
@@ -57,6 +57,25 @@ impl ScreenshotImpl {
             .capture_rect(rect(point(position.x, position.y), size(1, 1)))
             .await?;
         Ok((*image.as_rgba8().get_pixel(0, 0)).into())
+    }
+
+    async fn capture_desktop_impl(&self) -> Result<(Image, Rect)> {
+        let rect = self.desktop_rect().await?;
+        let display_rects = self.display_rects().await?;
+        let mut image = self.capture_rect(rect).await?;
+        blacken_non_display_areas(&mut image, rect, &display_rects);
+        Ok((image, rect))
+    }
+
+    pub async fn capture_desktop(&self) -> Result<Image> {
+        let (image, _rect) = self.capture_desktop_impl().await?;
+        Ok(image)
+    }
+
+    pub async fn capture_desktop_to_source(&self) -> Result<(Arc<Source>, Rect)> {
+        let (image, rect) = self.capture_desktop_impl().await?;
+        let source = Arc::<Source>::try_from(&image)?;
+        Ok((source, rect))
     }
 }
 
@@ -118,7 +137,7 @@ mod tests {
             println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
 
             image
-                .save("C:/Users/jmgr/Pictures/test_win.bmp")
+                .save("C:/Users/jmgr/Pictures/test_win.bmp") // TODO: TMP
                 .await
                 .unwrap();
         });
