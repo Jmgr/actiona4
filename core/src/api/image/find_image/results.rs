@@ -8,7 +8,10 @@ use opencv::core::{
 use tracing::instrument;
 
 use crate::{
-    api::image::find_image::{LabAMat, LabBMat, MaskMat, Match},
+    api::{
+        image::find_image::{LabAMat, LabBMat, MaskMat, Match},
+        rect,
+    },
     types::si32::Si32,
 };
 
@@ -37,11 +40,8 @@ pub fn compute_results(
             return;
         }
         let position = Point::new(col, row);
-        match_points.push(Match::new(
-            position.into(),
-            Rect::from_point_size(position, template_size).into(),
-            match_score.into(),
-        ));
+        let rect: rect::Rect = Rect::from_point_size(position, template_size).into();
+        match_points.push(Match::new(rect.center(), rect, match_score.into()));
     };
 
     if match_template_result.is_continuous() {

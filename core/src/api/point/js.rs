@@ -1,7 +1,7 @@
 //! @verbatim /**
 //! @verbatim  * PointLike
 //! @verbatim  */
-//! @verbatim type PointLike = Point | { x: number; y: number };
+//! @verbatim type PointLike = Point | { x: number; y: number } | Match;
 
 use rquickjs::{
     Ctx, JsLifetime, Result,
@@ -12,7 +12,7 @@ use rquickjs::{
 
 use crate::{
     IntoJsResult,
-    api::{ResultExt, js::classes::ValueClass, point::try_point},
+    api::{ResultExt, image::js::JsMatch, js::classes::ValueClass, point::try_point},
     runtime::WithUserData,
     types::display::display_with_type,
 };
@@ -50,6 +50,10 @@ impl<'js> FromParam<'js> for JsPointLike {
         // Also accept a JsPoint as a parameter.
         if let Ok(js_point) = value.get::<JsPoint>() {
             return Ok(Self(js_point.into()));
+        }
+
+        if let Ok(_match) = value.get::<JsMatch>() {
+            return Ok(Self(_match.position().into()));
         }
 
         let object = value
