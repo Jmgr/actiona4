@@ -204,28 +204,12 @@ enum ProcessResult {
 async fn process_dot_command(command: ReplArgs, script_engine: &Engine) -> Result<ProcessResult> {
     match command {
         ReplArgs::Load { filename } => {
-            // TODO: read file and call
-            // script_engine.eval_async(script)
-            let value: Result<Option<String>> = script_engine
-                .with(|ctx| {
-                    let value = ctx.eval_file::<Value<'_>, _>(&filename); // TODO: promise
-                    match value {
-                        Ok(value) => {
-                            if value.is_undefined() {
-                                Ok(None)
-                            } else {
-                                Ok(Some(value.get::<Coerced<String>>()?.0))
-                            }
-                        }
-                        Err(_) => {
-                            let caught = ctx.catch();
-                            Ok(Some(caught.get::<Coerced<String>>()?.0))
-                        }
-                    }
-                })
+            let script = fs::read_to_string(&filename).await?;
+            let value = script_engine
+                .eval_async_with_filename::<Option<Coerced<String>>>(&script, Some(&filename))
                 .await;
             if let Some(value) = value? {
-                println!("{value}");
+                println!("{}", value.0);
             }
         }
         ReplArgs::Clear => {

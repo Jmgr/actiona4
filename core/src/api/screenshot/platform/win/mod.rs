@@ -129,17 +129,12 @@ mod tests {
 
             let start = Instant::now();
 
-            let image = imp
+            let _image = imp
                 .capture_rect(rect(point(0, 0), size(1920, 1080)))
                 .await
                 .unwrap();
 
             println!("elapsed: {}", (Instant::now() - start).as_secs_f32());
-
-            image
-                .save("C:/Users/jmgr/Pictures/test_win.bmp") // TODO: TMP
-                .await
-                .unwrap();
         });
     }
 }

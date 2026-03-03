@@ -403,26 +403,6 @@ impl IsDone for Progress {
     }
 }
 
-impl Progress {
-    /*
-    pub fn total(&self) -> Option<u64> {
-        match self {
-            Self::Inactive | Self::Uploading { .. } => None,
-            Self::Downloading { total, .. } => *total,
-            Self::Finished { total, .. } => *total,
-        }
-    }
-
-    pub fn current(&self) -> u64 {
-        match self {
-            Self::Inactive | Self::Uploading { .. } => 0,
-            Self::Downloading { current, .. } => *current,
-            Self::Finished { current, .. } => *current,
-        }
-    }
-    */// TODO
-}
-
 #[derive(Clone)]
 pub struct Web {
     inner: reqwest::Client,

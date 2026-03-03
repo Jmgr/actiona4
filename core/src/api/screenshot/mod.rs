@@ -1,7 +1,6 @@
-use std::{sync::Arc, time::Instant};
+use std::sync::Arc;
 
 use color_eyre::Result;
-use humantime::format_duration;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 
@@ -54,10 +53,7 @@ impl Screenshot {
 
     /// Captures the entire virtual desktop (bounding box of all displays).
     pub async fn capture_desktop(&self) -> Result<Image> {
-        let start = Instant::now();
-        let result = self.implementation.capture_desktop().await?;
-        println!("DURATION: {}", format_duration(Instant::now() - start)); // TODO: remove
-        Ok(result)
+        self.implementation.capture_desktop().await
     }
 
     /// Captures the display identified by the given selector.

@@ -233,10 +233,18 @@ impl JsWebOptions {
                 headers
                     .into_iter()
                     .map(|(key, value)| {
-                        Ok((
-                            HeaderName::from_str(&key).map_err(|_| CommonError::Unexpected)?, // TODO: error
-                            HeaderValue::from_str(&value).map_err(|_| CommonError::Unexpected)?,
-                        ))
+                        let header_name = HeaderName::from_str(&key).map_err(|error| {
+                            CommonError::Unknown(format!(
+                                "Invalid HTTP header name '{key}': {error}"
+                            ))
+                        })?;
+                        let header_value = HeaderValue::from_str(&value).map_err(|error| {
+                            CommonError::Unknown(format!(
+                                "Invalid HTTP header value for '{key}': {error}"
+                            ))
+                        })?;
+
+                        Ok((header_name, header_value))
                     })
                     .collect::<std::result::Result<HeaderMap<_>, CommonError>>()
                     .into_js_result(ctx)?,
@@ -248,7 +256,11 @@ impl JsWebOptions {
         let mut headers = headers.unwrap_or_default();
         if let Some(content_type) = self.content_type {
             let header_value = HeaderValue::from_str(&content_type)
-                .map_err(|_| CommonError::Unexpected)
+                .map_err(|error| {
+                    CommonError::Unknown(format!(
+                        "Invalid content-type header value '{content_type}': {error}"
+                    ))
+                })
                 .into_js_result(ctx)?;
             headers.insert(CONTENT_TYPE, header_value);
         }
