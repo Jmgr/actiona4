@@ -495,7 +495,7 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsFindImageOptions {
     /// Use color matching.
-    /// @default `true`
+    /// @default `false`
     pub use_colors: bool,
 
     /// Use template transparency.
@@ -523,7 +523,7 @@ pub struct JsFindImageOptions {
 impl Default for JsFindImageOptions {
     fn default() -> Self {
         Self {
-            use_colors: true,
+            use_colors: false,
             use_transparency: true,
             match_threshold: 0.8,
             non_maximum_suppression_radius: Some(10),

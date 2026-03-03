@@ -28,6 +28,9 @@ Update
 
 - check we don't await without a cancellation token
 
+- impl DPI awareness
+- 90 MB appimage...
+
 // TODO: check all token cancellation return a Cancelled error
 // TODO: display a tray icon, enabled by default when waitAtEnd is true
 // TODO: check behaviour on DPI displays on Windows
