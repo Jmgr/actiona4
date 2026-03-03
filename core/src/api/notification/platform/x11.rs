@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use color_eyre::eyre::eyre;
+use derive_more::Constructor;
 use notify_rust::{Hint, Urgency, get_capabilities};
 use parking_lot::Mutex;
 use tokio::sync::oneshot;
@@ -11,8 +12,10 @@ use crate::{
     cancel_on,
 };
 
-#[derive(Default)]
-pub struct Notification;
+#[derive(Constructor)]
+pub struct Notification {
+    task_tracker: TaskTracker,
+}
 
 impl Notification {
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {
@@ -21,6 +24,7 @@ impl Notification {
 
         Ok(NotificationHandle {
             inner: Arc::new(Mutex::new(inner)),
+            task_tracker: self.task_tracker.clone(),
         })
     }
 
@@ -121,6 +125,7 @@ impl Notification {
 
 pub struct NotificationHandle {
     inner: Arc<Mutex<notify_rust::NotificationHandle>>,
+    task_tracker: TaskTracker,
 }
 
 impl NotificationHandle {
@@ -130,10 +135,11 @@ impl NotificationHandle {
             .map_err(|_| eyre!("notification is still in use while closing"))?
             .into_inner();
 
-        tokio::task::spawn_blocking(move || {
-            inner.close();
-        })
-        .await?;
+        self.task_tracker
+            .spawn_blocking(move || {
+                inner.close();
+            })
+            .await?;
 
         Ok(())
     }

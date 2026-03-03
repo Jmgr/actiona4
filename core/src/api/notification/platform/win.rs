@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use derive_more::Constructor;
 use parking_lot::Mutex;
 use tokio::{select, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -22,8 +23,10 @@ use crate::api::notification::{
 
 pub const AUMID: &str = "app.actiona.actiona-run";
 
-#[derive(Default)]
-pub struct Notification;
+#[derive(Constructor)]
+pub struct Notification {
+    task_tracker: TaskTracker,
+}
 
 impl Notification {
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {

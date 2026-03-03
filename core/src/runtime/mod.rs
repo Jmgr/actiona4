@@ -348,7 +348,7 @@ impl Runtime {
             runtime.playing_sounds_tracker.clone(),
         )?;
         let process = JsProcess::new(task_tracker.clone());
-        let notification = JsNotification::default();
+        let notification = JsNotification::new(task_tracker.clone());
         let standard_paths = JsStandardPaths::default();
         let windows = JsWindows::new(windows_inner, screenshot_inner);
 

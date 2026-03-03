@@ -170,7 +170,6 @@ pub struct NotificationSelection {
     pub content: String,
 }
 
-#[derive(Default)]
 pub struct Notification {
     inner: platform::Notification,
 }
@@ -182,6 +181,13 @@ impl Display for Notification {
 }
 
 impl Notification {
+    #[must_use]
+    pub const fn new(task_tracker: TaskTracker) -> Self {
+        Self {
+            inner: platform::Notification::new(task_tracker),
+        }
+    }
+
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {
         let inner = self.inner.show(options).await?;
         Ok(NotificationHandle { inner })

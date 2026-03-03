@@ -10,6 +10,7 @@ use rquickjs::{
 };
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
+use tokio_util::task::TaskTracker;
 
 use super::{
     NotificationAction, NotificationActionPlacement, NotificationActivationType,
@@ -810,7 +811,7 @@ impl From<JsNotificationOptions> for NotificationOptions {
 
 /// The global notification singleton for sending desktop notifications.
 /// @singleton
-#[derive(Default, JsLifetime)]
+#[derive(JsLifetime)]
 #[rquickjs::class(rename = "Notification")]
 pub struct JsNotification {
     inner: super::Notification,
@@ -831,6 +832,15 @@ impl<'js> SingletonClass<'js> for JsNotification {
         register_enum::<JsNotificationInputType>(ctx)?;
         register_host_class::<JsNotificationHandle>(ctx)?;
         Ok(())
+    }
+}
+
+impl JsNotification {
+    #[must_use]
+    pub const fn new(task_tracker: TaskTracker) -> Self {
+        Self {
+            inner: super::Notification::new(task_tracker),
+        }
     }
 }
 
