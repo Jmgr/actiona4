@@ -82,8 +82,8 @@ impl Screenshot {
     /// Finds the best match of an image within the given search area.
     pub async fn find_image(
         &self,
-        search_in: &SearchIn,
         template: &Arc<Template>,
+        search_in: &SearchIn,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
         progress: watch::Sender<FindImageProgress>,
@@ -98,8 +98,8 @@ impl Screenshot {
     /// Finds all matches of an image within the given search area.
     pub async fn find_image_all(
         &self,
-        search_in: &SearchIn,
         template: &Arc<Template>,
+        search_in: &SearchIn,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
         progress: watch::Sender<FindImageProgress>,

@@ -529,12 +529,11 @@ fn output_methods(
 
 #[cfg(test)]
 mod tests {
+    use super::write_comments;
     use crate::{
         input::Comments,
         types::{File, Method, MethodOverload, Struct, Type, Variable},
     };
-
-    use super::write_comments;
 
     #[test]
     fn test_overloading() {

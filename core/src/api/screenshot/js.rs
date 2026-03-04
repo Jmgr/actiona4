@@ -333,13 +333,13 @@ impl<'js> Trace<'js> for JsSearchInInner<'js> {
 ///
 /// ```ts
 /// // Search the entire desktop
-/// const match = await screenshot.findImage(SearchIn.desktop(), template);
+/// const match = await screenshot.findImage(image, SearchIn.desktop());
 ///
 /// // Search a specific display
-/// const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+/// const match = await screenshot.findImage(image, SearchIn.display(Display.primary()));
 ///
 /// // Search a specific rectangle
-/// const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+/// const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
 /// ```
 #[derive(Clone, Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "SearchIn")]
@@ -391,7 +391,7 @@ impl<'js> JsSearchIn<'js> {
     /// Searches within the entire desktop (the bounding rectangle of all connected displays).
     ///
     /// ```ts
-    /// const match = await screenshot.findImage(SearchIn.desktop(), template);
+    /// const match = await screenshot.findImage(image, SearchIn.desktop());
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -404,7 +404,7 @@ impl<'js> JsSearchIn<'js> {
     /// Searches within a specific display identified by a `Display` selector.
     ///
     /// ```ts
-    /// const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+    /// const match = await screenshot.findImage(image, SearchIn.display(Display.primary()));
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -417,7 +417,7 @@ impl<'js> JsSearchIn<'js> {
     /// Searches within the given screen rectangle.
     ///
     /// ```ts
-    /// const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+    /// const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -431,7 +431,7 @@ impl<'js> JsSearchIn<'js> {
     ///
     /// ```ts
     /// const win = windows.activeWindow();
-    /// const match = await screenshot.findImage(SearchIn.window(win), template);
+    /// const match = await screenshot.findImage(image, SearchIn.window(win));
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -573,11 +573,11 @@ impl JsScreenshot {
     /// Finds the best match of an image within the given search area.
     ///
     /// ```ts
-    /// const match = await screenshot.findImage(SearchIn.desktop(), template);
+    /// const match = await screenshot.findImage(image, SearchIn.desktop());
     /// ```
     ///
     /// ```ts
-    /// const task = screenshot.findImage(SearchIn.display(Display.primary()), template);
+    /// const task = screenshot.findImage(image, SearchIn.display(Display.primary()));
     /// for await (const progress of task) {
     ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
@@ -587,8 +587,8 @@ impl JsScreenshot {
     pub fn find_image<'js>(
         &self,
         ctx: Ctx<'js>,
-        search_in: JsSearchIn<'js>,
         image: JsImage,
+        search_in: JsSearchIn<'js>,
         options: Opt<JsFindImageOptions>,
     ) -> Result<Promise<'js>> {
         find_image_task(
@@ -599,7 +599,7 @@ impl JsScreenshot {
             options,
             |inner, search_in, template, opts, token, progress| async move {
                 let result = inner
-                    .find_image(&search_in, &template, opts, token, progress)
+                    .find_image(&template, &search_in, opts, token, progress)
                     .await?;
                 Ok(result.map(JsMatch::from))
             },
@@ -609,11 +609,11 @@ impl JsScreenshot {
     /// Finds all matches of an image within the given search area.
     ///
     /// ```ts
-    /// const matches = await screenshot.findImageAll(SearchIn.desktop(), image);
+    /// const matches = await screenshot.findImageAll(image, SearchIn.desktop());
     /// ```
     ///
     /// ```ts
-    /// const task = screenshot.findImageAll(SearchIn.rect(0, 0, 1920, 1080), image);
+    /// const task = screenshot.findImageAll(image, SearchIn.rect(0, 0, 1920, 1080));
     /// for await (const progress of task) {
     ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
@@ -623,8 +623,8 @@ impl JsScreenshot {
     pub fn find_image_all<'js>(
         &self,
         ctx: Ctx<'js>,
-        search_in: JsSearchIn<'js>,
         image: JsImage,
+        search_in: JsSearchIn<'js>,
         options: Opt<JsFindImageOptions>,
     ) -> Result<Promise<'js>> {
         find_image_task(
@@ -635,7 +635,7 @@ impl JsScreenshot {
             options,
             |inner, search_in, template, opts, token, progress| async move {
                 let results = inner
-                    .find_image_all(&search_in, &template, opts, token, progress)
+                    .find_image_all(&template, &search_in, opts, token, progress)
                     .await?;
                 Ok(results.into_iter().map(JsMatch::from).collect::<Vec<_>>())
             },
