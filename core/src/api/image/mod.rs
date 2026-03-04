@@ -843,31 +843,19 @@ impl Image {
         source: &Self,
         options: DrawImageOptions,
     ) -> Result<()> {
-        let (dest_x, dest_y) = dest.check_position(position)?;
-
         let (src_x, src_y, width, height) = if let Some(rect) = options.source_rect {
             source.check_rect(&rect)?
         } else {
             (0, 0, source.width(), source.height())
         };
 
-        Self::ensure_region_fits(
-            dest.width(),
-            dest.height(),
-            dest_x,
-            dest_y,
-            width,
-            height,
-            "destination region",
-        )?;
-
         let cropped = imageops::crop_imm(&source.inner, src_x, src_y, width, height).to_image();
 
         imageops::overlay(
             dest.inner_mut(),
             &cropped,
-            i64::from(dest_x),
-            i64::from(dest_y),
+            i64::from(position.x.into_inner()),
+            i64::from(position.y.into_inner()),
         );
 
         Ok(())

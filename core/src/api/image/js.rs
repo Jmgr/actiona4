@@ -1352,11 +1352,17 @@ impl JsImage {
         ctx: Ctx<'js>,
         this: This<Class<'js, Self>>,
         position: JsPointLike,
-        image: &JsImage,
+        image: Class<'js, Self>,
         options: Opt<JsDrawImageOptions>,
     ) -> Result<Class<'js, Self>> {
+        // If `image` is the same object as `self`, `try_borrow` will fail because `self` is
+        // already mutably borrowed. In that case we clone the current state and use it as source.
+        let source = match image.try_borrow() {
+            Ok(borrowed) => borrowed.inner.clone(),
+            Err(_) => self.inner.clone(),
+        };
         self.inner
-            .draw_image_mut(position.0, &image.inner, options.unwrap_or_default().into())
+            .draw_image_mut(position.0, &source, options.unwrap_or_default().into())
             .into_js_result(&ctx)?;
 
         Ok(this.0)
