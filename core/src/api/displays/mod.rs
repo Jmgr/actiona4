@@ -9,7 +9,7 @@ use tracing::{error, instrument};
 
 use super::point::Point;
 use crate::{
-    api::point::try_point,
+    api::{point::try_point, rect::Rect},
     runtime::{
         async_resource::AsyncResource,
         events::{DisplayInfo, DisplayInfoVec},
@@ -165,6 +165,56 @@ impl Displays {
             .cloned())
     }
 
+    pub async fn leftmost(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.get_info().await?;
+        Ok(displays_infos
+            .iter()
+            .min_by_key(|d| d.rect.top_left.x)
+            .cloned())
+    }
+
+    pub async fn rightmost(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.get_info().await?;
+        Ok(displays_infos
+            .iter()
+            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width)
+            .cloned())
+    }
+
+    pub async fn topmost(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.get_info().await?;
+        Ok(displays_infos
+            .iter()
+            .min_by_key(|d| d.rect.top_left.y)
+            .cloned())
+    }
+
+    pub async fn bottommost(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.get_info().await?;
+        Ok(displays_infos
+            .iter()
+            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height)
+            .cloned())
+    }
+
+    pub async fn center(&self) -> Result<Option<DisplayInfo>> {
+        let displays_infos = self.get_info().await?;
+        let mut iter = displays_infos.iter();
+        let Some(first) = iter.next() else {
+            return Ok(None);
+        };
+        let desktop: Rect = iter.fold(first.rect, |acc, d| acc.union(d.rect));
+        // Use 2*center to avoid division: 2*c = top_left*2 + size (preserves ordering)
+        let desktop_c2 = desktop.top_left * 2 + desktop.size;
+        Ok(displays_infos
+            .iter()
+            .min_by_key(|d| {
+                let diff = (d.rect.top_left * 2 + d.rect.size) - desktop_c2;
+                diff.length_squared()
+            })
+            .cloned())
+    }
+
     pub async fn all(&self) -> Result<Vec<DisplayInfo>> {
         let displays_infos = self.get_info().await?;
         Ok(displays_infos.iter().cloned().collect_vec())
@@ -173,49 +223,145 @@ impl Displays {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
+    use rstest::rstest;
 
-    use crate::runtime::Runtime;
+    use super::*;
+    use crate::{
+        api::{point::point, rect::Rect, size::size},
+        runtime::events::{DisplayInfo, DisplayInfoVec},
+    };
 
-    #[test]
-    #[traced_test]
-    fn test_displays() {
-        Runtime::test(async |_runtime| {
-            /*
-            let mouse = Mouse::new(runtime.clone()).await.unwrap();
-            let displays = Displays::new(runtime).unwrap();
+    fn make_display(id: u32, x: i32, y: i32, w: u32, h: u32) -> DisplayInfo {
+        DisplayInfo {
+            id,
+            name: id.to_string(),
+            friendly_name: id.to_string(),
+            rect: Rect::new(point(x, y), size(w, h)),
+            width_mm: 0,
+            height_mm: 0,
+            rotation: 0.0,
+            scale_factor: 1.0,
+            frequency: 60.0,
+            is_primary: false,
+        }
+    }
 
-            let displays = Displays::new(runtime).unwrap();
-            let displays_info = displays.displays_info().lock().unwrap();
-            for display_info in displays_info.iter() {
-                println!("display_info {display_info:?}");
-            }
-            */
+    fn with_displays(infos: Vec<DisplayInfo>) -> Displays {
+        let ct = CancellationToken::new();
+        let tracker = TaskTracker::new();
+        let displays = Displays::new(ct, tracker).unwrap();
+        displays.displays_info.set(DisplayInfoVec(infos));
+        displays
+    }
 
-            /*
-            display_info DisplayInfo { id: 65537, name: "\\\\.\\DISPLAY1", friendly_name: "Acer XB281HK", raw_handle: HMONITOR(0x10001), x: 0, y: 0, width: 3840, height: 2160, width_mm: 621, height_mm: 341, rotation: 0.0, scale_factor: 1.5, frequency: 60.0, is_primary: true }
-            display_info DisplayInfo { id: 65539, name: "\\\\.\\DISPLAY2", friendly_name: "2490W1", raw_handle: HMONITOR(0x10003), x: -1920, y: 541, width: 1920, height: 1080, width_mm: 527, height_mm: 296, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
-            display_info DisplayInfo { id: 65541, name: "\\\\.\\DISPLAY3", friendly_name: "SyncMaster", raw_handle: HMONITOR(0x10005), x: 3840, y: 558, width: 1920, height: 1080, width_mm: 510, height_mm: 287, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
+    // ---- empty / single -------------------------------------------------------
 
-            display_info DisplayInfo { id: 474, name: "DP-2", friendly_name: "DP-2", x: 1920, y: 0, width: 3840, height: 2160, width_mm: 621, height_mm: 341, rotation: 0.0, scale_factor: 1.0, frequency: 59.996624, is_primary: true }
-            display_info DisplayInfo { id: 469, name: "DP-0", friendly_name: "DP-0", x: 0, y: 649, width: 1920, height: 1080, width_mm: 527, height_mm: 296, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
-            display_info DisplayInfo { id: 444, name: "HDMI-0", friendly_name: "HDMI-0", x: 5760, y: 601, width: 1920, height: 1080, width_mm: 510, height_mm: 287, rotation: 0.0, scale_factor: 1.0, frequency: 60.0, is_primary: false }
-                         */
+    #[tokio::test]
+    async fn empty_returns_none_for_all() {
+        let d = with_displays(vec![]);
+        assert!(d.leftmost().await.unwrap().is_none());
+        assert!(d.rightmost().await.unwrap().is_none());
+        assert!(d.topmost().await.unwrap().is_none());
+        assert!(d.bottommost().await.unwrap().is_none());
+        assert!(d.center().await.unwrap().is_none());
+    }
 
-            //mouse
-            //    .set_position(displays.random_point().unwrap(), Coordinate::Abs)
-            //   .unwrap();
+    #[tokio::test]
+    async fn single_display_returned_for_all() {
+        let d = with_displays(vec![make_display(1, 100, 200, 1920, 1080)]);
+        assert_eq!(Some(1), d.leftmost().await.unwrap().map(|d| d.id));
+        assert_eq!(Some(1), d.rightmost().await.unwrap().map(|d| d.id));
+        assert_eq!(Some(1), d.topmost().await.unwrap().map(|d| d.id));
+        assert_eq!(Some(1), d.bottommost().await.unwrap().map(|d| d.id));
+        assert_eq!(Some(1), d.center().await.unwrap().map(|d| d.id));
+    }
 
-            //for _ in 0..60 {
-            //mouse
-            //    .r#move(displays.random_point().unwrap(), MoveOptions::default())
-            //    .unwrap();
+    // ---- leftmost / rightmost -------------------------------------------------
 
-            //let c = runtime.displays().screen_count().unwrap();
-            //println!("screen count: {c}");
+    #[rstest]
+    // id=2 has x=-500, the smallest left edge
+    #[case::negative_x(vec![
+        make_display(1,  100, 0, 1920, 1080),
+        make_display(2, -500, 0, 1920, 1080),
+        make_display(3,  200, 0, 1920, 1080),
+    ], 2)]
+    // leftmost is the one whose left edge is furthest left, not the narrowest
+    #[case::positive_only(vec![
+        make_display(1, 300, 0, 1920, 1080),
+        make_display(2,   0, 0, 1920, 1080),
+        make_display(3, 150, 0, 1920, 1080),
+    ], 2)]
+    #[tokio::test]
+    async fn leftmost(#[case] infos: Vec<DisplayInfo>, #[case] want_id: u32) {
+        let d = with_displays(infos);
+        assert_eq!(Some(want_id), d.leftmost().await.unwrap().map(|d| d.id));
+    }
 
-            //sleep(Duration::from_millis(1000)).await;
-            //}
-        });
+    #[rstest]
+    // id=2: x=2000 + w=800 = right edge 2800
+    #[case::offset_wide(vec![
+        make_display(1,    0, 0, 1920, 1080),
+        make_display(2, 2000, 0,  800, 1080),
+        make_display(3, -100, 0,  200, 1080),
+    ], 2)]
+    // id=1: x=0 + w=3840 = 3840 beats id=2: x=1920 + w=1920 = 3840 (tie → first wins in stable iter)
+    // but id=3: x=3840 + w=1920 = 5760
+    #[case::large_offset(vec![
+        make_display(1,    0, 0, 1920, 1080),
+        make_display(2, 1920, 0, 1920, 1080),
+        make_display(3, 3840, 0, 1920, 1080),
+    ], 3)]
+    #[tokio::test]
+    async fn rightmost(#[case] infos: Vec<DisplayInfo>, #[case] want_id: u32) {
+        let d = with_displays(infos);
+        assert_eq!(Some(want_id), d.rightmost().await.unwrap().map(|d| d.id));
+    }
+
+    // ---- topmost / bottommost -------------------------------------------------
+
+    #[rstest]
+    #[case::negative_y(vec![
+        make_display(1, 0,    0, 1920, 1080),
+        make_display(2, 0, -200, 1920, 1080),
+        make_display(3, 0,  500, 1920, 1080),
+    ], 2)]
+    #[tokio::test]
+    async fn topmost(#[case] infos: Vec<DisplayInfo>, #[case] want_id: u32) {
+        let d = with_displays(infos);
+        assert_eq!(Some(want_id), d.topmost().await.unwrap().map(|d| d.id));
+    }
+
+    #[rstest]
+    // id=2: y=500 + h=800 = bottom 1300
+    #[case::offset_tall(vec![
+        make_display(1, 0,    0, 1920, 1080),
+        make_display(2, 0,  500, 1920,  800),
+        make_display(3, 0, -100, 1920,  400),
+    ], 2)]
+    #[tokio::test]
+    async fn bottommost(#[case] infos: Vec<DisplayInfo>, #[case] want_id: u32) {
+        let d = with_displays(infos);
+        assert_eq!(Some(want_id), d.bottommost().await.unwrap().map(|d| d.id));
+    }
+
+    // ---- center ---------------------------------------------------------------
+
+    #[rstest]
+    // Three equal-sized displays side by side; middle is exactly at desktop center
+    #[case::three_horizontal(vec![
+        make_display(1,    0, 0, 1920, 1080),
+        make_display(2, 1920, 0, 1920, 1080),
+        make_display(3, 3840, 0, 1920, 1080),
+    ], 2)]
+    // Asymmetric: desktop spans (-1920,0)-(3840+1920), center ≈ x=1920; id=2 is closest
+    #[case::asymmetric(vec![
+        make_display(1, -1920, 0, 1920, 1080),
+        make_display(2,     0, 0, 3840, 1080),
+        make_display(3,  3840, 0, 1920, 1080),
+    ], 2)]
+    #[tokio::test]
+    async fn center(#[case] infos: Vec<DisplayInfo>, #[case] want_id: u32) {
+        let d = with_displays(infos);
+        assert_eq!(Some(want_id), d.center().await.unwrap().map(|d| d.id));
     }
 }

@@ -148,6 +148,46 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
                     .ok_or_else(|| eyre!("no displays found"))?;
                 Ok(info.id)
             }
+            DisplaySelector::Leftmost => {
+                let info = self
+                    .displays
+                    .leftmost()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
+            DisplaySelector::Rightmost => {
+                let info = self
+                    .displays
+                    .rightmost()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
+            DisplaySelector::Topmost => {
+                let info = self
+                    .displays
+                    .topmost()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
+            DisplaySelector::Bottommost => {
+                let info = self
+                    .displays
+                    .bottommost()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
+            DisplaySelector::Center => {
+                let info = self
+                    .displays
+                    .center()
+                    .await?
+                    .ok_or_else(|| eyre!("no displays found"))?;
+                Ok(info.id)
+            }
             DisplaySelector::FromPoint(point) => {
                 let info = self
                     .displays

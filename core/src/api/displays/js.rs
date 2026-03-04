@@ -167,6 +167,61 @@ impl JsDisplays {
             .map(|display_info| display_info.into()))
     }
 
+    /// Returns the display furthest to the left (minimum left edge), or `undefined` if none.
+    /// @readonly
+    pub async fn leftmost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .leftmost()
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
+    }
+
+    /// Returns the display furthest to the right (maximum right edge), or `undefined` if none.
+    /// @readonly
+    pub async fn rightmost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .rightmost()
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
+    }
+
+    /// Returns the display furthest to the top (minimum top edge), or `undefined` if none.
+    /// @readonly
+    pub async fn topmost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .topmost()
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
+    }
+
+    /// Returns the display furthest to the bottom (maximum bottom edge), or `undefined` if none.
+    /// @readonly
+    pub async fn bottommost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .bottommost()
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
+    }
+
+    /// Returns the display whose center is closest to the center of the desktop, or `undefined` if none.
+    /// @readonly
+    pub async fn center<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
+        Ok(self
+            .inner
+            .center()
+            .await
+            .into_js_result(&ctx)?
+            .map(|display_info| display_info.into()))
+    }
+
     /// Returns all displays.
     /// @readonly
     pub async fn all<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsDisplayInfo>> {

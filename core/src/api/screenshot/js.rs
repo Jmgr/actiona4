@@ -192,6 +192,71 @@ impl<'js> JsDisplay<'js> {
         }
     }
 
+    /// Selects the display furthest to the left (minimum left edge).
+    ///
+    /// ```ts
+    /// const img = await screenshot.captureDisplay(Display.leftmost());
+    /// ```
+    #[qjs(static)]
+    #[must_use]
+    pub const fn leftmost() -> Self {
+        Self {
+            inner: JsDisplayInner::Selector(DisplaySelector::Leftmost),
+        }
+    }
+
+    /// Selects the display furthest to the right (maximum right edge).
+    ///
+    /// ```ts
+    /// const img = await screenshot.captureDisplay(Display.rightmost());
+    /// ```
+    #[qjs(static)]
+    #[must_use]
+    pub const fn rightmost() -> Self {
+        Self {
+            inner: JsDisplayInner::Selector(DisplaySelector::Rightmost),
+        }
+    }
+
+    /// Selects the display furthest to the top (minimum top edge).
+    ///
+    /// ```ts
+    /// const img = await screenshot.captureDisplay(Display.topmost());
+    /// ```
+    #[qjs(static)]
+    #[must_use]
+    pub const fn topmost() -> Self {
+        Self {
+            inner: JsDisplayInner::Selector(DisplaySelector::Topmost),
+        }
+    }
+
+    /// Selects the display furthest to the bottom (maximum bottom edge).
+    ///
+    /// ```ts
+    /// const img = await screenshot.captureDisplay(Display.bottommost());
+    /// ```
+    #[qjs(static)]
+    #[must_use]
+    pub const fn bottommost() -> Self {
+        Self {
+            inner: JsDisplayInner::Selector(DisplaySelector::Bottommost),
+        }
+    }
+
+    /// Selects the display whose center is closest to the center of the desktop.
+    ///
+    /// ```ts
+    /// const img = await screenshot.captureDisplay(Display.center());
+    /// ```
+    #[qjs(static)]
+    #[must_use]
+    pub const fn center() -> Self {
+        Self {
+            inner: JsDisplayInner::Selector(DisplaySelector::Center),
+        }
+    }
+
     /// Selects a display by its unique numeric ID.
     ///
     /// ```ts
