@@ -1091,7 +1091,8 @@ impl JsImage {
 
     /// Adjusts the contrast of this image.
     ///
-    /// Positive `value` increases contrast, negative decreases it, 0 = no change.
+    /// `value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
+    /// and negative values decrease it. At -100 all pixels collapse to 50% gray.
     pub fn adjust_contrast<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
@@ -1102,9 +1103,7 @@ impl JsImage {
         this.0
     }
 
-    /// Returns a contrast-adjusted copy of this image.
-    ///
-    /// Positive `value` increases contrast, negative decreases it, 0 = no change.
+    /// Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
     #[must_use]
     pub fn with_adjusted_contrast(&self, value: f32) -> Self {
         self.inner.adjusted_contrast(value).into()
