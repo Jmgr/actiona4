@@ -1,4 +1,4 @@
-use crate::api::{displays::display_selector::DisplaySelector, rect::Rect, windows::WindowId};
+use crate::api::{rect::Rect, windows::WindowId};
 
 /// Specifies the screen area to search within for find-image operations.
 ///
@@ -7,8 +7,8 @@ use crate::api::{displays::display_selector::DisplaySelector, rect::Rect, window
 pub enum SearchIn {
     /// The entire desktop: the bounding rectangle of all connected displays.
     Desktop,
-    /// A specific display, identified by a `DisplaySelector`.
-    Display(DisplaySelector),
+    /// A specific display, identified by its numeric ID.
+    Display(u32),
     /// An explicit screen rectangle.
     Rect(Rect),
     /// A specific window, identified by its [`WindowId`].

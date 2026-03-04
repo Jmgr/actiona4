@@ -71,7 +71,7 @@ Use color matching.
 
 #### Default Value
 
-`true`
+`false`
 
 ***
 

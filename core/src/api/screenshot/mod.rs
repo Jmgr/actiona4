@@ -14,7 +14,7 @@ use platform::win::ScreenshotImpl;
 use platform::x11::ScreenshotImpl;
 
 use super::{
-    displays::{Displays, display_selector::DisplaySelector},
+    displays::Displays,
     image::{
         Image,
         find_image::{
@@ -53,17 +53,9 @@ impl Screenshot {
         self.implementation.capture_desktop().await
     }
 
-    /// Captures the display identified by the given selector.
-    ///
-    /// For `DisplaySelector::Desktop` this is equivalent to `capture_desktop`.
-    pub async fn capture_display(&self, selector: &DisplaySelector) -> Result<Image> {
-        match selector {
-            DisplaySelector::Desktop => self.capture_desktop().await,
-            other => {
-                let display_id = self.implementation.resolve_display_selector(other).await?;
-                self.implementation.capture_display(display_id).await
-            }
-        }
+    /// Captures the display with the given numeric ID.
+    pub async fn capture_display(&self, display_id: u32) -> Result<Image> {
+        self.implementation.capture_display(display_id).await
     }
 
     /// Captures the bounding rectangle of the given window.
@@ -114,15 +106,7 @@ impl Screenshot {
     ) -> Result<(Arc<Source>, Rect)> {
         match search_in {
             SearchIn::Desktop => self.implementation.capture_desktop_to_source().await,
-            SearchIn::Display(selector) => {
-                let display_id = self
-                    .implementation
-                    .resolve_display_selector(selector)
-                    .await?;
-                self.implementation
-                    .capture_display_to_source(display_id)
-                    .await
-            }
+            SearchIn::Display(id) => self.implementation.capture_display_to_source(*id).await,
             SearchIn::Rect(rect) => {
                 let source = self.implementation.capture_rect_to_source(*rect).await?;
                 Ok((source, *rect))

@@ -4,13 +4,14 @@ Specifies the screen area to search within for find-image operations.
 
 ```ts
 // Search the entire desktop
-const match = await screenshot.findImage(SearchIn.desktop(), template);
+const match = await screenshot.findImage(image, SearchIn.desktop());
 
 // Search a specific display
-const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+const display = displays.primary();
+const match = await screenshot.findImage(image, SearchIn.display(display));
 
 // Search a specific rectangle
-const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
 ```
 
 ## Methods
@@ -32,7 +33,7 @@ const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), templa
 Searches within the entire desktop (the bounding rectangle of all connected displays).
 
 ```ts
-const match = await screenshot.findImage(SearchIn.desktop(), template);
+const match = await screenshot.findImage(image, SearchIn.desktop());
 ```
 
 #### Returns
@@ -43,19 +44,20 @@ const match = await screenshot.findImage(SearchIn.desktop(), template);
 
 ### display()
 
-> `static` **display**(`display`: [`Display`](Display.md)): `SearchIn`
+> `static` **display**(`display`: [`DisplayInfo`](../interfaces/DisplayInfo.md)): `SearchIn`
 
-Searches within a specific display identified by a `Display` selector.
+Searches within a specific display.
 
 ```ts
-const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+const display = displays.primary();
+const match = await screenshot.findImage(image, SearchIn.display(display));
 ```
 
 #### Parameters
 
 ##### display
 
-[`Display`](Display.md)
+[`DisplayInfo`](../interfaces/DisplayInfo.md)
 
 #### Returns
 
@@ -72,7 +74,7 @@ const match = await screenshot.findImage(SearchIn.display(Display.primary()), te
 Searches within the given screen rectangle.
 
 ```ts
-const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
 ```
 
 ##### Parameters
@@ -92,7 +94,7 @@ const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), templa
 Searches within the given screen rectangle.
 
 ```ts
-const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
 ```
 
 ##### Parameters
@@ -127,7 +129,7 @@ Searches within the bounding rectangle of the given window.
 
 ```ts
 const win = windows.activeWindow();
-const match = await screenshot.findImage(SearchIn.window(win), template);
+const match = await screenshot.findImage(image, SearchIn.window(win));
 ```
 
 #### Parameters

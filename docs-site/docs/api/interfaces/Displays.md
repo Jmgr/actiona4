@@ -3,38 +3,66 @@
 The global displays singleton for querying connected monitors and screens.
 
 ```ts
-// Get a random point across all displays
-const point = await displays.randomPoint();
+// Get the primary display and convert a global coordinate to display-local
+const display = displays.primary();
+const local = display.point(globalX, globalY);
 
 // Find which display contains a point
-const info = await displays.fromPoint(100, 200);
+const info = displays.fromPoint(100, 200);
 if (info) println(info.name, info.rect);
 
 // Find a display by friendly name
-const monitor = await displays.fromName("HDMI-1");
+const monitor = displays.fromName("HDMI-1");
 
 // Get the largest or smallest display
-const largest = await displays.largest();
-const smallest = await displays.smallest();
+const largest = displays.largest();
+const smallest = displays.smallest();
+
+// Get a random point across all displays
+const point = await displays.randomPoint();
 ```
 
 ## Methods
 
 ### all()
 
-> <span class="async-badge">async</span> **all**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DisplayInfo`](DisplayInfo.md)[]\>
+> **all**(): readonly [`DisplayInfo`](DisplayInfo.md)[]
 
 Returns all displays.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`DisplayInfo`](DisplayInfo.md)[]\>
+readonly [`DisplayInfo`](DisplayInfo.md)[]
+
+***
+
+### bottommost()
+
+> **bottommost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### center()
+
+> **center**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the display whose center is closest to the center of the desktop, or throws if none.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
 ***
 
 ### fromDeviceName()
 
-> <span class="async-badge">async</span> **fromDeviceName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **fromDeviceName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Finds a display by its device name, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
 
@@ -46,13 +74,13 @@ Finds a display by its device name, or [`undefined`](https://developer.mozilla.o
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 ***
 
 ### fromId()
 
-> <span class="async-badge">async</span> **fromId**(`id`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **fromId**(`id`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Finds a display by its unique numeric ID, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
 
@@ -64,13 +92,13 @@ Finds a display by its unique numeric ID, or [`undefined`](https://developer.moz
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 ***
 
 ### fromName()
 
-> <span class="async-badge">async</span> **fromName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **fromName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Finds a display by its friendly name (e.g. `"HDMI-1"`), or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
 
@@ -82,7 +110,7 @@ Finds a display by its friendly name (e.g. `"HDMI-1"`), or [`undefined`](https:/
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 ***
 
@@ -90,7 +118,7 @@ Finds a display by its friendly name (e.g. `"HDMI-1"`), or [`undefined`](https:/
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **fromPoint**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **fromPoint**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Returns the display that contains the given point, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if none.
 
@@ -102,11 +130,11 @@ Returns the display that contains the given point, or [`undefined`](https://deve
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 #### Call Signature
 
-> <span class="async-badge">async</span> **fromPoint**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **fromPoint**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Returns the display that contains the given point, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if none.
 
@@ -122,19 +150,43 @@ Returns the display that contains the given point, or [`undefined`](https://deve
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 ***
 
 ### largest()
 
-> <span class="async-badge">async</span> **largest**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **largest**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
-Returns the largest display by area, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no displays are connected.
+Returns the largest display by area, or throws if no displays are connected.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### leftmost()
+
+> **leftmost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the display furthest to the left (minimum left edge), or throws if none.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### primary()
+
+> **primary**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the primary display, or throws if no primary display is found.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
 ***
 
@@ -150,15 +202,39 @@ Returns a random point within the bounds of all connected displays.
 
 ***
 
-### smallest()
+### rightmost()
 
-> <span class="async-badge">async</span> **smallest**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+> **rightmost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
-Returns the smallest display by area, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no displays are connected.
+Returns the display furthest to the right (maximum right edge), or throws if none.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>\>
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### smallest()
+
+> **smallest**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the smallest display by area, or throws if no displays are connected.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### topmost()
+
+> **topmost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the display furthest to the top (minimum top edge), or throws if none.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
 ***
 

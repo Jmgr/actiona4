@@ -4237,19 +4237,23 @@ declare class Directory {
  * The global displays singleton for querying connected monitors and screens.
  * 
  * ```ts
- * // Get a random point across all displays
- * const point = await displays.randomPoint();
+ * // Get the primary display and convert a global coordinate to display-local
+ * const display = displays.primary();
+ * const local = display.point(globalX, globalY);
  * 
  * // Find which display contains a point
- * const info = await displays.fromPoint(100, 200);
+ * const info = displays.fromPoint(100, 200);
  * if (info) println(info.name, info.rect);
  * 
  * // Find a display by friendly name
- * const monitor = await displays.fromName("HDMI-1");
+ * const monitor = displays.fromName("HDMI-1");
  * 
  * // Get the largest or smallest display
- * const largest = await displays.largest();
- * const smallest = await displays.smallest();
+ * const largest = displays.largest();
+ * const smallest = displays.smallest();
+ * 
+ * // Get a random point across all displays
+ * const point = await displays.randomPoint();
  * ```
  * @category Displays
  */
@@ -4259,37 +4263,61 @@ declare interface Displays {
      */
     randomPoint(): Promise<Readonly<Point>>;
     /**
-     * Returns the display that contains the given point, or `undefined` if none.
+     * Returns the primary display, or throws if no primary display is found.
      */
-    fromPoint(point: PointLike): Promise<Readonly<DisplayInfo | undefined>>;
+    primary(): Readonly<DisplayInfo>;
     /**
      * Returns the display that contains the given point, or `undefined` if none.
      */
-    fromPoint(x: number, y: number): Promise<Readonly<DisplayInfo | undefined>>;
+    fromPoint(point: PointLike): Readonly<DisplayInfo | undefined>;
+    /**
+     * Returns the display that contains the given point, or `undefined` if none.
+     */
+    fromPoint(x: number, y: number): Readonly<DisplayInfo | undefined>;
     /**
      * Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
      */
-    fromName(name: NameLike): Promise<Readonly<DisplayInfo | undefined>>;
+    fromName(name: NameLike): Readonly<DisplayInfo | undefined>;
     /**
      * Finds a display by its device name, or `undefined` if not found.
      */
-    fromDeviceName(name: NameLike): Promise<Readonly<DisplayInfo | undefined>>;
+    fromDeviceName(name: NameLike): Readonly<DisplayInfo | undefined>;
     /**
      * Finds a display by its unique numeric ID, or `undefined` if not found.
      */
-    fromId(id: number): Promise<Readonly<DisplayInfo | undefined>>;
+    fromId(id: number): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the smallest display by area, or `undefined` if no displays are connected.
+     * Returns the smallest display by area, or throws if no displays are connected.
      */
-    smallest(): Promise<Readonly<DisplayInfo | undefined>>;
+    smallest(): Readonly<DisplayInfo>;
     /**
-     * Returns the largest display by area, or `undefined` if no displays are connected.
+     * Returns the largest display by area, or throws if no displays are connected.
      */
-    largest(): Promise<Readonly<DisplayInfo | undefined>>;
+    largest(): Readonly<DisplayInfo>;
+    /**
+     * Returns the display furthest to the left (minimum left edge), or throws if none.
+     */
+    leftmost(): Readonly<DisplayInfo>;
+    /**
+     * Returns the display furthest to the right (maximum right edge), or throws if none.
+     */
+    rightmost(): Readonly<DisplayInfo>;
+    /**
+     * Returns the display furthest to the top (minimum top edge), or throws if none.
+     */
+    topmost(): Readonly<DisplayInfo>;
+    /**
+     * Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
+     */
+    bottommost(): Readonly<DisplayInfo>;
+    /**
+     * Returns the display whose center is closest to the center of the desktop, or throws if none.
+     */
+    center(): Readonly<DisplayInfo>;
     /**
      * Returns all displays.
      */
-    all(): Promise<readonly DisplayInfo[]>;
+    all(): readonly DisplayInfo[];
     toString(): string;
 }
 /**
@@ -4350,6 +4378,66 @@ declare interface DisplayInfo {
      * Whether this is the primary (main) display.
      */
     readonly isPrimary: boolean;
+    /**
+     * Converts a global desktop point to display-local coordinates.
+     * 
+     * The result is the position relative to this display's top-left corner,
+     * in the same logical-pixel unit used for mouse coordinates and `rect`.
+     * DPI scaling and rotation are already normalised into the desktop
+     * coordinate system by the OS, so no additional transform is needed.
+     * 
+     * ```ts
+     * const display = displays.primary();
+     * // After finding something at global coordinate (1980, 50):
+     * const local = display.toLocal(1980, 50);
+     * println(local.x, local.y); // position within the display
+     * ```
+     */
+    toLocal(point: PointLike): Point;
+    /**
+     * Converts a global desktop point to display-local coordinates.
+     * 
+     * The result is the position relative to this display's top-left corner,
+     * in the same logical-pixel unit used for mouse coordinates and `rect`.
+     * DPI scaling and rotation are already normalised into the desktop
+     * coordinate system by the OS, so no additional transform is needed.
+     * 
+     * ```ts
+     * const display = displays.primary();
+     * // After finding something at global coordinate (1980, 50):
+     * const local = display.toLocal(1980, 50);
+     * println(local.x, local.y); // position within the display
+     * ```
+     */
+    toLocal(x: number, y: number): Point;
+    /**
+     * Converts a display-local point to global desktop coordinates.
+     * 
+     * The inverse of `toLocal`: adds this display's top-left offset so the
+     * point can be used with mouse, keyboard, or capture APIs that expect
+     * global coordinates.
+     * 
+     * ```ts
+     * const display = displays.primary();
+     * // A point at (100, 50) within the display image:
+     * const global = display.toGlobal(100, 50);
+     * ```
+     */
+    toGlobal(point: PointLike): Point;
+    /**
+     * Converts a display-local point to global desktop coordinates.
+     * 
+     * The inverse of `toLocal`: adds this display's top-left offset so the
+     * point can be used with mouse, keyboard, or capture APIs that expect
+     * global coordinates.
+     * 
+     * ```ts
+     * const display = displays.primary();
+     * // A point at (100, 50) within the display image:
+     * const global = display.toGlobal(100, 50);
+     * ```
+     */
+    toGlobal(x: number, y: number): Point;
     /**
      * Returns a string representation of the display.
      */
@@ -7472,109 +7560,18 @@ declare class Rect {
     union(other: Rect): Rect;
 }
 /**
- * A display selector resolved at capture or search time.
- * 
- * Use the static factory methods to create a `Display`:
- * 
- * ```ts
- * // Capture a specific display
- * const img = await screenshot.captureDisplay(Display.primary());
- * const img = await screenshot.captureDisplay(Display.largest());
- * const img = await screenshot.captureDisplay(Display.fromId(474));
- * const img = await screenshot.captureDisplay(Display.fromName("HDMI-1"));
- * const img = await screenshot.captureDisplay(Display.fromName(new Wildcard("HDMI-*")));
- * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*\/));
- * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
- * ```
- * @category Screenshot
- */
-declare class Display {
-    private constructor();
-    /**
-     * Selects the entire desktop (the bounding rectangle of all connected displays).
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.desktop());
-     * ```
-     */
-    static desktop(): Display;
-    /**
-     * Selects the primary (main) display.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.primary());
-     * ```
-     */
-    static primary(): Display;
-    /**
-     * Selects the display with the largest area.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.largest());
-     * ```
-     */
-    static largest(): Display;
-    /**
-     * Selects the display with the smallest area.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.smallest());
-     * ```
-     */
-    static smallest(): Display;
-    /**
-     * Selects a display by its unique numeric ID.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.fromId(474));
-     * ```
-     */
-    static fromId(id: number): Display;
-    /**
-     * Selects a display by its friendly name.
-     * 
-     * Accepts a plain string (exact match), a `Wildcard` pattern, or a `RegExp`.
-     * String and wildcard names are resolved at capture time (no cache required at
-     * construction); regex names require the display cache to be available when used
-     * with `findImage`, or will wait for it with `captureDisplay`.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.fromName("HDMI-1"));
-     * const img = await screenshot.captureDisplay(Display.fromName(new Wildcard("HDMI-*")));
-     * const img = await screenshot.captureDisplay(Display.fromName(/HDMI-.*\/));
-     * ```
-     */
-    static fromName(name: NameLike): Display;
-    /**
-     * Selects the display that contains the given point.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
-     * ```
-     */
-    static fromPoint(point: PointLike): Display;
-    /**
-     * Selects the display that contains the given point.
-     * 
-     * ```ts
-     * const img = await screenshot.captureDisplay(Display.fromPoint(100, 200));
-     * ```
-     */
-    static fromPoint(x: number, y: number): Display;
-    toString(): string;
-}
-/**
  * Specifies the screen area to search within for find-image operations.
  * 
  * ```ts
  * // Search the entire desktop
- * const match = await screenshot.findImage(SearchIn.desktop(), template);
+ * const match = await screenshot.findImage(image, SearchIn.desktop());
  * 
  * // Search a specific display
- * const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+ * const display = displays.primary();
+ * const match = await screenshot.findImage(image, SearchIn.display(display));
  * 
  * // Search a specific rectangle
- * const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+ * const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
  * ```
  * @category Screenshot
  */
@@ -7584,23 +7581,24 @@ declare class SearchIn {
      * Searches within the entire desktop (the bounding rectangle of all connected displays).
      * 
      * ```ts
-     * const match = await screenshot.findImage(SearchIn.desktop(), template);
+     * const match = await screenshot.findImage(image, SearchIn.desktop());
      * ```
      */
     static desktop(): SearchIn;
     /**
-     * Searches within a specific display identified by a `Display` selector.
+     * Searches within a specific display.
      * 
      * ```ts
-     * const match = await screenshot.findImage(SearchIn.display(Display.primary()), template);
+     * const display = displays.primary();
+     * const match = await screenshot.findImage(image, SearchIn.display(display));
      * ```
      */
-    static display(display: Display): SearchIn;
+    static display(display: DisplayInfo): SearchIn;
     /**
      * Searches within the given screen rectangle.
      * 
      * ```ts
-     * const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+     * const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
      * ```
      */
     static rect(rect: RectLike): SearchIn;
@@ -7608,7 +7606,7 @@ declare class SearchIn {
      * Searches within the given screen rectangle.
      * 
      * ```ts
-     * const match = await screenshot.findImage(SearchIn.rect(0, 0, 1920, 1080), template);
+     * const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
      * ```
      */
     static rect(x: number, y: number, width: number, height: number): SearchIn;
@@ -7617,7 +7615,7 @@ declare class SearchIn {
      * 
      * ```ts
      * const win = windows.activeWindow();
-     * const match = await screenshot.findImage(SearchIn.window(win), template);
+     * const match = await screenshot.findImage(image, SearchIn.window(win));
      * ```
      */
     static window(handle: WindowHandle): SearchIn;
@@ -7635,7 +7633,8 @@ declare class SearchIn {
  * ```
  * 
  * ```ts
- * const image = await screenshot.captureDisplay(Display.primary());
+ * const display = displays.primary();
+ * const image = await screenshot.captureDisplay(display);
  * println(image.size());
  * ```
  * 
@@ -7655,15 +7654,15 @@ declare interface Screenshot {
      */
     captureDesktop(): Promise<Image>;
     /**
-     * Captures a screenshot of the display identified by the given selector.
+     * Captures a screenshot of the given display.
      * 
      * ```ts
-     * const image = await screenshot.captureDisplay(Display.primary());
-     * const image = await screenshot.captureDisplay(Display.fromId(474));
-     * const image = await screenshot.captureDisplay(Display.fromName(/HDMI-.*\/));
+     * const image = await screenshot.captureDisplay(displays.primary());
+     * const image = await screenshot.captureDisplay(displays.fromId(474));
+     * const image = await screenshot.captureDisplay(displays.largest());
      * ```
      */
-    captureDisplay(display: Display): Promise<Image>;
+    captureDisplay(display: DisplayInfo): Promise<Image>;
     /**
      * Captures a screenshot of a screen rectangle.
      * 
@@ -7711,34 +7710,35 @@ declare interface Screenshot {
      * Finds the best match of an image within the given search area.
      * 
      * ```ts
-     * const match = await screenshot.findImage(SearchIn.desktop(), template);
+     * const match = await screenshot.findImage(image, SearchIn.desktop());
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImage(SearchIn.display(Display.primary()), template);
+     * const display = displays.primary();
+     * const task = screenshot.findImage(image, SearchIn.display(display));
      * for await (const progress of task) {
      *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
      */
-    findImage(searchIn: SearchIn, image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    findImage(image: Image, searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
      * Finds all matches of an image within the given search area.
      * 
      * ```ts
-     * const matches = await screenshot.findImageAll(SearchIn.desktop(), image);
+     * const matches = await screenshot.findImageAll(image, SearchIn.desktop());
      * ```
      * 
      * ```ts
-     * const task = screenshot.findImageAll(SearchIn.rect(0, 0, 1920, 1080), image);
+     * const task = screenshot.findImageAll(image, SearchIn.rect(0, 0, 1920, 1080));
      * for await (const progress of task) {
      *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
      */
-    findImageAll(searchIn: SearchIn, image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    findImageAll(image: Image, searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
     toString(): string;
 }
 /**

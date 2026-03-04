@@ -25,11 +25,7 @@ default = []
 windows-bin = []
 
 [target.'cfg(windows)'.dependencies]
-windows = { workspace = true, features = [
-    "Wdk_System_SystemServices",
-    "Win32_System_Console",
-    "Win32_System_SystemInformation",
-] }
+windows = { workspace = true, features = ["Wdk_System_SystemServices", "Win32_System_Console", "Win32_System_SystemInformation"] }
 winrt-toast-reborn.workspace = true
 
 [dependencies]

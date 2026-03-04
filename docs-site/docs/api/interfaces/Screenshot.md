@@ -11,7 +11,8 @@ println(image.size());
 ```
 
 ```ts
-const image = await screenshot.captureDisplay(Display.primary());
+const display = displays.primary();
+const image = await screenshot.captureDisplay(display);
 println(image.size());
 ```
 
@@ -40,21 +41,21 @@ const image = await screenshot.captureDesktop();
 
 ### captureDisplay()
 
-> <span class="async-badge">async</span> **captureDisplay**(`display`: [`Display`](../classes/Display.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+> <span class="async-badge">async</span> **captureDisplay**(`display`: [`DisplayInfo`](DisplayInfo.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
-Captures a screenshot of the display identified by the given selector.
+Captures a screenshot of the given display.
 
 ```ts
-const image = await screenshot.captureDisplay(Display.primary());
-const image = await screenshot.captureDisplay(Display.fromId(474));
-const image = await screenshot.captureDisplay(Display.fromName(/HDMI-.*/));
+const image = await screenshot.captureDisplay(displays.primary());
+const image = await screenshot.captureDisplay(displays.fromId(474));
+const image = await screenshot.captureDisplay(displays.largest());
 ```
 
 #### Parameters
 
 ##### display
 
-[`Display`](../classes/Display.md)
+[`DisplayInfo`](DisplayInfo.md)
 
 #### Returns
 
@@ -193,16 +194,17 @@ const image = await screenshot.captureWindow(win);
 
 ### findImage()
 
-> <span class="async-badge">async</span> **findImage**(`searchIn`: [`SearchIn`](../classes/SearchIn.md), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImage**(`image`: [`Image`](../classes/Image.md), `searchIn`: [`SearchIn`](../classes/SearchIn.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds the best match of an image within the given search area.
 
 ```ts
-const match = await screenshot.findImage(SearchIn.desktop(), template);
+const match = await screenshot.findImage(image, SearchIn.desktop());
 ```
 
 ```ts
-const task = screenshot.findImage(SearchIn.display(Display.primary()), template);
+const display = displays.primary();
+const task = screenshot.findImage(image, SearchIn.display(display));
 for await (const progress of task) {
   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
@@ -211,13 +213,13 @@ const match = await task;
 
 #### Parameters
 
-##### searchIn
-
-[`SearchIn`](../classes/SearchIn.md)
-
 ##### image
 
 [`Image`](../classes/Image.md)
+
+##### searchIn
+
+[`SearchIn`](../classes/SearchIn.md)
 
 ##### options?
 
@@ -282,7 +284,7 @@ Use color matching.
 
 ###### Default Value
 
-`true`
+`false`
 
 ***
 
@@ -306,16 +308,16 @@ Use template transparency.
 
 ### findImageAll()
 
-> <span class="async-badge">async</span> **findImageAll**(`searchIn`: [`SearchIn`](../classes/SearchIn.md), `image`: [`Image`](../classes/Image.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findImageAll**(`image`: [`Image`](../classes/Image.md), `searchIn`: [`SearchIn`](../classes/SearchIn.md), `options?`: [`FindImageOptions`](FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](Match.md)[], [`FindImageProgress`](FindImageProgress.md)\>
 
 Finds all matches of an image within the given search area.
 
 ```ts
-const matches = await screenshot.findImageAll(SearchIn.desktop(), image);
+const matches = await screenshot.findImageAll(image, SearchIn.desktop());
 ```
 
 ```ts
-const task = screenshot.findImageAll(SearchIn.rect(0, 0, 1920, 1080), image);
+const task = screenshot.findImageAll(image, SearchIn.rect(0, 0, 1920, 1080));
 for await (const progress of task) {
   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
@@ -324,13 +326,13 @@ const matches = await task;
 
 #### Parameters
 
-##### searchIn
-
-[`SearchIn`](../classes/SearchIn.md)
-
 ##### image
 
 [`Image`](../classes/Image.md)
+
+##### searchIn
+
+[`SearchIn`](../classes/SearchIn.md)
 
 ##### options?
 
@@ -395,7 +397,7 @@ Use color matching.
 
 ###### Default Value
 
-`true`
+`false`
 
 ***
 

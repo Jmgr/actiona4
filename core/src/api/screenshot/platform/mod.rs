@@ -5,7 +5,7 @@ use tracing::error;
 
 use crate::{
     api::{
-        displays::{Displays, display_selector::DisplaySelector},
+        displays::Displays,
         image::{Image, find_image::Source},
         rect::Rect,
     },
@@ -115,87 +115,6 @@ impl<D: DisplayCapture> ScreenshotImplBase<D> {
     pub async fn display_rects(&self) -> Result<Vec<Rect>> {
         let displays_info = self.displays.wait_get_info().await?;
         Ok(displays_info.iter().map(|d| d.rect).collect())
-    }
-
-    /// Resolves a `DisplaySelector` to a display ID.
-    ///
-    /// Returns an error for `DisplaySelector::Desktop` since it does not map
-    /// to a single display; use `desktop_rect` for that case instead.
-    pub async fn resolve_display_selector(&self, selector: &DisplaySelector) -> Result<u32> {
-        match selector {
-            DisplaySelector::Desktop => {
-                Err(eyre!("Desktop selector does not map to a single display"))
-            }
-            DisplaySelector::ById(id) => Ok(*id),
-            DisplaySelector::Primary => {
-                let info = self.displays.primary().await?;
-                Ok(info.id)
-            }
-            DisplaySelector::Largest => {
-                let info = self
-                    .displays
-                    .largest()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::Smallest => {
-                let info = self
-                    .displays
-                    .smallest()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::Leftmost => {
-                let info = self
-                    .displays
-                    .leftmost()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::Rightmost => {
-                let info = self
-                    .displays
-                    .rightmost()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::Topmost => {
-                let info = self
-                    .displays
-                    .topmost()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::Bottommost => {
-                let info = self
-                    .displays
-                    .bottommost()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::Center => {
-                let info = self
-                    .displays
-                    .center()
-                    .await?
-                    .ok_or_else(|| eyre!("no displays found"))?;
-                Ok(info.id)
-            }
-            DisplaySelector::FromPoint(point) => {
-                let info = self
-                    .displays
-                    .from_point(*point)
-                    .await?
-                    .ok_or_else(|| eyre!("no display found at point {point}"))?;
-                Ok(info.id)
-            }
-        }
     }
 
     /// Capture a display and return an Image.

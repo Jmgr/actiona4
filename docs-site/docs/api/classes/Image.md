@@ -2257,7 +2257,7 @@ Use color matching.
 
 ###### Default Value
 
-`true`
+`false`
 
 ***
 
@@ -2372,7 +2372,7 @@ Use color matching.
 
 ###### Default Value
 
-`true`
+`false`
 
 ***
 

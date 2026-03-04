@@ -179,7 +179,6 @@
 
 ## Screenshot
 
-- [Display](classes/Display.md)
 - [SearchIn](classes/SearchIn.md)
 - [Screenshot](interfaces/Screenshot.md)
 - [screenshot](variables/screenshot.md)

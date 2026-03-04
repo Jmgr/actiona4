@@ -21,7 +21,6 @@ use crate::{
     },
 };
 
-pub mod display_selector;
 pub mod js;
 
 #[derive(Clone, Debug)]
@@ -57,6 +56,20 @@ impl Displays {
             self.refresh();
         }
         self.displays_info.wait_get().await
+    }
+
+    /// Returns display info, blocking the current thread on the first call.
+    ///
+    /// Subsequent calls return the cached value instantly via an atomic load.
+    pub fn get_info_sync(&self) -> Result<Arc<DisplayInfoVec>> {
+        if let Some(v) = self.displays_info.try_get() {
+            return Ok(v);
+        }
+        tokio::task::block_in_place(|| {
+            let info = display_info::DisplayInfo::all().map_err(|e| eyre!("{e}"))?;
+            self.displays_info.set(DisplayInfoVec::from(info));
+            Ok(self.displays_info.try_get().expect("just set"))
+        })
     }
 
     pub async fn random_point(&self, rng: SharedRng) -> Result<Point> {

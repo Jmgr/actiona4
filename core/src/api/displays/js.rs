@@ -12,7 +12,7 @@ use crate::{
         js::classes::{SingletonClass, ValueClass},
         name::js::JsNameLike,
         point::js::{JsPoint, JsPointLike},
-        rect::js::JsRect,
+        rect::{Rect, js::JsRect},
     },
     runtime::{self, WithUserData},
     types::display::display_with_type,
@@ -21,19 +21,23 @@ use crate::{
 /// The global displays singleton for querying connected monitors and screens.
 ///
 /// ```ts
-/// // Get a random point across all displays
-/// const point = await displays.randomPoint();
+/// // Get the primary display and convert a global coordinate to display-local
+/// const display = displays.primary();
+/// const local = display.toLocal(globalX, globalY);
 ///
 /// // Find which display contains a point
-/// const info = await displays.fromPoint(100, 200);
+/// const info = displays.fromPoint(100, 200);
 /// if (info) println(info.name, info.rect);
 ///
 /// // Find a display by friendly name
-/// const monitor = await displays.fromName("HDMI-1");
+/// const monitor = displays.fromName("HDMI-1");
 ///
 /// // Get the largest or smallest display
-/// const largest = await displays.largest();
-/// const smallest = await displays.smallest();
+/// const largest = displays.largest();
+/// const smallest = displays.smallest();
+///
+/// // Get a random point across all displays
+/// const point = await displays.randomPoint();
 /// ```
 ///
 /// @singleton
@@ -70,168 +74,181 @@ impl JsDisplays {
             .into())
     }
 
+    /// Returns the primary display, or throws if no primary display is found.
+    /// @readonly
+    pub fn primary(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .find(|d| d.is_primary)
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no primary display found"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
+    }
+
     /// Returns the display that contains the given point, or `undefined` if none.
     /// @readonly
-    pub async fn from_point(
-        &self,
-        ctx: Ctx<'_>,
-        point: JsPointLike,
-    ) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .from_point(point.0)
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn from_point(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<Option<JsDisplayInfo>> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        Ok(displays_info
+            .iter()
+            .find(|d| d.rect.contains(point.0))
+            .cloned()
+            .map(JsDisplayInfo::from))
     }
 
     /// Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
     /// @readonly
-    pub async fn from_name<'js>(
+    pub fn from_name<'js>(
         &self,
         ctx: Ctx<'js>,
         name: JsNameLike<'js>,
     ) -> Result<Option<JsDisplayInfo>> {
-        let displays_infos = self
-            .inner
-            .displays_info
-            .wait_get()
-            .await
-            .into_js_result(&ctx)?;
-        for display_info in displays_infos.iter() {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        for display_info in displays_info.iter() {
             if name.0.matches(&ctx, &display_info.friendly_name)? {
                 return Ok(Some(display_info.clone().into()));
             }
         }
-
         Ok(None)
     }
 
     /// Finds a display by its device name, or `undefined` if not found.
     /// @readonly
-    pub async fn from_device_name<'js>(
+    pub fn from_device_name<'js>(
         &self,
         ctx: Ctx<'js>,
         name: JsNameLike<'js>,
     ) -> Result<Option<JsDisplayInfo>> {
-        let displays_infos = self
-            .inner
-            .displays_info
-            .wait_get()
-            .await
-            .into_js_result(&ctx)?;
-        for display_info in displays_infos.iter() {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        for display_info in displays_info.iter() {
             if name.0.matches(&ctx, &display_info.name)? {
                 return Ok(Some(display_info.clone().into()));
             }
         }
-
         Ok(None)
     }
 
     /// Finds a display by its unique numeric ID, or `undefined` if not found.
     /// @readonly
-    pub async fn from_id<'js>(&self, ctx: Ctx<'js>, id: u32) -> Result<Option<JsDisplayInfo>> {
-        let displays_infos = self
-            .inner
-            .displays_info
-            .wait_get()
-            .await
-            .into_js_result(&ctx)?;
-        Ok(displays_infos
+    pub fn from_id(&self, ctx: Ctx<'_>, id: u32) -> Result<Option<JsDisplayInfo>> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        Ok(displays_info
             .iter()
-            .find(|display_info| display_info.id == id)
+            .find(|d| d.id == id)
             .cloned()
-            .map(|display_info| display_info.into()))
+            .map(JsDisplayInfo::from))
     }
 
-    /// Returns the smallest display by area, or `undefined` if no displays are connected.
+    /// Returns the smallest display by area, or throws if no displays are connected.
     /// @readonly
-    pub async fn smallest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .smallest()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn smallest(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .min_by(|a, b| a.rect.surface().cmp(&b.rect.surface()))
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
     }
 
-    /// Returns the largest display by area, or `undefined` if no displays are connected.
+    /// Returns the largest display by area, or throws if no displays are connected.
     /// @readonly
-    pub async fn largest<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .largest()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn largest(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .max_by(|a, b| a.rect.surface().cmp(&b.rect.surface()))
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
     }
 
-    /// Returns the display furthest to the left (minimum left edge), or `undefined` if none.
+    /// Returns the display furthest to the left (minimum left edge), or throws if none.
     /// @readonly
-    pub async fn leftmost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .leftmost()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn leftmost(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .min_by_key(|d| d.rect.top_left.x)
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
     }
 
-    /// Returns the display furthest to the right (maximum right edge), or `undefined` if none.
+    /// Returns the display furthest to the right (maximum right edge), or throws if none.
     /// @readonly
-    pub async fn rightmost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .rightmost()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn rightmost(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width)
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
     }
 
-    /// Returns the display furthest to the top (minimum top edge), or `undefined` if none.
+    /// Returns the display furthest to the top (minimum top edge), or throws if none.
     /// @readonly
-    pub async fn topmost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .topmost()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn topmost(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .min_by_key(|d| d.rect.top_left.y)
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
     }
 
-    /// Returns the display furthest to the bottom (maximum bottom edge), or `undefined` if none.
+    /// Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
     /// @readonly
-    pub async fn bottommost<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .bottommost()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn bottommost(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        displays_info
+            .iter()
+            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height)
+            .cloned()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)
+            .map(JsDisplayInfo::from)
     }
 
-    /// Returns the display whose center is closest to the center of the desktop, or `undefined` if none.
+    /// Returns the display whose center is closest to the center of the desktop, or throws if none.
     /// @readonly
-    pub async fn center<'js>(&self, ctx: Ctx<'js>) -> Result<Option<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .center()
-            .await
-            .into_js_result(&ctx)?
-            .map(|display_info| display_info.into()))
+    pub fn center(&self, ctx: Ctx<'_>) -> Result<JsDisplayInfo> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        let mut iter = displays_info.iter();
+        let first = iter
+            .next()
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays connected"))
+            .into_js_result(&ctx)?;
+        let desktop: Rect = iter.fold(first.rect, |acc, d| acc.union(d.rect));
+        let desktop_c2 = desktop.top_left * 2 + desktop.size;
+        Ok(displays_info
+            .iter()
+            .min_by_key(|d| {
+                let diff = (d.rect.top_left * 2 + d.rect.size) - desktop_c2;
+                diff.length_squared()
+            })
+            .cloned()
+            .map(JsDisplayInfo::from)
+            .expect("at least one display"))
     }
 
     /// Returns all displays.
     /// @readonly
-    pub async fn all<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsDisplayInfo>> {
-        Ok(self
-            .inner
-            .all()
-            .await
-            .into_js_result(&ctx)?
-            .into_iter()
-            .map(|display_info| display_info.into())
+    pub fn all(&self, ctx: Ctx<'_>) -> Result<Vec<JsDisplayInfo>> {
+        let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
+        Ok(displays_info
+            .iter()
+            .cloned()
+            .map(JsDisplayInfo::from)
             .collect_vec())
     }
 
@@ -353,6 +370,38 @@ impl JsDisplayInfo {
     #[must_use]
     pub const fn is_primary(&self) -> bool {
         self.inner.is_primary
+    }
+
+    /// Converts a global desktop point to display-local coordinates.
+    ///
+    /// The result is the position relative to this display's top-left corner,
+    /// in the same logical-pixel unit used for mouse coordinates and `rect`.
+    ///
+    /// ```ts
+    /// const display = displays.primary();
+    /// // After finding something at global coordinate (1980, 50):
+    /// const local = display.toLocal(1980, 50);
+    /// println(local.x, local.y); // position within the display
+    /// ```
+    #[must_use]
+    pub fn to_local(&self, point: JsPointLike) -> JsPoint {
+        (point.0 - self.inner.rect.top_left).into()
+    }
+
+    /// Converts a display-local point to global desktop coordinates.
+    ///
+    /// The inverse of `toLocal`: adds this display's top-left offset so the
+    /// point can be used with mouse, keyboard, or capture APIs that expect
+    /// global coordinates.
+    ///
+    /// ```ts
+    /// const display = displays.primary();
+    /// // A point at (100, 50) within the display image:
+    /// const global = display.toGlobal(100, 50);
+    /// ```
+    #[must_use]
+    pub fn to_global(&self, point: JsPointLike) -> JsPoint {
+        (point.0 + self.inner.rect.top_left).into()
     }
 
     /// Returns a string representation of the display.

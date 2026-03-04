@@ -93,6 +93,130 @@ The physical width of the display in millimeters.
 
 ## Methods
 
+### toGlobal()
+
+#### Call Signature
+
+> **toGlobal**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Point`](../classes/Point.md)
+
+Converts a display-local point to global desktop coordinates.
+
+The inverse of `toLocal`: adds this display's top-left offset so the
+point can be used with mouse, keyboard, or capture APIs that expect
+global coordinates.
+
+```ts
+const display = displays.primary();
+// A point at (100, 50) within the display image:
+const global = display.toGlobal(100, 50);
+```
+
+##### Parameters
+
+###### point
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+##### Returns
+
+[`Point`](../classes/Point.md)
+
+#### Call Signature
+
+> **toGlobal**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Point`](../classes/Point.md)
+
+Converts a display-local point to global desktop coordinates.
+
+The inverse of `toLocal`: adds this display's top-left offset so the
+point can be used with mouse, keyboard, or capture APIs that expect
+global coordinates.
+
+```ts
+const display = displays.primary();
+// A point at (100, 50) within the display image:
+const global = display.toGlobal(100, 50);
+```
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+[`Point`](../classes/Point.md)
+
+***
+
+### toLocal()
+
+#### Call Signature
+
+> **toLocal**(`point`: [`PointLike`](../type-aliases/PointLike.md)): [`Point`](../classes/Point.md)
+
+Converts a global desktop point to display-local coordinates.
+
+The result is the position relative to this display's top-left corner,
+in the same logical-pixel unit used for mouse coordinates and `rect`.
+DPI scaling and rotation are already normalised into the desktop
+coordinate system by the OS, so no additional transform is needed.
+
+```ts
+const display = displays.primary();
+// After finding something at global coordinate (1980, 50):
+const local = display.toLocal(1980, 50);
+println(local.x, local.y); // position within the display
+```
+
+##### Parameters
+
+###### point
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+##### Returns
+
+[`Point`](../classes/Point.md)
+
+#### Call Signature
+
+> **toLocal**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Point`](../classes/Point.md)
+
+Converts a global desktop point to display-local coordinates.
+
+The result is the position relative to this display's top-left corner,
+in the same logical-pixel unit used for mouse coordinates and `rect`.
+DPI scaling and rotation are already normalised into the desktop
+coordinate system by the OS, so no additional transform is needed.
+
+```ts
+const display = displays.primary();
+// After finding something at global coordinate (1980, 50):
+const local = display.toLocal(1980, 50);
+println(local.x, local.y); // position within the display
+```
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+[`Point`](../classes/Point.md)
+
+***
+
 ### toString()
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

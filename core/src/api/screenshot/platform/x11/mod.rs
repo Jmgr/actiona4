@@ -8,7 +8,7 @@ use super::{DisplayCapture, ScreenshotImplBase, blacken_non_display_areas};
 use crate::{
     api::{
         color::Color,
-        displays::{Displays, display_selector::DisplaySelector},
+        displays::Displays,
         image::{Image, find_image::Source},
         point::{Point, point},
         rect::{Rect, rect},
@@ -124,10 +124,6 @@ impl ScreenshotImpl {
         let shm = ShmCapture::new(&x11_connection, size).await?;
         self.desktop_shm.set((rect, shm));
         Ok(())
-    }
-
-    pub async fn resolve_display_selector(&self, selector: &DisplaySelector) -> Result<u32> {
-        self.base.resolve_display_selector(selector).await
     }
 
     pub async fn capture_display(&self, display_id: u32) -> Result<Image> {
