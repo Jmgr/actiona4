@@ -1,5 +1,4 @@
-use super::display_selector::DisplaySelector;
-use crate::api::{rect::Rect, windows::WindowId};
+use crate::api::{displays::display_selector::DisplaySelector, rect::Rect, windows::WindowId};
 
 /// Specifies the screen area to search within for find-image operations.
 ///

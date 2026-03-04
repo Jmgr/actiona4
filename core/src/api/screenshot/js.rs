@@ -13,8 +13,11 @@ use crate::{
     IntoJsResult,
     api::{
         color::js::JsColor,
+        displays::display_selector::DisplaySelector,
         image::{
-            find_image::{FindImageProgress, FindImageStage, FindImageTemplateOptions, Template},
+            find_image::{
+                FindImageProgress, FindImageStage, FindImageTemplateOptions, SearchIn, Template,
+            },
             js::{JsFindImageOptions, JsFindImageProgress, JsImage, JsMatch},
         },
         js::{
@@ -24,7 +27,7 @@ use crate::{
         name::{Name, js::JsNameLike},
         point::js::JsPointLike,
         rect::{Rect, js::JsRectLike},
-        screenshot::{Screenshot, display_selector::DisplaySelector, search_in::SearchIn},
+        screenshot::Screenshot,
         windows::js::JsWindowHandle,
     },
     runtime::WithUserData,

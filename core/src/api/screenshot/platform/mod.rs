@@ -3,10 +3,9 @@ use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use color_eyre::{Result, eyre::eyre};
 use tracing::error;
 
-use super::display_selector::DisplaySelector;
 use crate::{
     api::{
-        displays::Displays,
+        displays::{Displays, display_selector::DisplaySelector},
         image::{Image, find_image::Source},
         rect::Rect,
     },

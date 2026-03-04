@@ -8,11 +8,10 @@ use super::{DisplayCapture, ScreenshotImplBase, blacken_non_display_areas};
 use crate::{
     api::{
         color::Color,
-        displays::Displays,
+        displays::{Displays, display_selector::DisplaySelector},
         image::{Image, find_image::Source},
         point::{Point, point},
         rect::{Rect, rect},
-        screenshot::display_selector::DisplaySelector,
         size::size,
     },
     platform::x11::X11Connection,

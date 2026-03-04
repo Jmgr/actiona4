@@ -4,25 +4,22 @@ use color_eyre::Result;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 
-pub mod display_selector;
 pub mod js;
-pub mod search_in;
 
 mod platform;
 
-use display_selector::DisplaySelector;
 #[cfg(windows)]
 use platform::win::ScreenshotImpl;
 #[cfg(unix)]
 use platform::x11::ScreenshotImpl;
-use search_in::SearchIn;
 
 use super::{
-    displays::Displays,
+    displays::{Displays, display_selector::DisplaySelector},
     image::{
         Image,
         find_image::{
-            FindImageProgress, FindImageStage, FindImageTemplateOptions, Match, Source, Template,
+            FindImageProgress, FindImageStage, FindImageTemplateOptions, Match, SearchIn, Source,
+            Template,
         },
     },
     rect::Rect,

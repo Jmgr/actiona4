@@ -39,6 +39,9 @@ pub mod convert;
 mod matching;
 mod pyramids;
 mod results;
+pub mod search_in;
+
+pub use search_in::SearchIn;
 
 /// Warms up OpenCV's Lab color space processing code.
 pub fn warm_up() -> Result<()> {
