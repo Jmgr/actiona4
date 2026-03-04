@@ -993,7 +993,9 @@ impl JsImage {
         self.inner.flipped(flip_direction.into()).into()
     }
 
-    /// Hue rotate the image.
+    /// Rotates the hue of each pixel by `value` degrees.
+    ///
+    /// `value` is in degrees and wraps around, so 360 is equivalent to 0.
     pub fn hue_rotate<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
@@ -1004,7 +1006,9 @@ impl JsImage {
         this.0
     }
 
-    /// Hue rotate the image and returns a new image.
+    /// Returns a hue-rotated copy of this image.
+    ///
+    /// `value` is in degrees and wraps around, so 360 is equivalent to 0.
     #[must_use]
     pub fn with_hue_rotation(&self, value: i32) -> Self {
         self.inner.hue_rotated(value).into()
@@ -1063,6 +1067,9 @@ impl JsImage {
     }
 
     /// Brightens or darkens the pixels of this image.
+    ///
+    /// `value` is added to each RGB channel and clamped to 0–255.
+    /// Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
     pub fn adjust_brightness<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
@@ -1073,13 +1080,18 @@ impl JsImage {
         this.0
     }
 
-    /// Returns a brightened or darkened version of this image.
+    /// Returns a brightened or darkened copy of this image.
+    ///
+    /// `value` is added to each RGB channel and clamped to 0–255.
+    /// Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
     #[must_use]
     pub fn with_adjusted_brightness(&self, value: i32) -> Self {
         self.inner.adjusted_brightness(value).into()
     }
 
     /// Adjusts the contrast of this image.
+    ///
+    /// Positive `value` increases contrast, negative decreases it, 0 = no change.
     pub fn adjust_contrast<'js>(
         &mut self,
         this: This<Class<'js, Self>>,
@@ -1090,7 +1102,9 @@ impl JsImage {
         this.0
     }
 
-    /// Returns a new image with an adjusted contrast.
+    /// Returns a contrast-adjusted copy of this image.
+    ///
+    /// Positive `value` increases contrast, negative decreases it, 0 = no change.
     #[must_use]
     pub fn with_adjusted_contrast(&self, value: f32) -> Self {
         self.inner.adjusted_contrast(value).into()
