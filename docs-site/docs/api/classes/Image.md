@@ -28,9 +28,9 @@ await photo.save("photo_edited.png");
 
 ```ts
 // Find an image within another
-const screen = await Image.load("screenshot.png");
+const screenshot = await Image.load("screenshot.png");
 const button = await Image.load("button.png");
-const match = await screen.findImage(button, { matchThreshold: 0.9 });
+const match = await screenshot.find(button, { matchThreshold: 0.9 });
 if (match) {
   println(`Button found at ${match.position}`);
 }
@@ -2163,9 +2163,9 @@ Returns a copy of this image filled with a color.
 
 ***
 
-### findImage()
+### find()
 
-> <span class="async-badge">async</span> **findImage**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+> <span class="async-badge">async</span> **find**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
 Finds the best match of an image inside this image.
 
@@ -2173,7 +2173,7 @@ Returns a `ProgressTask` that can be awaited for the result and iterated
 for progress updates. Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
 
 ```ts
-const match = await source.findImage(template);
+const match = await source.find(template);
 if (match) {
   println(`Found at ${match.position} with score ${match.score}`);
 }
@@ -2181,7 +2181,7 @@ if (match) {
 
 ```ts
 // Track progress while searching
-const task = source.findImage(template);
+const task = source.find(template);
 for await (const progress of task) {
   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
@@ -2279,16 +2279,16 @@ Use template transparency.
 
 ***
 
-### findImageAll()
+### findAll()
 
-> <span class="async-badge">async</span> **findImageAll**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+> <span class="async-badge">async</span> **findAll**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
 Finds all occurrences of an image inside this image.
 
 Returns a `ProgressTask` that can be awaited for an array of matches.
 
 ```ts
-const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
+const matches = await source.findAll(template, { matchThreshold: 0.85 });
 for (const match of matches) {
   println(`Found at ${match.position}`);
 }
@@ -2296,7 +2296,7 @@ for (const match of matches) {
 
 ```ts
 // Track progress while searching
-const task = source.findImageAll(template);
+const task = source.findAll(template);
 for await (const progress of task) {
   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 }
@@ -2391,6 +2391,236 @@ Use template transparency.
 #### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+***
+
+### findAllOnScreen()
+
+> <span class="async-badge">async</span> **findAllOnScreen**(`searchIn`: [`SearchIn`](SearchIn.md), `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+Finds all matches of this image within the given screen area.
+
+Takes a live screenshot of the specified area and searches for all occurrences.
+
+```ts
+const matches = await image.findAllOnScreen(SearchIn.desktop());
+for (const match of matches) {
+  println(`Found at ${match.position}`);
+}
+```
+
+```ts
+const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+for await (const progress of task) {
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+}
+const matches = await task;
+```
+
+#### Parameters
+
+##### searchIn
+
+[`SearchIn`](SearchIn.md)
+
+##### options?
+
+[`FindImageOptions`](../interfaces/FindImageOptions.md)
+
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`false`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
+#### Returns
+
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+***
+
+### findOnScreen()
+
+> <span class="async-badge">async</span> **findOnScreen**(`searchIn`: [`SearchIn`](SearchIn.md), `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+Finds the best match of this image within the given screen area.
+
+Takes a live screenshot of the specified area and searches for this image within it.
+Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
+
+```ts
+const match = await image.findOnScreen(SearchIn.desktop());
+if (match) {
+  println(`Found at ${match.position} with score ${match.score}`);
+}
+```
+
+```ts
+const display = displays.primary();
+const task = image.findOnScreen(SearchIn.display(display));
+for await (const progress of task) {
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+}
+const match = await task;
+```
+
+#### Parameters
+
+##### searchIn
+
+[`SearchIn`](SearchIn.md)
+
+##### options?
+
+[`FindImageOptions`](../interfaces/FindImageOptions.md)
+
+<div class="options-fields">
+
+###### downscale?
+
+> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### signal?
+
+> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### useColors?
+
+> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`false`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+</div>
+
+#### Returns
+
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
 ***
 

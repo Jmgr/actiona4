@@ -265,7 +265,7 @@ declare enum TextVerticalAlign {
  * Stages of a find image operation.
  * 
  * ```ts
- * const task = source.findImage(template);
+ * const task = source.find(template);
  * for await (const progress of task) {
  *   if (progress.stage === FindImageStage.Matching) {
  *     println(`Matching: ${formatPercent(progress.percent)}`);
@@ -3208,7 +3208,7 @@ declare interface WaitForChangedOptions {
  * const text = clipboard.text.get();
  * 
  * // Copy and paste an image
- * const img = display.screenshot();
+ * const img = screen.captureDesktop();
  * clipboard.image.set(img);
  * 
  * // Work with file lists
@@ -3297,7 +3297,7 @@ declare interface ClipboardText {
  * Provides image clipboard operations.
  * 
  * ```ts
- * const img = display.screenshot();
+ * const img = screen.captureDesktop();
  * clipboard.image.set(img);
  * const clipped = clipboard.image.get();
  * ```
@@ -4239,7 +4239,7 @@ declare class Directory {
  * ```ts
  * // Get the primary display and convert a global coordinate to display-local
  * const display = displays.primary();
- * const local = display.point(globalX, globalY);
+ * const local = display.toLocal(globalX, globalY);
  * 
  * // Find which display contains a point
  * const info = displays.fromPoint(100, 200);
@@ -4383,8 +4383,6 @@ declare interface DisplayInfo {
      * 
      * The result is the position relative to this display's top-left corner,
      * in the same logical-pixel unit used for mouse coordinates and `rect`.
-     * DPI scaling and rotation are already normalised into the desktop
-     * coordinate system by the OS, so no additional transform is needed.
      * 
      * ```ts
      * const display = displays.primary();
@@ -4399,8 +4397,6 @@ declare interface DisplayInfo {
      * 
      * The result is the position relative to this display's top-left corner,
      * in the same logical-pixel unit used for mouse coordinates and `rect`.
-     * DPI scaling and rotation are already normalised into the desktop
-     * coordinate system by the OS, so no additional transform is needed.
      * 
      * ```ts
      * const display = displays.primary();
@@ -4915,11 +4911,11 @@ declare interface DrawTextOptions {
  * 
  * ```ts
  * // Find with stricter matching
- * const match = await source.findImage(template, { matchThreshold: 0.95 });
+ * const match = await source.find(template, { matchThreshold: 0.95 });
  * 
  * // Find with abort support
  * const controller = new AbortController();
- * const match = await source.findImage(template, { signal: controller.signal });
+ * const match = await source.find(template, { signal: controller.signal });
  * ```
  * @category Image
  * @expand
@@ -4958,12 +4954,12 @@ declare interface FindImageOptions {
     signal?: AbortSignal;
 }
 /**
- * A match returned by a findImage or findImageAll call.
+ * A match returned by a find or findAll call.
  * 
  * ```ts
  * const source = await Image.load("screenshot.png");
  * const template = await Image.load("button.png");
- * const match = await source.findImage(template);
+ * const match = await source.find(template);
  * if (match) {
  *   println(`Found at ${match.position} with score ${match.score}`);
  *   println(`Bounding rect: ${match.rect}`);
@@ -5000,10 +4996,10 @@ declare interface Match {
 /**
  * Progress of a find image operation.
  * 
- * Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
+ * Received by iterating over the async iterator returned by `find` or `findAll`.
  * 
  * ```ts
- * const task = source.findImage(template);
+ * const task = source.find(template);
  * for await (const progress of task) {
  *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
  *   if (progress.finished) break;
@@ -5056,9 +5052,9 @@ declare interface FindImageProgress {
  * 
  * ```ts
  * // Find an image within another
- * const screen = await Image.load("screenshot.png");
+ * const screenshot = await Image.load("screenshot.png");
  * const button = await Image.load("button.png");
- * const match = await screen.findImage(button, { matchThreshold: 0.9 });
+ * const match = await screenshot.find(button, { matchThreshold: 0.9 });
  * if (match) {
  *   println(`Button found at ${match.position}`);
  * }
@@ -5494,7 +5490,7 @@ declare class Image {
      * for progress updates. Returns `undefined` if no match is found.
      * 
      * ```ts
-     * const match = await source.findImage(template);
+     * const match = await source.find(template);
      * if (match) {
      *   println(`Found at ${match.position} with score ${match.score}`);
      * }
@@ -5502,21 +5498,21 @@ declare class Image {
      * 
      * ```ts
      * // Track progress while searching
-     * const task = source.findImage(template);
+     * const task = source.find(template);
      * for await (const progress of task) {
      *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const match = await task;
      * ```
      */
-    findImage(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    find(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
      * Finds all occurrences of an image inside this image.
      * 
      * Returns a `ProgressTask` that can be awaited for an array of matches.
      * 
      * ```ts
-     * const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
+     * const matches = await source.findAll(template, { matchThreshold: 0.85 });
      * for (const match of matches) {
      *   println(`Found at ${match.position}`);
      * }
@@ -5524,14 +5520,58 @@ declare class Image {
      * 
      * ```ts
      * // Track progress while searching
-     * const task = source.findImageAll(template);
+     * const task = source.findAll(template);
      * for await (const progress of task) {
      *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
      * }
      * const matches = await task;
      * ```
      */
-    findImageAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    findAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+    /**
+     * Finds the best match of this image within the given screen area.
+     * 
+     * Takes a live screenshot of the specified area and searches for this image within it.
+     * Returns `undefined` if no match is found.
+     * 
+     * ```ts
+     * const match = await image.findOnScreen(SearchIn.desktop());
+     * if (match) {
+     *   println(`Found at ${match.position} with score ${match.score}`);
+     * }
+     * ```
+     * 
+     * ```ts
+     * const display = displays.primary();
+     * const task = image.findOnScreen(SearchIn.display(display));
+     * for await (const progress of task) {
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * }
+     * const match = await task;
+     * ```
+     */
+    findOnScreen(searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
+    /**
+     * Finds all matches of this image within the given screen area.
+     * 
+     * Takes a live screenshot of the specified area and searches for all occurrences.
+     * 
+     * ```ts
+     * const matches = await image.findAllOnScreen(SearchIn.desktop());
+     * for (const match of matches) {
+     *   println(`Found at ${match.position}`);
+     * }
+     * ```
+     * 
+     * ```ts
+     * const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+     * for await (const progress of task) {
+     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     * }
+     * const matches = await task;
+     * ```
+     */
+    findAllOnScreen(searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
 }
 /**
  * A signal that can be used to abort asynchronous operations.
@@ -7564,16 +7604,16 @@ declare class Rect {
  * 
  * ```ts
  * // Search the entire desktop
- * const match = await screenshot.findImage(image, SearchIn.desktop());
+ * const match = await image.findOnScreen(SearchIn.desktop());
  * 
  * // Search a specific display
  * const display = displays.primary();
- * const match = await screenshot.findImage(image, SearchIn.display(display));
+ * const match = await image.findOnScreen(SearchIn.display(display));
  * 
  * // Search a specific rectangle
- * const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
+ * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
  * ```
- * @category Screenshot
+ * @category Screen
  */
 declare class SearchIn {
     private constructor();
@@ -7581,7 +7621,7 @@ declare class SearchIn {
      * Searches within the entire desktop (the bounding rectangle of all connected displays).
      * 
      * ```ts
-     * const match = await screenshot.findImage(image, SearchIn.desktop());
+     * const match = await image.findOnScreen(SearchIn.desktop());
      * ```
      */
     static desktop(): SearchIn;
@@ -7590,7 +7630,7 @@ declare class SearchIn {
      * 
      * ```ts
      * const display = displays.primary();
-     * const match = await screenshot.findImage(image, SearchIn.display(display));
+     * const match = await image.findOnScreen(SearchIn.display(display));
      * ```
      */
     static display(display: DisplayInfo): SearchIn;
@@ -7598,7 +7638,7 @@ declare class SearchIn {
      * Searches within the given screen rectangle.
      * 
      * ```ts
-     * const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
+     * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
      * ```
      */
     static rect(rect: RectLike): SearchIn;
@@ -7606,7 +7646,7 @@ declare class SearchIn {
      * Searches within the given screen rectangle.
      * 
      * ```ts
-     * const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
+     * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
      * ```
      */
     static rect(x: number, y: number, width: number, height: number): SearchIn;
@@ -7615,41 +7655,41 @@ declare class SearchIn {
      * 
      * ```ts
      * const win = windows.activeWindow();
-     * const match = await screenshot.findImage(image, SearchIn.window(win));
+     * const match = await image.findOnScreen(SearchIn.window(win));
      * ```
      */
     static window(handle: WindowHandle): SearchIn;
     toString(): string;
 }
 /**
- * Screenshot capture and image search.
+ * Screen capture and image search.
  * 
  * Provides methods to capture the entire desktop, a specific display, a screen
  * region, or a single pixel, as well as finding images on screen.
  * 
  * ```ts
- * const image = await screenshot.captureDesktop();
+ * const image = await screen.captureDesktop();
  * println(image.size());
  * ```
  * 
  * ```ts
  * const display = displays.primary();
- * const image = await screenshot.captureDisplay(display);
+ * const image = await screen.captureDisplay(display);
  * println(image.size());
  * ```
  * 
  * ```ts
- * const pixel = await screenshot.capturePixel(100, 100);
+ * const pixel = await screen.capturePixel(100, 100);
  * println(pixel);
  * ```
- * @category Screenshot
+ * @category Screen
  */
-declare interface Screenshot {
+declare interface Screen {
     /**
      * Captures a screenshot of the entire desktop.
      * 
      * ```ts
-     * const image = await screenshot.captureDesktop();
+     * const image = await screen.captureDesktop();
      * ```
      */
     captureDesktop(): Promise<Image>;
@@ -7657,9 +7697,9 @@ declare interface Screenshot {
      * Captures a screenshot of the given display.
      * 
      * ```ts
-     * const image = await screenshot.captureDisplay(displays.primary());
-     * const image = await screenshot.captureDisplay(displays.fromId(474));
-     * const image = await screenshot.captureDisplay(displays.largest());
+     * const image = await screen.captureDisplay(displays.primary());
+     * const image = await screen.captureDisplay(displays.fromId(474));
+     * const image = await screen.captureDisplay(displays.largest());
      * ```
      */
     captureDisplay(display: DisplayInfo): Promise<Image>;
@@ -7667,7 +7707,7 @@ declare interface Screenshot {
      * Captures a screenshot of a screen rectangle.
      * 
      * ```ts
-     * const image = await screenshot.captureRect(0, 0, 1920, 1080);
+     * const image = await screen.captureRect(0, 0, 1920, 1080);
      * ```
      */
     captureRect(rect: RectLike): Promise<Image>;
@@ -7675,7 +7715,7 @@ declare interface Screenshot {
      * Captures a screenshot of a screen rectangle.
      * 
      * ```ts
-     * const image = await screenshot.captureRect(0, 0, 1920, 1080);
+     * const image = await screen.captureRect(0, 0, 1920, 1080);
      * ```
      */
     captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
@@ -7684,7 +7724,7 @@ declare interface Screenshot {
      * 
      * ```ts
      * const win = windows.activeWindow();
-     * const image = await screenshot.captureWindow(win);
+     * const image = await screen.captureWindow(win);
      * ```
      */
     captureWindow(handle: WindowHandle): Promise<Image>;
@@ -7692,7 +7732,7 @@ declare interface Screenshot {
      * Captures the color of a single pixel on screen.
      * 
      * ```ts
-     * const color = await screenshot.capturePixel(100, 200);
+     * const color = await screen.capturePixel(100, 200);
      * println(color);
      * ```
      */
@@ -7701,50 +7741,17 @@ declare interface Screenshot {
      * Captures the color of a single pixel on screen.
      * 
      * ```ts
-     * const color = await screenshot.capturePixel(100, 200);
+     * const color = await screen.capturePixel(100, 200);
      * println(color);
      * ```
      */
     capturePixel(x: number, y: number): Promise<Color>;
-    /**
-     * Finds the best match of an image within the given search area.
-     * 
-     * ```ts
-     * const match = await screenshot.findImage(image, SearchIn.desktop());
-     * ```
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * const task = screenshot.findImage(image, SearchIn.display(display));
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const match = await task;
-     * ```
-     */
-    findImage(image: Image, searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
-    /**
-     * Finds all matches of an image within the given search area.
-     * 
-     * ```ts
-     * const matches = await screenshot.findImageAll(image, SearchIn.desktop());
-     * ```
-     * 
-     * ```ts
-     * const task = screenshot.findImageAll(image, SearchIn.rect(0, 0, 1920, 1080));
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const matches = await task;
-     * ```
-     */
-    findImageAll(image: Image, searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
     toString(): string;
 }
 /**
- * @category Screenshot
+ * @category Screen
  */
-declare const screenshot: Screenshot;
+declare const screen: Screen;
 /**
  * A 2D size with width and height.
  * 

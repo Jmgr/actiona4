@@ -3,7 +3,7 @@ use std::sync::Arc;
 use color_eyre::Result;
 
 use self::capture::capture_rect as capture_rect_raw;
-use super::{DisplayCapture, ScreenshotImplBase, blacken_non_display_areas};
+use super::{DisplayCapture, ScreenImplBase, blacken_non_display_areas};
 use crate::{
     api::{
         color::Color,
@@ -38,10 +38,10 @@ impl DisplayCapture for WindowsDisplay {
     }
 }
 
-/// Windows screenshot implementation.
-pub type ScreenshotImpl = ScreenshotImplBase<WindowsDisplay>;
+/// Windows screen implementation.
+pub type ScreenImpl = ScreenImplBase<WindowsDisplay>;
 
-impl ScreenshotImpl {
+impl ScreenImpl {
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
         let data = capture_rect_raw(rect)?;
         Image::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
@@ -88,7 +88,7 @@ mod tests {
             displays::Displays,
             point::point,
             rect::rect,
-            screenshot::platform::{ScreenshotImplBase, win::WindowsDisplay},
+            screen::platform::{ScreenImplBase, win::WindowsDisplay},
             size::size,
         },
         runtime::Runtime,
@@ -101,7 +101,7 @@ mod tests {
             let displays =
                 Displays::new(runtime.cancellation_token(), runtime.task_tracker()).unwrap();
 
-            let impl_ = ScreenshotImplBase::<WindowsDisplay>::new(runtime, displays.clone())
+            let impl_ = ScreenImplBase::<WindowsDisplay>::new(runtime, displays.clone())
                 .await
                 .unwrap();
 
@@ -123,7 +123,7 @@ mod tests {
             let displays =
                 Displays::new(runtime.cancellation_token(), runtime.task_tracker()).unwrap();
 
-            let imp = ScreenshotImplBase::<WindowsDisplay>::new(runtime, displays)
+            let imp = ScreenImplBase::<WindowsDisplay>::new(runtime, displays)
                 .await
                 .unwrap();
 

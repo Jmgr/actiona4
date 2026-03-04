@@ -98,7 +98,7 @@ impl From<JsWaitForChangedOptions> for super::WaitForChangedOptions {
 /// const text = clipboard.text.get();
 ///
 /// // Copy and paste an image
-/// const img = display.screenshot();
+/// const img = screen.captureDesktop();
 /// clipboard.image.set(img);
 ///
 /// // Work with file lists
@@ -292,7 +292,7 @@ impl JsClipboardText {
 /// Provides image clipboard operations.
 ///
 /// ```ts
-/// const img = display.screenshot();
+/// const img = screen.captureDesktop();
 /// clipboard.image.set(img);
 /// const clipped = clipboard.image.get();
 /// ```

@@ -5,7 +5,7 @@ The global displays singleton for querying connected monitors and screens.
 ```ts
 // Get the primary display and convert a global coordinate to display-local
 const display = displays.primary();
-const local = display.point(globalX, globalY);
+const local = display.toLocal(globalX, globalY);
 
 // Find which display contains a point
 const info = displays.fromPoint(100, 200);

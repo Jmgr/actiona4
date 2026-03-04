@@ -4,7 +4,7 @@ use color_eyre::Result;
 use tracing::{error, warn};
 
 use self::capture::{ShmCapture, get_image};
-use super::{DisplayCapture, ScreenshotImplBase, blacken_non_display_areas};
+use super::{DisplayCapture, ScreenImplBase, blacken_non_display_areas};
 use crate::{
     api::{
         color::Color,
@@ -70,17 +70,17 @@ impl DisplayCapture for X11Display {
 
 /// X11 screenshot implementation with pre-allocated SHM for desktop capture.
 #[derive(Debug)]
-pub struct ScreenshotImpl {
-    base: Arc<ScreenshotImplBase<X11Display>>,
+pub struct ScreenImpl {
+    base: Arc<ScreenImplBase<X11Display>>,
     /// Pre-allocated SHM segment for full-desktop capture.
     /// Stores the rect it was sized for alongside the capture object.
     desktop_shm: AsyncResource<(Rect, ShmCapture)>,
     runtime: Arc<Runtime>,
 }
 
-impl ScreenshotImpl {
+impl ScreenImpl {
     pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Arc<Self>> {
-        let base = ScreenshotImplBase::<X11Display>::new(runtime.clone(), displays.clone()).await?;
+        let base = ScreenImplBase::<X11Display>::new(runtime.clone(), displays.clone()).await?;
 
         let desktop_shm = AsyncResource::new(runtime.cancellation_token());
 
@@ -202,7 +202,7 @@ mod tests {
     use crate::{
         api::{
             displays::Displays,
-            screenshot::platform::{ScreenshotImplBase, x11::X11Display},
+            screen::platform::{ScreenImplBase, x11::X11Display},
         },
         runtime::Runtime,
     };
@@ -214,7 +214,7 @@ mod tests {
             let displays =
                 Displays::new(runtime.cancellation_token(), runtime.task_tracker()).unwrap();
 
-            let impl_ = ScreenshotImplBase::<X11Display>::new(runtime, displays.clone())
+            let impl_ = ScreenImplBase::<X11Display>::new(runtime, displays.clone())
                 .await
                 .unwrap();
 

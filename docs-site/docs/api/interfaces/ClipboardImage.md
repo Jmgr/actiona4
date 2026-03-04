@@ -3,7 +3,7 @@
 Provides image clipboard operations.
 
 ```ts
-const img = display.screenshot();
+const img = screen.captureDesktop();
 clipboard.image.set(img);
 const clipped = clipboard.image.get();
 ```

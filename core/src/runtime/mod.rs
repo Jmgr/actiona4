@@ -58,7 +58,7 @@ use crate::{
         process::js::JsProcess,
         random::js::JsRandom,
         rect::js::JsRect,
-        screenshot::{Screenshot, js::JsScreenshot},
+        screen::{Screen, js::JsScreen},
         size::js::JsSize,
         standardpaths::js::JsStandardPaths,
         system::js::JsSystem,
@@ -94,6 +94,7 @@ impl<'js> WithUserData for Ctx<'js> {
 #[derive(Constructor, Debug, JsLifetime)]
 pub(crate) struct JsUserData {
     displays: Displays,
+    screen: Screen,
     cancellation_token: CancellationToken,
     /// An optional scoped token (e.g. per-REPL-expression) whose children are
     /// cancelled independently of the root token. When set, `child_cancellation_token`
@@ -110,6 +111,10 @@ pub(crate) struct JsUserData {
 impl JsUserData {
     pub(crate) fn displays(&self) -> Displays {
         self.displays.clone()
+    }
+
+    pub(crate) fn screen(&self) -> Screen {
+        self.screen.clone()
     }
 
     pub(crate) fn cancellation_token(&self) -> CancellationToken {
@@ -337,9 +342,9 @@ impl Runtime {
         let console = JsConsole::default();
         let js_displays = JsDisplays::new(displays.clone())?;
         let windows_inner = Windows::new(runtime.clone());
-        let screenshot_inner =
-            Screenshot::new(runtime.clone(), displays.clone(), windows_inner.clone()).await?;
-        let screenshot = JsScreenshot::new(screenshot_inner.clone());
+        let screen_inner =
+            Screen::new(runtime.clone(), displays.clone(), windows_inner.clone()).await?;
+        let screen = JsScreen::new(screen_inner.clone());
         let clipboard = JsClipboard::new(clipboard);
         let system = JsSystem::new(task_tracker.clone()).await?;
         let audio = JsAudio::new(
@@ -350,7 +355,7 @@ impl Runtime {
         let process = JsProcess::new(task_tracker.clone());
         let notification = JsNotification::new(task_tracker.clone());
         let standard_paths = JsStandardPaths::default();
-        let windows = JsWindows::new(windows_inner, screenshot_inner);
+        let windows = JsWindows::new(windows_inner, screen_inner.clone());
 
         let script_engine = ScriptEngine::new().await?;
 
@@ -366,6 +371,7 @@ impl Runtime {
 
                 ctx.store_userdata(JsUserData::new(
                     displays,
+                    screen_inner.clone(),
                     cancellation_token.clone(),
                     Mutex::new(None),
                     local_rng,
@@ -388,7 +394,7 @@ impl Runtime {
                     keyboard,
                     console,
                     js_displays,
-                    screenshot,
+                    screen,
                     clipboard,
                     task_tracker,
                     system,
@@ -415,7 +421,7 @@ impl Runtime {
         keyboard: JsKeyboard,
         console: JsConsole,
         js_displays: JsDisplays,
-        screenshot: JsScreenshot,
+        screen: JsScreen,
         clipboard: JsClipboard,
         task_tracker: TaskTracker,
         system: JsSystem,
@@ -452,7 +458,7 @@ impl Runtime {
         register_singleton_class::<JsUi>(&ctx, JsUi::default())?;
         register_singleton_class::<JsConsole>(&ctx, console)?;
         register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
-        register_singleton_class::<JsScreenshot>(&ctx, screenshot)?;
+        register_singleton_class::<JsScreen>(&ctx, screen)?;
         register_singleton_class::<JsClipboard>(&ctx, clipboard)?;
         register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
         register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;

@@ -1216,7 +1216,7 @@ await doWork();
                 col: 41,
             }],
         );
-        let source = r#"await screenshot.captureRect(0, 0, 100, 100).save("out.png")"#;
+        let source = r#"await screen.captureRect(0, 0, 100, 100).save("out.png")"#;
 
         let (cm, _) = new_tty_handler();
         let span = runtime_primary_span(&runtime_error, source, &cm)

@@ -177,11 +177,11 @@
 
 - [Rect](classes/Rect.md)
 
-## Screenshot
+## Screen
 
 - [SearchIn](classes/SearchIn.md)
-- [Screenshot](interfaces/Screenshot.md)
-- [screenshot](variables/screenshot.md)
+- [Screen](interfaces/Screen.md)
+- [screen](variables/screen.md)
 
 ## Size
 

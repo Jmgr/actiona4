@@ -1,11 +1,11 @@
 # Interface: Match
 
-A match returned by a findImage or findImageAll call.
+A match returned by a find or findAll call.
 
 ```ts
 const source = await Image.load("screenshot.png");
 const template = await Image.load("button.png");
-const match = await source.findImage(template);
+const match = await source.find(template);
 if (match) {
   println(`Found at ${match.position} with score ${match.score}`);
   println(`Bounding rect: ${match.rect}`);

@@ -5,11 +5,11 @@ Options for finding an image within another image.
 
 ```ts
 // Find with stricter matching
-const match = await source.findImage(template, { matchThreshold: 0.95 });
+const match = await source.find(template, { matchThreshold: 0.95 });
 
 // Find with abort support
 const controller = new AbortController();
-const match = await source.findImage(template, { signal: controller.signal });
+const match = await source.find(template, { signal: controller.signal });
 ```
 
 ## Properties

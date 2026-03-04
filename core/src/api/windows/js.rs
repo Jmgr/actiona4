@@ -17,6 +17,7 @@ use crate::{
         name::js::JsName,
         point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
+        screen::Screen,
         size::js::{JsSize, JsSizeLike},
     },
     types::display::{DisplayFields, display_with_type},
@@ -102,7 +103,7 @@ impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
 #[rquickjs::class(rename = "Windows")]
 pub struct JsWindows {
     inner: super::Windows,
-    screenshot: crate::api::screenshot::Screenshot,
+    screen: Screen,
 }
 
 impl<'js> SingletonClass<'js> for JsWindows {
@@ -121,10 +122,10 @@ impl JsWindows {
     /// @skip
     #[must_use]
     #[instrument(skip_all)]
-    pub fn new(windows: super::Windows, screenshot: crate::api::screenshot::Screenshot) -> Self {
+    pub fn new(windows: super::Windows, screen: Screen) -> Self {
         Self {
             inner: windows,
-            screenshot,
+            screen,
         }
     }
 }
@@ -145,7 +146,7 @@ impl JsWindows {
             .into_iter()
             .map(|id| JsWindowHandle {
                 inner: self.inner.clone(),
-                screenshot: self.screenshot.clone(),
+                screen: self.screen.clone(),
                 id,
             })
             .collect())
@@ -163,7 +164,7 @@ impl JsWindows {
 
         Ok(JsWindowHandle {
             inner: self.inner.clone(),
-            screenshot: self.screenshot.clone(),
+            screen: self.screen.clone(),
             id,
         })
     }
@@ -243,7 +244,7 @@ impl JsWindows {
 
             windows.push(JsWindowHandle {
                 inner: self.inner.clone(),
-                screenshot: self.screenshot.clone(),
+                screen: self.screen.clone(),
                 id,
             });
         }
@@ -270,7 +271,7 @@ impl JsWindows {
 
             windows.push(JsWindowHandle {
                 inner: self.inner.clone(),
-                screenshot: self.screenshot.clone(),
+                screen: self.screen.clone(),
                 id,
             });
         }
@@ -300,7 +301,7 @@ impl JsWindows {
 #[rquickjs::class(rename = "WindowHandle")]
 pub struct JsWindowHandle {
     inner: super::Windows,
-    screenshot: crate::api::screenshot::Screenshot,
+    screen: crate::api::screen::Screen,
     id: super::WindowId,
 }
 
@@ -382,7 +383,7 @@ impl JsWindowHandle {
     /// ```
     pub async fn capture(&self, ctx: Ctx<'_>) -> Result<JsImage> {
         Ok(JsImage::new(
-            self.screenshot
+            self.screen
                 .capture_window(self.id)
                 .await
                 .into_js_result(&ctx)?,

@@ -21,7 +21,7 @@ use crate::{
             BlurOptions, DrawImageOptions, DrawTextOptions, DrawingOptions, FlipDirection,
             Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
             TextVerticalAlign,
-            find_image::{FindImageProgress, Source, Template},
+            find_image::{FindImageProgress, FindImageStage, Source, Template},
         },
         js::{
             abort_controller::JsAbortSignal,
@@ -30,6 +30,7 @@ use crate::{
         },
         point::js::{JsPoint, JsPointLike},
         rect::js::{JsRect, JsRectLike},
+        screen::js::JsSearchIn,
         size::js::JsSize,
     },
     error::CommonError,
@@ -485,11 +486,11 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
 ///
 /// ```ts
 /// // Find with stricter matching
-/// const match = await source.findImage(template, { matchThreshold: 0.95 });
+/// const match = await source.find(template, { matchThreshold: 0.95 });
 ///
 /// // Find with abort support
 /// const controller = new AbortController();
-/// const match = await source.findImage(template, { signal: controller.signal });
+/// const match = await source.find(template, { signal: controller.signal });
 /// ```
 /// @options
 #[derive(Clone, Debug, FromJsObject)]
@@ -545,12 +546,12 @@ impl JsFindImageOptions {
     }
 }
 
-/// A match returned by a findImage or findImageAll call.
+/// A match returned by a find or findAll call.
 ///
 /// ```ts
 /// const source = await Image.load("screenshot.png");
 /// const template = await Image.load("button.png");
-/// const match = await source.findImage(template);
+/// const match = await source.find(template);
 /// if (match) {
 ///   println(`Found at ${match.position} with score ${match.score}`);
 ///   println(`Bounding rect: ${match.rect}`);
@@ -632,7 +633,7 @@ impl From<super::find_image::Match> for JsMatch {
 /// Stages of a find image operation.
 ///
 /// ```ts
-/// const task = source.findImage(template);
+/// const task = source.find(template);
 /// for await (const progress of task) {
 ///   if (progress.stage === FindImageStage.Matching) {
 ///     println(`Matching: ${formatPercent(progress.percent)}`);
@@ -689,10 +690,10 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 
 /// Progress of a find image operation.
 ///
-/// Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
+/// Received by iterating over the async iterator returned by `find` or `findAll`.
 ///
 /// ```ts
-/// const task = source.findImage(template);
+/// const task = source.find(template);
 /// for await (const progress of task) {
 ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
 ///   if (progress.finished) break;
@@ -784,9 +785,9 @@ impl JsFindImageProgress {
 ///
 /// ```ts
 /// // Find an image within another
-/// const screen = await Image.load("screenshot.png");
+/// const screenshot = await Image.load("screenshot.png");
 /// const button = await Image.load("button.png");
-/// const match = await screen.findImage(button, { matchThreshold: 0.9 });
+/// const match = await screenshot.find(button, { matchThreshold: 0.9 });
 /// if (match) {
 ///   println(`Button found at ${match.position}`);
 /// }
@@ -1381,7 +1382,7 @@ impl JsImage {
     /// for progress updates. Returns `undefined` if no match is found.
     ///
     /// ```ts
-    /// const match = await source.findImage(template);
+    /// const match = await source.find(template);
     /// if (match) {
     ///   println(`Found at ${match.position} with score ${match.score}`);
     /// }
@@ -1389,14 +1390,14 @@ impl JsImage {
     ///
     /// ```ts
     /// // Track progress while searching
-    /// const task = source.findImage(template);
+    /// const task = source.find(template);
     /// for await (const progress of task) {
     ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const match = await task;
     /// ```
     /// @returns ProgressTask<Match | undefined, FindImageProgress>
-    pub fn find_image<'js>(
+    pub fn find<'js>(
         &self,
         ctx: Ctx<'js>,
         image: JsImage,
@@ -1438,7 +1439,7 @@ impl JsImage {
     /// Returns a `ProgressTask` that can be awaited for an array of matches.
     ///
     /// ```ts
-    /// const matches = await source.findImageAll(template, { matchThreshold: 0.85 });
+    /// const matches = await source.findAll(template, { matchThreshold: 0.85 });
     /// for (const match of matches) {
     ///   println(`Found at ${match.position}`);
     /// }
@@ -1446,14 +1447,14 @@ impl JsImage {
     ///
     /// ```ts
     /// // Track progress while searching
-    /// const task = source.findImageAll(template);
+    /// const task = source.findAll(template);
     /// for await (const progress of task) {
     ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
     /// }
     /// const matches = await task;
     /// ```
     /// @returns ProgressTask<Match[], FindImageProgress>
-    pub fn find_image_all<'js>(
+    pub fn find_all<'js>(
         &self,
         ctx: Ctx<'js>,
         image: JsImage,
@@ -1489,6 +1490,114 @@ impl JsImage {
                     .collect_vec();
 
                 Ok(result)
+            },
+        )
+    }
+
+    /// Finds the best match of this image within the given screen area.
+    ///
+    /// Takes a live screenshot of the specified area and searches for this image within it.
+    /// Returns `undefined` if no match is found.
+    ///
+    /// ```ts
+    /// const match = await image.findOnScreen(SearchIn.desktop());
+    /// if (match) {
+    ///   println(`Found at ${match.position} with score ${match.score}`);
+    /// }
+    /// ```
+    ///
+    /// ```ts
+    /// const display = displays.primary();
+    /// const task = image.findOnScreen(SearchIn.display(display));
+    /// for await (const progress of task) {
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    /// }
+    /// const match = await task;
+    /// ```
+    /// @returns ProgressTask<Match | undefined, FindImageProgress>
+    pub fn find_on_screen<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        search_in: JsSearchIn,
+        options: Opt<JsFindImageOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let template = Arc::<Template>::try_from(&self.inner).into_js_result(&ctx)?;
+        let screen = ctx.user_data().screen();
+        let (progress_sender, progress_receiver) =
+            watch::channel(FindImageProgress::new(FindImageStage::Capturing, 0));
+
+        progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
+            ctx,
+            signal,
+            progress_receiver,
+            async move |ctx, token| {
+                let search_in = crate::api::image::find_image::SearchIn::from(search_in);
+                let result = screen
+                    .find_on_screen(
+                        &template,
+                        &search_in,
+                        options.into_inner(),
+                        token,
+                        progress_sender,
+                    )
+                    .await
+                    .into_js_result(&ctx)?;
+                Ok(result.map(JsMatch::from))
+            },
+        )
+    }
+
+    /// Finds all matches of this image within the given screen area.
+    ///
+    /// Takes a live screenshot of the specified area and searches for all occurrences.
+    ///
+    /// ```ts
+    /// const matches = await image.findAllOnScreen(SearchIn.desktop());
+    /// for (const match of matches) {
+    ///   println(`Found at ${match.position}`);
+    /// }
+    /// ```
+    ///
+    /// ```ts
+    /// const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+    /// for await (const progress of task) {
+    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    /// }
+    /// const matches = await task;
+    /// ```
+    /// @returns ProgressTask<Match[], FindImageProgress>
+    pub fn find_all_on_screen<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        search_in: JsSearchIn,
+        options: Opt<JsFindImageOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let signal = options.signal.clone();
+        let template = Arc::<Template>::try_from(&self.inner).into_js_result(&ctx)?;
+        let screen = ctx.user_data().screen();
+        let (progress_sender, progress_receiver) =
+            watch::channel(FindImageProgress::new(FindImageStage::Capturing, 0));
+
+        progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
+            ctx,
+            signal,
+            progress_receiver,
+            async move |ctx, token| {
+                let search_in = crate::api::image::find_image::SearchIn::from(search_in);
+                let results = screen
+                    .find_all_on_screen(
+                        &template,
+                        &search_in,
+                        options.into_inner(),
+                        token,
+                        progress_sender,
+                    )
+                    .await
+                    .into_js_result(&ctx)?;
+                Ok(results.into_iter().map(JsMatch::from).collect_vec())
             },
         )
     }
@@ -1678,7 +1787,7 @@ mod tests {
 
     #[test]
     #[serial]
-    fn test_find_image() {
+    fn test_find() {
         Runtime::test_with_script_engine(async move |script_engine| {
             let tests_dir = workspace_tests_dir();
             let source_path = tests_dir.join("input.png");
@@ -1699,7 +1808,7 @@ mod tests {
                     const source = await Image.load(sourcePath);
                     const template = await Image.load(templatePath);
 
-                    const task = source.findImage(template);
+                    const task = source.find(template);
 
                     // Collect progress updates from the async iterator.
                     // watch channels coalesce values, so we may not see every
@@ -1755,7 +1864,7 @@ mod tests {
 
     #[test]
     #[serial]
-    fn test_find_image_all() {
+    fn test_find_all() {
         Runtime::test_with_script_engine(async move |script_engine| {
             let tests_dir = workspace_tests_dir();
             let source_path = tests_dir.join("input.png");
@@ -1776,7 +1885,7 @@ mod tests {
                     const source = await Image.load(sourcePath);
                     const template = await Image.load(templatePath);
 
-                    const task = source.findImageAll(template);
+                    const task = source.findAll(template);
 
                     let lastStage = "";
                     let lastPercent = 0;

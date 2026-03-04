@@ -67,7 +67,7 @@ cargo make doc
 
 - **runtime/mod.rs**: Main `Runtime` struct that orchestrates everything. Creates the QuickJS engine, registers all JS classes, manages cancellation tokens and task tracking. `run_with_ui()` starts Tauri + async runtime together.
 - **scripting/**: TypeScript-to-JavaScript transpilation (via SWC), sourcemap handling for error translation, and the `Engine` wrapper around QuickJS's `AsyncRuntime`/`AsyncContext`
-- **core/**: All automation modules (mouse, keyboard, clipboard, screenshot, system, etc.). Each module typically has:
+- **core/**: All automation modules (mouse, keyboard, clipboard, screen, system, etc.). Each module typically has:
   - `mod.rs`: Platform-agnostic Rust implementation
   - `js.rs`: JavaScript bindings using rquickjs
   - `platform/`: OS-specific implementations (x11.rs, win.rs)

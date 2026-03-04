@@ -11,7 +11,7 @@ clipboard.text.set("Hello, world!");
 const text = clipboard.text.get();
 
 // Copy and paste an image
-const img = display.screenshot();
+const img = screen.captureDesktop();
 clipboard.image.set(img);
 
 // Work with file lists

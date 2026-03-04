@@ -2,10 +2,10 @@
 
 Progress of a find image operation.
 
-Received by iterating over the async iterator returned by `findImage` or `findImageAll`.
+Received by iterating over the async iterator returned by `find` or `findAll`.
 
 ```ts
-const task = source.findImage(template);
+const task = source.find(template);
 for await (const progress of task) {
   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
   if (progress.finished) break;

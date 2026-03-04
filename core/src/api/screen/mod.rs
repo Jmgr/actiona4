@@ -9,9 +9,9 @@ pub mod js;
 mod platform;
 
 #[cfg(windows)]
-use platform::win::ScreenshotImpl;
+use platform::win::ScreenImpl;
 #[cfg(unix)]
-use platform::x11::ScreenshotImpl;
+use platform::x11::ScreenImpl;
 
 use super::{
     displays::Displays,
@@ -31,15 +31,15 @@ use crate::{
 };
 
 #[derive(Clone, Debug)]
-pub struct Screenshot {
-    implementation: Arc<ScreenshotImpl>,
+pub struct Screen {
+    implementation: Arc<ScreenImpl>,
     windows: Windows,
 }
 
-impl Screenshot {
+impl Screen {
     pub async fn new(runtime: Arc<Runtime>, displays: Displays, windows: Windows) -> Result<Self> {
         Ok(Self {
-            implementation: ScreenshotImpl::new(runtime, displays).await?,
+            implementation: ScreenImpl::new(runtime, displays).await?,
             windows,
         })
     }
@@ -69,7 +69,7 @@ impl Screenshot {
     }
 
     /// Finds the best match of an image within the given search area.
-    pub async fn find_image(
+    pub async fn find_on_screen(
         &self,
         template: &Arc<Template>,
         search_in: &SearchIn,
@@ -85,7 +85,7 @@ impl Screenshot {
     }
 
     /// Finds all matches of an image within the given search area.
-    pub async fn find_image_all(
+    pub async fn find_all_on_screen(
         &self,
         template: &Arc<Template>,
         search_in: &SearchIn,

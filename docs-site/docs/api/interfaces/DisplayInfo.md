@@ -163,8 +163,6 @@ Converts a global desktop point to display-local coordinates.
 
 The result is the position relative to this display's top-left corner,
 in the same logical-pixel unit used for mouse coordinates and `rect`.
-DPI scaling and rotation are already normalised into the desktop
-coordinate system by the OS, so no additional transform is needed.
 
 ```ts
 const display = displays.primary();
@@ -191,8 +189,6 @@ Converts a global desktop point to display-local coordinates.
 
 The result is the position relative to this display's top-left corner,
 in the same logical-pixel unit used for mouse coordinates and `rect`.
-DPI scaling and rotation are already normalised into the desktop
-coordinate system by the OS, so no additional transform is needed.
 
 ```ts
 const display = displays.primary();

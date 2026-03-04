@@ -1,31 +1,19 @@
-use std::sync::Arc;
-
 use rquickjs::{
-    Ctx, JsLifetime, Promise, Result,
+    Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
-    prelude::Opt,
 };
-use tokio::sync::watch;
 
 use crate::{
     IntoJsResult,
     api::{
         color::js::JsColor,
         displays::js::JsDisplayInfo,
-        image::{
-            find_image::{
-                FindImageProgress, FindImageStage, FindImageTemplateOptions, SearchIn, Template,
-            },
-            js::{JsFindImageOptions, JsFindImageProgress, JsImage, JsMatch},
-        },
-        js::{
-            classes::{HostClass, SingletonClass, register_host_class},
-            task::progress_task_with_token,
-        },
+        image::{find_image::SearchIn, js::JsImage},
+        js::classes::{HostClass, SingletonClass, register_host_class},
         point::js::JsPointLike,
         rect::{Rect, js::JsRectLike},
-        screenshot::Screenshot,
+        screen::Screen,
         windows::js::JsWindowHandle,
     },
     types::display::DisplayFields,
@@ -51,14 +39,14 @@ impl<'js> Trace<'js> for JsSearchInInner {
 ///
 /// ```ts
 /// // Search the entire desktop
-/// const match = await screenshot.findImage(image, SearchIn.desktop());
+/// const match = await image.findOnScreen(SearchIn.desktop());
 ///
 /// // Search a specific display
 /// const display = displays.primary();
-/// const match = await screenshot.findImage(image, SearchIn.display(display));
+/// const match = await image.findOnScreen(SearchIn.display(display));
 ///
 /// // Search a specific rectangle
-/// const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
+/// const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
 /// ```
 #[derive(Clone, Debug, JsLifetime, Trace)]
 #[rquickjs::class(rename = "SearchIn")]
@@ -112,7 +100,7 @@ impl JsSearchIn {
     /// Searches within the entire desktop (the bounding rectangle of all connected displays).
     ///
     /// ```ts
-    /// const match = await screenshot.findImage(image, SearchIn.desktop());
+    /// const match = await image.findOnScreen(SearchIn.desktop());
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -126,7 +114,7 @@ impl JsSearchIn {
     ///
     /// ```ts
     /// const display = displays.primary();
-    /// const match = await screenshot.findImage(image, SearchIn.display(display));
+    /// const match = await image.findOnScreen(SearchIn.display(display));
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -139,7 +127,7 @@ impl JsSearchIn {
     /// Searches within the given screen rectangle.
     ///
     /// ```ts
-    /// const match = await screenshot.findImage(image, SearchIn.rect(0, 0, 1920, 1080));
+    /// const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -153,7 +141,7 @@ impl JsSearchIn {
     ///
     /// ```ts
     /// const win = windows.activeWindow();
-    /// const match = await screenshot.findImage(image, SearchIn.window(win));
+    /// const match = await image.findOnScreen(SearchIn.window(win));
     /// ```
     #[qjs(static)]
     #[must_use]
@@ -170,59 +158,59 @@ impl JsSearchIn {
     }
 }
 
-impl<'js> Trace<'js> for super::Screenshot {
+impl<'js> Trace<'js> for super::Screen {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-/// Screenshot capture and image search.
+/// Screen capture and image search.
 ///
 /// Provides methods to capture the entire desktop, a specific display, a screen
-/// region, or a single pixel, as well as finding images on screen.
+/// region, or a single pixel.
 ///
 /// ```ts
-/// const image = await screenshot.captureDesktop();
+/// const image = await screen.captureDesktop();
 /// println(image.size());
 /// ```
 ///
 /// ```ts
 /// const display = displays.primary();
-/// const image = await screenshot.captureDisplay(display);
+/// const image = await screen.captureDisplay(display);
 /// println(image.size());
 /// ```
 ///
 /// ```ts
-/// const pixel = await screenshot.capturePixel(100, 100);
+/// const pixel = await screen.capturePixel(100, 100);
 /// println(pixel);
 /// ```
 ///
 /// @singleton
 #[derive(Debug, JsLifetime, Trace)]
-#[rquickjs::class(rename = "Screenshot")]
-pub struct JsScreenshot {
-    inner: super::Screenshot,
+#[rquickjs::class(rename = "Screen")]
+pub struct JsScreen {
+    inner: Screen,
 }
 
-impl SingletonClass<'_> for JsScreenshot {
+impl SingletonClass<'_> for JsScreen {
     fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
         register_host_class::<JsSearchIn>(ctx)?;
         Ok(())
     }
 }
 
-impl JsScreenshot {
+impl JsScreen {
     /// @skip
     #[must_use]
-    pub const fn new(inner: super::Screenshot) -> Self {
+    pub const fn new(inner: super::Screen) -> Self {
         Self { inner }
     }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
-impl JsScreenshot {
+impl JsScreen {
     /// Captures a screenshot of the entire desktop.
     ///
     /// ```ts
-    /// const image = await screenshot.captureDesktop();
+    /// const image = await screen.captureDesktop();
     /// ```
     pub async fn capture_desktop(&self, ctx: Ctx<'_>) -> Result<JsImage> {
         Ok(JsImage::new(
@@ -233,9 +221,9 @@ impl JsScreenshot {
     /// Captures a screenshot of the given display.
     ///
     /// ```ts
-    /// const image = await screenshot.captureDisplay(displays.primary());
-    /// const image = await screenshot.captureDisplay(displays.fromId(474));
-    /// const image = await screenshot.captureDisplay(displays.largest());
+    /// const image = await screen.captureDisplay(displays.primary());
+    /// const image = await screen.captureDisplay(displays.fromId(474));
+    /// const image = await screen.captureDisplay(displays.largest());
     /// ```
     pub async fn capture_display(&self, ctx: Ctx<'_>, display: JsDisplayInfo) -> Result<JsImage> {
         Ok(JsImage::new(
@@ -249,7 +237,7 @@ impl JsScreenshot {
     /// Captures a screenshot of a screen rectangle.
     ///
     /// ```ts
-    /// const image = await screenshot.captureRect(0, 0, 1920, 1080);
+    /// const image = await screen.captureRect(0, 0, 1920, 1080);
     /// ```
     pub async fn capture_rect(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<JsImage> {
         Ok(JsImage::new(
@@ -261,7 +249,7 @@ impl JsScreenshot {
     ///
     /// ```ts
     /// const win = windows.activeWindow();
-    /// const image = await screenshot.captureWindow(win);
+    /// const image = await screen.captureWindow(win);
     /// ```
     pub async fn capture_window(&self, ctx: Ctx<'_>, handle: JsWindowHandle) -> Result<JsImage> {
         Ok(JsImage::new(
@@ -275,7 +263,7 @@ impl JsScreenshot {
     /// Captures the color of a single pixel on screen.
     ///
     /// ```ts
-    /// const color = await screenshot.capturePixel(100, 200);
+    /// const color = await screen.capturePixel(100, 200);
     /// println(color);
     /// ```
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
@@ -287,135 +275,11 @@ impl JsScreenshot {
             .into())
     }
 
-    /// Finds the best match of an image within the given search area.
-    ///
-    /// ```ts
-    /// const match = await screenshot.findImage(image, SearchIn.desktop());
-    /// ```
-    ///
-    /// ```ts
-    /// const display = displays.primary();
-    /// const task = screenshot.findImage(image, SearchIn.display(display));
-    /// for await (const progress of task) {
-    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-    /// }
-    /// const match = await task;
-    /// ```
-    /// @returns ProgressTask<Match | undefined, FindImageProgress>
-    pub fn find_image<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        image: JsImage,
-        search_in: JsSearchIn,
-        options: Opt<JsFindImageOptions>,
-    ) -> Result<Promise<'js>> {
-        find_image_task(
-            ctx,
-            &self.inner,
-            search_in,
-            image,
-            options,
-            |inner, search_in, template, opts, token, progress| async move {
-                let result = inner
-                    .find_image(&template, &search_in, opts, token, progress)
-                    .await?;
-                Ok(result.map(JsMatch::from))
-            },
-        )
-    }
-
-    /// Finds all matches of an image within the given search area.
-    ///
-    /// ```ts
-    /// const matches = await screenshot.findImageAll(image, SearchIn.desktop());
-    /// ```
-    ///
-    /// ```ts
-    /// const task = screenshot.findImageAll(image, SearchIn.rect(0, 0, 1920, 1080));
-    /// for await (const progress of task) {
-    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-    /// }
-    /// const matches = await task;
-    /// ```
-    /// @returns ProgressTask<Match[], FindImageProgress>
-    pub fn find_image_all<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        image: JsImage,
-        search_in: JsSearchIn,
-        options: Opt<JsFindImageOptions>,
-    ) -> Result<Promise<'js>> {
-        find_image_task(
-            ctx,
-            &self.inner,
-            search_in,
-            image,
-            options,
-            |inner, search_in, template, opts, token, progress| async move {
-                let results = inner
-                    .find_image_all(&template, &search_in, opts, token, progress)
-                    .await?;
-                Ok(results.into_iter().map(JsMatch::from).collect::<Vec<_>>())
-            },
-        )
-    }
-
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Screenshot".to_string()
+        "Screen".to_string()
     }
-}
-
-/// Shared helper for all `find_image*` JS bindings.
-fn find_image_task<'js, R, F, Fut>(
-    ctx: Ctx<'js>,
-    inner: &Screenshot,
-    search_in: JsSearchIn,
-    image: JsImage,
-    options: Opt<JsFindImageOptions>,
-    search: F,
-) -> Result<Promise<'js>>
-where
-    R: rquickjs::IntoJs<'js> + 'js,
-    F: FnOnce(
-            Screenshot,
-            SearchIn,
-            Arc<Template>,
-            FindImageTemplateOptions,
-            tokio_util::sync::CancellationToken,
-            watch::Sender<FindImageProgress>,
-        ) -> Fut
-        + 'js,
-    Fut: Future<Output = color_eyre::Result<R>> + 'js,
-{
-    let options = options.0.unwrap_or_default();
-    let signal = options.signal.clone();
-    let template = Arc::<Template>::try_from(image.to_inner()).into_js_result(&ctx)?;
-    let inner = inner.clone();
-    let (progress_sender, progress_receiver) =
-        watch::channel(FindImageProgress::new(FindImageStage::Capturing, 0));
-
-    progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
-        ctx,
-        signal,
-        progress_receiver,
-        async move |ctx, token| {
-            let search_in = SearchIn::from(search_in);
-            let result = search(
-                inner,
-                search_in,
-                template,
-                options.into_inner(),
-                token,
-                progress_sender,
-            )
-            .await
-            .into_js_result(&ctx)?;
-
-            Ok(result)
-        },
-    )
 }
 
 #[cfg(test)]
@@ -435,11 +299,11 @@ mod tests {
     fn test_capture_desktop() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
-                .eval_async("(await screenshot.captureDesktop()).width")
+                .eval_async("(await screen.captureDesktop()).width")
                 .await
                 .unwrap();
             let height: u32 = script_engine
-                .eval_async("(await screenshot.captureDesktop()).height")
+                .eval_async("(await screen.captureDesktop()).height")
                 .await
                 .unwrap();
             println!("desktop: {width}x{height}");
@@ -453,11 +317,11 @@ mod tests {
     fn test_capture_display_primary() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
-                .eval_async("(await screenshot.captureDisplay(displays.primary())).width")
+                .eval_async("(await screen.captureDisplay(displays.primary())).width")
                 .await
                 .unwrap();
             let height: u32 = script_engine
-                .eval_async("(await screenshot.captureDisplay(displays.primary())).height")
+                .eval_async("(await screen.captureDisplay(displays.primary())).height")
                 .await
                 .unwrap();
             println!("primary: {width}x{height}");
@@ -471,11 +335,11 @@ mod tests {
     fn test_capture_display_largest() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
-                .eval_async("(await screenshot.captureDisplay(displays.largest())).width")
+                .eval_async("(await screen.captureDisplay(displays.largest())).width")
                 .await
                 .unwrap();
             let height: u32 = script_engine
-                .eval_async("(await screenshot.captureDisplay(displays.largest())).height")
+                .eval_async("(await screen.captureDisplay(displays.largest())).height")
                 .await
                 .unwrap();
             println!("largest: {width}x{height}");
@@ -495,7 +359,7 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                    const image = await screenshot.captureDesktop();
+                    const image = await screen.captureDesktop();
                     await image.save({});
                     "#,
                     js_path(&output_path)
@@ -520,7 +384,7 @@ mod tests {
                     r#"
                     const displayInfo = displays.all()[0];
                     if (!displayInfo) throw new Error("No display available");
-                    const image = await screenshot.captureDisplay(displayInfo);
+                    const image = await screen.captureDisplay(displayInfo);
                     await image.save({});
                     "#,
                     js_path(&output_path)
@@ -545,7 +409,7 @@ mod tests {
                     r#"
                     const displayInfo = displays.fromPoint(0, 0);
                     if (!displayInfo) throw new Error("No display at origin");
-                    const image = await screenshot.captureDisplay(displayInfo);
+                    const image = await screen.captureDisplay(displayInfo);
                     await image.save({});
                     "#,
                     js_path(&output_path)
@@ -571,7 +435,7 @@ mod tests {
                     const rect = displayInfo.rect;
                     const captureWidth = Math.max(1, Math.min(rect.width, 300));
                     const captureHeight = Math.max(1, Math.min(rect.height, 200));
-                    const image = await screenshot.captureRect(rect.x, rect.y, captureWidth, captureHeight);
+                    const image = await screen.captureRect(rect.x, rect.y, captureWidth, captureHeight);
                     await image.save({});
                     "#,
                     js_path(&output_path)
@@ -593,7 +457,7 @@ mod tests {
                 .eval_async::<()>(&format!(
                     r#"
                     const win = windows.foreground();
-                    const image = await screenshot.captureWindow(win);
+                    const image = await screen.captureWindow(win);
                     await image.save({});
                     "#,
                     js_path(&output_path)

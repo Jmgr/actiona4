@@ -20,7 +20,7 @@ pub mod point;
 pub mod process;
 pub mod random;
 pub mod rect;
-pub mod screenshot;
+pub mod screen;
 pub mod size;
 pub mod standardpaths;
 pub mod system;

@@ -40,34 +40,34 @@ pub trait DisplayCapture: Debug + Send + Sync + 'static {
 
 /// Generic screenshot implementation that works with any `DisplayCapture` backend.
 #[derive(Debug)]
-pub struct ScreenshotImplBase<D: DisplayCapture> {
+pub struct ScreenImplBase<D: DisplayCapture> {
     runtime: Arc<Runtime>,
     displays: Displays,
     display_map: AsyncResource<HashMap<u32, Arc<D>>>,
 }
 
-impl<D: DisplayCapture> ScreenshotImplBase<D> {
+impl<D: DisplayCapture> ScreenImplBase<D> {
     pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Arc<Self>> {
-        let screenshot_impl = Arc::new(Self {
+        let screen_impl = Arc::new(Self {
             runtime: runtime.clone(),
             displays: displays.clone(),
             display_map: AsyncResource::new(runtime.cancellation_token()),
         });
 
-        let local_screenshot_impl = screenshot_impl.clone();
+        let local_screen_impl = screen_impl.clone();
         runtime.task_tracker().spawn(async move {
             loop {
                 if displays.changed().await.is_err() {
                     break;
                 }
 
-                if let Err(err) = local_screenshot_impl.wait_and_update(&displays).await {
+                if let Err(err) = local_screen_impl.wait_and_update(&displays).await {
                     error!("error getting displays info: {err}");
                 }
             }
         });
 
-        Ok(screenshot_impl)
+        Ok(screen_impl)
     }
 
     async fn wait_and_update(&self, displays: &Displays) -> Result<()> {
