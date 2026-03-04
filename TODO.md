@@ -17,11 +17,10 @@ Keyboard:
  Mouse:
 - record & playback
 - drag and drop?
-- pressButton should be press, release, click
 
 Select rect on screen
 - https://github.com/neXromancers/hacksaw/tree/master
-- 
+
 Update
 - show notification if new version
 - Update fallback: check website if new version 
