@@ -1,7 +1,5 @@
 # Interface: Screen
 
-Screen capture and image search.
-
 Provides methods to capture the entire desktop, a specific display, a screen
 region, or a single pixel.
 

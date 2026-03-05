@@ -83,7 +83,7 @@ impl Motherboard {
 }
 
 #[derive(Debug)]
-pub struct Component {
+pub struct TemperatureSensor {
     label: String,
     id: OptionalSystemString,
     temperature: OptionalDegreesCelsius,
@@ -91,7 +91,7 @@ pub struct Component {
     critical_temperature: OptionalDegreesCelsius,
 }
 
-impl From<&sysinfo::Component> for Component {
+impl From<&sysinfo::Component> for TemperatureSensor {
     fn from(value: &sysinfo::Component) -> Self {
         Self {
             label: value.label().to_string(),
@@ -103,7 +103,7 @@ impl From<&sysinfo::Component> for Component {
     }
 }
 
-impl Display for Component {
+impl Display for TemperatureSensor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if f.alternate() {
             DisplayFields::default()
@@ -124,7 +124,7 @@ impl Display for Component {
     }
 }
 
-impl Component {
+impl TemperatureSensor {
     #[must_use]
     pub fn label(&self) -> &str {
         &self.label
@@ -154,7 +154,7 @@ impl Component {
 #[derive_where(Debug)]
 struct HardwareInner {
     #[derive_where(skip)]
-    components: Arc<Mutex<sysinfo::Components>>,
+    temperature_sensors: Arc<Mutex<sysinfo::Components>>,
 
     name: OptionalSystemString,
     family: OptionalSystemString,
@@ -185,7 +185,10 @@ impl Display for Hardware {
             .display_if_some("version", &self.inner.version)
             .display_if_some("vendor_name", &self.inner.vendor_name)
             .display("motherboard", &self.inner.motherboard)
-            .display("components", display_list(&self.components()))
+            .display(
+                "temperature_sensors",
+                display_list(&self.temperature_sensors()),
+            )
             .finish(f)
     }
 }
@@ -193,13 +196,13 @@ impl Display for Hardware {
 impl Hardware {
     #[instrument(name = "hardware", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
-        let components = task_tracker
+        let temperature_sensors = task_tracker
             .spawn_blocking(sysinfo::Components::new)
             .await?;
 
         Ok(Self {
             inner: Arc::new(HardwareInner {
-                components: Arc::new(Mutex::new(components)),
+                temperature_sensors: Arc::new(Mutex::new(temperature_sensors)),
                 name: Product::name().into(),
                 family: Product::family().into(),
                 serial_number: Product::serial_number().into(),
@@ -253,50 +256,64 @@ impl Hardware {
         &self.inner.motherboard
     }
 
-    pub async fn refresh_components(&self, rescan: bool) -> Result<Vec<Component>> {
-        let components = self.inner.components.clone();
+    pub async fn refresh_temperature_sensors(
+        &self,
+        rescan: bool,
+    ) -> Result<Vec<TemperatureSensor>> {
+        let temperature_sensors = self.inner.temperature_sensors.clone();
         let result = self
             .inner
             .task_tracker
             .spawn_blocking(move || {
-                let mut components = components.lock();
-                components.refresh(rescan);
-                components.list().iter().map(Component::from).collect_vec()
+                let mut temperature_sensors = temperature_sensors.lock();
+                temperature_sensors.refresh(rescan);
+                temperature_sensors
+                    .list()
+                    .iter()
+                    .map(TemperatureSensor::from)
+                    .collect_vec()
             })
             .await?;
         Ok(result)
     }
 
-    pub async fn refresh_component(&self, component: &Component) -> Result<Option<Component>> {
-        let component_id = component.id.clone();
-        let component_label = component.label.clone();
-        let components = self.inner.components.clone();
+    pub async fn refresh_temperature_sensor(
+        &self,
+        temperature_sensor: &TemperatureSensor,
+    ) -> Result<Option<TemperatureSensor>> {
+        let temperature_sensor_id = temperature_sensor.id.clone();
+        let temperature_sensor_label = temperature_sensor.label.clone();
+        let temperature_sensors = self.inner.temperature_sensors.clone();
         let result = self
             .inner
             .task_tracker
             .spawn_blocking(move || {
-                let mut components = components.lock();
-                let component = if let Some(id) = component_id.as_ref() {
-                    components
+                let mut temperature_sensors = temperature_sensors.lock();
+                let temperature_sensor = if let Some(id) = temperature_sensor_id.as_ref() {
+                    temperature_sensors
                         .list_mut()
                         .iter_mut()
                         .find(|c| c.id() == Some(id))
                 } else {
-                    components
+                    temperature_sensors
                         .list_mut()
                         .iter_mut()
-                        .find(|c| c.label() == component_label)
+                        .find(|c| c.label() == temperature_sensor_label)
                 }?;
-                component.refresh();
-                Some(Component::from(&*component))
+                temperature_sensor.refresh();
+                Some(TemperatureSensor::from(&*temperature_sensor))
             })
             .await?;
         Ok(result)
     }
 
-    pub fn components(&self) -> Vec<Component> {
-        let components = self.inner.components.lock();
+    pub fn temperature_sensors(&self) -> Vec<TemperatureSensor> {
+        let temperature_sensors = self.inner.temperature_sensors.lock();
 
-        components.list().iter().map(Component::from).collect_vec()
+        temperature_sensors
+            .list()
+            .iter()
+            .map(TemperatureSensor::from)
+            .collect_vec()
     }
 }

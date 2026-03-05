@@ -1,12 +1,12 @@
-# Interface: Component
+# Interface: TemperatureSensor
 
-A hardware component (for example a thermal sensor).
+A hardware temperature sensor.
 
 ```ts
-const components = await system.hardware.listComponents();
-const component = components[0];
-if (component) {
-  println(component.label, component.temperature);
+const temperatureSensors = await system.hardware.listTemperatureSensors();
+const temperatureSensor = temperatureSensors[0];
+if (temperatureSensor) {
+  println(temperatureSensor.label, temperatureSensor.temperature);
 }
 ```
 

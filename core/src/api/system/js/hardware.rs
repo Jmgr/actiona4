@@ -6,7 +6,7 @@ use crate::{
     IntoJsResult,
     api::{
         js::classes::{HostClass, register_host_class},
-        system::hardware::{Component, Hardware, Motherboard},
+        system::hardware::{Hardware, Motherboard, TemperatureSensor},
     },
     types::display::display_with_type,
 };
@@ -16,9 +16,9 @@ use crate::{
 /// ```ts
 /// const hw = system.hardware;
 /// const board = hw.motherboard;
-/// const components = await hw.listComponents();
+/// const temperatureSensors = await hw.listTemperatureSensors();
 ///
-/// println(hw.vendorName, board.name, components.length);
+/// println(hw.vendorName, board.name, temperatureSensors.length);
 /// ```
 #[derive(Debug, JsLifetime)]
 #[rquickjs::class(rename = "Hardware")]
@@ -30,7 +30,7 @@ pub struct JsHardware {
 impl<'js> HostClass<'js> for JsHardware {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
         register_host_class::<JsMotherboard>(ctx)?;
-        register_host_class::<JsComponent>(ctx)?;
+        register_host_class::<JsTemperatureSensor>(ctx)?;
         Ok(())
     }
 }
@@ -49,16 +49,16 @@ impl JsHardware {
     }
 }
 
-/// List components options
+/// List temperature sensors options
 /// @options
 #[derive(Clone, Copy, Debug, FromJsObject)]
-pub struct ListComponentsOptions {
+pub struct ListTemperatureSensorsOptions {
     /// Rescan
     /// @default `true`
     pub rescan: bool,
 }
 
-impl Default for ListComponentsOptions {
+impl Default for ListTemperatureSensorsOptions {
     fn default() -> Self {
         Self { rescan: true }
     }
@@ -131,21 +131,24 @@ impl JsHardware {
         self.motherboard.clone().into()
     }
 
-    /// Hardware components
+    /// Hardware temperature sensors
     /// @readonly
-    pub async fn list_components<'js>(
+    pub async fn list_temperature_sensors<'js>(
         &self,
         ctx: Ctx<'js>,
-        options: Opt<ListComponentsOptions>,
-    ) -> Result<Vec<JsComponent>> {
+        options: Opt<ListTemperatureSensorsOptions>,
+    ) -> Result<Vec<JsTemperatureSensor>> {
         let options = options.unwrap_or_default();
-        let components = self
+        let temperature_sensors = self
             .inner
-            .refresh_components(options.rescan)
+            .refresh_temperature_sensors(options.rescan)
             .await
             .into_js_result(&ctx)?;
 
-        Ok(components.into_iter().map(JsComponent::from).collect_vec())
+        Ok(temperature_sensors
+            .into_iter()
+            .map(JsTemperatureSensor::from)
+            .collect_vec())
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]
@@ -228,35 +231,35 @@ impl JsMotherboard {
     }
 }
 
-/// A hardware component (for example a thermal sensor).
+/// A hardware temperature sensor.
 ///
 /// ```ts
-/// const components = await system.hardware.listComponents();
-/// const component = components[0];
-/// if (component) {
-///   println(component.label, component.temperature);
+/// const temperatureSensors = await system.hardware.listTemperatureSensors();
+/// const temperatureSensor = temperatureSensors[0];
+/// if (temperatureSensor) {
+///   println(temperatureSensor.label, temperatureSensor.temperature);
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Component")]
-pub struct JsComponent {
-    inner: Component,
+#[rquickjs::class(rename = "TemperatureSensor")]
+pub struct JsTemperatureSensor {
+    inner: TemperatureSensor,
 }
 
-impl<'js> HostClass<'js> for JsComponent {}
+impl<'js> HostClass<'js> for JsTemperatureSensor {}
 
-impl<'js> Trace<'js> for JsComponent {
+impl<'js> Trace<'js> for JsTemperatureSensor {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
 }
 
-impl From<Component> for JsComponent {
-    fn from(value: Component) -> Self {
+impl From<TemperatureSensor> for JsTemperatureSensor {
+    fn from(value: TemperatureSensor) -> Self {
         Self { inner: value }
     }
 }
 
 #[rquickjs::methods(rename_all = "camelCase")]
-impl JsComponent {
+impl JsTemperatureSensor {
     /// Label
     /// @get
     #[qjs(get)]
@@ -300,6 +303,6 @@ impl JsComponent {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        display_with_type("Component", &self.inner)
+        display_with_type("TemperatureSensor", &self.inner)
     }
 }

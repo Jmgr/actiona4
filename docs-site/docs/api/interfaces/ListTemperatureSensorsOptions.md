@@ -1,7 +1,7 @@
-# Interface: ListComponentsOptions
+# Interface: ListTemperatureSensorsOptions
 
 
-List components options
+List temperature sensors options
 
 ## Properties
 

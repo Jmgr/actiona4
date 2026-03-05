@@ -7710,8 +7710,6 @@ declare class SearchIn {
     toString(): string;
 }
 /**
- * Screen capture and image search.
- * 
  * Provides methods to capture the entire desktop, a specific display, a screen
  * region, or a single pixel.
  * 
@@ -8014,9 +8012,9 @@ declare interface Cpu {
  * ```ts
  * const hw = system.hardware;
  * const board = hw.motherboard;
- * const components = await hw.listComponents();
+ * const temperatureSensors = await hw.listTemperatureSensors();
  * 
- * println(hw.vendorName, board.name, components.length);
+ * println(hw.vendorName, board.name, temperatureSensors.length);
  * ```
  * @category System
  */
@@ -8054,17 +8052,17 @@ declare interface Hardware {
      */
     readonly motherboard: Readonly<Motherboard>;
     /**
-     * Hardware components
+     * Hardware temperature sensors
      */
-    listComponents(options?: ListComponentsOptions): Promise<readonly Component[]>;
+    listTemperatureSensors(options?: ListTemperatureSensorsOptions): Promise<readonly TemperatureSensor[]>;
     toString(): string;
 }
 /**
- * List components options
+ * List temperature sensors options
  * @category System
  * @expand
  */
-declare interface ListComponentsOptions {
+declare interface ListTemperatureSensorsOptions {
     /**
      * Rescan
      * @defaultValue `true`
@@ -8104,18 +8102,18 @@ declare interface Motherboard {
     toString(): string;
 }
 /**
- * A hardware component (for example a thermal sensor).
+ * A hardware temperature sensor.
  * 
  * ```ts
- * const components = await system.hardware.listComponents();
- * const component = components[0];
- * if (component) {
- *   println(component.label, component.temperature);
+ * const temperatureSensors = await system.hardware.listTemperatureSensors();
+ * const temperatureSensor = temperatureSensors[0];
+ * if (temperatureSensor) {
+ *   println(temperatureSensor.label, temperatureSensor.temperature);
  * }
  * ```
  * @category System
  */
-declare interface Component {
+declare interface TemperatureSensor {
     /**
      * Label
      */

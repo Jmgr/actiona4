@@ -5,9 +5,9 @@ Hardware information.
 ```ts
 const hw = system.hardware;
 const board = hw.motherboard;
-const components = await hw.listComponents();
+const temperatureSensors = await hw.listTemperatureSensors();
 
-println(hw.vendorName, board.name, components.length);
+println(hw.vendorName, board.name, temperatureSensors.length);
 ```
 
 ## Properties
@@ -76,17 +76,17 @@ Version
 
 ## Methods
 
-### listComponents()
+### listTemperatureSensors()
 
-> <span class="async-badge">async</span> **listComponents**(`options?`: [`ListComponentsOptions`](ListComponentsOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Component`](Component.md)[]\>
+> <span class="async-badge">async</span> **listTemperatureSensors**(`options?`: [`ListTemperatureSensorsOptions`](ListTemperatureSensorsOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`TemperatureSensor`](TemperatureSensor.md)[]\>
 
-Hardware components
+Hardware temperature sensors
 
 #### Parameters
 
 ##### options?
 
-[`ListComponentsOptions`](ListComponentsOptions.md)
+[`ListTemperatureSensorsOptions`](ListTemperatureSensorsOptions.md)
 
 <div class="options-fields">
 
@@ -104,7 +104,7 @@ Rescan
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Component`](Component.md)[]\>
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`TemperatureSensor`](TemperatureSensor.md)[]\>
 
 ***
 
