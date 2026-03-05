@@ -18,7 +18,8 @@ Action type string (Windows-specific, e.g. for protocol activation).
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -36,7 +37,8 @@ Activation type for this action.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -54,7 +56,8 @@ Visual style of the button.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -80,7 +83,8 @@ ID of the input element this action is associated with.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -106,5 +110,6 @@ Placement of this action button.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>

@@ -31,7 +31,8 @@ Brazilian ABNT keyboard key C1
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -46,7 +47,8 @@ Brazilian ABNT keyboard key C2
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -61,7 +63,8 @@ IME “Accept” / commit conversion
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -94,7 +97,8 @@ Application/Menu key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -109,7 +113,8 @@ Attention key (legacy/rare)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -142,7 +147,8 @@ Begin key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -157,7 +163,8 @@ Break key (X11/Linux)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -172,7 +179,8 @@ Browser Back
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -187,7 +195,8 @@ Browser Favorites
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -202,7 +211,8 @@ Browser Forward
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -217,7 +227,8 @@ Browser Home
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -232,7 +243,8 @@ Browser Refresh
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -247,7 +259,8 @@ Browser Search
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -262,7 +275,8 @@ Browser Stop
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -322,7 +336,8 @@ IME Convert (start/confirm conversion)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -337,7 +352,8 @@ Cursor Select (CRSel)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -361,7 +377,8 @@ IME: switch to alphanumeric
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -376,7 +393,8 @@ IME: code input mode
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -391,7 +409,8 @@ IME: determine string
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -406,7 +425,8 @@ IME: enter dialog conversion mode
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -421,7 +441,8 @@ IME: open configuration
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -436,7 +457,8 @@ IME: word register mode
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -451,7 +473,8 @@ IME: flush/reset composition string
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -466,7 +489,8 @@ IME: Hiragana
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -481,7 +505,8 @@ IME: Katakana
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -496,7 +521,8 @@ IME: no code point
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -511,7 +537,8 @@ IME: no roman
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -526,7 +553,8 @@ IME: Roman
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -541,7 +569,8 @@ IME: SBCS character
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -556,7 +585,8 @@ IME: SBCS/Special char
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -625,7 +655,8 @@ Erase EOF
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -658,7 +689,8 @@ Extend Selection (ExSel)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -835,7 +867,8 @@ Function key F25
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -850,7 +883,8 @@ Function key F26
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -865,7 +899,8 @@ Function key F27
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -880,7 +915,8 @@ Function key F28
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -895,7 +931,8 @@ Function key F29
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -919,7 +956,8 @@ Function key F30
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -934,7 +972,8 @@ Function key F31
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -949,7 +988,8 @@ Function key F32
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -964,7 +1004,8 @@ Function key F33
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -979,7 +1020,8 @@ Function key F34
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -994,7 +1036,8 @@ Function key F35
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1063,7 +1106,8 @@ IME Final (end conversion)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1078,7 +1122,8 @@ Find key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1102,7 +1147,8 @@ Gamepad: A button
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1117,7 +1163,8 @@ Gamepad: B button
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1132,7 +1179,8 @@ Gamepad: D-Pad Down
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1147,7 +1195,8 @@ Gamepad: D-Pad Left
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1162,7 +1211,8 @@ Gamepad: D-Pad Right
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1177,7 +1227,8 @@ Gamepad: D-Pad Up
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1192,7 +1243,8 @@ Gamepad: Left shoulder (L1)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1207,7 +1259,8 @@ Gamepad: Left thumbstick button (L3)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1222,7 +1275,8 @@ Gamepad: Left thumbstick down
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1237,7 +1291,8 @@ Gamepad: Left thumbstick left
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1252,7 +1307,8 @@ Gamepad: Left thumbstick right
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1267,7 +1323,8 @@ Gamepad: Left thumbstick up
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1282,7 +1339,8 @@ Gamepad: Left trigger (L2)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1297,7 +1355,8 @@ Gamepad: Menu / Start
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1312,7 +1371,8 @@ Gamepad: Right shoulder (R1)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1327,7 +1387,8 @@ Gamepad: Right thumbstick button (R3)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1342,7 +1403,8 @@ Gamepad: Right thumbstick down
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1357,7 +1419,8 @@ Gamepad: Right thumbstick left
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1372,7 +1435,8 @@ Gamepad: Right thumbstick right
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1387,7 +1451,8 @@ Gamepad: Right thumbstick up
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1402,7 +1467,8 @@ Gamepad: Right trigger (R2)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1417,7 +1483,8 @@ Gamepad: View / Back
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1432,7 +1499,8 @@ Gamepad: X button
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1447,7 +1515,8 @@ Gamepad: Y button
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1471,7 +1540,8 @@ Hangeul toggle (Korean layout)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1531,7 +1601,8 @@ ICO (legacy) key 00
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1546,7 +1617,8 @@ ICO (legacy) Clear
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1561,7 +1633,8 @@ ICO (legacy) Help
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1576,7 +1649,8 @@ IME Off (disable IME)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1591,7 +1665,8 @@ IME On (enable IME)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1624,7 +1699,8 @@ IME: Junja mode
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1648,7 +1724,8 @@ IME: Kana mode
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1681,7 +1758,8 @@ Launch application 1
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1696,7 +1774,8 @@ Launch application 2
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1711,7 +1790,8 @@ Launch default mail client
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1726,7 +1806,8 @@ Launch media selector
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1777,7 +1858,8 @@ Left Windows / Super key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1792,7 +1874,8 @@ Line Feed key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1861,7 +1944,8 @@ Microphone mute
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1903,7 +1987,8 @@ Navigation: Accept/OK (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1918,7 +2003,8 @@ Navigation: Cancel/Back (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1933,7 +2019,8 @@ Navigation: Down (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1948,7 +2035,8 @@ Navigation: Left (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1963,7 +2051,8 @@ Navigation: Menu (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1978,7 +2067,8 @@ Navigation: Right (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -1993,7 +2083,8 @@ Navigation: Up (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2008,7 +2099,8 @@ Navigation: View (UWP)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2023,7 +2115,8 @@ NoName key (reserved)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2038,7 +2131,8 @@ IME Non-Convert (cancel conversion)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2053,7 +2147,8 @@ Placeholder "no key"
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2275,7 +2370,8 @@ OEM specific key 1
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2290,7 +2386,8 @@ OEM specific key 102 (angle bracket/pipe on some layouts)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2305,7 +2402,8 @@ OEM specific key 2
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2320,7 +2418,8 @@ OEM specific key 3 (backtick/tilde on some layouts)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2335,7 +2434,8 @@ OEM specific key 4 (left bracket on some layouts)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2350,7 +2450,8 @@ OEM specific key 5 (right bracket on some layouts)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2365,7 +2466,8 @@ OEM specific key 6 (semicolon on some layouts)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2380,7 +2482,8 @@ OEM specific key 7 (quote on some layouts)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2395,7 +2498,8 @@ OEM specific key 8
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2410,7 +2514,8 @@ OEM Attention
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2425,7 +2530,8 @@ OEM Auto
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2440,7 +2546,8 @@ OEM Ax
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2455,7 +2562,8 @@ OEM Backtab (reverse Tab)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2470,7 +2578,8 @@ OEM Clear
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2485,7 +2594,8 @@ OEM Comma ','
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2500,7 +2610,8 @@ OEM Copy
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2515,7 +2626,8 @@ OEM Cusel
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2530,7 +2642,8 @@ OEM Enlw
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2545,7 +2658,8 @@ OEM Finish
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2560,7 +2674,8 @@ OEM FJ Jisho (dictionary)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2575,7 +2690,8 @@ OEM FJ Loya
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2590,7 +2706,8 @@ OEM FJ Masshou
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2605,7 +2722,8 @@ OEM FJ Roya
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2620,7 +2738,8 @@ OEM FJ Touroku
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2635,7 +2754,8 @@ OEM Jump
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2650,7 +2770,8 @@ OEM Minus '-'
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2665,7 +2786,8 @@ OEM NEC Equal '='
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2680,7 +2802,8 @@ OEM PA1
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2695,7 +2818,8 @@ OEM PA2
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2710,7 +2834,8 @@ OEM PA3
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2725,7 +2850,8 @@ OEM Period '.'
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2740,7 +2866,8 @@ OEM Plus '+'
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2755,7 +2882,8 @@ OEM Reset
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2770,7 +2898,8 @@ OEM Wsctrl
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2803,7 +2932,8 @@ PA1 key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2818,7 +2948,8 @@ Packet key (used to pass Unicode chars)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2860,7 +2991,8 @@ Media Play
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2884,7 +3016,8 @@ IME Process key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2917,7 +3050,8 @@ Redo
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2941,7 +3075,8 @@ Right Alt/Menu
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -2983,7 +3118,8 @@ Right Windows / Super key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3007,7 +3143,8 @@ Script switch
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3022,7 +3159,8 @@ Scroll key (legacy)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3037,7 +3175,8 @@ Scroll Lock
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3061,7 +3200,8 @@ Numpad separator (locale-dependent)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3085,7 +3225,8 @@ Shift Lock
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3100,7 +3241,8 @@ System Sleep
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3133,7 +3275,8 @@ System Request (SysRq)
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3175,7 +3318,8 @@ Undo
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3271,5 +3415,6 @@ Zoom key
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>

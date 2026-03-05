@@ -3,6 +3,7 @@ import { MarkdownPageEvent } from "typedoc-plugin-markdown";
 
 const ONLY_PREFIX = "only works on ";
 const NOT_PREFIX = "does not work on ";
+const PLATFORMS = ["Windows", "Linux", "Wayland"];
 
 const PLATFORM_SECTION_RE = /^(#{2,6} Platform)\n\n([^\n]+)\n/gm;
 
@@ -48,13 +49,94 @@ function parsePlatformSentence(sentence) {
   return { supported, unsupported };
 }
 
+function normalizePlatformName(platformName) {
+  switch (platformName.trim().toLowerCase()) {
+    case "windows":
+      return "Windows";
+    case "linux":
+      return "Linux";
+    case "wayland":
+      return "Wayland";
+    case "x11":
+      return "X11";
+    default:
+      return null;
+  }
+}
+
+function buildPlatformStatuses(platforms) {
+  const hasOnlyConstraints = platforms.supported.length > 0;
+  /** @type {Map<string, boolean | null>} */
+  const statuses = new Map(
+    PLATFORMS.map((platformName) => [platformName, null]),
+  );
+
+  for (const platformName of platforms.supported) {
+    const normalizedPlatform = normalizePlatformName(platformName);
+    if (!normalizedPlatform) {
+      continue;
+    }
+
+    if (normalizedPlatform === "X11") {
+      statuses.set("Linux", true);
+      statuses.set("Wayland", false);
+      continue;
+    }
+
+    if (normalizedPlatform === "Wayland") {
+      // Wayland is a Linux compositor protocol.
+      statuses.set("Linux", true);
+    }
+
+    statuses.set(normalizedPlatform, true);
+  }
+
+  if (hasOnlyConstraints) {
+    // "Only works on Linux" should not imply a Wayland status.
+    if (statuses.get("Windows") !== true) {
+      statuses.set("Windows", false);
+    }
+    if (statuses.get("Linux") !== true) {
+      statuses.set("Linux", false);
+    }
+    if (statuses.get("Wayland") !== true && statuses.get("Wayland") !== false) {
+      statuses.set("Wayland", null);
+    }
+  } else {
+    // With only negative constraints, unspecified platforms are supported.
+    for (const platformName of PLATFORMS) {
+      if (statuses.get(platformName) === null) {
+        statuses.set(platformName, true);
+      }
+    }
+  }
+
+  for (const platformName of platforms.unsupported) {
+    const normalizedPlatform = normalizePlatformName(platformName);
+    if (!normalizedPlatform || normalizedPlatform === "X11") {
+      continue;
+    }
+
+    statuses.set(normalizedPlatform, false);
+    if (normalizedPlatform === "Linux") {
+      statuses.set("Wayland", null);
+    }
+  }
+
+  if (statuses.get("Linux") === false) {
+    statuses.set("Wayland", null);
+  }
+
+  return statuses;
+}
+
 function renderBadge(platformName, isSupported) {
   const statusClass = isSupported
     ? "platform-badge--supported"
     : "platform-badge--unsupported";
   const statusText = isSupported ? "Supported on" : "Not supported on";
   const statusIcon = isSupported ? "✓" : "✕";
-  const label = isSupported ? `${platformName}-only` : platformName;
+  const label = platformName;
   const escapedLabel = escapeHtml(label);
   const escapedTitle = escapeHtml(`${statusText} ${platformName}`);
 
@@ -62,10 +144,15 @@ function renderBadge(platformName, isSupported) {
 }
 
 function renderPlatformBadges(platforms) {
-  const badges = [
-    ...platforms.supported.map((platform) => renderBadge(platform, true)),
-    ...platforms.unsupported.map((platform) => renderBadge(platform, false)),
-  ];
+  const statuses = buildPlatformStatuses(platforms);
+  const badges = PLATFORMS.map((platformName) => {
+    const status = statuses.get(platformName);
+    if (status === null) {
+      return null;
+    }
+
+    return renderBadge(platformName, status);
+  }).filter(Boolean);
 
   if (badges.length === 0) {
     return "";

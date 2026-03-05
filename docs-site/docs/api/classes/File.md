@@ -128,6 +128,8 @@ Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Wayland" aria-label="Supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -248,6 +250,7 @@ Sets the creation time of the file. No-op on Linux.
 #### Platform
 
 <div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
@@ -274,6 +277,8 @@ You should use the octal notation to specify the mode: `await file.setMode(0o445
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Wayland" aria-label="Supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
