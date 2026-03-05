@@ -82,7 +82,6 @@
 }
 
 .platform-badge--unsupported .platform-badge__label {
-    text-decoration: line-through;
     text-decoration-thickness: 0.12em;
 }
 
