@@ -5141,11 +5141,15 @@ class Image {
      */
     flipped(flipDirection: FlipDirection): Image;
     /**
-     * Hue rotate the image.
+     * Rotates the hue of each pixel by `value` degrees.
+     * 
+     * `value` is in degrees and wraps around, so 360 is equivalent to 0.
      */
     hueRotate(value: number): this;
     /**
-     * Hue rotate the image and returns a new image.
+     * Returns a hue-rotated copy of this image.
+     * 
+     * `value` is in degrees and wraps around, so 360 is equivalent to 0.
      */
     withHueRotation(value: number): Image;
     /**
@@ -5182,18 +5186,27 @@ class Image {
     resized(width: number, height: number, options?: ResizeOptions): Image;
     /**
      * Brightens or darkens the pixels of this image.
+     * 
+     * `value` is added to each RGB channel and clamped to 0–255.
+     * Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
      */
     adjustBrightness(value: number): this;
     /**
-     * Returns a brightened or darkened version of this image.
+     * Returns a brightened or darkened copy of this image.
+     * 
+     * `value` is added to each RGB channel and clamped to 0–255.
+     * Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
      */
     withAdjustedBrightness(value: number): Image;
     /**
      * Adjusts the contrast of this image.
+     * 
+     * `value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
+     * and negative values decrease it. At -100 all pixels collapse to 50% gray.
      */
     adjustContrast(value: number): this;
     /**
-     * Returns a new image with an adjusted contrast.
+     * Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
      */
     withAdjustedContrast(value: number): Image;
     /**
@@ -5471,11 +5484,11 @@ class Image {
     /**
      * Draw another image on this image.
      */
-    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
+    drawImage(position: PointLike, options?: DrawImageOptions): this;
     /**
      * Draw another image on this image.
      */
-    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
+    drawImage(x: number, y: number, options?: DrawImageOptions): this;
     /**
      * Draw another image on a copy of this image.
      */
@@ -5550,6 +5563,7 @@ class Image {
      * }
      * const match = await task;
      * ```
+     * @platform does not work on Wayland
      */
     findOnScreen(searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
     /**
@@ -5571,6 +5585,7 @@ class Image {
      * }
      * const matches = await task;
      * ```
+     * @platform does not work on Wayland
      */
     findAllOnScreen(searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
 }
@@ -5735,48 +5750,57 @@ interface EventHandle {
 interface Keyboard {
     /**
      * Types the given text string using simulated key events.
+     * @platform does not work on Wayland
      */
     writeText(text: string): void;
     /**
      * Presses and holds a key until `release` is called.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
+     * @platform does not work on Wayland
      */
     press(key: Key | string | number): void;
     /**
      * Releases a key previously held with `press`.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
+     * @platform does not work on Wayland
      */
     release(key: Key | string | number): void;
     /**
      * Presses and releases a key in one action.
      * 
      * Accepts a `Key` constant, a single character string, or a raw keycode number.
+     * @platform does not work on Wayland
      */
     tap(key: Key | string | number): void;
     /**
      * Presses and holds a raw keycode until `releaseRaw` is called.
      * 
      * Use this for keys not covered by the `Key` enum.
+     * @platform does not work on Wayland
      */
     pressRaw(keycode: number): void;
     /**
      * Releases a raw keycode previously held with `pressRaw`.
+     * @platform does not work on Wayland
      */
     releaseRaw(keycode: number): void;
     /**
      * Presses and releases a raw keycode in one action.
      * 
      * Use this for keys not covered by the `Key` enum.
+     * @platform does not work on Wayland
      */
     tapRaw(keycode: number): void;
     /**
      * Returns whether a key is currently pressed.
+     * @platform does not work on Wayland
      */
     isKeyPressed(key: Key | string | number): boolean;
     /**
      * Returns the list of keys that are currently pressed.
+     * @platform does not work on Wayland
      */
     getPressedKeys(): Key[];
     /**
@@ -5794,6 +5818,7 @@ interface Keyboard {
      *   signal: controller.signal
      * });
      * ```
+     * @platform does not work on Wayland
      */
     waitForKeys(keys: (Key | string | number)[]): Task<void>;
     /**
@@ -5817,6 +5842,7 @@ interface Keyboard {
      * 
      * h.cancel(); // unregister
      * ```
+     * @platform does not work on Wayland
      */
     onText(text: string, handler: string | Image | (() => string | Image | void | Promise<string | Image | void>), options?: OnTextOptions): EventHandle;
     /**
@@ -5826,6 +5852,7 @@ interface Keyboard {
      * const h = keyboard.onKey(Key.F5, () => console.println("F5 pressed!"));
      * h.cancel();
      * ```
+     * @platform does not work on Wayland
      */
     onKey(key: Key | string | number, callback: () => void | Promise<void>, options?: KeysOptions): EventHandle;
     /**
@@ -5841,6 +5868,7 @@ interface Keyboard {
      * 
      * h.cancel();
      * ```
+     * @platform does not work on Wayland
      */
     onKeys(keys: (Key | string | number)[], callback: () => void | Promise<void>, options?: KeysOptions): EventHandle;
     /**
@@ -5941,6 +5969,7 @@ interface Mouse {
     isPressed(button: Button): boolean;
     /**
      * Scrolls the mouse wheel by the given amount.
+     * @platform does not work on Wayland
      */
     scroll(length: number, axis?: Axis): void;
     /**
@@ -5950,38 +5979,47 @@ interface Mouse {
     position(): Readonly<Point>;
     /**
      * Measures the mouse movement speed over a duration (in pixels per second).
+     * @platform does not work on Wayland
      */
     measureSpeed(options?: MeasureSpeedOptions): Task<number>;
     /**
      * Moves the mouse cursor smoothly to the given position.
+     * @platform does not work on Wayland
      */
     move(point: PointLike, options?: MoveOptions): Task<void>;
     /**
      * Moves the mouse cursor smoothly to the given position.
+     * @platform does not work on Wayland
      */
     move(x: number, y: number, options?: MoveOptions): Task<void>;
     /**
      * Sets the mouse cursor position instantly (absolute coordinates).
+     * @platform does not work on Wayland
      */
     setPosition(point: PointLike): void;
     /**
      * Sets the mouse cursor position instantly (absolute coordinates).
+     * @platform does not work on Wayland
      */
     setPosition(x: number, y: number): void;
     /**
      * Moves the mouse cursor by the given offset (relative coordinates).
+     * @platform does not work on Wayland
      */
     setRelativePosition(point: PointLike): void;
     /**
      * Moves the mouse cursor by the given offset (relative coordinates).
+     * @platform does not work on Wayland
      */
     setRelativePosition(x: number, y: number): void;
     /**
      * Clicks a mouse button.
+     * @platform does not work on Wayland
      */
     click(options?: ClickOptions): Task<void>;
     /**
      * Double-clicks a mouse button.
+     * @platform does not work on Wayland
      */
     doubleClick(options?: DoubleClickOptions): Task<void>;
     /**
@@ -5999,6 +6037,7 @@ interface Mouse {
      *   speed: 500,
      * });
      * ```
+     * @platform does not work on Wayland
      */
     dragAndDrop(start: PointLike, end: PointLike, options?: DragOptions): Task<void>;
     /**
@@ -6016,6 +6055,7 @@ interface Mouse {
      *   speed: 500,
      * });
      * ```
+     * @platform does not work on Wayland
      */
     dragAndDrop(start: PointLike, x: number, y: number, options?: DragOptions): Task<void>;
     /**
@@ -6033,6 +6073,7 @@ interface Mouse {
      *   speed: 500,
      * });
      * ```
+     * @platform does not work on Wayland
      */
     dragAndDrop(x: number, y: number, end: PointLike, options?: DragOptions): Task<void>;
     /**
@@ -6050,14 +6091,17 @@ interface Mouse {
      *   speed: 500,
      * });
      * ```
+     * @platform does not work on Wayland
      */
     dragAndDrop(x1: number, y1: number, x2: number, y2: number, options?: DragOptions): Task<void>;
     /**
      * Presses and holds a mouse button.
+     * @platform does not work on Wayland
      */
     press(options?: PressOptions): void;
     /**
      * Releases a mouse button.
+     * @platform does not work on Wayland
      */
     release(button?: Button): void;
     /**
@@ -6076,6 +6120,7 @@ interface Mouse {
      *   signal: controller.signal
      * });
      * ```
+     * @platform does not work on Wayland
      */
     waitForButton(options?: WaitForButtonOptions): Task<Button>;
     /**
@@ -6095,6 +6140,7 @@ interface Mouse {
      *   signal: controller.signal
      * });
      * ```
+     * @platform does not work on Wayland
      */
     waitForScroll(options?: WaitForScrollOptions): Task<ScrollEvent>;
     /**
@@ -6107,6 +6153,7 @@ interface Mouse {
      * // ... later:
      * handle.cancel();
      * ```
+     * @platform does not work on Wayland
      */
     onButton(button: Button, callback: () => void | Promise<void>, options?: OnButtonOptions): EventHandle;
     /**
@@ -6126,6 +6173,7 @@ interface Mouse {
      *   console.println(`Horizontal scroll: ${length}`);
      * }, { axis: Axis.Horizontal });
      * ```
+     * @platform does not work on Wayland
      */
     onScroll(callback: (length: number) => void | Promise<void>, options?: OnScrollOptions): EventHandle;
     /**
@@ -7666,7 +7714,7 @@ class SearchIn {
  * Screen capture and image search.
  * 
  * Provides methods to capture the entire desktop, a specific display, a screen
- * region, or a single pixel, as well as finding images on screen.
+ * region, or a single pixel.
  * 
  * ```ts
  * const image = await screen.captureDesktop();
@@ -7692,6 +7740,7 @@ interface Screen {
      * ```ts
      * const image = await screen.captureDesktop();
      * ```
+     * @platform does not work on Wayland
      */
     captureDesktop(): Promise<Image>;
     /**
@@ -7702,6 +7751,7 @@ interface Screen {
      * const image = await screen.captureDisplay(displays.fromId(474));
      * const image = await screen.captureDisplay(displays.largest());
      * ```
+     * @platform does not work on Wayland
      */
     captureDisplay(display: DisplayInfo): Promise<Image>;
     /**
@@ -7710,6 +7760,7 @@ interface Screen {
      * ```ts
      * const image = await screen.captureRect(0, 0, 1920, 1080);
      * ```
+     * @platform does not work on Wayland
      */
     captureRect(rect: RectLike): Promise<Image>;
     /**
@@ -7718,6 +7769,7 @@ interface Screen {
      * ```ts
      * const image = await screen.captureRect(0, 0, 1920, 1080);
      * ```
+     * @platform does not work on Wayland
      */
     captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
     /**
@@ -7727,6 +7779,7 @@ interface Screen {
      * const win = windows.activeWindow();
      * const image = await screen.captureWindow(win);
      * ```
+     * @platform does not work on Wayland
      */
     captureWindow(handle: WindowHandle): Promise<Image>;
     /**
@@ -7736,6 +7789,7 @@ interface Screen {
      * const color = await screen.capturePixel(100, 200);
      * println(color);
      * ```
+     * @platform does not work on Wayland
      */
     capturePixel(position: PointLike): Promise<Color>;
     /**
@@ -7745,6 +7799,7 @@ interface Screen {
      * const color = await screen.capturePixel(100, 200);
      * println(color);
      * ```
+     * @platform does not work on Wayland
      */
     capturePixel(x: number, y: number): Promise<Color>;
     toString(): string;
@@ -9262,6 +9317,7 @@ interface Windows {
      * const allWindows = windows.all();
      * println(`Found ${allWindows.length} windows`);
      * ```
+     * @platform does not work on Wayland
      */
     all(): readonly WindowHandle[];
     /**
@@ -9271,6 +9327,7 @@ interface Windows {
      * const win = windows.active();
      * println(win.title());
      * ```
+     * @platform does not work on Wayland
      */
     active(): Readonly<WindowHandle>;
     /**
@@ -9280,6 +9337,7 @@ interface Windows {
      * const win = windows.foreground();
      * println(win.title());
      * ```
+     * @platform does not work on Wayland
      */
     foreground(): Readonly<WindowHandle>;
     /**
@@ -9295,6 +9353,7 @@ interface Windows {
      * const byClass = windows.find({ className: /^gnome-terminal/i });
      * const exact = windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
      * ```
+     * @platform does not work on Wayland
      */
     find(options: WindowsFindOptions): readonly WindowHandle[];
     /**
@@ -9304,6 +9363,7 @@ interface Windows {
      * const underMouse = windows.findAt(mouse.position());
      * const atOrigin = windows.findAt(0, 0);
      * ```
+     * @platform does not work on Wayland
      */
     findAt(point: PointLike): readonly WindowHandle[];
     /**
@@ -9313,6 +9373,7 @@ interface Windows {
      * const underMouse = windows.findAt(mouse.position());
      * const atOrigin = windows.findAt(0, 0);
      * ```
+     * @platform does not work on Wayland
      */
     findAt(x: number, y: number): readonly WindowHandle[];
     toString(): string;
@@ -9343,6 +9404,7 @@ interface WindowHandle {
      * const win = windows.activeWindow();
      * await win.closed;
      * ```
+     * @platform does not work on Wayland
      */
     readonly closed: Task<void>;
     /**
@@ -9351,6 +9413,7 @@ interface WindowHandle {
      * ```ts
      * const visible = win.isVisible();
      * ```
+     * @platform does not work on Wayland
      */
     isVisible(): boolean;
     /**
@@ -9359,6 +9422,7 @@ interface WindowHandle {
      * ```ts
      * const title = win.title();
      * ```
+     * @platform does not work on Wayland
      */
     title(): string;
     /**
@@ -9367,6 +9431,7 @@ interface WindowHandle {
      * ```ts
      * const className = win.className();
      * ```
+     * @platform does not work on Wayland
      */
     className(): string;
     /**
@@ -9375,6 +9440,7 @@ interface WindowHandle {
      * ```ts
      * win.close();
      * ```
+     * @platform does not work on Wayland
      */
     close(): void;
     /**
@@ -9383,6 +9449,7 @@ interface WindowHandle {
      * ```ts
      * const pid = win.processId();
      * ```
+     * @platform does not work on Wayland
      */
     processId(): number;
     /**
@@ -9392,6 +9459,7 @@ interface WindowHandle {
      * const r = win.rect();
      * println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
      * ```
+     * @platform does not work on Wayland
      */
     rect(): Readonly<Rect>;
     /**
@@ -9401,6 +9469,7 @@ interface WindowHandle {
      * const win = windows.activeWindow();
      * const image = await win.capture();
      * ```
+     * @platform does not work on Wayland
      */
     capture(): Promise<Image>;
     /**
@@ -9409,6 +9478,7 @@ interface WindowHandle {
      * ```ts
      * win.setActive();
      * ```
+     * @platform does not work on Wayland
      */
     setActive(): void;
     /**
@@ -9417,6 +9487,7 @@ interface WindowHandle {
      * ```ts
      * win.setForeground();
      * ```
+     * @platform does not work on Wayland
      */
     setForeground(): void;
     /**
@@ -9425,6 +9496,7 @@ interface WindowHandle {
      * ```ts
      * win.minimize();
      * ```
+     * @platform does not work on Wayland
      */
     minimize(): void;
     /**
@@ -9433,6 +9505,7 @@ interface WindowHandle {
      * ```ts
      * win.maximize();
      * ```
+     * @platform does not work on Wayland
      */
     maximize(): void;
     /**
@@ -9443,6 +9516,7 @@ interface WindowHandle {
      * win.setPosition(new Point(100, 200));
      * win.setPosition({x: 100, y: 200});
      * ```
+     * @platform does not work on Wayland
      */
     setPosition(position: PointLike): void;
     /**
@@ -9453,6 +9527,7 @@ interface WindowHandle {
      * win.setPosition(new Point(100, 200));
      * win.setPosition({x: 100, y: 200});
      * ```
+     * @platform does not work on Wayland
      */
     setPosition(x: number, y: number): void;
     /**
@@ -9462,6 +9537,7 @@ interface WindowHandle {
      * const pos = win.position();
      * println(`${pos.x}, ${pos.y}`);
      * ```
+     * @platform does not work on Wayland
      */
     position(): Readonly<Point>;
     /**
@@ -9472,6 +9548,7 @@ interface WindowHandle {
      * win.setSize(new Size(800, 600));
      * win.setSize({width: 800, height: 600});
      * ```
+     * @platform does not work on Wayland
      */
     setSize(size: SizeLike): void;
     /**
@@ -9482,6 +9559,7 @@ interface WindowHandle {
      * win.setSize(new Size(800, 600));
      * win.setSize({width: 800, height: 600});
      * ```
+     * @platform does not work on Wayland
      */
     setSize(width: number, height: number): void;
     /**
@@ -9491,6 +9569,7 @@ interface WindowHandle {
      * const s = win.size();
      * println(`${s.width}x${s.height}`);
      * ```
+     * @platform does not work on Wayland
      */
     size(): Readonly<Size>;
     /**
@@ -9499,6 +9578,7 @@ interface WindowHandle {
      * ```ts
      * const active = win.isActive();
      * ```
+     * @platform does not work on Wayland
      */
     isActive(): boolean;
     /**

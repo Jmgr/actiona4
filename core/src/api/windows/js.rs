@@ -139,6 +139,7 @@ impl JsWindows {
     /// println(`Found ${allWindows.length} windows`);
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn all(&self, ctx: Ctx<'_>) -> Result<Vec<JsWindowHandle>> {
         let ids = self.inner.all().into_js_result(&ctx)?;
 
@@ -159,6 +160,7 @@ impl JsWindows {
     /// println(win.title());
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn active(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
         let id = self.inner.active_window().into_js_result(&ctx)?;
 
@@ -176,6 +178,7 @@ impl JsWindows {
     /// println(win.title());
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn foreground(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
         self.active(ctx)
     }
@@ -193,6 +196,7 @@ impl JsWindows {
     /// const exact = windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn find<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -259,6 +263,7 @@ impl JsWindows {
     /// const atOrigin = windows.findAt(0, 0);
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn find_at(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<Vec<JsWindowHandle>> {
         let ids = self.inner.all().into_js_result(&ctx)?;
         let mut windows = Vec::new();
@@ -324,6 +329,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const visible = win.isVisible();
     /// ```
+    /// @platforms -wayland
     pub fn is_visible(&self, ctx: Ctx<'_>) -> Result<bool> {
         self.inner.is_visible(self.id).into_js_result(&ctx)
     }
@@ -333,6 +339,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const title = win.title();
     /// ```
+    /// @platforms -wayland
     pub fn title(&self, ctx: Ctx<'_>) -> Result<String> {
         self.inner.title(self.id).into_js_result(&ctx)
     }
@@ -342,6 +349,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const className = win.className();
     /// ```
+    /// @platforms -wayland
     pub fn class_name(&self, ctx: Ctx<'_>) -> Result<String> {
         self.inner.classname(self.id).into_js_result(&ctx)
     }
@@ -351,6 +359,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.close();
     /// ```
+    /// @platforms -wayland
     pub fn close(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.close(self.id).into_js_result(&ctx)
     }
@@ -360,6 +369,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const pid = win.processId();
     /// ```
+    /// @platforms -wayland
     pub fn process_id(&self, ctx: Ctx<'_>) -> Result<u32> {
         self.inner.process_id(self.id).into_js_result(&ctx)
     }
@@ -371,6 +381,7 @@ impl JsWindowHandle {
     /// println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn rect(&self, ctx: Ctx<'_>) -> Result<JsRect> {
         Ok(self.inner.rect(self.id).into_js_result(&ctx)?.into())
     }
@@ -381,6 +392,7 @@ impl JsWindowHandle {
     /// const win = windows.activeWindow();
     /// const image = await win.capture();
     /// ```
+    /// @platforms -wayland
     pub async fn capture(&self, ctx: Ctx<'_>) -> Result<JsImage> {
         Ok(JsImage::new(
             self.screen
@@ -395,6 +407,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.setActive();
     /// ```
+    /// @platforms -wayland
     pub fn set_active(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.set_active(self.id).into_js_result(&ctx)
     }
@@ -404,6 +417,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.setForeground();
     /// ```
+    /// @platforms -wayland
     pub fn set_foreground(&self, ctx: Ctx<'_>) -> Result<()> {
         self.set_active(ctx)
     }
@@ -413,6 +427,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.minimize();
     /// ```
+    /// @platforms -wayland
     pub fn minimize(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.minimize(self.id).into_js_result(&ctx)
     }
@@ -422,6 +437,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.maximize();
     /// ```
+    /// @platforms -wayland
     pub fn maximize(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.maximize(self.id).into_js_result(&ctx)
     }
@@ -433,6 +449,7 @@ impl JsWindowHandle {
     /// win.setPosition(new Point(100, 200));
     /// win.setPosition({x: 100, y: 200});
     /// ```
+    /// @platforms -wayland
     pub fn set_position(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<()> {
         self.inner
             .set_position(self.id, position.0)
@@ -446,6 +463,7 @@ impl JsWindowHandle {
     /// println(`${pos.x}, ${pos.y}`);
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position(self.id).into_js_result(&ctx)?.into())
     }
@@ -457,6 +475,7 @@ impl JsWindowHandle {
     /// win.setSize(new Size(800, 600));
     /// win.setSize({width: 800, height: 600});
     /// ```
+    /// @platforms -wayland
     pub fn set_size(&self, ctx: Ctx<'_>, size: JsSizeLike) -> Result<()> {
         self.inner.set_size(self.id, size.0).into_js_result(&ctx)
     }
@@ -468,6 +487,7 @@ impl JsWindowHandle {
     /// println(`${s.width}x${s.height}`);
     /// ```
     /// @readonly
+    /// @platforms -wayland
     pub fn size(&self, ctx: Ctx<'_>) -> Result<JsSize> {
         Ok(self.inner.size(self.id).into_js_result(&ctx)?.into())
     }
@@ -477,6 +497,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const active = win.isActive();
     /// ```
+    /// @platforms -wayland
     pub fn is_active(&self, ctx: Ctx<'_>) -> Result<bool> {
         self.inner.is_active(self.id).into_js_result(&ctx)
     }
@@ -490,6 +511,7 @@ impl JsWindowHandle {
     ///
     /// @get
     /// @returns Task<void>
+    /// @platforms -wayland
     #[qjs(get)]
     pub fn closed<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
         let inner = self.inner.clone();

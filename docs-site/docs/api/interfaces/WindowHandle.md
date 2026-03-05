@@ -25,6 +25,12 @@ const win = windows.activeWindow();
 await win.closed;
 ```
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ## Methods
 
 ### capture()
@@ -42,6 +48,12 @@ const image = await win.capture();
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### className()
@@ -57,6 +69,12 @@ const className = win.className();
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -74,6 +92,12 @@ win.close();
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### isActive()
@@ -89,6 +113,12 @@ const active = win.isActive();
 #### Returns
 
 [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -106,6 +136,12 @@ const visible = win.isVisible();
 
 [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### maximize()
@@ -122,6 +158,12 @@ win.maximize();
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### minimize()
@@ -137,6 +179,12 @@ win.minimize();
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -155,6 +203,12 @@ println(`${pos.x}, ${pos.y}`);
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### processId()
@@ -170,6 +224,12 @@ const pid = win.processId();
 #### Returns
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -188,6 +248,12 @@ println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](../classes/Rect.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### setActive()
@@ -204,6 +270,12 @@ win.setActive();
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### setForeground()
@@ -219,6 +291,12 @@ win.setForeground();
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -246,6 +324,12 @@ win.setPosition({x: 100, y: 200});
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > **setPosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
@@ -271,6 +355,12 @@ win.setPosition({x: 100, y: 200});
 ##### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -298,6 +388,12 @@ win.setSize({width: 800, height: 600});
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > **setSize**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
@@ -324,6 +420,12 @@ win.setSize({width: 800, height: 600});
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### size()
@@ -341,6 +443,12 @@ println(`${s.width}x${s.height}`);
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Size`](../classes/Size.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### title()
@@ -356,6 +464,12 @@ const title = win.title();
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 

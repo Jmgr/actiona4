@@ -97,6 +97,9 @@ Returns a Rect representing this image.
 
 Brightens or darkens the pixels of this image.
 
+`value` is added to each RGB channel and clamped to 0–255.
+Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
+
 #### Parameters
 
 ##### value
@@ -114,6 +117,9 @@ Brightens or darkens the pixels of this image.
 > **adjustContrast**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
 
 Adjusts the contrast of this image.
+
+`value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
+and negative values decrease it. At -100 all pixels collapse to 50% gray.
 
 #### Parameters
 
@@ -915,7 +921,7 @@ Draw a hollow shape instead of a filled one
 
 #### Call Signature
 
-> **drawImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
+> **drawImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
 
 Draw another image on this image.
 
@@ -924,10 +930,6 @@ Draw another image on this image.
 ###### position
 
 [`PointLike`](../type-aliases/PointLike.md)
-
-###### image
-
-`Image`
 
 ###### options?
 
@@ -954,7 +956,7 @@ Source rectangle.
 
 #### Call Signature
 
-> **drawImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
+> **drawImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
 
 Draw another image on this image.
 
@@ -967,10 +969,6 @@ Draw another image on this image.
 ###### y
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### image
-
-`Image`
 
 ###### options?
 
@@ -2506,6 +2504,12 @@ Use template transparency.
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### findOnScreen()
@@ -2621,6 +2625,12 @@ Use template transparency.
 #### Returns
 
 [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -2752,7 +2762,9 @@ Transform this image into a grayscale.
 
 > **hueRotate**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
 
-Hue rotate the image.
+Rotates the hue of each pixel by `value` degrees.
+
+`value` is in degrees and wraps around, so 360 is equivalent to 0.
 
 #### Parameters
 
@@ -3304,7 +3316,10 @@ Returns a string representation of this image.
 
 > **withAdjustedBrightness**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
 
-Returns a brightened or darkened version of this image.
+Returns a brightened or darkened copy of this image.
+
+`value` is added to each RGB channel and clamped to 0–255.
+Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
 
 #### Parameters
 
@@ -3322,7 +3337,7 @@ Returns a brightened or darkened version of this image.
 
 > **withAdjustedContrast**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
 
-Returns a new image with an adjusted contrast.
+Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
 
 #### Parameters
 
@@ -3892,7 +3907,9 @@ Returns a grayscale version of this image.
 
 > **withHueRotation**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
 
-Hue rotate the image and returns a new image.
+Returns a hue-rotated copy of this image.
+
+`value` is in degrees and wraps around, so 360 is equivalent to 0.
 
 #### Parameters
 

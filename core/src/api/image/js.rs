@@ -1534,6 +1534,7 @@ impl JsImage {
     /// const match = await task;
     /// ```
     /// @returns ProgressTask<Match | undefined, FindImageProgress>
+    /// @platforms -wayland
     pub fn find_on_screen<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -1587,6 +1588,7 @@ impl JsImage {
     /// const matches = await task;
     /// ```
     /// @returns ProgressTask<Match[], FindImageProgress>
+    /// @platforms -wayland
     pub fn find_all_on_screen<'js>(
         &self,
         ctx: Ctx<'js>,

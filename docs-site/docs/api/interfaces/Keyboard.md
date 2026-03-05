@@ -61,6 +61,12 @@ Returns the list of keys that are currently pressed.
 
 [`Key`](../enumerations/Key.md)[]
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### isKeyPressed()
@@ -78,6 +84,12 @@ Returns whether a key is currently pressed.
 #### Returns
 
 [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -135,6 +147,12 @@ Abort signal to cancel the operation.
 #### Returns
 
 [`EventHandle`](EventHandle.md)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -198,6 +216,12 @@ Abort signal to cancel the operation.
 #### Returns
 
 [`EventHandle`](EventHandle.md)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -296,6 +320,12 @@ Replacing with an image always uses the clipboard.
 
 [`EventHandle`](EventHandle.md)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### press()
@@ -315,6 +345,12 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -336,6 +372,12 @@ Use this for keys not covered by the `Key` enum.
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### release()
@@ -356,6 +398,12 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### releaseRaw()
@@ -373,6 +421,12 @@ Releases a raw keycode previously held with `pressRaw`.
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -394,6 +448,12 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### tapRaw()
@@ -413,6 +473,12 @@ Use this for keys not covered by the `Key` enum.
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -455,6 +521,12 @@ await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### writeText()
@@ -472,3 +544,9 @@ Types the given text string using simulated key events.
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>

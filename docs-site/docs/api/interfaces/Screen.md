@@ -3,7 +3,7 @@
 Screen capture and image search.
 
 Provides methods to capture the entire desktop, a specific display, a screen
-region, or a single pixel, as well as finding images on screen.
+region, or a single pixel.
 
 ```ts
 const image = await screen.captureDesktop();
@@ -37,6 +37,12 @@ const image = await screen.captureDesktop();
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### captureDisplay()
@@ -60,6 +66,12 @@ const image = await screen.captureDisplay(displays.largest());
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -86,6 +98,12 @@ println(color);
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > <span class="async-badge">async</span> **capturePixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
@@ -111,6 +129,12 @@ println(color);
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### captureRect()
@@ -134,6 +158,12 @@ const image = await screen.captureRect(0, 0, 1920, 1080);
 ##### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 #### Call Signature
 
@@ -167,6 +197,12 @@ const image = await screen.captureRect(0, 0, 1920, 1080);
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### captureWindow()
@@ -189,6 +225,12 @@ const image = await screen.captureWindow(win);
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 

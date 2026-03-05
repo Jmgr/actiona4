@@ -42,6 +42,12 @@ println(win.title());
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### all()
@@ -58,6 +64,12 @@ println(`Found ${allWindows.length} windows`);
 #### Returns
 
 readonly [`WindowHandle`](WindowHandle.md)[]
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -155,6 +167,12 @@ When undefined, visibility is not filtered.
 
 readonly [`WindowHandle`](WindowHandle.md)[]
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### findAt()
@@ -179,6 +197,12 @@ const atOrigin = windows.findAt(0, 0);
 ##### Returns
 
 readonly [`WindowHandle`](WindowHandle.md)[]
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 #### Call Signature
 
@@ -205,6 +229,12 @@ const atOrigin = windows.findAt(0, 0);
 
 readonly [`WindowHandle`](WindowHandle.md)[]
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### foreground()
@@ -221,6 +251,12 @@ println(win.title());
 #### Returns
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 

@@ -215,6 +215,7 @@ impl From<JsKeysOptions> for OnKeysOptions {
 #[rquickjs::methods(rename_all = "camelCase")]
 impl JsKeyboard {
     /// Types the given text string using simulated key events.
+    /// @platforms -wayland
     pub fn write_text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
         self.inner.text(&text).into_js_result(&ctx)?;
 
@@ -225,6 +226,7 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
+    /// @platforms -wayland
     pub fn press(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
         self.inner.press(key).into_js_result(&ctx)?;
@@ -236,6 +238,7 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
+    /// @platforms -wayland
     pub fn release(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
         self.inner.release(key).into_js_result(&ctx)?;
@@ -247,6 +250,7 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
+    /// @platforms -wayland
     pub fn tap(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
         self.inner.tap(key).into_js_result(&ctx)?;
@@ -257,6 +261,7 @@ impl JsKeyboard {
     /// Presses and holds a raw keycode until `releaseRaw` is called.
     ///
     /// Use this for keys not covered by the `Key` enum.
+    /// @platforms -wayland
     pub fn press_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
         self.inner.press_raw(keycode).into_js_result(&ctx)?;
 
@@ -264,6 +269,7 @@ impl JsKeyboard {
     }
 
     /// Releases a raw keycode previously held with `pressRaw`.
+    /// @platforms -wayland
     pub fn release_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
         self.inner.release_raw(keycode).into_js_result(&ctx)?;
 
@@ -273,6 +279,7 @@ impl JsKeyboard {
     /// Presses and releases a raw keycode in one action.
     ///
     /// Use this for keys not covered by the `Key` enum.
+    /// @platforms -wayland
     pub fn tap_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
         self.inner.tap_raw(keycode).into_js_result(&ctx)?;
 
@@ -281,6 +288,7 @@ impl JsKeyboard {
 
     /// Returns whether a key is currently pressed.
     /// @param key: Key | string | number
+    /// @platforms -wayland
     pub fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = Self::parse_key(&ctx, key)?;
 
@@ -288,6 +296,7 @@ impl JsKeyboard {
     }
 
     /// Returns the list of keys that are currently pressed.
+    /// @platforms -wayland
     pub fn get_pressed_keys(&self, ctx: Ctx<'_>) -> Result<Vec<JsKey>> {
         let keys = self.inner.get_pressed_keys().into_js_result(&ctx)?;
 
@@ -324,6 +333,7 @@ impl JsKeyboard {
     /// ```
     /// @param keys: (Key | string | number)[]
     /// @returns Task<void>
+    /// @platforms -wayland
     pub fn wait_for_keys<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -375,6 +385,7 @@ impl JsKeyboard {
     /// @param handler: string | Image | (() => string | Image | void | Promise<string | Image | void>)
     /// @param options?: OnTextOptions
     /// @returns EventHandle
+    /// @platforms -wayland
     pub fn on_text<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -421,6 +432,7 @@ impl JsKeyboard {
     /// @param callback: () => void | Promise<void>
     /// @param options?: KeysOptions
     /// @returns EventHandle
+    /// @platforms -wayland
     pub fn on_key<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -450,6 +462,7 @@ impl JsKeyboard {
     /// @param callback: () => void | Promise<void>
     /// @param options?: KeysOptions
     /// @returns EventHandle
+    /// @platforms -wayland
     pub fn on_keys<'js>(
         &self,
         ctx: Ctx<'js>,

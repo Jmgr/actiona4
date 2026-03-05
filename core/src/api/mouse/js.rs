@@ -382,6 +382,7 @@ impl JsMouse {
     }
 
     /// Scrolls the mouse wheel by the given amount.
+    /// @platforms -wayland
     pub fn scroll(&self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
@@ -389,14 +390,15 @@ impl JsMouse {
     }
 
     /// Returns the current mouse cursor position.
-    /// @platforms -wayland
     /// @readonly
+    /// @platforms -wayland
     pub fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position().into_js_result(&ctx)?.into())
     }
 
     /// Measures the mouse movement speed over a duration (in pixels per second).
     /// @returns Task<number>
+    /// @platforms -wayland
     pub fn measure_speed<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -419,6 +421,7 @@ impl JsMouse {
 
     /// Moves the mouse cursor smoothly to the given position.
     /// @returns Task<void>
+    /// @platforms -wayland
     #[qjs(rename = "move")]
     pub fn r#move<'js>(
         &self,
@@ -442,6 +445,7 @@ impl JsMouse {
     }
 
     /// Sets the mouse cursor position instantly (absolute coordinates).
+    /// @platforms -wayland
     pub fn set_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
@@ -449,6 +453,7 @@ impl JsMouse {
     }
 
     /// Moves the mouse cursor by the given offset (relative coordinates).
+    /// @platforms -wayland
     pub fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
@@ -457,6 +462,7 @@ impl JsMouse {
 
     /// Clicks a mouse button.
     /// @returns Task<void>
+    /// @platforms -wayland
     pub fn click<'js>(&self, ctx: Ctx<'js>, options: Opt<JsClickOptions>) -> Result<Promise<'js>> {
         let local_mouse = self.inner.clone();
         let options = options.0.unwrap_or_default();
@@ -472,6 +478,7 @@ impl JsMouse {
 
     /// Double-clicks a mouse button.
     /// @returns Task<void>
+    /// @platforms -wayland
     pub fn double_click<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -504,6 +511,7 @@ impl JsMouse {
     /// });
     /// ```
     /// @returns Task<void>
+    /// @platforms -wayland
     pub fn drag_and_drop<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -535,6 +543,7 @@ impl JsMouse {
     }
 
     /// Presses and holds a mouse button.
+    /// @platforms -wayland
     pub fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
         self.inner
             .press(options.unwrap_or_default())
@@ -542,6 +551,7 @@ impl JsMouse {
     }
 
     /// Releases a mouse button.
+    /// @platforms -wayland
     pub fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))
@@ -565,6 +575,7 @@ impl JsMouse {
     /// ```
     /// @param options?: WaitForButtonOptions
     /// @returns Task<Button>
+    /// @platforms -wayland
     pub fn wait_for_button<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -605,6 +616,7 @@ impl JsMouse {
     /// ```
     /// @param options?: WaitForScrollOptions
     /// @returns Task<ScrollEvent>
+    /// @platforms -wayland
     pub fn wait_for_scroll<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -641,6 +653,7 @@ impl JsMouse {
     /// @param callback: () => void | Promise<void>
     /// @param options?: OnButtonOptions
     /// @returns EventHandle
+    /// @platforms -wayland
     pub fn on_button<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -688,6 +701,7 @@ impl JsMouse {
     /// @param callback: (length: number) => void | Promise<void>
     /// @param options?: OnScrollOptions
     /// @returns EventHandle
+    /// @platforms -wayland
     pub fn on_scroll<'js>(
         &self,
         ctx: Ctx<'js>,

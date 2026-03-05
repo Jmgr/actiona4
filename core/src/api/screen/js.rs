@@ -212,6 +212,7 @@ impl JsScreen {
     /// ```ts
     /// const image = await screen.captureDesktop();
     /// ```
+    /// @platforms -wayland
     pub async fn capture_desktop(&self, ctx: Ctx<'_>) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner.capture_desktop().await.into_js_result(&ctx)?,
@@ -225,6 +226,7 @@ impl JsScreen {
     /// const image = await screen.captureDisplay(displays.fromId(474));
     /// const image = await screen.captureDisplay(displays.largest());
     /// ```
+    /// @platforms -wayland
     pub async fn capture_display(&self, ctx: Ctx<'_>, display: JsDisplayInfo) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner
@@ -239,6 +241,7 @@ impl JsScreen {
     /// ```ts
     /// const image = await screen.captureRect(0, 0, 1920, 1080);
     /// ```
+    /// @platforms -wayland
     pub async fn capture_rect(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner.capture_rect(rect.0).await.into_js_result(&ctx)?,
@@ -251,6 +254,7 @@ impl JsScreen {
     /// const win = windows.activeWindow();
     /// const image = await screen.captureWindow(win);
     /// ```
+    /// @platforms -wayland
     pub async fn capture_window(&self, ctx: Ctx<'_>, handle: JsWindowHandle) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner
@@ -266,6 +270,7 @@ impl JsScreen {
     /// const color = await screen.capturePixel(100, 200);
     /// println(color);
     /// ```
+    /// @platforms -wayland
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         Ok(self
             .inner

@@ -201,6 +201,12 @@ Abort signal to cancel the click.
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### doubleClick()
@@ -391,6 +397,12 @@ Abort signal to cancel the click.
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -590,6 +602,12 @@ Easing function used for the movement.
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > <span class="async-badge">async</span> **dragAndDrop**(`start`: [`PointLike`](../type-aliases/PointLike.md), `x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DragOptions`](DragOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -788,6 +806,12 @@ Easing function used for the movement.
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > <span class="async-badge">async</span> **dragAndDrop**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `end`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`DragOptions`](DragOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -985,6 +1009,12 @@ Easing function used for the movement.
 ##### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 #### Call Signature
 
@@ -1188,6 +1218,12 @@ Easing function used for the movement.
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### isPressed()
@@ -1303,6 +1339,12 @@ Abort signal to cancel the measurement.
 
 [`Task`](../type-aliases/Task.md)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### move()
@@ -1401,6 +1443,12 @@ Easing function used for the movement.
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > <span class="async-badge">async</span> **move**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`MoveOptions`](MoveOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -1498,6 +1546,12 @@ Easing function used for the movement.
 ##### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -1606,6 +1660,12 @@ Abort signal to automatically cancel this listener when signalled.
 
 [`EventHandle`](EventHandle.md)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### onScroll()
@@ -1686,6 +1746,12 @@ Abort signal to automatically cancel this listener when signalled.
 #### Returns
 
 [`EventHandle`](EventHandle.md)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -1808,6 +1874,12 @@ Whether the position is relative to the current cursor position.
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### release()
@@ -1873,6 +1945,12 @@ Right button
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### scroll()
@@ -1913,6 +1991,12 @@ Scrolls the mouse wheel by the given amount.
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### setPosition()
@@ -1932,6 +2016,12 @@ Sets the mouse cursor position instantly (absolute coordinates).
 ##### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 #### Call Signature
 
@@ -1953,6 +2043,12 @@ Sets the mouse cursor position instantly (absolute coordinates).
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### setRelativePosition()
@@ -1973,6 +2069,12 @@ Moves the mouse cursor by the given offset (relative coordinates).
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 #### Call Signature
 
 > **setRelativePosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
@@ -1992,6 +2094,12 @@ Moves the mouse cursor by the given offset (relative coordinates).
 ##### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
 
 ***
 
@@ -2108,6 +2216,12 @@ Abort signal to cancel the wait.
 
 [`Task`](../type-aliases/Task.md)\<[`Button`](../enumerations/Button.md)\>
 
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
+
 ***
 
 ### waitForScroll()
@@ -2184,3 +2298,9 @@ Abort signal to cancel the wait.
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`ScrollEvent`](ScrollEvent.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+</div>
