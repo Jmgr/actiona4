@@ -51,10 +51,15 @@ impl Keyboard {
         })
     }
 
+    pub fn check_input_support(&self) -> color_eyre::Result<()> {
+        self.runtime.require_not_wayland()
+    }
+
     #[instrument(skip(self), err, ret)]
     pub fn text(&self, text: &str) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().text(text)?;
 
         Ok(())
@@ -64,6 +69,7 @@ impl Keyboard {
     pub fn press(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().key(key, Direction::Press)?;
 
         Ok(())
@@ -73,6 +79,7 @@ impl Keyboard {
     pub fn release(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().key(key, Direction::Release)?;
 
         Ok(())
@@ -82,6 +89,7 @@ impl Keyboard {
     pub fn tap(&self, key: Key) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().key(key, Direction::Click)?;
 
         Ok(())
@@ -91,6 +99,7 @@ impl Keyboard {
     pub fn press_raw(&self, keycode: u16) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().raw(keycode, Direction::Press)?;
 
         Ok(())
@@ -100,6 +109,7 @@ impl Keyboard {
     pub fn release_raw(&self, keycode: u16) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().raw(keycode, Direction::Release)?;
 
         Ok(())
@@ -109,16 +119,19 @@ impl Keyboard {
     pub fn tap_raw(&self, keycode: u16) -> Result<()> {
         use enigo::Keyboard;
 
+        self.runtime.require_not_wayland()?;
         self.enigo.lock().raw(keycode, Direction::Click)?;
 
         Ok(())
     }
 
     pub fn is_key_pressed(&self, key: Key) -> Result<bool> {
+        self.runtime.require_not_wayland()?;
         self.implementation.is_key_pressed(key)
     }
 
     pub fn get_pressed_keys(&self) -> Result<Vec<Key>> {
+        self.runtime.require_not_wayland()?;
         self.implementation.get_pressed_keys()
     }
 
@@ -128,6 +141,7 @@ impl Keyboard {
         exclusive: bool,
         cancellation_token: CancellationToken,
     ) -> Result<()> {
+        self.runtime.require_not_wayland()?;
         if keys.is_empty() {
             return Ok(());
         }

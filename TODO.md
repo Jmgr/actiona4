@@ -21,6 +21,8 @@ Keyboard:
 Select rect on screen
 - https://github.com/neXromancers/hacksaw/tree/master
 
+- create a KeyLike typedef with Key | string | number
+
 Update
 - show notification if new version
 - Update fallback: check website if new version 

@@ -30,6 +30,8 @@ use crate::{
         },
         point::js::JsPoint,
     },
+    error::CommonError,
+    platform_info::Platform,
     runtime::WithUserData,
     types::display::display_with_type,
 };
@@ -427,6 +429,44 @@ pub struct JsNotificationAction {
     pub input_id: Option<String>,
 }
 
+impl JsNotificationAction {
+    fn validate_for_platform(&self, platform: Platform) -> color_eyre::Result<()> {
+        if platform.is_linux() {
+            if self.action_type.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "action.action_type is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.activation_type.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "action.activation_type is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.placement.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "action.placement is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.button_style.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "action.button_style is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.input_id.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "action.input_id is only available on Windows".into(),
+                )
+                .into());
+            }
+        }
+        Ok(())
+    }
+}
+
 impl From<JsNotificationAction> for NotificationAction {
     fn from(value: JsNotificationAction) -> Self {
         Self {
@@ -742,6 +782,201 @@ pub struct JsNotificationOptions {
     pub use_button_style: bool,
 }
 
+impl JsNotificationOptions {
+    fn validate_for_platform(&self, platform: Platform) -> color_eyre::Result<()> {
+        if platform.is_linux() {
+            if self.attribution_text.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "attribution_text is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.hero_image.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "hero_image is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.icon_crop_circle {
+                return Err(CommonError::UnsupportedPlatform(
+                    "icon_crop_circle is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.scenario.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "scenario is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.sound.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "sound is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.sound_looping {
+                return Err(CommonError::UnsupportedPlatform(
+                    "sound_looping is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.silent {
+                return Err(CommonError::UnsupportedPlatform(
+                    "silent is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.header.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "header is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.inputs.as_ref().is_some_and(|v| !v.is_empty()) {
+                return Err(CommonError::UnsupportedPlatform(
+                    "inputs is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.selections.as_ref().is_some_and(|v| !v.is_empty()) {
+                return Err(CommonError::UnsupportedPlatform(
+                    "selections is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.tag.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "tag is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.group.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "group is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.remote_id.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "remote_id is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.launch.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "launch is only available on Windows".into(),
+                )
+                .into());
+            }
+            if self.use_button_style {
+                return Err(CommonError::UnsupportedPlatform(
+                    "use_button_style is only available on Windows".into(),
+                )
+                .into());
+            }
+            if let Some(actions) = &self.actions {
+                for action in actions {
+                    action.validate_for_platform(platform)?;
+                }
+            }
+        }
+        if platform.is_windows() {
+            if self.app_name.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "app_name is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.icon_name.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "icon_name is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.auto_icon {
+                return Err(CommonError::UnsupportedPlatform(
+                    "auto_icon is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.action_icons.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "action_icons is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.category.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "category is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.desktop_entry.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "desktop_entry is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.resident.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "resident is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.sound_file.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "sound_file is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.sound_name.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "sound_name is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.suppress_sound.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "suppress_sound is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.transient.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "transient is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.point.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "point is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.urgency.is_some() {
+                return Err(CommonError::UnsupportedPlatform(
+                    "urgency is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.custom_hints.as_ref().is_some_and(|v| !v.is_empty()) {
+                return Err(CommonError::UnsupportedPlatform(
+                    "custom_hints is only available on Linux".into(),
+                )
+                .into());
+            }
+            if self.custom_int_hints.as_ref().is_some_and(|v| !v.is_empty()) {
+                return Err(CommonError::UnsupportedPlatform(
+                    "custom_int_hints is only available on Linux".into(),
+                )
+                .into());
+            }
+        }
+        Ok(())
+    }
+}
+
 impl From<JsNotificationOptions> for NotificationOptions {
     fn from(value: JsNotificationOptions) -> Self {
         Self {
@@ -854,6 +1089,9 @@ impl JsNotification {
         options: Opt<JsNotificationOptions>,
     ) -> Result<JsNotificationHandle> {
         let options = options.0.unwrap_or_default();
+        options
+            .validate_for_platform(ctx.user_data().platform())
+            .into_js_result(&ctx)?;
         let notification_options = options.into();
         self.inner
             .show(notification_options)
@@ -866,6 +1104,7 @@ impl JsNotification {
     ///
     /// @platforms =linux
     pub fn capabilities(&self, ctx: Ctx<'_>) -> Result<Vec<String>> {
+        ctx.user_data().require_linux(&ctx)?;
         super::Notification::capabilities().into_js_result(&ctx)
     }
 
@@ -956,6 +1195,7 @@ impl JsNotificationHandle {
         ctx: Ctx<'js>,
         options: Opt<JsNotificationOptions>,
     ) -> Result<()> {
+        ctx.user_data().require_linux(&ctx)?;
         let handle = self.inner.lock().as_ref().cloned().ok_or_else(|| {
             Exception::throw_message(
                 &ctx,

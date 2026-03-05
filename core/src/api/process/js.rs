@@ -411,6 +411,7 @@ impl JsProcess {
     ///
     /// @platforms =linux
     pub fn send_signal(&self, ctx: Ctx<'_>, pid: u32, signal: JsSignal) -> Result<()> {
+        ctx.user_data().require_linux(&ctx)?;
         #[cfg(unix)]
         {
             let pid = Pid::try_from(pid).into_js_result(&ctx)?;

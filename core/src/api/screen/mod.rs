@@ -34,37 +34,44 @@ use crate::{
 pub struct Screen {
     implementation: Arc<ScreenImpl>,
     windows: Windows,
+    runtime: Arc<Runtime>,
 }
 
 impl Screen {
     pub async fn new(runtime: Arc<Runtime>, displays: Displays, windows: Windows) -> Result<Self> {
         Ok(Self {
-            implementation: ScreenImpl::new(runtime, displays).await?,
+            implementation: ScreenImpl::new(runtime.clone(), displays).await?,
             windows,
+            runtime: runtime.clone(),
         })
     }
 
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
+        self.runtime.require_not_wayland()?;
         self.implementation.capture_rect(rect).await
     }
 
     /// Captures the entire virtual desktop (bounding box of all displays).
     pub async fn capture_desktop(&self) -> Result<Image> {
+        self.runtime.require_not_wayland()?;
         self.implementation.capture_desktop().await
     }
 
     /// Captures the display with the given numeric ID.
     pub async fn capture_display(&self, display_id: u32) -> Result<Image> {
+        self.runtime.require_not_wayland()?;
         self.implementation.capture_display(display_id).await
     }
 
     /// Captures the bounding rectangle of the given window.
     pub async fn capture_window(&self, id: WindowId) -> Result<Image> {
+        self.runtime.require_not_wayland()?;
         let rect = self.windows.rect(id)?;
         self.implementation.capture_rect(rect).await
     }
 
     pub async fn capture_pixel(&self, position: Point) -> Result<Color> {
+        self.runtime.require_not_wayland()?;
         self.implementation.capture_pixel(position).await
     }
 
@@ -77,6 +84,7 @@ impl Screen {
         cancellation_token: CancellationToken,
         progress: watch::Sender<FindImageProgress>,
     ) -> Result<Option<Match>> {
+        self.runtime.require_not_wayland()?;
         progress.send_replace(FindImageProgress::new(FindImageStage::Capturing, 0));
         let (source, area_rect) = self.capture_search_in_to_source(search_in).await?;
         let origin = area_rect.top_left;
@@ -93,6 +101,7 @@ impl Screen {
         cancellation_token: CancellationToken,
         progress: watch::Sender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
+        self.runtime.require_not_wayland()?;
         progress.send_replace(FindImageProgress::new(FindImageStage::Capturing, 0));
         let (source, area_rect) = self.capture_search_in_to_source(search_in).await?;
         let origin = area_rect.top_left;

@@ -393,6 +393,7 @@ impl JsKeyboard {
         handler: Value<'js>,
         options: Opt<JsOnTextOptions>,
     ) -> Result<JsEventHandle> {
+        self.inner.check_input_support().into_js_result(&ctx)?;
         if text.is_empty() {
             return Err(Exception::throw_type(&ctx, "text must not be empty"));
         }
@@ -440,6 +441,7 @@ impl JsKeyboard {
         callback: Value<'js>,
         options: Opt<JsKeysOptions>,
     ) -> Result<JsEventHandle> {
+        self.inner.check_input_support().into_js_result(&ctx)?;
         let enigo_key = Key::try_from(key)
             .map_err(|_| Exception::throw_message(&ctx, &format!("key {key} is not supported")))?;
         self.register_key_trigger(ctx, vec![enigo_key], callback, options)
@@ -470,6 +472,7 @@ impl JsKeyboard {
         callback: Value<'js>,
         options: Opt<JsKeysOptions>,
     ) -> Result<JsEventHandle> {
+        self.inner.check_input_support().into_js_result(&ctx)?;
         let enigo_keys = keys
             .into_iter()
             .map(|key| {

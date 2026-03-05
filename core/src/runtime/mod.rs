@@ -32,6 +32,9 @@ use crate::runtime::win::events::input::{
     mouse::MouseMoveTopic, mouse::MouseScrollTopic,
 };
 use crate::{
+    IntoJSError,
+    platform_info::Platform,
+    error::CommonError,
     api::{
         app::js::JsApp,
         audio::{PlayingSoundsTracker, js::JsAudio},
@@ -106,6 +109,7 @@ pub(crate) struct JsUserData {
     script_engine: ScriptEngine,
     callbacks: Callbacks,
     no_globals: bool,
+    platform: Platform,
 }
 
 impl JsUserData {
@@ -160,6 +164,37 @@ impl JsUserData {
 
     pub(crate) const fn no_globals(&self) -> bool {
         self.no_globals
+    }
+
+    pub(crate) const fn platform(&self) -> Platform {
+        self.platform
+    }
+
+    pub(crate) fn require_linux<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        if self.platform.is_windows() {
+            return Err(
+                CommonError::UnsupportedPlatform("only available on Linux".into()).into_js(ctx),
+            );
+        }
+        Ok(())
+    }
+
+    pub(crate) fn require_not_windows<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        if self.platform.is_windows() {
+            return Err(
+                CommonError::UnsupportedPlatform("not supported on Windows".into()).into_js(ctx),
+            );
+        }
+        Ok(())
+    }
+
+    pub(crate) fn require_not_linux<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        if self.platform.is_linux() {
+            return Err(
+                CommonError::UnsupportedPlatform("not supported on Linux".into()).into_js(ctx),
+            );
+        }
+        Ok(())
     }
 }
 
@@ -253,6 +288,8 @@ pub struct Runtime {
 
     #[derive_where(skip)]
     clipboard: Clipboard,
+
+    platform: Platform,
 }
 
 #[instrument(skip_all)]
@@ -313,6 +350,7 @@ impl Runtime {
         });
 
         let clipboard = Clipboard::new()?;
+        let platform = Platform::detect();
         let runtime = Arc::new(Self {
             runtime,
             enigo: new_enigo()?,
@@ -324,6 +362,7 @@ impl Runtime {
             background_tasks_counter: AtomicU64::new(0),
             playing_sounds_tracker: Arc::new(PlayingSoundsTracker::default()),
             clipboard: clipboard.clone(),
+            platform,
         });
 
         #[allow(clippy::option_if_let_else)]
@@ -380,6 +419,7 @@ impl Runtime {
                     local_script_engine,
                     callbacks,
                     options.no_globals,
+                    platform,
                 ))?;
 
                 if options.no_globals {
@@ -850,6 +890,42 @@ impl Runtime {
     fn has_background_tasks(&self) -> bool {
         self.background_tasks_counter.load(Ordering::Relaxed) > 0
             || self.playing_sounds_tracker.has_playing_sounds()
+    }
+
+    pub fn require_not_wayland(&self) -> color_eyre::Result<()> {
+        if self.platform.is_wayland() {
+            return Err(
+                CommonError::UnsupportedPlatform("not supported on Wayland".into()).into(),
+            );
+        }
+        Ok(())
+    }
+
+    pub fn require_linux(&self) -> color_eyre::Result<()> {
+        if self.platform.is_windows() {
+            return Err(
+                CommonError::UnsupportedPlatform("only available on Linux".into()).into(),
+            );
+        }
+        Ok(())
+    }
+
+    pub fn require_not_windows(&self) -> color_eyre::Result<()> {
+        if self.platform.is_windows() {
+            return Err(
+                CommonError::UnsupportedPlatform("not supported on Windows".into()).into(),
+            );
+        }
+        Ok(())
+    }
+
+    pub fn require_not_linux(&self) -> color_eyre::Result<()> {
+        if self.platform.is_linux() {
+            return Err(
+                CommonError::UnsupportedPlatform("not supported on Linux".into()).into(),
+            );
+        }
+        Ok(())
     }
 }
 

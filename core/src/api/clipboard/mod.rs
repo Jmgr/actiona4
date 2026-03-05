@@ -154,7 +154,21 @@ impl Clipboard {
         }
     }
 
+    #[allow(clippy::missing_const_for_fn)] // non-linux path is not const-compatible
+    fn check_selection_mode(mode: Option<ClipboardMode>) -> Result<()> {
+        #[cfg(not(linux))]
+        if mode.unwrap_or_default() == ClipboardMode::Selection {
+            return Err(CommonError::UnsupportedPlatform(
+                "ClipboardMode.Selection is only available on Linux".into(),
+            )
+            .into());
+        }
+        let _ = mode;
+        Ok(())
+    }
+
     pub fn save(&self, mode: Option<ClipboardMode>) -> Result<ClipboardData> {
+        Self::check_selection_mode(mode)?;
         Ok(if let Ok(data) = self.get(|get| get.image(), mode) {
             ClipboardData::Image(data)
         } else if let Ok(data) = self.get(|get| get.file_list(), mode) {
@@ -208,6 +222,7 @@ impl Clipboard {
         options: WaitForChangedOptions,
         cancellation_token: CancellationToken,
     ) -> Result<()> {
+        Self::check_selection_mode(options.mode)?;
         if options.interval.is_zero() {
             return Err(eyre!("unsupported: interval cannot be zero"));
         }
@@ -252,6 +267,7 @@ impl Clipboard {
     }
 
     pub fn restore(&self, data: ClipboardData, mode: Option<ClipboardMode>) -> Result<()> {
+        Self::check_selection_mode(mode)?;
         self.set(
             |set| match data {
                 ClipboardData::Text(text) => set.text(text),
@@ -269,18 +285,21 @@ impl Clipboard {
         text: T,
         mode: Option<ClipboardMode>,
     ) -> Result<()> {
+        Self::check_selection_mode(mode)?;
         self.set(|set| set.text(text), mode)?;
 
         Ok(())
     }
 
     pub fn get_text(&self, mode: Option<ClipboardMode>) -> Result<String> {
+        Self::check_selection_mode(mode)?;
         let text = self.get(|get| get.text(), mode)?;
 
         Ok(text)
     }
 
     pub fn set_image(&self, image: Image, mode: Option<ClipboardMode>) -> Result<()> {
+        Self::check_selection_mode(mode)?;
         let image = image.into_rgba8();
         let (width, height) = image.dimensions();
         let width: usize = width.try_into()?;
@@ -302,6 +321,7 @@ impl Clipboard {
     }
 
     pub fn get_image(&self, mode: Option<ClipboardMode>) -> Result<Image> {
+        Self::check_selection_mode(mode)?;
         let image = self.get(|get| get.image(), mode)?;
 
         let img = RgbaImage::from_vec(
@@ -319,12 +339,14 @@ impl Clipboard {
         file_list: &[impl AsRef<Path>],
         mode: Option<ClipboardMode>,
     ) -> Result<()> {
+        Self::check_selection_mode(mode)?;
         self.set(|set| set.file_list(file_list), mode)?;
 
         Ok(())
     }
 
     pub fn get_file_list(&self, mode: Option<ClipboardMode>) -> Result<Vec<String>> {
+        Self::check_selection_mode(mode)?;
         let result = self.get(|get| get.file_list(), mode)?;
 
         let result = result
@@ -341,18 +363,21 @@ impl Clipboard {
         alt_text: Option<String>,
         mode: Option<ClipboardMode>,
     ) -> Result<()> {
+        Self::check_selection_mode(mode)?;
         self.set(|set| set.html(html, alt_text), mode)?;
 
         Ok(())
     }
 
     pub fn get_html(&self, mode: Option<ClipboardMode>) -> Result<String> {
+        Self::check_selection_mode(mode)?;
         let html = self.get(|get| get.html(), mode)?;
 
         Ok(html)
     }
 
     pub fn clear(&self, mode: Option<ClipboardMode>) -> Result<()> {
+        Self::check_selection_mode(mode)?;
         let mode = mode.unwrap_or_default();
         let mut inner = self.inner.lock();
 

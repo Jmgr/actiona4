@@ -351,8 +351,13 @@ impl Mouse {
         })
     }
 
+    pub fn check_input_support(&self) -> color_eyre::Result<()> {
+        self.runtime.require_not_wayland()
+    }
+
     #[instrument(skip(self), err, ret)]
     pub fn is_pressed(&self, button: Button) -> Result<bool> {
+        self.runtime.require_not_wayland()?;
         self.implementation.is_button_pressed(button)
     }
 
@@ -362,6 +367,7 @@ impl Mouse {
         conditions: ButtonConditions,
         cancellation_token: CancellationToken,
     ) -> Result<MouseButtonEvent> {
+        self.runtime.require_not_wayland()?;
         self.implementation
             .wait_for_button(conditions, cancellation_token)
             .await
@@ -373,6 +379,7 @@ impl Mouse {
         conditions: ScrollConditions,
         cancellation_token: CancellationToken,
     ) -> Result<MouseScrollEvent> {
+        self.runtime.require_not_wayland()?;
         let guard = self.runtime.mouse_scroll();
         let mut receiver = guard.subscribe();
         let runtime_cancellation_token = self.runtime.cancellation_token();
@@ -404,6 +411,7 @@ impl Mouse {
     pub fn scroll(&self, length: i32, axis: Axis) -> Result<()> {
         use enigo::Mouse;
 
+        self.runtime.require_not_wayland()?;
         Ok(self.enigo.lock().scroll(length, axis.into())?)
     }
 
@@ -411,6 +419,7 @@ impl Mouse {
     pub fn set_position(&self, position: Point, coordinate: Coordinate) -> Result<()> {
         use enigo::Mouse;
 
+        self.runtime.require_not_wayland()?;
         Ok(self
             .enigo
             .lock()
@@ -421,6 +430,7 @@ impl Mouse {
     pub fn position(&self) -> Result<Point> {
         use enigo::Mouse;
 
+        self.runtime.require_not_wayland()?;
         let pos = self.enigo.lock().location()?;
 
         Ok(point(pos.0, pos.1))
@@ -432,6 +442,7 @@ impl Mouse {
         duration: Duration,
         cancellation_token: CancellationToken,
     ) -> Result<f64> {
+        self.runtime.require_not_wayland()?;
         let mut last_position = self.position()?;
         let mut last_time = Instant::now();
 
@@ -532,6 +543,7 @@ impl Mouse {
         options: MoveOptions,
         rng: SharedRng,
     ) -> Result<()> {
+        self.runtime.require_not_wayland()?;
         if options.target_randomness > 0. {
             target_position =
                 Point::random_in_circle(target_position, options.target_randomness, rng.clone())?;
@@ -661,6 +673,7 @@ impl Mouse {
     ) -> Result<()> {
         use enigo::Mouse;
 
+        self.runtime.require_not_wayland()?;
         let coordinate = if options.press.relative_position {
             Coordinate::Rel
         } else {
@@ -762,6 +775,7 @@ impl Mouse {
         options: DoubleClickOptions,
         cancellation_token: CancellationToken,
     ) -> Result<()> {
+        self.runtime.require_not_wayland()?;
         self.click(options.click, cancellation_token.clone())
             .await?;
         select! {
@@ -814,6 +828,7 @@ impl Mouse {
     pub fn press(&self, options: PressOptions) -> Result<()> {
         use enigo::Mouse;
 
+        self.runtime.require_not_wayland()?;
         let contains = {
             let lock = self.pressed_buttons.lock();
             lock.contains(&options.button)
@@ -857,6 +872,7 @@ impl Mouse {
     pub fn release(&self, button: Option<Button>) -> Result<()> {
         use enigo::Mouse;
 
+        self.runtime.require_not_wayland()?;
         let button = if let Some(button) = button {
             let contains = {
                 let lock = self.pressed_buttons.lock();

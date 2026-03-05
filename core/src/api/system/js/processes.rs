@@ -22,6 +22,7 @@ use crate::{
             processes::{Process, Processes, Status},
         },
     },
+    runtime::WithUserData,
     types::display::display_with_type,
 };
 
@@ -401,30 +402,30 @@ impl JsProcessInfo {
     /// @get
     /// @platforms =linux
     #[qjs(get)]
-    #[must_use]
-    pub fn effective_user_id(&self) -> Option<String> {
-        self.inner
+    pub fn effective_user_id(&self, ctx: Ctx<'_>) -> Result<Option<String>> {
+        ctx.user_data().require_linux(&ctx)?;
+        Ok(self.inner
             .effective_user_id()
             .as_ref()
-            .map(|id| id.to_string())
+            .map(|id| id.to_string()))
     }
 
     /// Group ID
     /// @get
     /// @platforms =linux
     #[qjs(get)]
-    #[must_use]
-    pub fn group_id(&self) -> Option<u32> {
-        *self.inner.group_id()
+    pub fn group_id(&self, ctx: Ctx<'_>) -> Result<Option<u32>> {
+        ctx.user_data().require_linux(&ctx)?;
+        Ok(*self.inner.group_id())
     }
 
     /// Effective group ID
     /// @get
     /// @platforms =linux
     #[qjs(get)]
-    #[must_use]
-    pub fn effective_group_id(&self) -> Option<u32> {
-        *self.inner.effective_group_id()
+    pub fn effective_group_id(&self, ctx: Ctx<'_>) -> Result<Option<u32>> {
+        ctx.user_data().require_linux(&ctx)?;
+        Ok(*self.inner.effective_group_id())
     }
 
     /// Session ID
@@ -499,6 +500,7 @@ impl JsProcessInfo {
     ///
     /// @platforms =linux
     pub fn send_signal(&self, ctx: Ctx<'_>, signal: JsSignal) -> Result<()> {
+        ctx.user_data().require_linux(&ctx)?;
         #[cfg(unix)]
         {
             crate::api::process::send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)

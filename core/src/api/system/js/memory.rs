@@ -6,6 +6,7 @@ use crate::{
         js::classes::{HostClass, register_host_class},
         system::memory::{CGroupLimits, Memory, MemoryUsage},
     },
+    runtime::WithUserData,
     types::display::display_with_type,
 };
 
@@ -68,8 +69,9 @@ impl JsMemory {
     /// @platforms =linux
     /// @get
     #[qjs(get)]
-    pub fn cgroup_limits(&self) -> Option<JsCGroupLimits> {
-        self.inner.cgroup_limits().map(JsCGroupLimits::from)
+    pub fn cgroup_limits(&self, ctx: Ctx<'_>) -> Result<Option<JsCGroupLimits>> {
+        ctx.user_data().require_linux(&ctx)?;
+        Ok(self.inner.cgroup_limits().map(JsCGroupLimits::from))
     }
 
     #[qjs(rename = PredefinedAtom::ToString)]

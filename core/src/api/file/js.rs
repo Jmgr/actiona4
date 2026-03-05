@@ -473,9 +473,10 @@ impl JsFile {
         Ok(())
     }
 
-    /// Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
+    /// Returns the Unix file mode (e.g. `0o644`).
     /// @platforms -windows
     pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
+        ctx.user_data().require_not_windows(&ctx)?;
         #[cfg(unix)]
         {
             let opened_file = self.opened_file(&ctx)?;
@@ -501,6 +502,7 @@ impl JsFile {
     /// You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
     /// @platforms -windows
     pub async fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
+        ctx.user_data().require_not_windows(&ctx)?;
         #[cfg(unix)]
         return {
             let opened_file = self.opened_file(&ctx)?;
@@ -607,6 +609,7 @@ impl JsFile {
     /// @param date: Date
     /// @platforms -linux
     pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
+        ctx.user_data().require_not_linux(&ctx)?;
         #[cfg(unix)]
         {
             _ = ctx;

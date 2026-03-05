@@ -18,6 +18,7 @@ use crate::error::CommonError;
 
 pub mod api;
 pub mod config;
+pub mod platform_info;
 pub mod enigo;
 pub mod error;
 pub(crate) mod platform;

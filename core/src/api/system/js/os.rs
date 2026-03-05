@@ -10,6 +10,7 @@ use crate::{
         },
         system::os::{Group, Os, User},
     },
+    runtime::WithUserData,
     types::display::{DisplayFields, display_list, display_with_type},
 };
 
@@ -246,18 +247,18 @@ impl JsUser {
     /// @get
     /// @platforms -windows
     #[qjs(get)]
-    #[must_use]
-    pub const fn group_id(&self) -> Option<u32> {
-        self.inner.group_id()
+    pub fn group_id(&self, ctx: Ctx<'_>) -> Result<Option<u32>> {
+        ctx.user_data().require_not_windows(&ctx)?;
+        Ok(self.inner.group_id())
     }
 
     /// Group name
     /// @get
     /// @platforms -windows
     #[qjs(get)]
-    #[must_use]
-    pub fn group_name(&self) -> Option<&str> {
-        self.group_name.as_deref()
+    pub fn group_name(&self, ctx: Ctx<'_>) -> Result<Option<&str>> {
+        ctx.user_data().require_not_windows(&ctx)?;
+        Ok(self.group_name.as_deref())
     }
 
     /// Groups
@@ -286,7 +287,7 @@ impl JsUser {
             DisplayFields::default()
                 .display("name", self.inner.name())
                 .display_if_some("group_id", &self.inner.group_id())
-                .display_if_some("group_name", &self.group_name())
+                .display_if_some("group_name", &self.group_name)
                 .display("groups", display_list(self.inner.groups()))
                 .display("group_names", display_list(self.group_names()))
                 .finish_as_string(),
