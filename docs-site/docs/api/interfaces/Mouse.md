@@ -204,7 +204,7 @@ Abort signal to cancel the click.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -401,7 +401,7 @@ Abort signal to cancel the click.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -605,7 +605,7 @@ Easing function used for the movement.
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -809,7 +809,7 @@ Easing function used for the movement.
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -1013,7 +1013,7 @@ Easing function used for the movement.
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -1221,7 +1221,7 @@ Easing function used for the movement.
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1292,7 +1292,7 @@ Right button
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1342,7 +1342,7 @@ Abort signal to cancel the measurement.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1446,7 +1446,7 @@ Easing function used for the movement.
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -1550,7 +1550,7 @@ Easing function used for the movement.
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1663,7 +1663,7 @@ Abort signal to automatically cancel this listener when signalled.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1750,7 +1750,7 @@ Abort signal to automatically cancel this listener when signalled.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1768,7 +1768,7 @@ Returns the current mouse cursor position.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1877,7 +1877,7 @@ Whether the position is relative to the current cursor position.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1948,7 +1948,7 @@ Right button
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -1994,7 +1994,7 @@ Scrolls the mouse wheel by the given amount.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -2020,7 +2020,7 @@ Sets the mouse cursor position instantly (absolute coordinates).
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -2046,7 +2046,7 @@ Sets the mouse cursor position instantly (absolute coordinates).
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -2072,7 +2072,7 @@ Moves the mouse cursor by the given offset (relative coordinates).
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -2098,7 +2098,7 @@ Moves the mouse cursor by the given offset (relative coordinates).
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -2219,7 +2219,7 @@ Abort signal to cancel the wait.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -2302,5 +2302,5 @@ Abort signal to cancel the wait.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>

@@ -17,7 +17,7 @@ Server capabilities.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -49,7 +49,7 @@ If `true`, action identifiers may be interpreted as icon names.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -79,7 +79,7 @@ Application name, filled by default with executable name.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -97,7 +97,7 @@ Attribution text displayed at the bottom of the notification.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -115,7 +115,7 @@ Whether to set the icon automatically from executable name.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -147,7 +147,7 @@ Notification category such as `email`, `im`, or `device`.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -165,7 +165,7 @@ Custom string key/value pairs forwarded as-is.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -183,7 +183,7 @@ Custom integer key/value pairs forwarded as-is.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -201,7 +201,7 @@ Desktop entry id (usually app `.desktop` name without extension).
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -219,7 +219,7 @@ Group identifier for organizing notifications.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -263,7 +263,7 @@ Header for grouping notifications in Action Center.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -281,7 +281,7 @@ Hero image displayed prominently at the top of the notification.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -311,7 +311,7 @@ Whether to crop the icon into a circle.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -330,7 +330,7 @@ Usually available in /usr/share/icons.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -348,7 +348,7 @@ Input fields displayed in the notification.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -366,7 +366,7 @@ Launch string passed to the app when the notification is clicked.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -384,7 +384,7 @@ Target screen position for the notification.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -402,7 +402,7 @@ Remote ID for cross-device notification correlation.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -422,7 +422,7 @@ timeout is provided.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -474,7 +474,7 @@ Toast scenario that adjusts notification behavior.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -492,7 +492,7 @@ Selection options for dropdown inputs.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -510,7 +510,7 @@ Whether to suppress all notification sound.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -528,7 +528,7 @@ Sound to play with the notification.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -546,7 +546,7 @@ Absolute path to a sound file to play for this notification.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -564,7 +564,7 @@ Whether to loop the notification sound.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -582,7 +582,7 @@ Themeable freedesktop sound name, e.g. `message-new-instant`.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -600,7 +600,7 @@ If `true`, suppress notification sounds.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -618,7 +618,7 @@ Tag for identifying and replacing notifications.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 ***
@@ -661,7 +661,7 @@ If `true`, request non-persistent behavior from the server.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -705,7 +705,7 @@ Urgency level.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -723,7 +723,7 @@ Whether to enable button styling on actions.
 ###### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Windows"><span class="platform-badge__label">Windows-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows-only</span></span>
 </div>
 
 </div>

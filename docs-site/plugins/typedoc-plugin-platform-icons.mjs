@@ -52,12 +52,13 @@ function renderBadge(platformName, isSupported) {
   const statusClass = isSupported
     ? "platform-badge--supported"
     : "platform-badge--unsupported";
-  const statusText = isSupported ? "Only works on" : "Does not work on";
+  const statusText = isSupported ? "Supported on" : "Not supported on";
+  const statusIcon = isSupported ? "✓" : "✕";
   const label = isSupported ? `${platformName}-only` : platformName;
   const escapedLabel = escapeHtml(label);
   const escapedTitle = escapeHtml(`${statusText} ${platformName}`);
 
-  return `<span class="platform-badge ${statusClass}" title="${escapedTitle}"><span class="platform-badge__label">${escapedLabel}</span></span>`;
+  return `<span class="platform-badge ${statusClass}" title="${escapedTitle}" aria-label="${escapedTitle}"><span class="platform-badge__icon" aria-hidden="true">${statusIcon}</span><span class="platform-badge__label">${escapedLabel}</span></span>`;
 }
 
 function renderPlatformBadges(platforms) {

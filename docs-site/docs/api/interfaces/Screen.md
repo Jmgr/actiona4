@@ -40,7 +40,7 @@ const image = await screen.captureDesktop();
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -70,7 +70,7 @@ const image = await screen.captureDisplay(displays.largest());
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -101,7 +101,7 @@ println(color);
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -132,7 +132,7 @@ println(color);
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -162,7 +162,7 @@ const image = await screen.captureRect(0, 0, 1920, 1080);
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -200,7 +200,7 @@ const image = await screen.captureRect(0, 0, 1920, 1080);
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -229,7 +229,7 @@ const image = await screen.captureWindow(win);
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***

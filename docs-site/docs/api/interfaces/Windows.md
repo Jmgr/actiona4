@@ -45,7 +45,7 @@ println(win.title());
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -68,7 +68,7 @@ readonly [`WindowHandle`](WindowHandle.md)[]
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -170,7 +170,7 @@ readonly [`WindowHandle`](WindowHandle.md)[]
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -201,7 +201,7 @@ readonly [`WindowHandle`](WindowHandle.md)[]
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 #### Call Signature
@@ -232,7 +232,7 @@ readonly [`WindowHandle`](WindowHandle.md)[]
 ##### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***
@@ -255,7 +255,7 @@ println(win.title());
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Wayland"><span class="platform-badge__label">Wayland</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
 
 ***

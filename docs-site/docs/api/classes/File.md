@@ -127,7 +127,7 @@ Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Windows"><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
 </div>
 
 ***
@@ -248,7 +248,7 @@ Sets the creation time of the file. No-op on Linux.
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Linux"><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -273,7 +273,7 @@ You should use the octal notation to specify the mode: `await file.setMode(0o445
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Does not work on Windows"><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
 </div>
 
 ***

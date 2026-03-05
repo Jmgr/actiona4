@@ -61,7 +61,7 @@ Effective group ID
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -75,7 +75,7 @@ Effective user ID
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -113,7 +113,7 @@ Group ID
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
@@ -266,7 +266,7 @@ if (proc) proc.sendSignal(Signal.Term);
 #### Platform
 
 <div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Only works on Linux"><span class="platform-badge__label">Linux-only</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux-only</span></span>
 </div>
 
 ***
