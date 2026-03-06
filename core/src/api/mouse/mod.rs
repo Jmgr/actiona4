@@ -351,7 +351,7 @@ impl Mouse {
         })
     }
 
-    pub fn check_input_support(&self) -> color_eyre::Result<()> {
+    pub fn check_platform(&self) -> color_eyre::Result<()> {
         self.runtime.require_not_wayland()
     }
 

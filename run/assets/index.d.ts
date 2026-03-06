@@ -4622,7 +4622,7 @@ declare class File {
      */
     setReadonly(readonly: boolean): Promise<void>;
     /**
-     * Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
+     * Returns the Unix file mode (e.g. `0o644`).
      * @platform does not work on Windows
      */
     mode(): Promise<number>;
@@ -4653,7 +4653,7 @@ declare class File {
      */
     creationTime(): Promise<Date>;
     /**
-     * Sets the creation time of the file. No-op on Linux.
+     * Sets the creation time of the file.
      * @platform does not work on Linux
      */
     setCreationTime(date: Date): Promise<void>;

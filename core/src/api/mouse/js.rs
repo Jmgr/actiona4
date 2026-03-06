@@ -661,7 +661,7 @@ impl JsMouse {
         callback: Value<'js>,
         options: Opt<JsOnButtonOptions>,
     ) -> Result<JsEventHandle> {
-        self.inner.check_input_support().into_js_result(&ctx)?;
+        self.inner.check_platform().into_js_result(&ctx)?;
         let Some(function) = callback.as_function() else {
             return Err(Exception::throw_type(&ctx, "callback must be a function"));
         };
@@ -709,7 +709,7 @@ impl JsMouse {
         callback: Value<'js>,
         options: Opt<JsOnScrollOptions>,
     ) -> Result<JsEventHandle> {
-        self.inner.check_input_support().into_js_result(&ctx)?;
+        self.inner.check_platform().into_js_result(&ctx)?;
         let Some(function) = callback.as_function() else {
             return Err(Exception::throw_type(&ctx, "callback must be a function"));
         };
