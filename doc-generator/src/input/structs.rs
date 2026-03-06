@@ -12,12 +12,6 @@ use crate::{
 pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
     let mut result = Vec::new();
 
-    for item in items.iter() {
-        if matches!(item.inner, ItemEnum::Impl(_)) {
-            println!("# {:?}: {:?}", item.name, item.links);
-        }
-    }
-
     let structs = items
         .iter()
         .filter(|item| item.links.is_empty()) // We use this to filter out generated structs
@@ -50,20 +44,22 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                 .into_iter()
                 // Select only Fields
                 .filter_map(|item| match &item.inner {
-                    ItemEnum::StructField(field) => {
-                        item.name.as_ref().map(|name| (name, &item.docs, field))
-                    }
+                    ItemEnum::StructField(field) => item
+                        .name
+                        .as_ref()
+                        .map(|name| (name, item.docs.as_ref(), field)),
                     _ => None,
                 });
 
-            for (field_name, docs, field) in fields {
+            for (field_name, field_docs, field) in fields {
                 let (comments, instructions, _) =
-                    process_rustdoc(docs.as_ref(), RustdocContext::Property)?;
+                    process_rustdoc(field_docs, RustdocContext::Property)?;
                 if instructions.has_skip() {
                     continue;
                 }
 
                 let default_value = instructions.default_value();
+                let platforms = instructions.platforms();
 
                 let type_ = if let Some(type_) = instructions.type_() {
                     type_
@@ -78,7 +74,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                     is_readonly: false,
                     is_readonly_type: false,
                     default_value,
-                    platforms: instructions.platforms(),
+                    platforms,
                     is_promise: false,
                 });
             }

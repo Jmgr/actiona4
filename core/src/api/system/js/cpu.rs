@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use macros::{js_class, js_methods};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace};
 
 use crate::{
@@ -9,7 +10,6 @@ use crate::{
     },
     types::display::display_with_type,
 };
-
 /// CPU metrics and topology.
 ///
 /// ```ts
@@ -25,7 +25,7 @@ use crate::{
 /// );
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Cpu")]
+#[js_class]
 pub struct JsCpu {
     inner: Cpu,
     cores: Vec<CpuCore>,
@@ -47,7 +47,7 @@ impl JsCpu {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsCpu {
     pub async fn usage(&self, ctx: Ctx<'_>) -> Result<f32> {
         Ok(*self
@@ -81,15 +81,13 @@ impl JsCpu {
     }
 
     /// Logical core count
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn logical_core_count(&self, ctx: Ctx<'_>) -> Result<u64> {
         u64::try_from(self.cores.len()).into_js_result(&ctx)
     }
 
     /// Physical core count
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn physical_core_count(&self, ctx: Ctx<'_>) -> Result<Option<u64>> {
         self.inner
             .physical_core_count()
@@ -99,8 +97,7 @@ impl JsCpu {
     }
 
     /// Architecture
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn architecture(&self) -> &str {
         self.inner.architecture()

@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use derive_more::Display;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, Exception, Function, JsLifetime, Object, Promise, Result, Value, atom::PredefinedAtom,
     class::Trace, prelude::Opt,
@@ -32,24 +32,19 @@ use crate::{
 };
 
 /// Options for starting a process.
-///
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsStartProcessOptions {
     /// Arguments to pass to the command.
-    /// @default `[]`
     pub args: Vec<String>,
 
     /// Working directory for the process.
-    /// @default `undefined`
     pub working_directory: Option<String>,
 
     /// Environment variables for the process.
-    /// @default `undefined`
     pub env: Option<HashMap<String, String>>,
 
     /// Abort signal to kill the process.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
@@ -64,17 +59,14 @@ impl JsStartProcessOptions {
 }
 
 /// Options for running a shell command.
-///
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsShellOptions {
     /// Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
     /// On Windows defaults to `powershell`.
-    /// @default `undefined`
     pub shell: Option<String>,
 
     /// Abort signal to cancel the operation.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
@@ -84,7 +76,7 @@ pub struct JsShellOptions {
 /// await process.sendSignal(1234, Signal.Term);
 /// ```
 ///
-/// @platforms =linux
+#[platform(only = "linux")]
 #[derive(
     Clone,
     Copy,
@@ -198,7 +190,7 @@ impl From<JsSignal> for Signal {
 ///
 /// @singleton
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Process")]
+#[js_class]
 pub struct JsProcess {
     inner: ProcessRunner,
 }
@@ -226,7 +218,7 @@ impl JsProcess {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsProcess {
     /// Starts a process and returns a `ProcessHandle` for interacting with it.
     ///
@@ -409,9 +401,8 @@ impl JsProcess {
     /// process.sendSignal(1234, Signal.Term);
     /// ```
     ///
-    /// @platforms =linux
+    #[platform(only = "linux")]
     pub fn send_signal(&self, ctx: Ctx<'_>, pid: u32, signal: JsSignal) -> Result<()> {
-        ctx.user_data().require_linux(&ctx)?;
         #[cfg(unix)]
         {
             let pid = Pid::try_from(pid).into_js_result(&ctx)?;
@@ -449,7 +440,7 @@ impl JsProcess {
 /// println(result.exitCode);
 /// ```
 #[derive(JsLifetime)]
-#[rquickjs::class(rename = "ProcessHandle")]
+#[js_class]
 pub struct JsProcessHandle {
     pid: u32,
     stdin: Option<Arc<Mutex<Option<tokio::process::ChildStdin>>>>,
@@ -515,11 +506,10 @@ fn make_async_iterable<'js>(
     Ok(obj)
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsProcessHandle {
     /// Process ID.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn pid(&self) -> u32 {
         self.pid
@@ -534,9 +524,8 @@ impl JsProcessHandle {
     /// }
     /// ```
     ///
-    /// @get
     /// @returns AsyncIterableIterator<string>
-    #[qjs(get)]
+    #[get]
     pub fn stdout<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let Some(rx) = &self.stdout_receiver else {
             return Err(Exception::throw_message(&ctx, "stdout is not available"));
@@ -554,9 +543,8 @@ impl JsProcessHandle {
     /// }
     /// ```
     ///
-    /// @get
     /// @returns AsyncIterableIterator<string>
-    #[qjs(get)]
+    #[get]
     pub fn stderr<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let Some(rx) = &self.stderr_receiver else {
             return Err(Exception::throw_message(&ctx, "stderr is not available"));
@@ -636,9 +624,8 @@ impl JsProcessHandle {
     /// println(result.exitCode);
     /// ```
     ///
-    /// @get
     /// @returns Task<ProcessExitResult>
-    #[qjs(get)]
+    #[get]
     pub fn closed<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
         let child = self.child.clone();
         let token = self.cancellation_token.clone();
@@ -693,7 +680,7 @@ impl JsProcessHandle {
 /// println(result.stdout);
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "ProcessExitResult")]
+#[js_class]
 pub struct JsProcessExitResult {
     pid: Option<u32>,
     exit_code: Option<i32>,
@@ -707,35 +694,31 @@ impl<'js> Trace<'js> for JsProcessExitResult {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsProcessExitResult {
     /// The process ID. Only available when using `handle.closed`.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn pid(&self) -> Option<u32> {
         self.pid
     }
 
     /// The exit code of the process. `undefined` if the process was killed by a signal.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn exit_code(&self) -> Option<i32> {
         self.exit_code
     }
 
     /// The captured stdout output. Only available when using `startAndWait`.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn stdout(&self) -> Option<&str> {
         self.stdout.as_deref()
     }
 
     /// The captured stderr output. Only available when using `startAndWait`.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn stderr(&self) -> Option<&str> {
         self.stderr.as_deref()

@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 
 use crate::{
@@ -21,7 +21,7 @@ use crate::{
 /// println(hw.vendorName, board.name, temperatureSensors.length);
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Hardware")]
+#[js_class]
 pub struct JsHardware {
     inner: Hardware,
     motherboard: Motherboard,
@@ -50,82 +50,68 @@ impl JsHardware {
 }
 
 /// List temperature sensors options
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListTemperatureSensorsOptions {
     /// Rescan
-    /// @default `true`
+    #[default(true)]
     pub rescan: bool,
 }
 
-impl Default for ListTemperatureSensorsOptions {
-    fn default() -> Self {
-        Self { rescan: true }
-    }
-}
-
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsHardware {
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.inner.name()
     }
 
     /// Family
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn family(&self) -> Option<&str> {
         self.inner.family()
     }
 
     /// Serial number
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn serial_number(&self) -> Option<&str> {
         self.inner.serial_number()
     }
 
     /// Stock keeping unit
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn stock_keeping_unit(&self) -> Option<&str> {
         self.inner.stock_keeping_unit()
     }
 
     /// Version
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn version(&self) -> Option<&str> {
         self.inner.version()
     }
 
     /// Uuid
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn uuid(&self) -> Option<&str> {
         self.inner.uuid()
     }
 
     /// Vendor name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn vendor_name(&self) -> Option<&str> {
         self.inner.vendor_name()
     }
 
     /// Motherboard
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn motherboard(&self) -> JsMotherboard {
         self.motherboard.clone().into()
@@ -165,7 +151,7 @@ impl JsHardware {
 /// println(board.vendorName, board.name, board.version);
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Motherboard")]
+#[js_class]
 pub struct JsMotherboard {
     inner: Motherboard,
 }
@@ -182,43 +168,38 @@ impl From<Motherboard> for JsMotherboard {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMotherboard {
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.inner.name()
     }
 
     /// Vendor name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn vendor_name(&self) -> Option<&str> {
         self.inner.vendor_name()
     }
 
     /// Version
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn version(&self) -> Option<&str> {
         self.inner.version()
     }
 
     /// Serial number
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn serial_number(&self) -> Option<&str> {
         self.inner.serial_number()
     }
 
     /// Asset tag
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn asset_tag(&self) -> Option<&str> {
         self.inner.asset_tag()
@@ -241,7 +222,7 @@ impl JsMotherboard {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "TemperatureSensor")]
+#[js_class]
 pub struct JsTemperatureSensor {
     inner: TemperatureSensor,
 }
@@ -258,43 +239,38 @@ impl From<TemperatureSensor> for JsTemperatureSensor {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsTemperatureSensor {
     /// Label
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn label(&self) -> &str {
         self.inner.label()
     }
 
     /// ID
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn id(&self) -> Option<&str> {
         self.inner.id().as_deref()
     }
 
     /// Temperature
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn temperature(&self) -> Option<f64> {
         self.inner.temperature().as_deref().copied()
     }
 
     /// Maximum temperature
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn max_temperature(&self) -> Option<f64> {
         self.inner.max_temperature().as_deref().copied()
     }
 
     /// Critical temperature
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn critical_temperature(&self) -> Option<f64> {
         self.inner.critical_temperature().as_deref().copied()

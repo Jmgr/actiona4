@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use macros::{js_class, js_methods, platform};
 use rquickjs::{Ctx, JsLifetime, Object, Result, atom::PredefinedAtom, class::Trace};
 
 use crate::{
@@ -13,7 +14,6 @@ use crate::{
     runtime::WithUserData,
     types::display::{DisplayFields, display_list, display_with_type},
 };
-
 /// OS-level information.
 ///
 /// ```ts
@@ -24,7 +24,7 @@ use crate::{
 /// println(users.length, groups.length);
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Os")]
+#[js_class]
 pub struct JsOs {
     inner: Os,
 }
@@ -49,84 +49,74 @@ impl JsOs {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsOs {
     /// Name
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn name(&self) -> Option<&str> {
         self.inner.name()
     }
 
     /// Kernel version
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn kernel_version(&self) -> Option<&str> {
         self.inner.kernel_version()
     }
 
     /// Version
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn version(&self) -> Option<&str> {
         self.inner.version()
     }
 
     /// Long version
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn long_version(&self) -> Option<&str> {
         self.inner.long_version()
     }
 
     /// Distribution ID
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn distribution_id(&self) -> &str {
         self.inner.distribution_id()
     }
 
     /// Distribution ID like
-    /// @get
     /// @readonly
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn distribution_id_like(&self) -> &[String] {
         self.inner.distribution_id_like().as_ref()
     }
 
     /// Kernel long version
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn kernel_long_version(&self) -> &str {
         self.inner.kernel_long_version()
     }
 
     /// Uptime in seconds
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn uptime(&self) -> f64 {
         self.inner.uptime().as_secs_f64()
     }
 
     /// Boot time
-    /// @get
     /// @returns Date
-    #[qjs(get)]
+    #[get]
     pub fn boot_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         date_from_system_time(&ctx, &self.inner.boot_time())
     }
 
     /// Open files limit
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn open_files_limit(&self, ctx: Ctx<'_>) -> Result<Option<u64>> {
         self.inner
             .open_files_limit()
@@ -193,7 +183,7 @@ impl JsOs {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "User")]
+#[js_class]
 pub struct JsUser {
     inner: User,
     id: String,
@@ -225,55 +215,49 @@ impl JsUser {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsUser {
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> &str {
         self.inner.name()
     }
 
     /// ID
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn id(&self) -> &str {
         &self.id
     }
 
     /// Group ID
-    /// @get
-    /// @platforms -windows
-    #[qjs(get)]
+    #[platform(not = "windows")]
+    #[get]
     pub fn group_id(&self, ctx: Ctx<'_>) -> Result<Option<u32>> {
         ctx.user_data().require_not_windows(&ctx)?;
         Ok(self.inner.group_id())
     }
 
     /// Group name
-    /// @get
-    /// @platforms -windows
-    #[qjs(get)]
+    #[platform(not = "windows")]
+    #[get]
     pub fn group_name(&self, ctx: Ctx<'_>) -> Result<Option<&str>> {
         ctx.user_data().require_not_windows(&ctx)?;
         Ok(self.group_name.as_deref())
     }
 
     /// Groups
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn groups(&self) -> &[u32] {
         self.inner.groups()
     }
 
     /// Group names
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn group_names(&self) -> &[String] {
         &self.group_names
@@ -305,7 +289,7 @@ impl JsUser {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Group")]
+#[js_class]
 pub struct JsGroup {
     inner: Group,
     id: u32,
@@ -325,19 +309,17 @@ impl JsGroup {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsGroup {
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> &str {
         self.inner.name()
     }
 
     /// ID
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn id(&self) -> u32 {
         self.id

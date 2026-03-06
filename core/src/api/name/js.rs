@@ -3,6 +3,7 @@
 //! @verbatim  */
 //! @verbatim type NameLike = string | Wildcard | RegExp;
 
+use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
     atom::PredefinedAtom,
@@ -15,7 +16,6 @@ use crate::{
     api::{ResultExt, js::classes::ValueClass},
     types::display::{DisplayFields, display_with_type},
 };
-
 /// A wildcard pattern for matching strings.
 ///
 /// Supports `*` (match any sequence) and `?` (match any single character).
@@ -29,7 +29,7 @@ use crate::{
 /// const pattern = new Wildcard("my_app*");
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "Wildcard")]
+#[js_class]
 pub struct JsWildcard {
     pattern: String,
     inner: WildMatch,
@@ -61,7 +61,7 @@ impl JsWildcard {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsWildcard {
     /// Constructor.
     ///
@@ -171,6 +171,7 @@ impl<'js> FromParam<'js> for JsNameLike<'js> {
 
 #[cfg(test)]
 mod tests {
+    use macros::{js_class, js_methods};
     use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
 
     use super::{JsNameLike, JsWildcard};
@@ -180,12 +181,12 @@ mod tests {
     };
 
     #[derive(Clone, Default, JsLifetime, Trace)]
-    #[rquickjs::class(rename = "Test")]
+    #[js_class]
     struct JsTest {}
 
     impl<'js> SingletonClass<'js> for JsTest {}
 
-    #[rquickjs::methods(rename_all = "camelCase")]
+    #[js_methods]
     impl JsTest {
         pub fn name_match<'js>(
             &self,

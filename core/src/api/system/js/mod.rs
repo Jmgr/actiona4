@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use human_units::{FormatSize, si::Prefix};
+use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -24,7 +25,6 @@ use crate::{
     },
     types::display::display_with_type,
 };
-
 pub mod cpu;
 pub mod hardware;
 pub mod memory;
@@ -48,7 +48,7 @@ pub mod storage;
 /// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "System")]
+#[js_class]
 pub struct JsSystem {
     inner: System,
 }
@@ -85,59 +85,52 @@ impl JsSystem {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsSystem {
     /// Cpu information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn cpu(&self) -> JsCpu {
         JsCpu::new(self.inner.cpu())
     }
 
     /// Hardware information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn hardware(&self) -> JsHardware {
         JsHardware::new(self.inner.hardware())
     }
 
     /// Memory information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn memory(&self) -> JsMemory {
         JsMemory::new(self.inner.memory())
     }
 
     /// Network information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn network(&self) -> JsNetwork {
         JsNetwork::new(self.inner.network())
     }
 
     /// Os information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn os(&self) -> JsOs {
         JsOs::new(self.inner.os())
     }
 
     /// Processes information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn processes(&self) -> JsProcesses {
         JsProcesses::new(self.inner.processes())
     }
 
     /// Storage information
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn storage(&self) -> JsStorage {
         JsStorage::new(self.inner.storage())

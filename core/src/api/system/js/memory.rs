@@ -1,3 +1,4 @@
+use macros::{js_class, js_methods, platform};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace};
 
 use crate::{
@@ -9,7 +10,6 @@ use crate::{
     runtime::WithUserData,
     types::display::display_with_type,
 };
-
 /// Memory metrics.
 ///
 /// ```ts
@@ -19,7 +19,7 @@ use crate::{
 /// println(formatBytes(usage.used), formatBytes(swap.used));
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Memory")]
+#[js_class]
 pub struct JsMemory {
     inner: Memory,
 }
@@ -44,7 +44,7 @@ impl JsMemory {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMemory {
     /// Memory usage
     pub async fn usage<'js>(&self, ctx: Ctx<'js>) -> Result<JsMemoryUsage> {
@@ -64,11 +64,9 @@ impl JsMemory {
             .into_js_result(&ctx)
     }
 
-    // TODO: @platforms does not work on properties?
     /// CGroup limits
-    /// @platforms =linux
-    /// @get
-    #[qjs(get)]
+    #[platform(only = "linux")]
+    #[get]
     pub fn cgroup_limits(&self, ctx: Ctx<'_>) -> Result<Option<JsCGroupLimits>> {
         ctx.user_data().require_linux(&ctx)?;
         Ok(self.inner.cgroup_limits().map(JsCGroupLimits::from))
@@ -93,7 +91,7 @@ impl JsMemory {
 /// );
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "MemoryUsage")]
+#[js_class]
 pub struct JsMemoryUsage {
     inner: MemoryUsage,
 }
@@ -110,35 +108,31 @@ impl From<MemoryUsage> for JsMemoryUsage {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMemoryUsage {
     /// Used
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn used(&self) -> u64 {
         *self.inner.used()
     }
 
     /// Free
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn free(&self) -> u64 {
         *self.inner.free()
     }
 
     /// Available
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn available(&self) -> u64 {
         *self.inner.available()
     }
 
     /// Total
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn total(&self) -> u64 {
         *self.inner.total()
@@ -165,9 +159,9 @@ impl JsMemoryUsage {
 /// ```
 ///
 /// CGroup limits
-/// @platforms =linux
+#[platform(only = "linux")]
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "CGroupLimits")]
+#[js_class]
 pub struct JsCGroupLimits {
     inner: CGroupLimits,
 }
@@ -184,35 +178,31 @@ impl From<CGroupLimits> for JsCGroupLimits {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsCGroupLimits {
     /// Total memory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn total_memory(&self) -> u64 {
         *self.inner.total_memory()
     }
 
     /// Free memory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn free_memory(&self) -> u64 {
         *self.inner.free_memory()
     }
 
     /// Free swap
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn free_swap(&self) -> u64 {
         *self.inner.free_swap()
     }
 
     /// RSS
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn rss(&self) -> u64 {
         *self.inner.rss()

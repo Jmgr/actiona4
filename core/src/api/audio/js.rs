@@ -1,6 +1,6 @@
 use std::{path::Path, sync::Arc};
 
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result,
     atom::PredefinedAtom,
@@ -37,51 +37,33 @@ use crate::{
 ///     fadeIn: 2000,
 /// });
 /// ```
-///
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsPlaySoundOptions {
     /// Volume to play the sound at
-    /// @default `1.0`
+    #[default(1.0)]
     pub volume: f32,
 
     /// Speed to play the sound at
-    /// @default `1.0`
+    #[default(1.0)]
     pub playback_rate: f32,
 
     /// Should the sound start paused
-    /// @default `false`
     pub paused: bool,
 
     /// Should the sound loop
-    /// @default `false`
     pub r#loop: bool,
 
     /// Fade in duration
-    /// @default `0`
+    #[default(ts = "0")]
     pub fade_in: Option<JsDuration>,
 
     /// Fade out duration
-    /// @default `0`
+    #[default(ts = "0")]
     pub fade_out: Option<JsDuration>,
 
     /// Abort signal to cancel the sound playback.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
-}
-
-impl Default for JsPlaySoundOptions {
-    fn default() -> Self {
-        Self {
-            volume: 1.0,
-            playback_rate: 1.0,
-            paused: false,
-            r#loop: false,
-            fade_in: None,
-            fade_out: None,
-            signal: None,
-        }
-    }
 }
 
 impl JsPlaySoundOptions {
@@ -115,7 +97,7 @@ impl JsPlaySoundOptions {
 ///
 /// @singleton
 #[derive(JsLifetime)]
-#[rquickjs::class(rename = "Audio")]
+#[js_class]
 pub struct JsAudio {
     inner: Audio,
 }
@@ -146,7 +128,7 @@ impl JsAudio {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsAudio {
     /// Plays a sound file and returns a `PlayingSound` handle for controlling playback.
     ///
@@ -222,7 +204,7 @@ impl JsAudio {
 /// @prop volume: number = `1` // Sound volume
 /// @prop playbackRate: number = `1` // Sound playing speed
 #[derive(JsLifetime)]
-#[rquickjs::class(rename = "PlayingSound")]
+#[js_class]
 pub struct JsPlayingSound {
     inner: PlayingSound,
 }
@@ -241,11 +223,10 @@ impl JsPlayingSound {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsPlayingSound {
     /// Whether the sound is currently paused.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn paused(&self) -> bool {
         self.inner.is_paused()
@@ -267,27 +248,27 @@ impl JsPlayingSound {
     }
 
     /// @skip
-    #[qjs(get, rename = "volume")]
+    #[get("volume")]
     #[must_use]
     pub fn get_volume(&self) -> f32 {
         self.inner.volume()
     }
 
     /// @skip
-    #[qjs(set, rename = "volume")]
+    #[set("volume")]
     pub fn set_volume(&mut self, ctx: Ctx<'_>, volume: f32) -> Result<()> {
         self.inner.set_volume(volume).into_js_result(&ctx)
     }
 
     /// @skip
-    #[qjs(get, rename = "playbackRate")]
+    #[get("playbackRate")]
     #[must_use]
     pub fn get_playback_rate(&self) -> f32 {
         self.inner.playback_rate()
     }
 
     /// @skip
-    #[qjs(set, rename = "playbackRate")]
+    #[set("playbackRate")]
     pub fn set_playback_rate(&mut self, ctx: Ctx<'_>, playback_rate: f32) -> Result<()> {
         self.inner
             .set_playback_rate(playback_rate)
@@ -295,8 +276,7 @@ impl JsPlayingSound {
     }
 
     /// The total duration of the sound in seconds, or `undefined` if unknown.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn duration(&self) -> Option<f64> {
         let duration = self.inner.duration()?;
@@ -311,9 +291,8 @@ impl JsPlayingSound {
     /// println("Sound finished!");
     /// ```
     ///
-    /// @get
     /// @returns Promise<void>
-    #[qjs(get)]
+    #[get]
     pub fn finished<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
         let local_sound = self.inner.clone();
 

@@ -44,17 +44,15 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             .into_iter()
             // Select only Variants
             .filter_map(|item| match &item.inner {
-                ItemEnum::Variant(variant) => {
-                    item.name.as_ref().map(|name| (name, &item.docs, variant))
-                }
+                ItemEnum::Variant(variant) => item.name.as_ref().map(|name| (name, item, variant)),
                 _ => None,
             })
             // Convert the variant names into constant case
-            .map(|(name, docs, function)| (name.to_case(Case::Pascal), docs, function));
+            .map(|(name, item, variant)| (name.to_case(Case::Pascal), item, variant));
 
         let mut result_variants = Vec::new();
 
-        for (name, docs, variant) in variants {
+        for (name, item, variant) in variants {
             if variant.discriminant.is_some() {
                 warn!("Discriminants are not supported: {enum_name}::{name}");
                 continue;
@@ -65,8 +63,11 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             }
 
             let (comments, instructions, _) =
-                process_rustdoc(docs.as_ref(), RustdocContext::EnumVariant)?;
-            if !instructions.is_empty() {
+                process_rustdoc(item.docs.as_ref(), RustdocContext::EnumVariant)?;
+            if instructions
+                .iter()
+                .any(|instruction| !instruction.is_platforms())
+            {
                 warn!("Unexpected instructions: {enum_name}::{name}");
             }
 

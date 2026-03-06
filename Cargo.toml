@@ -22,6 +22,7 @@ clap_complete = "4.5.66"
 color-eyre = "0.6.5"
 console = "0.16.2"
 convert_case = "0.11.0"
+darling = "0.21.3"
 derive-where = "1.6.0"
 derive_more = { version = "2.1.1", default-features = false, features = ["add", "add_assign", "mul", "mul_assign", "not", "display", "deref", "deref_mut", "from", "into", "constructor"] }
 directories = "6.0.0"

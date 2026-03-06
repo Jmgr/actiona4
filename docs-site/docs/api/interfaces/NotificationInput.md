@@ -30,6 +30,10 @@ Default value for the input.
 
 Unique identifier for this input.
 
+#### Default Value
+
+`""`
+
 ***
 
 ### inputType?
@@ -37,6 +41,10 @@ Unique identifier for this input.
 > `optional` **inputType**: [`NotificationInputType`](../enumerations/NotificationInputType.md)
 
 Type of input field.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 

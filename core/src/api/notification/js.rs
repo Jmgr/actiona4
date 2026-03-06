@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{
+    FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_methods, options, platform,
+};
 use parking_lot::Mutex;
 use rquickjs::{
     Ctx, Exception, JsLifetime, Promise, Result,
@@ -30,8 +32,6 @@ use crate::{
         },
         point::js::JsPoint,
     },
-    error::CommonError,
-    platform_info::Platform,
     runtime::WithUserData,
     types::display::display_with_type,
 };
@@ -72,7 +72,7 @@ impl From<JsNotificationUrgency> for NotificationUrgency {
 
 /// Toast notification scenario.
 ///
-/// @platforms =windows
+#[platform(only = "windows")]
 /// @expand
 #[derive(
     Clone,
@@ -112,7 +112,7 @@ impl From<JsNotificationScenario> for NotificationScenario {
 
 /// Notification sound.
 ///
-/// @platforms =windows
+#[platform(only = "windows")]
 #[derive(
     Clone,
     Copy,
@@ -217,7 +217,7 @@ impl From<JsNotificationSound> for NotificationSound {
 
 /// Activation type for toast actions and headers.
 ///
-/// @platforms =windows
+#[platform(only = "windows")]
 /// @expand
 #[derive(
     Clone,
@@ -254,7 +254,7 @@ impl From<JsNotificationActivationType> for NotificationActivationType {
 
 /// Placement of a toast action button.
 ///
-/// @platforms =windows
+#[platform(only = "windows")]
 /// @expand
 #[derive(
     Clone,
@@ -285,7 +285,7 @@ impl From<JsNotificationActionPlacement> for NotificationActionPlacement {
 
 /// Style of a toast action button.
 ///
-/// @platforms =windows
+#[platform(only = "windows")]
 /// @expand
 #[derive(
     Clone,
@@ -319,7 +319,7 @@ impl From<JsNotificationButtonStyle> for NotificationButtonStyle {
 
 /// Input type for toast input fields.
 ///
-/// @platforms =windows
+#[platform(only = "windows")]
 /// @expand
 #[derive(
     Clone,
@@ -352,10 +352,10 @@ impl From<JsNotificationInputType> for NotificationInputType {
 }
 
 /// A custom string hint for Linux notifications.
-///
-/// @platforms =linux
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+
+#[platform(only = "linux")]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsNotificationCustomHint {
     /// Hint name.
     pub name: String,
@@ -373,10 +373,10 @@ impl From<JsNotificationCustomHint> for NotificationCustomHint {
 }
 
 /// A custom integer hint for Linux notifications.
-///
-/// @platforms =linux
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+
+#[platform(only = "linux")]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsNotificationCustomIntHint {
     /// Hint name.
     pub name: String,
@@ -394,9 +394,8 @@ impl From<JsNotificationCustomIntHint> for NotificationCustomIntHint {
 }
 
 /// A notification action button.
-///
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[derive(Clone, Debug, FromJsObject, PlatformValidate)]
+#[options]
 pub struct JsNotificationAction {
     /// Action identifier (used as arguments on Windows).
     pub identifier: String,
@@ -404,67 +403,24 @@ pub struct JsNotificationAction {
     pub label: String,
     /// Action type string (Windows-specific, e.g. for protocol activation).
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+    #[platform(only = "windows")]
     pub action_type: Option<String>,
     /// Activation type for this action.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+    #[platform(only = "windows")]
     pub activation_type: Option<JsNotificationActivationType>,
     /// Placement of this action button.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+    #[platform(only = "windows")]
     pub placement: Option<JsNotificationActionPlacement>,
     /// Visual style of the button.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+    #[platform(only = "windows")]
     pub button_style: Option<JsNotificationButtonStyle>,
     /// ID of the input element this action is associated with.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+    #[platform(only = "windows")]
     pub input_id: Option<String>,
-}
-
-impl JsNotificationAction {
-    fn validate_for_platform(&self, platform: Platform) -> color_eyre::Result<()> {
-        if platform.is_linux() {
-            if self.action_type.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "action.action_type is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.activation_type.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "action.activation_type is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.placement.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "action.placement is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.button_style.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "action.button_style is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.input_id.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "action.input_id is only available on Windows".into(),
-                )
-                .into());
-            }
-        }
-        Ok(())
-    }
 }
 
 impl From<JsNotificationAction> for NotificationAction {
@@ -482,10 +438,10 @@ impl From<JsNotificationAction> for NotificationAction {
 }
 
 /// A notification header for grouping toasts in Action Center.
-///
-/// @platforms =windows
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+
+#[platform(only = "windows")]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsNotificationHeader {
     /// Unique identifier for this header group.
     pub id: String,
@@ -506,26 +462,20 @@ impl From<JsNotificationHeader> for NotificationHeader {
 }
 
 /// A toast input field.
-///
-/// @platforms =windows
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+
+#[platform(only = "windows")]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsNotificationInput {
     /// Unique identifier for this input.
     pub id: String,
     /// Type of input field.
     pub input_type: Option<JsNotificationInputType>,
     /// Placeholder text shown when the input is empty.
-    ///
-    /// @default `undefined`
     pub placeholder: Option<String>,
     /// Title displayed above the input.
-    ///
-    /// @default `undefined`
     pub title: Option<String>,
     /// Default value for the input.
-    ///
-    /// @default `undefined`
     pub default_input: Option<String>,
 }
 
@@ -545,10 +495,10 @@ impl From<JsNotificationInput> for NotificationInput {
 }
 
 /// A selection option for a dropdown input.
-///
-/// @platforms =windows
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+
+#[platform(only = "windows")]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsNotificationSelection {
     /// Unique identifier for this selection option.
     pub id: String,
@@ -566,415 +516,214 @@ impl From<JsNotificationSelection> for NotificationSelection {
 }
 
 /// Options for a notification.
-///
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject, PlatformValidate)]
 pub struct JsNotificationOptions {
     /// Title of the notification (summary line).
     ///
-    /// @default `undefined`
     pub title: Option<String>,
 
     /// Application name, filled by default with executable name.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub app_name: Option<String>,
 
     /// Body text of the notification.
     /// Multiple lines possible, may support simple markup.
     /// On Linux, check `notification.capabilities()` for a list.
     ///
-    /// @default `undefined`
     pub body: Option<String>,
 
     /// Icon name/path assigned to the notification icon field.
     /// Usually available in /usr/share/icons.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub icon_name: Option<String>,
 
     /// Whether to set the icon automatically from executable name.
     ///
-    /// @platforms =linux
-    /// @default `false`
+
+    #[platform(only = "linux")]
     pub auto_icon: bool,
 
     /// Icon image to display with the notification.
     ///
-    /// @default `undefined`
     pub icon: Option<JsImage>,
 
     /// Timeout before the notification is automatically dismissed.
     /// Note that most servers don't respect this setting.
     ///
-    /// @default `undefined`
     pub timeout: Option<JsDuration>,
 
     /// If `true`, action identifiers may be interpreted as icon names.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub action_icons: Option<bool>,
 
     /// Notification category such as `email`, `im`, or `device`.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub category: Option<String>,
 
     /// Desktop entry id (usually app `.desktop` name without extension).
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub desktop_entry: Option<String>,
 
     /// If `true`, keep notification resident until explicitly dismissed.
     /// Also automatically sets the timeout to never expire unless an explicit
     /// timeout is provided.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub resident: Option<bool>,
 
     /// Absolute path to a sound file to play for this notification.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub sound_file: Option<String>,
 
     /// Themeable freedesktop sound name, e.g. `message-new-instant`.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub sound_name: Option<String>,
 
     /// If `true`, suppress notification sounds.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub suppress_sound: Option<bool>,
 
     /// If `true`, request non-persistent behavior from the server.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub transient: Option<bool>,
 
     /// Target screen position for the notification.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub point: Option<JsPoint>,
 
     /// Urgency level.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux")]
     pub urgency: Option<JsNotificationUrgency>,
 
     /// Custom string key/value pairs forwarded as-is.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux", check = "non_empty")]
     pub custom_hints: Option<Vec<JsNotificationCustomHint>>,
 
     /// Custom integer key/value pairs forwarded as-is.
     ///
-    /// @platforms =linux
-    /// @default `undefined`
+
+    #[platform(only = "linux", check = "non_empty")]
     pub custom_int_hints: Option<Vec<JsNotificationCustomIntHint>>,
 
     /// Notification actions.
     ///
-    /// @default `undefined`
+    #[platform(nested)]
     pub actions: Option<Vec<JsNotificationAction>>,
 
     /// Attribution text displayed at the bottom of the notification.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub attribution_text: Option<String>,
 
     /// Hero image displayed prominently at the top of the notification.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub hero_image: Option<JsImage>,
 
     /// Whether to crop the icon into a circle.
     ///
-    /// @platforms =windows
-    /// @default `false`
+
+    #[platform(only = "windows")]
     pub icon_crop_circle: bool,
 
     /// Toast scenario that adjusts notification behavior.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub scenario: Option<JsNotificationScenario>,
 
     /// Sound to play with the notification.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub sound: Option<JsNotificationSound>,
 
     /// Whether to loop the notification sound.
     ///
-    /// @platforms =windows
-    /// @default `false`
+
+    #[platform(only = "windows")]
     pub sound_looping: bool,
 
     /// Whether to suppress all notification sound.
     ///
-    /// @platforms =windows
-    /// @default `false`
+
+    #[platform(only = "windows")]
     pub silent: bool,
 
     /// Header for grouping notifications in Action Center.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub header: Option<JsNotificationHeader>,
 
     /// Input fields displayed in the notification.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows", check = "non_empty")]
     pub inputs: Option<Vec<JsNotificationInput>>,
 
     /// Selection options for dropdown inputs.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows", check = "non_empty")]
     pub selections: Option<Vec<JsNotificationSelection>>,
 
     /// Tag for identifying and replacing notifications.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
-    pub tag: Option<String>,
 
+    #[platform(only = "windows")]
+    pub tag: Option<String>,
     /// Group identifier for organizing notifications.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub group: Option<String>,
 
     /// Remote ID for cross-device notification correlation.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub remote_id: Option<String>,
 
     /// Launch string passed to the app when the notification is clicked.
     ///
-    /// @platforms =windows
-    /// @default `undefined`
+
+    #[platform(only = "windows")]
     pub launch: Option<String>,
 
     /// Whether to enable button styling on actions.
     ///
-    /// @platforms =windows
-    /// @default `false`
-    pub use_button_style: bool,
-}
 
-impl JsNotificationOptions {
-    fn validate_for_platform(&self, platform: Platform) -> color_eyre::Result<()> {
-        if platform.is_linux() {
-            if self.attribution_text.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "attribution_text is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.hero_image.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "hero_image is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.icon_crop_circle {
-                return Err(CommonError::UnsupportedPlatform(
-                    "icon_crop_circle is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.scenario.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "scenario is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.sound.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "sound is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.sound_looping {
-                return Err(CommonError::UnsupportedPlatform(
-                    "sound_looping is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.silent {
-                return Err(CommonError::UnsupportedPlatform(
-                    "silent is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.header.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "header is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.inputs.as_ref().is_some_and(|v| !v.is_empty()) {
-                return Err(CommonError::UnsupportedPlatform(
-                    "inputs is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.selections.as_ref().is_some_and(|v| !v.is_empty()) {
-                return Err(CommonError::UnsupportedPlatform(
-                    "selections is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.tag.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "tag is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.group.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "group is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.remote_id.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "remote_id is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.launch.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "launch is only available on Windows".into(),
-                )
-                .into());
-            }
-            if self.use_button_style {
-                return Err(CommonError::UnsupportedPlatform(
-                    "use_button_style is only available on Windows".into(),
-                )
-                .into());
-            }
-            if let Some(actions) = &self.actions {
-                for action in actions {
-                    action.validate_for_platform(platform)?;
-                }
-            }
-        }
-        if platform.is_windows() {
-            if self.app_name.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "app_name is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.icon_name.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "icon_name is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.auto_icon {
-                return Err(CommonError::UnsupportedPlatform(
-                    "auto_icon is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.action_icons.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "action_icons is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.category.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "category is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.desktop_entry.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "desktop_entry is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.resident.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "resident is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.sound_file.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "sound_file is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.sound_name.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "sound_name is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.suppress_sound.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "suppress_sound is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.transient.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "transient is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.point.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "point is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.urgency.is_some() {
-                return Err(CommonError::UnsupportedPlatform(
-                    "urgency is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.custom_hints.as_ref().is_some_and(|v| !v.is_empty()) {
-                return Err(CommonError::UnsupportedPlatform(
-                    "custom_hints is only available on Linux".into(),
-                )
-                .into());
-            }
-            if self.custom_int_hints.as_ref().is_some_and(|v| !v.is_empty()) {
-                return Err(CommonError::UnsupportedPlatform(
-                    "custom_int_hints is only available on Linux".into(),
-                )
-                .into());
-            }
-        }
-        Ok(())
-    }
+    #[platform(only = "windows")]
+    pub use_button_style: bool,
 }
 
 impl From<JsNotificationOptions> for NotificationOptions {
@@ -1047,7 +796,7 @@ impl From<JsNotificationOptions> for NotificationOptions {
 /// The global notification singleton for sending desktop notifications.
 /// @singleton
 #[derive(JsLifetime)]
-#[rquickjs::class(rename = "Notification")]
+#[js_class]
 pub struct JsNotification {
     inner: super::Notification,
 }
@@ -1080,7 +829,7 @@ impl JsNotification {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsNotification {
     /// Shows a desktop notification.
     pub async fn show(
@@ -1101,10 +850,9 @@ impl JsNotification {
     }
 
     /// Server capabilities.
-    ///
-    /// @platforms =linux
+
+    #[platform(only = "linux")]
     pub fn capabilities(&self, ctx: Ctx<'_>) -> Result<Vec<String>> {
-        ctx.user_data().require_linux(&ctx)?;
         super::Notification::capabilities().into_js_result(&ctx)
     }
 
@@ -1116,18 +864,16 @@ impl JsNotification {
 }
 
 /// Options for waiting on a notification action or close event.
-///
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsWaitForActionOptions {
     /// Abort signal to cancel waiting.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
 /// A handle for a shown desktop notification.
 #[derive(JsLifetime)]
-#[rquickjs::class(rename = "NotificationHandle")]
+#[js_class]
 pub struct JsNotificationHandle {
     inner: Mutex<Option<Arc<super::NotificationHandle>>>,
 }
@@ -1168,7 +914,7 @@ impl<'js> Trace<'js> for JsNotificationHandle {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsNotificationHandle {
     /// Programmatically closes the notification.
     ///
@@ -1188,14 +934,13 @@ impl JsNotificationHandle {
     /// const handle = await notification.show({ title: "Initial" });
     /// await handle.update({ title: "Updated", body: "New body" });
     /// ```
-    ///
-    /// @platforms =linux
+
+    #[platform(only = "linux")]
     pub async fn update<'js>(
         &self,
         ctx: Ctx<'js>,
         options: Opt<JsNotificationOptions>,
     ) -> Result<()> {
-        ctx.user_data().require_linux(&ctx)?;
         let handle = self.inner.lock().as_ref().cloned().ok_or_else(|| {
             Exception::throw_message(
                 &ctx,

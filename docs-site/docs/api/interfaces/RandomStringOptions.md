@@ -56,7 +56,8 @@ Ignored when `characters` is specified.
 Possible characters to pick from.
 Can contain any Unicode grapheme cluster.
 When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
+Defaults to all printable ASCII characters.
 
 #### Default Value
 
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) (all printable ASCII characters)
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

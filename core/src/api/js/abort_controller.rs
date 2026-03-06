@@ -1,3 +1,4 @@
+use macros::{js_class, js_methods};
 use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
 use tokio_util::sync::CancellationToken;
 
@@ -8,7 +9,6 @@ use crate::{
     },
     runtime::WithUserData,
 };
-
 /// A signal that can be used to abort asynchronous operations.
 ///
 /// Obtained from an `AbortController` via the `signal` property. Pass it
@@ -21,7 +21,7 @@ use crate::{
 /// controller.abort();
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "AbortSignal")]
+#[js_class]
 pub struct JsAbortSignal {
     token: CancellationToken,
 }
@@ -40,7 +40,7 @@ impl JsAbortSignal {
     }
 }
 
-#[rquickjs::methods]
+#[js_methods]
 impl JsAbortSignal {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
@@ -71,7 +71,7 @@ impl IntoToken for Option<JsAbortSignal> {
 /// controller.abort();
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "AbortController")]
+#[js_class]
 pub struct JsAbortController {
     token: CancellationToken,
 }
@@ -82,7 +82,7 @@ impl<'js> Trace<'js> for JsAbortController {
     fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
 }
 
-#[rquickjs::methods]
+#[js_methods]
 impl JsAbortController {
     /// @constructor
     #[qjs(constructor)]
@@ -98,8 +98,7 @@ impl JsAbortController {
         self.token.cancel();
     }
 
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn signal(&self) -> JsAbortSignal {
         JsAbortSignal {
@@ -121,6 +120,7 @@ mod tests {
         atomic::{AtomicBool, Ordering},
     };
 
+    use macros::{js_class, js_methods};
     use rquickjs::{
         JsLifetime,
         class::{Trace, Tracer},
@@ -135,19 +135,19 @@ mod tests {
     };
 
     #[derive(Clone, Debug, Default, JsLifetime)]
-    #[rquickjs::class]
-    pub struct TestStruct {
+    #[js_class]
+    pub struct JsTestStruct {
         has_run: Arc<AtomicBool>,
     }
 
-    impl<'js> Trace<'js> for TestStruct {
+    impl<'js> Trace<'js> for JsTestStruct {
         fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
     }
 
-    impl<'js> SingletonClass<'js> for TestStruct {}
+    impl<'js> SingletonClass<'js> for JsTestStruct {}
 
-    #[rquickjs::methods(rename_all = "camelCase")]
-    impl TestStruct {
+    #[js_methods]
+    impl JsTestStruct {
         #[qjs(constructor)]
         pub fn new() -> Self {
             Self::default()
@@ -162,18 +162,18 @@ mod tests {
     #[test]
     fn test_abort_controller() {
         Runtime::test_with_script_engine(|script_engine| async move {
-            let test = TestStruct::default();
+            let test = JsTestStruct::default();
 
             script_engine
                 .with(|ctx| {
-                    register_singleton_class::<TestStruct>(&ctx, test)?;
+                    register_singleton_class::<JsTestStruct>(&ctx, test)?;
                     Ok(())
                 })
                 .await
                 .unwrap();
 
             let result = script_engine
-                .eval_async::<TestStruct>(
+                .eval_async::<JsTestStruct>(
                     r#"
                 let controller = new AbortController();
 

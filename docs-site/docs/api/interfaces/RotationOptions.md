@@ -20,13 +20,12 @@ image.rotate(30, { defaultColor: Color.White });
 
 > `optional` **center**: [`Point`](../classes/Point.md)
 
-Rotation center
+Rotation center.
+Defaults to the center of the image.
 
 #### Default Value
 
-```ts
-image center
-```
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 

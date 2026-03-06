@@ -3,6 +3,7 @@
 //! @verbatim  */
 //! @verbatim type RectLike = Rect | { x: number; y: number; width: number; height: number };
 
+use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -21,7 +22,6 @@ use crate::{
     },
     types::display::display_with_type,
 };
-
 pub struct JsRectLike(pub super::Rect);
 
 impl<'js> FromParam<'js> for JsRectLike {
@@ -106,14 +106,14 @@ impl<'js> FromParam<'js> for JsRectLike {
 /// @prop topLeft: Point // Top-left origin
 /// @prop size: Size // Size
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Rect")]
+#[js_class]
 pub struct JsRect {
     inner: super::Rect,
 }
 
 impl ValueClass<'_> for JsRect {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsRect {
     /// Creates a new rectangle.
     ///
@@ -145,79 +145,79 @@ impl JsRect {
     }
 
     /// @skip
-    #[qjs(get, rename = "x")]
+    #[get("x")]
     #[must_use]
     pub fn get_x(&self) -> i32 {
         self.inner.top_left.x.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "x")]
+    #[set("x")]
     pub fn set_x(&mut self, x: i32) {
         self.inner.top_left.x = x.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "y")]
+    #[get("y")]
     #[must_use]
     pub fn get_y(&self) -> i32 {
         self.inner.top_left.y.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "y")]
+    #[set("y")]
     pub fn set_y(&mut self, y: i32) {
         self.inner.top_left.y = y.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "width")]
+    #[get("width")]
     #[must_use]
     pub fn get_width(&self) -> u32 {
         self.inner.size.width.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "width")]
+    #[set("width")]
     pub fn set_width(&mut self, width: u32) {
         self.inner.size.width = width.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "height")]
+    #[get("height")]
     #[must_use]
     pub fn get_height(&self) -> u32 {
         self.inner.size.height.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "height")]
+    #[set("height")]
     pub fn set_height(&mut self, height: u32) {
         self.inner.size.height = height.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "topLeft")]
+    #[get("topLeft")]
     #[must_use]
     pub fn get_top_left(&self) -> JsPoint {
         self.inner.top_left.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "topLeft")]
+    #[set("topLeft")]
     pub fn set_top_left(&mut self, top_left: JsPoint) {
         self.inner.top_left = top_left.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "size")]
+    #[get("size")]
     #[must_use]
     pub fn get_size(&self) -> JsSize {
         self.inner.size.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "size")]
+    #[set("size")]
     pub fn set_size(&mut self, size: JsSize) {
         self.inner.size = size.into();
     }

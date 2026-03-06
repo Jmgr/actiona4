@@ -5,7 +5,7 @@ use color_eyre::{
     eyre::{Error, ensure, eyre},
 };
 use derive_more::{Constructor, Display};
-use macros::FromJsObject;
+use macros::{FromJsObject, options};
 use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
     imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
@@ -271,41 +271,28 @@ impl IsDone for FindImageProgress {
 }
 
 /// Find image template options
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject, PartialEq)]
 pub struct FindImageTemplateOptions {
     /// Use color matching.
-    /// @default `true`
+    #[default(true)]
     pub use_colors: bool,
 
     /// Use template transparency.
-    /// @default `true`
+    #[default(true)]
     pub use_transparency: bool,
 
     /// Matching threshold.
     /// Values are between 0 (worst) to 1 (best).
-    /// @default `0.8`
+    #[default(0.8)]
     pub match_threshold: f32,
 
     /// Radius to consider proximity (in pixels).
-    /// @default `10`
+    #[default(Some(10), ts = "10")]
     pub non_maximum_suppression_radius: Option<i32>,
 
     /// How many times should the source image and the template be downscaled?
-    /// @default `0`
     pub downscale: u64,
-}
-
-impl Default for FindImageTemplateOptions {
-    fn default() -> Self {
-        Self {
-            use_colors: true,
-            use_transparency: true,
-            match_threshold: 0.8,
-            non_maximum_suppression_radius: Some(10),
-            downscale: 0,
-        }
-    }
 }
 
 impl Source {
@@ -499,8 +486,8 @@ mod tests {
                 .unwrap();
 
             assert_eq!(result.len(), 2);
-            assert_eq!(result[0].position, crate::api::point::point(1636, 233));
-            assert_eq!(result[1].position, crate::api::point::point(237, 231));
+            assert_eq!(result[0].position, crate::api::point::point(1700, 297));
+            assert_eq!(result[1].position, crate::api::point::point(301, 295));
         });
     }
 

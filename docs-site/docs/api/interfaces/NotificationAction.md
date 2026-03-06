@@ -68,6 +68,10 @@ Visual style of the button.
 
 Action identifier (used as arguments on Windows).
 
+#### Default Value
+
+`""`
+
 ***
 
 ### inputId?
@@ -94,6 +98,10 @@ ID of the input element this action is associated with.
 > `optional` **label**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Action label visible to the user.
+
+#### Default Value
+
+`""`
 
 ***
 

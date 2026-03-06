@@ -118,7 +118,7 @@ Returns true if the file is open.
 
 > <span class="async-badge">async</span> **mode**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
 
-Returns the Unix file mode (e.g. `0o644`). Returns `0` on Windows.
+Returns the Unix file mode (e.g. `0o644`).
 
 #### Returns
 
@@ -235,7 +235,7 @@ Sets the last access time of the file.
 
 > <span class="async-badge">async</span> **setCreationTime**(`date`: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-Sets the creation time of the file. No-op on Linux.
+Sets the creation time of the file.
 
 #### Parameters
 

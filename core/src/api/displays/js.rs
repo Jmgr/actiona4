@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -17,7 +18,6 @@ use crate::{
     runtime::{self, WithUserData},
     types::display::display_with_type,
 };
-
 /// The global displays singleton for querying connected monitors and screens.
 ///
 /// ```ts
@@ -42,7 +42,7 @@ use crate::{
 ///
 /// @singleton
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "Displays")]
+#[js_class]
 pub struct JsDisplays {
     inner: super::Displays,
 }
@@ -61,7 +61,7 @@ impl JsDisplays {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsDisplays {
     /// Returns a random point within the bounds of all connected displays.
     /// @readonly
@@ -270,7 +270,7 @@ impl JsDisplays {
 /// }
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "DisplayInfo")]
+#[js_class]
 pub struct JsDisplayInfo {
     inner: runtime::events::DisplayInfo,
 }
@@ -287,19 +287,17 @@ impl From<runtime::events::DisplayInfo> for JsDisplayInfo {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsDisplayInfo {
     /// Unique numeric identifier for this display.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn id(&self) -> u32 {
         self.inner.id
     }
 
     /// The display device name (e.g. `"DP-1"`).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[allow(clippy::missing_const_for_fn)]
     #[must_use]
     pub fn name(&self) -> &str {
@@ -307,8 +305,7 @@ impl JsDisplayInfo {
     }
 
     /// The display friendly name (e.g. `"HDMI-1"`).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[allow(clippy::missing_const_for_fn)]
     #[must_use]
     pub fn friendly_name(&self) -> &str {
@@ -316,57 +313,50 @@ impl JsDisplayInfo {
     }
 
     /// The display rectangle (position and size in pixels).
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn rect(&self) -> JsRect {
         self.inner.rect.into()
     }
 
     /// The physical width of the display in millimeters.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn width_mm(&self) -> i32 {
         self.inner.width_mm
     }
 
     /// The physical height of the display in millimeters.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn height_mm(&self) -> i32 {
         self.inner.height_mm
     }
 
     /// The display rotation in clock-wise degrees (0, 90, 180, or 270).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn rotation(&self) -> f32 {
         self.inner.rotation
     }
 
     /// The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn scale_factor(&self) -> f32 {
         self.inner.scale_factor
     }
 
     /// The display refresh rate in Hz.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn frequency(&self) -> f32 {
         self.inner.frequency
     }
 
     /// Whether this is the primary (main) display.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn is_primary(&self) -> bool {
         self.inner.is_primary

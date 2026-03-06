@@ -3,6 +3,7 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 
+use macros::{js_class, js_methods};
 use rquickjs::{
     JsLifetime,
     atom::PredefinedAtom,
@@ -10,7 +11,6 @@ use rquickjs::{
 };
 
 use crate::api::js::classes::HostClass;
-
 /// Unique identifier for a registered event handle.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct HandleId(u64);
@@ -36,7 +36,7 @@ pub(crate) trait HandleRegistry: std::fmt::Debug + Send + Sync {
 /// handle.cancel();
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "EventHandle")]
+#[js_class]
 pub struct JsEventHandle {
     id: HandleId,
     registry: Arc<dyn HandleRegistry>,
@@ -54,7 +54,7 @@ impl JsEventHandle {
     }
 }
 
-#[rquickjs::methods]
+#[js_methods]
 impl JsEventHandle {
     /// Unregisters this event listener.
     pub fn cancel(&self) {

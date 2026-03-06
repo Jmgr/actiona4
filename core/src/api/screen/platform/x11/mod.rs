@@ -90,13 +90,8 @@ impl ScreenImpl {
             runtime: runtime.clone(),
         });
 
-        // Initialize the desktop SHM immediately and watch for display changes.
+        // Watch for display changes and re-allocate desktop SHM once it has been created.
         {
-            let local_impl = impl_.clone();
-            if let Err(err) = local_impl.update_desktop_shm().await {
-                error!("Failed to initialize desktop SHM: {err}");
-            }
-
             let local_impl = impl_.clone();
             runtime.task_tracker().spawn(async move {
                 loop {
@@ -156,6 +151,13 @@ impl ScreenImpl {
     async fn capture_desktop_impl(&self) -> Result<(Image, Rect)> {
         let rect = self.base.desktop_rect().await?;
         let display_rects = self.base.display_rects().await?;
+
+        if self.runtime.platform().has_shm()
+            && self.desktop_shm.try_get().is_none()
+            && let Err(err) = self.update_desktop_shm().await
+        {
+            error!("Failed to lazily initialize desktop SHM: {err}");
+        }
 
         let mut image = if let Some(shm_data) = self.desktop_shm.try_get() {
             let (shm_rect, shm) = &*shm_data;

@@ -1,6 +1,6 @@
 use derive_more::Display;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -25,7 +25,7 @@ use crate::{
 /// println(disks.length);
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Storage")]
+#[js_class]
 pub struct JsStorage {
     inner: Storage,
 }
@@ -50,21 +50,15 @@ impl JsStorage {
 }
 
 /// List disks options
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListDisksOptions {
     /// Rescan
-    /// @default `true`
+    #[default(true)]
     pub rescan: bool,
 }
 
-impl Default for ListDisksOptions {
-    fn default() -> Self {
-        Self { rescan: true }
-    }
-}
-
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsStorage {
     /// Disks
     /// @readonly
@@ -107,7 +101,7 @@ impl JsStorage {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Disk")]
+#[js_class]
 pub struct JsDisk {
     inner: Disk,
 }
@@ -130,76 +124,67 @@ impl From<Disk> for JsDisk {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsDisk {
     /// Kind
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn kind(&self) -> JsDiskKind {
         self.inner.kind().into()
     }
 
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.inner.name().as_deref()
     }
 
     /// File system
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn file_system(&self) -> Option<&str> {
         self.inner.file_system().as_deref()
     }
 
     /// Mount point
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn mount_point(&self) -> String {
         self.inner.mount_point().to_string_lossy().to_string()
     }
 
     /// Total space
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn total_space(&self) -> u64 {
         *self.inner.total_space()
     }
 
     /// Available space
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn available_space(&self) -> u64 {
         *self.inner.available_space()
     }
 
     /// Is removable
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn is_removable(&self) -> bool {
         self.inner.is_removable()
     }
 
     /// Is read-only
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn is_read_only(&self) -> bool {
         self.inner.is_read_only()
     }
 
     /// Usage
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn usage(&self) -> JsDiskUsage {
         self.inner.usage().into()
@@ -277,7 +262,7 @@ impl From<DiskKind> for JsDiskKind {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "IoStats")]
+#[js_class]
 pub struct JsIoStats {
     inner: IoStats,
 }
@@ -294,19 +279,17 @@ impl From<IoStats> for JsIoStats {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsIoStats {
     /// Total
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn total(&self) -> u64 {
         *self.inner.total()
     }
 
     /// Delta
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn delta(&self) -> u64 {
         *self.inner.delta()
@@ -332,7 +315,7 @@ impl JsIoStats {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "DiskUsage")]
+#[js_class]
 pub struct JsDiskUsage {
     inner: DiskUsage,
 }
@@ -354,21 +337,19 @@ impl From<DiskUsage> for JsDiskUsage {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsDiskUsage {
     /// Written
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn written(&self) -> JsIoStats {
         self.inner.written().into()
     }
 
     /// Read
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn read(&self) -> JsIoStats {
         self.inner.read().into()

@@ -18,6 +18,10 @@ A custom string hint for Linux notifications.
 
 Hint name.
 
+#### Default Value
+
+`""`
+
 ***
 
 ### value?
@@ -25,3 +29,7 @@ Hint name.
 > `optional` **value**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Hint value.
+
+#### Default Value
+
+`""`

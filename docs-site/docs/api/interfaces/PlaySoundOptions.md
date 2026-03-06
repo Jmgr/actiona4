@@ -73,7 +73,7 @@ Speed to play the sound at
 
 #### Default Value
 
-`1.0`
+`1`
 
 ***
 
@@ -97,4 +97,4 @@ Volume to play the sound at
 
 #### Default Value
 
-`1.0`
+`1`

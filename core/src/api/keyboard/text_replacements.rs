@@ -8,6 +8,7 @@ use derive_where::derive_where;
 use enigo::{Direction, Key, Keyboard};
 use indexmap::IndexMap;
 use itertools::Itertools;
+use macros::options;
 use parking_lot::Mutex;
 use rquickjs::{AsyncContext, Coerced, async_with};
 use tokio::select;
@@ -36,32 +37,21 @@ pub enum Replacement {
 }
 
 /// Options for `onText`.
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug)]
 pub struct OnTextOptions {
     /// Erase the typed text before inserting the replacement.
     /// Set to `false` to trigger an action without replacing the typed text.
-    /// @default `true`
+    #[default(true)]
     pub erase: bool,
 
     /// When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
     /// Replacing with an image always uses the clipboard.
-    /// @default `false`
     pub use_clipboard_for_text: bool,
 
     /// Save and restore the clipboard contents around a clipboard-based replacement.
-    /// @default `true`
+    #[default(true)]
     pub save_restore_clipboard: bool,
-}
-
-impl Default for OnTextOptions {
-    fn default() -> Self {
-        Self {
-            erase: true,
-            use_clipboard_for_text: false,
-            save_restore_clipboard: true,
-        }
-    }
 }
 
 /// One registered handler for a given text trigger.

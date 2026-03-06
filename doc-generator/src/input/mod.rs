@@ -48,6 +48,33 @@ impl Comments {
             self.pop();
         }
 
+        // Rustdoc can add a shared left margin for some items (notably impl
+        // methods). Remove that common margin while preserving relative
+        // indentation (important for fenced code blocks).
+        let common_left_padding = self
+            .iter()
+            .filter(|line| !line.trim().is_empty())
+            .map(|line| {
+                line.chars()
+                    .take_while(|character| *character == ' ')
+                    .count()
+            })
+            .min()
+            .unwrap_or(0);
+
+        if common_left_padding > 0 {
+            for line in &mut self.0 {
+                if line.trim().is_empty() {
+                    continue;
+                }
+
+                let trimmed_line = line
+                    .strip_prefix(&" ".repeat(common_left_padding))
+                    .unwrap_or(line);
+                *line = trimmed_line.to_string();
+            }
+        }
+
         self
     }
 }
@@ -597,8 +624,8 @@ fn process_rustdoc(
         ));
     };
 
-    // Keep leading whitespace in comments (e.g. markdown/code block indentation),
-    // while still normalizing trailing spaces.
+    // Keep leading whitespace in comments. Shared indentation is normalized later
+    // in `Comments::trimmed()`.
     let lines = rustdoc.lines().map(str::trim_end);
     let mut comments = Vec::new();
 
@@ -689,14 +716,15 @@ fn unwrap_generic(path: &rustdoc_types::Path) -> Result<&rustdoc_types::Type> {
     let rustdoc_types::GenericArgs::AngleBracketed { args, .. } = args.as_ref() else {
         bail!("Unsupported ResolvedPath: {path:?}");
     };
-    let Some(first_arg) = args.first() else {
-        bail!("No args for ResolvedPath: {path:?}");
-    };
-    let rustdoc_types::GenericArg::Type(type_) = first_arg else {
-        bail!("Unsupported ResolvedPath: {path:?}");
-    };
-
-    Ok(type_)
+    args.iter()
+        .find_map(|arg| {
+            if let rustdoc_types::GenericArg::Type(type_) = arg {
+                Some(type_)
+            } else {
+                None
+            }
+        })
+        .ok_or_else(|| eyre!("No type args for ResolvedPath: {path:?}"))
 }
 
 fn unwrap_generic_pair(

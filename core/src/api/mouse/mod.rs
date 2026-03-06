@@ -8,7 +8,7 @@ use color_eyre::{Result, eyre::eyre};
 use derive_more::Display;
 use enigo::Enigo;
 use indexmap::IndexSet;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde, options};
 use noiselib::{perlin::perlin_noise_1d, uniform::UniformRandomGen};
 use num_traits::ToPrimitive;
 use parking_lot::Mutex;
@@ -489,45 +489,31 @@ impl Mouse {
 ///   targetRandomness: 5
 /// });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct MoveOptions {
     /// Movement speed in pixels per second.
-    /// @default `2000`
+    #[default(2000.0)]
     pub speed: f64,
 
     /// Easing function used for the movement.
-    /// @default `Tween.SineOut`
+    #[default(Tween::SineOut)]
     pub tween: Tween,
 
     /// Scale of the Perlin noise applied to the movement path.
-    /// @default `50`
+    #[default(50.0)]
     pub perlin_scale: f64,
 
     /// Amplitude of the Perlin noise applied to the movement path.
-    /// @default `5`
+    #[default(5.0)]
     pub perlin_amplitude: f64,
 
     /// Random offset applied to the target position, in pixels.
-    /// @default `0`
     pub target_randomness: f64,
 
     /// Interval in seconds
-    /// @default `0.01`
+    #[default(Duration::from_millis(10).into(), ts = "0.01")]
     pub interval: JsDuration,
-}
-
-impl Default for MoveOptions {
-    fn default() -> Self {
-        Self {
-            speed: 2000.,
-            tween: Tween::SineOut,
-            perlin_scale: 50.,
-            perlin_amplitude: 5.,
-            target_randomness: 0.,
-            interval: Duration::from_millis(10).into(),
-        }
-    }
 }
 
 fn sigmoid(x: f64) -> f64 {
@@ -634,34 +620,23 @@ impl Mouse {
 /// await mouse.click({ button: Button.Right, amount: 3, interval: 0.1 });
 /// ```
 /// @extends PressOptions
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ClickOptions {
     /// @skip
     pub press: PressOptions,
 
     /// Number of times to click.
-    /// @default `1`
+    #[default(1)]
     pub amount: i32,
 
     /// Delay between consecutive clicks, in seconds.
-    /// @default `0`
+    #[default(Duration::ZERO.into(), ts = "0")]
     pub interval: JsDuration,
 
     /// How long to hold each click, in seconds.
-    /// @default `0`
+    #[default(Duration::ZERO.into(), ts = "0")]
     pub duration: JsDuration,
-}
-
-impl Default for ClickOptions {
-    fn default() -> Self {
-        Self {
-            press: PressOptions::default(),
-            amount: 1,
-            interval: Duration::ZERO.into(),
-            duration: Duration::ZERO.into(),
-        }
-    }
 }
 
 impl Mouse {
@@ -748,24 +723,15 @@ impl Mouse {
 /// await mouse.doubleClick({ delay: 0.1 });
 /// ```
 /// @extends ClickOptions
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct DoubleClickOptions {
     /// @skip
     pub click: ClickOptions,
 
     /// Delay between the two clicks, in seconds.
-    /// @default `0.25`
+    #[default(Duration::from_millis(250).into(), ts = "0.25")]
     pub delay: JsDuration,
-}
-
-impl Default for DoubleClickOptions {
-    fn default() -> Self {
-        Self {
-            click: ClickOptions::default(),
-            delay: Duration::from_millis(250).into(),
-        }
-    }
 }
 
 impl Mouse {
@@ -797,30 +763,18 @@ impl Mouse {
 /// // Press at coordinates using PointLike shorthand
 /// mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PressOptions {
     /// Mouse button to press.
-    /// @default `Button.Left`
+    #[default(Button::Left)]
     pub button: Button,
 
     /// Position to move the cursor to before pressing.
-    /// @default `undefined`
     pub position: Option<JsPoint>,
 
     /// Whether the position is relative to the current cursor position.
-    /// @default `false`
     pub relative_position: bool,
-}
-
-impl Default for PressOptions {
-    fn default() -> Self {
-        Self {
-            button: Button::Left,
-            position: None,
-            relative_position: false,
-        }
-    }
 }
 
 impl Mouse {

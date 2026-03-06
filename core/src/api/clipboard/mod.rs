@@ -14,7 +14,7 @@ use color_eyre::{Result, eyre::eyre};
 use derive_more::Display;
 use image::RgbaImage;
 use itertools::Itertools;
-use macros::{FromSerde, IntoSerde};
+use macros::{FromSerde, IntoSerde, PlatformValidate, options};
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -24,7 +24,7 @@ use tracing::instrument;
 #[cfg(windows)]
 use windows::Win32::System::DataExchange::GetClipboardSequenceNumber;
 
-use crate::{api::image::Image, error::CommonError};
+use crate::{api::image::Image, error::CommonError, platform_info::Platform};
 
 pub mod js;
 
@@ -45,15 +45,17 @@ pub struct ContentNotAvailable;
     FromSerde,
     IntoSerde,
     PartialEq,
+    PlatformValidate,
     Serialize,
 )]
+#[options]
 /// @expand
 pub enum ClipboardMode {
     #[default]
     /// `ClipboardMode.Clipboard`
     Clipboard,
 
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `ClipboardMode.Selection`
     Selection,
 }
@@ -154,17 +156,9 @@ impl Clipboard {
         }
     }
 
-    #[allow(clippy::missing_const_for_fn)] // non-linux path is not const-compatible
     fn check_selection_mode(mode: Option<ClipboardMode>) -> Result<()> {
-        #[cfg(not(linux))]
-        if mode.unwrap_or_default() == ClipboardMode::Selection {
-            return Err(CommonError::UnsupportedPlatform(
-                "ClipboardMode.Selection is only available on Linux".into(),
-            )
-            .into());
-        }
-        let _ = mode;
-        Ok(())
+        mode.unwrap_or_default()
+            .validate_for_platform(Platform::detect())
     }
 
     pub fn save(&self, mode: Option<ClipboardMode>) -> Result<ClipboardData> {

@@ -260,6 +260,10 @@ Group identifier for organizing notifications.
 
 Arguments passed when the header is clicked.
 
+###### Default Value
+
+`""`
+
 ***
 
 ###### id?
@@ -268,6 +272,10 @@ Arguments passed when the header is clicked.
 
 Unique identifier for this header group.
 
+###### Default Value
+
+`""`
+
 ***
 
 ###### title?
@@ -275,6 +283,10 @@ Unique identifier for this header group.
 > `optional` **title**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title displayed for the header group.
+
+###### Default Value
+
+`""`
 
 </div>
 

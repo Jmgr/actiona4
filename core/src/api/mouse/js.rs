@@ -1,6 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
@@ -64,7 +64,7 @@ pub type JsTween = super::Tween;
 /// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Mouse")]
+#[js_class]
 pub struct JsMouse {
     inner: super::Mouse,
     click_triggers: ClickTriggers,
@@ -121,15 +121,13 @@ pub type JsMoveOptions = super::MoveOptions;
 pub type JsPressOptions = super::PressOptions;
 
 /// Options for `onButton`.
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsOnButtonOptions {
     /// Require exactly this button and no others to be pressed simultaneously.
-    /// @default `false`
     pub exclusive: bool,
 
     /// Abort signal to automatically cancel this listener when signalled.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
@@ -142,25 +140,15 @@ impl From<JsOnButtonOptions> for OnButtonOptions {
 }
 
 /// Options for `onScroll`.
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsOnScrollOptions {
     /// Axis to listen on.
-    /// @default `Axis.Vertical`
+    #[default(super::Axis::Vertical, ts = "Axis.Vertical")]
     pub axis: super::Axis,
 
     /// Abort signal to automatically cancel this listener when signalled.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
-}
-
-impl Default for JsOnScrollOptions {
-    fn default() -> Self {
-        Self {
-            axis: super::Axis::Vertical,
-            signal: None,
-        }
-    }
 }
 
 /// Options for measuring mouse movement speed.
@@ -168,41 +156,36 @@ impl Default for JsOnScrollOptions {
 /// ```ts
 /// const speed = await mouse.measureSpeed({ duration: "3s" });
 /// ```
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsMeasureSpeedOptions {
     /// Measurement duration.
-    /// @default `2s`
+    #[default(ts = "2s")]
     pub duration: Option<JsDuration>,
 
     /// Abort signal to cancel the measurement.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
 /// Options for `waitForButton`.
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsWaitForButtonOptions {
     /// Mouse button to wait for. If not specified, waits for any button.
-    /// @default `undefined`
     pub button: Option<JsButton>,
 
     /// Abort signal to cancel the wait.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
 /// Options for `waitForScroll`.
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsWaitForScrollOptions {
     /// Scroll axis to wait for. If not specified, waits for any axis.
-    /// @default `undefined`
     pub axis: Option<JsAxis>,
 
     /// Abort signal to cancel the wait.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
@@ -213,7 +196,7 @@ pub struct JsWaitForScrollOptions {
 /// console.println(`Scrolled ${event.length} on axis ${event.axis}`);
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "ScrollEvent")]
+#[js_class]
 pub struct JsScrollEvent {
     axis: JsAxis,
     length: i32,
@@ -225,19 +208,17 @@ impl<'js> Trace<'js> for JsScrollEvent {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsScrollEvent {
     /// The scroll axis.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn axis(&self) -> JsAxis {
         self.axis
     }
 
     /// The scroll amount. Positive values scroll down/right, negative values scroll up/left.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn length(&self) -> i32 {
         self.length
@@ -263,39 +244,26 @@ impl JsScrollEvent {
 /// await mouse.click({ duration: 0.5 });
 /// ```
 /// @extends PressOptions
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsClickOptions {
     /// @skip
     pub press: super::PressOptions,
 
     /// Number of times to click.
-    /// @default `1`
+    #[default(1)]
     pub amount: i32,
 
     /// Delay between consecutive clicks, in seconds.
-    /// @default `0`
+    #[default(Duration::ZERO.into(), ts = "0")]
     pub interval: JsDuration,
 
     /// How long to hold each click, in seconds.
-    /// @default `0`
+    #[default(Duration::ZERO.into(), ts = "0")]
     pub duration: JsDuration,
 
     /// Abort signal to cancel the click.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
-}
-
-impl Default for JsClickOptions {
-    fn default() -> Self {
-        Self {
-            press: super::PressOptions::default(),
-            amount: 1,
-            interval: Duration::ZERO.into(),
-            duration: Duration::ZERO.into(),
-            signal: None,
-        }
-    }
 }
 
 impl JsClickOptions {
@@ -315,24 +283,15 @@ impl JsClickOptions {
 /// await mouse.doubleClick({ delay: 0.1 });
 /// ```
 /// @extends ClickOptions
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsDoubleClickOptions {
     /// @skip
     pub click: JsClickOptions,
 
     /// Delay between the two clicks, in seconds.
-    /// @default `0.25`
+    #[default(Duration::from_millis(250).into(), ts = "0.25")]
     pub delay: JsDuration,
-}
-
-impl Default for JsDoubleClickOptions {
-    fn default() -> Self {
-        Self {
-            click: JsClickOptions::default(),
-            delay: Duration::from_millis(250).into(),
-        }
-    }
 }
 
 impl JsDoubleClickOptions {
@@ -353,36 +312,27 @@ impl JsDoubleClickOptions {
 /// });
 /// ```
 /// @extends MoveOptions
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDragOptions {
     /// @skip
     pub move_options: super::MoveOptions,
 
     /// Mouse button to use for dragging.
-    /// @default `Button.Left`
+    #[default(super::Button::Left, ts = "Button.Left")]
     pub button: super::Button,
 }
 
-impl Default for JsDragOptions {
-    fn default() -> Self {
-        Self {
-            move_options: super::MoveOptions::default(),
-            button: super::Button::Left,
-        }
-    }
-}
-
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMouse {
     /// Returns whether a mouse button is currently pressed.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn is_pressed(&self, ctx: Ctx<'_>, button: JsButton) -> Result<bool> {
         self.inner.is_pressed(button).into_js_result(&ctx)
     }
 
     /// Scrolls the mouse wheel by the given amount.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn scroll(&self, ctx: Ctx<'_>, length: i32, axis: Opt<JsAxis>) -> Result<()> {
         self.inner
             .scroll(length, axis.unwrap_or(JsAxis::Vertical))
@@ -391,14 +341,14 @@ impl JsMouse {
 
     /// Returns the current mouse cursor position.
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position().into_js_result(&ctx)?.into())
     }
 
     /// Measures the mouse movement speed over a duration (in pixels per second).
     /// @returns Task<number>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn measure_speed<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -421,7 +371,7 @@ impl JsMouse {
 
     /// Moves the mouse cursor smoothly to the given position.
     /// @returns Task<void>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     #[qjs(rename = "move")]
     pub fn r#move<'js>(
         &self,
@@ -445,7 +395,7 @@ impl JsMouse {
     }
 
     /// Sets the mouse cursor position instantly (absolute coordinates).
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn set_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Abs)
@@ -453,7 +403,7 @@ impl JsMouse {
     }
 
     /// Moves the mouse cursor by the given offset (relative coordinates).
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn set_relative_position(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<()> {
         self.inner
             .set_position(point.0, Coordinate::Rel)
@@ -462,7 +412,7 @@ impl JsMouse {
 
     /// Clicks a mouse button.
     /// @returns Task<void>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn click<'js>(&self, ctx: Ctx<'js>, options: Opt<JsClickOptions>) -> Result<Promise<'js>> {
         let local_mouse = self.inner.clone();
         let options = options.0.unwrap_or_default();
@@ -478,7 +428,7 @@ impl JsMouse {
 
     /// Double-clicks a mouse button.
     /// @returns Task<void>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn double_click<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -511,7 +461,7 @@ impl JsMouse {
     /// });
     /// ```
     /// @returns Task<void>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn drag_and_drop<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -543,7 +493,7 @@ impl JsMouse {
     }
 
     /// Presses and holds a mouse button.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
         self.inner
             .press(options.unwrap_or_default())
@@ -551,7 +501,7 @@ impl JsMouse {
     }
 
     /// Releases a mouse button.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
         self.inner
             .release(button.map(|button| button))
@@ -575,7 +525,7 @@ impl JsMouse {
     /// ```
     /// @param options?: WaitForButtonOptions
     /// @returns Task<Button>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn wait_for_button<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -616,7 +566,7 @@ impl JsMouse {
     /// ```
     /// @param options?: WaitForScrollOptions
     /// @returns Task<ScrollEvent>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn wait_for_scroll<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -653,7 +603,7 @@ impl JsMouse {
     /// @param callback: () => void | Promise<void>
     /// @param options?: OnButtonOptions
     /// @returns EventHandle
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn on_button<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -702,7 +652,7 @@ impl JsMouse {
     /// @param callback: (length: number) => void | Promise<void>
     /// @param options?: OnScrollOptions
     /// @returns EventHandle
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn on_scroll<'js>(
         &self,
         ctx: Ctx<'js>,

@@ -1,2 +1,2 @@
 - Wayland/WSL: run hangs on start
--
+-@options with non-optional fields doesn't work

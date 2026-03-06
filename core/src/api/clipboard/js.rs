@@ -1,6 +1,6 @@
 use std::{fmt::Debug, time::Duration};
 
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
     JsLifetime, Promise, Result,
     atom::PredefinedAtom,
@@ -52,30 +52,19 @@ pub type JsClipboardMode = super::ClipboardMode;
 ///   sleep("1s"),
 /// ]);
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsWaitForChangedOptions {
     /// Clipboard source to watch.
-    /// @default `ClipboardMode.Clipboard`
+    #[default(ts = "ClipboardMode.Clipboard")]
     pub mode: Option<JsClipboardMode>,
 
     /// Polling interval in seconds.
-    /// @default `0.2`
+    #[default(Duration::from_millis(200).into(), ts = "0.2")]
     pub interval: JsDuration,
 
     /// Abort signal to cancel the wait.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
-}
-
-impl Default for JsWaitForChangedOptions {
-    fn default() -> Self {
-        Self {
-            mode: None,
-            interval: Duration::from_millis(200).into(),
-            signal: None,
-        }
-    }
 }
 
 impl From<JsWaitForChangedOptions> for super::WaitForChangedOptions {
@@ -119,7 +108,7 @@ impl From<JsWaitForChangedOptions> for super::WaitForChangedOptions {
 ///
 /// @singleton
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Clipboard")]
+#[js_class]
 pub struct JsClipboard {
     inner: super::Clipboard,
     text: JsClipboardText,
@@ -164,35 +153,31 @@ impl JsClipboard {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsClipboard {
     /// Sub-object for text clipboard operations.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn text(&self) -> JsClipboardText {
         self.text.clone()
     }
 
     /// Sub-object for image clipboard operations.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn image(&self) -> JsClipboardImage {
         self.image.clone()
     }
 
     /// Sub-object for file list clipboard operations.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn file_list(&self) -> JsClipboardFileList {
         self.file_list.clone()
     }
 
     /// Sub-object for HTML clipboard operations.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn html(&self) -> JsClipboardHtml {
         self.html.clone()
@@ -251,7 +236,7 @@ impl JsClipboard {
 /// const text = clipboard.text.get();
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "ClipboardText")]
+#[js_class]
 pub struct JsClipboardText {
     inner: super::Clipboard,
 }
@@ -270,7 +255,7 @@ impl JsClipboardText {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsClipboardText {
     /// Sets the clipboard text content.
     pub fn set(&self, ctx: Ctx<'_>, text: String, mode: Opt<JsClipboardMode>) -> Result<()> {
@@ -297,7 +282,7 @@ impl JsClipboardText {
 /// const clipped = clipboard.image.get();
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "ClipboardImage")]
+#[js_class]
 pub struct JsClipboardImage {
     inner: super::Clipboard,
 }
@@ -316,7 +301,7 @@ impl JsClipboardImage {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsClipboardImage {
     /// Sets the clipboard image content.
     pub fn set(&self, ctx: Ctx<'_>, image: JsImage, mode: Opt<JsClipboardMode>) -> Result<()> {
@@ -346,7 +331,7 @@ impl JsClipboardImage {
 /// const files = clipboard.fileList.get();
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "ClipboardFileList")]
+#[js_class]
 pub struct JsClipboardFileList {
     inner: super::Clipboard,
 }
@@ -365,7 +350,7 @@ impl JsClipboardFileList {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsClipboardFileList {
     /// Sets the clipboard file list content.
     pub fn set(
@@ -404,7 +389,7 @@ impl JsClipboardFileList {
 /// const html = clipboard.html.get();
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "ClipboardHtml")]
+#[js_class]
 pub struct JsClipboardHtml {
     inner: super::Clipboard,
 }
@@ -423,7 +408,7 @@ impl JsClipboardHtml {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsClipboardHtml {
     /// Sets the clipboard HTML content, with an optional plain-text alternative.
     pub fn set(

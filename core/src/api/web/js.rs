@@ -2,7 +2,7 @@ use std::{path::PathBuf, str::FromStr};
 
 use bytes::Bytes;
 use indexmap::IndexMap;
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use mime::Mime;
 use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderName, HeaderValue};
 use rquickjs::{
@@ -47,7 +47,7 @@ pub type JsMethod = super::Method;
 /// });
 /// ```
 #[derive(Clone, Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "MultipartForm")]
+#[js_class]
 pub struct JsMultipartForm {
     fields: Vec<MultipartField>,
 }
@@ -71,7 +71,7 @@ impl JsMultipartForm {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMultipartForm {
     /// @constructor
     #[qjs(constructor)]
@@ -175,54 +175,45 @@ impl JsMultipartForm {
 }
 
 /// Web request options.
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsWebOptions {
     /// Abort signal to cancel the request.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 
     /// User name for HTTP basic authentication.
-    /// @default `undefined`
     pub user_name: Option<String>,
 
     /// Password for HTTP basic authentication.
-    /// @default `undefined`
     pub password: Option<String>,
 
     /// Additional HTTP headers to send with the request.
-    /// @default `undefined`
     pub headers: Option<IndexMap<String, String>>,
 
     /// HTTP method to use for the request.
-    /// @default `Method.Get`
+    #[default(JsMethod::Get, ts = "Method.Get")]
     pub method: JsMethod,
 
     /// Request timeout duration.
-    /// @default `undefined`
     pub timeout: Option<JsDuration>,
 
     /// Sets the content-type header.
     /// Overrides any content-type set by other fields.
     ///
-    /// @default `undefined`
     pub content_type: Option<String>,
 
     /// Form data as strings.
     /// Sets content-type to "application/x-www-form-urlencoded".
     ///
-    /// @default `undefined`
     pub form: Option<IndexMap<String, String>>,
 
     /// Additional query parameters.
     ///
-    /// @default `undefined`
     pub query: Option<IndexMap<String, String>>,
 
     /// Form multipart data.
     /// Sets content-type and content-length appropriately.
     ///
-    /// @default `undefined`
     pub multipart: Option<JsMultipartForm>,
 }
 
@@ -307,7 +298,7 @@ impl JsWebOptions {
 /// }
 /// ```
 #[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "WebProgress")]
+#[js_class]
 pub struct JsWebProgress {
     total: u64,
     current: u64,
@@ -357,27 +348,24 @@ impl From<Progress> for JsWebProgress {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsWebProgress {
     /// Total bytes expected (0 if unknown).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn total(&self) -> u64 {
         self.total
     }
 
     /// Bytes transferred so far.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn current(&self) -> u64 {
         self.current
     }
 
     /// Whether the transfer is complete.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn finished(&self) -> bool {
         self.finished
@@ -412,7 +400,7 @@ impl JsWebProgress {
 ///
 /// @singleton
 #[derive(JsLifetime)]
-#[rquickjs::class(rename = "Web")]
+#[js_class]
 pub struct JsWeb {
     inner: super::Web,
 }
@@ -448,7 +436,7 @@ impl JsWeb {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsWeb {
     /// Downloads a binary file.
     ///

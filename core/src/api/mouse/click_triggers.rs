@@ -1,6 +1,7 @@
 use std::{collections::HashSet, fmt, sync::Arc};
 
 use color_eyre::Result;
+use macros::options;
 use parking_lot::Mutex;
 use rquickjs::{AsyncContext, async_with};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -26,10 +27,10 @@ struct ClickHandler {
 type TriggerList = Vec<ClickHandler>;
 
 /// Options for a click trigger.
-#[derive(Clone, Copy, Debug, Default)]
+#[options]
+#[derive(Clone, Copy, Debug)]
 pub struct OnButtonOptions {
     /// Require exactly this button and no others to be pressed.
-    /// @default `false`
     pub exclusive: bool,
 }
 

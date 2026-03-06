@@ -1,3 +1,4 @@
+use macros::{js_class, js_methods, platform};
 use rquickjs::{
     Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -18,7 +19,6 @@ use crate::{
     },
     types::display::DisplayFields,
 };
-
 #[derive(Clone, Debug)]
 enum JsSearchInInner {
     Desktop,
@@ -49,7 +49,7 @@ impl<'js> Trace<'js> for JsSearchInInner {
 /// const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
 /// ```
 #[derive(Clone, Debug, JsLifetime, Trace)]
-#[rquickjs::class(rename = "SearchIn")]
+#[js_class]
 pub struct JsSearchIn {
     inner: JsSearchInInner,
 }
@@ -85,7 +85,7 @@ impl JsSearchIn {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsSearchIn {
     /// @constructor
     /// @private
@@ -183,7 +183,7 @@ impl<'js> Trace<'js> for super::Screen {
 ///
 /// @singleton
 #[derive(Debug, JsLifetime, Trace)]
-#[rquickjs::class(rename = "Screen")]
+#[js_class]
 pub struct JsScreen {
     inner: Screen,
 }
@@ -203,14 +203,14 @@ impl JsScreen {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsScreen {
     /// Captures a screenshot of the entire desktop.
     ///
     /// ```ts
     /// const image = await screen.captureDesktop();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub async fn capture_desktop(&self, ctx: Ctx<'_>) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner.capture_desktop().await.into_js_result(&ctx)?,
@@ -224,7 +224,7 @@ impl JsScreen {
     /// const image = await screen.captureDisplay(displays.fromId(474));
     /// const image = await screen.captureDisplay(displays.largest());
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub async fn capture_display(&self, ctx: Ctx<'_>, display: JsDisplayInfo) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner
@@ -239,7 +239,7 @@ impl JsScreen {
     /// ```ts
     /// const image = await screen.captureRect(0, 0, 1920, 1080);
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub async fn capture_rect(&self, ctx: Ctx<'_>, rect: JsRectLike) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner.capture_rect(rect.0).await.into_js_result(&ctx)?,
@@ -252,7 +252,7 @@ impl JsScreen {
     /// const win = windows.activeWindow();
     /// const image = await screen.captureWindow(win);
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub async fn capture_window(&self, ctx: Ctx<'_>, handle: JsWindowHandle) -> Result<JsImage> {
         Ok(JsImage::new(
             self.inner
@@ -268,7 +268,7 @@ impl JsScreen {
     /// const color = await screen.capturePixel(100, 200);
     /// println(color);
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub async fn capture_pixel(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<JsColor> {
         Ok(self
             .inner

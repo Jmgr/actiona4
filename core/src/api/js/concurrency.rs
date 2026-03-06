@@ -1,13 +1,13 @@
 use std::pin::Pin;
 
 use futures::future::select_all;
+use macros::{js_class, js_methods};
 use rquickjs::{
     Array, Ctx, Function, JsLifetime, Promise, Result, Value, class::Trace, function::Args,
 };
 use tracing::instrument;
 
 use crate::api::js::task::task;
-
 /// Utilities for concurrent operations.
 ///
 /// ```ts
@@ -16,10 +16,10 @@ use crate::api::js::task::task;
 /// const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
 /// ```
 #[derive(Debug, JsLifetime, Trace)]
-#[rquickjs::class]
+#[js_class]
 pub struct JsConcurrency {}
 
-#[rquickjs::methods]
+#[js_methods]
 impl JsConcurrency {
     /// @skip
     #[must_use]

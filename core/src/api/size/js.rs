@@ -3,6 +3,7 @@
 //! @verbatim  */
 //! @verbatim type SizeLike = Size | { width: number; height: number };
 
+use macros::{js_class, js_methods};
 use rquickjs::{
     JsLifetime, Result,
     atom::PredefinedAtom,
@@ -16,7 +17,6 @@ use crate::{
     api::{ResultExt, js::classes::ValueClass, size::try_size},
     types::display::display_with_type,
 };
-
 pub struct JsSizeLike(pub super::Size);
 
 impl<'js> FromParam<'js> for JsSizeLike {
@@ -83,14 +83,14 @@ impl<'js> FromParam<'js> for JsSizeLike {
 /// @prop width: number // width
 /// @prop height: number // height
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Size")]
+#[js_class]
 pub struct JsSize {
     inner: super::Size,
 }
 
 impl ValueClass<'_> for JsSize {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsSize {
     /// Constructor.
     ///
@@ -112,27 +112,27 @@ impl JsSize {
     }
 
     /// @skip
-    #[qjs(get, rename = "width")]
+    #[get("width")]
     #[must_use]
     pub fn get_width(&self) -> u32 {
         self.inner.width.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "width")]
+    #[set("width")]
     pub fn set_width(&mut self, width: u32) {
         self.inner.width = width.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "height")]
+    #[get("height")]
     #[must_use]
     pub fn get_height(&self) -> u32 {
         self.inner.height.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "height")]
+    #[set("height")]
     pub fn set_height(&mut self, height: u32) {
         self.inner.height = height.into();
     }

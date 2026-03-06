@@ -2,7 +2,7 @@ use std::{io, sync::Arc};
 
 use image::ImageResult;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options, platform};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Promise, Result, TypedArray,
     atom::PredefinedAtom,
@@ -182,25 +182,15 @@ impl From<JsInterpolation> for Interpolation {
 /// // Resize with a specific filter
 /// image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsResizeOptions {
     /// Should the aspect ratio be kept?
-    /// @default `false`
     pub keep_aspect_ratio: bool,
 
     /// What filter to use
-    /// @default `ResizeFilter.Cubic`
+    #[default(JsResizeFilter::Cubic, ts = "ResizeFilter.Cubic")]
     pub filter: JsResizeFilter,
-}
-
-impl Default for JsResizeOptions {
-    fn default() -> Self {
-        Self {
-            keep_aspect_ratio: false,
-            filter: JsResizeFilter::Cubic,
-        }
-    }
 }
 
 impl From<JsResizeOptions> for ResizeOptions {
@@ -221,25 +211,15 @@ impl From<JsResizeOptions> for ResizeOptions {
 /// // Gaussian blur with custom sigma
 /// image.blur({ sigma: 5.0 });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsBlurOptions {
     /// Perform a fast, lower quality blur
-    /// @default `false`
     pub fast: bool,
 
     /// Standard deviation of the (approximated) Gaussian
-    /// @default `2`
+    #[default(2.0, ts = "2")]
     pub sigma: f32,
-}
-
-impl Default for JsBlurOptions {
-    fn default() -> Self {
-        Self {
-            fast: false,
-            sigma: 2.,
-        }
-    }
 }
 
 impl From<JsBlurOptions> for BlurOptions {
@@ -259,12 +239,11 @@ impl From<JsBlurOptions> for BlurOptions {
 ///   sourceRect: new Rect(0, 0, 32, 32)
 /// });
 /// ```
-/// @options
-#[derive(Clone, Copy, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDrawImageOptions {
     /// Source rectangle.
     /// `undefined` means the whole image.
-    /// @default `undefined`
     pub source_rect: Option<JsRect>,
 }
 
@@ -288,30 +267,20 @@ impl From<JsDrawImageOptions> for DrawImageOptions {
 /// // Rotate with a background color for exposed areas
 /// image.rotate(30, { defaultColor: Color.White });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsRotationOptions {
     /// Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-    /// @default `Interpolation.Bilinear`
+    #[default(JsInterpolation::Bilinear, ts = "Interpolation.Bilinear")]
     pub interpolation: JsInterpolation,
 
-    /// Rotation center
-    /// @default image center
+    /// Rotation center.
+    /// Defaults to the center of the image.
     pub center: Option<JsPoint>,
 
     /// Default color, used if the rotation triggers more pixels to be displayed
-    /// @default `Color.Black`
+    #[default(JsColor::new(0, 0, 0, 255), ts = "Color.Black")]
     pub default_color: JsColor,
-}
-
-impl Default for JsRotationOptions {
-    fn default() -> Self {
-        Self {
-            interpolation: JsInterpolation::Bilinear,
-            center: None,
-            default_color: JsColor::new(0, 0, 0, 255),
-        }
-    }
 }
 
 impl From<JsRotationOptions> for RotationOptions {
@@ -330,11 +299,10 @@ impl From<JsRotationOptions> for RotationOptions {
 /// // Draw a hollow circle (outline only)
 /// image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
 /// ```
-/// @options
-#[derive(Clone, Copy, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDrawingOptions {
     /// Draw a hollow shape instead of a filled one
-    /// @default `false`
     pub hollow: bool,
 }
 
@@ -440,35 +408,24 @@ impl From<JsTextVerticalAlign> for TextVerticalAlign {
 ///   verticalAlign: TextVerticalAlign.Middle
 /// });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDrawTextOptions {
     /// Font size in pixels.
-    /// @default `16`
+    #[default(16.0, ts = "16")]
     pub font_size: f32,
 
     /// Multiplier applied to the default line height when rendering multi-line text.
-    /// @default `1`
+    #[default(1.0, ts = "1")]
     pub line_spacing: f32,
 
     /// Horizontal alignment relative to the provided position.
-    /// @default `TextHorizontalAlign.Left`
+    #[default(JsTextHorizontalAlign::Left, ts = "TextHorizontalAlign.Left")]
     pub horizontal_align: JsTextHorizontalAlign,
 
     /// Vertical alignment relative to the provided position.
-    /// @default `TextVerticalAlign.Top`
+    #[default(JsTextVerticalAlign::Top, ts = "TextVerticalAlign.Top")]
     pub vertical_align: JsTextVerticalAlign,
-}
-
-impl Default for JsDrawTextOptions {
-    fn default() -> Self {
-        Self {
-            font_size: 16.0,
-            line_spacing: 1.0,
-            horizontal_align: JsTextHorizontalAlign::Left,
-            vertical_align: JsTextVerticalAlign::Top,
-        }
-    }
 }
 
 impl From<JsDrawTextOptions> for DrawTextOptions {
@@ -492,46 +449,30 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
 /// const controller = new AbortController();
 /// const match = await source.find(template, { signal: controller.signal });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsFindImageOptions {
     /// Use color matching.
-    /// @default `false`
     pub use_colors: bool,
 
     /// Use template transparency.
-    /// @default `true`
+    #[default(true)]
     pub use_transparency: bool,
 
     /// Matching threshold.
     /// Values are between 0 (worst) to 1 (best).
-    /// @default `0.8`
+    #[default(0.8)]
     pub match_threshold: f32,
 
     /// Radius to consider proximity (in pixels).
-    /// @default `10`
+    #[default(Some(10), ts = "10")]
     pub non_maximum_suppression_radius: Option<i32>,
 
     /// How many times should the source image and the template be downscaled?
-    /// @default `0`
     pub downscale: u64,
 
     /// Abort signal to cancel the search.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
-}
-
-impl Default for JsFindImageOptions {
-    fn default() -> Self {
-        Self {
-            use_colors: false,
-            use_transparency: true,
-            match_threshold: 0.8,
-            non_maximum_suppression_radius: Some(10),
-            downscale: 0,
-            signal: None,
-        }
-    }
 }
 
 impl JsFindImageOptions {
@@ -562,31 +503,31 @@ impl JsFindImageOptions {
 /// @prop rect: Rect // the rectangle on the source image where the target image was found
 /// @prop score: number // the score for this match, goes from 0 (worst) to 1 (best)
 #[derive(Clone, Copy, Debug, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Match")]
+#[js_class]
 pub struct JsMatch {
     inner: super::find_image::Match,
 }
 
 impl HostClass<'_> for JsMatch {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMatch {
     /// @skip
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn position(&self) -> JsPoint {
         self.inner.position.into()
     }
 
     /// @skip
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn rect(&self) -> JsRect {
         self.inner.rect.into()
     }
 
     /// @skip
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn score(&self) -> f64 {
         self.inner.score
@@ -701,7 +642,7 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 /// const result = await task;
 /// ```
 #[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "FindImageProgress")]
+#[js_class]
 pub struct JsFindImageProgress {
     inner: super::find_image::FindImageProgress,
 }
@@ -724,27 +665,24 @@ impl From<super::find_image::FindImageProgress> for JsFindImageProgress {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsFindImageProgress {
     /// The current stage of the find image operation.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn stage(&self) -> JsFindImageStage {
         self.inner.stage.into()
     }
 
     /// Completion percentage (0-100).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn percent(&self) -> u8 {
         self.inner.percent
     }
 
     /// Whether the operation has finished.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn finished(&self) -> bool {
         self.inner.stage.is_finished()
@@ -793,7 +731,7 @@ impl JsFindImageProgress {
 /// }
 /// ```
 #[derive(Clone, Debug, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Image")]
+#[js_class]
 pub struct JsImage {
     inner: super::Image,
 }
@@ -826,7 +764,7 @@ impl<'js> ValueClass<'js> for JsImage {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsImage {
     /// @skip
     #[qjs(skip)]
@@ -882,22 +820,19 @@ impl JsImage {
         Ok(image.into())
     }
 
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn width(&self) -> u32 {
         self.inner.width()
     }
 
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn height(&self) -> u32 {
         self.inner.height()
     }
 
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn size(&self) -> JsSize {
         self.inner.size().into()
@@ -1158,9 +1093,8 @@ impl JsImage {
     }
 
     /// Returns a Rect representing this image.
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn rect(&self) -> JsRect {
         self.inner.bounds_rect().into()
@@ -1534,7 +1468,7 @@ impl JsImage {
     /// const match = await task;
     /// ```
     /// @returns ProgressTask<Match | undefined, FindImageProgress>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn find_on_screen<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -1588,7 +1522,7 @@ impl JsImage {
     /// const matches = await task;
     /// ```
     /// @returns ProgressTask<Match[], FindImageProgress>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn find_all_on_screen<'js>(
         &self,
         ctx: Ctx<'js>,

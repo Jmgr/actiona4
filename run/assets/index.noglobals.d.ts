@@ -3021,12 +3021,12 @@ const app: App;
 interface PlaySoundOptions {
     /**
      * Volume to play the sound at
-     * @defaultValue `1.0`
+     * @defaultValue `1`
      */
     volume?: number;
     /**
      * Speed to play the sound at
-     * @defaultValue `1.0`
+     * @defaultValue `1`
      */
     playbackRate?: number;
     /**
@@ -4844,8 +4844,9 @@ interface RotationOptions {
      */
     interpolation?: Interpolation;
     /**
-     * Rotation center
-     * @defaultValue image center
+     * Rotation center.
+     * Defaults to the center of the image.
+     * @defaultValue `undefined`
      */
     center?: Point;
     /**
@@ -5484,11 +5485,11 @@ class Image {
     /**
      * Draw another image on this image.
      */
-    drawImage(position: PointLike, options?: DrawImageOptions): this;
+    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
     /**
      * Draw another image on this image.
      */
-    drawImage(x: number, y: number, options?: DrawImageOptions): this;
+    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
     /**
      * Draw another image on a copy of this image.
      */
@@ -6398,10 +6399,12 @@ class Wildcard {
 interface NotificationCustomHint {
     /**
      * Hint name.
+     * @defaultValue `""`
      */
     name?: string;
     /**
      * Hint value.
+     * @defaultValue `""`
      */
     value?: string;
 }
@@ -6414,10 +6417,12 @@ interface NotificationCustomHint {
 interface NotificationCustomIntHint {
     /**
      * Hint name.
+     * @defaultValue `""`
      */
     name?: string;
     /**
      * Integer hint value.
+     * @defaultValue `0`
      */
     value?: number;
 }
@@ -6429,10 +6434,12 @@ interface NotificationCustomIntHint {
 interface NotificationAction {
     /**
      * Action identifier (used as arguments on Windows).
+     * @defaultValue `""`
      */
     identifier?: string;
     /**
      * Action label visible to the user.
+     * @defaultValue `""`
      */
     label?: string;
     /**
@@ -6475,14 +6482,17 @@ interface NotificationAction {
 interface NotificationHeader {
     /**
      * Unique identifier for this header group.
+     * @defaultValue `""`
      */
     id?: string;
     /**
      * Title displayed for the header group.
+     * @defaultValue `""`
      */
     title?: string;
     /**
      * Arguments passed when the header is clicked.
+     * @defaultValue `""`
      */
     arguments?: string;
 }
@@ -6495,10 +6505,12 @@ interface NotificationHeader {
 interface NotificationInput {
     /**
      * Unique identifier for this input.
+     * @defaultValue `""`
      */
     id?: string;
     /**
      * Type of input field.
+     * @defaultValue `undefined`
      */
     inputType?: NotificationInputType;
     /**
@@ -6526,10 +6538,12 @@ interface NotificationInput {
 interface NotificationSelection {
     /**
      * Unique identifier for this selection option.
+     * @defaultValue `""`
      */
     id?: string;
     /**
      * Display text for this selection option.
+     * @defaultValue `""`
      */
     content?: string;
 }
@@ -7384,7 +7398,8 @@ interface RandomStringOptions {
      * Possible characters to pick from.
      * Can contain any Unicode grapheme cluster.
      * When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
-     * @defaultValue `undefined` (all printable ASCII characters)
+     * Defaults to all printable ASCII characters.
+     * @defaultValue `undefined`
      */
     characters?: string;
     /**

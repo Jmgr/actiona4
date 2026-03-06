@@ -2,7 +2,7 @@ use std::{collections::HashSet, str::FromStr, sync::Arc};
 
 use derive_more::Display;
 use enigo::Key;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, IntoSerde, PlatformValidate, js_class, js_methods, options, platform};
 use rquickjs::{
     Class, Coerced, Ctx, Exception, FromJs, IntoJs, JsLifetime, Object, Promise, Result, Value,
     atom::PredefinedAtom,
@@ -70,7 +70,7 @@ impl<'js> Trace<'js> for super::Keyboard {
 /// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Keyboard")]
+#[js_class]
 pub struct JsKeyboard {
     inner: super::Keyboard,
     text_replacements: TextReplacements,
@@ -143,37 +143,24 @@ impl JsKeyboard {
 }
 
 /// Options for `onText`.
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsOnTextOptions {
     /// Erase the typed text before inserting the replacement.
     /// Set to `false` to trigger an action without replacing the typed text.
-    /// @default `true`
+    #[default(true)]
     pub erase: bool,
 
     /// When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
     /// Replacing with an image always uses the clipboard.
-    /// @default `false`
     pub use_clipboard_for_text: bool,
 
     /// Save and restore the clipboard contents around a clipboard-based replacement.
-    /// @default `true`
+    #[default(true)]
     pub save_restore_clipboard: bool,
 
     /// Abort signal to automatically cancel this listener when signalled.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
-}
-
-impl Default for JsOnTextOptions {
-    fn default() -> Self {
-        Self {
-            erase: true,
-            use_clipboard_for_text: false,
-            save_restore_clipboard: true,
-            signal: None,
-        }
-    }
 }
 
 impl From<JsOnTextOptions> for OnTextOptions {
@@ -192,15 +179,13 @@ impl From<JsOnTextOptions> for OnTextOptions {
 /// // Wait for exactly Ctrl+S and no other keys
 /// await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
 /// ```
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsKeysOptions {
     /// Require exactly these keys and no others to be pressed simultaneously.
-    /// @default `false`
     pub exclusive: bool,
 
     /// Abort signal to cancel the operation.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
@@ -212,10 +197,10 @@ impl From<JsKeysOptions> for OnKeysOptions {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsKeyboard {
     /// Types the given text string using simulated key events.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn write_text(&self, ctx: Ctx<'_>, text: String) -> Result<()> {
         self.inner.text(&text).into_js_result(&ctx)?;
 
@@ -226,7 +211,7 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn press(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
         self.inner.press(key).into_js_result(&ctx)?;
@@ -238,7 +223,7 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn release(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
         self.inner.release(key).into_js_result(&ctx)?;
@@ -250,7 +235,7 @@ impl JsKeyboard {
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
     /// @param key: Key | string | number
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn tap(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
         self.inner.tap(key).into_js_result(&ctx)?;
@@ -261,7 +246,7 @@ impl JsKeyboard {
     /// Presses and holds a raw keycode until `releaseRaw` is called.
     ///
     /// Use this for keys not covered by the `Key` enum.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn press_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
         self.inner.press_raw(keycode).into_js_result(&ctx)?;
 
@@ -269,7 +254,7 @@ impl JsKeyboard {
     }
 
     /// Releases a raw keycode previously held with `pressRaw`.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn release_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
         self.inner.release_raw(keycode).into_js_result(&ctx)?;
 
@@ -279,7 +264,7 @@ impl JsKeyboard {
     /// Presses and releases a raw keycode in one action.
     ///
     /// Use this for keys not covered by the `Key` enum.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn tap_raw(&self, ctx: Ctx<'_>, keycode: u16) -> Result<()> {
         self.inner.tap_raw(keycode).into_js_result(&ctx)?;
 
@@ -288,7 +273,7 @@ impl JsKeyboard {
 
     /// Returns whether a key is currently pressed.
     /// @param key: Key | string | number
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = Self::parse_key(&ctx, key)?;
 
@@ -296,7 +281,7 @@ impl JsKeyboard {
     }
 
     /// Returns the list of keys that are currently pressed.
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn get_pressed_keys(&self, ctx: Ctx<'_>) -> Result<Vec<JsKey>> {
         let keys = self.inner.get_pressed_keys().into_js_result(&ctx)?;
 
@@ -333,7 +318,7 @@ impl JsKeyboard {
     /// ```
     /// @param keys: (Key | string | number)[]
     /// @returns Task<void>
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn wait_for_keys<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -385,7 +370,7 @@ impl JsKeyboard {
     /// @param handler: string | Image | (() => string | Image | void | Promise<string | Image | void>)
     /// @param options?: OnTextOptions
     /// @returns EventHandle
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn on_text<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -433,7 +418,7 @@ impl JsKeyboard {
     /// @param callback: () => void | Promise<void>
     /// @param options?: KeysOptions
     /// @returns EventHandle
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn on_key<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -464,7 +449,7 @@ impl JsKeyboard {
     /// @param callback: () => void | Promise<void>
     /// @param options?: KeysOptions
     /// @returns EventHandle
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn on_keys<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -559,10 +544,10 @@ impl JsKeyboard {
     EnumIter,
     EnumString,
     Eq,
-    FromSerde,
     Hash,
     IntoSerde,
     PartialEq,
+    PlatformValidate,
     Serialize,
 )]
 /// Standard keyboard keys.
@@ -574,6 +559,7 @@ impl JsKeyboard {
 /// keyboard.tap(Key.Return);
 /// keyboard.tap("a");
 /// ```
+#[options]
 #[serde(rename = "Key")]
 /// @rename Key
 pub enum JsStandardKey {
@@ -686,15 +672,15 @@ pub enum JsStandardKey {
     /// `Key.Z`
     Z,
     /// Brazilian ABNT keyboard key C1
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.AbntC1`
     AbntC1,
     /// Brazilian ABNT keyboard key C2
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.AbntC2`
     AbntC2,
     /// IME “Accept” / commit conversion
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Accept`
     Accept,
     /// Numpad '+' (addition) key
@@ -704,50 +690,50 @@ pub enum JsStandardKey {
     /// `Key.Alt`
     Alt,
     /// Application/Menu key
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Apps`
     Apps,
     /// Attention key (legacy/rare)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Attention`
     Attention,
     /// Backspace / Delete-previous-character
     /// `Key.Backspace`
     Backspace,
     /// Break key (X11/Linux)
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.Break`
     Break,
     /// Begin key
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.Begin`
     Begin,
     /// Browser Back
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserBack`
     BrowserBack,
     /// Browser Favorites
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserFavorites`
     BrowserFavorites,
     /// Browser Forward
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserForward`
     BrowserForward,
     /// Browser Home
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserHome`
     BrowserHome,
     /// Browser Refresh
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserRefresh`
     BrowserRefresh,
     /// Browser Search
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserSearch`
     BrowserSearch,
     /// Browser Stop
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.BrowserStop`
     BrowserStop,
     /// Cancel key (legacy)
@@ -763,67 +749,67 @@ pub enum JsStandardKey {
     /// `Key.Control`
     Control,
     /// IME Convert (start/confirm conversion)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Convert`
     Convert,
     /// Cursor Select (CRSel)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.CursorSelect`
     CursorSelect,
     /// IME: switch to alphanumeric
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEAlphanumeric`
     DBEAlphanumeric,
     /// IME: code input mode
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBECodeinput`
     DBECodeinput,
     /// IME: determine string
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEDetermineString`
     DBEDetermineString,
     /// IME: enter dialog conversion mode
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEEnterDLGConversionMode`
     DBEEnterDLGConversionMode,
     /// IME: open configuration
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEEnterIMEConfigMode`
     DBEEnterIMEConfigMode,
     /// IME: word register mode
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEEnterWordRegisterMode`
     DBEEnterWordRegisterMode,
     /// IME: flush/reset composition string
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEFlushString`
     DBEFlushString,
     /// IME: Hiragana
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEHiragana`
     DBEHiragana,
     /// IME: Katakana
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBEKatakana`
     DBEKatakana,
     /// IME: no code point
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBENoCodepoint`
     DBENoCodepoint,
     /// IME: no roman
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBENoRoman`
     DBENoRoman,
     /// IME: Roman
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBERoman`
     DBERoman,
     /// IME: SBCS character
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBESBCSChar`
     DBESBCSChar,
     /// IME: SBCS/Special char
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.DBESChar`
     DBESChar,
     /// Numpad decimal point '.'
@@ -842,7 +828,7 @@ pub enum JsStandardKey {
     /// `Key.End`
     End,
     /// Erase EOF
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Ereof`
     Ereof,
     /// Escape key
@@ -852,7 +838,7 @@ pub enum JsStandardKey {
     /// `Key.Execute`
     Execute,
     /// Extend Selection (ExSel)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Exsel`
     Exsel,
     /// Function key F1
@@ -928,155 +914,155 @@ pub enum JsStandardKey {
     /// `Key.F24`
     F24,
     /// Function key F25
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F25`
     F25,
     /// Function key F26
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F26`
     F26,
     /// Function key F27
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F27`
     F27,
     /// Function key F28
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F28`
     F28,
     /// Function key F29
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F29`
     F29,
     /// Function key F30
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F30`
     F30,
     /// Function key F31
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F31`
     F31,
     /// Function key F32
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F32`
     F32,
     /// Function key F33
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F33`
     F33,
     /// Function key F34
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F34`
     F34,
     /// Function key F35
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.F35`
     F35,
     /// IME Final (end conversion)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Final`
     Final,
     /// Find key
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.Find`
     Find,
     /// Gamepad: A button
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadA`
     GamepadA,
     /// Gamepad: B button
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadB`
     GamepadB,
     /// Gamepad: D-Pad Down
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadDPadDown`
     GamepadDPadDown,
     /// Gamepad: D-Pad Left
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadDPadLeft`
     GamepadDPadLeft,
     /// Gamepad: D-Pad Right
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadDPadRight`
     GamepadDPadRight,
     /// Gamepad: D-Pad Up
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadDPadUp`
     GamepadDPadUp,
     /// Gamepad: Left shoulder (L1)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftShoulder`
     GamepadLeftShoulder,
     /// Gamepad: Left thumbstick button (L3)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftThumbstickButton`
     GamepadLeftThumbstickButton,
     /// Gamepad: Left thumbstick down
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftThumbstickDown`
     GamepadLeftThumbstickDown,
     /// Gamepad: Left thumbstick left
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftThumbstickLeft`
     GamepadLeftThumbstickLeft,
     /// Gamepad: Left thumbstick right
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftThumbstickRight`
     GamepadLeftThumbstickRight,
     /// Gamepad: Left thumbstick up
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftThumbstickUp`
     GamepadLeftThumbstickUp,
     /// Gamepad: Left trigger (L2)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadLeftTrigger`
     GamepadLeftTrigger,
     /// Gamepad: Menu / Start
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadMenu`
     GamepadMenu,
     /// Gamepad: Right shoulder (R1)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightShoulder`
     GamepadRightShoulder,
     /// Gamepad: Right thumbstick button (R3)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightThumbstickButton`
     GamepadRightThumbstickButton,
     /// Gamepad: Right thumbstick down
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightThumbstickDown`
     GamepadRightThumbstickDown,
     /// Gamepad: Right thumbstick left
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightThumbstickLeft`
     GamepadRightThumbstickLeft,
     /// Gamepad: Right thumbstick right
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightThumbstickRight`
     GamepadRightThumbstickRight,
     /// Gamepad: Right thumbstick up
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightThumbstickUp`
     GamepadRightThumbstickUp,
     /// Gamepad: Right trigger (R2)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadRightTrigger`
     GamepadRightTrigger,
     /// Gamepad: View / Back
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadView`
     GamepadView,
     /// Gamepad: X button
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadX`
     GamepadX,
     /// Gamepad: Y button
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.GamepadY`
     GamepadY,
     /// Hangeul toggle (Korean layout)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Hangeul`
     Hangeul,
     /// Hangul toggle (Korean layout)
@@ -1092,53 +1078,53 @@ pub enum JsStandardKey {
     /// `Key.Home`
     Home,
     /// ICO (legacy) key 00
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Ico00`
     Ico00,
     /// ICO (legacy) Clear
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.IcoClear`
     IcoClear,
     /// ICO (legacy) Help
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.IcoHelp`
     IcoHelp,
     /// IME Off (disable IME)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.IMEOff`
     IMEOff,
     /// IME On (enable IME)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.IMEOn`
     IMEOn,
     /// Insert key
     /// `Key.Insert`
     Insert,
     /// IME: Junja mode
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Junja`
     Junja,
     /// IME: Kana mode
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Kana`
     Kana,
     /// Kanji toggle (Japanese layout)
     /// `Key.Kanji`
     Kanji,
     /// Launch application 1
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.LaunchApp1`
     LaunchApp1,
     /// Launch application 2
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.LaunchApp2`
     LaunchApp2,
     /// Launch default mail client
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.LaunchMail`
     LaunchMail,
     /// Launch media selector
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.LaunchMediaSelect`
     LaunchMediaSelect,
     /// Left Control
@@ -1148,7 +1134,7 @@ pub enum JsStandardKey {
     /// `Key.LeftArrow`
     LeftArrow,
     /// Line Feed key
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.Linefeed`
     Linefeed,
     /// Left Alt/Menu
@@ -1158,7 +1144,7 @@ pub enum JsStandardKey {
     /// `Key.LeftShift`
     LeftShift,
     /// Left Windows / Super key
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.LeftWindows`
     LeftWindows,
     /// Next media track
@@ -1183,47 +1169,47 @@ pub enum JsStandardKey {
     /// `Key.Multiply`
     Multiply,
     /// Navigation: Accept/OK (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationAccept`
     NavigationAccept,
     /// Navigation: Cancel/Back (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationCancel`
     NavigationCancel,
     /// Navigation: Down (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationDown`
     NavigationDown,
     /// Navigation: Left (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationLeft`
     NavigationLeft,
     /// Navigation: Menu (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationMenu`
     NavigationMenu,
     /// Navigation: Right (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationRight`
     NavigationRight,
     /// Navigation: Up (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationUp`
     NavigationUp,
     /// Navigation: View (UWP)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NavigationView`
     NavigationView,
     /// NoName key (reserved)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NoName`
     NoName,
     /// IME Non-Convert (cancel conversion)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.NonConvert`
     NonConvert,
     /// Placeholder "no key"
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.None`
     None,
     /// Num Lock toggle
@@ -1263,150 +1249,150 @@ pub enum JsStandardKey {
     /// `Key.NumpadEnter`
     NumpadEnter,
     /// OEM specific key 1
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM1`
     OEM1,
     /// OEM specific key 102 (angle bracket/pipe on some layouts)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM102`
     OEM102,
     /// OEM specific key 2
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM2`
     OEM2,
     /// OEM specific key 3 (backtick/tilde on some layouts)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM3`
     OEM3,
     /// OEM specific key 4 (left bracket on some layouts)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM4`
     OEM4,
     /// OEM specific key 5 (right bracket on some layouts)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM5`
     OEM5,
     /// OEM specific key 6 (semicolon on some layouts)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM6`
     OEM6,
     /// OEM specific key 7 (quote on some layouts)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM7`
     OEM7,
     /// OEM specific key 8
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEM8`
     OEM8,
     /// OEM Attention
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMAttn`
     OEMAttn,
     /// OEM Auto
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMAuto`
     OEMAuto,
     /// OEM Ax
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMAx`
     OEMAx,
     /// OEM Backtab (reverse Tab)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMBacktab`
     OEMBacktab,
     /// OEM Clear
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMClear`
     OEMClear,
     /// OEM Comma ','
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMComma`
     OEMComma,
     /// OEM Copy
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMCopy`
     OEMCopy,
     /// OEM Cusel
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMCusel`
     OEMCusel,
     /// OEM Enlw
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMEnlw`
     OEMEnlw,
     /// OEM Finish
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMFinish`
     OEMFinish,
     /// OEM FJ Jisho (dictionary)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMFJJisho`
     OEMFJJisho,
     /// OEM FJ Loya
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMFJLoya`
     OEMFJLoya,
     /// OEM FJ Masshou
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMFJMasshou`
     OEMFJMasshou,
     /// OEM FJ Roya
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMFJRoya`
     OEMFJRoya,
     /// OEM FJ Touroku
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMFJTouroku`
     OEMFJTouroku,
     /// OEM Jump
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMJump`
     OEMJump,
     /// OEM Minus '-'
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMMinus`
     OEMMinus,
     /// OEM NEC Equal '='
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMNECEqual`
     OEMNECEqual,
     /// OEM PA1
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMPA1`
     OEMPA1,
     /// OEM PA2
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMPA2`
     OEMPA2,
     /// OEM PA3
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMPA3`
     OEMPA3,
     /// OEM Period '.'
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMPeriod`
     OEMPeriod,
     /// OEM Plus '+'
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMPlus`
     OEMPlus,
     /// OEM Reset
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMReset`
     OEMReset,
     /// OEM Wsctrl
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.OEMWsctrl`
     OEMWsctrl,
     /// Same as Alt
     /// `Key.Option`
     Option,
     /// PA1 key
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.PA1`
     PA1,
     /// Packet key (used to pass Unicode chars)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Packet`
     Packet,
     /// Page Down
@@ -1419,21 +1405,21 @@ pub enum JsStandardKey {
     /// `Key.Pause`
     Pause,
     /// Media Play
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Play`
     Play,
     /// Screenshot
     /// `Key.PrintScreen`
     PrintScreen,
     /// IME Process key
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Processkey`
     Processkey,
     /// Right Control
     /// `Key.RightControl`
     RightControl,
     /// Redo
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.Redo`
     Redo,
     /// Enter / Return
@@ -1443,44 +1429,44 @@ pub enum JsStandardKey {
     /// `Key.RightArrow`
     RightArrow,
     /// Right Alt/Menu
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.RightAlt`
     RightAlt,
     /// Right Shift
     /// `Key.RightShift`
     RightShift,
     /// Right Windows / Super key
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.RightWindows`
     RightWindows,
     /// Scroll key (legacy)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Scroll`
     Scroll,
     /// Scroll Lock
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.ScrollLock`
     ScrollLock,
     /// Select key
     /// `Key.Select`
     Select,
     /// Script switch
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.ScriptSwitch`
     ScriptSwitch,
     /// Numpad separator (locale-dependent)
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Separator`
     Separator,
     /// Shift modifier
     /// `Key.Shift`
     Shift,
     /// Shift Lock
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.ShiftLock`
     ShiftLock,
     /// System Sleep
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Sleep`
     Sleep,
     /// Spacebar
@@ -1490,14 +1476,14 @@ pub enum JsStandardKey {
     /// `Key.Subtract`
     Subtract,
     /// System Request (SysRq)
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.SysReq`
     SysReq,
     /// Tab / focus next
     /// `Key.Tab`
     Tab,
     /// Undo
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.Undo`
     Undo,
     /// Arrow: Up
@@ -1513,13 +1499,29 @@ pub enum JsStandardKey {
     /// `Key.VolumeUp`
     VolumeUp,
     /// Microphone mute
-    /// @platforms =linux
+    #[platform(only = "linux")]
     /// `Key.MicrophoneMute`
     MicrophoneMute,
     /// Zoom key
-    /// @platforms =windows
+    #[platform(only = "windows")]
     /// `Key.Zoom`
     Zoom,
+}
+
+impl JsStandardKey {
+    fn validate_for_current_platform(self, ctx: &Ctx<'_>) -> Result<Self> {
+        self.validate_for_platform(ctx.user_data().platform())
+            .into_js_result(ctx)?;
+        Ok(self)
+    }
+}
+
+impl<'js> FromJs<'js> for JsStandardKey {
+    fn from_js(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        let standard_key: Self = rquickjs_serde::from_value(value)
+            .map_err(|err| Exception::throw_message(ctx, &format!("{err}")))?;
+        standard_key.validate_for_current_platform(ctx)
+    }
 }
 
 /// @skip
@@ -1568,7 +1570,9 @@ impl<'js> FromJs<'js> for JsKey {
             } else if let Some(string) = value.as_string() {
                 let string = string.to_string()?;
                 if let Ok(standard_key) = JsStandardKey::from_str(&string) {
-                    return Ok(Self::Standard(standard_key));
+                    return Ok(Self::Standard(
+                        standard_key.validate_for_current_platform(ctx)?,
+                    ));
                 }
                 if string.chars().count() != 1 {
                     return Err(Exception::throw_message(ctx, "invalid key name"));
@@ -2846,6 +2850,7 @@ mod tests {
 
     use crate::{
         api::keyboard::js::{JsKey, JsStandardKey},
+        platform_info::Platform,
         runtime::Runtime,
     };
 
@@ -3013,5 +3018,17 @@ mod tests {
             let key = script_engine.eval::<JsKey>("42").await.unwrap();
             assert_eq!(key, JsKey::Other(42));
         });
+    }
+
+    #[test]
+    fn test_standard_key_platform_validation() {
+        let validation_result = if Platform::detect().is_windows() {
+            JsStandardKey::Linefeed.validate_for_platform(Platform::detect())
+        } else {
+            JsStandardKey::GamepadA.validate_for_platform(Platform::detect())
+        };
+
+        let error = validation_result.unwrap_err();
+        assert!(error.to_string().contains("only available on"));
     }
 }

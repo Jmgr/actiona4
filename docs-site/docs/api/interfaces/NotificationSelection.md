@@ -18,6 +18,10 @@ A selection option for a dropdown input.
 
 Display text for this selection option.
 
+#### Default Value
+
+`""`
+
 ***
 
 ### id?
@@ -25,3 +29,7 @@ Display text for this selection option.
 > `optional` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Unique identifier for this selection option.
+
+#### Default Value
+
+`""`

@@ -1,6 +1,6 @@
 use std::{borrow::Cow, fmt::Debug};
 
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
     Array, Ctx, Exception, JsLifetime, Result, Value,
     atom::PredefinedAtom,
@@ -26,40 +26,29 @@ const ASCII_SPECIAL_CHARACTERS: &str = r##" !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"##;
 /// const token = random.string(32);
 /// const pin = random.string(6, { characters: "0123456789" });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsRandomStringOptions {
     /// Possible characters to pick from.
     /// Can contain any Unicode grapheme cluster.
     /// When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
-    /// @default `undefined` (all printable ASCII characters)
+    /// Defaults to all printable ASCII characters.
     pub characters: Option<String>,
 
     /// Include digits `0-9` in the default character set.
     /// Ignored when `characters` is specified.
-    /// @default `true`
+    #[default(true)]
     pub allow_numbers: bool,
 
     /// Include letters `A-Z` and `a-z` in the default character set.
     /// Ignored when `characters` is specified.
-    /// @default `true`
+    #[default(true)]
     pub allow_letters: bool,
 
     /// Include printable ASCII non-alphanumeric characters in the default character set.
     /// Ignored when `characters` is specified.
-    /// @default `true`
+    #[default(true)]
     pub allow_special_characters: bool,
-}
-
-impl Default for JsRandomStringOptions {
-    fn default() -> Self {
-        Self {
-            characters: None,
-            allow_numbers: true,
-            allow_letters: true,
-            allow_special_characters: true,
-        }
-    }
 }
 
 /// Random number generator.
@@ -81,7 +70,7 @@ impl Default for JsRandomStringOptions {
 ///
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "Random")]
+#[js_class]
 pub struct JsRandom {}
 
 impl<'js> Trace<'js> for JsRandom {
@@ -90,7 +79,7 @@ impl<'js> Trace<'js> for JsRandom {
 
 impl<'js> SingletonClass<'js> for JsRandom {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsRandom {
     /// Returns a random floating-point number.
     ///

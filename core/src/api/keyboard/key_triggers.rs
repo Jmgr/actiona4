@@ -6,6 +6,7 @@ use std::{
 
 use color_eyre::Result;
 use enigo::Key;
+use macros::options;
 use parking_lot::Mutex;
 use rquickjs::{AsyncContext, async_with};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -18,10 +19,10 @@ use crate::{
 };
 
 /// Options for a key trigger.
-#[derive(Clone, Copy, Debug, Default)]
+#[options]
+#[derive(Clone, Copy, Debug)]
 pub struct OnKeysOptions {
     /// Require exactly these keys and no others to be pressed.
-    /// @default `false`
     pub exclusive: bool,
 }
 

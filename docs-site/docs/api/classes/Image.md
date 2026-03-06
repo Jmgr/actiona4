@@ -921,7 +921,7 @@ Draw a hollow shape instead of a filled one
 
 #### Call Signature
 
-> **drawImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
+> **drawImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
 
 Draw another image on this image.
 
@@ -930,6 +930,10 @@ Draw another image on this image.
 ###### position
 
 [`PointLike`](../type-aliases/PointLike.md)
+
+###### image
+
+`Image`
 
 ###### options?
 
@@ -956,7 +960,7 @@ Source rectangle.
 
 #### Call Signature
 
-> **drawImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
+> **drawImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
 
 Draw another image on this image.
 
@@ -969,6 +973,10 @@ Draw another image on this image.
 ###### y
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### image
+
+`Image`
 
 ###### options?
 
@@ -3016,13 +3024,12 @@ Rotate the image.
 
 > `optional` **center**: [`Point`](Point.md)
 
-Rotation center
+Rotation center.
+Defaults to the center of the image.
 
 ###### Default Value
 
-```ts
-image center
-```
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
@@ -3104,13 +3111,12 @@ Rotate the image and returns a new image.
 
 > `optional` **center**: [`Point`](Point.md)
 
-Rotation center
+Rotation center.
+Defaults to the center of the image.
 
 ###### Default Value
 
-```ts
-image center
-```
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 

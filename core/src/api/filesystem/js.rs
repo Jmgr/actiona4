@@ -1,8 +1,8 @@
+use macros::{js_class, js_methods};
 use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
 use tokio::fs;
 
 use crate::api::js::classes::HostClass;
-
 /// Provides static methods for querying filesystem path types.
 ///
 /// ```ts
@@ -17,12 +17,12 @@ use crate::api::js::classes::HostClass;
 /// }
 /// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
-#[rquickjs::class(rename = "Filesystem")]
+#[js_class]
 pub struct JsFilesystem {}
 
 impl HostClass<'_> for JsFilesystem {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsFilesystem {
     /// @constructor
     /// @private

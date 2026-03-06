@@ -1,6 +1,6 @@
 use std::{fmt::Debug, path::PathBuf};
 
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 use tokio::fs::{self};
 
@@ -19,7 +19,7 @@ use crate::{
 /// }
 /// ```
 #[derive(Clone, Debug, Default, Eq, JsLifetime, PartialEq, Trace)]
-#[rquickjs::class(rename = "DirectoryEntry")]
+#[js_class]
 pub struct JsDirectoryEntry {
     path: String,
     file_name: String,
@@ -31,51 +31,45 @@ pub struct JsDirectoryEntry {
 
 impl HostClass<'_> for JsDirectoryEntry {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsDirectoryEntry {
     /// The full path to the entry.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn path(&self) -> &str {
         &self.path
     }
 
     /// The file name (last component of the path).
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn file_name(&self) -> &str {
         &self.file_name
     }
 
     /// Whether this entry is a regular file.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn is_file(&self) -> bool {
         self.is_file
     }
 
     /// Whether this entry is a directory.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn is_directory(&self) -> bool {
         self.is_directory
     }
 
     /// Whether this entry is a symbolic link.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn is_symlink(&self) -> bool {
         self.is_symlink
     }
 
     /// The size of the entry in bytes.
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn size(&self) -> u64 {
         self.size
@@ -104,18 +98,12 @@ impl JsDirectoryEntry {
 /// await Directory.create("/tmp/a/b/c", { recursive: true });
 /// await Directory.remove("/tmp/a", { recursive: false });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryOptions {
     /// Should the directories be created or removed recursively?
-    /// @default `true`
+    #[default(true)]
     pub recursive: bool,
-}
-
-impl Default for JsDirectoryOptions {
-    fn default() -> Self {
-        Self { recursive: true }
-    }
 }
 
 /// Options for `Directory.listEntries()`.
@@ -127,25 +115,16 @@ impl Default for JsDirectoryOptions {
 ///   fetchSize: true,
 /// });
 /// ```
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsDirectoryListOptions {
     /// Should the entries be sorted?
-    /// @default `true`
+    #[default(true)]
     pub sort: bool,
 
     /// Should each entry's size be fetched?
-    /// @default `true`
+    #[default(true)]
     pub fetch_size: bool,
-}
-
-impl Default for JsDirectoryListOptions {
-    fn default() -> Self {
-        Self {
-            sort: true,
-            fetch_size: true,
-        }
-    }
 }
 
 /// Provides static methods for creating, removing, and listing directories.
@@ -164,7 +143,7 @@ impl Default for JsDirectoryListOptions {
 /// await Directory.remove("/tmp/my");
 /// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
-#[rquickjs::class(rename = "Directory")]
+#[js_class]
 pub struct JsDirectory {}
 
 impl HostClass<'_> for JsDirectory {
@@ -175,7 +154,7 @@ impl HostClass<'_> for JsDirectory {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsDirectory {
     /// @constructor
     /// @private

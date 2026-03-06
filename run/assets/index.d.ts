@@ -3020,12 +3020,12 @@ declare const app: App;
 declare interface PlaySoundOptions {
     /**
      * Volume to play the sound at
-     * @defaultValue `1.0`
+     * @defaultValue `1`
      */
     volume?: number;
     /**
      * Speed to play the sound at
-     * @defaultValue `1.0`
+     * @defaultValue `1`
      */
     playbackRate?: number;
     /**
@@ -4843,8 +4843,9 @@ declare interface RotationOptions {
      */
     interpolation?: Interpolation;
     /**
-     * Rotation center
-     * @defaultValue image center
+     * Rotation center.
+     * Defaults to the center of the image.
+     * @defaultValue `undefined`
      */
     center?: Point;
     /**
@@ -5483,11 +5484,11 @@ declare class Image {
     /**
      * Draw another image on this image.
      */
-    drawImage(position: PointLike, options?: DrawImageOptions): this;
+    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
     /**
      * Draw another image on this image.
      */
-    drawImage(x: number, y: number, options?: DrawImageOptions): this;
+    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
     /**
      * Draw another image on a copy of this image.
      */
@@ -6397,10 +6398,12 @@ declare class Wildcard {
 declare interface NotificationCustomHint {
     /**
      * Hint name.
+     * @defaultValue `""`
      */
     name?: string;
     /**
      * Hint value.
+     * @defaultValue `""`
      */
     value?: string;
 }
@@ -6413,10 +6416,12 @@ declare interface NotificationCustomHint {
 declare interface NotificationCustomIntHint {
     /**
      * Hint name.
+     * @defaultValue `""`
      */
     name?: string;
     /**
      * Integer hint value.
+     * @defaultValue `0`
      */
     value?: number;
 }
@@ -6428,10 +6433,12 @@ declare interface NotificationCustomIntHint {
 declare interface NotificationAction {
     /**
      * Action identifier (used as arguments on Windows).
+     * @defaultValue `""`
      */
     identifier?: string;
     /**
      * Action label visible to the user.
+     * @defaultValue `""`
      */
     label?: string;
     /**
@@ -6474,14 +6481,17 @@ declare interface NotificationAction {
 declare interface NotificationHeader {
     /**
      * Unique identifier for this header group.
+     * @defaultValue `""`
      */
     id?: string;
     /**
      * Title displayed for the header group.
+     * @defaultValue `""`
      */
     title?: string;
     /**
      * Arguments passed when the header is clicked.
+     * @defaultValue `""`
      */
     arguments?: string;
 }
@@ -6494,10 +6504,12 @@ declare interface NotificationHeader {
 declare interface NotificationInput {
     /**
      * Unique identifier for this input.
+     * @defaultValue `""`
      */
     id?: string;
     /**
      * Type of input field.
+     * @defaultValue `undefined`
      */
     inputType?: NotificationInputType;
     /**
@@ -6525,10 +6537,12 @@ declare interface NotificationInput {
 declare interface NotificationSelection {
     /**
      * Unique identifier for this selection option.
+     * @defaultValue `""`
      */
     id?: string;
     /**
      * Display text for this selection option.
+     * @defaultValue `""`
      */
     content?: string;
 }
@@ -7383,7 +7397,8 @@ declare interface RandomStringOptions {
      * Possible characters to pick from.
      * Can contain any Unicode grapheme cluster.
      * When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
-     * @defaultValue `undefined` (all printable ASCII characters)
+     * Defaults to all printable ASCII characters.
+     * @defaultValue `undefined`
      */
     characters?: string;
     /**

@@ -10,7 +10,7 @@ use std::{
 };
 
 use color_eyre::{Result, eyre::ensure};
-use macros::FromJsObject;
+use macros::{FromJsObject, options};
 use parking_lot::Mutex;
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
 use tokio::{
@@ -133,45 +133,30 @@ impl Display for PlayingSound {
 }
 
 /// Play sound options
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct PlaySoundOptions {
     /// Volume to play the sound at
-    /// @default `1.0`
+    #[default(1.0)]
     pub volume: f32,
 
     /// Speed to play the sound at
-    /// @default `1.0`
+    #[default(1.0)]
     pub playback_rate: f32,
 
     /// Should the sound start paused
-    /// @default `false`
     pub paused: bool,
 
     /// Should the sound loop
-    /// @default `false`
     pub r#loop: bool,
 
     /// Fade in duration
-    /// @default `0`
+    #[default(ts = "0")]
     pub fade_in: Option<JsDuration>,
 
     /// Fade out duration
-    /// @default `0`
+    #[default(ts = "0")]
     pub fade_out: Option<JsDuration>,
-}
-
-impl Default for PlaySoundOptions {
-    fn default() -> Self {
-        Self {
-            volume: 1.0,
-            playback_rate: 1.0,
-            paused: false,
-            r#loop: false,
-            fade_in: None,
-            fade_out: None,
-        }
-    }
 }
 
 #[derive(Default)]

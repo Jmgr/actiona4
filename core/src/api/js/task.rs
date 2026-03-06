@@ -234,6 +234,7 @@ mod tests {
 
     use derive_more::From;
     use indicatif::ProgressBar;
+    use macros::{js_class, js_methods};
     use rquickjs::{
         Ctx, IntoJs, JsLifetime, Promise, Result, Value,
         class::{Trace, Tracer},
@@ -271,22 +272,22 @@ mod tests {
     }
 
     #[derive(Default, JsLifetime)]
-    #[rquickjs::class]
-    pub struct TestStruct {
+    #[js_class]
+    pub struct JsTestStruct {
         pub has_started: Arc<AtomicBool>,
         pub was_canceled: Arc<AtomicBool>,
         pub token: CancellationToken,
         pub sender: watch::Sender<ProgressValue>,
     }
 
-    impl<'js> Trace<'js> for TestStruct {
+    impl<'js> Trace<'js> for JsTestStruct {
         fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
     }
 
-    impl<'js> SingletonClass<'js> for TestStruct {}
+    impl<'js> SingletonClass<'js> for JsTestStruct {}
 
-    #[rquickjs::methods(rename_all = "camelCase")]
-    impl TestStruct {
+    #[js_methods]
+    impl JsTestStruct {
         #[qjs(constructor)]
         pub fn new() -> Self {
             Self::default()
@@ -344,10 +345,10 @@ mod tests {
         }
     }
 
-    async fn setup(script_engine: scripting::Engine, test: TestStruct) {
+    async fn setup(script_engine: scripting::Engine, test: JsTestStruct) {
         script_engine
             .with(|ctx| {
-                register_singleton_class::<TestStruct>(&ctx, test)?;
+                register_singleton_class::<JsTestStruct>(&ctx, test)?;
                 register_value_class::<JsCounter>(&ctx)?;
                 Ok(())
             })
@@ -358,7 +359,7 @@ mod tests {
     #[test]
     fn test_task() {
         Runtime::test_with_script_engine(|script_engine| async move {
-            let test = TestStruct::default();
+            let test = JsTestStruct::default();
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
 
@@ -383,7 +384,7 @@ mod tests {
     #[test]
     fn test_task_with_token() {
         Runtime::test_with_script_engine(|script_engine| async move {
-            let test = TestStruct::default();
+            let test = JsTestStruct::default();
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
             let token = test.token.clone();
@@ -409,7 +410,7 @@ mod tests {
     #[test]
     fn test_task_with_progress() {
         Runtime::test_with_script_engine(|script_engine| async move {
-            let test = TestStruct::default();
+            let test = JsTestStruct::default();
             let has_started = test.has_started.clone();
             let was_canceled = test.was_canceled.clone();
 

@@ -59,6 +59,7 @@ pub(crate) mod test_helpers {
         path::{Path, PathBuf},
     };
 
+    use macros::{js_class, js_methods};
     use rand::RngExt;
     use rquickjs::{JsLifetime, atom::PredefinedAtom, class::Trace};
 
@@ -87,14 +88,14 @@ pub(crate) mod test_helpers {
     }
 
     #[derive(Clone, Debug, Default, JsLifetime, Trace)]
-    #[rquickjs::class(rename = "Counter")]
+    #[js_class]
     pub struct JsCounter {
         count: u64,
     }
 
     impl<'js> ValueClass<'js> for JsCounter {}
 
-    #[rquickjs::methods(rename_all = "camelCase")]
+    #[js_methods]
     impl JsCounter {
         #[qjs(constructor)]
         pub fn new() -> Self {

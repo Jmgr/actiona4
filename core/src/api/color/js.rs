@@ -4,6 +4,7 @@
 //! @verbatim type ColorLike = Color | { r: number; g: number; b: number; a?: number };
 
 use image::Rgba;
+use macros::{js_class, js_methods};
 use rquickjs::{
     JsLifetime, Object, Result,
     atom::PredefinedAtom,
@@ -15,7 +16,6 @@ use crate::{
     api::{ResultExt, js::classes::ValueClass},
     types::display::display_with_type,
 };
-
 pub struct JsColorLike(pub super::Color);
 
 impl<'js> FromParam<'js> for JsColorLike {
@@ -251,7 +251,7 @@ impl<'js> FromParam<'js> for JsColorLike {
 /// let c = new Color(128, 255, 255, 255);
 /// ```
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Color")]
+#[js_class]
 pub struct JsColor {
     inner: super::Color,
 }
@@ -418,7 +418,7 @@ impl JsColor {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsColor {
     /// Creates a new color.
     ///
@@ -447,53 +447,53 @@ impl JsColor {
     }
 
     /// @skip
-    #[qjs(get, rename = "r")]
+    #[get("r")]
     #[must_use]
     pub fn get_r(&self) -> u8 {
         self.inner.0[0]
     }
 
     /// @skip
-    #[qjs(set, rename = "r")]
+    #[set("r")]
     pub fn set_r(&mut self, r: u8) {
         self.inner.0[0] = r;
     }
 
     /// @skip
-    #[qjs(get, rename = "g")]
+    #[get("g")]
     #[must_use]
     pub fn get_g(&self) -> u8 {
         self.inner.0[1]
     }
 
     /// @skip
-    #[qjs(set, rename = "g")]
+    #[set("g")]
     pub fn set_g(&mut self, g: u8) {
         self.inner.0[1] = g;
     }
 
     /// @skip
-    #[qjs(get, rename = "b")]
+    #[get("b")]
     #[must_use]
     pub fn get_b(&self) -> u8 {
         self.inner.0[2]
     }
 
     /// @skip
-    #[qjs(set, rename = "b")]
+    #[set("b")]
     pub fn set_b(&mut self, b: u8) {
         self.inner.0[2] = b;
     }
 
     /// @skip
-    #[qjs(get, rename = "a")]
+    #[get("a")]
     #[must_use]
     pub fn get_a(&self) -> u8 {
         self.inner.0[3]
     }
 
     /// @skip
-    #[qjs(set, rename = "a")]
+    #[set("a")]
     pub fn set_a(&mut self, a: u8) {
         self.inner.0[3] = a;
     }

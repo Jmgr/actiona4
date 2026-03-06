@@ -1,4 +1,4 @@
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result,
     atom::PredefinedAtom,
@@ -32,23 +32,21 @@ pub type JsMessageBoxResult = super::MessageBoxResult;
 /// });
 /// ```
 /// @category UI
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsMessageBoxOptions {
     /// Title displayed in the message box title bar.
-    /// @default `undefined`
     pub title: Option<String>,
 
     /// Buttons displayed in the message box.
-    /// @default `MessageBoxButtons.ok()`
+    #[default(ts = "MessageBoxButtons.ok()")]
     pub buttons: Option<JsMessageBoxButtons>,
 
     /// Icon displayed in the message box.
-    /// @default `MessageBoxIcon.Info`
+    #[default(ts = "MessageBoxIcon.Info")]
     pub icon: Option<super::MessageBoxIcon>,
 
     /// Abort signal to cancel the message box.
-    /// @default `undefined`
     pub signal: Option<JsAbortSignal>,
 }
 
@@ -85,7 +83,7 @@ impl JsMessageBoxOptions {
 /// @category UI
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "Ui")]
+#[js_class]
 pub struct JsUi {}
 
 impl SingletonClass<'_> for JsUi {
@@ -101,7 +99,7 @@ impl<'js> Trace<'js> for JsUi {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsUi {
     /// @constructor
     /// @private
@@ -152,7 +150,7 @@ impl JsUi {
 /// ```
 /// @category UI
 #[derive(Clone, Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "MessageBoxButtons")]
+#[js_class]
 pub struct JsMessageBoxButtons {
     inner: MessageBoxButtons,
 }
@@ -171,7 +169,7 @@ impl JsMessageBoxButtons {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsMessageBoxButtons {
     /// @constructor
     /// @private

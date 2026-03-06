@@ -18,6 +18,10 @@ A custom integer hint for Linux notifications.
 
 Hint name.
 
+#### Default Value
+
+`""`
+
 ***
 
 ### value?
@@ -25,3 +29,7 @@ Hint name.
 > `optional` **value**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Integer hint value.
+
+#### Default Value
+
+`0`

@@ -3,6 +3,7 @@
 //! @verbatim  */
 //! @verbatim type PointLike = Point | { x: number; y: number } | Match;
 
+use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
@@ -16,7 +17,6 @@ use crate::{
     runtime::WithUserData,
     types::display::display_with_type,
 };
-
 pub struct JsPointLike(pub super::Point);
 
 impl<'js> FromParam<'js> for JsPointLike {
@@ -87,14 +87,14 @@ impl<'js> FromParam<'js> for JsPointLike {
 /// @prop x: number // X coordinate
 /// @prop y: number // Y coordinate
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
-#[rquickjs::class(rename = "Point")]
+#[js_class]
 pub struct JsPoint {
     inner: super::Point,
 }
 
 impl ValueClass<'_> for JsPoint {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsPoint {
     /// Constructor.
     ///
@@ -116,27 +116,27 @@ impl JsPoint {
     }
 
     /// @skip
-    #[qjs(get, rename = "x")]
+    #[get("x")]
     #[must_use]
     pub fn get_x(&self) -> i32 {
         self.inner.x.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "x")]
+    #[set("x")]
     pub fn set_x(&mut self, x: i32) {
         self.inner.x = x.into();
     }
 
     /// @skip
-    #[qjs(get, rename = "y")]
+    #[get("y")]
     #[must_use]
     pub fn get_y(&self) -> i32 {
         self.inner.y.into()
     }
 
     /// @skip
-    #[qjs(set, rename = "y")]
+    #[set("y")]
     pub fn set_y(&mut self, y: i32) {
         self.inner.y = y.into();
     }

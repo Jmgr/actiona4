@@ -5,7 +5,7 @@ use std::os::windows::fs::FileTimesExt;
 use std::{fmt::Debug, fs::FileTimes, io::SeekFrom, sync::Arc};
 
 use color_eyre::eyre::eyre;
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Object, Result, TypedArray,
     atom::PredefinedAtom,
@@ -60,51 +60,32 @@ impl PartialEq for OpenedFile {
 ///     append: true,
 /// });
 /// ```
-///
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct JsOpenOptions {
     /// Should the file be opened with read access?
-    /// @default `true`
+    #[default(true)]
     pub read: bool,
 
     /// Should the file be opened with write access?
-    /// @default `false`
     pub write: bool,
 
     /// Writing: open the file in append mode.
     /// Note that setting this to `true` implies setting `write` to `true`.
-    /// @default `false`
     pub append: bool,
 
     /// Writing: truncate (remove all contents of) the file.
     /// Note that this only works if `write` is `true`.
-    /// @default `false`
     pub truncate: bool,
 
     /// Writing: create a new file if it doesn't exist.
     /// Note that this only works if `write` or `append` are set to `true`.
-    /// @default `false`
     pub create: bool,
 
     /// Writing: always create a new file, even if one already exists.
     /// Note that this only works if `write` or `append` are set to `true`.
     /// Note that `create` and `truncate` are ignored if this is set to `true`.
-    /// @default `false`
     pub create_new: bool,
-}
-
-impl Default for JsOpenOptions {
-    fn default() -> Self {
-        Self {
-            read: true,
-            write: false,
-            append: false,
-            truncate: false,
-            create: false,
-            create_new: false,
-        }
-    }
 }
 
 impl From<JsOpenOptions> for fs::OpenOptions {
@@ -144,7 +125,7 @@ impl From<JsOpenOptions> for fs::OpenOptions {
 /// await File.remove("file.txt");
 /// ```
 #[derive(Clone, Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "File")]
+#[js_class]
 pub struct JsFile {
     inner: Option<OpenedFile>,
 }
@@ -167,7 +148,7 @@ impl JsFile {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsFile {
     /// @constructor
     /// @private
@@ -474,7 +455,7 @@ impl JsFile {
     }
 
     /// Returns the Unix file mode (e.g. `0o644`).
-    /// @platforms -windows
+    #[platform(not = "windows")]
     pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
         ctx.user_data().require_not_windows(&ctx)?;
         #[cfg(unix)]
@@ -500,7 +481,7 @@ impl JsFile {
 
     /// Sets the file mode.
     /// You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
-    /// @platforms -windows
+    #[platform(not = "windows")]
     pub async fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
         ctx.user_data().require_not_windows(&ctx)?;
         #[cfg(unix)]
@@ -605,9 +586,9 @@ impl JsFile {
         date_from_system_time(&ctx, &modified)
     }
 
-    /// Sets the creation time of the file. No-op on Linux.
+    /// Sets the creation time of the file.
     /// @param date: Date
-    /// @platforms -linux
+    #[platform(not = "linux")]
     pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
         ctx.user_data().require_not_linux(&ctx)?;
         #[cfg(unix)]
@@ -680,8 +661,7 @@ impl JsFile {
     }
 
     /// The file path
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn path(&self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file(&ctx)?;
 
@@ -1151,29 +1131,26 @@ mod tests {
             assert_eq!(time.second(), SECOND);
             assert_eq!(time.timestamp_subsec_millis(), MILLISECOND);
 
-            script_engine
-                .eval_async::<()>(&format!(
-                    r#"
+            #[cfg(windows)]
+            {
+                script_engine
+                    .eval_async::<()>(&format!(
+                        r#"
                 await file.setCreationTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
                 var result = await file.creationTime()
                 "#
-                ))
-                .await
-                .unwrap();
+                    ))
+                    .await
+                    .unwrap();
 
-            let time = script_engine
-                .with::<_, DateTime<Utc>>(|ctx| {
-                    let result = ctx.globals().get::<_, Object>("result")?;
-                    Ok(system_time_from_date(ctx, result)?.into())
-                })
-                .await
-                .unwrap();
+                let time = script_engine
+                    .with::<_, DateTime<Utc>>(|ctx| {
+                        let result = ctx.globals().get::<_, Object>("result")?;
+                        Ok(system_time_from_date(ctx, result)?.into())
+                    })
+                    .await
+                    .unwrap();
 
-            #[cfg(unix)]
-            let _ = time;
-
-            #[cfg(windows)]
-            {
                 assert_eq!(time.year(), YEAR);
                 assert_eq!(time.month0(), MONTH);
                 assert_eq!(time.day(), DAY);

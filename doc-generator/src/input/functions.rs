@@ -97,10 +97,29 @@ pub fn extract_functions(
                     .wrap_err_with(|| function_name.clone());
                 match parameter_type {
                     Ok(Type::This) => {
-                        // If we have a "this" parameter ("self" in Rust) that means we should ignore it, and mark
-                        // this method as not being static.
-                        is_static = false;
-                        continue;
+                        if parameter_name == "self" || parameter_name == "this" {
+                            // Receiver-like parameters (`self` and the explicit `this` helper) are not exposed in TS.
+                            is_static = false;
+                            continue;
+                        }
+
+                        let parameter_type = if let Some(struct_name) = struct_name {
+                            // Extra `Class<'js, Self>` parameters are regular arguments, not the method receiver.
+                            Type::Verbatim(struct_name.to_string())
+                        } else {
+                            Type::This
+                        };
+
+                        parameters.push(Variable {
+                            name: parameter_name.to_string(),
+                            type_: parameter_type,
+                            comments: Default::default(), // TODO
+                            is_readonly: false,
+                            is_readonly_type: false,
+                            default_value: None,
+                            platforms: instructions.platforms(),
+                            is_promise: false,
+                        });
                     }
                     Ok(Type::Ignore) => {
                         continue;

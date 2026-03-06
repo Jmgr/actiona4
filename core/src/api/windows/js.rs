@@ -1,3 +1,4 @@
+use macros::{js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
@@ -24,33 +25,27 @@ use crate::{
 };
 
 /// Window search options.
-///
-/// @options
-#[derive(Debug, Default)]
+#[options]
+#[derive(Debug)]
 pub struct JsWindowsFindOptions<'js> {
     /// Match by internal window ID.
     /// When undefined, any window ID is accepted.
-    /// @default `undefined`
     pub id: Option<u64>,
 
     /// Match by window process ID.
     /// When undefined, any process ID is accepted.
-    /// @default `undefined`
     pub process_id: Option<u32>,
 
     /// Match by window visibility.
     /// When undefined, visibility is not filtered.
-    /// @default `undefined`
     pub visible: Option<bool>,
 
     /// Match by window title.
     /// When undefined, title is not filtered.
-    /// @default `undefined`
     pub title: Option<JsName<'js>>,
 
     /// Match by window class name.
     /// When undefined, class name is not filtered.
-    /// @default `undefined`
     pub class_name: Option<JsName<'js>>,
 }
 
@@ -100,7 +95,7 @@ impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
 /// ```
 /// @singleton
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Windows")]
+#[js_class]
 pub struct JsWindows {
     inner: super::Windows,
     screen: Screen,
@@ -130,7 +125,7 @@ impl JsWindows {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsWindows {
     /// Returns all currently open windows.
     ///
@@ -139,7 +134,7 @@ impl JsWindows {
     /// println(`Found ${allWindows.length} windows`);
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn all(&self, ctx: Ctx<'_>) -> Result<Vec<JsWindowHandle>> {
         let ids = self.inner.all().into_js_result(&ctx)?;
 
@@ -160,7 +155,7 @@ impl JsWindows {
     /// println(win.title());
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn active(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
         let id = self.inner.active_window().into_js_result(&ctx)?;
 
@@ -178,7 +173,7 @@ impl JsWindows {
     /// println(win.title());
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn foreground(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
         self.active(ctx)
     }
@@ -196,7 +191,7 @@ impl JsWindows {
     /// const exact = windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn find<'js>(
         &self,
         ctx: Ctx<'js>,
@@ -263,7 +258,7 @@ impl JsWindows {
     /// const atOrigin = windows.findAt(0, 0);
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn find_at(&self, ctx: Ctx<'_>, point: JsPointLike) -> Result<Vec<JsWindowHandle>> {
         let ids = self.inner.all().into_js_result(&ctx)?;
         let mut windows = Vec::new();
@@ -303,7 +298,7 @@ impl JsWindows {
 /// println(win.rect());
 /// ```
 #[derive(Clone, Debug, JsLifetime)]
-#[rquickjs::class(rename = "WindowHandle")]
+#[js_class]
 pub struct JsWindowHandle {
     inner: super::Windows,
     screen: crate::api::screen::Screen,
@@ -322,14 +317,14 @@ impl JsWindowHandle {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsWindowHandle {
     /// Returns whether this window is visible.
     ///
     /// ```ts
     /// const visible = win.isVisible();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn is_visible(&self, ctx: Ctx<'_>) -> Result<bool> {
         self.inner.is_visible(self.id).into_js_result(&ctx)
     }
@@ -339,7 +334,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const title = win.title();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn title(&self, ctx: Ctx<'_>) -> Result<String> {
         self.inner.title(self.id).into_js_result(&ctx)
     }
@@ -349,7 +344,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const className = win.className();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn class_name(&self, ctx: Ctx<'_>) -> Result<String> {
         self.inner.classname(self.id).into_js_result(&ctx)
     }
@@ -359,7 +354,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.close();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn close(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.close(self.id).into_js_result(&ctx)
     }
@@ -369,7 +364,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const pid = win.processId();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn process_id(&self, ctx: Ctx<'_>) -> Result<u32> {
         self.inner.process_id(self.id).into_js_result(&ctx)
     }
@@ -381,7 +376,7 @@ impl JsWindowHandle {
     /// println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn rect(&self, ctx: Ctx<'_>) -> Result<JsRect> {
         Ok(self.inner.rect(self.id).into_js_result(&ctx)?.into())
     }
@@ -392,7 +387,7 @@ impl JsWindowHandle {
     /// const win = windows.activeWindow();
     /// const image = await win.capture();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub async fn capture(&self, ctx: Ctx<'_>) -> Result<JsImage> {
         Ok(JsImage::new(
             self.screen
@@ -407,7 +402,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.setActive();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn set_active(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.set_active(self.id).into_js_result(&ctx)
     }
@@ -417,7 +412,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.setForeground();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn set_foreground(&self, ctx: Ctx<'_>) -> Result<()> {
         self.set_active(ctx)
     }
@@ -427,7 +422,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.minimize();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn minimize(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.minimize(self.id).into_js_result(&ctx)
     }
@@ -437,7 +432,7 @@ impl JsWindowHandle {
     /// ```ts
     /// win.maximize();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn maximize(&self, ctx: Ctx<'_>) -> Result<()> {
         self.inner.maximize(self.id).into_js_result(&ctx)
     }
@@ -449,7 +444,7 @@ impl JsWindowHandle {
     /// win.setPosition(new Point(100, 200));
     /// win.setPosition({x: 100, y: 200});
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn set_position(&self, ctx: Ctx<'_>, position: JsPointLike) -> Result<()> {
         self.inner
             .set_position(self.id, position.0)
@@ -463,7 +458,7 @@ impl JsWindowHandle {
     /// println(`${pos.x}, ${pos.y}`);
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn position(&self, ctx: Ctx<'_>) -> Result<JsPoint> {
         Ok(self.inner.position(self.id).into_js_result(&ctx)?.into())
     }
@@ -475,7 +470,7 @@ impl JsWindowHandle {
     /// win.setSize(new Size(800, 600));
     /// win.setSize({width: 800, height: 600});
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn set_size(&self, ctx: Ctx<'_>, size: JsSizeLike) -> Result<()> {
         self.inner.set_size(self.id, size.0).into_js_result(&ctx)
     }
@@ -487,7 +482,7 @@ impl JsWindowHandle {
     /// println(`${s.width}x${s.height}`);
     /// ```
     /// @readonly
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn size(&self, ctx: Ctx<'_>) -> Result<JsSize> {
         Ok(self.inner.size(self.id).into_js_result(&ctx)?.into())
     }
@@ -497,7 +492,7 @@ impl JsWindowHandle {
     /// ```ts
     /// const active = win.isActive();
     /// ```
-    /// @platforms -wayland
+    #[platform(not = "wayland")]
     pub fn is_active(&self, ctx: Ctx<'_>) -> Result<bool> {
         self.inner.is_active(self.id).into_js_result(&ctx)
     }
@@ -509,10 +504,9 @@ impl JsWindowHandle {
     /// await win.closed;
     /// ```
     ///
-    /// @get
     /// @returns Task<void>
-    /// @platforms -wayland
-    #[qjs(get)]
+    #[platform(not = "wayland")]
+    #[get]
     pub fn closed<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
         let inner = self.inner.clone();
         let id = self.id;

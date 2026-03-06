@@ -1,9 +1,9 @@
 use std::path::{self, Path, PathBuf};
 
+use macros::{js_class, js_methods};
 use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace, prelude::Rest};
 
 use crate::api::js::classes::HostClass;
-
 /// Utilities for manipulating file paths. All methods are static.
 ///
 /// ```ts
@@ -19,12 +19,12 @@ use crate::api::js::classes::HostClass;
 /// // "/tmp/data.json"
 /// ```
 #[derive(Clone, Debug, Default, JsLifetime, Trace)]
-#[rquickjs::class(rename = "Path")]
+#[js_class]
 pub struct JsPath {}
 
 impl HostClass<'_> for JsPath {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsPath {
     /// @constructor
     /// @private

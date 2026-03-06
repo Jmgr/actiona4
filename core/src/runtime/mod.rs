@@ -1,3 +1,5 @@
+#[cfg(test)]
+use std::sync::OnceLock;
 use std::sync::{
     Arc,
     atomic::{AtomicBool, AtomicU8, AtomicU64, Ordering},
@@ -33,8 +35,6 @@ use crate::runtime::win::events::input::{
 };
 use crate::{
     IntoJSError,
-    platform_info::Platform,
-    error::CommonError,
     api::{
         app::js::JsApp,
         audio::{PlayingSoundsTracker, js::JsAudio},
@@ -70,6 +70,8 @@ use crate::{
         windows::{Windows, js::JsWindows},
     },
     cancel_on,
+    error::CommonError,
+    platform_info::Platform,
     runtime::{events::Guard, shared_rng::SharedRng},
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
@@ -314,6 +316,21 @@ fn setup_opencv_threading() -> Result<()> {
 }
 
 impl Runtime {
+    #[cfg(test)]
+    fn test_tokio_runtime() -> &'static tokio::runtime::Runtime {
+        static TOKIO_RUNTIME: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
+
+        TOKIO_RUNTIME.get_or_init(|| {
+            // Tests spin up native resources such as X11 and QuickJS. Sharing one
+            // multithreaded runtime avoids per-test runtime teardown crashes while
+            // still supporting block_in_place and background task progress.
+            tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .expect("failed to build shared Tokio test runtime")
+        })
+    }
+
     // TODO: make private
     #[instrument(name = "Runtime::new", skip_all)]
     pub async fn new(
@@ -630,17 +647,17 @@ impl Runtime {
         let task_tracker = TaskTracker::new();
 
         #[cfg(test)]
-        let tokio_runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()?;
-        #[cfg(not(test))]
-        let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()?;
-
-        let unhandled_exceptions = tokio_runtime.block_on(async move {
+        let unhandled_exceptions = Self::test_tokio_runtime().handle().block_on(async move {
             Self::run_impl(f, cancellation_token, task_tracker, None, runtime_options).await
         })?;
+
+        #[cfg(not(test))]
+        let unhandled_exceptions = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()?
+            .block_on(async move {
+                Self::run_impl(f, cancellation_token, task_tracker, None, runtime_options).await
+            })?;
 
         Ok(unhandled_exceptions)
     }
@@ -899,36 +916,28 @@ impl Runtime {
 
     pub fn require_not_wayland(&self) -> color_eyre::Result<()> {
         if self.platform.is_wayland() {
-            return Err(
-                CommonError::UnsupportedPlatform("not supported on Wayland".into()).into(),
-            );
+            return Err(CommonError::UnsupportedPlatform("not supported on Wayland".into()).into());
         }
         Ok(())
     }
 
     pub fn require_linux(&self) -> color_eyre::Result<()> {
         if self.platform.is_windows() {
-            return Err(
-                CommonError::UnsupportedPlatform("only available on Linux".into()).into(),
-            );
+            return Err(CommonError::UnsupportedPlatform("only available on Linux".into()).into());
         }
         Ok(())
     }
 
     pub fn require_not_windows(&self) -> color_eyre::Result<()> {
         if self.platform.is_windows() {
-            return Err(
-                CommonError::UnsupportedPlatform("not supported on Windows".into()).into(),
-            );
+            return Err(CommonError::UnsupportedPlatform("not supported on Windows".into()).into());
         }
         Ok(())
     }
 
     pub fn require_not_linux(&self) -> color_eyre::Result<()> {
         if self.platform.is_linux() {
-            return Err(
-                CommonError::UnsupportedPlatform("not supported on Linux".into()).into(),
-            );
+            return Err(CommonError::UnsupportedPlatform("not supported on Linux".into()).into());
         }
         Ok(())
     }
@@ -937,7 +946,7 @@ impl Runtime {
 #[cfg(test)]
 mod tests {
     use derive_more::Display;
-    use macros::{FromSerde, IntoSerde};
+    use macros::{FromSerde, IntoSerde, js_class, js_methods};
     use rquickjs::{Function, Object, Value, atom::PredefinedAtom, class::Trace};
     use serde::{Deserialize, Serialize};
     use strum::EnumIter;
@@ -970,13 +979,13 @@ mod tests {
     }
 
     #[derive(Clone, JsLifetime, Trace)]
-    #[rquickjs::class]
-    pub struct TestGenerator {
+    #[js_class]
+    pub struct JsTestGenerator {
         n: i32,
     }
 
-    #[rquickjs::methods(rename_all = "camelCase")]
-    impl TestGenerator {
+    #[js_methods]
+    impl JsTestGenerator {
         #[qjs(constructor)]
         #[allow(clippy::new_without_default)]
         pub fn new() -> Self {
@@ -998,20 +1007,20 @@ mod tests {
         }
     }
 
-    impl ValueClass<'_> for TestGenerator {}
+    impl ValueClass<'_> for JsTestGenerator {}
 
     #[derive(Default, JsLifetime, Trace)]
-    #[rquickjs::class]
-    pub struct TestSingletonStruct {
+    #[js_class]
+    pub struct JsTestSingletonStruct {
         string: String,
         integer: i64,
         float: f64,
     }
 
-    #[rquickjs::methods(rename_all = "camelCase")]
-    impl TestSingletonStruct {}
+    #[js_methods]
+    impl JsTestSingletonStruct {}
 
-    impl SingletonClass<'_> for TestSingletonStruct {}
+    impl SingletonClass<'_> for JsTestSingletonStruct {}
 
     async fn setup(script_engine: ScriptEngine) {
         script_engine
@@ -1019,11 +1028,11 @@ mod tests {
                 ctx.globals()
                     .prop("print", Function::new(ctx.clone(), print))?;
                 register_enum::<TestEnum>(&ctx)?;
-                register_singleton_class::<TestSingletonStruct>(
+                register_singleton_class::<JsTestSingletonStruct>(
                     &ctx,
-                    TestSingletonStruct::default(),
+                    JsTestSingletonStruct::default(),
                 )?;
-                register_value_class::<TestGenerator>(&ctx)?;
+                register_value_class::<JsTestGenerator>(&ctx)?;
                 Ok(())
             })
             .await

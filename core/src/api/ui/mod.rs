@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde, options};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 use tauri::AppHandle;
@@ -105,19 +105,18 @@ impl From<tauri_plugin_dialog::MessageDialogResult> for MessageBoxResult {
 }
 
 /// Message box options
-/// @options
-#[derive(Clone, Debug, Default, FromJsObject)]
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct MessageBoxOptions {
     /// Title displayed in the message box title bar.
-    /// @default `undefined`
     pub title: Option<String>,
 
     /// Buttons displayed in the message box.
-    /// @default `MessageBoxButtons.ok()`
+    #[default(ts = "MessageBoxButtons.ok()")]
     pub buttons: Option<JsMessageBoxButtons>,
 
     /// Icon displayed in the message box.
-    /// @default `MessageBoxIcon.Info`
+    #[default(ts = "MessageBoxIcon.Info")]
     pub icon: Option<MessageBoxIcon>,
 }
 

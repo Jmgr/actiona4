@@ -3,6 +3,7 @@ use std::{collections::HashMap, io::Write, time::Instant};
 use console::{Style, Term};
 use humantime::format_duration;
 use itertools::Itertools;
+use macros::{js_class, js_methods};
 use rquickjs::{
     Exception, JsLifetime, Result, Value,
     atom::PredefinedAtom,
@@ -12,7 +13,6 @@ use rquickjs::{
 use tracing::warn;
 
 use crate::api::js::classes::SingletonClass;
-
 /// The global console singleton for printing output and basic debugging.
 ///
 /// ```ts
@@ -35,7 +35,7 @@ use crate::api::js::classes::SingletonClass;
 ///
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "Console")]
+#[js_class]
 pub struct JsConsole {
     timers: HashMap<String, Instant>,
     counters: HashMap<String, usize>,
@@ -427,7 +427,7 @@ impl JsConsole {
 
 const DEFAULT_LABEL: &str = "default";
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsConsole {
     /// Prints values without a trailing newline.
     /// @rest

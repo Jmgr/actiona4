@@ -691,22 +691,25 @@ impl Engine {
 mod tests {
     use std::path::PathBuf;
 
+    use macros::{FromJsObject, PlatformValidate, js_class, js_methods, options, platform};
+    use rquickjs::Function;
     use swc_common::{FileName, SourceMap, SourceMapper, sync::Lrc};
     use swc_ecma_ast::EsVersion;
     use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
     use tokio::time::Duration;
 
     use super::*;
+    use crate::{IntoJsResult, platform_info::Platform};
 
     // ──────────────────────────────────────────────────────────────────────────
     // Helper JS class we sometimes expose to JS for sleeps / debug printing.
     // ──────────────────────────────────────────────────────────────────────────
-    #[rquickjs::class]
+    #[js_class]
     #[derive(Debug, rquickjs::JsLifetime, rquickjs::class::Trace)]
-    struct Helper {}
+    struct JsHelper {}
 
-    #[rquickjs::methods]
-    impl Helper {
+    #[js_methods]
+    impl JsHelper {
         async fn sleep(ctx: Ctx<'_>, secs: f64) -> rquickjs::Result<()> {
             let duration = Duration::try_from_secs_f64(secs).map_err(|_| {
                 Exception::throw_message(
@@ -722,6 +725,58 @@ mod tests {
         fn log(s: String) {
             println!("{s}");
         }
+    }
+
+    #[derive(Debug, Default, rquickjs::JsLifetime, rquickjs::class::Trace)]
+    #[js_class]
+    struct JsMacroCounter {
+        value: i32,
+    }
+
+    #[js_methods]
+    impl JsMacroCounter {
+        #[qjs(constructor)]
+        fn new() -> Self {
+            Self::default()
+        }
+
+        #[get("value")]
+        fn value(&self) -> i32 {
+            self.value
+        }
+
+        #[set("value")]
+        fn set_value(&mut self, value: i32) {
+            self.value = value;
+        }
+    }
+
+    #[options]
+    #[derive(Clone, Debug, FromJsObject, PlatformValidate)]
+    struct JsMacroOptions {
+        #[default(true)]
+        enabled: bool,
+        #[platform(only = "linux")]
+        linux_label: Option<String>,
+        #[platform(only = "windows")]
+        windows_label: Option<String>,
+    }
+
+    fn validate_macro_options(ctx: Ctx<'_>, options: JsMacroOptions) -> rquickjs::Result<bool> {
+        options
+            .validate_for_platform(Platform::detect())
+            .into_js_result(&ctx)?;
+        Ok(options.enabled)
+    }
+
+    #[platform(only = "linux")]
+    fn linux_only_marker() -> color_eyre::Result<&'static str> {
+        Ok("linux")
+    }
+
+    #[platform(only = "windows")]
+    fn windows_only_marker() -> color_eyre::Result<&'static str> {
+        Ok("windows")
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -862,7 +917,7 @@ outer();
         // expose our Helper so JS can await a real delay
         engine
             .with(|ctx| {
-                let helper = rquickjs::Class::instance(ctx.clone(), Helper {})?;
+                let helper = rquickjs::Class::instance(ctx.clone(), JsHelper {})?;
                 ctx.globals().set("helper", helper)?;
                 Ok(())
             })
@@ -891,6 +946,74 @@ outer();
         // Pull the breadcrumb back out of JS to prove it ran.
         let done: i32 = engine.eval("globalThis.__done__ ?? 0;").await.unwrap();
         assert_eq!(done, 99, "async body should have executed after idle()");
+    }
+
+    #[tokio::test]
+    async fn macro_helpers_work_with_engine() {
+        let engine = Engine::new().await.unwrap();
+
+        engine
+            .with(|ctx| {
+                rquickjs::Class::<JsMacroCounter>::define(&ctx.globals())?;
+                ctx.globals().prop(
+                    "validateMacroOptions",
+                    Function::new(ctx.clone(), validate_macro_options),
+                )?;
+                Ok(())
+            })
+            .await
+            .unwrap();
+
+        let incremented_value: i32 = engine
+            .eval(
+                r#"
+                const counter = new MacroCounter();
+                counter.value = 41;
+                counter.value + 1;
+                "#,
+            )
+            .await
+            .unwrap();
+        assert_eq!(incremented_value, 42);
+
+        let valid_options_script = if Platform::detect().is_windows() {
+            r#"validateMacroOptions({ enabled: false, windowsLabel: "ok" });"#
+        } else {
+            r#"validateMacroOptions({ enabled: false, linuxLabel: "ok" });"#
+        };
+        let enabled: bool = engine.eval(valid_options_script).await.unwrap();
+        assert!(!enabled);
+
+        let invalid_options_script = if Platform::detect().is_windows() {
+            r#"validateMacroOptions({ linuxLabel: "nope" });"#
+        } else {
+            r#"validateMacroOptions({ windowsLabel: "nope" });"#
+        };
+        let invalid_options_error = engine
+            .eval::<bool>(invalid_options_script)
+            .await
+            .unwrap_err();
+        assert!(
+            invalid_options_error
+                .to_string()
+                .contains("only available on"),
+            "unexpected validation error: {invalid_options_error}"
+        );
+    }
+
+    #[test]
+    fn platform_macro_respects_current_platform() {
+        if Platform::detect().is_windows() {
+            assert_eq!(windows_only_marker().unwrap(), "windows");
+
+            let error = linux_only_marker().unwrap_err();
+            assert!(error.to_string().contains("only available on Linux"));
+        } else {
+            assert_eq!(linux_only_marker().unwrap(), "linux");
+
+            let error = windows_only_marker().unwrap_err();
+            assert!(error.to_string().contains("only available on Windows"));
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────────

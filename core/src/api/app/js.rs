@@ -1,5 +1,6 @@
 use std::{collections::BTreeMap, sync::Arc};
 
+use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
     atom::PredefinedAtom,
@@ -16,7 +17,6 @@ use crate::{
     built_info,
     runtime::{Runtime, WaitAtEnd},
 };
-
 pub type JsWaitAtEnd = WaitAtEnd;
 
 /// The global application singleton, providing access to environment information
@@ -41,7 +41,7 @@ pub type JsWaitAtEnd = WaitAtEnd;
 /// @singleton
 /// @prop waitAtEnd: WaitAtEnd | boolean // Should the app wait at the end of execution
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "App")]
+#[js_class]
 pub struct JsApp {
     runtime: Arc<Runtime>,
 }
@@ -66,19 +66,19 @@ impl JsApp {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsApp {
     /// Should the script pause at the end?
     /// @skip
     #[must_use]
-    #[qjs(get, rename = "waitAtEnd")]
+    #[get("waitAtEnd")]
     pub fn get_wait_at_end(&self) -> JsWaitAtEnd {
         self.runtime.wait_at_end()
     }
 
     /// Should the script pause at the end?
     /// @skip
-    #[qjs(set, rename = "waitAtEnd")]
+    #[set("waitAtEnd")]
     pub fn set_wait_at_end(&self, ctx: Ctx<'_>, value: Value<'_>) -> Result<()> {
         let value = if let Ok(value) = value.get::<JsWaitAtEnd>() {
             value
@@ -106,9 +106,8 @@ impl JsApp {
     /// println(app.version); // e.g. "0.1.0"
     /// ```
     ///
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn version(&self) -> &str {
         built_info::PKG_VERSION
     }
@@ -121,10 +120,9 @@ impl JsApp {
     /// println(env["PATH"]);
     /// ```
     ///
-    /// @get
     /// @readonly
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn env(&self) -> BTreeMap<String, String> {
         App::env_vars()
     }
@@ -135,8 +133,7 @@ impl JsApp {
     /// println(app.cwd); // e.g. "/home/user/project"
     /// ```
     ///
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn cwd(&self, ctx: Ctx<'_>) -> Result<String> {
         std::env::current_dir()
             .map(|dir| dir.to_string_lossy().to_string())
@@ -159,8 +156,7 @@ impl JsApp {
     /// println(app.executablePath); // e.g. "/usr/bin/actiona-run"
     /// ```
     ///
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn executable_path(&self, ctx: Ctx<'_>) -> Result<String> {
         std::env::current_exe()
             .map(|dir| dir.to_string_lossy().to_string())

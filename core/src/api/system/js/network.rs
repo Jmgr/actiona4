@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use macros::FromJsObject;
+use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 
 use crate::{
@@ -19,7 +19,7 @@ use crate::{
 /// println(interfaces.length);
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Network")]
+#[js_class]
 pub struct JsNetwork {
     inner: Network,
 }
@@ -45,26 +45,19 @@ impl JsNetwork {
 }
 
 /// List network interfaces options
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListInterfacesOptions {
     /// Rescan
-    /// @default `true`
+    #[default(true)]
     pub rescan: bool,
 }
 
-impl Default for ListInterfacesOptions {
-    fn default() -> Self {
-        Self { rescan: true }
-    }
-}
-
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsNetwork {
     /// Host name
-    /// @get
     #[must_use]
-    #[qjs(get)]
+    #[get]
     pub fn hostname(&self) -> Option<String> {
         self.inner.hostname()
     }
@@ -104,7 +97,7 @@ impl JsNetwork {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "NetworkInterface")]
+#[js_class]
 pub struct JsNetworkInterface {
     inner: NetworkInterface,
     name: String,
@@ -124,54 +117,48 @@ impl JsNetworkInterface {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsNetworkInterface {
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Inbound
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn inbound(&self) -> JsTraffic {
         self.inner.inbound().into()
     }
 
     /// Outbound
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn outbound(&self) -> JsTraffic {
         self.inner.outbound().into()
     }
 
     /// MTU
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn mtu(&self) -> u64 {
         self.inner.mtu()
     }
 
     /// MAC address
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn mac_address(&self) -> Option<&str> {
         self.inner.mac_address()
     }
 
     /// Subnets
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn subnets(&self) -> Vec<String> {
         self.inner
@@ -199,7 +186,7 @@ impl JsNetworkInterface {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Counters")]
+#[js_class]
 pub struct JsCounters {
     inner: Counters,
 }
@@ -216,27 +203,24 @@ impl From<Counters> for JsCounters {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsCounters {
     /// Data
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn data(&self) -> u64 {
         *self.inner.data()
     }
 
     /// Packets
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn packets(&self) -> u64 {
         self.inner.packets()
     }
 
     /// Errors
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn errors(&self) -> u64 {
         self.inner.errors()
@@ -262,7 +246,7 @@ impl JsCounters {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Traffic")]
+#[js_class]
 pub struct JsTraffic {
     inner: Traffic,
 }
@@ -284,21 +268,19 @@ impl From<Traffic> for JsTraffic {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsTraffic {
     /// Total
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn total(&self) -> JsCounters {
         self.inner.total().into()
     }
 
     /// Delta
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn delta(&self) -> JsCounters {
         self.inner.delta().into()

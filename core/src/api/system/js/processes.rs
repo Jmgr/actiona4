@@ -1,6 +1,6 @@
 use derive_more::Display;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace, prelude::Opt,
 };
@@ -22,7 +22,6 @@ use crate::{
             processes::{Process, Processes, Status},
         },
     },
-    runtime::WithUserData,
     types::display::display_with_type,
 };
 
@@ -33,7 +32,7 @@ use crate::{
 /// println(processes.length);
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "Processes")]
+#[js_class]
 pub struct JsProcesses {
     inner: Processes,
 }
@@ -58,59 +57,37 @@ impl JsProcesses {
 }
 
 /// List processes options
-/// @options
+#[options]
 #[derive(Clone, Copy, Debug, FromJsObject)]
 pub struct ListProcessesOptions {
     /// Rescan
-    /// @default `true`
+    #[default(true)]
     pub rescan: bool,
 }
 
-impl Default for ListProcessesOptions {
-    fn default() -> Self {
-        Self { rescan: true }
-    }
-}
-
 /// Process search options.
-/// @options
+#[options]
 #[derive(Debug)]
 pub struct JsProcessesFindOptions<'js> {
     /// Match by process ID.
     /// When undefined, any PID is accepted.
-    /// @default `undefined`
     pub pid: Option<u32>,
 
     /// Match by parent process ID.
     /// When undefined, parent PID is not filtered.
-    /// @default `undefined`
     pub parent_pid: Option<u32>,
 
     /// Match by process name.
     /// When undefined, name is not filtered.
-    /// @default `undefined`
     pub name: Option<JsName<'js>>,
 
     /// Match by process status.
     /// When undefined, status is not filtered.
-    /// @default `undefined`
     pub status: Option<JsProcessStatus>,
 
     /// Refresh process list before filtering.
-    /// @default `true`
+    #[default(true)]
     pub rescan: bool,
-}
-
-impl<'js> Default for JsProcessesFindOptions<'js> {
-    fn default() -> Self {
-        Self {
-            pid: None,
-            parent_pid: None,
-            name: None,
-            status: None,
-            rescan: true,
-        }
-    }
 }
 
 impl<'js> rquickjs::FromJs<'js> for JsProcessesFindOptions<'js> {
@@ -135,7 +112,7 @@ impl<'js> rquickjs::FromJs<'js> for JsProcessesFindOptions<'js> {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsProcesses {
     /// Lists all processes
     /// @readonly
@@ -227,7 +204,7 @@ impl JsProcesses {
 /// }
 /// ```
 #[derive(Debug, JsLifetime)]
-#[rquickjs::class(rename = "ProcessInfo")]
+#[js_class]
 pub struct JsProcessInfo {
     inner: Process,
 }
@@ -249,28 +226,25 @@ impl From<Process> for JsProcessInfo {
     }
 }
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsProcessInfo {
     /// Name
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.inner.name().as_deref()
     }
 
     /// Cmd
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn cmd(&self) -> &[String] {
         self.inner.cmd()
     }
 
     /// Exe
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn exe(&self) -> Option<String> {
         self.inner
@@ -280,25 +254,22 @@ impl JsProcessInfo {
     }
 
     /// Pid
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn pid(&self) -> u32 {
         self.inner.pid().into()
     }
 
     /// Env
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn env(&self) -> &[String] {
         self.inner.env()
     }
 
     /// Cwd
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn cwd(&self) -> Option<String> {
         self.inner
@@ -308,8 +279,7 @@ impl JsProcessInfo {
     }
 
     /// Root
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn root(&self) -> Option<String> {
         self.inner
@@ -319,134 +289,116 @@ impl JsProcessInfo {
     }
 
     /// Memory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn memory(&self) -> u64 {
         *self.inner.memory()
     }
 
     /// Virtual memory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn virtual_memory(&self) -> u64 {
         *self.inner.virtual_memory()
     }
 
     /// Parent
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn parent(&self) -> Option<u32> {
         self.inner.parent().map(|pid| pid.into())
     }
 
     /// Status
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn status(&self) -> JsProcessStatus {
         (*self.inner.status()).into()
     }
 
     /// Start time
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn start_time<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         date_from_system_time(&ctx, &self.inner.start_time())
     }
 
     /// Run time in seconds
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn run_time(&self) -> f64 {
         self.inner.run_time().as_secs_f64()
     }
 
     /// CPU usage
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn cpu_usage(&self) -> f32 {
         *self.inner.cpu_usage()
     }
 
     /// Accumulated CPU time in seconds
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn accumulated_cpu_time(&self) -> f64 {
         self.inner.accumulated_cpu_time().as_secs_f64()
     }
 
     /// Disk usage
-    /// @get
     /// @readonly
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn disk_usage(&self) -> JsDiskUsage {
         self.inner.disk_usage().into()
     }
 
     /// User ID
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn user_id(&self) -> Option<String> {
         self.inner.user_id().as_ref().map(|id| id.to_string())
     }
 
     /// Effective user ID
-    /// @get
-    /// @platforms =linux
-    #[qjs(get)]
+    #[get]
+    #[platform(only = "linux")]
     pub fn effective_user_id(&self, ctx: Ctx<'_>) -> Result<Option<String>> {
-        ctx.user_data().require_linux(&ctx)?;
-        Ok(self.inner
+        Ok(self
+            .inner
             .effective_user_id()
             .as_ref()
             .map(|id| id.to_string()))
     }
 
     /// Group ID
-    /// @get
-    /// @platforms =linux
-    #[qjs(get)]
+    #[get]
+    #[platform(only = "linux")]
     pub fn group_id(&self, ctx: Ctx<'_>) -> Result<Option<u32>> {
-        ctx.user_data().require_linux(&ctx)?;
         Ok(*self.inner.group_id())
     }
 
     /// Effective group ID
-    /// @get
-    /// @platforms =linux
-    #[qjs(get)]
+    #[get]
+    #[platform(only = "linux")]
     pub fn effective_group_id(&self, ctx: Ctx<'_>) -> Result<Option<u32>> {
-        ctx.user_data().require_linux(&ctx)?;
         Ok(*self.inner.effective_group_id())
     }
 
     /// Session ID
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn session_id(&self) -> Option<u32> {
         *self.inner.session_id()
     }
 
     /// Exists
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub const fn exists(&self) -> bool {
         self.inner.exists()
     }
 
     /// Open files
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn open_files(&self, ctx: Ctx<'_>) -> Result<Option<u64>> {
         self.inner
             .open_files()
@@ -456,8 +408,7 @@ impl JsProcessInfo {
     }
 
     /// Open files limit
-    /// @get
-    #[qjs(get)]
+    #[get]
     pub fn open_files_limit(&self, ctx: Ctx<'_>) -> Result<Option<u64>> {
         self.inner
             .open_files_limit()
@@ -497,10 +448,9 @@ impl JsProcessInfo {
     /// const proc = (await system.processes.find({ pid: targetPid }))[0];
     /// if (proc) proc.sendSignal(Signal.Term);
     /// ```
-    ///
-    /// @platforms =linux
+
+    #[platform(only = "linux")]
     pub fn send_signal(&self, ctx: Ctx<'_>, signal: JsSignal) -> Result<()> {
-        ctx.user_data().require_linux(&ctx)?;
         #[cfg(unix)]
         {
             crate::api::process::send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)

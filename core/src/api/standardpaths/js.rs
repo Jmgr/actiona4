@@ -1,3 +1,4 @@
+use macros::{js_class, js_methods};
 use rquickjs::{
     JsLifetime,
     atom::PredefinedAtom,
@@ -8,7 +9,6 @@ use crate::{
     api::{js::classes::SingletonClass, standardpaths::StandardPaths},
     types::display::display_with_type,
 };
-
 /// Platform-specific standard directory paths.
 ///
 /// All properties return the path as a string, or undefined if unavailable.
@@ -22,7 +22,7 @@ use crate::{
 /// @category StandardPaths
 /// @singleton
 #[derive(Clone, Debug, Default, JsLifetime)]
-#[rquickjs::class(rename = "StandardPaths")]
+#[js_class]
 pub struct JsStandardPaths {
     inner: StandardPaths,
 }
@@ -33,99 +33,87 @@ impl<'js> Trace<'js> for JsStandardPaths {
 
 impl SingletonClass<'_> for JsStandardPaths {}
 
-#[rquickjs::methods(rename_all = "camelCase")]
+#[js_methods]
 impl JsStandardPaths {
     /// Home directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn home(&self) -> Option<String> {
         self.inner.home().as_ref().map(|path| path.to_string())
     }
 
     /// Temporary directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn temp(&self) -> Option<String> {
         self.inner.temp().as_ref().map(|path| path.to_string())
     }
 
     /// Music directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn music(&self) -> Option<String> {
         self.inner.music().as_ref().map(|path| path.to_string())
     }
 
     /// Desktop directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn desktop(&self) -> Option<String> {
         self.inner.desktop().as_ref().map(|path| path.to_string())
     }
 
     /// Documents directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn documents(&self) -> Option<String> {
         self.inner.documents().as_ref().map(|path| path.to_string())
     }
 
     /// Downloads directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn downloads(&self) -> Option<String> {
         self.inner.downloads().as_ref().map(|path| path.to_string())
     }
 
     /// Pictures directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn pictures(&self) -> Option<String> {
         self.inner.pictures().as_ref().map(|path| path.to_string())
     }
 
     /// Public directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn public(&self) -> Option<String> {
         self.inner.public().as_ref().map(|path| path.to_string())
     }
 
     /// Videos directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn videos(&self) -> Option<String> {
         self.inner.videos().as_ref().map(|path| path.to_string())
     }
 
     /// Cache directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn cache(&self) -> Option<String> {
         self.inner.cache().as_ref().map(|path| path.to_string())
     }
 
     /// Config directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn config(&self) -> Option<String> {
         self.inner.config().as_ref().map(|path| path.to_string())
     }
 
     /// Local config directory
-    /// @get
-    #[qjs(get)]
+    #[get]
     #[must_use]
     pub fn local_config(&self) -> Option<String> {
         self.inner
