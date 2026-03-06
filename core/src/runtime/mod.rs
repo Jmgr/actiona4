@@ -629,6 +629,11 @@ impl Runtime {
         let cancellation_token = CancellationToken::new();
         let task_tracker = TaskTracker::new();
 
+        #[cfg(test)]
+        let tokio_runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()?;
+        #[cfg(not(test))]
         let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
