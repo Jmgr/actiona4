@@ -53,6 +53,7 @@ use crate::{
             global,
         },
         keyboard::js::JsKeyboard,
+        macros::js::JsMacros,
         mouse::js::JsMouse,
         name::js::JsWildcard,
         notification::js::JsNotification,
@@ -412,6 +413,7 @@ impl Runtime {
         let notification = JsNotification::new(task_tracker.clone());
         let standard_paths = JsStandardPaths::default();
         let windows = JsWindows::new(windows_inner, screen_inner.clone());
+        let macros = JsMacros::new(runtime.clone()).await?;
 
         let script_engine = ScriptEngine::new().await?;
 
@@ -460,6 +462,7 @@ impl Runtime {
                     notification,
                     standard_paths,
                     windows,
+                    macros,
                 )?;
 
                 Ok(())
@@ -487,6 +490,7 @@ impl Runtime {
         notification: JsNotification,
         standard_paths: JsStandardPaths,
         windows: JsWindows,
+        macros: JsMacros,
     ) -> rquickjs::Result<()> {
         // Tools
         JsConcurrency::register(&ctx)?;
@@ -525,6 +529,7 @@ impl Runtime {
         register_singleton_class::<JsNotification>(&ctx, notification)?;
         register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
         register_singleton_class::<JsWindows>(&ctx, windows)?;
+        register_singleton_class::<JsMacros>(&ctx, macros)?;
 
         Ok(())
     }

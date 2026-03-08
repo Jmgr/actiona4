@@ -12,6 +12,7 @@ pub mod filesystem;
 pub mod image;
 pub mod js;
 pub mod keyboard;
+pub mod macros;
 pub mod mouse;
 pub mod name;
 pub mod notification;

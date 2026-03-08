@@ -5940,6 +5940,268 @@ interface KeysOptions {
     signal?: AbortSignal;
 }
 /**
+ * A recorded macro that can be replayed or saved to disk.
+ * 
+ * ```ts
+ * // Record a macro
+ * const m = await macros.record({ stopKeys: [Key.Escape] });
+ * 
+ * // Save and reload
+ * await m.save("my_macro.amacro");
+ * const loaded = await Macro.load("my_macro.amacro");
+ * 
+ * // Play back
+ * await macros.play(loaded, { speed: 1.5 });
+ * ```
+ * @category Macros
+ */
+class Macro {
+    private constructor();
+    /**
+     * Saves this macro to a gzip-compressed JSON file.
+     * 
+     * ```ts
+     * await macro.save("recording.amacro");
+     * ```
+     */
+    save(path: string): Promise<void>;
+    /**
+     * Loads a macro from a gzip-compressed JSON file previously written by `save()`.
+     * 
+     * ```ts
+     * const loaded = await Macro.load("recording.amacro");
+     * await macros.play(loaded);
+     * ```
+     */
+    static load(path: string): Promise<Macro>;
+    /**
+     * Returns the total number of events in this macro.
+     */
+    eventCount(): number;
+    /**
+     * Returns the total duration of the recording in seconds.
+     */
+    duration(): number;
+    /**
+     * Returns when this macro was recorded.
+     */
+    recordedAt(): Date;
+    /**
+     * Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
+     */
+    platform(): string;
+    toString(): string;
+}
+/**
+ * Progress of a `macros.play()` operation.
+ * 
+ * Received by iterating over the async iterator returned by `play`.
+ * 
+ * ```ts
+ * const task = macros.play(macro);
+ * for await (const progress of task) {
+ *     console.println(`${Math.round(progress.ratio() * 100)}%`);
+ *     if (progress.finished()) break;
+ * }
+ * await task;
+ * ```
+ * @category Macros
+ */
+class PlayProgress {
+    private constructor();
+    /**
+     * Number of events replayed so far.
+     */
+    eventsDone(): number;
+    /**
+     * Total number of events to replay.
+     */
+    totalEvents(): number;
+    /**
+     * Replay ratio, in the range `[0, 1]`.
+     */
+    ratio(): number;
+    /**
+     * Whether all events have been replayed.
+     */
+    finished(): boolean;
+    toString(): string;
+}
+/**
+ * Options for `macros.record()`.
+ * 
+ * ```ts
+ * const m = await macros.record({
+ *     stopKeys: [Key.Escape],
+ *     mousePositionInterval: "16ms",
+ * });
+ * ```
+ * @category Macros
+ * @expand
+ */
+interface RecordOptions {
+    /**
+     * Key combination that stops the recording.
+     * All listed keys must be pressed simultaneously.
+     * @defaultValue `[Key.Escape]`
+     */
+    stopKeys?: Key[];
+    /**
+     * Maximum recording duration before automatically stopping.
+     * @defaultValue `undefined`
+     */
+    timeout?: number | string;
+    /**
+     * How often to sample the mouse position.
+     * @defaultValue `"16ms"`
+     */
+    mousePositionInterval?: number | string;
+    /**
+     * Record mouse button press and release events.
+     * @defaultValue `true`
+     */
+    mouseButtons?: boolean;
+    /**
+     * Record mouse cursor position.
+     * @defaultValue `true`
+     */
+    mousePosition?: boolean;
+    /**
+     * Record mouse scroll wheel events.
+     * @defaultValue `true`
+     */
+    mouseScroll?: boolean;
+    /**
+     * Record keyboard key press and release events.
+     * @defaultValue `true`
+     */
+    keyboardKeys?: boolean;
+    /**
+     * Abort signal to cancel recording.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Options for `macros.play()`.
+ * 
+ * ```ts
+ * await macros.play(macro, { speed: 2.0 });
+ * ```
+ * @category Macros
+ * @expand
+ */
+interface PlayOptions {
+    /**
+     * Playback speed multiplier. `1.0` is real-time, `2.0` is twice as fast.
+     * Must be greater than zero.
+     * @defaultValue `1`
+     */
+    speed?: number;
+    /**
+     * Replay mouse button events.
+     * @defaultValue `true`
+     */
+    mouseButtons?: boolean;
+    /**
+     * Replay mouse cursor movements.
+     * @defaultValue `true`
+     */
+    mousePosition?: boolean;
+    /**
+     * Replay mouse scroll events.
+     * @defaultValue `true`
+     */
+    mouseScroll?: boolean;
+    /**
+     * Replay keyboard key events.
+     * @defaultValue `true`
+     */
+    keyboardKeys?: boolean;
+    /**
+     * Abort signal to cancel playback.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Records and replays input macros.
+ * 
+ * ```ts
+ * // Record until Escape is pressed
+ * const m = await macros.record();
+ * await macros.play(m);
+ * ```
+ * 
+ * ```ts
+ * // Save and reload a macro
+ * const m = await macros.record({ timeout: "30s" });
+ * await m.save("workflow.amacro");
+ * const loaded = await Macro.load("workflow.amacro");
+ * await macros.play(loaded, { speed: 2.0 });
+ * ```
+ * @category Macros
+ */
+interface Macros {
+    /**
+     * Records user input until the stop key combination is pressed (or the timeout elapses).
+     * 
+     * ```ts
+     * // Record with default settings (stop with Escape)
+     * const m = await macros.record();
+     * ```
+     * 
+     * ```ts
+     * // Record with a 30-second timeout
+     * const m = await macros.record({ timeout: "30s" });
+     * ```
+     * 
+     * ```ts
+     * // Record only keyboard events
+     * const m = await macros.record({
+     *     mouseButtons: false,
+     *     mousePosition: false,
+     *     mouseScroll: false,
+     * });
+     * ```
+     * @platform does not work on Wayland
+     */
+    record(options?: RecordOptions): Task<Macro>;
+    /**
+     * Replays a previously recorded macro.
+     * 
+     * Only one playback can be active at a time; calling `play()` while another
+     * playback is already running throws an error.
+     * 
+     * ```ts
+     * await macros.play(macro);
+     * ```
+     * 
+     * ```ts
+     * // Play at twice the original speed, skipping mouse movements
+     * await macros.play(macro, { speed: 2.0, mousePosition: false });
+     * ```
+     * 
+     * ```ts
+     * // Cancellable playback with progress tracking
+     * const controller = new AbortController();
+     * const task = macros.play(macro, { signal: controller.signal });
+     * for await (const progress of task) {
+     *     console.println(`${Math.round(progress.ratio() * 100)}%`);
+     *     if (progress.finished()) break;
+     * }
+     * await task;
+     * ```
+     * @platform does not work on Wayland
+     */
+    play(macroArg: Macro, options?: PlayOptions): ProgressTask<void, PlayProgress>;
+    toString(): string;
+}
+/**
+ * @category Macros
+ */
+const macros: Macros;
+/**
  * Controls mouse input: movement, clicking, scrolling, and position queries.
  * 
  * ```ts

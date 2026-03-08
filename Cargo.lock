@@ -1212,6 +1212,7 @@ dependencies = [
  "display-info",
  "encoding_rs",
  "enigo",
+ "flate2",
  "futures",
  "http-body",
  "http-body-util",

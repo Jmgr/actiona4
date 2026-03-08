@@ -2290,6 +2290,56 @@ impl TryFrom<enigo::Key> for JsKey {
     }
 }
 
+impl serde::Serialize for JsKey {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        match self {
+            Self::Standard(key) => serde_plain::to_string(key)
+                .map_err(serde::ser::Error::custom)?
+                .serialize(serializer),
+            Self::Unicode(c) => format!("u+{:04X}", u32::from(*c)).serialize(serializer),
+            Self::Other(n) => n.serialize(serializer),
+        }
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for JsKey {
+    fn deserialize<D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> std::result::Result<Self, D::Error> {
+        use std::str::FromStr;
+
+        #[derive(serde::Deserialize)]
+        #[serde(untagged)]
+        enum Helper {
+            Number(u32),
+            Text(String),
+        }
+
+        match Helper::deserialize(deserializer)? {
+            Helper::Number(n) => Ok(Self::Other(n)),
+            Helper::Text(s) => {
+                if let Some(hex) = s.strip_prefix("u+") {
+                    let codepoint =
+                        u32::from_str_radix(hex, 16).map_err(serde::de::Error::custom)?;
+                    let c = char::try_from(codepoint).map_err(serde::de::Error::custom)?;
+                    return Ok(Self::Unicode(c));
+                }
+                if let Ok(key) = JsStandardKey::from_str(&s) {
+                    return Ok(Self::Standard(key));
+                }
+                let mut chars = s.chars();
+                if let (Some(c), None) = (chars.next(), chars.next()) {
+                    return Ok(Self::Unicode(c));
+                }
+                Err(serde::de::Error::custom(format!("unknown key name: {s}")))
+            }
+        }
+    }
+}
+
 impl TryFrom<enigo::Key> for JsStandardKey {
     type Error = KeyError;
 

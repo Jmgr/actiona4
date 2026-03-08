@@ -52,6 +52,7 @@ directories.workspace = true
 display-info.workspace = true
 encoding_rs.workspace = true
 enigo.workspace = true
+flate2.workspace = true
 futures.workspace = true
 http-body.workspace = true
 http-body-util.workspace = true
