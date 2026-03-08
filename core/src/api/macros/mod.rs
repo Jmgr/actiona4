@@ -18,6 +18,7 @@ use tracing::warn;
 
 use crate::{
     api::{
+        displays::Displays,
         keyboard::{Keyboard, js::JsKey},
         mouse::{Axis, Button, Mouse, PressOptions},
         point::point,
@@ -128,6 +129,19 @@ pub struct MacroDisplayInfo {
     pub is_primary: bool,
 }
 
+impl From<&crate::runtime::events::DisplayInfo> for MacroDisplayInfo {
+    fn from(d: &crate::runtime::events::DisplayInfo) -> Self {
+        Self {
+            x: d.rect.top_left.x,
+            y: d.rect.top_left.y,
+            width: d.rect.size.width,
+            height: d.rect.size.height,
+            scale_factor: d.scale_factor,
+            is_primary: d.is_primary,
+        }
+    }
+}
+
 /// Metadata stored alongside the recorded events.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -201,6 +215,9 @@ pub struct PlayConfig {
     pub speed: f64,
     pub mouse_buttons: bool,
     pub mouse_position: bool,
+    /// When true, mouse movements are offset by the delta between the current cursor position
+    /// and the first recorded cursor position, making playback position-independent.
+    pub relative_mouse_position: bool,
     pub mouse_scroll: bool,
     pub keyboard_keys: bool,
 }
@@ -217,9 +234,14 @@ pub async fn record_impl(
     runtime: Arc<Runtime>,
     mouse: Mouse,
     config: RecordConfig,
-    display_snapshot: Vec<MacroDisplayInfo>,
+    displays: Displays,
     token: CancellationToken,
 ) -> Result<MacroData> {
+    let current_displays = displays
+        .wait_get_info()
+        .await
+        .map(|infos| infos.iter().map(MacroDisplayInfo::from).collect::<Vec<_>>())
+        .unwrap_or_default();
     let button_guard = runtime.mouse_buttons();
     let mut button_rx = button_guard.subscribe();
     let scroll_guard = runtime.mouse_scroll();
@@ -356,7 +378,7 @@ pub async fn record_impl(
         duration_ms: elapsed_ms(),
         recorded_at: OffsetDateTime::now_utc(),
         platform: OS_NAME.to_string(),
-        displays: display_snapshot,
+        displays: current_displays,
     };
 
     Ok(MacroData {
@@ -366,16 +388,46 @@ pub async fn record_impl(
     })
 }
 
+/// Computes the mouse offset for relative playback: `(current_pos - first_recorded_pos)`.
+///
+/// Returns `(Si32::ZERO, Si32::ZERO)` if relative mode is disabled, no mouse move events exist,
+/// or the current position cannot be queried.
+fn relative_mouse_offset(config: &PlayConfig, data: &MacroData, mouse: &Mouse) -> (Si32, Si32) {
+    if !config.relative_mouse_position || !config.mouse_position {
+        return (Si32::ZERO, Si32::ZERO);
+    }
+    let Some((fx, fy)) = data.events.iter().find_map(|e| {
+        if let MacroEvent::MouseMove { x, y, .. } = e { Some((*x, *y)) } else { None }
+    }) else {
+        return (Si32::ZERO, Si32::ZERO);
+    };
+    match mouse.position() {
+        Ok(pos) => (pos.x - fx, pos.y - fy),
+        Err(err) => {
+            warn!(
+                "Failed to get current mouse position for relative playback: {err}; \
+                 falling back to absolute positions."
+            );
+            (Si32::ZERO, Si32::ZERO)
+        }
+    }
+}
+
 /// Replays a `MacroData`, reporting progress through `progress_tx`.
 pub async fn play_impl(
     runtime: Arc<Runtime>,
     mouse: Mouse,
     data: &MacroData,
     config: &PlayConfig,
-    current_displays: &[MacroDisplayInfo],
+    displays: Displays,
     progress_tx: watch::Sender<PlayProgress>,
     token: CancellationToken,
 ) -> Result<()> {
+    let current_displays = displays
+        .wait_get_info()
+        .await
+        .map(|infos| infos.iter().map(MacroDisplayInfo::from).collect::<Vec<_>>())
+        .unwrap_or_default();
     if current_displays != data.metadata.displays.as_slice() {
         warn!(
             "Display configuration has changed since this macro was recorded. \
@@ -393,6 +445,8 @@ pub async fn play_impl(
         });
         return Ok(());
     }
+
+    let mouse_offset = relative_mouse_offset(config, data, &mouse);
 
     let mut last_time_ms = 0u64;
 
@@ -414,7 +468,10 @@ pub async fn play_impl(
             MacroEvent::MouseMove { x, y, .. } => {
                 if config.mouse_position {
                     mouse
-                        .set_position(point(*x, *y), Coordinate::Abs)
+                        .set_position(
+                            point(*x + mouse_offset.0, *y + mouse_offset.1),
+                            Coordinate::Abs,
+                        )
                         .map_err(|err| eyre!("mouse move failed: {err}"))?;
                 }
             }

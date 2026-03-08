@@ -36,6 +36,7 @@ clap_complete.workspace = true
 color-eyre.workspace = true
 console.workspace = true
 directories.workspace = true
+enigo.workspace = true
 flate2.workspace = true
 humantime.workspace = true
 indicatif.workspace = true

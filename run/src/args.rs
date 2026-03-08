@@ -4,6 +4,88 @@ use clap::{Args as ClapArgs, Parser, Subcommand, ValueHint};
 use strum::EnumIs;
 
 #[derive(ClapArgs, Clone, Debug)]
+pub struct MacroInputFilter {
+    /// do not record/replay mouse button press/release events
+    #[arg(long)]
+    pub no_mouse_buttons: bool,
+
+    /// do not record/replay mouse cursor position
+    #[arg(long)]
+    pub no_mouse_position: bool,
+
+    /// do not record/replay mouse scroll wheel events
+    #[arg(long)]
+    pub no_mouse_scroll: bool,
+
+    /// do not record/replay keyboard key press/release events
+    #[arg(long)]
+    pub no_keyboard_keys: bool,
+}
+
+/// 🔴 Records and replays input macros.
+///
+/// Examples:
+/// - `actiona-run macros record recording.amacro`
+/// - `actiona-run macros play recording.amacro --speed 2.0`
+#[derive(Debug, Subcommand)]
+#[command(verbatim_doc_comment)]
+pub enum MacrosCommands {
+    /// Records user input and saves the macro to a file
+    ///
+    /// Examples:
+    /// - `actiona-run macros record recording.amacro`
+    /// - `actiona-run macros record recording.amacro --stop-key Escape --stop-key Control`
+    /// - `actiona-run macros record recording.amacro --timeout 30s --no-mouse-position`
+    #[command(verbatim_doc_comment)]
+    Record {
+        /// file path to save the recorded macro to
+        #[arg(value_hint = ValueHint::FilePath)]
+        file: PathBuf,
+
+        /// key that stops recording; can be specified multiple times (all listed keys must be
+        /// pressed simultaneously to stop). Key names: Escape, Control, Alt, Shift, Space, etc.
+        #[arg(long = "stop-key", value_name = "KEY", default_values = ["Escape"])]
+        stop_keys: Vec<String>,
+
+        /// maximum recording duration before stopping automatically (e.g. 30s, 1m, 2m30s)
+        #[arg(long)]
+        timeout: Option<String>,
+
+        /// how often to sample the mouse cursor position (e.g. 16ms, 33ms)
+        #[arg(long, default_value = "16ms")]
+        mouse_position_interval: String,
+
+        #[command(flatten)]
+        filter: MacroInputFilter,
+    },
+
+    /// Replays a macro from a file
+    ///
+    /// Examples:
+    /// - `actiona-run macros play recording.amacro`
+    /// - `actiona-run macros play recording.amacro --speed 2.0`
+    /// - `actiona-run macros play recording.amacro --relative-mouse-position`
+    #[command(verbatim_doc_comment)]
+    Play {
+        /// file path of the macro to replay
+        #[arg(value_hint = ValueHint::FilePath)]
+        file: PathBuf,
+
+        /// playback speed multiplier (1.0 = real-time, 2.0 = twice as fast)
+        #[arg(long, default_value = "1.0")]
+        speed: f64,
+
+        /// replay mouse movements relative to the current cursor position instead of the
+        /// absolute screen coordinates that were recorded
+        #[arg(long)]
+        relative_mouse_position: bool,
+
+        #[command(flatten)]
+        filter: MacroInputFilter,
+    },
+}
+
+#[derive(ClapArgs, Clone, Debug)]
 pub struct RunArgs {
     /// Seed the random number generator for deterministic runs
     #[arg(long)]
@@ -78,6 +160,12 @@ pub enum Commands {
 
         /// the value to set (true or false); omit to read the current value
         value: Option<bool>,
+    },
+
+    /// 🔴 records and replays input macros
+    Macros {
+        #[command(subcommand)]
+        command: MacrosCommands,
     },
 }
 

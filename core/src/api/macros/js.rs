@@ -292,6 +292,11 @@ pub struct JsPlayOptions {
     #[default(true)]
     pub mouse_position: bool,
 
+    /// Replay mouse movements relative to the current cursor position instead of absolute
+    /// screen coordinates. The offset is computed from the difference between the cursor's
+    /// position at playback start and the first recorded mouse position.
+    pub relative_mouse_position: bool,
+
     /// Replay mouse scroll events.
     #[default(true)]
     pub mouse_scroll: bool,
@@ -361,25 +366,6 @@ impl JsMacros {
         })
     }
 
-    fn display_snapshot(ctx: &Ctx<'_>) -> Vec<super::MacroDisplayInfo> {
-        ctx.user_data()
-            .displays()
-            .get_info_sync()
-            .map(|infos| {
-                infos
-                    .iter()
-                    .map(|display| super::MacroDisplayInfo {
-                        x: display.rect.top_left.x,
-                        y: display.rect.top_left.y,
-                        width: display.rect.size.width,
-                        height: display.rect.size.height,
-                        scale_factor: display.scale_factor,
-                        is_primary: display.is_primary,
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .unwrap_or_default()
-    }
 }
 
 #[js_methods]
@@ -416,7 +402,7 @@ impl JsMacros {
         let runtime = self.runtime.clone();
         let mouse = self.mouse.clone();
 
-        let display_snapshot = Self::display_snapshot(&ctx);
+        let displays = ctx.user_data().displays();
 
         let stop_keys = options
             .stop_keys
@@ -443,7 +429,7 @@ impl JsMacros {
         };
 
         task_with_token(ctx, signal, async move |ctx, token| {
-            record_impl(runtime, mouse, config, display_snapshot, token)
+            record_impl(runtime, mouse, config, displays, token)
                 .await
                 .map(|data| JsMacro {
                     data: Arc::new(data),
@@ -510,12 +496,13 @@ impl JsMacros {
         let is_playing_guard = IsPlayingGuard(self.is_playing.clone());
         let runtime = self.runtime.clone();
 
-        let current_displays = Self::display_snapshot(&ctx);
+        let displays = ctx.user_data().displays();
 
         let config = PlayConfig {
             speed: options.speed,
             mouse_buttons: options.mouse_buttons,
             mouse_position: options.mouse_position,
+            relative_mouse_position: options.relative_mouse_position,
             mouse_scroll: options.mouse_scroll,
             keyboard_keys: options.keyboard_keys,
         };
@@ -533,7 +520,7 @@ impl JsMacros {
                     mouse,
                     &macro_data,
                     &config,
-                    &current_displays,
+                    displays,
                     progress_tx,
                     token,
                 )

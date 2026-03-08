@@ -292,6 +292,7 @@ pub struct Runtime {
     #[derive_where(skip)]
     clipboard: Clipboard,
 
+    displays: Displays,
     platform: Platform,
 }
 
@@ -380,6 +381,7 @@ impl Runtime {
             background_tasks_counter: AtomicU64::new(0),
             playing_sounds_tracker: Arc::new(PlayingSoundsTracker::default()),
             clipboard: clipboard.clone(),
+            displays: displays.clone(),
             platform,
         });
 
@@ -813,6 +815,11 @@ impl Runtime {
     #[must_use]
     pub fn clipboard(&self) -> Clipboard {
         self.clipboard.clone()
+    }
+
+    #[must_use]
+    pub fn displays(&self) -> Displays {
+        self.displays.clone()
     }
 
     #[inline]

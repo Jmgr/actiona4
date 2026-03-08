@@ -28,7 +28,7 @@ use windows::{
 };
 
 use crate::{
-    args::{Args, Commands},
+    args::{Args, Commands, MacrosCommands},
     repl::repl,
     updates::{check_updates, check_updates_now},
 };
@@ -40,6 +40,7 @@ mod built_info {
 mod args;
 mod config;
 mod init;
+mod macros;
 mod repl;
 mod updates;
 
@@ -139,6 +140,7 @@ pub fn run_cli() -> Result<()> {
             parse_pragmas(&code).no_globals
         }
         Commands::Repl { no_globals, .. } => *no_globals,
+        Commands::Macros { .. } => false,
         _ => false,
     };
 
@@ -146,6 +148,7 @@ pub fn run_cli() -> Result<()> {
         Commands::Run { run_args, .. }
         | Commands::Eval { run_args, .. }
         | Commands::Repl { run_args, .. } => run_args.seed,
+        Commands::Macros { .. } => None,
         _ => None,
     };
 
@@ -214,6 +217,46 @@ pub fn run_cli() -> Result<()> {
 
                     repl(script_engine, runtime.cancellation_token()).await?;
                 }
+                Commands::Macros { command } => match command {
+                    MacrosCommands::Record {
+                        file,
+                        stop_keys,
+                        timeout,
+                        mouse_position_interval,
+                        filter,
+                    } => {
+                        macros::run_record(
+                            runtime,
+                            file,
+                            stop_keys,
+                            timeout.as_deref(),
+                            mouse_position_interval,
+                            !filter.no_mouse_buttons,
+                            !filter.no_mouse_position,
+                            !filter.no_mouse_scroll,
+                            !filter.no_keyboard_keys,
+                        )
+                        .await?;
+                    }
+                    MacrosCommands::Play {
+                        file,
+                        speed,
+                        relative_mouse_position,
+                        filter,
+                    } => {
+                        macros::run_play(
+                            runtime,
+                            file,
+                            *speed,
+                            !filter.no_mouse_buttons,
+                            !filter.no_mouse_position,
+                            *relative_mouse_position,
+                            !filter.no_mouse_scroll,
+                            !filter.no_keyboard_keys,
+                        )
+                        .await?;
+                    }
+                },
                 Commands::Init { .. }
                 | Commands::Update
                 | Commands::Completions { .. }
