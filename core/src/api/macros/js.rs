@@ -365,7 +365,6 @@ impl JsMacros {
             is_playing: Arc::new(AtomicBool::new(false)),
         })
     }
-
 }
 
 #[js_methods]
@@ -467,7 +466,7 @@ impl JsMacros {
     pub fn play<'js>(
         &self,
         ctx: Ctx<'js>,
-        macro_arg: JsMacro,
+        r#macro: JsMacro,
         options: Opt<JsPlayOptions>,
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
@@ -491,7 +490,7 @@ impl JsMacros {
         }
 
         let signal = options.signal.clone();
-        let macro_data = macro_arg.data;
+        let macro_data = r#macro.data;
         let mouse = self.mouse.clone();
         let is_playing_guard = IsPlayingGuard(self.is_playing.clone());
         let runtime = self.runtime.clone();
