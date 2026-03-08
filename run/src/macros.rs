@@ -121,7 +121,7 @@ pub async fn run_play(
     let total = u64::try_from(data.events.len()).unwrap_or(u64::MAX);
     let (progress_tx, mut progress_rx) = watch::channel(PlayProgress::default());
 
-    let progress_handle = tokio::spawn(async move {
+    let progress_handle = runtime.task_tracker().spawn(async move {
         loop {
             if progress_rx.changed().await.is_err() {
                 break;

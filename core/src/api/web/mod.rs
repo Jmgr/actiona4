@@ -864,7 +864,7 @@ mod tests {
             let received_progress = Arc::new(Mutex::new(Vec::new()));
 
             let local_received_progress = received_progress.clone();
-            let receiver_handle = tokio::spawn(async move {
+            let receiver_handle = runtime.task_tracker().spawn(async move {
                 while receiver.changed().await.is_ok() {
                     local_received_progress
                         .lock()

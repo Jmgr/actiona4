@@ -230,14 +230,14 @@ impl ProcessRunner {
         let stdout = child.stdout.take();
         let stderr = child.stderr.take();
 
-        let stdout_reader = tokio::spawn(async move {
+        let stdout_reader = self.task_tracker.spawn(async move {
             match stdout {
                 Some(stdout) => read_stream_to_string(stdout).await,
                 None => Ok(String::new()),
             }
         });
 
-        let stderr_reader = tokio::spawn(async move {
+        let stderr_reader = self.task_tracker.spawn(async move {
             match stderr {
                 Some(stderr) => read_stream_to_string(stderr).await,
                 None => Ok(String::new()),
