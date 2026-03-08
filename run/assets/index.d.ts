@@ -6108,6 +6108,13 @@ declare interface PlayOptions {
      */
     mousePosition?: boolean;
     /**
+     * Replay mouse movements relative to the current cursor position instead of absolute
+     * screen coordinates. The offset is computed from the difference between the cursor's
+     * position at playback start and the first recorded mouse position.
+     * @defaultValue `false`
+     */
+    relativeMousePosition?: boolean;
+    /**
      * Replay mouse scroll events.
      * @defaultValue `true`
      */

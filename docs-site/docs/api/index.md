@@ -95,6 +95,15 @@
 - [OnTextOptions](interfaces/OnTextOptions.md)
 - [keyboard](variables/keyboard.md)
 
+## Macros
+
+- [Macro](classes/Macro.md)
+- [PlayProgress](classes/PlayProgress.md)
+- [Macros](interfaces/Macros.md)
+- [PlayOptions](interfaces/PlayOptions.md)
+- [RecordOptions](interfaces/RecordOptions.md)
+- [macros](variables/macros.md)
+
 ## Misc
 
 - [ColorLike](type-aliases/ColorLike.md)
