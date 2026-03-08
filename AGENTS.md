@@ -44,6 +44,9 @@ Note: do not stage any changes.
 * never use single letter names for variables
 * prefer `use` instructions over specifying the full path for a type (when it is not ambiguous)
 * use cancel_on instead of a manual select! when it makes the code simpler
+* use `use` imports instead of fully-qualified paths for event types
+* don't use `tokio::spawn`, use `task_tracker`
+* file I/O should be async (use `tokio::fs` like Image does)
 
 ## Definition of done
 
