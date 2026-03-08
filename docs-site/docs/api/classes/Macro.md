@@ -7,8 +7,8 @@ A recorded macro that can be replayed or saved to disk.
 const m = await macros.record({ stopKeys: [Key.Escape] });
 
 // Save and reload
-await m.save("my_macro.amacro");
-const loaded = await Macro.load("my_macro.amacro");
+await m.save("my_macro.amac");
+const loaded = await Macro.load("my_macro.amac");
 
 // Play back
 await macros.play(loaded, { speed: 1.5 });
@@ -71,7 +71,7 @@ Returns when this macro was recorded.
 Saves this macro to a gzip-compressed JSON file.
 
 ```ts
-await macro.save("recording.amacro");
+await macro.save("recording.amac");
 ```
 
 #### Parameters
@@ -103,7 +103,7 @@ await macro.save("recording.amacro");
 Loads a macro from a gzip-compressed JSON file previously written by `save()`.
 
 ```ts
-const loaded = await Macro.load("recording.amacro");
+const loaded = await Macro.load("recording.amac");
 await macros.play(loaded);
 ```
 

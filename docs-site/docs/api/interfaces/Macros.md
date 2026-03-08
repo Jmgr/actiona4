@@ -11,8 +11,8 @@ await macros.play(m);
 ```ts
 // Save and reload a macro
 const m = await macros.record({ timeout: "30s" });
-await m.save("workflow.amacro");
-const loaded = await Macro.load("workflow.amacro");
+await m.save("workflow.amac");
+const loaded = await Macro.load("workflow.amac");
 await macros.play(loaded, { speed: 2.0 });
 ```
 

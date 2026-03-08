@@ -25,17 +25,17 @@ pub struct MacroInputFilter {
 /// 🔴 Records and replays input macros.
 ///
 /// Examples:
-/// - `actiona-run macros record recording.amacro`
-/// - `actiona-run macros play recording.amacro --speed 2.0`
+/// - `actiona-run macros record recording.amac`
+/// - `actiona-run macros play recording.amac --speed 2.0`
 #[derive(Debug, Subcommand)]
 #[command(verbatim_doc_comment)]
 pub enum MacrosCommands {
     /// Records user input and saves the macro to a file
     ///
     /// Examples:
-    /// - `actiona-run macros record recording.amacro`
-    /// - `actiona-run macros record recording.amacro --stop-key Escape --stop-key Control`
-    /// - `actiona-run macros record recording.amacro --timeout 30s --no-mouse-position`
+    /// - `actiona-run macros record recording.amac`
+    /// - `actiona-run macros record recording.amac --stop-key Escape --stop-key Control`
+    /// - `actiona-run macros record recording.amac --timeout 30s --no-mouse-position`
     #[command(verbatim_doc_comment)]
     Record {
         /// file path to save the recorded macro to
@@ -62,9 +62,9 @@ pub enum MacrosCommands {
     /// Replays a macro from a file
     ///
     /// Examples:
-    /// - `actiona-run macros play recording.amacro`
-    /// - `actiona-run macros play recording.amacro --speed 2.0`
-    /// - `actiona-run macros play recording.amacro --relative-mouse-position`
+    /// - `actiona-run macros play recording.amac`
+    /// - `actiona-run macros play recording.amac --speed 2.0`
+    /// - `actiona-run macros play recording.amac --relative-mouse-position`
     #[command(verbatim_doc_comment)]
     Play {
         /// file path of the macro to replay

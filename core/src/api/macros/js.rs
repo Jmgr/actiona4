@@ -43,8 +43,8 @@ use crate::{
 /// const m = await macros.record({ stopKeys: [Key.Escape] });
 ///
 /// // Save and reload
-/// await m.save("my_macro.amacro");
-/// const loaded = await Macro.load("my_macro.amacro");
+/// await m.save("my_macro.amac");
+/// const loaded = await Macro.load("my_macro.amac");
 ///
 /// // Play back
 /// await macros.play(loaded, { speed: 1.5 });
@@ -76,7 +76,7 @@ impl JsMacro {
     /// Saves this macro to a gzip-compressed JSON file.
     ///
     /// ```ts
-    /// await macro.save("recording.amacro");
+    /// await macro.save("recording.amac");
     /// ```
     pub async fn save(&self, ctx: Ctx<'_>, path: String) -> Result<()> {
         self.data
@@ -88,7 +88,7 @@ impl JsMacro {
     /// Loads a macro from a gzip-compressed JSON file previously written by `save()`.
     ///
     /// ```ts
-    /// const loaded = await Macro.load("recording.amacro");
+    /// const loaded = await Macro.load("recording.amac");
     /// await macros.play(loaded);
     /// ```
     #[qjs(static)]
@@ -328,8 +328,8 @@ impl Drop for IsPlayingGuard {
 /// ```ts
 /// // Save and reload a macro
 /// const m = await macros.record({ timeout: "30s" });
-/// await m.save("workflow.amacro");
-/// const loaded = await Macro.load("workflow.amacro");
+/// await m.save("workflow.amac");
+/// const loaded = await Macro.load("workflow.amac");
 /// await macros.play(loaded, { speed: 2.0 });
 /// ```
 /// @singleton
@@ -585,7 +585,7 @@ mod tests {
                     r#"
                     console.println("Recording… press Escape to stop.");
                     const m = await macros.record();
-                    const path = "/tmp/test_macro.amacro";
+                    const path = "/tmp/test_macro.amac";
                     await m.save(path);
                     console.println(`Saved to ${path}`);
                     const loaded = await Macro.load(path);

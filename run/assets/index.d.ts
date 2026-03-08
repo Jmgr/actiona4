@@ -10,14 +10,14 @@ type ColorLike = Color | { r: number; g: number; b: number; a?: number };
  * Task: cancellable promise.
  */
 type Task<Result> = Promise<Result> & {
-    cancel(): void;
+  cancel(): void;
 };
 
 /**
  * ProgressTask: task with progress.
  */
 type ProgressTask<Result, Progress> = Task<Result> & {
-    [Symbol.asyncIterator](): AsyncIterator<Progress>;
+  [Symbol.asyncIterator](): AsyncIterator<Progress>;
 };
 /**
  * NameLike
@@ -37,14 +37,14 @@ type RectLike = Rect | { x: number; y: number; width: number; height: number };
 type SizeLike = Size | { width: number; height: number };
 /**
  * Pauses the execution for the given duration.
- * 
+ *
  * ```ts
  * // Wait 500 milliseconds
  * await sleep(500);
- * 
+ *
  * // Wait 1 second
  * await sleep("1s");
- * 
+ *
  * // Wait 1 hour
  * await sleep("1h");
  * ```
@@ -54,7 +54,7 @@ type SizeLike = Size | { width: number; height: number };
 declare function sleep(duration: number | string): Task<void>;
 /**
  * Stops the script execution immediately.
- * 
+ *
  * ```ts
  * if (errorCondition) {
  *   exit();
@@ -65,28 +65,28 @@ declare function sleep(duration: number | string): Task<void>;
 declare function exit(): void;
 /**
  * Prints values without a trailing newline.
- * 
+ *
  * Alias for `console.print(...)`.
  * @category Core
  */
 declare function print(...args: unknown[]): void;
 /**
  * Prints values followed by a newline.
- * 
+ *
  * Alias for `console.println(...)`.
  * @category Core
  */
 declare function println(...args: unknown[]): void;
 /**
  * Pretty-prints values using an inspect-style multiline format.
- * 
+ *
  * Alias for `console.inspect(...)`.
  * @category Core
  */
 declare function inspect(...args: unknown[]): void;
 /**
  * Formats a frequency value in Hz using SI prefixes.
- * 
+ *
  * ```ts
  * formatFrequency(40000);    // "40 kHz"
  * formatFrequency(3400000);  // "3.4 MHz"
@@ -96,7 +96,7 @@ declare function inspect(...args: unknown[]): void;
 declare function formatFrequency(frequency: number): string;
 /**
  * Formats a percentage value and appends `%`.
- * 
+ *
  * ```ts
  * formatPercent(50);          // "50%"
  * formatPercent(50.005);      // "50.01%"
@@ -107,7 +107,7 @@ declare function formatFrequency(frequency: number): string;
 declare function formatPercent(percent: number, precision?: number): string;
 /**
  * Formats a byte size using human-readable units.
- * 
+ *
  * ```ts
  * formatBytes(42000);        // "42 kB"
  * formatBytes(1048576);      // "1.05 MB"
@@ -117,11 +117,11 @@ declare function formatPercent(percent: number, precision?: number): string;
 declare function formatBytes(bytes: number): string;
 /**
  * Direction to flip an image.
- * 
+ *
  * ```ts
  * // Flip horizontally (mirror)
  * image.flip(FlipDirection.Horizontal);
- * 
+ *
  * // Flip vertically
  * image.flip(FlipDirection.Vertical);
  * ```
@@ -129,23 +129,23 @@ declare function formatBytes(bytes: number): string;
  * @expand
  */
 declare enum FlipDirection {
-    /**
-     * `FlipDirection.Horizontal`
-     */
-    Horizontal,
+  /**
+   * `FlipDirection.Horizontal`
+   */
+  Horizontal,
 
-    /**
-     * `FlipDirection.Vertical`
-     */
-    Vertical,
+  /**
+   * `FlipDirection.Vertical`
+   */
+  Vertical,
 }
 /**
  * Resize filter algorithms.
- * 
+ *
  * ```ts
  * // Use nearest-neighbor for pixel art (no smoothing)
  * image.resize(64, 64, { filter: ResizeFilter.Nearest });
- * 
+ *
  * // Use Lanczos3 for high-quality downscaling
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3 });
  * ```
@@ -153,38 +153,38 @@ declare enum FlipDirection {
  * @expand
  */
 declare enum ResizeFilter {
-    /**
-     * `ResizeFilter.Nearest`
-     */
-    Nearest,
+  /**
+   * `ResizeFilter.Nearest`
+   */
+  Nearest,
 
-    /**
-     * `ResizeFilter.Linear`
-     */
-    Linear,
+  /**
+   * `ResizeFilter.Linear`
+   */
+  Linear,
 
-    /**
-     * `ResizeFilter.Cubic`
-     */
-    Cubic,
+  /**
+   * `ResizeFilter.Cubic`
+   */
+  Cubic,
 
-    /**
-     * `ResizeFilter.Gaussian`
-     */
-    Gaussian,
+  /**
+   * `ResizeFilter.Gaussian`
+   */
+  Gaussian,
 
-    /**
-     * `ResizeFilter.Lanczos3`
-     */
-    Lanczos3,
+  /**
+   * `ResizeFilter.Lanczos3`
+   */
+  Lanczos3,
 }
 /**
  * Interpolation algorithms used for image rotations.
- * 
+ *
  * ```ts
  * // Fast but lower quality
  * image.rotate(45, { interpolation: Interpolation.Nearest });
- * 
+ *
  * // Smooth result (default)
  * image.rotate(45, { interpolation: Interpolation.Bilinear });
  * ```
@@ -192,24 +192,24 @@ declare enum ResizeFilter {
  * @expand
  */
 declare enum Interpolation {
-    /**
-     * `Interpolation.Nearest`
-     */
-    Nearest,
+  /**
+   * `Interpolation.Nearest`
+   */
+  Nearest,
 
-    /**
-     * `Interpolation.Bilinear`
-     */
-    Bilinear,
+  /**
+   * `Interpolation.Bilinear`
+   */
+  Bilinear,
 
-    /**
-     * `Interpolation.Bicubic`
-     */
-    Bicubic,
+  /**
+   * `Interpolation.Bicubic`
+   */
+  Bicubic,
 }
 /**
  * Horizontal alignment for text drawing.
- * 
+ *
  * ```ts
  * image.drawText(100, 50, "Centered", fontPath, Color.Black, {
  *   horizontalAlign: TextHorizontalAlign.Center
@@ -219,24 +219,24 @@ declare enum Interpolation {
  * @expand
  */
 declare enum TextHorizontalAlign {
-    /**
-     * `TextHorizontalAlign.Left`
-     */
-    Left,
+  /**
+   * `TextHorizontalAlign.Left`
+   */
+  Left,
 
-    /**
-     * `TextHorizontalAlign.Center`
-     */
-    Center,
+  /**
+   * `TextHorizontalAlign.Center`
+   */
+  Center,
 
-    /**
-     * `TextHorizontalAlign.Right`
-     */
-    Right,
+  /**
+   * `TextHorizontalAlign.Right`
+   */
+  Right,
 }
 /**
  * Vertical alignment for text drawing.
- * 
+ *
  * ```ts
  * image.drawText(50, 100, "Middle", fontPath, Color.Black, {
  *   verticalAlign: TextVerticalAlign.Middle
@@ -246,24 +246,24 @@ declare enum TextHorizontalAlign {
  * @expand
  */
 declare enum TextVerticalAlign {
-    /**
-     * `TextVerticalAlign.Top`
-     */
-    Top,
+  /**
+   * `TextVerticalAlign.Top`
+   */
+  Top,
 
-    /**
-     * `TextVerticalAlign.Middle`
-     */
-    Middle,
+  /**
+   * `TextVerticalAlign.Middle`
+   */
+  Middle,
 
-    /**
-     * `TextVerticalAlign.Bottom`
-     */
-    Bottom,
+  /**
+   * `TextVerticalAlign.Bottom`
+   */
+  Bottom,
 }
 /**
  * Stages of a find image operation.
- * 
+ *
  * ```ts
  * const task = source.find(template);
  * for await (const progress of task) {
@@ -276,47 +276,47 @@ declare enum TextVerticalAlign {
  * @expand
  */
 declare enum FindImageStage {
-    /**
-     * `FindImageStage.Capturing`
-     */
-    Capturing,
+  /**
+   * `FindImageStage.Capturing`
+   */
+  Capturing,
 
-    /**
-     * `FindImageStage.Preparing`
-     */
-    Preparing,
+  /**
+   * `FindImageStage.Preparing`
+   */
+  Preparing,
 
-    /**
-     * `FindImageStage.Downscaling`
-     */
-    Downscaling,
+  /**
+   * `FindImageStage.Downscaling`
+   */
+  Downscaling,
 
-    /**
-     * `FindImageStage.Matching`
-     */
-    Matching,
+  /**
+   * `FindImageStage.Matching`
+   */
+  Matching,
 
-    /**
-     * `FindImageStage.Filtering`
-     */
-    Filtering,
+  /**
+   * `FindImageStage.Filtering`
+   */
+  Filtering,
 
-    /**
-     * `FindImageStage.ComputingResults`
-     */
-    ComputingResults,
+  /**
+   * `FindImageStage.ComputingResults`
+   */
+  ComputingResults,
 
-    /**
-     * `FindImageStage.Finished`
-     */
-    Finished,
+  /**
+   * `FindImageStage.Finished`
+   */
+  Finished,
 }
 /**
  * Standard keyboard keys.
- * 
+ *
  * Use as constants on the `Key` class. You can also pass a single character string
  * or a raw keycode number wherever a `Key` is expected.
- * 
+ *
  * ```ts
  * keyboard.tap(Key.Return);
  * keyboard.tap("a");
@@ -324,1772 +324,1772 @@ declare enum FindImageStage {
  * @category Keyboard
  */
 declare enum Key {
-    /**
-     * Top-row digit '0' key (not numpad)
-     * `Key.Num0`
-     */
-    Num0,
-
-    /**
-     * Top-row digit '1' key (not numpad)
-     * `Key.Num1`
-     */
-    Num1,
-
-    /**
-     * Top-row digit '2' key (not numpad)
-     * `Key.Num2`
-     */
-    Num2,
-
-    /**
-     * Top-row digit '3' key (not numpad)
-     * `Key.Num3`
-     */
-    Num3,
-
-    /**
-     * Top-row digit '4' key (not numpad)
-     * `Key.Num4`
-     */
-    Num4,
-
-    /**
-     * Top-row digit '5' key (not numpad)
-     * `Key.Num5`
-     */
-    Num5,
-
-    /**
-     * Top-row digit '6' key (not numpad)
-     * `Key.Num6`
-     */
-    Num6,
-
-    /**
-     * Top-row digit '7' key (not numpad)
-     * `Key.Num7`
-     */
-    Num7,
-
-    /**
-     * Top-row digit '8' key (not numpad)
-     * `Key.Num8`
-     */
-    Num8,
-
-    /**
-     * Top-row digit '9' key (not numpad)
-     * `Key.Num9`
-     */
-    Num9,
-
-    /**
-     * Letter key 'A'
-     * `Key.A`
-     */
-    A,
-
-    /**
-     * Letter key 'B'
-     * `Key.B`
-     */
-    B,
-
-    /**
-     * Letter key 'C'
-     * `Key.C`
-     */
-    C,
-
-    /**
-     * Letter key 'D'
-     * `Key.D`
-     */
-    D,
-
-    /**
-     * Letter key 'E'
-     * `Key.E`
-     */
-    E,
-
-    /**
-     * Letter key 'F'
-     * `Key.F`
-     */
-    F,
-
-    /**
-     * Letter key 'G'
-     * `Key.G`
-     */
-    G,
-
-    /**
-     * Letter key 'H'
-     * `Key.H`
-     */
-    H,
-
-    /**
-     * Letter key 'I'
-     * `Key.I`
-     */
-    I,
-
-    /**
-     * Letter key 'J'
-     * `Key.J`
-     */
-    J,
-
-    /**
-     * Letter key 'K'
-     * `Key.K`
-     */
-    K,
-
-    /**
-     * Letter key 'L'
-     * `Key.L`
-     */
-    L,
-
-    /**
-     * Letter key 'M'
-     * `Key.M`
-     */
-    M,
-
-    /**
-     * Letter key 'N'
-     * `Key.N`
-     */
-    N,
-
-    /**
-     * Letter key 'O'
-     * `Key.O`
-     */
-    O,
-
-    /**
-     * Letter key 'P'
-     * `Key.P`
-     */
-    P,
-
-    /**
-     * Letter key 'Q'
-     * `Key.Q`
-     */
-    Q,
-
-    /**
-     * Letter key 'R'
-     * `Key.R`
-     */
-    R,
-
-    /**
-     * Letter key 'S'
-     * `Key.S`
-     */
-    S,
-
-    /**
-     * Letter key 'T'
-     * `Key.T`
-     */
-    T,
-
-    /**
-     * Letter key 'U'
-     * `Key.U`
-     */
-    U,
-
-    /**
-     * Letter key 'V'
-     * `Key.V`
-     */
-    V,
-
-    /**
-     * Letter key 'W'
-     * `Key.W`
-     */
-    W,
-
-    /**
-     * Letter key 'X'
-     * `Key.X`
-     */
-    X,
-
-    /**
-     * Letter key 'Y'
-     * `Key.Y`
-     */
-    Y,
-
-    /**
-     * Letter key 'Z'
-     * `Key.Z`
-     */
-    Z,
-
-    /**
-     * Brazilian ABNT keyboard key C1
-     * `Key.AbntC1`
-     * @platform only works on Windows
-     */
-    AbntC1,
-
-    /**
-     * Brazilian ABNT keyboard key C2
-     * `Key.AbntC2`
-     * @platform only works on Windows
-     */
-    AbntC2,
-
-    /**
-     * IME “Accept” / commit conversion
-     * `Key.Accept`
-     * @platform only works on Windows
-     */
-    Accept,
-
-    /**
-     * Numpad '+' (addition) key
-     * `Key.Add`
-     */
-    Add,
-
-    /**
-     * Alt (Alternate) modifier key
-     * `Key.Alt`
-     */
-    Alt,
-
-    /**
-     * Application/Menu key
-     * `Key.Apps`
-     * @platform only works on Windows
-     */
-    Apps,
-
-    /**
-     * Attention key (legacy/rare)
-     * `Key.Attention`
-     * @platform only works on Windows
-     */
-    Attention,
-
-    /**
-     * Backspace / Delete-previous-character
-     * `Key.Backspace`
-     */
-    Backspace,
-
-    /**
-     * Break key (X11/Linux)
-     * `Key.Break`
-     * @platform only works on Linux
-     */
-    Break,
-
-    /**
-     * Begin key
-     * `Key.Begin`
-     * @platform only works on Linux
-     */
-    Begin,
-
-    /**
-     * Browser Back
-     * `Key.BrowserBack`
-     * @platform only works on Windows
-     */
-    BrowserBack,
-
-    /**
-     * Browser Favorites
-     * `Key.BrowserFavorites`
-     * @platform only works on Windows
-     */
-    BrowserFavorites,
-
-    /**
-     * Browser Forward
-     * `Key.BrowserForward`
-     * @platform only works on Windows
-     */
-    BrowserForward,
-
-    /**
-     * Browser Home
-     * `Key.BrowserHome`
-     * @platform only works on Windows
-     */
-    BrowserHome,
-
-    /**
-     * Browser Refresh
-     * `Key.BrowserRefresh`
-     * @platform only works on Windows
-     */
-    BrowserRefresh,
-
-    /**
-     * Browser Search
-     * `Key.BrowserSearch`
-     * @platform only works on Windows
-     */
-    BrowserSearch,
-
-    /**
-     * Browser Stop
-     * `Key.BrowserStop`
-     * @platform only works on Windows
-     */
-    BrowserStop,
-
-    /**
-     * Cancel key (legacy)
-     * `Key.Cancel`
-     */
-    Cancel,
-
-    /**
-     * Caps Lock toggle
-     * `Key.CapsLock`
-     */
-    CapsLock,
-
-    /**
-     * Clear key
-     * `Key.Clear`
-     */
-    Clear,
-
-    /**
-     * Control (Ctrl) modifier key
-     * `Key.Control`
-     */
-    Control,
-
-    /**
-     * IME Convert (start/confirm conversion)
-     * `Key.Convert`
-     * @platform only works on Windows
-     */
-    Convert,
-
-    /**
-     * Cursor Select (CRSel)
-     * `Key.CursorSelect`
-     * @platform only works on Windows
-     */
-    CursorSelect,
-
-    /**
-     * IME: switch to alphanumeric
-     * `Key.DBEAlphanumeric`
-     * @platform only works on Windows
-     */
-    DbeAlphanumeric,
-
-    /**
-     * IME: code input mode
-     * `Key.DBECodeinput`
-     * @platform only works on Windows
-     */
-    DbeCodeinput,
-
-    /**
-     * IME: determine string
-     * `Key.DBEDetermineString`
-     * @platform only works on Windows
-     */
-    DbeDetermineString,
-
-    /**
-     * IME: enter dialog conversion mode
-     * `Key.DBEEnterDLGConversionMode`
-     * @platform only works on Windows
-     */
-    DbeEnterDlgConversionMode,
-
-    /**
-     * IME: open configuration
-     * `Key.DBEEnterIMEConfigMode`
-     * @platform only works on Windows
-     */
-    DbeEnterImeConfigMode,
-
-    /**
-     * IME: word register mode
-     * `Key.DBEEnterWordRegisterMode`
-     * @platform only works on Windows
-     */
-    DbeEnterWordRegisterMode,
-
-    /**
-     * IME: flush/reset composition string
-     * `Key.DBEFlushString`
-     * @platform only works on Windows
-     */
-    DbeFlushString,
-
-    /**
-     * IME: Hiragana
-     * `Key.DBEHiragana`
-     * @platform only works on Windows
-     */
-    DbeHiragana,
-
-    /**
-     * IME: Katakana
-     * `Key.DBEKatakana`
-     * @platform only works on Windows
-     */
-    DbeKatakana,
-
-    /**
-     * IME: no code point
-     * `Key.DBENoCodepoint`
-     * @platform only works on Windows
-     */
-    DbeNoCodepoint,
-
-    /**
-     * IME: no roman
-     * `Key.DBENoRoman`
-     * @platform only works on Windows
-     */
-    DbeNoRoman,
-
-    /**
-     * IME: Roman
-     * `Key.DBERoman`
-     * @platform only works on Windows
-     */
-    DbeRoman,
-
-    /**
-     * IME: SBCS character
-     * `Key.DBESBCSChar`
-     * @platform only works on Windows
-     */
-    DbesbcsChar,
-
-    /**
-     * IME: SBCS/Special char
-     * `Key.DBESChar`
-     * @platform only works on Windows
-     */
-    DbesChar,
-
-    /**
-     * Numpad decimal point '.'
-     * `Key.Decimal`
-     */
-    Decimal,
-
-    /**
-     * Delete / Forward delete
-     * `Key.Delete`
-     */
-    Delete,
-
-    /**
-     * Numpad divide '/'
-     * `Key.Divide`
-     */
-    Divide,
-
-    /**
-     * Arrow: Down
-     * `Key.DownArrow`
-     */
-    DownArrow,
-
-    /**
-     * End key
-     * `Key.End`
-     */
-    End,
-
-    /**
-     * Erase EOF
-     * `Key.Ereof`
-     * @platform only works on Windows
-     */
-    Ereof,
-
-    /**
-     * Escape key
-     * `Key.Escape`
-     */
-    Escape,
-
-    /**
-     * Execute key
-     * `Key.Execute`
-     */
-    Execute,
-
-    /**
-     * Extend Selection (ExSel)
-     * `Key.Exsel`
-     * @platform only works on Windows
-     */
-    Exsel,
-
-    /**
-     * Function key F1
-     * `Key.F1`
-     */
-    F1,
-
-    /**
-     * Function key F2
-     * `Key.F2`
-     */
-    F2,
-
-    /**
-     * Function key F3
-     * `Key.F3`
-     */
-    F3,
-
-    /**
-     * Function key F4
-     * `Key.F4`
-     */
-    F4,
-
-    /**
-     * Function key F5
-     * `Key.F5`
-     */
-    F5,
-
-    /**
-     * Function key F6
-     * `Key.F6`
-     */
-    F6,
-
-    /**
-     * Function key F7
-     * `Key.F7`
-     */
-    F7,
-
-    /**
-     * Function key F8
-     * `Key.F8`
-     */
-    F8,
-
-    /**
-     * Function key F9
-     * `Key.F9`
-     */
-    F9,
-
-    /**
-     * Function key F10
-     * `Key.F10`
-     */
-    F10,
-
-    /**
-     * Function key F11
-     * `Key.F11`
-     */
-    F11,
-
-    /**
-     * Function key F12
-     * `Key.F12`
-     */
-    F12,
-
-    /**
-     * Function key F13
-     * `Key.F13`
-     */
-    F13,
-
-    /**
-     * Function key F14
-     * `Key.F14`
-     */
-    F14,
-
-    /**
-     * Function key F15
-     * `Key.F15`
-     */
-    F15,
-
-    /**
-     * Function key F16
-     * `Key.F16`
-     */
-    F16,
-
-    /**
-     * Function key F17
-     * `Key.F17`
-     */
-    F17,
-
-    /**
-     * Function key F18
-     * `Key.F18`
-     */
-    F18,
-
-    /**
-     * Function key F19
-     * `Key.F19`
-     */
-    F19,
-
-    /**
-     * Function key F20
-     * `Key.F20`
-     */
-    F20,
-
-    /**
-     * Function key F21
-     * `Key.F21`
-     */
-    F21,
-
-    /**
-     * Function key F22
-     * `Key.F22`
-     */
-    F22,
-
-    /**
-     * Function key F23
-     * `Key.F23`
-     */
-    F23,
-
-    /**
-     * Function key F24
-     * `Key.F24`
-     */
-    F24,
-
-    /**
-     * Function key F25
-     * `Key.F25`
-     * @platform only works on Linux
-     */
-    F25,
-
-    /**
-     * Function key F26
-     * `Key.F26`
-     * @platform only works on Linux
-     */
-    F26,
-
-    /**
-     * Function key F27
-     * `Key.F27`
-     * @platform only works on Linux
-     */
-    F27,
-
-    /**
-     * Function key F28
-     * `Key.F28`
-     * @platform only works on Linux
-     */
-    F28,
-
-    /**
-     * Function key F29
-     * `Key.F29`
-     * @platform only works on Linux
-     */
-    F29,
-
-    /**
-     * Function key F30
-     * `Key.F30`
-     * @platform only works on Linux
-     */
-    F30,
-
-    /**
-     * Function key F31
-     * `Key.F31`
-     * @platform only works on Linux
-     */
-    F31,
-
-    /**
-     * Function key F32
-     * `Key.F32`
-     * @platform only works on Linux
-     */
-    F32,
-
-    /**
-     * Function key F33
-     * `Key.F33`
-     * @platform only works on Linux
-     */
-    F33,
-
-    /**
-     * Function key F34
-     * `Key.F34`
-     * @platform only works on Linux
-     */
-    F34,
-
-    /**
-     * Function key F35
-     * `Key.F35`
-     * @platform only works on Linux
-     */
-    F35,
-
-    /**
-     * IME Final (end conversion)
-     * `Key.Final`
-     * @platform only works on Windows
-     */
-    Final,
-
-    /**
-     * Find key
-     * `Key.Find`
-     * @platform only works on Linux
-     */
-    Find,
-
-    /**
-     * Gamepad: A button
-     * `Key.GamepadA`
-     * @platform only works on Windows
-     */
-    GamepadA,
-
-    /**
-     * Gamepad: B button
-     * `Key.GamepadB`
-     * @platform only works on Windows
-     */
-    GamepadB,
-
-    /**
-     * Gamepad: D-Pad Down
-     * `Key.GamepadDPadDown`
-     * @platform only works on Windows
-     */
-    GamepadDPadDown,
-
-    /**
-     * Gamepad: D-Pad Left
-     * `Key.GamepadDPadLeft`
-     * @platform only works on Windows
-     */
-    GamepadDPadLeft,
-
-    /**
-     * Gamepad: D-Pad Right
-     * `Key.GamepadDPadRight`
-     * @platform only works on Windows
-     */
-    GamepadDPadRight,
-
-    /**
-     * Gamepad: D-Pad Up
-     * `Key.GamepadDPadUp`
-     * @platform only works on Windows
-     */
-    GamepadDPadUp,
-
-    /**
-     * Gamepad: Left shoulder (L1)
-     * `Key.GamepadLeftShoulder`
-     * @platform only works on Windows
-     */
-    GamepadLeftShoulder,
-
-    /**
-     * Gamepad: Left thumbstick button (L3)
-     * `Key.GamepadLeftThumbstickButton`
-     * @platform only works on Windows
-     */
-    GamepadLeftThumbstickButton,
-
-    /**
-     * Gamepad: Left thumbstick down
-     * `Key.GamepadLeftThumbstickDown`
-     * @platform only works on Windows
-     */
-    GamepadLeftThumbstickDown,
-
-    /**
-     * Gamepad: Left thumbstick left
-     * `Key.GamepadLeftThumbstickLeft`
-     * @platform only works on Windows
-     */
-    GamepadLeftThumbstickLeft,
-
-    /**
-     * Gamepad: Left thumbstick right
-     * `Key.GamepadLeftThumbstickRight`
-     * @platform only works on Windows
-     */
-    GamepadLeftThumbstickRight,
-
-    /**
-     * Gamepad: Left thumbstick up
-     * `Key.GamepadLeftThumbstickUp`
-     * @platform only works on Windows
-     */
-    GamepadLeftThumbstickUp,
-
-    /**
-     * Gamepad: Left trigger (L2)
-     * `Key.GamepadLeftTrigger`
-     * @platform only works on Windows
-     */
-    GamepadLeftTrigger,
-
-    /**
-     * Gamepad: Menu / Start
-     * `Key.GamepadMenu`
-     * @platform only works on Windows
-     */
-    GamepadMenu,
-
-    /**
-     * Gamepad: Right shoulder (R1)
-     * `Key.GamepadRightShoulder`
-     * @platform only works on Windows
-     */
-    GamepadRightShoulder,
-
-    /**
-     * Gamepad: Right thumbstick button (R3)
-     * `Key.GamepadRightThumbstickButton`
-     * @platform only works on Windows
-     */
-    GamepadRightThumbstickButton,
-
-    /**
-     * Gamepad: Right thumbstick down
-     * `Key.GamepadRightThumbstickDown`
-     * @platform only works on Windows
-     */
-    GamepadRightThumbstickDown,
-
-    /**
-     * Gamepad: Right thumbstick left
-     * `Key.GamepadRightThumbstickLeft`
-     * @platform only works on Windows
-     */
-    GamepadRightThumbstickLeft,
-
-    /**
-     * Gamepad: Right thumbstick right
-     * `Key.GamepadRightThumbstickRight`
-     * @platform only works on Windows
-     */
-    GamepadRightThumbstickRight,
-
-    /**
-     * Gamepad: Right thumbstick up
-     * `Key.GamepadRightThumbstickUp`
-     * @platform only works on Windows
-     */
-    GamepadRightThumbstickUp,
-
-    /**
-     * Gamepad: Right trigger (R2)
-     * `Key.GamepadRightTrigger`
-     * @platform only works on Windows
-     */
-    GamepadRightTrigger,
-
-    /**
-     * Gamepad: View / Back
-     * `Key.GamepadView`
-     * @platform only works on Windows
-     */
-    GamepadView,
-
-    /**
-     * Gamepad: X button
-     * `Key.GamepadX`
-     * @platform only works on Windows
-     */
-    GamepadX,
-
-    /**
-     * Gamepad: Y button
-     * `Key.GamepadY`
-     * @platform only works on Windows
-     */
-    GamepadY,
-
-    /**
-     * Hangeul toggle (Korean layout)
-     * `Key.Hangeul`
-     * @platform only works on Windows
-     */
-    Hangeul,
-
-    /**
-     * Hangul toggle (Korean layout)
-     * `Key.Hangul`
-     */
-    Hangul,
-
-    /**
-     * Hanja toggle (Chinese characters on Korean layout)
-     * `Key.Hanja`
-     */
-    Hanja,
-
-    /**
-     * Help key
-     * `Key.Help`
-     */
-    Help,
-
-    /**
-     * Home key
-     * `Key.Home`
-     */
-    Home,
-
-    /**
-     * ICO (legacy) key 00
-     * `Key.Ico00`
-     * @platform only works on Windows
-     */
-    Ico00,
-
-    /**
-     * ICO (legacy) Clear
-     * `Key.IcoClear`
-     * @platform only works on Windows
-     */
-    IcoClear,
-
-    /**
-     * ICO (legacy) Help
-     * `Key.IcoHelp`
-     * @platform only works on Windows
-     */
-    IcoHelp,
-
-    /**
-     * IME Off (disable IME)
-     * `Key.IMEOff`
-     * @platform only works on Windows
-     */
-    ImeOff,
-
-    /**
-     * IME On (enable IME)
-     * `Key.IMEOn`
-     * @platform only works on Windows
-     */
-    ImeOn,
-
-    /**
-     * Insert key
-     * `Key.Insert`
-     */
-    Insert,
-
-    /**
-     * IME: Junja mode
-     * `Key.Junja`
-     * @platform only works on Windows
-     */
-    Junja,
-
-    /**
-     * IME: Kana mode
-     * `Key.Kana`
-     * @platform only works on Windows
-     */
-    Kana,
-
-    /**
-     * Kanji toggle (Japanese layout)
-     * `Key.Kanji`
-     */
-    Kanji,
-
-    /**
-     * Launch application 1
-     * `Key.LaunchApp1`
-     * @platform only works on Windows
-     */
-    LaunchApp1,
-
-    /**
-     * Launch application 2
-     * `Key.LaunchApp2`
-     * @platform only works on Windows
-     */
-    LaunchApp2,
-
-    /**
-     * Launch default mail client
-     * `Key.LaunchMail`
-     * @platform only works on Windows
-     */
-    LaunchMail,
-
-    /**
-     * Launch media selector
-     * `Key.LaunchMediaSelect`
-     * @platform only works on Windows
-     */
-    LaunchMediaSelect,
-
-    /**
-     * Left Control
-     * `Key.LeftControl`
-     */
-    LeftControl,
-
-    /**
-     * Arrow: Left
-     * `Key.LeftArrow`
-     */
-    LeftArrow,
-
-    /**
-     * Line Feed key
-     * `Key.Linefeed`
-     * @platform only works on Linux
-     */
-    Linefeed,
-
-    /**
-     * Left Alt/Menu
-     * `Key.LeftAlt`
-     */
-    LeftAlt,
-
-    /**
-     * Left Shift
-     * `Key.LeftShift`
-     */
-    LeftShift,
-
-    /**
-     * Left Windows / Super key
-     * `Key.LeftWindows`
-     * @platform only works on Windows
-     */
-    LeftWindows,
-
-    /**
-     * Next media track
-     * `Key.MediaNextTrack`
-     */
-    MediaNextTrack,
-
-    /**
-     * Play/Pause media
-     * `Key.MediaPlayPause`
-     */
-    MediaPlayPause,
-
-    /**
-     * Previous media track
-     * `Key.MediaPrevTrack`
-     */
-    MediaPrevTrack,
-
-    /**
-     * Stop media
-     * `Key.MediaStop`
-     */
-    MediaStop,
-
-    /**
-     * Meta key (also known as "windows", "super", and "command")
-     * `Key.Meta`
-     */
-    Meta,
-
-    /**
-     * IME mode change
-     * `Key.ModeChange`
-     */
-    ModeChange,
-
-    /**
-     * Numpad multiply '*'
-     * `Key.Multiply`
-     */
-    Multiply,
-
-    /**
-     * Navigation: Accept/OK (UWP)
-     * `Key.NavigationAccept`
-     * @platform only works on Windows
-     */
-    NavigationAccept,
-
-    /**
-     * Navigation: Cancel/Back (UWP)
-     * `Key.NavigationCancel`
-     * @platform only works on Windows
-     */
-    NavigationCancel,
-
-    /**
-     * Navigation: Down (UWP)
-     * `Key.NavigationDown`
-     * @platform only works on Windows
-     */
-    NavigationDown,
-
-    /**
-     * Navigation: Left (UWP)
-     * `Key.NavigationLeft`
-     * @platform only works on Windows
-     */
-    NavigationLeft,
-
-    /**
-     * Navigation: Menu (UWP)
-     * `Key.NavigationMenu`
-     * @platform only works on Windows
-     */
-    NavigationMenu,
-
-    /**
-     * Navigation: Right (UWP)
-     * `Key.NavigationRight`
-     * @platform only works on Windows
-     */
-    NavigationRight,
-
-    /**
-     * Navigation: Up (UWP)
-     * `Key.NavigationUp`
-     * @platform only works on Windows
-     */
-    NavigationUp,
-
-    /**
-     * Navigation: View (UWP)
-     * `Key.NavigationView`
-     * @platform only works on Windows
-     */
-    NavigationView,
-
-    /**
-     * NoName key (reserved)
-     * `Key.NoName`
-     * @platform only works on Windows
-     */
-    NoName,
-
-    /**
-     * IME Non-Convert (cancel conversion)
-     * `Key.NonConvert`
-     * @platform only works on Windows
-     */
-    NonConvert,
-
-    /**
-     * Placeholder "no key"
-     * `Key.None`
-     * @platform only works on Windows
-     */
-    None,
-
-    /**
-     * Num Lock toggle
-     * `Key.Numlock`
-     */
-    Numlock,
-
-    /**
-     * Numpad digit '0'
-     * `Key.Numpad0`
-     */
-    Numpad0,
-
-    /**
-     * Numpad digit '1'
-     * `Key.Numpad1`
-     */
-    Numpad1,
-
-    /**
-     * Numpad digit '2'
-     * `Key.Numpad2`
-     */
-    Numpad2,
-
-    /**
-     * Numpad digit '3'
-     * `Key.Numpad3`
-     */
-    Numpad3,
-
-    /**
-     * Numpad digit '4'
-     * `Key.Numpad4`
-     */
-    Numpad4,
-
-    /**
-     * Numpad digit '5'
-     * `Key.Numpad5`
-     */
-    Numpad5,
-
-    /**
-     * Numpad digit '6'
-     * `Key.Numpad6`
-     */
-    Numpad6,
-
-    /**
-     * Numpad digit '7'
-     * `Key.Numpad7`
-     */
-    Numpad7,
-
-    /**
-     * Numpad digit '8'
-     * `Key.Numpad8`
-     */
-    Numpad8,
-
-    /**
-     * Numpad digit '9'
-     * `Key.Numpad9`
-     */
-    Numpad9,
-
-    /**
-     * Numpad Enter
-     * `Key.NumpadEnter`
-     */
-    NumpadEnter,
-
-    /**
-     * OEM specific key 1
-     * `Key.OEM1`
-     * @platform only works on Windows
-     */
-    Oem1,
-
-    /**
-     * OEM specific key 102 (angle bracket/pipe on some layouts)
-     * `Key.OEM102`
-     * @platform only works on Windows
-     */
-    Oem102,
-
-    /**
-     * OEM specific key 2
-     * `Key.OEM2`
-     * @platform only works on Windows
-     */
-    Oem2,
-
-    /**
-     * OEM specific key 3 (backtick/tilde on some layouts)
-     * `Key.OEM3`
-     * @platform only works on Windows
-     */
-    Oem3,
-
-    /**
-     * OEM specific key 4 (left bracket on some layouts)
-     * `Key.OEM4`
-     * @platform only works on Windows
-     */
-    Oem4,
-
-    /**
-     * OEM specific key 5 (right bracket on some layouts)
-     * `Key.OEM5`
-     * @platform only works on Windows
-     */
-    Oem5,
-
-    /**
-     * OEM specific key 6 (semicolon on some layouts)
-     * `Key.OEM6`
-     * @platform only works on Windows
-     */
-    Oem6,
-
-    /**
-     * OEM specific key 7 (quote on some layouts)
-     * `Key.OEM7`
-     * @platform only works on Windows
-     */
-    Oem7,
-
-    /**
-     * OEM specific key 8
-     * `Key.OEM8`
-     * @platform only works on Windows
-     */
-    Oem8,
-
-    /**
-     * OEM Attention
-     * `Key.OEMAttn`
-     * @platform only works on Windows
-     */
-    OemAttn,
-
-    /**
-     * OEM Auto
-     * `Key.OEMAuto`
-     * @platform only works on Windows
-     */
-    OemAuto,
-
-    /**
-     * OEM Ax
-     * `Key.OEMAx`
-     * @platform only works on Windows
-     */
-    OemAx,
-
-    /**
-     * OEM Backtab (reverse Tab)
-     * `Key.OEMBacktab`
-     * @platform only works on Windows
-     */
-    OemBacktab,
-
-    /**
-     * OEM Clear
-     * `Key.OEMClear`
-     * @platform only works on Windows
-     */
-    OemClear,
-
-    /**
-     * OEM Comma ','
-     * `Key.OEMComma`
-     * @platform only works on Windows
-     */
-    OemComma,
-
-    /**
-     * OEM Copy
-     * `Key.OEMCopy`
-     * @platform only works on Windows
-     */
-    OemCopy,
-
-    /**
-     * OEM Cusel
-     * `Key.OEMCusel`
-     * @platform only works on Windows
-     */
-    OemCusel,
-
-    /**
-     * OEM Enlw
-     * `Key.OEMEnlw`
-     * @platform only works on Windows
-     */
-    OemEnlw,
-
-    /**
-     * OEM Finish
-     * `Key.OEMFinish`
-     * @platform only works on Windows
-     */
-    OemFinish,
-
-    /**
-     * OEM FJ Jisho (dictionary)
-     * `Key.OEMFJJisho`
-     * @platform only works on Windows
-     */
-    OemfjJisho,
-
-    /**
-     * OEM FJ Loya
-     * `Key.OEMFJLoya`
-     * @platform only works on Windows
-     */
-    OemfjLoya,
-
-    /**
-     * OEM FJ Masshou
-     * `Key.OEMFJMasshou`
-     * @platform only works on Windows
-     */
-    OemfjMasshou,
-
-    /**
-     * OEM FJ Roya
-     * `Key.OEMFJRoya`
-     * @platform only works on Windows
-     */
-    OemfjRoya,
-
-    /**
-     * OEM FJ Touroku
-     * `Key.OEMFJTouroku`
-     * @platform only works on Windows
-     */
-    OemfjTouroku,
-
-    /**
-     * OEM Jump
-     * `Key.OEMJump`
-     * @platform only works on Windows
-     */
-    OemJump,
-
-    /**
-     * OEM Minus '-'
-     * `Key.OEMMinus`
-     * @platform only works on Windows
-     */
-    OemMinus,
-
-    /**
-     * OEM NEC Equal '='
-     * `Key.OEMNECEqual`
-     * @platform only works on Windows
-     */
-    OemnecEqual,
-
-    /**
-     * OEM PA1
-     * `Key.OEMPA1`
-     * @platform only works on Windows
-     */
-    Oempa1,
-
-    /**
-     * OEM PA2
-     * `Key.OEMPA2`
-     * @platform only works on Windows
-     */
-    Oempa2,
-
-    /**
-     * OEM PA3
-     * `Key.OEMPA3`
-     * @platform only works on Windows
-     */
-    Oempa3,
-
-    /**
-     * OEM Period '.'
-     * `Key.OEMPeriod`
-     * @platform only works on Windows
-     */
-    OemPeriod,
-
-    /**
-     * OEM Plus '+'
-     * `Key.OEMPlus`
-     * @platform only works on Windows
-     */
-    OemPlus,
-
-    /**
-     * OEM Reset
-     * `Key.OEMReset`
-     * @platform only works on Windows
-     */
-    OemReset,
-
-    /**
-     * OEM Wsctrl
-     * `Key.OEMWsctrl`
-     * @platform only works on Windows
-     */
-    OemWsctrl,
-
-    /**
-     * Same as Alt
-     * `Key.Option`
-     */
-    Option,
-
-    /**
-     * PA1 key
-     * `Key.PA1`
-     * @platform only works on Windows
-     */
-    Pa1,
-
-    /**
-     * Packet key (used to pass Unicode chars)
-     * `Key.Packet`
-     * @platform only works on Windows
-     */
-    Packet,
-
-    /**
-     * Page Down
-     * `Key.PageDown`
-     */
-    PageDown,
-
-    /**
-     * Page Up
-     * `Key.PageUp`
-     */
-    PageUp,
-
-    /**
-     * Pause key
-     * `Key.Pause`
-     */
-    Pause,
-
-    /**
-     * Media Play
-     * `Key.Play`
-     * @platform only works on Windows
-     */
-    Play,
-
-    /**
-     * Screenshot
-     * `Key.PrintScreen`
-     */
-    PrintScreen,
-
-    /**
-     * IME Process key
-     * `Key.Processkey`
-     * @platform only works on Windows
-     */
-    Processkey,
-
-    /**
-     * Right Control
-     * `Key.RightControl`
-     */
-    RightControl,
-
-    /**
-     * Redo
-     * `Key.Redo`
-     * @platform only works on Linux
-     */
-    Redo,
-
-    /**
-     * Enter / Return
-     * `Key.Return`
-     */
-    Return,
-
-    /**
-     * Arrow: Right
-     * `Key.RightArrow`
-     */
-    RightArrow,
-
-    /**
-     * Right Alt/Menu
-     * `Key.RightAlt`
-     * @platform only works on Windows
-     */
-    RightAlt,
-
-    /**
-     * Right Shift
-     * `Key.RightShift`
-     */
-    RightShift,
-
-    /**
-     * Right Windows / Super key
-     * `Key.RightWindows`
-     * @platform only works on Windows
-     */
-    RightWindows,
-
-    /**
-     * Scroll key (legacy)
-     * `Key.Scroll`
-     * @platform only works on Windows
-     */
-    Scroll,
-
-    /**
-     * Scroll Lock
-     * `Key.ScrollLock`
-     * @platform only works on Linux
-     */
-    ScrollLock,
-
-    /**
-     * Select key
-     * `Key.Select`
-     */
-    Select,
-
-    /**
-     * Script switch
-     * `Key.ScriptSwitch`
-     * @platform only works on Linux
-     */
-    ScriptSwitch,
-
-    /**
-     * Numpad separator (locale-dependent)
-     * `Key.Separator`
-     * @platform only works on Windows
-     */
-    Separator,
-
-    /**
-     * Shift modifier
-     * `Key.Shift`
-     */
-    Shift,
-
-    /**
-     * Shift Lock
-     * `Key.ShiftLock`
-     * @platform only works on Linux
-     */
-    ShiftLock,
-
-    /**
-     * System Sleep
-     * `Key.Sleep`
-     * @platform only works on Windows
-     */
-    Sleep,
-
-    /**
-     * Spacebar
-     * `Key.Space`
-     */
-    Space,
-
-    /**
-     * Numpad '-' (subtract)
-     * `Key.Subtract`
-     */
-    Subtract,
-
-    /**
-     * System Request (SysRq)
-     * `Key.SysReq`
-     * @platform only works on Linux
-     */
-    SysReq,
-
-    /**
-     * Tab / focus next
-     * `Key.Tab`
-     */
-    Tab,
-
-    /**
-     * Undo
-     * `Key.Undo`
-     * @platform only works on Linux
-     */
-    Undo,
-
-    /**
-     * Arrow: Up
-     * `Key.UpArrow`
-     */
-    UpArrow,
-
-    /**
-     * Volume down
-     * `Key.VolumeDown`
-     */
-    VolumeDown,
-
-    /**
-     * Volume mute
-     * `Key.VolumeMute`
-     */
-    VolumeMute,
-
-    /**
-     * Volume up
-     * `Key.VolumeUp`
-     */
-    VolumeUp,
-
-    /**
-     * Microphone mute
-     * `Key.MicrophoneMute`
-     * @platform only works on Linux
-     */
-    MicrophoneMute,
-
-    /**
-     * Zoom key
-     * `Key.Zoom`
-     * @platform only works on Windows
-     */
-    Zoom,
+  /**
+   * Top-row digit '0' key (not numpad)
+   * `Key.Num0`
+   */
+  Num0,
+
+  /**
+   * Top-row digit '1' key (not numpad)
+   * `Key.Num1`
+   */
+  Num1,
+
+  /**
+   * Top-row digit '2' key (not numpad)
+   * `Key.Num2`
+   */
+  Num2,
+
+  /**
+   * Top-row digit '3' key (not numpad)
+   * `Key.Num3`
+   */
+  Num3,
+
+  /**
+   * Top-row digit '4' key (not numpad)
+   * `Key.Num4`
+   */
+  Num4,
+
+  /**
+   * Top-row digit '5' key (not numpad)
+   * `Key.Num5`
+   */
+  Num5,
+
+  /**
+   * Top-row digit '6' key (not numpad)
+   * `Key.Num6`
+   */
+  Num6,
+
+  /**
+   * Top-row digit '7' key (not numpad)
+   * `Key.Num7`
+   */
+  Num7,
+
+  /**
+   * Top-row digit '8' key (not numpad)
+   * `Key.Num8`
+   */
+  Num8,
+
+  /**
+   * Top-row digit '9' key (not numpad)
+   * `Key.Num9`
+   */
+  Num9,
+
+  /**
+   * Letter key 'A'
+   * `Key.A`
+   */
+  A,
+
+  /**
+   * Letter key 'B'
+   * `Key.B`
+   */
+  B,
+
+  /**
+   * Letter key 'C'
+   * `Key.C`
+   */
+  C,
+
+  /**
+   * Letter key 'D'
+   * `Key.D`
+   */
+  D,
+
+  /**
+   * Letter key 'E'
+   * `Key.E`
+   */
+  E,
+
+  /**
+   * Letter key 'F'
+   * `Key.F`
+   */
+  F,
+
+  /**
+   * Letter key 'G'
+   * `Key.G`
+   */
+  G,
+
+  /**
+   * Letter key 'H'
+   * `Key.H`
+   */
+  H,
+
+  /**
+   * Letter key 'I'
+   * `Key.I`
+   */
+  I,
+
+  /**
+   * Letter key 'J'
+   * `Key.J`
+   */
+  J,
+
+  /**
+   * Letter key 'K'
+   * `Key.K`
+   */
+  K,
+
+  /**
+   * Letter key 'L'
+   * `Key.L`
+   */
+  L,
+
+  /**
+   * Letter key 'M'
+   * `Key.M`
+   */
+  M,
+
+  /**
+   * Letter key 'N'
+   * `Key.N`
+   */
+  N,
+
+  /**
+   * Letter key 'O'
+   * `Key.O`
+   */
+  O,
+
+  /**
+   * Letter key 'P'
+   * `Key.P`
+   */
+  P,
+
+  /**
+   * Letter key 'Q'
+   * `Key.Q`
+   */
+  Q,
+
+  /**
+   * Letter key 'R'
+   * `Key.R`
+   */
+  R,
+
+  /**
+   * Letter key 'S'
+   * `Key.S`
+   */
+  S,
+
+  /**
+   * Letter key 'T'
+   * `Key.T`
+   */
+  T,
+
+  /**
+   * Letter key 'U'
+   * `Key.U`
+   */
+  U,
+
+  /**
+   * Letter key 'V'
+   * `Key.V`
+   */
+  V,
+
+  /**
+   * Letter key 'W'
+   * `Key.W`
+   */
+  W,
+
+  /**
+   * Letter key 'X'
+   * `Key.X`
+   */
+  X,
+
+  /**
+   * Letter key 'Y'
+   * `Key.Y`
+   */
+  Y,
+
+  /**
+   * Letter key 'Z'
+   * `Key.Z`
+   */
+  Z,
+
+  /**
+   * Brazilian ABNT keyboard key C1
+   * `Key.AbntC1`
+   * @platform only works on Windows
+   */
+  AbntC1,
+
+  /**
+   * Brazilian ABNT keyboard key C2
+   * `Key.AbntC2`
+   * @platform only works on Windows
+   */
+  AbntC2,
+
+  /**
+   * IME “Accept” / commit conversion
+   * `Key.Accept`
+   * @platform only works on Windows
+   */
+  Accept,
+
+  /**
+   * Numpad '+' (addition) key
+   * `Key.Add`
+   */
+  Add,
+
+  /**
+   * Alt (Alternate) modifier key
+   * `Key.Alt`
+   */
+  Alt,
+
+  /**
+   * Application/Menu key
+   * `Key.Apps`
+   * @platform only works on Windows
+   */
+  Apps,
+
+  /**
+   * Attention key (legacy/rare)
+   * `Key.Attention`
+   * @platform only works on Windows
+   */
+  Attention,
+
+  /**
+   * Backspace / Delete-previous-character
+   * `Key.Backspace`
+   */
+  Backspace,
+
+  /**
+   * Break key (X11/Linux)
+   * `Key.Break`
+   * @platform only works on Linux
+   */
+  Break,
+
+  /**
+   * Begin key
+   * `Key.Begin`
+   * @platform only works on Linux
+   */
+  Begin,
+
+  /**
+   * Browser Back
+   * `Key.BrowserBack`
+   * @platform only works on Windows
+   */
+  BrowserBack,
+
+  /**
+   * Browser Favorites
+   * `Key.BrowserFavorites`
+   * @platform only works on Windows
+   */
+  BrowserFavorites,
+
+  /**
+   * Browser Forward
+   * `Key.BrowserForward`
+   * @platform only works on Windows
+   */
+  BrowserForward,
+
+  /**
+   * Browser Home
+   * `Key.BrowserHome`
+   * @platform only works on Windows
+   */
+  BrowserHome,
+
+  /**
+   * Browser Refresh
+   * `Key.BrowserRefresh`
+   * @platform only works on Windows
+   */
+  BrowserRefresh,
+
+  /**
+   * Browser Search
+   * `Key.BrowserSearch`
+   * @platform only works on Windows
+   */
+  BrowserSearch,
+
+  /**
+   * Browser Stop
+   * `Key.BrowserStop`
+   * @platform only works on Windows
+   */
+  BrowserStop,
+
+  /**
+   * Cancel key (legacy)
+   * `Key.Cancel`
+   */
+  Cancel,
+
+  /**
+   * Caps Lock toggle
+   * `Key.CapsLock`
+   */
+  CapsLock,
+
+  /**
+   * Clear key
+   * `Key.Clear`
+   */
+  Clear,
+
+  /**
+   * Control (Ctrl) modifier key
+   * `Key.Control`
+   */
+  Control,
+
+  /**
+   * IME Convert (start/confirm conversion)
+   * `Key.Convert`
+   * @platform only works on Windows
+   */
+  Convert,
+
+  /**
+   * Cursor Select (CRSel)
+   * `Key.CursorSelect`
+   * @platform only works on Windows
+   */
+  CursorSelect,
+
+  /**
+   * IME: switch to alphanumeric
+   * `Key.DBEAlphanumeric`
+   * @platform only works on Windows
+   */
+  DbeAlphanumeric,
+
+  /**
+   * IME: code input mode
+   * `Key.DBECodeinput`
+   * @platform only works on Windows
+   */
+  DbeCodeinput,
+
+  /**
+   * IME: determine string
+   * `Key.DBEDetermineString`
+   * @platform only works on Windows
+   */
+  DbeDetermineString,
+
+  /**
+   * IME: enter dialog conversion mode
+   * `Key.DBEEnterDLGConversionMode`
+   * @platform only works on Windows
+   */
+  DbeEnterDlgConversionMode,
+
+  /**
+   * IME: open configuration
+   * `Key.DBEEnterIMEConfigMode`
+   * @platform only works on Windows
+   */
+  DbeEnterImeConfigMode,
+
+  /**
+   * IME: word register mode
+   * `Key.DBEEnterWordRegisterMode`
+   * @platform only works on Windows
+   */
+  DbeEnterWordRegisterMode,
+
+  /**
+   * IME: flush/reset composition string
+   * `Key.DBEFlushString`
+   * @platform only works on Windows
+   */
+  DbeFlushString,
+
+  /**
+   * IME: Hiragana
+   * `Key.DBEHiragana`
+   * @platform only works on Windows
+   */
+  DbeHiragana,
+
+  /**
+   * IME: Katakana
+   * `Key.DBEKatakana`
+   * @platform only works on Windows
+   */
+  DbeKatakana,
+
+  /**
+   * IME: no code point
+   * `Key.DBENoCodepoint`
+   * @platform only works on Windows
+   */
+  DbeNoCodepoint,
+
+  /**
+   * IME: no roman
+   * `Key.DBENoRoman`
+   * @platform only works on Windows
+   */
+  DbeNoRoman,
+
+  /**
+   * IME: Roman
+   * `Key.DBERoman`
+   * @platform only works on Windows
+   */
+  DbeRoman,
+
+  /**
+   * IME: SBCS character
+   * `Key.DBESBCSChar`
+   * @platform only works on Windows
+   */
+  DbesbcsChar,
+
+  /**
+   * IME: SBCS/Special char
+   * `Key.DBESChar`
+   * @platform only works on Windows
+   */
+  DbesChar,
+
+  /**
+   * Numpad decimal point '.'
+   * `Key.Decimal`
+   */
+  Decimal,
+
+  /**
+   * Delete / Forward delete
+   * `Key.Delete`
+   */
+  Delete,
+
+  /**
+   * Numpad divide '/'
+   * `Key.Divide`
+   */
+  Divide,
+
+  /**
+   * Arrow: Down
+   * `Key.DownArrow`
+   */
+  DownArrow,
+
+  /**
+   * End key
+   * `Key.End`
+   */
+  End,
+
+  /**
+   * Erase EOF
+   * `Key.Ereof`
+   * @platform only works on Windows
+   */
+  Ereof,
+
+  /**
+   * Escape key
+   * `Key.Escape`
+   */
+  Escape,
+
+  /**
+   * Execute key
+   * `Key.Execute`
+   */
+  Execute,
+
+  /**
+   * Extend Selection (ExSel)
+   * `Key.Exsel`
+   * @platform only works on Windows
+   */
+  Exsel,
+
+  /**
+   * Function key F1
+   * `Key.F1`
+   */
+  F1,
+
+  /**
+   * Function key F2
+   * `Key.F2`
+   */
+  F2,
+
+  /**
+   * Function key F3
+   * `Key.F3`
+   */
+  F3,
+
+  /**
+   * Function key F4
+   * `Key.F4`
+   */
+  F4,
+
+  /**
+   * Function key F5
+   * `Key.F5`
+   */
+  F5,
+
+  /**
+   * Function key F6
+   * `Key.F6`
+   */
+  F6,
+
+  /**
+   * Function key F7
+   * `Key.F7`
+   */
+  F7,
+
+  /**
+   * Function key F8
+   * `Key.F8`
+   */
+  F8,
+
+  /**
+   * Function key F9
+   * `Key.F9`
+   */
+  F9,
+
+  /**
+   * Function key F10
+   * `Key.F10`
+   */
+  F10,
+
+  /**
+   * Function key F11
+   * `Key.F11`
+   */
+  F11,
+
+  /**
+   * Function key F12
+   * `Key.F12`
+   */
+  F12,
+
+  /**
+   * Function key F13
+   * `Key.F13`
+   */
+  F13,
+
+  /**
+   * Function key F14
+   * `Key.F14`
+   */
+  F14,
+
+  /**
+   * Function key F15
+   * `Key.F15`
+   */
+  F15,
+
+  /**
+   * Function key F16
+   * `Key.F16`
+   */
+  F16,
+
+  /**
+   * Function key F17
+   * `Key.F17`
+   */
+  F17,
+
+  /**
+   * Function key F18
+   * `Key.F18`
+   */
+  F18,
+
+  /**
+   * Function key F19
+   * `Key.F19`
+   */
+  F19,
+
+  /**
+   * Function key F20
+   * `Key.F20`
+   */
+  F20,
+
+  /**
+   * Function key F21
+   * `Key.F21`
+   */
+  F21,
+
+  /**
+   * Function key F22
+   * `Key.F22`
+   */
+  F22,
+
+  /**
+   * Function key F23
+   * `Key.F23`
+   */
+  F23,
+
+  /**
+   * Function key F24
+   * `Key.F24`
+   */
+  F24,
+
+  /**
+   * Function key F25
+   * `Key.F25`
+   * @platform only works on Linux
+   */
+  F25,
+
+  /**
+   * Function key F26
+   * `Key.F26`
+   * @platform only works on Linux
+   */
+  F26,
+
+  /**
+   * Function key F27
+   * `Key.F27`
+   * @platform only works on Linux
+   */
+  F27,
+
+  /**
+   * Function key F28
+   * `Key.F28`
+   * @platform only works on Linux
+   */
+  F28,
+
+  /**
+   * Function key F29
+   * `Key.F29`
+   * @platform only works on Linux
+   */
+  F29,
+
+  /**
+   * Function key F30
+   * `Key.F30`
+   * @platform only works on Linux
+   */
+  F30,
+
+  /**
+   * Function key F31
+   * `Key.F31`
+   * @platform only works on Linux
+   */
+  F31,
+
+  /**
+   * Function key F32
+   * `Key.F32`
+   * @platform only works on Linux
+   */
+  F32,
+
+  /**
+   * Function key F33
+   * `Key.F33`
+   * @platform only works on Linux
+   */
+  F33,
+
+  /**
+   * Function key F34
+   * `Key.F34`
+   * @platform only works on Linux
+   */
+  F34,
+
+  /**
+   * Function key F35
+   * `Key.F35`
+   * @platform only works on Linux
+   */
+  F35,
+
+  /**
+   * IME Final (end conversion)
+   * `Key.Final`
+   * @platform only works on Windows
+   */
+  Final,
+
+  /**
+   * Find key
+   * `Key.Find`
+   * @platform only works on Linux
+   */
+  Find,
+
+  /**
+   * Gamepad: A button
+   * `Key.GamepadA`
+   * @platform only works on Windows
+   */
+  GamepadA,
+
+  /**
+   * Gamepad: B button
+   * `Key.GamepadB`
+   * @platform only works on Windows
+   */
+  GamepadB,
+
+  /**
+   * Gamepad: D-Pad Down
+   * `Key.GamepadDPadDown`
+   * @platform only works on Windows
+   */
+  GamepadDPadDown,
+
+  /**
+   * Gamepad: D-Pad Left
+   * `Key.GamepadDPadLeft`
+   * @platform only works on Windows
+   */
+  GamepadDPadLeft,
+
+  /**
+   * Gamepad: D-Pad Right
+   * `Key.GamepadDPadRight`
+   * @platform only works on Windows
+   */
+  GamepadDPadRight,
+
+  /**
+   * Gamepad: D-Pad Up
+   * `Key.GamepadDPadUp`
+   * @platform only works on Windows
+   */
+  GamepadDPadUp,
+
+  /**
+   * Gamepad: Left shoulder (L1)
+   * `Key.GamepadLeftShoulder`
+   * @platform only works on Windows
+   */
+  GamepadLeftShoulder,
+
+  /**
+   * Gamepad: Left thumbstick button (L3)
+   * `Key.GamepadLeftThumbstickButton`
+   * @platform only works on Windows
+   */
+  GamepadLeftThumbstickButton,
+
+  /**
+   * Gamepad: Left thumbstick down
+   * `Key.GamepadLeftThumbstickDown`
+   * @platform only works on Windows
+   */
+  GamepadLeftThumbstickDown,
+
+  /**
+   * Gamepad: Left thumbstick left
+   * `Key.GamepadLeftThumbstickLeft`
+   * @platform only works on Windows
+   */
+  GamepadLeftThumbstickLeft,
+
+  /**
+   * Gamepad: Left thumbstick right
+   * `Key.GamepadLeftThumbstickRight`
+   * @platform only works on Windows
+   */
+  GamepadLeftThumbstickRight,
+
+  /**
+   * Gamepad: Left thumbstick up
+   * `Key.GamepadLeftThumbstickUp`
+   * @platform only works on Windows
+   */
+  GamepadLeftThumbstickUp,
+
+  /**
+   * Gamepad: Left trigger (L2)
+   * `Key.GamepadLeftTrigger`
+   * @platform only works on Windows
+   */
+  GamepadLeftTrigger,
+
+  /**
+   * Gamepad: Menu / Start
+   * `Key.GamepadMenu`
+   * @platform only works on Windows
+   */
+  GamepadMenu,
+
+  /**
+   * Gamepad: Right shoulder (R1)
+   * `Key.GamepadRightShoulder`
+   * @platform only works on Windows
+   */
+  GamepadRightShoulder,
+
+  /**
+   * Gamepad: Right thumbstick button (R3)
+   * `Key.GamepadRightThumbstickButton`
+   * @platform only works on Windows
+   */
+  GamepadRightThumbstickButton,
+
+  /**
+   * Gamepad: Right thumbstick down
+   * `Key.GamepadRightThumbstickDown`
+   * @platform only works on Windows
+   */
+  GamepadRightThumbstickDown,
+
+  /**
+   * Gamepad: Right thumbstick left
+   * `Key.GamepadRightThumbstickLeft`
+   * @platform only works on Windows
+   */
+  GamepadRightThumbstickLeft,
+
+  /**
+   * Gamepad: Right thumbstick right
+   * `Key.GamepadRightThumbstickRight`
+   * @platform only works on Windows
+   */
+  GamepadRightThumbstickRight,
+
+  /**
+   * Gamepad: Right thumbstick up
+   * `Key.GamepadRightThumbstickUp`
+   * @platform only works on Windows
+   */
+  GamepadRightThumbstickUp,
+
+  /**
+   * Gamepad: Right trigger (R2)
+   * `Key.GamepadRightTrigger`
+   * @platform only works on Windows
+   */
+  GamepadRightTrigger,
+
+  /**
+   * Gamepad: View / Back
+   * `Key.GamepadView`
+   * @platform only works on Windows
+   */
+  GamepadView,
+
+  /**
+   * Gamepad: X button
+   * `Key.GamepadX`
+   * @platform only works on Windows
+   */
+  GamepadX,
+
+  /**
+   * Gamepad: Y button
+   * `Key.GamepadY`
+   * @platform only works on Windows
+   */
+  GamepadY,
+
+  /**
+   * Hangeul toggle (Korean layout)
+   * `Key.Hangeul`
+   * @platform only works on Windows
+   */
+  Hangeul,
+
+  /**
+   * Hangul toggle (Korean layout)
+   * `Key.Hangul`
+   */
+  Hangul,
+
+  /**
+   * Hanja toggle (Chinese characters on Korean layout)
+   * `Key.Hanja`
+   */
+  Hanja,
+
+  /**
+   * Help key
+   * `Key.Help`
+   */
+  Help,
+
+  /**
+   * Home key
+   * `Key.Home`
+   */
+  Home,
+
+  /**
+   * ICO (legacy) key 00
+   * `Key.Ico00`
+   * @platform only works on Windows
+   */
+  Ico00,
+
+  /**
+   * ICO (legacy) Clear
+   * `Key.IcoClear`
+   * @platform only works on Windows
+   */
+  IcoClear,
+
+  /**
+   * ICO (legacy) Help
+   * `Key.IcoHelp`
+   * @platform only works on Windows
+   */
+  IcoHelp,
+
+  /**
+   * IME Off (disable IME)
+   * `Key.IMEOff`
+   * @platform only works on Windows
+   */
+  ImeOff,
+
+  /**
+   * IME On (enable IME)
+   * `Key.IMEOn`
+   * @platform only works on Windows
+   */
+  ImeOn,
+
+  /**
+   * Insert key
+   * `Key.Insert`
+   */
+  Insert,
+
+  /**
+   * IME: Junja mode
+   * `Key.Junja`
+   * @platform only works on Windows
+   */
+  Junja,
+
+  /**
+   * IME: Kana mode
+   * `Key.Kana`
+   * @platform only works on Windows
+   */
+  Kana,
+
+  /**
+   * Kanji toggle (Japanese layout)
+   * `Key.Kanji`
+   */
+  Kanji,
+
+  /**
+   * Launch application 1
+   * `Key.LaunchApp1`
+   * @platform only works on Windows
+   */
+  LaunchApp1,
+
+  /**
+   * Launch application 2
+   * `Key.LaunchApp2`
+   * @platform only works on Windows
+   */
+  LaunchApp2,
+
+  /**
+   * Launch default mail client
+   * `Key.LaunchMail`
+   * @platform only works on Windows
+   */
+  LaunchMail,
+
+  /**
+   * Launch media selector
+   * `Key.LaunchMediaSelect`
+   * @platform only works on Windows
+   */
+  LaunchMediaSelect,
+
+  /**
+   * Left Control
+   * `Key.LeftControl`
+   */
+  LeftControl,
+
+  /**
+   * Arrow: Left
+   * `Key.LeftArrow`
+   */
+  LeftArrow,
+
+  /**
+   * Line Feed key
+   * `Key.Linefeed`
+   * @platform only works on Linux
+   */
+  Linefeed,
+
+  /**
+   * Left Alt/Menu
+   * `Key.LeftAlt`
+   */
+  LeftAlt,
+
+  /**
+   * Left Shift
+   * `Key.LeftShift`
+   */
+  LeftShift,
+
+  /**
+   * Left Windows / Super key
+   * `Key.LeftWindows`
+   * @platform only works on Windows
+   */
+  LeftWindows,
+
+  /**
+   * Next media track
+   * `Key.MediaNextTrack`
+   */
+  MediaNextTrack,
+
+  /**
+   * Play/Pause media
+   * `Key.MediaPlayPause`
+   */
+  MediaPlayPause,
+
+  /**
+   * Previous media track
+   * `Key.MediaPrevTrack`
+   */
+  MediaPrevTrack,
+
+  /**
+   * Stop media
+   * `Key.MediaStop`
+   */
+  MediaStop,
+
+  /**
+   * Meta key (also known as "windows", "super", and "command")
+   * `Key.Meta`
+   */
+  Meta,
+
+  /**
+   * IME mode change
+   * `Key.ModeChange`
+   */
+  ModeChange,
+
+  /**
+   * Numpad multiply '*'
+   * `Key.Multiply`
+   */
+  Multiply,
+
+  /**
+   * Navigation: Accept/OK (UWP)
+   * `Key.NavigationAccept`
+   * @platform only works on Windows
+   */
+  NavigationAccept,
+
+  /**
+   * Navigation: Cancel/Back (UWP)
+   * `Key.NavigationCancel`
+   * @platform only works on Windows
+   */
+  NavigationCancel,
+
+  /**
+   * Navigation: Down (UWP)
+   * `Key.NavigationDown`
+   * @platform only works on Windows
+   */
+  NavigationDown,
+
+  /**
+   * Navigation: Left (UWP)
+   * `Key.NavigationLeft`
+   * @platform only works on Windows
+   */
+  NavigationLeft,
+
+  /**
+   * Navigation: Menu (UWP)
+   * `Key.NavigationMenu`
+   * @platform only works on Windows
+   */
+  NavigationMenu,
+
+  /**
+   * Navigation: Right (UWP)
+   * `Key.NavigationRight`
+   * @platform only works on Windows
+   */
+  NavigationRight,
+
+  /**
+   * Navigation: Up (UWP)
+   * `Key.NavigationUp`
+   * @platform only works on Windows
+   */
+  NavigationUp,
+
+  /**
+   * Navigation: View (UWP)
+   * `Key.NavigationView`
+   * @platform only works on Windows
+   */
+  NavigationView,
+
+  /**
+   * NoName key (reserved)
+   * `Key.NoName`
+   * @platform only works on Windows
+   */
+  NoName,
+
+  /**
+   * IME Non-Convert (cancel conversion)
+   * `Key.NonConvert`
+   * @platform only works on Windows
+   */
+  NonConvert,
+
+  /**
+   * Placeholder "no key"
+   * `Key.None`
+   * @platform only works on Windows
+   */
+  None,
+
+  /**
+   * Num Lock toggle
+   * `Key.Numlock`
+   */
+  Numlock,
+
+  /**
+   * Numpad digit '0'
+   * `Key.Numpad0`
+   */
+  Numpad0,
+
+  /**
+   * Numpad digit '1'
+   * `Key.Numpad1`
+   */
+  Numpad1,
+
+  /**
+   * Numpad digit '2'
+   * `Key.Numpad2`
+   */
+  Numpad2,
+
+  /**
+   * Numpad digit '3'
+   * `Key.Numpad3`
+   */
+  Numpad3,
+
+  /**
+   * Numpad digit '4'
+   * `Key.Numpad4`
+   */
+  Numpad4,
+
+  /**
+   * Numpad digit '5'
+   * `Key.Numpad5`
+   */
+  Numpad5,
+
+  /**
+   * Numpad digit '6'
+   * `Key.Numpad6`
+   */
+  Numpad6,
+
+  /**
+   * Numpad digit '7'
+   * `Key.Numpad7`
+   */
+  Numpad7,
+
+  /**
+   * Numpad digit '8'
+   * `Key.Numpad8`
+   */
+  Numpad8,
+
+  /**
+   * Numpad digit '9'
+   * `Key.Numpad9`
+   */
+  Numpad9,
+
+  /**
+   * Numpad Enter
+   * `Key.NumpadEnter`
+   */
+  NumpadEnter,
+
+  /**
+   * OEM specific key 1
+   * `Key.OEM1`
+   * @platform only works on Windows
+   */
+  Oem1,
+
+  /**
+   * OEM specific key 102 (angle bracket/pipe on some layouts)
+   * `Key.OEM102`
+   * @platform only works on Windows
+   */
+  Oem102,
+
+  /**
+   * OEM specific key 2
+   * `Key.OEM2`
+   * @platform only works on Windows
+   */
+  Oem2,
+
+  /**
+   * OEM specific key 3 (backtick/tilde on some layouts)
+   * `Key.OEM3`
+   * @platform only works on Windows
+   */
+  Oem3,
+
+  /**
+   * OEM specific key 4 (left bracket on some layouts)
+   * `Key.OEM4`
+   * @platform only works on Windows
+   */
+  Oem4,
+
+  /**
+   * OEM specific key 5 (right bracket on some layouts)
+   * `Key.OEM5`
+   * @platform only works on Windows
+   */
+  Oem5,
+
+  /**
+   * OEM specific key 6 (semicolon on some layouts)
+   * `Key.OEM6`
+   * @platform only works on Windows
+   */
+  Oem6,
+
+  /**
+   * OEM specific key 7 (quote on some layouts)
+   * `Key.OEM7`
+   * @platform only works on Windows
+   */
+  Oem7,
+
+  /**
+   * OEM specific key 8
+   * `Key.OEM8`
+   * @platform only works on Windows
+   */
+  Oem8,
+
+  /**
+   * OEM Attention
+   * `Key.OEMAttn`
+   * @platform only works on Windows
+   */
+  OemAttn,
+
+  /**
+   * OEM Auto
+   * `Key.OEMAuto`
+   * @platform only works on Windows
+   */
+  OemAuto,
+
+  /**
+   * OEM Ax
+   * `Key.OEMAx`
+   * @platform only works on Windows
+   */
+  OemAx,
+
+  /**
+   * OEM Backtab (reverse Tab)
+   * `Key.OEMBacktab`
+   * @platform only works on Windows
+   */
+  OemBacktab,
+
+  /**
+   * OEM Clear
+   * `Key.OEMClear`
+   * @platform only works on Windows
+   */
+  OemClear,
+
+  /**
+   * OEM Comma ','
+   * `Key.OEMComma`
+   * @platform only works on Windows
+   */
+  OemComma,
+
+  /**
+   * OEM Copy
+   * `Key.OEMCopy`
+   * @platform only works on Windows
+   */
+  OemCopy,
+
+  /**
+   * OEM Cusel
+   * `Key.OEMCusel`
+   * @platform only works on Windows
+   */
+  OemCusel,
+
+  /**
+   * OEM Enlw
+   * `Key.OEMEnlw`
+   * @platform only works on Windows
+   */
+  OemEnlw,
+
+  /**
+   * OEM Finish
+   * `Key.OEMFinish`
+   * @platform only works on Windows
+   */
+  OemFinish,
+
+  /**
+   * OEM FJ Jisho (dictionary)
+   * `Key.OEMFJJisho`
+   * @platform only works on Windows
+   */
+  OemfjJisho,
+
+  /**
+   * OEM FJ Loya
+   * `Key.OEMFJLoya`
+   * @platform only works on Windows
+   */
+  OemfjLoya,
+
+  /**
+   * OEM FJ Masshou
+   * `Key.OEMFJMasshou`
+   * @platform only works on Windows
+   */
+  OemfjMasshou,
+
+  /**
+   * OEM FJ Roya
+   * `Key.OEMFJRoya`
+   * @platform only works on Windows
+   */
+  OemfjRoya,
+
+  /**
+   * OEM FJ Touroku
+   * `Key.OEMFJTouroku`
+   * @platform only works on Windows
+   */
+  OemfjTouroku,
+
+  /**
+   * OEM Jump
+   * `Key.OEMJump`
+   * @platform only works on Windows
+   */
+  OemJump,
+
+  /**
+   * OEM Minus '-'
+   * `Key.OEMMinus`
+   * @platform only works on Windows
+   */
+  OemMinus,
+
+  /**
+   * OEM NEC Equal '='
+   * `Key.OEMNECEqual`
+   * @platform only works on Windows
+   */
+  OemnecEqual,
+
+  /**
+   * OEM PA1
+   * `Key.OEMPA1`
+   * @platform only works on Windows
+   */
+  Oempa1,
+
+  /**
+   * OEM PA2
+   * `Key.OEMPA2`
+   * @platform only works on Windows
+   */
+  Oempa2,
+
+  /**
+   * OEM PA3
+   * `Key.OEMPA3`
+   * @platform only works on Windows
+   */
+  Oempa3,
+
+  /**
+   * OEM Period '.'
+   * `Key.OEMPeriod`
+   * @platform only works on Windows
+   */
+  OemPeriod,
+
+  /**
+   * OEM Plus '+'
+   * `Key.OEMPlus`
+   * @platform only works on Windows
+   */
+  OemPlus,
+
+  /**
+   * OEM Reset
+   * `Key.OEMReset`
+   * @platform only works on Windows
+   */
+  OemReset,
+
+  /**
+   * OEM Wsctrl
+   * `Key.OEMWsctrl`
+   * @platform only works on Windows
+   */
+  OemWsctrl,
+
+  /**
+   * Same as Alt
+   * `Key.Option`
+   */
+  Option,
+
+  /**
+   * PA1 key
+   * `Key.PA1`
+   * @platform only works on Windows
+   */
+  Pa1,
+
+  /**
+   * Packet key (used to pass Unicode chars)
+   * `Key.Packet`
+   * @platform only works on Windows
+   */
+  Packet,
+
+  /**
+   * Page Down
+   * `Key.PageDown`
+   */
+  PageDown,
+
+  /**
+   * Page Up
+   * `Key.PageUp`
+   */
+  PageUp,
+
+  /**
+   * Pause key
+   * `Key.Pause`
+   */
+  Pause,
+
+  /**
+   * Media Play
+   * `Key.Play`
+   * @platform only works on Windows
+   */
+  Play,
+
+  /**
+   * Screenshot
+   * `Key.PrintScreen`
+   */
+  PrintScreen,
+
+  /**
+   * IME Process key
+   * `Key.Processkey`
+   * @platform only works on Windows
+   */
+  Processkey,
+
+  /**
+   * Right Control
+   * `Key.RightControl`
+   */
+  RightControl,
+
+  /**
+   * Redo
+   * `Key.Redo`
+   * @platform only works on Linux
+   */
+  Redo,
+
+  /**
+   * Enter / Return
+   * `Key.Return`
+   */
+  Return,
+
+  /**
+   * Arrow: Right
+   * `Key.RightArrow`
+   */
+  RightArrow,
+
+  /**
+   * Right Alt/Menu
+   * `Key.RightAlt`
+   * @platform only works on Windows
+   */
+  RightAlt,
+
+  /**
+   * Right Shift
+   * `Key.RightShift`
+   */
+  RightShift,
+
+  /**
+   * Right Windows / Super key
+   * `Key.RightWindows`
+   * @platform only works on Windows
+   */
+  RightWindows,
+
+  /**
+   * Scroll key (legacy)
+   * `Key.Scroll`
+   * @platform only works on Windows
+   */
+  Scroll,
+
+  /**
+   * Scroll Lock
+   * `Key.ScrollLock`
+   * @platform only works on Linux
+   */
+  ScrollLock,
+
+  /**
+   * Select key
+   * `Key.Select`
+   */
+  Select,
+
+  /**
+   * Script switch
+   * `Key.ScriptSwitch`
+   * @platform only works on Linux
+   */
+  ScriptSwitch,
+
+  /**
+   * Numpad separator (locale-dependent)
+   * `Key.Separator`
+   * @platform only works on Windows
+   */
+  Separator,
+
+  /**
+   * Shift modifier
+   * `Key.Shift`
+   */
+  Shift,
+
+  /**
+   * Shift Lock
+   * `Key.ShiftLock`
+   * @platform only works on Linux
+   */
+  ShiftLock,
+
+  /**
+   * System Sleep
+   * `Key.Sleep`
+   * @platform only works on Windows
+   */
+  Sleep,
+
+  /**
+   * Spacebar
+   * `Key.Space`
+   */
+  Space,
+
+  /**
+   * Numpad '-' (subtract)
+   * `Key.Subtract`
+   */
+  Subtract,
+
+  /**
+   * System Request (SysRq)
+   * `Key.SysReq`
+   * @platform only works on Linux
+   */
+  SysReq,
+
+  /**
+   * Tab / focus next
+   * `Key.Tab`
+   */
+  Tab,
+
+  /**
+   * Undo
+   * `Key.Undo`
+   * @platform only works on Linux
+   */
+  Undo,
+
+  /**
+   * Arrow: Up
+   * `Key.UpArrow`
+   */
+  UpArrow,
+
+  /**
+   * Volume down
+   * `Key.VolumeDown`
+   */
+  VolumeDown,
+
+  /**
+   * Volume mute
+   * `Key.VolumeMute`
+   */
+  VolumeMute,
+
+  /**
+   * Volume up
+   * `Key.VolumeUp`
+   */
+  VolumeUp,
+
+  /**
+   * Microphone mute
+   * `Key.MicrophoneMute`
+   * @platform only works on Linux
+   */
+  MicrophoneMute,
+
+  /**
+   * Zoom key
+   * `Key.Zoom`
+   * @platform only works on Windows
+   */
+  Zoom,
 }
 /**
  * @category Keyboard
  */
 declare enum KeyError {
-    Unsupported,
+  Unsupported,
 }
 /**
  * @category Notification
  * @expand
  */
 declare enum NotificationUrgency {
-    /**
-     * `NotificationUrgency.Low`
-     */
-    Low,
+  /**
+   * `NotificationUrgency.Low`
+   */
+  Low,
 
-    /**
-     * `NotificationUrgency.Normal`
-     */
-    Normal,
+  /**
+   * `NotificationUrgency.Normal`
+   */
+  Normal,
 
-    /**
-     * `NotificationUrgency.Critical`
-     */
-    Critical,
+  /**
+   * `NotificationUrgency.Critical`
+   */
+  Critical,
 }
 /**
  * Toast notification scenario.
@@ -2098,25 +2098,25 @@ declare enum NotificationUrgency {
  * @expand
  */
 declare enum NotificationScenario {
-    /**
-     * `NotificationScenario.Reminder`
-     */
-    Reminder,
+  /**
+   * `NotificationScenario.Reminder`
+   */
+  Reminder,
 
-    /**
-     * `NotificationScenario.Alarm`
-     */
-    Alarm,
+  /**
+   * `NotificationScenario.Alarm`
+   */
+  Alarm,
 
-    /**
-     * `NotificationScenario.IncomingCall`
-     */
-    IncomingCall,
+  /**
+   * `NotificationScenario.IncomingCall`
+   */
+  IncomingCall,
 
-    /**
-     * `NotificationScenario.Urgent`
-     */
-    Urgent,
+  /**
+   * `NotificationScenario.Urgent`
+   */
+  Urgent,
 }
 /**
  * Notification sound.
@@ -2124,135 +2124,135 @@ declare enum NotificationScenario {
  * @platform only works on Windows
  */
 declare enum NotificationSound {
-    /**
-     * `NotificationSound.Default`
-     */
-    Default,
+  /**
+   * `NotificationSound.Default`
+   */
+  Default,
 
-    /**
-     * `NotificationSound.IM`
-     */
-    Im,
+  /**
+   * `NotificationSound.IM`
+   */
+  Im,
 
-    /**
-     * `NotificationSound.Mail`
-     */
-    Mail,
+  /**
+   * `NotificationSound.Mail`
+   */
+  Mail,
 
-    /**
-     * `NotificationSound.Reminder`
-     */
-    Reminder,
+  /**
+   * `NotificationSound.Reminder`
+   */
+  Reminder,
 
-    /**
-     * `NotificationSound.SMS`
-     */
-    Sms,
+  /**
+   * `NotificationSound.SMS`
+   */
+  Sms,
 
-    /**
-     * `NotificationSound.None`
-     */
-    None,
+  /**
+   * `NotificationSound.None`
+   */
+  None,
 
-    /**
-     * `NotificationSound.LoopingAlarm`
-     */
-    LoopingAlarm,
+  /**
+   * `NotificationSound.LoopingAlarm`
+   */
+  LoopingAlarm,
 
-    /**
-     * `NotificationSound.LoopingAlarm2`
-     */
-    LoopingAlarm2,
+  /**
+   * `NotificationSound.LoopingAlarm2`
+   */
+  LoopingAlarm2,
 
-    /**
-     * `NotificationSound.LoopingAlarm3`
-     */
-    LoopingAlarm3,
+  /**
+   * `NotificationSound.LoopingAlarm3`
+   */
+  LoopingAlarm3,
 
-    /**
-     * `NotificationSound.LoopingAlarm4`
-     */
-    LoopingAlarm4,
+  /**
+   * `NotificationSound.LoopingAlarm4`
+   */
+  LoopingAlarm4,
 
-    /**
-     * `NotificationSound.LoopingAlarm5`
-     */
-    LoopingAlarm5,
+  /**
+   * `NotificationSound.LoopingAlarm5`
+   */
+  LoopingAlarm5,
 
-    /**
-     * `NotificationSound.LoopingAlarm6`
-     */
-    LoopingAlarm6,
+  /**
+   * `NotificationSound.LoopingAlarm6`
+   */
+  LoopingAlarm6,
 
-    /**
-     * `NotificationSound.LoopingAlarm7`
-     */
-    LoopingAlarm7,
+  /**
+   * `NotificationSound.LoopingAlarm7`
+   */
+  LoopingAlarm7,
 
-    /**
-     * `NotificationSound.LoopingAlarm8`
-     */
-    LoopingAlarm8,
+  /**
+   * `NotificationSound.LoopingAlarm8`
+   */
+  LoopingAlarm8,
 
-    /**
-     * `NotificationSound.LoopingAlarm9`
-     */
-    LoopingAlarm9,
+  /**
+   * `NotificationSound.LoopingAlarm9`
+   */
+  LoopingAlarm9,
 
-    /**
-     * `NotificationSound.LoopingAlarm10`
-     */
-    LoopingAlarm10,
+  /**
+   * `NotificationSound.LoopingAlarm10`
+   */
+  LoopingAlarm10,
 
-    /**
-     * `NotificationSound.LoopingCall`
-     */
-    LoopingCall,
+  /**
+   * `NotificationSound.LoopingCall`
+   */
+  LoopingCall,
 
-    /**
-     * `NotificationSound.LoopingCall2`
-     */
-    LoopingCall2,
+  /**
+   * `NotificationSound.LoopingCall2`
+   */
+  LoopingCall2,
 
-    /**
-     * `NotificationSound.LoopingCall3`
-     */
-    LoopingCall3,
+  /**
+   * `NotificationSound.LoopingCall3`
+   */
+  LoopingCall3,
 
-    /**
-     * `NotificationSound.LoopingCall4`
-     */
-    LoopingCall4,
+  /**
+   * `NotificationSound.LoopingCall4`
+   */
+  LoopingCall4,
 
-    /**
-     * `NotificationSound.LoopingCall5`
-     */
-    LoopingCall5,
+  /**
+   * `NotificationSound.LoopingCall5`
+   */
+  LoopingCall5,
 
-    /**
-     * `NotificationSound.LoopingCall6`
-     */
-    LoopingCall6,
+  /**
+   * `NotificationSound.LoopingCall6`
+   */
+  LoopingCall6,
 
-    /**
-     * `NotificationSound.LoopingCall7`
-     */
-    LoopingCall7,
+  /**
+   * `NotificationSound.LoopingCall7`
+   */
+  LoopingCall7,
 
-    /**
-     * `NotificationSound.LoopingCall8`
-     */
-    LoopingCall8,
+  /**
+   * `NotificationSound.LoopingCall8`
+   */
+  LoopingCall8,
 
-    /**
-     * `NotificationSound.LoopingCall9`
-     */
-    LoopingCall9,
+  /**
+   * `NotificationSound.LoopingCall9`
+   */
+  LoopingCall9,
 
-    /**
-     * `NotificationSound.LoopingCall10`
-     */
-    LoopingCall10,
+  /**
+   * `NotificationSound.LoopingCall10`
+   */
+  LoopingCall10,
 }
 /**
  * Activation type for toast actions and headers.
@@ -2261,20 +2261,20 @@ declare enum NotificationSound {
  * @expand
  */
 declare enum NotificationActivationType {
-    /**
-     * `NotificationActivationType.Foreground`
-     */
-    Foreground,
+  /**
+   * `NotificationActivationType.Foreground`
+   */
+  Foreground,
 
-    /**
-     * `NotificationActivationType.Background`
-     */
-    Background,
+  /**
+   * `NotificationActivationType.Background`
+   */
+  Background,
 
-    /**
-     * `NotificationActivationType.Protocol`
-     */
-    Protocol,
+  /**
+   * `NotificationActivationType.Protocol`
+   */
+  Protocol,
 }
 /**
  * Placement of a toast action button.
@@ -2283,10 +2283,10 @@ declare enum NotificationActivationType {
  * @expand
  */
 declare enum NotificationActionPlacement {
-    /**
-     * `NotificationActionPlacement.ContextMenu`
-     */
-    ContextMenu,
+  /**
+   * `NotificationActionPlacement.ContextMenu`
+   */
+  ContextMenu,
 }
 /**
  * Style of a toast action button.
@@ -2295,15 +2295,15 @@ declare enum NotificationActionPlacement {
  * @expand
  */
 declare enum NotificationButtonStyle {
-    /**
-     * `NotificationButtonStyle.Success`
-     */
-    Success,
+  /**
+   * `NotificationButtonStyle.Success`
+   */
+  Success,
 
-    /**
-     * `NotificationButtonStyle.Critical`
-     */
-    Critical,
+  /**
+   * `NotificationButtonStyle.Critical`
+   */
+  Critical,
 }
 /**
  * Input type for toast input fields.
@@ -2312,19 +2312,19 @@ declare enum NotificationButtonStyle {
  * @expand
  */
 declare enum NotificationInputType {
-    /**
-     * `NotificationInputType.Text`
-     */
-    Text,
+  /**
+   * `NotificationInputType.Text`
+   */
+  Text,
 
-    /**
-     * `NotificationInputType.Selection`
-     */
-    Selection,
+  /**
+   * `NotificationInputType.Selection`
+   */
+  Selection,
 }
 /**
  * Unix signal.
- * 
+ *
  * ```ts
  * await process.sendSignal(1234, Signal.Term);
  * ```
@@ -2332,87 +2332,87 @@ declare enum NotificationInputType {
  * @platform only works on Linux
  */
 declare enum Signal {
-    /**
-     * `SIGHUP` - hang up; often used to request config reload.
-     * `Signal.Hup`
-     */
-    Hup,
+  /**
+   * `SIGHUP` - hang up; often used to request config reload.
+   * `Signal.Hup`
+   */
+  Hup,
 
-    /**
-     * `SIGINT` - interrupt (like Ctrl-C).
-     * `Signal.Int`
-     */
-    Int,
+  /**
+   * `SIGINT` - interrupt (like Ctrl-C).
+   * `Signal.Int`
+   */
+  Int,
 
-    /**
-     * `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
-     * `Signal.Quit`
-     */
-    Quit,
+  /**
+   * `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
+   * `Signal.Quit`
+   */
+  Quit,
 
-    /**
-     * `SIGTERM` - polite termination request.
-     * `Signal.Term`
-     */
-    Term,
+  /**
+   * `SIGTERM` - polite termination request.
+   * `Signal.Term`
+   */
+  Term,
 
-    /**
-     * `SIGKILL` - force kill immediately.
-     * `Signal.Kill`
-     */
-    Kill,
+  /**
+   * `SIGKILL` - force kill immediately.
+   * `Signal.Kill`
+   */
+  Kill,
 
-    /**
-     * `SIGSTOP` - stop/suspend execution immediately.
-     * `Signal.Stop`
-     */
-    Stop,
+  /**
+   * `SIGSTOP` - stop/suspend execution immediately.
+   * `Signal.Stop`
+   */
+  Stop,
 
-    /**
-     * `SIGTSTP` - terminal stop (like Ctrl-Z).
-     * `Signal.Tstp`
-     */
-    Tstp,
+  /**
+   * `SIGTSTP` - terminal stop (like Ctrl-Z).
+   * `Signal.Tstp`
+   */
+  Tstp,
 
-    /**
-     * `SIGCONT` - continue a stopped process.
-     * `Signal.Cont`
-     */
-    Cont,
+  /**
+   * `SIGCONT` - continue a stopped process.
+   * `Signal.Cont`
+   */
+  Cont,
 
-    /**
-     * `SIGTTIN` - background process attempted terminal input.
-     * `Signal.Ttin`
-     */
-    Ttin,
+  /**
+   * `SIGTTIN` - background process attempted terminal input.
+   * `Signal.Ttin`
+   */
+  Ttin,
 
-    /**
-     * `SIGTTOU` - background process attempted terminal output.
-     * `Signal.Ttou`
-     */
-    Ttou,
+  /**
+   * `SIGTTOU` - background process attempted terminal output.
+   * `Signal.Ttou`
+   */
+  Ttou,
 
-    /**
-     * `SIGWINCH` - terminal window size changed.
-     * `Signal.Winch`
-     */
-    Winch,
+  /**
+   * `SIGWINCH` - terminal window size changed.
+   * `Signal.Winch`
+   */
+  Winch,
 
-    /**
-     * `SIGUSR1` - user-defined signal 1.
-     * `Signal.Usr1`
-     */
-    Usr1,
+  /**
+   * `SIGUSR1` - user-defined signal 1.
+   * `Signal.Usr1`
+   */
+  Usr1,
 
-    /**
-     * `SIGUSR2` - user-defined signal 2.
-     * `Signal.Usr2`
-     */
-    Usr2,
+  /**
+   * `SIGUSR2` - user-defined signal 2.
+   * `Signal.Usr2`
+   */
+  Usr2,
 }
 /**
  * Process status.
- * 
+ *
  * ```ts
  * const processes = await system.processes.list();
  * const process = processes[0];
@@ -2423,79 +2423,79 @@ declare enum Signal {
  * @category System
  */
 declare enum ProcessStatus {
-    /**
-     * `ProcessStatus.Idle`
-     */
-    Idle,
+  /**
+   * `ProcessStatus.Idle`
+   */
+  Idle,
 
-    /**
-     * `ProcessStatus.Run`
-     */
-    Run,
+  /**
+   * `ProcessStatus.Run`
+   */
+  Run,
 
-    /**
-     * `ProcessStatus.Sleep`
-     */
-    Sleep,
+  /**
+   * `ProcessStatus.Sleep`
+   */
+  Sleep,
 
-    /**
-     * `ProcessStatus.Stop`
-     */
-    Stop,
+  /**
+   * `ProcessStatus.Stop`
+   */
+  Stop,
 
-    /**
-     * `ProcessStatus.Zombie`
-     */
-    Zombie,
+  /**
+   * `ProcessStatus.Zombie`
+   */
+  Zombie,
 
-    /**
-     * `ProcessStatus.Tracing`
-     */
-    Tracing,
+  /**
+   * `ProcessStatus.Tracing`
+   */
+  Tracing,
 
-    /**
-     * `ProcessStatus.Dead`
-     */
-    Dead,
+  /**
+   * `ProcessStatus.Dead`
+   */
+  Dead,
 
-    /**
-     * `ProcessStatus.Wakekill`
-     */
-    Wakekill,
+  /**
+   * `ProcessStatus.Wakekill`
+   */
+  Wakekill,
 
-    /**
-     * `ProcessStatus.Waking`
-     */
-    Waking,
+  /**
+   * `ProcessStatus.Waking`
+   */
+  Waking,
 
-    /**
-     * `ProcessStatus.Parked`
-     */
-    Parked,
+  /**
+   * `ProcessStatus.Parked`
+   */
+  Parked,
 
-    /**
-     * `ProcessStatus.LockBlocked`
-     */
-    LockBlocked,
+  /**
+   * `ProcessStatus.LockBlocked`
+   */
+  LockBlocked,
 
-    /**
-     * `ProcessStatus.UninterruptibleDiskSleep`
-     */
-    UninterruptibleDiskSleep,
+  /**
+   * `ProcessStatus.UninterruptibleDiskSleep`
+   */
+  UninterruptibleDiskSleep,
 
-    /**
-     * `ProcessStatus.Suspended`
-     */
-    Suspended,
+  /**
+   * `ProcessStatus.Suspended`
+   */
+  Suspended,
 
-    /**
-     * `ProcessStatus.Unknown`
-     */
-    Unknown,
+  /**
+   * `ProcessStatus.Unknown`
+   */
+  Unknown,
 }
 /**
  * Disk kind values.
- * 
+ *
  * ```ts
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
@@ -2503,29 +2503,29 @@ declare enum ProcessStatus {
  *   println("SSD");
  * }
  * ```
- * 
+ *
  * Disk kind
  * @category System
  * @expand
  */
 declare enum DiskKind {
-    /**
-     * Hard disk drive
-     * `DiskKind.HDD`
-     */
-    Hdd,
+  /**
+   * Hard disk drive
+   * `DiskKind.HDD`
+   */
+  Hdd,
 
-    /**
-     * Solid-state drive
-     * `DiskKind.SSD`
-     */
-    Ssd,
+  /**
+   * Solid-state drive
+   * `DiskKind.SSD`
+   */
+  Ssd,
 
-    /**
-     * Unknown drive kind
-     * `DiskKind.Unknown`
-     */
-    Unknown,
+  /**
+   * Unknown drive kind
+   * `DiskKind.Unknown`
+   */
+  Unknown,
 }
 /**
  * Should the script wait at the end of the execution?
@@ -2534,44 +2534,44 @@ declare enum DiskKind {
  * @expand
  */
 declare enum WaitAtEnd {
-    /**
-     * Automatically decide if the script should wait.
-     * Setting hotstrings will have the script wait.
-     * `WaitAtEnd.Automatic`
-     */
-    Automatic,
+  /**
+   * Automatically decide if the script should wait.
+   * Setting hotstrings will have the script wait.
+   * `WaitAtEnd.Automatic`
+   */
+  Automatic,
 
-    /**
-     * Always wait.
-     * `WaitAtEnd.Yes`
-     */
-    Yes,
+  /**
+   * Always wait.
+   * `WaitAtEnd.Yes`
+   */
+  Yes,
 
-    /**
-     * Never wait.
-     * `WaitAtEnd.No`
-     */
-    No,
+  /**
+   * Never wait.
+   * `WaitAtEnd.No`
+   */
+  No,
 }
 /**
  * @category Clipboard
  * @expand
  */
 declare enum ClipboardMode {
-    /**
-     * `ClipboardMode.Clipboard`
-     */
-    Clipboard,
+  /**
+   * `ClipboardMode.Clipboard`
+   */
+  Clipboard,
 
-    /**
-     * `ClipboardMode.Selection`
-     * @platform only works on Linux
-     */
-    Selection,
+  /**
+   * `ClipboardMode.Selection`
+   * @platform only works on Linux
+   */
+  Selection,
 }
 /**
  * Mouse button.
- * 
+ *
  * ```ts
  * await mouse.click({ button: Button.Right });
  * const pressed = await mouse.isPressed(Button.Left);
@@ -2580,39 +2580,39 @@ declare enum ClipboardMode {
  * @expand
  */
 declare enum Button {
-    /**
-     * Left button
-     * `Button.Left`
-     */
-    Left,
+  /**
+   * Left button
+   * `Button.Left`
+   */
+  Left,
 
-    /**
-     * Middle button
-     * `Button.Middle`
-     */
-    Middle,
+  /**
+   * Middle button
+   * `Button.Middle`
+   */
+  Middle,
 
-    /**
-     * Right button
-     * `Button.Right`
-     */
-    Right,
+  /**
+   * Right button
+   * `Button.Right`
+   */
+  Right,
 
-    /**
-     * Back button
-     * `Button.Back`
-     */
-    Back,
+  /**
+   * Back button
+   * `Button.Back`
+   */
+  Back,
 
-    /**
-     * Forward button
-     * `Button.Forward`
-     */
-    Forward,
+  /**
+   * Forward button
+   * `Button.Forward`
+   */
+  Forward,
 }
 /**
  * Scroll axis direction.
- * 
+ *
  * ```ts
  * mouse.scroll(3, Axis.Vertical);
  * mouse.scroll(-1, Axis.Horizontal);
@@ -2621,259 +2621,259 @@ declare enum Button {
  * @expand
  */
 declare enum Axis {
-    /**
-     * `Axis.Horizontal`
-     */
-    Horizontal,
+  /**
+   * `Axis.Horizontal`
+   */
+  Horizontal,
 
-    /**
-     * `Axis.Vertical`
-     */
-    Vertical,
+  /**
+   * `Axis.Vertical`
+   */
+  Vertical,
 }
 /**
  * Tweening functions for smooth mouse movement.
- * 
+ *
  * ```ts
  * // Move with a bounce effect
  * await mouse.move(500, 300, { tween: Tween.BounceOut });
- * 
+ *
  * // Move with linear interpolation (no easing)
  * await mouse.move(100, 100, { tween: Tween.Linear });
  * ```
  * @category Mouse
  */
 declare enum Tween {
-    /**
-     * Starts slowly, then accelerates with an overshoot.
-     * `Tween.BackIn`
-     */
-    BackIn,
+  /**
+   * Starts slowly, then accelerates with an overshoot.
+   * `Tween.BackIn`
+   */
+  BackIn,
 
-    /**
-     * Starts and ends with an overshoot, accelerating in between.
-     * `Tween.BackInOut`
-     */
-    BackInOut,
+  /**
+   * Starts and ends with an overshoot, accelerating in between.
+   * `Tween.BackInOut`
+   */
+  BackInOut,
 
-    /**
-     * Starts quickly, then decelerates with an overshoot.
-     * `Tween.BackOut`
-     */
-    BackOut,
+  /**
+   * Starts quickly, then decelerates with an overshoot.
+   * `Tween.BackOut`
+   */
+  BackOut,
 
-    /**
-     * Starts by bouncing off the start point.
-     * `Tween.BounceIn`
-     */
-    BounceIn,
+  /**
+   * Starts by bouncing off the start point.
+   * `Tween.BounceIn`
+   */
+  BounceIn,
 
-    /**
-     * Bounces at both the start and end points.
-     * `Tween.BounceInOut`
-     */
-    BounceInOut,
+  /**
+   * Bounces at both the start and end points.
+   * `Tween.BounceInOut`
+   */
+  BounceInOut,
 
-    /**
-     * Ends with a bounce effect.
-     * `Tween.BounceOut`
-     */
-    BounceOut,
+  /**
+   * Ends with a bounce effect.
+   * `Tween.BounceOut`
+   */
+  BounceOut,
 
-    /**
-     * Starts slowly and accelerates in a circular motion.
-     * `Tween.CircIn`
-     */
-    CircIn,
+  /**
+   * Starts slowly and accelerates in a circular motion.
+   * `Tween.CircIn`
+   */
+  CircIn,
 
-    /**
-     * Starts and ends slowly with a circular motion.
-     * `Tween.CircInOut`
-     */
-    CircInOut,
+  /**
+   * Starts and ends slowly with a circular motion.
+   * `Tween.CircInOut`
+   */
+  CircInOut,
 
-    /**
-     * Ends slowly with a circular motion.
-     * `Tween.CircOut`
-     */
-    CircOut,
+  /**
+   * Ends slowly with a circular motion.
+   * `Tween.CircOut`
+   */
+  CircOut,
 
-    /**
-     * Starts slowly and accelerates cubically.
-     * `Tween.CubicIn`
-     */
-    CubicIn,
+  /**
+   * Starts slowly and accelerates cubically.
+   * `Tween.CubicIn`
+   */
+  CubicIn,
 
-    /**
-     * Starts and ends slowly with a cubic acceleration.
-     * `Tween.CubicInOut`
-     */
-    CubicInOut,
+  /**
+   * Starts and ends slowly with a cubic acceleration.
+   * `Tween.CubicInOut`
+   */
+  CubicInOut,
 
-    /**
-     * Ends slowly with a cubic deceleration.
-     * `Tween.CubicOut`
-     */
-    CubicOut,
+  /**
+   * Ends slowly with a cubic deceleration.
+   * `Tween.CubicOut`
+   */
+  CubicOut,
 
-    /**
-     * Starts with an elastic effect, overshooting the target.
-     * `Tween.ElasticIn`
-     */
-    ElasticIn,
+  /**
+   * Starts with an elastic effect, overshooting the target.
+   * `Tween.ElasticIn`
+   */
+  ElasticIn,
 
-    /**
-     * Starts and ends with an elastic effect.
-     * `Tween.ElasticInOut`
-     */
-    ElasticInOut,
+  /**
+   * Starts and ends with an elastic effect.
+   * `Tween.ElasticInOut`
+   */
+  ElasticInOut,
 
-    /**
-     * Ends with an elastic effect, overshooting the target.
-     * `Tween.ElasticOut`
-     */
-    ElasticOut,
+  /**
+   * Ends with an elastic effect, overshooting the target.
+   * `Tween.ElasticOut`
+   */
+  ElasticOut,
 
-    /**
-     * Starts slowly and accelerates exponentially.
-     * `Tween.ExpoIn`
-     */
-    ExpoIn,
+  /**
+   * Starts slowly and accelerates exponentially.
+   * `Tween.ExpoIn`
+   */
+  ExpoIn,
 
-    /**
-     * Starts and ends slowly with an exponential acceleration.
-     * `Tween.ExpoInOut`
-     */
-    ExpoInOut,
+  /**
+   * Starts and ends slowly with an exponential acceleration.
+   * `Tween.ExpoInOut`
+   */
+  ExpoInOut,
 
-    /**
-     * Ends slowly with an exponential deceleration.
-     * `Tween.ExpoOut`
-     */
-    ExpoOut,
+  /**
+   * Ends slowly with an exponential deceleration.
+   * `Tween.ExpoOut`
+   */
+  ExpoOut,
 
-    /**
-     * A linear tween with no acceleration or deceleration.
-     * `Tween.Linear`
-     */
-    Linear,
+  /**
+   * A linear tween with no acceleration or deceleration.
+   * `Tween.Linear`
+   */
+  Linear,
 
-    /**
-     * Starts slowly and accelerates quadratically.
-     * `Tween.QuadIn`
-     */
-    QuadIn,
+  /**
+   * Starts slowly and accelerates quadratically.
+   * `Tween.QuadIn`
+   */
+  QuadIn,
 
-    /**
-     * Starts and ends slowly with a quadratic acceleration.
-     * `Tween.QuadInOut`
-     */
-    QuadInOut,
+  /**
+   * Starts and ends slowly with a quadratic acceleration.
+   * `Tween.QuadInOut`
+   */
+  QuadInOut,
 
-    /**
-     * Ends slowly with a quadratic deceleration.
-     * `Tween.QuadOut`
-     */
-    QuadOut,
+  /**
+   * Ends slowly with a quadratic deceleration.
+   * `Tween.QuadOut`
+   */
+  QuadOut,
 
-    /**
-     * Starts slowly and accelerates quartically.
-     * `Tween.QuartIn`
-     */
-    QuartIn,
+  /**
+   * Starts slowly and accelerates quartically.
+   * `Tween.QuartIn`
+   */
+  QuartIn,
 
-    /**
-     * Starts and ends slowly with a quartic acceleration.
-     * `Tween.QuartInOut`
-     */
-    QuartInOut,
+  /**
+   * Starts and ends slowly with a quartic acceleration.
+   * `Tween.QuartInOut`
+   */
+  QuartInOut,
 
-    /**
-     * Ends slowly with a quartic deceleration.
-     * `Tween.QuartOut`
-     */
-    QuartOut,
+  /**
+   * Ends slowly with a quartic deceleration.
+   * `Tween.QuartOut`
+   */
+  QuartOut,
 
-    /**
-     * Starts slowly and accelerates quintically.
-     * `Tween.QuintIn`
-     */
-    QuintIn,
+  /**
+   * Starts slowly and accelerates quintically.
+   * `Tween.QuintIn`
+   */
+  QuintIn,
 
-    /**
-     * Starts and ends slowly with a quintic acceleration.
-     * `Tween.QuintInOut`
-     */
-    QuintInOut,
+  /**
+   * Starts and ends slowly with a quintic acceleration.
+   * `Tween.QuintInOut`
+   */
+  QuintInOut,
 
-    /**
-     * Ends slowly with a quintic deceleration.
-     * `Tween.QuintOut`
-     */
-    QuintOut,
+  /**
+   * Ends slowly with a quintic deceleration.
+   * `Tween.QuintOut`
+   */
+  QuintOut,
 
-    /**
-     * Starts slowly and accelerates sinusoidally.
-     * `Tween.SineIn`
-     */
-    SineIn,
+  /**
+   * Starts slowly and accelerates sinusoidally.
+   * `Tween.SineIn`
+   */
+  SineIn,
 
-    /**
-     * Starts and ends slowly with a sinusoidal acceleration.
-     * `Tween.SineInOut`
-     */
-    SineInOut,
+  /**
+   * Starts and ends slowly with a sinusoidal acceleration.
+   * `Tween.SineInOut`
+   */
+  SineInOut,
 
-    /**
-     * Ends slowly with a sinusoidal deceleration.
-     * `Tween.SineOut`
-     */
-    SineOut,
+  /**
+   * Ends slowly with a sinusoidal deceleration.
+   * `Tween.SineOut`
+   */
+  SineOut,
 }
 /**
  * @category UI
  * @expand
  */
 declare enum MessageBoxIcon {
-    /**
-     * `MessageBoxIcon.Info`
-     */
-    Info,
+  /**
+   * `MessageBoxIcon.Info`
+   */
+  Info,
 
-    /**
-     * `MessageBoxIcon.Warning`
-     */
-    Warning,
+  /**
+   * `MessageBoxIcon.Warning`
+   */
+  Warning,
 
-    /**
-     * `MessageBoxIcon.Error`
-     */
-    Error,
+  /**
+   * `MessageBoxIcon.Error`
+   */
+  Error,
 }
 /**
  * @category UI
  * @expand
  */
 declare enum MessageBoxResult {
-    /**
-     * `MessageBoxResult.Yes`
-     */
-    Yes,
+  /**
+   * `MessageBoxResult.Yes`
+   */
+  Yes,
 
-    /**
-     * `MessageBoxResult.No`
-     */
-    No,
+  /**
+   * `MessageBoxResult.No`
+   */
+  No,
 
-    /**
-     * `MessageBoxResult.Ok`
-     */
-    Ok,
+  /**
+   * `MessageBoxResult.Ok`
+   */
+  Ok,
 
-    /**
-     * `MessageBoxResult.Cancel`
-     */
-    Cancel,
+  /**
+   * `MessageBoxResult.Cancel`
+   */
+  Cancel,
 }
 /**
  * HTTP request method.
@@ -2881,66 +2881,66 @@ declare enum MessageBoxResult {
  * @expand
  */
 declare enum Method {
-    /**
-     * `Method.Get`
-     */
-    Get,
+  /**
+   * `Method.Get`
+   */
+  Get,
 
-    /**
-     * `Method.Post`
-     */
-    Post,
+  /**
+   * `Method.Post`
+   */
+  Post,
 
-    /**
-     * `Method.Put`
-     */
-    Put,
+  /**
+   * `Method.Put`
+   */
+  Put,
 
-    /**
-     * `Method.Delete`
-     */
-    Delete,
+  /**
+   * `Method.Delete`
+   */
+  Delete,
 
-    /**
-     * `Method.Head`
-     */
-    Head,
+  /**
+   * `Method.Head`
+   */
+  Head,
 
-    /**
-     * `Method.Options`
-     */
-    Options,
+  /**
+   * `Method.Options`
+   */
+  Options,
 
-    /**
-     * `Method.Connect`
-     */
-    Connect,
+  /**
+   * `Method.Connect`
+   */
+  Connect,
 
-    /**
-     * `Method.Patch`
-     */
-    Patch,
+  /**
+   * `Method.Patch`
+   */
+  Patch,
 
-    /**
-     * `Method.Trace`
-     */
-    Trace,
+  /**
+   * `Method.Trace`
+   */
+  Trace,
 }
 /**
  * The global application singleton, providing access to environment information
  * and execution settings.
- * 
+ *
  * ```ts
  * // Get the current version
  * println(app.version);
- * 
+ *
  * // Read environment variables
  * const home = app.env["HOME"];
- * 
+ *
  * // Change working directory
  * app.setCwd("/tmp");
  * println(app.cwd);
- * 
+ *
  * // Control whether the script waits at the end
  * app.waitAtEnd = true;
  * app.waitAtEnd = WaitAtEnd.Automatic;
@@ -2948,53 +2948,53 @@ declare enum Method {
  * @category App
  */
 declare interface App {
-    /**
-     * Should the app wait at the end of execution
-     */
-    waitAtEnd: WaitAtEnd | boolean;
-    /**
-     * The version of Actiona-cli.
-     * 
-     * ```ts
-     * println(app.version); // e.g. "0.1.0"
-     * ```
-     */
-    readonly version: string;
-    /**
-     * All environment variables as a readonly key-value map.
-     * 
-     * ```ts
-     * const env = app.env;
-     * println(env["HOME"]);
-     * println(env["PATH"]);
-     * ```
-     */
-    readonly env: Readonly<Record<string, string | undefined>>;
-    /**
-     * The current working directory.
-     * 
-     * ```ts
-     * println(app.cwd); // e.g. "/home/user/project"
-     * ```
-     */
-    readonly cwd: string;
-    /**
-     * The path to the running executable.
-     * 
-     * ```ts
-     * println(app.executablePath); // e.g. "/usr/bin/actiona-run"
-     * ```
-     */
-    readonly executablePath: string;
-    /**
-     * Sets the current working directory.
-     * 
-     * ```ts
-     * app.setCwd("/tmp");
-     * ```
-     */
-    setCwd(cwd: string): void;
-    toString(): string;
+  /**
+   * Should the app wait at the end of execution
+   */
+  waitAtEnd: WaitAtEnd | boolean;
+  /**
+   * The version of Actiona-cli.
+   *
+   * ```ts
+   * println(app.version); // e.g. "0.1.0"
+   * ```
+   */
+  readonly version: string;
+  /**
+   * All environment variables as a readonly key-value map.
+   *
+   * ```ts
+   * const env = app.env;
+   * println(env["HOME"]);
+   * println(env["PATH"]);
+   * ```
+   */
+  readonly env: Readonly<Record<string, string | undefined>>;
+  /**
+   * The current working directory.
+   *
+   * ```ts
+   * println(app.cwd); // e.g. "/home/user/project"
+   * ```
+   */
+  readonly cwd: string;
+  /**
+   * The path to the running executable.
+   *
+   * ```ts
+   * println(app.executablePath); // e.g. "/usr/bin/actiona-run"
+   * ```
+   */
+  readonly executablePath: string;
+  /**
+   * Sets the current working directory.
+   *
+   * ```ts
+   * app.setCwd("/tmp");
+   * ```
+   */
+  setCwd(cwd: string): void;
+  toString(): string;
 }
 /**
  * @category App
@@ -3002,11 +3002,11 @@ declare interface App {
 declare const app: App;
 /**
  * Options for playing a sound file.
- * 
+ *
  * ```ts
  * // Play with default options
  * audio.playFile("sound.wav");
- * 
+ *
  * // Play at half volume, looping, with a fade in
  * audio.playFile("music.mp3", {
  *     volume: 0.5,
@@ -3018,52 +3018,52 @@ declare const app: App;
  * @expand
  */
 declare interface PlaySoundOptions {
-    /**
-     * Volume to play the sound at
-     * @defaultValue `1`
-     */
-    volume?: number;
-    /**
-     * Speed to play the sound at
-     * @defaultValue `1`
-     */
-    playbackRate?: number;
-    /**
-     * Should the sound start paused
-     * @defaultValue `false`
-     */
-    paused?: boolean;
-    /**
-     * Should the sound loop
-     * @defaultValue `false`
-     */
-    loop?: boolean;
-    /**
-     * Fade in duration
-     * @defaultValue `0`
-     */
-    fadeIn?: number | string;
-    /**
-     * Fade out duration
-     * @defaultValue `0`
-     */
-    fadeOut?: number | string;
-    /**
-     * Abort signal to cancel the sound playback.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Volume to play the sound at
+   * @defaultValue `1`
+   */
+  volume?: number;
+  /**
+   * Speed to play the sound at
+   * @defaultValue `1`
+   */
+  playbackRate?: number;
+  /**
+   * Should the sound start paused
+   * @defaultValue `false`
+   */
+  paused?: boolean;
+  /**
+   * Should the sound loop
+   * @defaultValue `false`
+   */
+  loop?: boolean;
+  /**
+   * Fade in duration
+   * @defaultValue `0`
+   */
+  fadeIn?: number | string;
+  /**
+   * Fade out duration
+   * @defaultValue `0`
+   */
+  fadeOut?: number | string;
+  /**
+   * Abort signal to cancel the sound playback.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * The global audio singleton for playing sound files.
- * 
+ *
  * ```ts
  * // Play a sound and forget about it
  * audio.playFile("notification.wav");
- * 
+ *
  * // Play a sound and wait for it to finish
  * await audio.playFileAndWait("alert.wav");
- * 
+ *
  * // Play with options and control playback
  * const sound = audio.playFile("music.mp3", { volume: 0.8, loop: true });
  * sound.pause();
@@ -3073,31 +3073,31 @@ declare interface PlaySoundOptions {
  * @category Audio
  */
 declare interface Audio {
-    /**
-     * Plays a sound file and returns a `PlayingSound` handle for controlling playback.
-     * 
-     * ```ts
-     * const sound = audio.playFile("music.mp3");
-     * sound.volume = 0.5;
-     * ```
-     */
-    playFile(path: string, options?: PlaySoundOptions): PlayingSound;
-    /**
-     * Plays a sound file and waits for it to finish.
-     * 
-     * ```ts
-     * await audio.playFileAndWait("alert.wav");
-     * 
-     * // With a fade out and abort signal
-     * const controller = new AbortController();
-     * await audio.playFileAndWait("long-track.mp3", {
-     *     fadeOut: 1000,
-     *     signal: controller.signal,
-     * });
-     * ```
-     */
-    playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
-    toString(): string;
+  /**
+   * Plays a sound file and returns a `PlayingSound` handle for controlling playback.
+   *
+   * ```ts
+   * const sound = audio.playFile("music.mp3");
+   * sound.volume = 0.5;
+   * ```
+   */
+  playFile(path: string, options?: PlaySoundOptions): PlayingSound;
+  /**
+   * Plays a sound file and waits for it to finish.
+   *
+   * ```ts
+   * await audio.playFileAndWait("alert.wav");
+   *
+   * // With a fade out and abort signal
+   * const controller = new AbortController();
+   * await audio.playFileAndWait("long-track.mp3", {
+   *     fadeOut: 1000,
+   *     signal: controller.signal,
+   * });
+   * ```
+   */
+  playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
+  toString(): string;
 }
 /**
  * @category Audio
@@ -3105,7 +3105,7 @@ declare interface Audio {
 declare const audio: Audio;
 /**
  * A handle to an actively playing sound, allowing control over playback.
- * 
+ *
  * ```ts
  * const sound = audio.playFile("music.mp3");
  * println(sound.duration);  // duration in seconds
@@ -3118,58 +3118,58 @@ declare const audio: Audio;
  * @category Audio
  */
 declare interface PlayingSound {
-    /**
-     * Sound volume
-     * @defaultValue `1`
-     */
-    volume: number;
-    /**
-     * Sound playing speed
-     * @defaultValue `1`
-     */
-    playbackRate: number;
-    /**
-     * Whether the sound is currently paused.
-     */
-    readonly paused: boolean;
-    /**
-     * The total duration of the sound in seconds, or `undefined` if unknown.
-     */
-    readonly duration?: number;
-    /**
-     * A promise that resolves when the sound has finished playing.
-     * 
-     * ```ts
-     * const sound = audio.playFile("music.mp3");
-     * await sound.finished;
-     * println("Sound finished!");
-     * ```
-     */
-    readonly finished: Promise<void>;
-    /**
-     * Pauses the sound. Use `resume()` to continue playback.
-     */
-    pause(): void;
-    /**
-     * Resumes a paused sound.
-     */
-    resume(): void;
-    /**
-     * Stops the sound permanently.
-     */
-    stop(): void;
-    toString(): string;
+  /**
+   * Sound volume
+   * @defaultValue `1`
+   */
+  volume: number;
+  /**
+   * Sound playing speed
+   * @defaultValue `1`
+   */
+  playbackRate: number;
+  /**
+   * Whether the sound is currently paused.
+   */
+  readonly paused: boolean;
+  /**
+   * The total duration of the sound in seconds, or `undefined` if unknown.
+   */
+  readonly duration?: number;
+  /**
+   * A promise that resolves when the sound has finished playing.
+   *
+   * ```ts
+   * const sound = audio.playFile("music.mp3");
+   * await sound.finished;
+   * println("Sound finished!");
+   * ```
+   */
+  readonly finished: Promise<void>;
+  /**
+   * Pauses the sound. Use `resume()` to continue playback.
+   */
+  pause(): void;
+  /**
+   * Resumes a paused sound.
+   */
+  resume(): void;
+  /**
+   * Stops the sound permanently.
+   */
+  stop(): void;
+  toString(): string;
 }
 /**
  * Options for waiting until clipboard content changes.
- * 
+ *
  * ```ts
  * // Wait for any clipboard change
  * await clipboard.waitForChanged();
- * 
+ *
  * // Wait on Linux selection clipboard with a custom polling interval
  * await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 });
- * 
+ *
  * // Wait up to 1 second for a clipboard change
  * await Concurrency.race([
  *   clipboard.waitForChanged(),
@@ -3180,94 +3180,94 @@ declare interface PlayingSound {
  * @expand
  */
 declare interface WaitForChangedOptions {
-    /**
-     * Clipboard source to watch.
-     * @defaultValue `ClipboardMode.Clipboard`
-     */
-    mode?: ClipboardMode;
-    /**
-     * Polling interval in seconds.
-     * @defaultValue `0.2`
-     */
-    interval?: number | string;
-    /**
-     * Abort signal to cancel the wait.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Clipboard source to watch.
+   * @defaultValue `ClipboardMode.Clipboard`
+   */
+  mode?: ClipboardMode;
+  /**
+   * Polling interval in seconds.
+   * @defaultValue `0.2`
+   */
+  interval?: number | string;
+  /**
+   * Abort signal to cancel the wait.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * The global clipboard singleton for reading and writing clipboard content.
- * 
+ *
  * Supports text, images, file lists, and HTML content. Each content type
  * is accessed through a dedicated sub-object.
- * 
+ *
  * ```ts
  * // Copy and paste text
  * clipboard.text.set("Hello, world!");
  * const text = clipboard.text.get();
- * 
+ *
  * // Copy and paste an image
  * const img = screen.captureDesktop();
  * clipboard.image.set(img);
- * 
+ *
  * // Work with file lists
  * clipboard.fileList.set(["/path/to/file.txt"]);
- * 
+ *
  * // HTML content with alt text fallback
  * clipboard.html.set("<b>bold</b>", "bold");
- * 
+ *
  * // Clear the clipboard
  * clipboard.clear();
- * 
+ *
  * // On Linux, use the selection clipboard
  * clipboard.text.set("selected", ClipboardMode.Selection);
- * 
+ *
  * // Wait until clipboard content changes
  * await clipboard.waitForChanged();
  * ```
  * @category Clipboard
  */
 declare interface Clipboard {
-    /**
-     * Sub-object for text clipboard operations.
-     */
-    readonly text: ClipboardText;
-    /**
-     * Sub-object for image clipboard operations.
-     */
-    readonly image: ClipboardImage;
-    /**
-     * Sub-object for file list clipboard operations.
-     */
-    readonly fileList: ClipboardFileList;
-    /**
-     * Sub-object for HTML clipboard operations.
-     */
-    readonly html: ClipboardHtml;
-    /**
-     * Clears the clipboard contents.
-     * 
-     * ```ts
-     * clipboard.clear();
-     * 
-     * // On Linux, clear the selection clipboard
-     * clipboard.clear(ClipboardMode.Selection);
-     * ```
-     */
-    clear(mode?: ClipboardMode): void;
-    /**
-     * Waits until clipboard content changes.
-     * 
-     * ```ts
-     * const controller = new AbortController();
-     * const task = clipboard.waitForChanged({ signal: controller.signal });
-     * // controller.abort();
-     * await task;
-     * ```
-     */
-    waitForChanged(options?: WaitForChangedOptions): Task<void>;
-    toString(): string;
+  /**
+   * Sub-object for text clipboard operations.
+   */
+  readonly text: ClipboardText;
+  /**
+   * Sub-object for image clipboard operations.
+   */
+  readonly image: ClipboardImage;
+  /**
+   * Sub-object for file list clipboard operations.
+   */
+  readonly fileList: ClipboardFileList;
+  /**
+   * Sub-object for HTML clipboard operations.
+   */
+  readonly html: ClipboardHtml;
+  /**
+   * Clears the clipboard contents.
+   *
+   * ```ts
+   * clipboard.clear();
+   *
+   * // On Linux, clear the selection clipboard
+   * clipboard.clear(ClipboardMode.Selection);
+   * ```
+   */
+  clear(mode?: ClipboardMode): void;
+  /**
+   * Waits until clipboard content changes.
+   *
+   * ```ts
+   * const controller = new AbortController();
+   * const task = clipboard.waitForChanged({ signal: controller.signal });
+   * // controller.abort();
+   * await task;
+   * ```
+   */
+  waitForChanged(options?: WaitForChangedOptions): Task<void>;
+  toString(): string;
 }
 /**
  * @category Clipboard
@@ -3275,7 +3275,7 @@ declare interface Clipboard {
 declare const clipboard: Clipboard;
 /**
  * Provides text clipboard operations.
- * 
+ *
  * ```ts
  * clipboard.text.set("Hello!");
  * const text = clipboard.text.get();
@@ -3283,19 +3283,19 @@ declare const clipboard: Clipboard;
  * @category Clipboard
  */
 declare interface ClipboardText {
-    /**
-     * Sets the clipboard text content.
-     */
-    set(text: string, mode?: ClipboardMode): void;
-    /**
-     * Gets the clipboard text content.
-     */
-    get(mode?: ClipboardMode): string;
-    toString(): string;
+  /**
+   * Sets the clipboard text content.
+   */
+  set(text: string, mode?: ClipboardMode): void;
+  /**
+   * Gets the clipboard text content.
+   */
+  get(mode?: ClipboardMode): string;
+  toString(): string;
 }
 /**
  * Provides image clipboard operations.
- * 
+ *
  * ```ts
  * const img = screen.captureDesktop();
  * clipboard.image.set(img);
@@ -3304,19 +3304,19 @@ declare interface ClipboardText {
  * @category Clipboard
  */
 declare interface ClipboardImage {
-    /**
-     * Sets the clipboard image content.
-     */
-    set(image: Image, mode?: ClipboardMode): void;
-    /**
-     * Gets the clipboard image content.
-     */
-    get(mode?: ClipboardMode): Image;
-    toString(): string;
+  /**
+   * Sets the clipboard image content.
+   */
+  set(image: Image, mode?: ClipboardMode): void;
+  /**
+   * Gets the clipboard image content.
+   */
+  get(mode?: ClipboardMode): Image;
+  toString(): string;
 }
 /**
  * Provides file list clipboard operations.
- * 
+ *
  * ```ts
  * clipboard.fileList.set(["/home/user/doc.pdf", "/home/user/img.png"]);
  * const files = clipboard.fileList.get();
@@ -3324,703 +3324,703 @@ declare interface ClipboardImage {
  * @category Clipboard
  */
 declare interface ClipboardFileList {
-    /**
-     * Sets the clipboard file list content.
-     */
-    set(fileList: string[], mode?: ClipboardMode): void;
-    /**
-     * Gets the clipboard file list content.
-     */
-    get(mode?: ClipboardMode): readonly string[];
-    toString(): string;
+  /**
+   * Sets the clipboard file list content.
+   */
+  set(fileList: string[], mode?: ClipboardMode): void;
+  /**
+   * Gets the clipboard file list content.
+   */
+  get(mode?: ClipboardMode): readonly string[];
+  toString(): string;
 }
 /**
  * Provides HTML clipboard operations.
- * 
+ *
  * ```ts
  * // Set HTML with a plain-text fallback
  * clipboard.html.set("<b>bold</b>", "bold");
- * 
+ *
  * // Set HTML without a fallback
  * clipboard.html.set("<em>italic</em>");
- * 
+ *
  * const html = clipboard.html.get();
  * ```
  * @category Clipboard
  */
 declare interface ClipboardHtml {
-    /**
-     * Sets the clipboard HTML content, with an optional plain-text alternative.
-     */
-    set(html: string, altText?: string, mode?: ClipboardMode): void;
-    /**
-     * Gets the clipboard HTML content.
-     */
-    get(mode?: ClipboardMode): string;
-    toString(): string;
+  /**
+   * Sets the clipboard HTML content, with an optional plain-text alternative.
+   */
+  set(html: string, altText?: string, mode?: ClipboardMode): void;
+  /**
+   * Gets the clipboard HTML content.
+   */
+  get(mode?: ClipboardMode): string;
+  toString(): string;
 }
 /**
  * An RGBA color with 8-bit channels.
- * 
+ *
  * Can be constructed from individual r/g/b/a values, or by using one of the
  * many named color constants (CSS colors).
- * 
+ *
  * ```ts
  * // Create from RGB (alpha defaults to 255)
  * const red = new Color(255, 0, 0);
- * 
+ *
  * // Create from RGBA
  * const semiTransparent = new Color(255, 0, 0, 128);
- * 
+ *
  * // Use a named constant
  * const blue = Color.Blue;
- * 
+ *
  * // Read and modify channels
  * const c = new Color(10, 20, 30);
  * c.r = 100;
  * println(c); // "Color(100, 20, 30, 255)"
- * 
+ *
  * // Compare colors
  * Color.Red.equals(new Color(255, 0, 0)); // true
- * 
+ *
  * // Clone a color
  * const copy = Color.Red.clone();
  * ```
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * ```js
  * let c = new Color(128, 255, 255, 255);
  * ```
  * @category Color
  */
 declare class Color {
-    /**
-     * #FF0000FF
-     */
-    static readonly Red: Color;
-    /**
-     * #008000FF
-     */
-    static readonly Green: Color;
-    /**
-     * #0000FFFF
-     */
-    static readonly Blue: Color;
-    /**
-     * #FFFFFFFF
-     */
-    static readonly White: Color;
-    /**
-     * #000000FF
-     */
-    static readonly Black: Color;
-    /**
-     * #00000000
-     */
-    static readonly Transparent: Color;
-    /**
-     * #F0F8FFFF
-     */
-    static readonly AliceBlue: Color;
-    /**
-     * #FAEBD7FF
-     */
-    static readonly AntiqueWhite: Color;
-    /**
-     * #00FFFFFF
-     */
-    static readonly Aqua: Color;
-    /**
-     * #7FFFD4FF
-     */
-    static readonly Aquamarine: Color;
-    /**
-     * #F0FFFFFF
-     */
-    static readonly Azure: Color;
-    /**
-     * #F5F5DCFF
-     */
-    static readonly Beige: Color;
-    /**
-     * #FFE4C4FF
-     */
-    static readonly Bisque: Color;
-    /**
-     * #FFEBCDFF
-     */
-    static readonly BlanchedAlmond: Color;
-    /**
-     * #8A2BE2FF
-     */
-    static readonly BlueViolet: Color;
-    /**
-     * #A52A2AFF
-     */
-    static readonly Brown: Color;
-    /**
-     * #DEB887FF
-     */
-    static readonly BurlyWood: Color;
-    /**
-     * #5F9EA0FF
-     */
-    static readonly CadetBlue: Color;
-    /**
-     * #7FFF00FF
-     */
-    static readonly Chartreuse: Color;
-    /**
-     * #D2691EFF
-     */
-    static readonly Chocolate: Color;
-    /**
-     * #FF7F50FF
-     */
-    static readonly Coral: Color;
-    /**
-     * #6495EDFF
-     */
-    static readonly CornflowerBlue: Color;
-    /**
-     * #FFF8DCFF
-     */
-    static readonly Cornsilk: Color;
-    /**
-     * #DC143CFF
-     */
-    static readonly Crimson: Color;
-    /**
-     * #00FFFFFF
-     */
-    static readonly Cyan: Color;
-    /**
-     * #00008BFF
-     */
-    static readonly DarkBlue: Color;
-    /**
-     * #008B8BFF
-     */
-    static readonly DarkCyan: Color;
-    /**
-     * #B8860BFF
-     */
-    static readonly DarkGoldenRod: Color;
-    /**
-     * #A9A9A9FF
-     */
-    static readonly DarkGray: Color;
-    /**
-     * #006400FF
-     */
-    static readonly DarkGreen: Color;
-    /**
-     * #BDB76BFF
-     */
-    static readonly DarkKhaki: Color;
-    /**
-     * #8B008BFF
-     */
-    static readonly DarkMagenta: Color;
-    /**
-     * #556B2FFF
-     */
-    static readonly DarkOliveGreen: Color;
-    /**
-     * #FF8C00FF
-     */
-    static readonly DarkOrange: Color;
-    /**
-     * #9932CCFF
-     */
-    static readonly DarkOrchid: Color;
-    /**
-     * #8B0000FF
-     */
-    static readonly DarkRed: Color;
-    /**
-     * #E9967AFF
-     */
-    static readonly DarkSalmon: Color;
-    /**
-     * #8FBC8FFF
-     */
-    static readonly DarkSeaGreen: Color;
-    /**
-     * #483D8BFF
-     */
-    static readonly DarkSlateBlue: Color;
-    /**
-     * #2F4F4FFF
-     */
-    static readonly DarkSlateGray: Color;
-    /**
-     * #00CED1FF
-     */
-    static readonly DarkTurquoise: Color;
-    /**
-     * #9400D3FF
-     */
-    static readonly DarkViolet: Color;
-    /**
-     * #FF1493FF
-     */
-    static readonly DeepPink: Color;
-    /**
-     * #00BFFFFF
-     */
-    static readonly DeepSkyBlue: Color;
-    /**
-     * #696969FF
-     */
-    static readonly DimGray: Color;
-    /**
-     * #1E90FFFF
-     */
-    static readonly DodgerBlue: Color;
-    /**
-     * #B22222FF
-     */
-    static readonly Firebrick: Color;
-    /**
-     * #FFFAF0FF
-     */
-    static readonly FloralWhite: Color;
-    /**
-     * #228B22FF
-     */
-    static readonly ForestGreen: Color;
-    /**
-     * #FF00FFFF
-     */
-    static readonly Fuchsia: Color;
-    /**
-     * #DCDCDCFF
-     */
-    static readonly Gainsboro: Color;
-    /**
-     * #F8F8FFFF
-     */
-    static readonly GhostWhite: Color;
-    /**
-     * #FFD700FF
-     */
-    static readonly Gold: Color;
-    /**
-     * #DAA520FF
-     */
-    static readonly GoldenRod: Color;
-    /**
-     * #808080FF
-     */
-    static readonly Gray: Color;
-    /**
-     * #ADFF2FFF
-     */
-    static readonly GreenYellow: Color;
-    /**
-     * #F0FFF0FF
-     */
-    static readonly HoneyDew: Color;
-    /**
-     * #FF69B4FF
-     */
-    static readonly HotPink: Color;
-    /**
-     * #CD5C5CFF
-     */
-    static readonly IndianRed: Color;
-    /**
-     * #4B0082FF
-     */
-    static readonly Indigo: Color;
-    /**
-     * #FFFFF0FF
-     */
-    static readonly Ivory: Color;
-    /**
-     * #F0E68CFF
-     */
-    static readonly Khaki: Color;
-    /**
-     * #E6E6FAFF
-     */
-    static readonly Lavender: Color;
-    /**
-     * #FFF0F5FF
-     */
-    static readonly LavenderBlush: Color;
-    /**
-     * #7CFC00FF
-     */
-    static readonly LawnGreen: Color;
-    /**
-     * #FFFACDFF
-     */
-    static readonly LemonChiffon: Color;
-    /**
-     * #ADD8E6FF
-     */
-    static readonly LightBlue: Color;
-    /**
-     * #F08080FF
-     */
-    static readonly LightCoral: Color;
-    /**
-     * #E0FFFFFF
-     */
-    static readonly LightCyan: Color;
-    /**
-     * #FAFAD2FF
-     */
-    static readonly LightGoldenRodYellow: Color;
-    /**
-     * #D3D3D3FF
-     */
-    static readonly LightGray: Color;
-    /**
-     * #90EE90FF
-     */
-    static readonly LightGreen: Color;
-    /**
-     * #FFB6C1FF
-     */
-    static readonly LightPink: Color;
-    /**
-     * #FFA07AFF
-     */
-    static readonly LightSalmon: Color;
-    /**
-     * #20B2AAFF
-     */
-    static readonly LightSeaGreen: Color;
-    /**
-     * #87CEFAFF
-     */
-    static readonly LightSkyBlue: Color;
-    /**
-     * #778899FF
-     */
-    static readonly LightSlateGray: Color;
-    /**
-     * #B0C4DEFF
-     */
-    static readonly LightSteelBlue: Color;
-    /**
-     * #FFFFE0FF
-     */
-    static readonly LightYellow: Color;
-    /**
-     * #00FF00FF
-     */
-    static readonly Lime: Color;
-    /**
-     * #32CD32FF
-     */
-    static readonly LimeGreen: Color;
-    /**
-     * #FAF0E6FF
-     */
-    static readonly Linen: Color;
-    /**
-     * #FF00FFFF
-     */
-    static readonly Magenta: Color;
-    /**
-     * #800000FF
-     */
-    static readonly Maroon: Color;
-    /**
-     * #66CDAAFF
-     */
-    static readonly MediumAquaMarine: Color;
-    /**
-     * #0000CDFF
-     */
-    static readonly MediumBlue: Color;
-    /**
-     * #BA55D3FF
-     */
-    static readonly MediumOrchid: Color;
-    /**
-     * #9370DBFF
-     */
-    static readonly MediumPurple: Color;
-    /**
-     * #3CB371FF
-     */
-    static readonly MediumSeaGreen: Color;
-    /**
-     * #7B68EEFF
-     */
-    static readonly MediumSlateBlue: Color;
-    /**
-     * #00FA9AFF
-     */
-    static readonly MediumSpringGreen: Color;
-    /**
-     * #48D1CCFF
-     */
-    static readonly MediumTurquoise: Color;
-    /**
-     * #C71585FF
-     */
-    static readonly MediumVioletRed: Color;
-    /**
-     * #191970FF
-     */
-    static readonly MidnightBlue: Color;
-    /**
-     * #F5FFFAFF
-     */
-    static readonly MintCream: Color;
-    /**
-     * #FFE4E1FF
-     */
-    static readonly MistyRose: Color;
-    /**
-     * #FFE4B5FF
-     */
-    static readonly Moccasin: Color;
-    /**
-     * #FFDEADFF
-     */
-    static readonly NavajoWhite: Color;
-    /**
-     * #000080FF
-     */
-    static readonly Navy: Color;
-    /**
-     * #FDF5E6FF
-     */
-    static readonly OldLace: Color;
-    /**
-     * #808000FF
-     */
-    static readonly Olive: Color;
-    /**
-     * #6B8E23FF
-     */
-    static readonly OliveDrab: Color;
-    /**
-     * #FFA500FF
-     */
-    static readonly Orange: Color;
-    /**
-     * #FF4500FF
-     */
-    static readonly OrangeRed: Color;
-    /**
-     * #DA70D6FF
-     */
-    static readonly Orchid: Color;
-    /**
-     * #EEE8AAFF
-     */
-    static readonly PaleGoldenRod: Color;
-    /**
-     * #98FB98FF
-     */
-    static readonly PaleGreen: Color;
-    /**
-     * #AFEEEEFF
-     */
-    static readonly PaleTurquoise: Color;
-    /**
-     * #DB7093FF
-     */
-    static readonly PaleVioletRed: Color;
-    /**
-     * #FFEFD5FF
-     */
-    static readonly PapayaWhip: Color;
-    /**
-     * #FFDAB9FF
-     */
-    static readonly PeachPuff: Color;
-    /**
-     * #CD853FFF
-     */
-    static readonly Peru: Color;
-    /**
-     * #FFC0CBFF
-     */
-    static readonly Pink: Color;
-    /**
-     * #DDA0DDFF
-     */
-    static readonly Plum: Color;
-    /**
-     * #B0E0E6FF
-     */
-    static readonly PowderBlue: Color;
-    /**
-     * #800080FF
-     */
-    static readonly Purple: Color;
-    /**
-     * #663399FF
-     */
-    static readonly RebeccaPurple: Color;
-    /**
-     * #BC8F8FFF
-     */
-    static readonly RosyBrown: Color;
-    /**
-     * #4169E1FF
-     */
-    static readonly RoyalBlue: Color;
-    /**
-     * #8B4513FF
-     */
-    static readonly SaddleBrown: Color;
-    /**
-     * #FA8072FF
-     */
-    static readonly Salmon: Color;
-    /**
-     * #F4A460FF
-     */
-    static readonly SandyBrown: Color;
-    /**
-     * #2E8B57FF
-     */
-    static readonly SeaGreen: Color;
-    /**
-     * #FFF5EEFF
-     */
-    static readonly SeaShell: Color;
-    /**
-     * #A0522DFF
-     */
-    static readonly Sienna: Color;
-    /**
-     * #C0C0C0FF
-     */
-    static readonly Silver: Color;
-    /**
-     * #87CEEBFF
-     */
-    static readonly SkyBlue: Color;
-    /**
-     * #6A5ACDFF
-     */
-    static readonly SlateBlue: Color;
-    /**
-     * #708090FF
-     */
-    static readonly SlateGray: Color;
-    /**
-     * #FFFAFAFF
-     */
-    static readonly Snow: Color;
-    /**
-     * #00FF7FFF
-     */
-    static readonly SpringGreen: Color;
-    /**
-     * #4682B4FF
-     */
-    static readonly SteelBlue: Color;
-    /**
-     * #D2B48CFF
-     */
-    static readonly Tan: Color;
-    /**
-     * #008080FF
-     */
-    static readonly Teal: Color;
-    /**
-     * #D8BFD8FF
-     */
-    static readonly Thistle: Color;
-    /**
-     * #FF6347FF
-     */
-    static readonly Tomato: Color;
-    /**
-     * #40E0D0FF
-     */
-    static readonly Turquoise: Color;
-    /**
-     * #EE82EEFF
-     */
-    static readonly Violet: Color;
-    /**
-     * #F5DEB3FF
-     */
-    static readonly Wheat: Color;
-    /**
-     * #F5F5F5FF
-     */
-    static readonly WhiteSmoke: Color;
-    /**
-     * #FFFF00FF
-     */
-    static readonly Yellow: Color;
-    /**
-     * #9ACD32FF
-     */
-    static readonly YellowGreen: Color;
-    /**
-     * Red (should be between 0-255)
-     */
-    r: number;
-    /**
-     * Green (should be between 0-255)
-     */
-    g: number;
-    /**
-     * Blue (should be between 0-255)
-     */
-    b: number;
-    /**
-     * Alpha (should be between 0-255)
-     */
-    a: number;
-    /**
-     * Constructor with three color channels and an alpha channel.
-     */
-    constructor(r: number, g: number, b: number, a?: number);
-    /**
-     * Constructor with anything Color-like.
-     */
-    constructor(c: ColorLike);
-    /**
-     * Returns `true` if both colors have the same r, g, b, and a values.
-     * 
-     * ```ts
-     * Color.Red.equals(new Color(255, 0, 0)); // true
-     * ```
-     */
-    equals(other: Color): boolean;
-    /**
-     * Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
-     */
-    toString(): string;
-    /**
-     * Returns a copy of this color.
-     */
-    clone(): Color;
+  /**
+   * #FF0000FF
+   */
+  static readonly Red: Color;
+  /**
+   * #008000FF
+   */
+  static readonly Green: Color;
+  /**
+   * #0000FFFF
+   */
+  static readonly Blue: Color;
+  /**
+   * #FFFFFFFF
+   */
+  static readonly White: Color;
+  /**
+   * #000000FF
+   */
+  static readonly Black: Color;
+  /**
+   * #00000000
+   */
+  static readonly Transparent: Color;
+  /**
+   * #F0F8FFFF
+   */
+  static readonly AliceBlue: Color;
+  /**
+   * #FAEBD7FF
+   */
+  static readonly AntiqueWhite: Color;
+  /**
+   * #00FFFFFF
+   */
+  static readonly Aqua: Color;
+  /**
+   * #7FFFD4FF
+   */
+  static readonly Aquamarine: Color;
+  /**
+   * #F0FFFFFF
+   */
+  static readonly Azure: Color;
+  /**
+   * #F5F5DCFF
+   */
+  static readonly Beige: Color;
+  /**
+   * #FFE4C4FF
+   */
+  static readonly Bisque: Color;
+  /**
+   * #FFEBCDFF
+   */
+  static readonly BlanchedAlmond: Color;
+  /**
+   * #8A2BE2FF
+   */
+  static readonly BlueViolet: Color;
+  /**
+   * #A52A2AFF
+   */
+  static readonly Brown: Color;
+  /**
+   * #DEB887FF
+   */
+  static readonly BurlyWood: Color;
+  /**
+   * #5F9EA0FF
+   */
+  static readonly CadetBlue: Color;
+  /**
+   * #7FFF00FF
+   */
+  static readonly Chartreuse: Color;
+  /**
+   * #D2691EFF
+   */
+  static readonly Chocolate: Color;
+  /**
+   * #FF7F50FF
+   */
+  static readonly Coral: Color;
+  /**
+   * #6495EDFF
+   */
+  static readonly CornflowerBlue: Color;
+  /**
+   * #FFF8DCFF
+   */
+  static readonly Cornsilk: Color;
+  /**
+   * #DC143CFF
+   */
+  static readonly Crimson: Color;
+  /**
+   * #00FFFFFF
+   */
+  static readonly Cyan: Color;
+  /**
+   * #00008BFF
+   */
+  static readonly DarkBlue: Color;
+  /**
+   * #008B8BFF
+   */
+  static readonly DarkCyan: Color;
+  /**
+   * #B8860BFF
+   */
+  static readonly DarkGoldenRod: Color;
+  /**
+   * #A9A9A9FF
+   */
+  static readonly DarkGray: Color;
+  /**
+   * #006400FF
+   */
+  static readonly DarkGreen: Color;
+  /**
+   * #BDB76BFF
+   */
+  static readonly DarkKhaki: Color;
+  /**
+   * #8B008BFF
+   */
+  static readonly DarkMagenta: Color;
+  /**
+   * #556B2FFF
+   */
+  static readonly DarkOliveGreen: Color;
+  /**
+   * #FF8C00FF
+   */
+  static readonly DarkOrange: Color;
+  /**
+   * #9932CCFF
+   */
+  static readonly DarkOrchid: Color;
+  /**
+   * #8B0000FF
+   */
+  static readonly DarkRed: Color;
+  /**
+   * #E9967AFF
+   */
+  static readonly DarkSalmon: Color;
+  /**
+   * #8FBC8FFF
+   */
+  static readonly DarkSeaGreen: Color;
+  /**
+   * #483D8BFF
+   */
+  static readonly DarkSlateBlue: Color;
+  /**
+   * #2F4F4FFF
+   */
+  static readonly DarkSlateGray: Color;
+  /**
+   * #00CED1FF
+   */
+  static readonly DarkTurquoise: Color;
+  /**
+   * #9400D3FF
+   */
+  static readonly DarkViolet: Color;
+  /**
+   * #FF1493FF
+   */
+  static readonly DeepPink: Color;
+  /**
+   * #00BFFFFF
+   */
+  static readonly DeepSkyBlue: Color;
+  /**
+   * #696969FF
+   */
+  static readonly DimGray: Color;
+  /**
+   * #1E90FFFF
+   */
+  static readonly DodgerBlue: Color;
+  /**
+   * #B22222FF
+   */
+  static readonly Firebrick: Color;
+  /**
+   * #FFFAF0FF
+   */
+  static readonly FloralWhite: Color;
+  /**
+   * #228B22FF
+   */
+  static readonly ForestGreen: Color;
+  /**
+   * #FF00FFFF
+   */
+  static readonly Fuchsia: Color;
+  /**
+   * #DCDCDCFF
+   */
+  static readonly Gainsboro: Color;
+  /**
+   * #F8F8FFFF
+   */
+  static readonly GhostWhite: Color;
+  /**
+   * #FFD700FF
+   */
+  static readonly Gold: Color;
+  /**
+   * #DAA520FF
+   */
+  static readonly GoldenRod: Color;
+  /**
+   * #808080FF
+   */
+  static readonly Gray: Color;
+  /**
+   * #ADFF2FFF
+   */
+  static readonly GreenYellow: Color;
+  /**
+   * #F0FFF0FF
+   */
+  static readonly HoneyDew: Color;
+  /**
+   * #FF69B4FF
+   */
+  static readonly HotPink: Color;
+  /**
+   * #CD5C5CFF
+   */
+  static readonly IndianRed: Color;
+  /**
+   * #4B0082FF
+   */
+  static readonly Indigo: Color;
+  /**
+   * #FFFFF0FF
+   */
+  static readonly Ivory: Color;
+  /**
+   * #F0E68CFF
+   */
+  static readonly Khaki: Color;
+  /**
+   * #E6E6FAFF
+   */
+  static readonly Lavender: Color;
+  /**
+   * #FFF0F5FF
+   */
+  static readonly LavenderBlush: Color;
+  /**
+   * #7CFC00FF
+   */
+  static readonly LawnGreen: Color;
+  /**
+   * #FFFACDFF
+   */
+  static readonly LemonChiffon: Color;
+  /**
+   * #ADD8E6FF
+   */
+  static readonly LightBlue: Color;
+  /**
+   * #F08080FF
+   */
+  static readonly LightCoral: Color;
+  /**
+   * #E0FFFFFF
+   */
+  static readonly LightCyan: Color;
+  /**
+   * #FAFAD2FF
+   */
+  static readonly LightGoldenRodYellow: Color;
+  /**
+   * #D3D3D3FF
+   */
+  static readonly LightGray: Color;
+  /**
+   * #90EE90FF
+   */
+  static readonly LightGreen: Color;
+  /**
+   * #FFB6C1FF
+   */
+  static readonly LightPink: Color;
+  /**
+   * #FFA07AFF
+   */
+  static readonly LightSalmon: Color;
+  /**
+   * #20B2AAFF
+   */
+  static readonly LightSeaGreen: Color;
+  /**
+   * #87CEFAFF
+   */
+  static readonly LightSkyBlue: Color;
+  /**
+   * #778899FF
+   */
+  static readonly LightSlateGray: Color;
+  /**
+   * #B0C4DEFF
+   */
+  static readonly LightSteelBlue: Color;
+  /**
+   * #FFFFE0FF
+   */
+  static readonly LightYellow: Color;
+  /**
+   * #00FF00FF
+   */
+  static readonly Lime: Color;
+  /**
+   * #32CD32FF
+   */
+  static readonly LimeGreen: Color;
+  /**
+   * #FAF0E6FF
+   */
+  static readonly Linen: Color;
+  /**
+   * #FF00FFFF
+   */
+  static readonly Magenta: Color;
+  /**
+   * #800000FF
+   */
+  static readonly Maroon: Color;
+  /**
+   * #66CDAAFF
+   */
+  static readonly MediumAquaMarine: Color;
+  /**
+   * #0000CDFF
+   */
+  static readonly MediumBlue: Color;
+  /**
+   * #BA55D3FF
+   */
+  static readonly MediumOrchid: Color;
+  /**
+   * #9370DBFF
+   */
+  static readonly MediumPurple: Color;
+  /**
+   * #3CB371FF
+   */
+  static readonly MediumSeaGreen: Color;
+  /**
+   * #7B68EEFF
+   */
+  static readonly MediumSlateBlue: Color;
+  /**
+   * #00FA9AFF
+   */
+  static readonly MediumSpringGreen: Color;
+  /**
+   * #48D1CCFF
+   */
+  static readonly MediumTurquoise: Color;
+  /**
+   * #C71585FF
+   */
+  static readonly MediumVioletRed: Color;
+  /**
+   * #191970FF
+   */
+  static readonly MidnightBlue: Color;
+  /**
+   * #F5FFFAFF
+   */
+  static readonly MintCream: Color;
+  /**
+   * #FFE4E1FF
+   */
+  static readonly MistyRose: Color;
+  /**
+   * #FFE4B5FF
+   */
+  static readonly Moccasin: Color;
+  /**
+   * #FFDEADFF
+   */
+  static readonly NavajoWhite: Color;
+  /**
+   * #000080FF
+   */
+  static readonly Navy: Color;
+  /**
+   * #FDF5E6FF
+   */
+  static readonly OldLace: Color;
+  /**
+   * #808000FF
+   */
+  static readonly Olive: Color;
+  /**
+   * #6B8E23FF
+   */
+  static readonly OliveDrab: Color;
+  /**
+   * #FFA500FF
+   */
+  static readonly Orange: Color;
+  /**
+   * #FF4500FF
+   */
+  static readonly OrangeRed: Color;
+  /**
+   * #DA70D6FF
+   */
+  static readonly Orchid: Color;
+  /**
+   * #EEE8AAFF
+   */
+  static readonly PaleGoldenRod: Color;
+  /**
+   * #98FB98FF
+   */
+  static readonly PaleGreen: Color;
+  /**
+   * #AFEEEEFF
+   */
+  static readonly PaleTurquoise: Color;
+  /**
+   * #DB7093FF
+   */
+  static readonly PaleVioletRed: Color;
+  /**
+   * #FFEFD5FF
+   */
+  static readonly PapayaWhip: Color;
+  /**
+   * #FFDAB9FF
+   */
+  static readonly PeachPuff: Color;
+  /**
+   * #CD853FFF
+   */
+  static readonly Peru: Color;
+  /**
+   * #FFC0CBFF
+   */
+  static readonly Pink: Color;
+  /**
+   * #DDA0DDFF
+   */
+  static readonly Plum: Color;
+  /**
+   * #B0E0E6FF
+   */
+  static readonly PowderBlue: Color;
+  /**
+   * #800080FF
+   */
+  static readonly Purple: Color;
+  /**
+   * #663399FF
+   */
+  static readonly RebeccaPurple: Color;
+  /**
+   * #BC8F8FFF
+   */
+  static readonly RosyBrown: Color;
+  /**
+   * #4169E1FF
+   */
+  static readonly RoyalBlue: Color;
+  /**
+   * #8B4513FF
+   */
+  static readonly SaddleBrown: Color;
+  /**
+   * #FA8072FF
+   */
+  static readonly Salmon: Color;
+  /**
+   * #F4A460FF
+   */
+  static readonly SandyBrown: Color;
+  /**
+   * #2E8B57FF
+   */
+  static readonly SeaGreen: Color;
+  /**
+   * #FFF5EEFF
+   */
+  static readonly SeaShell: Color;
+  /**
+   * #A0522DFF
+   */
+  static readonly Sienna: Color;
+  /**
+   * #C0C0C0FF
+   */
+  static readonly Silver: Color;
+  /**
+   * #87CEEBFF
+   */
+  static readonly SkyBlue: Color;
+  /**
+   * #6A5ACDFF
+   */
+  static readonly SlateBlue: Color;
+  /**
+   * #708090FF
+   */
+  static readonly SlateGray: Color;
+  /**
+   * #FFFAFAFF
+   */
+  static readonly Snow: Color;
+  /**
+   * #00FF7FFF
+   */
+  static readonly SpringGreen: Color;
+  /**
+   * #4682B4FF
+   */
+  static readonly SteelBlue: Color;
+  /**
+   * #D2B48CFF
+   */
+  static readonly Tan: Color;
+  /**
+   * #008080FF
+   */
+  static readonly Teal: Color;
+  /**
+   * #D8BFD8FF
+   */
+  static readonly Thistle: Color;
+  /**
+   * #FF6347FF
+   */
+  static readonly Tomato: Color;
+  /**
+   * #40E0D0FF
+   */
+  static readonly Turquoise: Color;
+  /**
+   * #EE82EEFF
+   */
+  static readonly Violet: Color;
+  /**
+   * #F5DEB3FF
+   */
+  static readonly Wheat: Color;
+  /**
+   * #F5F5F5FF
+   */
+  static readonly WhiteSmoke: Color;
+  /**
+   * #FFFF00FF
+   */
+  static readonly Yellow: Color;
+  /**
+   * #9ACD32FF
+   */
+  static readonly YellowGreen: Color;
+  /**
+   * Red (should be between 0-255)
+   */
+  r: number;
+  /**
+   * Green (should be between 0-255)
+   */
+  g: number;
+  /**
+   * Blue (should be between 0-255)
+   */
+  b: number;
+  /**
+   * Alpha (should be between 0-255)
+   */
+  a: number;
+  /**
+   * Constructor with three color channels and an alpha channel.
+   */
+  constructor(r: number, g: number, b: number, a?: number);
+  /**
+   * Constructor with anything Color-like.
+   */
+  constructor(c: ColorLike);
+  /**
+   * Returns `true` if both colors have the same r, g, b, and a values.
+   *
+   * ```ts
+   * Color.Red.equals(new Color(255, 0, 0)); // true
+   * ```
+   */
+  equals(other: Color): boolean;
+  /**
+   * Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
+   */
+  toString(): string;
+  /**
+   * Returns a copy of this color.
+   */
+  clone(): Color;
 }
 /**
  * The global console singleton for printing output and basic debugging.
- * 
+ *
  * ```ts
  * // Print values
  * println("hello", 42, { key: "value" });
- * 
+ *
  * // Warnings and errors are styled
  * console.warn("this is a warning");
  * console.error("something went wrong");
- * 
+ *
  * // Measure elapsed time
  * console.time("fetch");
  * // ... do work ...
  * console.timeEnd("fetch"); // prints "fetch: 1s 234ms - timer ended"
- * 
+ *
  * // Count how many times a label is hit
  * console.count("loop");
  * console.count("loop");
@@ -4028,66 +4028,66 @@ declare class Color {
  * @category Console
  */
 declare interface Console {
-    /**
-     * Prints values without a trailing newline.
-     */
-    print(...args: unknown[]): void;
-    /**
-     * Prints values followed by a newline.
-     */
-    println(...args: unknown[]): void;
-    /**
-     * Logs values to stdout. Alias for `println`.
-     */
-    log(...args: unknown[]): void;
-    /**
-     * Logs informational values. Alias for `log`.
-     */
-    info(...args: unknown[]): void;
-    /**
-     * Logs a warning in yellow.
-     */
-    warn(...args: unknown[]): void;
-    /**
-     * Logs an error in bold red.
-     */
-    error(...args: unknown[]): void;
-    /**
-     * Pretty-prints values using an inspect-style multiline format.
-     */
-    inspect(...args: unknown[]): void;
-    /**
-     * Clears the terminal screen.
-     */
-    clear(): void;
-    /**
-     * Starts a timer with the given label (defaults to `"default"`).
-     * 
-     * ```ts
-     * console.time("myTimer");
-     * ```
-     */
-    time(label?: string): void;
-    /**
-     * Stops a timer and prints the elapsed time.
-     * 
-     * ```ts
-     * console.time("myTimer");
-     * // ... do work ...
-     * console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
-     * ```
-     */
-    timeEnd(label?: string): void;
-    /**
-     * Increments and prints a counter for the given label (defaults to `"default"`).
-     * 
-     * ```ts
-     * console.count("loop"); // prints "loop: 1"
-     * console.count("loop"); // prints "loop: 2"
-     * ```
-     */
-    count(label?: string): void;
-    toString(): string;
+  /**
+   * Prints values without a trailing newline.
+   */
+  print(...args: unknown[]): void;
+  /**
+   * Prints values followed by a newline.
+   */
+  println(...args: unknown[]): void;
+  /**
+   * Logs values to stdout. Alias for `println`.
+   */
+  log(...args: unknown[]): void;
+  /**
+   * Logs informational values. Alias for `log`.
+   */
+  info(...args: unknown[]): void;
+  /**
+   * Logs a warning in yellow.
+   */
+  warn(...args: unknown[]): void;
+  /**
+   * Logs an error in bold red.
+   */
+  error(...args: unknown[]): void;
+  /**
+   * Pretty-prints values using an inspect-style multiline format.
+   */
+  inspect(...args: unknown[]): void;
+  /**
+   * Clears the terminal screen.
+   */
+  clear(): void;
+  /**
+   * Starts a timer with the given label (defaults to `"default"`).
+   *
+   * ```ts
+   * console.time("myTimer");
+   * ```
+   */
+  time(label?: string): void;
+  /**
+   * Stops a timer and prints the elapsed time.
+   *
+   * ```ts
+   * console.time("myTimer");
+   * // ... do work ...
+   * console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
+   * ```
+   */
+  timeEnd(label?: string): void;
+  /**
+   * Increments and prints a counter for the given label (defaults to `"default"`).
+   *
+   * ```ts
+   * console.count("loop"); // prints "loop: 1"
+   * console.count("loop"); // prints "loop: 2"
+   * ```
+   */
+  count(label?: string): void;
+  toString(): string;
 }
 /**
  * @category Console
@@ -4096,7 +4096,7 @@ declare const console: Console;
 /**
  * An entry returned by `Directory.listEntries()`, representing a file, directory,
  * or symlink within a directory.
- * 
+ *
  * ```ts
  * const entries = await Directory.listEntries("/home/user");
  * for (const entry of entries) {
@@ -4106,35 +4106,35 @@ declare const console: Console;
  * @category Directory
  */
 declare interface DirectoryEntry {
-    /**
-     * The full path to the entry.
-     */
-    readonly path: string;
-    /**
-     * The file name (last component of the path).
-     */
-    readonly fileName: string;
-    /**
-     * Whether this entry is a regular file.
-     */
-    readonly isFile: boolean;
-    /**
-     * Whether this entry is a directory.
-     */
-    readonly isDirectory: boolean;
-    /**
-     * Whether this entry is a symbolic link.
-     */
-    readonly isSymlink: boolean;
-    /**
-     * The size of the entry in bytes.
-     */
-    readonly size: number;
-    toString(): string;
+  /**
+   * The full path to the entry.
+   */
+  readonly path: string;
+  /**
+   * The file name (last component of the path).
+   */
+  readonly fileName: string;
+  /**
+   * Whether this entry is a regular file.
+   */
+  readonly isFile: boolean;
+  /**
+   * Whether this entry is a directory.
+   */
+  readonly isDirectory: boolean;
+  /**
+   * Whether this entry is a symbolic link.
+   */
+  readonly isSymlink: boolean;
+  /**
+   * The size of the entry in bytes.
+   */
+  readonly size: number;
+  toString(): string;
 }
 /**
  * Options for `Directory.create()` and `Directory.remove()`.
- * 
+ *
  * ```ts
  * await Directory.create("/tmp/a/b/c", { recursive: true });
  * await Directory.remove("/tmp/a", { recursive: false });
@@ -4143,15 +4143,15 @@ declare interface DirectoryEntry {
  * @expand
  */
 declare interface DirectoryOptions {
-    /**
-     * Should the directories be created or removed recursively?
-     * @defaultValue `true`
-     */
-    recursive?: boolean;
+  /**
+   * Should the directories be created or removed recursively?
+   * @defaultValue `true`
+   */
+  recursive?: boolean;
 }
 /**
  * Options for `Directory.listEntries()`.
- * 
+ *
  * ```ts
  * const entries = await Directory.listEntries("/tmp", {
  *   sort: false,
@@ -4163,162 +4163,165 @@ declare interface DirectoryOptions {
  * @expand
  */
 declare interface DirectoryListOptions {
-    /**
-     * Should the entries be sorted?
-     * @defaultValue `true`
-     */
-    sort?: boolean;
-    /**
-     * Should each entry's size be fetched?
-     * @defaultValue `true`
-     */
-    fetchSize?: boolean;
+  /**
+   * Should the entries be sorted?
+   * @defaultValue `true`
+   */
+  sort?: boolean;
+  /**
+   * Should each entry's size be fetched?
+   * @defaultValue `true`
+   */
+  fetchSize?: boolean;
 }
 /**
  * Provides static methods for creating, removing, and listing directories.
- * 
+ *
  * ```ts
  * // Create a directory (recursively by default)
  * await Directory.create("/tmp/my/nested/dir");
- * 
+ *
  * // List entries in a directory
  * const entries = await Directory.listEntries("/tmp/my/nested/dir");
  * for (const entry of entries) {
  *     println(entry.fileName, entry.isFile ? "file" : "dir");
  * }
- * 
+ *
  * // Remove a directory tree
  * await Directory.remove("/tmp/my");
  * ```
  * @category Directory
  */
 declare class Directory {
-    private constructor();
-    /**
-     * Creates a directory at the given path. By default, creates parent directories
-     * recursively.
-     * 
-     * ```ts
-     * await Directory.create("/tmp/a/b/c");
-     * 
-     * // Non-recursive: fails if parent doesn't exist
-     * await Directory.create("/tmp/a/b/c", { recursive: false });
-     * ```
-     */
-    static create(path: string, options?: DirectoryOptions): Promise<void>;
-    /**
-     * Removes a directory. By default, removes all contents recursively.
-     * 
-     * ```ts
-     * await Directory.remove("/tmp/my/dir");
-     * 
-     * // Non-recursive: fails if the directory is not empty
-     * await Directory.remove("/tmp/my/dir", { recursive: false });
-     * ```
-     */
-    static remove(path: string, options?: DirectoryOptions): Promise<void>;
-    /**
-     * Lists all entries in a directory, returning an array of `DirectoryEntry`.
-     * 
-     * ```ts
-     * // List with defaults (sorted, absolute paths, sizes fetched)
-     * const entries = await Directory.listEntries("/home/user/docs");
-     * 
-     * // Skip size fetching for faster listing
-     * const entries = await Directory.listEntries("/home/user/docs", {
-     *     fetchSize: false,
-     * });
-     * ```
-     */
-    static listEntries(path: string, options?: DirectoryListOptions): Promise<readonly DirectoryEntry[]>;
-    toString(): string;
+  private constructor();
+  /**
+   * Creates a directory at the given path. By default, creates parent directories
+   * recursively.
+   *
+   * ```ts
+   * await Directory.create("/tmp/a/b/c");
+   *
+   * // Non-recursive: fails if parent doesn't exist
+   * await Directory.create("/tmp/a/b/c", { recursive: false });
+   * ```
+   */
+  static create(path: string, options?: DirectoryOptions): Promise<void>;
+  /**
+   * Removes a directory. By default, removes all contents recursively.
+   *
+   * ```ts
+   * await Directory.remove("/tmp/my/dir");
+   *
+   * // Non-recursive: fails if the directory is not empty
+   * await Directory.remove("/tmp/my/dir", { recursive: false });
+   * ```
+   */
+  static remove(path: string, options?: DirectoryOptions): Promise<void>;
+  /**
+   * Lists all entries in a directory, returning an array of `DirectoryEntry`.
+   *
+   * ```ts
+   * // List with defaults (sorted, absolute paths, sizes fetched)
+   * const entries = await Directory.listEntries("/home/user/docs");
+   *
+   * // Skip size fetching for faster listing
+   * const entries = await Directory.listEntries("/home/user/docs", {
+   *     fetchSize: false,
+   * });
+   * ```
+   */
+  static listEntries(
+    path: string,
+    options?: DirectoryListOptions,
+  ): Promise<readonly DirectoryEntry[]>;
+  toString(): string;
 }
 /**
  * The global displays singleton for querying connected monitors and screens.
- * 
+ *
  * ```ts
  * // Get the primary display and convert a global coordinate to display-local
  * const display = displays.primary();
  * const local = display.toLocal(globalX, globalY);
- * 
+ *
  * // Find which display contains a point
  * const info = displays.fromPoint(100, 200);
  * if (info) println(info.name, info.rect);
- * 
+ *
  * // Find a display by friendly name
  * const monitor = displays.fromName("HDMI-1");
- * 
+ *
  * // Get the largest or smallest display
  * const largest = displays.largest();
  * const smallest = displays.smallest();
- * 
+ *
  * // Get a random point across all displays
  * const point = await displays.randomPoint();
  * ```
  * @category Displays
  */
 declare interface Displays {
-    /**
-     * Returns a random point within the bounds of all connected displays.
-     */
-    randomPoint(): Promise<Readonly<Point>>;
-    /**
-     * Returns the primary display, or throws if no primary display is found.
-     */
-    primary(): Readonly<DisplayInfo>;
-    /**
-     * Returns the display that contains the given point, or `undefined` if none.
-     */
-    fromPoint(point: PointLike): Readonly<DisplayInfo | undefined>;
-    /**
-     * Returns the display that contains the given point, or `undefined` if none.
-     */
-    fromPoint(x: number, y: number): Readonly<DisplayInfo | undefined>;
-    /**
-     * Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
-     */
-    fromName(name: NameLike): Readonly<DisplayInfo | undefined>;
-    /**
-     * Finds a display by its device name, or `undefined` if not found.
-     */
-    fromDeviceName(name: NameLike): Readonly<DisplayInfo | undefined>;
-    /**
-     * Finds a display by its unique numeric ID, or `undefined` if not found.
-     */
-    fromId(id: number): Readonly<DisplayInfo | undefined>;
-    /**
-     * Returns the smallest display by area, or throws if no displays are connected.
-     */
-    smallest(): Readonly<DisplayInfo>;
-    /**
-     * Returns the largest display by area, or throws if no displays are connected.
-     */
-    largest(): Readonly<DisplayInfo>;
-    /**
-     * Returns the display furthest to the left (minimum left edge), or throws if none.
-     */
-    leftmost(): Readonly<DisplayInfo>;
-    /**
-     * Returns the display furthest to the right (maximum right edge), or throws if none.
-     */
-    rightmost(): Readonly<DisplayInfo>;
-    /**
-     * Returns the display furthest to the top (minimum top edge), or throws if none.
-     */
-    topmost(): Readonly<DisplayInfo>;
-    /**
-     * Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
-     */
-    bottommost(): Readonly<DisplayInfo>;
-    /**
-     * Returns the display whose center is closest to the center of the desktop, or throws if none.
-     */
-    center(): Readonly<DisplayInfo>;
-    /**
-     * Returns all displays.
-     */
-    all(): readonly DisplayInfo[];
-    toString(): string;
+  /**
+   * Returns a random point within the bounds of all connected displays.
+   */
+  randomPoint(): Promise<Readonly<Point>>;
+  /**
+   * Returns the primary display, or throws if no primary display is found.
+   */
+  primary(): Readonly<DisplayInfo>;
+  /**
+   * Returns the display that contains the given point, or `undefined` if none.
+   */
+  fromPoint(point: PointLike): Readonly<DisplayInfo | undefined>;
+  /**
+   * Returns the display that contains the given point, or `undefined` if none.
+   */
+  fromPoint(x: number, y: number): Readonly<DisplayInfo | undefined>;
+  /**
+   * Finds a display by its friendly name (e.g. `"HDMI-1"`), or `undefined` if not found.
+   */
+  fromName(name: NameLike): Readonly<DisplayInfo | undefined>;
+  /**
+   * Finds a display by its device name, or `undefined` if not found.
+   */
+  fromDeviceName(name: NameLike): Readonly<DisplayInfo | undefined>;
+  /**
+   * Finds a display by its unique numeric ID, or `undefined` if not found.
+   */
+  fromId(id: number): Readonly<DisplayInfo | undefined>;
+  /**
+   * Returns the smallest display by area, or throws if no displays are connected.
+   */
+  smallest(): Readonly<DisplayInfo>;
+  /**
+   * Returns the largest display by area, or throws if no displays are connected.
+   */
+  largest(): Readonly<DisplayInfo>;
+  /**
+   * Returns the display furthest to the left (minimum left edge), or throws if none.
+   */
+  leftmost(): Readonly<DisplayInfo>;
+  /**
+   * Returns the display furthest to the right (maximum right edge), or throws if none.
+   */
+  rightmost(): Readonly<DisplayInfo>;
+  /**
+   * Returns the display furthest to the top (minimum top edge), or throws if none.
+   */
+  topmost(): Readonly<DisplayInfo>;
+  /**
+   * Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
+   */
+  bottommost(): Readonly<DisplayInfo>;
+  /**
+   * Returns the display whose center is closest to the center of the desktop, or throws if none.
+   */
+  center(): Readonly<DisplayInfo>;
+  /**
+   * Returns all displays.
+   */
+  all(): readonly DisplayInfo[];
+  toString(): string;
 }
 /**
  * @category Displays
@@ -4327,7 +4330,7 @@ declare const displays: Displays;
 /**
  * Information about a connected display, including its name, geometry,
  * rotation, scale factor, and refresh rate.
- * 
+ *
  * ```ts
  * const info = await displays.fromName("HDMI-1");
  * if (info) {
@@ -4338,120 +4341,120 @@ declare const displays: Displays;
  * @category Displays
  */
 declare interface DisplayInfo {
-    /**
-     * Unique numeric identifier for this display.
-     */
-    readonly id: number;
-    /**
-     * The display device name (e.g. `"DP-1"`).
-     */
-    readonly name: string;
-    /**
-     * The display friendly name (e.g. `"HDMI-1"`).
-     */
-    readonly friendlyName: string;
-    /**
-     * The display rectangle (position and size in pixels).
-     */
-    readonly rect: Readonly<Rect>;
-    /**
-     * The physical width of the display in millimeters.
-     */
-    readonly widthMm: number;
-    /**
-     * The physical height of the display in millimeters.
-     */
-    readonly heightMm: number;
-    /**
-     * The display rotation in clock-wise degrees (0, 90, 180, or 270).
-     */
-    readonly rotation: number;
-    /**
-     * The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
-     */
-    readonly scaleFactor: number;
-    /**
-     * The display refresh rate in Hz.
-     */
-    readonly frequency: number;
-    /**
-     * Whether this is the primary (main) display.
-     */
-    readonly isPrimary: boolean;
-    /**
-     * Converts a global desktop point to display-local coordinates.
-     * 
-     * The result is the position relative to this display's top-left corner,
-     * in the same logical-pixel unit used for mouse coordinates and `rect`.
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * // After finding something at global coordinate (1980, 50):
-     * const local = display.toLocal(1980, 50);
-     * println(local.x, local.y); // position within the display
-     * ```
-     */
-    toLocal(point: PointLike): Point;
-    /**
-     * Converts a global desktop point to display-local coordinates.
-     * 
-     * The result is the position relative to this display's top-left corner,
-     * in the same logical-pixel unit used for mouse coordinates and `rect`.
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * // After finding something at global coordinate (1980, 50):
-     * const local = display.toLocal(1980, 50);
-     * println(local.x, local.y); // position within the display
-     * ```
-     */
-    toLocal(x: number, y: number): Point;
-    /**
-     * Converts a display-local point to global desktop coordinates.
-     * 
-     * The inverse of `toLocal`: adds this display's top-left offset so the
-     * point can be used with mouse, keyboard, or capture APIs that expect
-     * global coordinates.
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * // A point at (100, 50) within the display image:
-     * const global = display.toGlobal(100, 50);
-     * ```
-     */
-    toGlobal(point: PointLike): Point;
-    /**
-     * Converts a display-local point to global desktop coordinates.
-     * 
-     * The inverse of `toLocal`: adds this display's top-left offset so the
-     * point can be used with mouse, keyboard, or capture APIs that expect
-     * global coordinates.
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * // A point at (100, 50) within the display image:
-     * const global = display.toGlobal(100, 50);
-     * ```
-     */
-    toGlobal(x: number, y: number): Point;
-    /**
-     * Returns a string representation of the display.
-     */
-    toString(): string;
+  /**
+   * Unique numeric identifier for this display.
+   */
+  readonly id: number;
+  /**
+   * The display device name (e.g. `"DP-1"`).
+   */
+  readonly name: string;
+  /**
+   * The display friendly name (e.g. `"HDMI-1"`).
+   */
+  readonly friendlyName: string;
+  /**
+   * The display rectangle (position and size in pixels).
+   */
+  readonly rect: Readonly<Rect>;
+  /**
+   * The physical width of the display in millimeters.
+   */
+  readonly widthMm: number;
+  /**
+   * The physical height of the display in millimeters.
+   */
+  readonly heightMm: number;
+  /**
+   * The display rotation in clock-wise degrees (0, 90, 180, or 270).
+   */
+  readonly rotation: number;
+  /**
+   * The display's pixel scale factor (e.g. `2.0` for HiDPI/Retina).
+   */
+  readonly scaleFactor: number;
+  /**
+   * The display refresh rate in Hz.
+   */
+  readonly frequency: number;
+  /**
+   * Whether this is the primary (main) display.
+   */
+  readonly isPrimary: boolean;
+  /**
+   * Converts a global desktop point to display-local coordinates.
+   *
+   * The result is the position relative to this display's top-left corner,
+   * in the same logical-pixel unit used for mouse coordinates and `rect`.
+   *
+   * ```ts
+   * const display = displays.primary();
+   * // After finding something at global coordinate (1980, 50):
+   * const local = display.toLocal(1980, 50);
+   * println(local.x, local.y); // position within the display
+   * ```
+   */
+  toLocal(point: PointLike): Point;
+  /**
+   * Converts a global desktop point to display-local coordinates.
+   *
+   * The result is the position relative to this display's top-left corner,
+   * in the same logical-pixel unit used for mouse coordinates and `rect`.
+   *
+   * ```ts
+   * const display = displays.primary();
+   * // After finding something at global coordinate (1980, 50):
+   * const local = display.toLocal(1980, 50);
+   * println(local.x, local.y); // position within the display
+   * ```
+   */
+  toLocal(x: number, y: number): Point;
+  /**
+   * Converts a display-local point to global desktop coordinates.
+   *
+   * The inverse of `toLocal`: adds this display's top-left offset so the
+   * point can be used with mouse, keyboard, or capture APIs that expect
+   * global coordinates.
+   *
+   * ```ts
+   * const display = displays.primary();
+   * // A point at (100, 50) within the display image:
+   * const global = display.toGlobal(100, 50);
+   * ```
+   */
+  toGlobal(point: PointLike): Point;
+  /**
+   * Converts a display-local point to global desktop coordinates.
+   *
+   * The inverse of `toLocal`: adds this display's top-left offset so the
+   * point can be used with mouse, keyboard, or capture APIs that expect
+   * global coordinates.
+   *
+   * ```ts
+   * const display = displays.primary();
+   * // A point at (100, 50) within the display image:
+   * const global = display.toGlobal(100, 50);
+   * ```
+   */
+  toGlobal(x: number, y: number): Point;
+  /**
+   * Returns a string representation of the display.
+   */
+  toString(): string;
 }
 /**
  * Options for `File.open()`.
- * 
+ *
  * ```ts
  * // Read-only (default)
  * const file = await File.open("data.txt");
- * 
+ *
  * // Create a new file for writing
  * const file = await File.open("out.txt", {
  *     write: true,
  *     createNew: true,
  * });
- * 
+ *
  * // Append to an existing file
  * const file = await File.open("log.txt", {
  *     write: true,
@@ -4462,60 +4465,60 @@ declare interface DisplayInfo {
  * @expand
  */
 declare interface OpenOptions {
-    /**
-     * Should the file be opened with read access?
-     * @defaultValue `true`
-     */
-    read?: boolean;
-    /**
-     * Should the file be opened with write access?
-     * @defaultValue `false`
-     */
-    write?: boolean;
-    /**
-     * Writing: open the file in append mode.
-     * Note that setting this to `true` implies setting `write` to `true`.
-     * @defaultValue `false`
-     */
-    append?: boolean;
-    /**
-     * Writing: truncate (remove all contents of) the file.
-     * Note that this only works if `write` is `true`.
-     * @defaultValue `false`
-     */
-    truncate?: boolean;
-    /**
-     * Writing: create a new file if it doesn't exist.
-     * Note that this only works if `write` or `append` are set to `true`.
-     * @defaultValue `false`
-     */
-    create?: boolean;
-    /**
-     * Writing: always create a new file, even if one already exists.
-     * Note that this only works if `write` or `append` are set to `true`.
-     * Note that `create` and `truncate` are ignored if this is set to `true`.
-     * @defaultValue `false`
-     */
-    createNew?: boolean;
+  /**
+   * Should the file be opened with read access?
+   * @defaultValue `true`
+   */
+  read?: boolean;
+  /**
+   * Should the file be opened with write access?
+   * @defaultValue `false`
+   */
+  write?: boolean;
+  /**
+   * Writing: open the file in append mode.
+   * Note that setting this to `true` implies setting `write` to `true`.
+   * @defaultValue `false`
+   */
+  append?: boolean;
+  /**
+   * Writing: truncate (remove all contents of) the file.
+   * Note that this only works if `write` is `true`.
+   * @defaultValue `false`
+   */
+  truncate?: boolean;
+  /**
+   * Writing: create a new file if it doesn't exist.
+   * Note that this only works if `write` or `append` are set to `true`.
+   * @defaultValue `false`
+   */
+  create?: boolean;
+  /**
+   * Writing: always create a new file, even if one already exists.
+   * Note that this only works if `write` or `append` are set to `true`.
+   * Note that `create` and `truncate` are ignored if this is set to `true`.
+   * @defaultValue `false`
+   */
+  createNew?: boolean;
 }
 /**
  * A file handle for reading and writing. Also provides static utility methods
  * for common file operations without needing to open a handle.
- * 
+ *
  * ```ts
  * // Read a file in one shot (static)
  * const text = await File.readText("config.json");
- * 
+ *
  * // Write a file in one shot (static)
  * await File.writeText("output.txt", "Hello!");
- * 
+ *
  * // Open, read/write, then close
  * const file = await File.open("data.bin", { read: true, write: true, create: true });
  * await file.writeBytes(new Uint8Array([1, 2, 3]));
  * await file.rewind();
  * const bytes = await file.readBytes();
  * await file.close();
- * 
+ *
  * // File utilities
  * await File.copy("src.txt", "dst.txt");
  * await File.rename("old.txt", "new.txt");
@@ -4525,203 +4528,203 @@ declare interface OpenOptions {
  * @category File
  */
 declare class File {
-    /**
-     * The file path
-     */
-    readonly path: string;
-    private constructor();
-    /**
-     * Opens a file.
-     * 
-     * Example
-     * ```js
-     * // Open a file for reading
-     * let file = await File.open("my_file.txt", {
-     *     read: true,
-     * });
-     * 
-     * // Create a new file for writing.
-     * let file = await File.open("my_file.txt", {
-     *     write: true,
-     *     createNew: true,
-     * });
-     * 
-     * // Append to an existing file.
-     * let file = await File.open("my_file.txt", {
-     *     write: true,
-     *     append: true,
-     * });
-     * ```
-     */
-    static open(path: string, options?: OpenOptions): Promise<File>;
-    /**
-     * Returns true if the file is open.
-     */
-    isOpen(): boolean;
-    /**
-     * Closes this file handle.
-     * Please note that the actual file might not be closed until all other handles to it are also closed.
-     * This can happen if you cloned() this File.
-     */
-    close(): void;
-    /**
-     * Writes bytes to this file handle.
-     */
-    writeBytes(bytes: Uint8Array): Promise<void>;
-    /**
-     * Writes bytes to a file at the given path (static).
-     */
-    static writeBytes(path: string, bytes: Uint8Array): Promise<void>;
-    /**
-     * Writes text to this file handle.
-     */
-    writeText(text: string): Promise<void>;
-    /**
-     * Writes text to a file at the given path (static).
-     * 
-     * ```ts
-     * await File.writeText("hello.txt", "Hello, world!");
-     * ```
-     */
-    static writeText(path: string, text: string): Promise<void>;
-    /**
-     * Reads bytes from this file handle. If `amount` is given, reads exactly that many bytes;
-     * otherwise reads until EOF.
-     */
-    readBytes(amount?: number): Promise<Uint8Array>;
-    /**
-     * Reads bytes from a file at the given path (static).
-     */
-    static readBytes(path: string, amount?: number): Promise<Uint8Array>;
-    /**
-     * Reads the entire file as a UTF-8 string from this file handle.
-     */
-    readText(): Promise<string>;
-    /**
-     * Reads the entire file as a UTF-8 string (static).
-     * 
-     * ```ts
-     * const text = await File.readText("config.json");
-     * ```
-     */
-    static readText(path: string): Promise<string>;
-    /**
-     * Returns the file size in bytes.
-     */
-    size(): Promise<number>;
-    /**
-     * Truncates or extends the file to the given size in bytes.
-     */
-    setSize(size: number): Promise<void>;
-    /**
-     * Returns whether the file is read-only.
-     */
-    readonly(): Promise<boolean>;
-    /**
-     * Sets whether the file is read-only.
-     */
-    setReadonly(readonly: boolean): Promise<void>;
-    /**
-     * Returns the Unix file mode (e.g. `0o644`).
-     * @platform does not work on Windows
-     */
-    mode(): Promise<number>;
-    /**
-     * Sets the file mode.
-     * You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
-     * @platform does not work on Windows
-     */
-    setMode(mode: number): Promise<void>;
-    /**
-     * Returns the last modification time of the file.
-     */
-    modifiedTime(): Promise<Date>;
-    /**
-     * Sets the last modification time of the file.
-     */
-    setModifiedTime(date: Date): Promise<void>;
-    /**
-     * Returns the last access time of the file.
-     */
-    accessedTime(): Promise<Date>;
-    /**
-     * Sets the last access time of the file.
-     */
-    setAccessedTime(date: Date): Promise<void>;
-    /**
-     * Returns the creation time of the file.
-     */
-    creationTime(): Promise<Date>;
-    /**
-     * Sets the creation time of the file.
-     * @platform does not work on Linux
-     */
-    setCreationTime(date: Date): Promise<void>;
-    /**
-     * Returns the current read/write position in the file.
-     */
-    position(): Promise<number>;
-    /**
-     * Seeks to an absolute position in the file.
-     */
-    setPosition(position: number): Promise<void>;
-    /**
-     * Seeks relative to the current position (can be negative).
-     */
-    setRelativePosition(offset: number): Promise<void>;
-    /**
-     * Rewinds the file position to the beginning.
-     */
-    rewind(): Promise<void>;
-    /**
-     * Returns `true` if a file exists at the given path.
-     * 
-     * ```ts
-     * if (await File.exists("config.json")) {
-     *     const text = await File.readText("config.json");
-     * }
-     * ```
-     */
-    static exists(path: string): Promise<boolean>;
-    /**
-     * Removes a file from the filesystem.
-     * 
-     * Note that there is no guarantee that the file is immediately deleted (e.g. depending on platform, other open file descriptors may prevent immediate removal).
-     */
-    static remove(path: string): Promise<void>;
-    /**
-     * Copies a file from `source` to `destination`.
-     */
-    static copy(source: string, destination: string): Promise<void>;
-    /**
-     * Renames (moves) a file from `source` to `destination`. Works across filesystems.
-     */
-    static rename(source: string, destination: string): Promise<void>;
-    /**
-     * Alias for `rename`.
-     */
-    static move(source: string, destination: string): Promise<void>;
-    /**
-     * Returns a clone of this file handle. Both handles share the same underlying file.
-     */
-    clone(): File;
-    /**
-     * Returns `true` if both handles refer to the same file path.
-     */
-    equals(other: File): boolean;
-    /**
-     * Returns a string representation of the file handle.
-     */
-    toString(): string;
+  /**
+   * The file path
+   */
+  readonly path: string;
+  private constructor();
+  /**
+   * Opens a file.
+   *
+   * Example
+   * ```js
+   * // Open a file for reading
+   * let file = await File.open("my_file.txt", {
+   *     read: true,
+   * });
+   *
+   * // Create a new file for writing.
+   * let file = await File.open("my_file.txt", {
+   *     write: true,
+   *     createNew: true,
+   * });
+   *
+   * // Append to an existing file.
+   * let file = await File.open("my_file.txt", {
+   *     write: true,
+   *     append: true,
+   * });
+   * ```
+   */
+  static open(path: string, options?: OpenOptions): Promise<File>;
+  /**
+   * Returns true if the file is open.
+   */
+  isOpen(): boolean;
+  /**
+   * Closes this file handle.
+   * Please note that the actual file might not be closed until all other handles to it are also closed.
+   * This can happen if you cloned() this File.
+   */
+  close(): void;
+  /**
+   * Writes bytes to this file handle.
+   */
+  writeBytes(bytes: Uint8Array): Promise<void>;
+  /**
+   * Writes bytes to a file at the given path (static).
+   */
+  static writeBytes(path: string, bytes: Uint8Array): Promise<void>;
+  /**
+   * Writes text to this file handle.
+   */
+  writeText(text: string): Promise<void>;
+  /**
+   * Writes text to a file at the given path (static).
+   *
+   * ```ts
+   * await File.writeText("hello.txt", "Hello, world!");
+   * ```
+   */
+  static writeText(path: string, text: string): Promise<void>;
+  /**
+   * Reads bytes from this file handle. If `amount` is given, reads exactly that many bytes;
+   * otherwise reads until EOF.
+   */
+  readBytes(amount?: number): Promise<Uint8Array>;
+  /**
+   * Reads bytes from a file at the given path (static).
+   */
+  static readBytes(path: string, amount?: number): Promise<Uint8Array>;
+  /**
+   * Reads the entire file as a UTF-8 string from this file handle.
+   */
+  readText(): Promise<string>;
+  /**
+   * Reads the entire file as a UTF-8 string (static).
+   *
+   * ```ts
+   * const text = await File.readText("config.json");
+   * ```
+   */
+  static readText(path: string): Promise<string>;
+  /**
+   * Returns the file size in bytes.
+   */
+  size(): Promise<number>;
+  /**
+   * Truncates or extends the file to the given size in bytes.
+   */
+  setSize(size: number): Promise<void>;
+  /**
+   * Returns whether the file is read-only.
+   */
+  readonly(): Promise<boolean>;
+  /**
+   * Sets whether the file is read-only.
+   */
+  setReadonly(readonly: boolean): Promise<void>;
+  /**
+   * Returns the Unix file mode (e.g. `0o644`).
+   * @platform does not work on Windows
+   */
+  mode(): Promise<number>;
+  /**
+   * Sets the file mode.
+   * You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
+   * @platform does not work on Windows
+   */
+  setMode(mode: number): Promise<void>;
+  /**
+   * Returns the last modification time of the file.
+   */
+  modifiedTime(): Promise<Date>;
+  /**
+   * Sets the last modification time of the file.
+   */
+  setModifiedTime(date: Date): Promise<void>;
+  /**
+   * Returns the last access time of the file.
+   */
+  accessedTime(): Promise<Date>;
+  /**
+   * Sets the last access time of the file.
+   */
+  setAccessedTime(date: Date): Promise<void>;
+  /**
+   * Returns the creation time of the file.
+   */
+  creationTime(): Promise<Date>;
+  /**
+   * Sets the creation time of the file.
+   * @platform does not work on Linux
+   */
+  setCreationTime(date: Date): Promise<void>;
+  /**
+   * Returns the current read/write position in the file.
+   */
+  position(): Promise<number>;
+  /**
+   * Seeks to an absolute position in the file.
+   */
+  setPosition(position: number): Promise<void>;
+  /**
+   * Seeks relative to the current position (can be negative).
+   */
+  setRelativePosition(offset: number): Promise<void>;
+  /**
+   * Rewinds the file position to the beginning.
+   */
+  rewind(): Promise<void>;
+  /**
+   * Returns `true` if a file exists at the given path.
+   *
+   * ```ts
+   * if (await File.exists("config.json")) {
+   *     const text = await File.readText("config.json");
+   * }
+   * ```
+   */
+  static exists(path: string): Promise<boolean>;
+  /**
+   * Removes a file from the filesystem.
+   *
+   * Note that there is no guarantee that the file is immediately deleted (e.g. depending on platform, other open file descriptors may prevent immediate removal).
+   */
+  static remove(path: string): Promise<void>;
+  /**
+   * Copies a file from `source` to `destination`.
+   */
+  static copy(source: string, destination: string): Promise<void>;
+  /**
+   * Renames (moves) a file from `source` to `destination`. Works across filesystems.
+   */
+  static rename(source: string, destination: string): Promise<void>;
+  /**
+   * Alias for `rename`.
+   */
+  static move(source: string, destination: string): Promise<void>;
+  /**
+   * Returns a clone of this file handle. Both handles share the same underlying file.
+   */
+  clone(): File;
+  /**
+   * Returns `true` if both handles refer to the same file path.
+   */
+  equals(other: File): boolean;
+  /**
+   * Returns a string representation of the file handle.
+   */
+  toString(): string;
 }
 /**
  * Provides static methods for querying filesystem path types.
- * 
+ *
  * ```ts
  * if (await Filesystem.exists("/tmp/myfile.txt")) {
  *     println("exists!");
  * }
- * 
+ *
  * if (await Filesystem.isFile("/tmp/myfile.txt")) {
  *     println("it's a file");
  * } else if (await Filesystem.isDirectory("/tmp/myfile.txt")) {
@@ -4731,32 +4734,32 @@ declare class File {
  * @category Filesystem
  */
 declare class Filesystem {
-    private constructor();
-    /**
-     * Returns `true` if a path exists on the filesystem.
-     */
-    static exists(path: string): Promise<boolean>;
-    /**
-     * Returns `true` if the path points to a regular file.
-     */
-    static isFile(path: string): Promise<boolean>;
-    /**
-     * Returns `true` if the path points to a directory.
-     */
-    static isDirectory(path: string): Promise<boolean>;
-    /**
-     * Returns `true` if the path points to a symbolic link.
-     */
-    static isSymlink(path: string): Promise<boolean>;
-    toString(): string;
+  private constructor();
+  /**
+   * Returns `true` if a path exists on the filesystem.
+   */
+  static exists(path: string): Promise<boolean>;
+  /**
+   * Returns `true` if the path points to a regular file.
+   */
+  static isFile(path: string): Promise<boolean>;
+  /**
+   * Returns `true` if the path points to a directory.
+   */
+  static isDirectory(path: string): Promise<boolean>;
+  /**
+   * Returns `true` if the path points to a symbolic link.
+   */
+  static isSymlink(path: string): Promise<boolean>;
+  toString(): string;
 }
 /**
  * Options for resizing an image.
- * 
+ *
  * ```ts
  * // Resize while preserving aspect ratio
  * image.resize(200, 150, { keepAspectRatio: true });
- * 
+ *
  * // Resize with a specific filter
  * image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true });
  * ```
@@ -4764,24 +4767,24 @@ declare class Filesystem {
  * @expand
  */
 declare interface ResizeOptions {
-    /**
-     * Should the aspect ratio be kept?
-     * @defaultValue `false`
-     */
-    keepAspectRatio?: boolean;
-    /**
-     * What filter to use
-     * @defaultValue `ResizeFilter.Cubic`
-     */
-    filter?: ResizeFilter;
+  /**
+   * Should the aspect ratio be kept?
+   * @defaultValue `false`
+   */
+  keepAspectRatio?: boolean;
+  /**
+   * What filter to use
+   * @defaultValue `ResizeFilter.Cubic`
+   */
+  filter?: ResizeFilter;
 }
 /**
  * Options for blurring an image.
- * 
+ *
  * ```ts
  * // Fast blur
  * image.blur({ fast: true });
- * 
+ *
  * // Gaussian blur with custom sigma
  * image.blur({ sigma: 5.0 });
  * ```
@@ -4789,20 +4792,20 @@ declare interface ResizeOptions {
  * @expand
  */
 declare interface BlurOptions {
-    /**
-     * Perform a fast, lower quality blur
-     * @defaultValue `false`
-     */
-    fast?: boolean;
-    /**
-     * Standard deviation of the (approximated) Gaussian
-     * @defaultValue `2`
-     */
-    sigma?: number;
+  /**
+   * Perform a fast, lower quality blur
+   * @defaultValue `false`
+   */
+  fast?: boolean;
+  /**
+   * Standard deviation of the (approximated) Gaussian
+   * @defaultValue `2`
+   */
+  sigma?: number;
 }
 /**
  * Options for drawing an image onto another image.
- * 
+ *
  * ```ts
  * // Draw only a portion of the source image
  * canvas.drawImage(0, 0, sprite, {
@@ -4813,23 +4816,23 @@ declare interface BlurOptions {
  * @expand
  */
 declare interface DrawImageOptions {
-    /**
-     * Source rectangle.
-     * `undefined` means the whole image.
-     * @defaultValue `undefined`
-     */
-    sourceRect?: Rect;
+  /**
+   * Source rectangle.
+   * `undefined` means the whole image.
+   * @defaultValue `undefined`
+   */
+  sourceRect?: Rect;
 }
 /**
  * Options for rotating an image.
- * 
+ *
  * ```ts
  * // Rotate around a custom center point
  * image.rotate(45, { center: new Point(10, 10) });
- * 
+ *
  * // You can also use a plain object for the center
  * image.rotate(45, { center: {x: 10, y: 10} });
- * 
+ *
  * // Rotate with a background color for exposed areas
  * image.rotate(30, { defaultColor: Color.White });
  * ```
@@ -4837,26 +4840,26 @@ declare interface DrawImageOptions {
  * @expand
  */
 declare interface RotationOptions {
-    /**
-     * Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-     * @defaultValue `Interpolation.Bilinear`
-     */
-    interpolation?: Interpolation;
-    /**
-     * Rotation center.
-     * Defaults to the center of the image.
-     * @defaultValue `undefined`
-     */
-    center?: Point;
-    /**
-     * Default color, used if the rotation triggers more pixels to be displayed
-     * @defaultValue `Color.Black`
-     */
-    defaultColor?: Color;
+  /**
+   * Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
+   * @defaultValue `Interpolation.Bilinear`
+   */
+  interpolation?: Interpolation;
+  /**
+   * Rotation center.
+   * Defaults to the center of the image.
+   * @defaultValue `undefined`
+   */
+  center?: Point;
+  /**
+   * Default color, used if the rotation triggers more pixels to be displayed
+   * @defaultValue `Color.Black`
+   */
+  defaultColor?: Color;
 }
 /**
  * Options for drawing shapes on an image.
- * 
+ *
  * ```ts
  * // Draw a hollow circle (outline only)
  * image.drawCircle(50, 50, 20, Color.Red, { hollow: true });
@@ -4865,15 +4868,15 @@ declare interface RotationOptions {
  * @expand
  */
 declare interface DrawingOptions {
-    /**
-     * Draw a hollow shape instead of a filled one
-     * @defaultValue `false`
-     */
-    hollow?: boolean;
+  /**
+   * Draw a hollow shape instead of a filled one
+   * @defaultValue `false`
+   */
+  hollow?: boolean;
 }
 /**
  * Options for drawing text on an image.
- * 
+ *
  * ```ts
  * // Draw large, centered text
  * image.drawText(100, 50, "Hello", fontPath, Color.White, {
@@ -4886,34 +4889,34 @@ declare interface DrawingOptions {
  * @expand
  */
 declare interface DrawTextOptions {
-    /**
-     * Font size in pixels.
-     * @defaultValue `16`
-     */
-    fontSize?: number;
-    /**
-     * Multiplier applied to the default line height when rendering multi-line text.
-     * @defaultValue `1`
-     */
-    lineSpacing?: number;
-    /**
-     * Horizontal alignment relative to the provided position.
-     * @defaultValue `TextHorizontalAlign.Left`
-     */
-    horizontalAlign?: TextHorizontalAlign;
-    /**
-     * Vertical alignment relative to the provided position.
-     * @defaultValue `TextVerticalAlign.Top`
-     */
-    verticalAlign?: TextVerticalAlign;
+  /**
+   * Font size in pixels.
+   * @defaultValue `16`
+   */
+  fontSize?: number;
+  /**
+   * Multiplier applied to the default line height when rendering multi-line text.
+   * @defaultValue `1`
+   */
+  lineSpacing?: number;
+  /**
+   * Horizontal alignment relative to the provided position.
+   * @defaultValue `TextHorizontalAlign.Left`
+   */
+  horizontalAlign?: TextHorizontalAlign;
+  /**
+   * Vertical alignment relative to the provided position.
+   * @defaultValue `TextVerticalAlign.Top`
+   */
+  verticalAlign?: TextVerticalAlign;
 }
 /**
  * Options for finding an image within another image.
- * 
+ *
  * ```ts
  * // Find with stricter matching
  * const match = await source.find(template, { matchThreshold: 0.95 });
- * 
+ *
  * // Find with abort support
  * const controller = new AbortController();
  * const match = await source.find(template, { signal: controller.signal });
@@ -4922,41 +4925,41 @@ declare interface DrawTextOptions {
  * @expand
  */
 declare interface FindImageOptions {
-    /**
-     * Use color matching.
-     * @defaultValue `false`
-     */
-    useColors?: boolean;
-    /**
-     * Use template transparency.
-     * @defaultValue `true`
-     */
-    useTransparency?: boolean;
-    /**
-     * Matching threshold.
-     * Values are between 0 (worst) to 1 (best).
-     * @defaultValue `0.8`
-     */
-    matchThreshold?: number;
-    /**
-     * Radius to consider proximity (in pixels).
-     * @defaultValue `10`
-     */
-    nonMaximumSuppressionRadius?: number;
-    /**
-     * How many times should the source image and the template be downscaled?
-     * @defaultValue `0`
-     */
-    downscale?: number;
-    /**
-     * Abort signal to cancel the search.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Use color matching.
+   * @defaultValue `false`
+   */
+  useColors?: boolean;
+  /**
+   * Use template transparency.
+   * @defaultValue `true`
+   */
+  useTransparency?: boolean;
+  /**
+   * Matching threshold.
+   * Values are between 0 (worst) to 1 (best).
+   * @defaultValue `0.8`
+   */
+  matchThreshold?: number;
+  /**
+   * Radius to consider proximity (in pixels).
+   * @defaultValue `10`
+   */
+  nonMaximumSuppressionRadius?: number;
+  /**
+   * How many times should the source image and the template be downscaled?
+   * @defaultValue `0`
+   */
+  downscale?: number;
+  /**
+   * Abort signal to cancel the search.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * A match returned by a find or findAll call.
- * 
+ *
  * ```ts
  * const source = await Image.load("screenshot.png");
  * const template = await Image.load("button.png");
@@ -4969,36 +4972,36 @@ declare interface FindImageOptions {
  * @category Image
  */
 declare interface Match {
-    /**
-     * the position on the source image where the target image was found
-     */
-    position: Point;
-    /**
-     * the rectangle on the source image where the target image was found
-     */
-    rect: Rect;
-    /**
-     * the score for this match, goes from 0 (worst) to 1 (best)
-     */
-    score: number;
-    /**
-     * Returns true if a Match equals another.
-     */
-    equals(other: Match): boolean;
-    /**
-     * Returns a string representation of this Match.
-     */
-    toString(): string;
-    /**
-     * Clones this Match.
-     */
-    clone(): Match;
+  /**
+   * the position on the source image where the target image was found
+   */
+  position: Point;
+  /**
+   * the rectangle on the source image where the target image was found
+   */
+  rect: Rect;
+  /**
+   * the score for this match, goes from 0 (worst) to 1 (best)
+   */
+  score: number;
+  /**
+   * Returns true if a Match equals another.
+   */
+  equals(other: Match): boolean;
+  /**
+   * Returns a string representation of this Match.
+   */
+  toString(): string;
+  /**
+   * Clones this Match.
+   */
+  clone(): Match;
 }
 /**
  * Progress of a find image operation.
- * 
+ *
  * Received by iterating over the async iterator returned by `find` or `findAll`.
- * 
+ *
  * ```ts
  * const task = source.find(template);
  * for await (const progress of task) {
@@ -5010,29 +5013,29 @@ declare interface Match {
  * @category Image
  */
 declare interface FindImageProgress {
-    /**
-     * The current stage of the find image operation.
-     */
-    readonly stage: FindImageStage;
-    /**
-     * Completion percentage (0-100).
-     */
-    readonly percent: number;
-    /**
-     * Whether the operation has finished.
-     */
-    readonly finished: boolean;
-    toString(): string;
+  /**
+   * The current stage of the find image operation.
+   */
+  readonly stage: FindImageStage;
+  /**
+   * Completion percentage (0-100).
+   */
+  readonly percent: number;
+  /**
+   * Whether the operation has finished.
+   */
+  readonly finished: boolean;
+  toString(): string;
 }
 /**
  * An image that can be loaded, created, manipulated, and saved.
- * 
+ *
  * Provides methods for image processing (blur, rotate, resize, color adjustments),
  * drawing primitives (lines, circles, rectangles, text), and template matching (findImage).
- * 
+ *
  * Most mutating methods return `this` for chaining. Each also has an immutable variant
  * that returns a new `Image` (e.g., `blur()` vs `blurred()`).
- * 
+ *
  * ```ts
  * // Create, manipulate, and save
  * let image = new Image(200, 100);
@@ -5041,7 +5044,7 @@ declare interface FindImageProgress {
  *      .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
  * await image.save("output.png");
  * ```
- * 
+ *
  * ```ts
  * // Load, transform, and save
  * let photo = await Image.load("photo.png");
@@ -5050,7 +5053,7 @@ declare interface FindImageProgress {
  *      .adjustContrast(5);
  * await photo.save("photo_edited.png");
  * ```
- * 
+ *
  * ```ts
  * // Find an image within another
  * const screenshot = await Image.load("screenshot.png");
@@ -5063,538 +5066,923 @@ declare interface FindImageProgress {
  * @category Image
  */
 declare class Image {
-    readonly width: number;
-    readonly height: number;
-    readonly size: Size;
-    /**
-     * Returns a Rect representing this image.
-     */
-    readonly rect: Readonly<Rect>;
-    /**
-     * Creates a new empty image.
-     * 
-     * Example
-     * ```js
-     * let image = new Image(100, 100);
-     * ```
-     */
-    constructor(width: number, height: number);
-    /**
-     * Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
-     * 
-     * ```ts
-     * const bytes = await file.readAll();
-     * const image = Image.fromBytes(bytes);
-     * ```
-     */
-    static fromBytes(bytes: Uint8Array): Image;
-    /**
-     * Saves this image to a file. The format is inferred from the file extension.
-     */
-    save(path: string): Promise<void>;
-    /**
-     * Loads an image from a file. The format is guessed from the file contents.
-     */
-    static load(path: string): Promise<Image>;
-    /**
-     * Returns true if this image equals another (same dimensions and pixel data).
-     */
-    equals(other: Image): boolean;
-    /**
-     * Returns a string representation of this image.
-     */
-    toString(): string;
-    /**
-     * Clones this image.
-     */
-    clone(): Image;
-    /**
-     * Invert the colors of this image.
-     */
-    invertColors(): this;
-    /**
-     * Invert the colors of this image and returns a new image.
-     */
-    invertedColors(): Image;
-    /**
-     * Blur the image.
-     */
-    blur(options?: BlurOptions): this;
-    /**
-     * Blur the image and returns a new image.
-     */
-    blurred(options?: BlurOptions): Image;
-    /**
-     * Rotate the image.
-     */
-    rotate(angle: number, options?: RotationOptions): this;
-    /**
-     * Rotate the image and returns a new image.
-     */
-    rotated(angle: number, options?: RotationOptions): Image;
-    /**
-     * Flip the image.
-     */
-    flip(flipDirection: FlipDirection): this;
-    /**
-     * Flip the image and returns a new image.
-     */
-    flipped(flipDirection: FlipDirection): Image;
-    /**
-     * Rotates the hue of each pixel by `value` degrees.
-     * 
-     * `value` is in degrees and wraps around, so 360 is equivalent to 0.
-     */
-    hueRotate(value: number): this;
-    /**
-     * Returns a hue-rotated copy of this image.
-     * 
-     * `value` is in degrees and wraps around, so 360 is equivalent to 0.
-     */
-    withHueRotation(value: number): Image;
-    /**
-     * Transform this image into a grayscale.
-     */
-    grayscale(): this;
-    /**
-     * Returns a grayscale version of this image.
-     */
-    withGrayscale(): Image;
-    /**
-     * Crops this image.
-     */
-    crop(rect: RectLike): this;
-    /**
-     * Crops this image.
-     */
-    crop(x: number, y: number, width: number, height: number): this;
-    /**
-     * Returns a cropped version of this image.
-     */
-    cropped(rect: RectLike): Image;
-    /**
-     * Returns a cropped version of this image.
-     */
-    cropped(x: number, y: number, width: number, height: number): Image;
-    /**
-     * Resizes this image.
-     */
-    resize(width: number, height: number, options?: ResizeOptions): this;
-    /**
-     * Returns a resized version of this image.
-     */
-    resized(width: number, height: number, options?: ResizeOptions): Image;
-    /**
-     * Brightens or darkens the pixels of this image.
-     * 
-     * `value` is added to each RGB channel and clamped to 0–255.
-     * Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
-     */
-    adjustBrightness(value: number): this;
-    /**
-     * Returns a brightened or darkened copy of this image.
-     * 
-     * `value` is added to each RGB channel and clamped to 0–255.
-     * Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
-     */
-    withAdjustedBrightness(value: number): Image;
-    /**
-     * Adjusts the contrast of this image.
-     * 
-     * `value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
-     * and negative values decrease it. At -100 all pixels collapse to 50% gray.
-     */
-    adjustContrast(value: number): this;
-    /**
-     * Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
-     */
-    withAdjustedContrast(value: number): Image;
-    /**
-     * Fill this image with a color.
-     */
-    fill(color: ColorLike): this;
-    /**
-     * Fill this image with a color.
-     */
-    fill(r: number, g: number, b: number, a?: number): this;
-    /**
-     * Returns a copy of this image filled with a color.
-     */
-    filled(color: ColorLike): Image;
-    /**
-     * Returns a copy of this image filled with a color.
-     */
-    filled(r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Returns the value of a pixel.
-     */
-    getPixel(position: PointLike): Color;
-    /**
-     * Returns the value of a pixel.
-     */
-    getPixel(x: number, y: number): Color;
-    /**
-     * Sets the color of a pixel.
-     */
-    setPixel(position: PointLike, color: ColorLike): this;
-    /**
-     * Sets the color of a pixel.
-     */
-    setPixel(position: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Sets the color of a pixel.
-     */
-    setPixel(x: number, y: number, color: ColorLike): this;
-    /**
-     * Sets the color of a pixel.
-     */
-    setPixel(x: number, y: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Creates a new image from a part of this image.
-     */
-    copyRegion(rect: RectLike): Image;
-    /**
-     * Creates a new image from a part of this image.
-     */
-    copyRegion(x: number, y: number, width: number, height: number): Image;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(position: PointLike, color: ColorLike): this;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(position: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(x: number, y: number, color: ColorLike): this;
-    /**
-     * Draw a cross on this image.
-     */
-    drawCross(x: number, y: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(position: PointLike, color: ColorLike): Image;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(position: PointLike, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(x: number, y: number, color: ColorLike): Image;
-    /**
-     * Draw a cross on a copy of this image.
-     */
-    withCross(x: number, y: number, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, end: PointLike, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, x: number, y: number, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x: number, y: number, end: PointLike, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): this;
-    /**
-     * Draw a line on this image.
-     */
-    drawLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): this;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, end: PointLike, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, end: PointLike, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, x: number, y: number, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(start: PointLike, x: number, y: number, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x: number, y: number, end: PointLike, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x: number, y: number, end: PointLike, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x1: number, y1: number, x2: number, y2: number, color: ColorLike): Image;
-    /**
-     * Draw a line on a copy of this image.
-     */
-    withLine(x1: number, y1: number, x2: number, y2: number, r: number, g: number, b: number, a?: number): Image;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on this image.
-     */
-    drawCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(center: PointLike, radius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(center: PointLike, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(x: number, y: number, radius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a circle on a copy of this image.
-     */
-    withCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on this image.
-     */
-    drawEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(center: PointLike, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw an ellipse on a copy of this image.
-     */
-    withEllipse(x: number, y: number, widthRadius: number, heightRadius: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on this image.
-     */
-    drawRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): this;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(rect: RectLike, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(rect: RectLike, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(x: number, y: number, width: number, height: number, color: ColorLike, options?: DrawingOptions): Image;
-    /**
-     * Draw a rectangle on a copy of this image.
-     */
-    withRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
-    /**
-     * Draw text on this image using the provided font.
-     */
-    drawText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
-    /**
-     * Draw another image on this image.
-     */
-    drawImage(position: PointLike, image: Image, options?: DrawImageOptions): this;
-    /**
-     * Draw another image on this image.
-     */
-    drawImage(x: number, y: number, image: Image, options?: DrawImageOptions): this;
-    /**
-     * Draw another image on a copy of this image.
-     */
-    withImage(position: PointLike, image: Image, options?: DrawImageOptions): Image;
-    /**
-     * Draw another image on a copy of this image.
-     */
-    withImage(x: number, y: number, image: Image, options?: DrawImageOptions): Image;
-    /**
-     * Finds the best match of an image inside this image.
-     * 
-     * Returns a `ProgressTask` that can be awaited for the result and iterated
-     * for progress updates. Returns `undefined` if no match is found.
-     * 
-     * ```ts
-     * const match = await source.find(template);
-     * if (match) {
-     *   println(`Found at ${match.position} with score ${match.score}`);
-     * }
-     * ```
-     * 
-     * ```ts
-     * // Track progress while searching
-     * const task = source.find(template);
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const match = await task;
-     * ```
-     */
-    find(image: Image, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
-    /**
-     * Finds all occurrences of an image inside this image.
-     * 
-     * Returns a `ProgressTask` that can be awaited for an array of matches.
-     * 
-     * ```ts
-     * const matches = await source.findAll(template, { matchThreshold: 0.85 });
-     * for (const match of matches) {
-     *   println(`Found at ${match.position}`);
-     * }
-     * ```
-     * 
-     * ```ts
-     * // Track progress while searching
-     * const task = source.findAll(template);
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const matches = await task;
-     * ```
-     */
-    findAll(image: Image, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
-    /**
-     * Finds the best match of this image within the given screen area.
-     * 
-     * Takes a live screenshot of the specified area and searches for this image within it.
-     * Returns `undefined` if no match is found.
-     * 
-     * ```ts
-     * const match = await image.findOnScreen(SearchIn.desktop());
-     * if (match) {
-     *   println(`Found at ${match.position} with score ${match.score}`);
-     * }
-     * ```
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * const task = image.findOnScreen(SearchIn.display(display));
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const match = await task;
-     * ```
-     * @platform does not work on Wayland
-     */
-    findOnScreen(searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match | undefined, FindImageProgress>;
-    /**
-     * Finds all matches of this image within the given screen area.
-     * 
-     * Takes a live screenshot of the specified area and searches for all occurrences.
-     * 
-     * ```ts
-     * const matches = await image.findAllOnScreen(SearchIn.desktop());
-     * for (const match of matches) {
-     *   println(`Found at ${match.position}`);
-     * }
-     * ```
-     * 
-     * ```ts
-     * const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
-     * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-     * }
-     * const matches = await task;
-     * ```
-     * @platform does not work on Wayland
-     */
-    findAllOnScreen(searchIn: SearchIn, options?: FindImageOptions): ProgressTask<Match[], FindImageProgress>;
+  readonly width: number;
+  readonly height: number;
+  readonly size: Size;
+  /**
+   * Returns a Rect representing this image.
+   */
+  readonly rect: Readonly<Rect>;
+  /**
+   * Creates a new empty image.
+   *
+   * Example
+   * ```js
+   * let image = new Image(100, 100);
+   * ```
+   */
+  constructor(width: number, height: number);
+  /**
+   * Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
+   *
+   * ```ts
+   * const bytes = await file.readAll();
+   * const image = Image.fromBytes(bytes);
+   * ```
+   */
+  static fromBytes(bytes: Uint8Array): Image;
+  /**
+   * Saves this image to a file. The format is inferred from the file extension.
+   */
+  save(path: string): Promise<void>;
+  /**
+   * Loads an image from a file. The format is guessed from the file contents.
+   */
+  static load(path: string): Promise<Image>;
+  /**
+   * Returns true if this image equals another (same dimensions and pixel data).
+   */
+  equals(other: Image): boolean;
+  /**
+   * Returns a string representation of this image.
+   */
+  toString(): string;
+  /**
+   * Clones this image.
+   */
+  clone(): Image;
+  /**
+   * Invert the colors of this image.
+   */
+  invertColors(): this;
+  /**
+   * Invert the colors of this image and returns a new image.
+   */
+  invertedColors(): Image;
+  /**
+   * Blur the image.
+   */
+  blur(options?: BlurOptions): this;
+  /**
+   * Blur the image and returns a new image.
+   */
+  blurred(options?: BlurOptions): Image;
+  /**
+   * Rotate the image.
+   */
+  rotate(angle: number, options?: RotationOptions): this;
+  /**
+   * Rotate the image and returns a new image.
+   */
+  rotated(angle: number, options?: RotationOptions): Image;
+  /**
+   * Flip the image.
+   */
+  flip(flipDirection: FlipDirection): this;
+  /**
+   * Flip the image and returns a new image.
+   */
+  flipped(flipDirection: FlipDirection): Image;
+  /**
+   * Rotates the hue of each pixel by `value` degrees.
+   *
+   * `value` is in degrees and wraps around, so 360 is equivalent to 0.
+   */
+  hueRotate(value: number): this;
+  /**
+   * Returns a hue-rotated copy of this image.
+   *
+   * `value` is in degrees and wraps around, so 360 is equivalent to 0.
+   */
+  withHueRotation(value: number): Image;
+  /**
+   * Transform this image into a grayscale.
+   */
+  grayscale(): this;
+  /**
+   * Returns a grayscale version of this image.
+   */
+  withGrayscale(): Image;
+  /**
+   * Crops this image.
+   */
+  crop(rect: RectLike): this;
+  /**
+   * Crops this image.
+   */
+  crop(x: number, y: number, width: number, height: number): this;
+  /**
+   * Returns a cropped version of this image.
+   */
+  cropped(rect: RectLike): Image;
+  /**
+   * Returns a cropped version of this image.
+   */
+  cropped(x: number, y: number, width: number, height: number): Image;
+  /**
+   * Resizes this image.
+   */
+  resize(width: number, height: number, options?: ResizeOptions): this;
+  /**
+   * Returns a resized version of this image.
+   */
+  resized(width: number, height: number, options?: ResizeOptions): Image;
+  /**
+   * Brightens or darkens the pixels of this image.
+   *
+   * `value` is added to each RGB channel and clamped to 0–255.
+   * Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
+   */
+  adjustBrightness(value: number): this;
+  /**
+   * Returns a brightened or darkened copy of this image.
+   *
+   * `value` is added to each RGB channel and clamped to 0–255.
+   * Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
+   */
+  withAdjustedBrightness(value: number): Image;
+  /**
+   * Adjusts the contrast of this image.
+   *
+   * `value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
+   * and negative values decrease it. At -100 all pixels collapse to 50% gray.
+   */
+  adjustContrast(value: number): this;
+  /**
+   * Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
+   */
+  withAdjustedContrast(value: number): Image;
+  /**
+   * Fill this image with a color.
+   */
+  fill(color: ColorLike): this;
+  /**
+   * Fill this image with a color.
+   */
+  fill(r: number, g: number, b: number, a?: number): this;
+  /**
+   * Returns a copy of this image filled with a color.
+   */
+  filled(color: ColorLike): Image;
+  /**
+   * Returns a copy of this image filled with a color.
+   */
+  filled(r: number, g: number, b: number, a?: number): Image;
+  /**
+   * Returns the value of a pixel.
+   */
+  getPixel(position: PointLike): Color;
+  /**
+   * Returns the value of a pixel.
+   */
+  getPixel(x: number, y: number): Color;
+  /**
+   * Sets the color of a pixel.
+   */
+  setPixel(position: PointLike, color: ColorLike): this;
+  /**
+   * Sets the color of a pixel.
+   */
+  setPixel(
+    position: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Sets the color of a pixel.
+   */
+  setPixel(x: number, y: number, color: ColorLike): this;
+  /**
+   * Sets the color of a pixel.
+   */
+  setPixel(
+    x: number,
+    y: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Creates a new image from a part of this image.
+   */
+  copyRegion(rect: RectLike): Image;
+  /**
+   * Creates a new image from a part of this image.
+   */
+  copyRegion(x: number, y: number, width: number, height: number): Image;
+  /**
+   * Draw a cross on this image.
+   */
+  drawCross(position: PointLike, color: ColorLike): this;
+  /**
+   * Draw a cross on this image.
+   */
+  drawCross(
+    position: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Draw a cross on this image.
+   */
+  drawCross(x: number, y: number, color: ColorLike): this;
+  /**
+   * Draw a cross on this image.
+   */
+  drawCross(
+    x: number,
+    y: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Draw a cross on a copy of this image.
+   */
+  withCross(position: PointLike, color: ColorLike): Image;
+  /**
+   * Draw a cross on a copy of this image.
+   */
+  withCross(
+    position: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): Image;
+  /**
+   * Draw a cross on a copy of this image.
+   */
+  withCross(x: number, y: number, color: ColorLike): Image;
+  /**
+   * Draw a cross on a copy of this image.
+   */
+  withCross(
+    x: number,
+    y: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): Image;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(start: PointLike, end: PointLike, color: ColorLike): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(
+    start: PointLike,
+    end: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(start: PointLike, x: number, y: number, color: ColorLike): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(
+    start: PointLike,
+    x: number,
+    y: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(x: number, y: number, end: PointLike, color: ColorLike): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(
+    x: number,
+    y: number,
+    end: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color: ColorLike,
+  ): this;
+  /**
+   * Draw a line on this image.
+   */
+  drawLine(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): this;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(start: PointLike, end: PointLike, color: ColorLike): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(
+    start: PointLike,
+    end: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(start: PointLike, x: number, y: number, color: ColorLike): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(
+    start: PointLike,
+    x: number,
+    y: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(x: number, y: number, end: PointLike, color: ColorLike): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(
+    x: number,
+    y: number,
+    end: PointLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color: ColorLike,
+  ): Image;
+  /**
+   * Draw a line on a copy of this image.
+   */
+  withLine(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+  ): Image;
+  /**
+   * Draw a circle on this image.
+   */
+  drawCircle(
+    center: PointLike,
+    radius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a circle on this image.
+   */
+  drawCircle(
+    center: PointLike,
+    radius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a circle on this image.
+   */
+  drawCircle(
+    x: number,
+    y: number,
+    radius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a circle on this image.
+   */
+  drawCircle(
+    x: number,
+    y: number,
+    radius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a circle on a copy of this image.
+   */
+  withCircle(
+    center: PointLike,
+    radius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a circle on a copy of this image.
+   */
+  withCircle(
+    center: PointLike,
+    radius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a circle on a copy of this image.
+   */
+  withCircle(
+    x: number,
+    y: number,
+    radius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a circle on a copy of this image.
+   */
+  withCircle(
+    x: number,
+    y: number,
+    radius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw an ellipse on this image.
+   */
+  drawEllipse(
+    center: PointLike,
+    widthRadius: number,
+    heightRadius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw an ellipse on this image.
+   */
+  drawEllipse(
+    center: PointLike,
+    widthRadius: number,
+    heightRadius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw an ellipse on this image.
+   */
+  drawEllipse(
+    x: number,
+    y: number,
+    widthRadius: number,
+    heightRadius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw an ellipse on this image.
+   */
+  drawEllipse(
+    x: number,
+    y: number,
+    widthRadius: number,
+    heightRadius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw an ellipse on a copy of this image.
+   */
+  withEllipse(
+    center: PointLike,
+    widthRadius: number,
+    heightRadius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw an ellipse on a copy of this image.
+   */
+  withEllipse(
+    center: PointLike,
+    widthRadius: number,
+    heightRadius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw an ellipse on a copy of this image.
+   */
+  withEllipse(
+    x: number,
+    y: number,
+    widthRadius: number,
+    heightRadius: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw an ellipse on a copy of this image.
+   */
+  withEllipse(
+    x: number,
+    y: number,
+    widthRadius: number,
+    heightRadius: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a rectangle on this image.
+   */
+  drawRectangle(
+    rect: RectLike,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a rectangle on this image.
+   */
+  drawRectangle(
+    rect: RectLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a rectangle on this image.
+   */
+  drawRectangle(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a rectangle on this image.
+   */
+  drawRectangle(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): this;
+  /**
+   * Draw a rectangle on a copy of this image.
+   */
+  withRectangle(
+    rect: RectLike,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a rectangle on a copy of this image.
+   */
+  withRectangle(
+    rect: RectLike,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a rectangle on a copy of this image.
+   */
+  withRectangle(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: ColorLike,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw a rectangle on a copy of this image.
+   */
+  withRectangle(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawingOptions,
+  ): Image;
+  /**
+   * Draw text on this image using the provided font.
+   */
+  drawText(
+    position: PointLike,
+    text: string,
+    fontPath: string,
+    color: ColorLike,
+    options?: DrawTextOptions,
+  ): this;
+  /**
+   * Draw text on this image using the provided font.
+   */
+  drawText(
+    position: PointLike,
+    text: string,
+    fontPath: string,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawTextOptions,
+  ): this;
+  /**
+   * Draw text on this image using the provided font.
+   */
+  drawText(
+    x: number,
+    y: number,
+    text: string,
+    fontPath: string,
+    color: ColorLike,
+    options?: DrawTextOptions,
+  ): this;
+  /**
+   * Draw text on this image using the provided font.
+   */
+  drawText(
+    x: number,
+    y: number,
+    text: string,
+    fontPath: string,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawTextOptions,
+  ): this;
+  /**
+   * Draw text on a copy of this image.
+   */
+  withText(
+    position: PointLike,
+    text: string,
+    fontPath: string,
+    color: ColorLike,
+    options?: DrawTextOptions,
+  ): Image;
+  /**
+   * Draw text on a copy of this image.
+   */
+  withText(
+    position: PointLike,
+    text: string,
+    fontPath: string,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawTextOptions,
+  ): Image;
+  /**
+   * Draw text on a copy of this image.
+   */
+  withText(
+    x: number,
+    y: number,
+    text: string,
+    fontPath: string,
+    color: ColorLike,
+    options?: DrawTextOptions,
+  ): Image;
+  /**
+   * Draw text on a copy of this image.
+   */
+  withText(
+    x: number,
+    y: number,
+    text: string,
+    fontPath: string,
+    r: number,
+    g: number,
+    b: number,
+    a?: number,
+    options?: DrawTextOptions,
+  ): Image;
+  /**
+   * Draw another image on this image.
+   */
+  drawImage(
+    position: PointLike,
+    image: Image,
+    options?: DrawImageOptions,
+  ): this;
+  /**
+   * Draw another image on this image.
+   */
+  drawImage(
+    x: number,
+    y: number,
+    image: Image,
+    options?: DrawImageOptions,
+  ): this;
+  /**
+   * Draw another image on a copy of this image.
+   */
+  withImage(
+    position: PointLike,
+    image: Image,
+    options?: DrawImageOptions,
+  ): Image;
+  /**
+   * Draw another image on a copy of this image.
+   */
+  withImage(
+    x: number,
+    y: number,
+    image: Image,
+    options?: DrawImageOptions,
+  ): Image;
+  /**
+   * Finds the best match of an image inside this image.
+   *
+   * Returns a `ProgressTask` that can be awaited for the result and iterated
+   * for progress updates. Returns `undefined` if no match is found.
+   *
+   * ```ts
+   * const match = await source.find(template);
+   * if (match) {
+   *   println(`Found at ${match.position} with score ${match.score}`);
+   * }
+   * ```
+   *
+   * ```ts
+   * // Track progress while searching
+   * const task = source.find(template);
+   * for await (const progress of task) {
+   *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+   * }
+   * const match = await task;
+   * ```
+   */
+  find(
+    image: Image,
+    options?: FindImageOptions,
+  ): ProgressTask<Match | undefined, FindImageProgress>;
+  /**
+   * Finds all occurrences of an image inside this image.
+   *
+   * Returns a `ProgressTask` that can be awaited for an array of matches.
+   *
+   * ```ts
+   * const matches = await source.findAll(template, { matchThreshold: 0.85 });
+   * for (const match of matches) {
+   *   println(`Found at ${match.position}`);
+   * }
+   * ```
+   *
+   * ```ts
+   * // Track progress while searching
+   * const task = source.findAll(template);
+   * for await (const progress of task) {
+   *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+   * }
+   * const matches = await task;
+   * ```
+   */
+  findAll(
+    image: Image,
+    options?: FindImageOptions,
+  ): ProgressTask<Match[], FindImageProgress>;
+  /**
+   * Finds the best match of this image within the given screen area.
+   *
+   * Takes a live screenshot of the specified area and searches for this image within it.
+   * Returns `undefined` if no match is found.
+   *
+   * ```ts
+   * const match = await image.findOnScreen(SearchIn.desktop());
+   * if (match) {
+   *   println(`Found at ${match.position} with score ${match.score}`);
+   * }
+   * ```
+   *
+   * ```ts
+   * const display = displays.primary();
+   * const task = image.findOnScreen(SearchIn.display(display));
+   * for await (const progress of task) {
+   *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+   * }
+   * const match = await task;
+   * ```
+   * @platform does not work on Wayland
+   */
+  findOnScreen(
+    searchIn: SearchIn,
+    options?: FindImageOptions,
+  ): ProgressTask<Match | undefined, FindImageProgress>;
+  /**
+   * Finds all matches of this image within the given screen area.
+   *
+   * Takes a live screenshot of the specified area and searches for all occurrences.
+   *
+   * ```ts
+   * const matches = await image.findAllOnScreen(SearchIn.desktop());
+   * for (const match of matches) {
+   *   println(`Found at ${match.position}`);
+   * }
+   * ```
+   *
+   * ```ts
+   * const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+   * for await (const progress of task) {
+   *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+   * }
+   * const matches = await task;
+   * ```
+   * @platform does not work on Wayland
+   */
+  findAllOnScreen(
+    searchIn: SearchIn,
+    options?: FindImageOptions,
+  ): ProgressTask<Match[], FindImageProgress>;
 }
 /**
  * A signal that can be used to abort asynchronous operations.
- * 
+ *
  * Obtained from an `AbortController` via the `signal` property. Pass it
  * to cancellable operations (e.g., `findImage`) in their options.
- * 
+ *
  * ```ts
  * const controller = new AbortController();
  * const task = source.findImage(template, { signal: controller.signal });
@@ -5604,20 +5992,20 @@ declare class Image {
  * @category Core
  */
 declare interface AbortSignal {
-    toString(): string;
+  toString(): string;
 }
 /**
  * Controls cancellation of asynchronous operations.
- * 
+ *
  * Create an `AbortController`, pass its `signal` to a cancellable operation,
  * and call `abort()` to cancel it.
- * 
+ *
  * ```ts
  * const controller = new AbortController();
- * 
+ *
  * // Start a long-running operation
  * const task = source.findImage(template, { signal: controller.signal });
- * 
+ *
  * // Cancel after 5 seconds
  * await sleep("5s");
  * controller.abort();
@@ -5625,17 +6013,17 @@ declare interface AbortSignal {
  * @category Core
  */
 declare class AbortController {
-    readonly signal: AbortSignal;
-    constructor();
-    /**
-     * Signals cancellation to all operations using this controller's signal.
-     */
-    abort(): void;
-    toString(): string;
+  readonly signal: AbortSignal;
+  constructor();
+  /**
+   * Signals cancellation to all operations using this controller's signal.
+   */
+  abort(): void;
+  toString(): string;
 }
 /**
  * Utilities for concurrent operations.
- * 
+ *
  * ```ts
  * // Race two promises, resolving with whichever finishes first, cancelling the other.
  * // Note that this is different from `Promises.race`, which doesn't cancel any promise.
@@ -5644,62 +6032,62 @@ declare class AbortController {
  * @category Core
  */
 declare interface Concurrency {
-    /**
-     * Races multiple promises, returning the result of the first one to settle.
-     * Losing tasks will be cancelled automatically.
-     * 
-     * ```ts
-     * // Resolve with the first successful result.
-     * const result = await Concurrency.race([
-     *   sleep("200ms").then(() => "fast"),
-     *   sleep("1s").then(() => "slow"),
-     * ]);
-     * // result === "fast"
-     * ```
-     * 
-     * ```ts
-     * // Use race to implement a timeout.
-     * const result = await Concurrency.race([
-     *   fetchData(),
-     *   sleep("5s").then(() => { throw new Error("Timeout"); })
-     * ]);
-     * ```
-     * 
-     * ```ts
-     * // Rejections also win the race.
-     * // Here the error is thrown quickly and the slower task is cancelled.
-     * try {
-     *   await Concurrency.race([
-     *     sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
-     *     sleep("2s"),
-     *   ]);
-     * } catch (e) {
-     *   console.println(e); // Error: Failed quickly
-     * }
-     * ```
-     * 
-     * ```ts
-     * // You can cancel the race task itself.
-     * const t = Concurrency.race([
-     *   sleep("5s"),
-     *   sleep("8s"),
-     * ]);
-     * t.cancel();
-     * await t; // throws "Error: Cancelled"
-     * ```
-     * 
-     * ```ts
-     * // Empty or non-promise-only inputs resolve to undefined.
-     * const a = await Concurrency.race([]);
-     * const b = await Concurrency.race([1, "text", null]);
-     * // a === undefined, b === undefined
-     * ```
-     */
-    race<T>(promises: Iterable<T|PromiseLike<T>>): Task<Awaited<T>>;
+  /**
+   * Races multiple promises, returning the result of the first one to settle.
+   * Losing tasks will be cancelled automatically.
+   *
+   * ```ts
+   * // Resolve with the first successful result.
+   * const result = await Concurrency.race([
+   *   sleep("200ms").then(() => "fast"),
+   *   sleep("1s").then(() => "slow"),
+   * ]);
+   * // result === "fast"
+   * ```
+   *
+   * ```ts
+   * // Use race to implement a timeout.
+   * const result = await Concurrency.race([
+   *   fetchData(),
+   *   sleep("5s").then(() => { throw new Error("Timeout"); })
+   * ]);
+   * ```
+   *
+   * ```ts
+   * // Rejections also win the race.
+   * // Here the error is thrown quickly and the slower task is cancelled.
+   * try {
+   *   await Concurrency.race([
+   *     sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
+   *     sleep("2s"),
+   *   ]);
+   * } catch (e) {
+   *   console.println(e); // Error: Failed quickly
+   * }
+   * ```
+   *
+   * ```ts
+   * // You can cancel the race task itself.
+   * const t = Concurrency.race([
+   *   sleep("5s"),
+   *   sleep("8s"),
+   * ]);
+   * t.cancel();
+   * await t; // throws "Error: Cancelled"
+   * ```
+   *
+   * ```ts
+   * // Empty or non-promise-only inputs resolve to undefined.
+   * const a = await Concurrency.race([]);
+   * const b = await Concurrency.race([1, "text", null]);
+   * // a === undefined, b === undefined
+   * ```
+   */
+  race<T>(promises: Iterable<T | PromiseLike<T>>): Task<Awaited<T>>;
 }
 /**
  * A handle to a registered event listener. Call `.cancel()` to unregister it.
- * 
+ *
  * ```ts
  * const handle = keyboard.onText("btw", "by the way");
  * // ... later:
@@ -5708,39 +6096,39 @@ declare interface Concurrency {
  * @category Core
  */
 declare interface EventHandle {
-    /**
-     * Unregisters this event listener.
-     */
-    cancel(): void;
-    toString(): string;
+  /**
+   * Unregisters this event listener.
+   */
+  cancel(): void;
+  toString(): string;
 }
 /**
  * Controls keyboard input: typing text, pressing keys, waiting for key combinations,
  * and registering text or key event listeners.
- * 
+ *
  * ```ts
  * // Type text
  * keyboard.writeText("Hello, world!");
  * ```
- * 
+ *
  * ```ts
  * // Press a key combination (Ctrl+C)
  * keyboard.press(Key.Control);
  * keyboard.tap("c");
  * keyboard.release(Key.Control);
  * ```
- * 
+ *
  * ```ts
  * // Wait for a key combination
  * await keyboard.waitForKeys([Key.Control, Key.Alt, "q"]);
  * ```
- * 
+ *
  * ```ts
  * // Replace typed text
  * const h = keyboard.onText("btw", "by the way");
  * h.cancel(); // unregister
  * ```
- * 
+ *
  * ```ts
  * // Run a callback when a key combo is pressed
  * const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => console.println("triggered!"));
@@ -5748,140 +6136,155 @@ declare interface EventHandle {
  * @category Keyboard
  */
 declare interface Keyboard {
-    /**
-     * Types the given text string using simulated key events.
-     * @platform does not work on Wayland
-     */
-    writeText(text: string): void;
-    /**
-     * Presses and holds a key until `release` is called.
-     * 
-     * Accepts a `Key` constant, a single character string, or a raw keycode number.
-     * @platform does not work on Wayland
-     */
-    press(key: Key | string | number): void;
-    /**
-     * Releases a key previously held with `press`.
-     * 
-     * Accepts a `Key` constant, a single character string, or a raw keycode number.
-     * @platform does not work on Wayland
-     */
-    release(key: Key | string | number): void;
-    /**
-     * Presses and releases a key in one action.
-     * 
-     * Accepts a `Key` constant, a single character string, or a raw keycode number.
-     * @platform does not work on Wayland
-     */
-    tap(key: Key | string | number): void;
-    /**
-     * Presses and holds a raw keycode until `releaseRaw` is called.
-     * 
-     * Use this for keys not covered by the `Key` enum.
-     * @platform does not work on Wayland
-     */
-    pressRaw(keycode: number): void;
-    /**
-     * Releases a raw keycode previously held with `pressRaw`.
-     * @platform does not work on Wayland
-     */
-    releaseRaw(keycode: number): void;
-    /**
-     * Presses and releases a raw keycode in one action.
-     * 
-     * Use this for keys not covered by the `Key` enum.
-     * @platform does not work on Wayland
-     */
-    tapRaw(keycode: number): void;
-    /**
-     * Returns whether a key is currently pressed.
-     * @platform does not work on Wayland
-     */
-    isKeyPressed(key: Key | string | number): boolean;
-    /**
-     * Returns the list of keys that are currently pressed.
-     * @platform does not work on Wayland
-     */
-    getPressedKeys(): Key[];
-    /**
-     * Waits until the specified keys are all pressed simultaneously.
-     * 
-     * ```ts
-     * await keyboard.waitForKeys([Key.Control, "s"]);
-     * ```
-     * 
-     * ```ts
-     * // Wait for exactly these keys and no others, with abort support
-     * const controller = new AbortController();
-     * await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
-     *   exclusive: true,
-     *   signal: controller.signal
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    waitForKeys(keys: (Key | string | number)[]): Task<void>;
-    /**
-     * Registers a listener that fires when the specified text is typed.
-     * 
-     * By default the typed text is erased and replaced with `handler`. Pass
-     * `{ erase: false }` to trigger an action without replacing the text.
-     * 
-     * `handler` can be a string, an `Image`, or a callback returning either.
-     * A callback that returns nothing (void) fires without inserting anything.
-     * 
-     * ```ts
-     * // Simple text replacement
-     * const h = keyboard.onText("btw", "by the way");
-     * 
-     * // Dynamic replacement via callback
-     * const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
-     * 
-     * // Trigger only — don't erase the typed text
-     * const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
-     * 
-     * h.cancel(); // unregister
-     * ```
-     * @platform does not work on Wayland
-     */
-    onText(text: string, handler: string | Image | (() => string | Image | void | Promise<string | Image | void>), options?: OnTextOptions): EventHandle;
-    /**
-     * Registers a listener that fires when a single key is pressed.
-     * 
-     * ```ts
-     * const h = keyboard.onKey(Key.F5, () => console.println("F5 pressed!"));
-     * h.cancel();
-     * ```
-     * @platform does not work on Wayland
-     */
-    onKey(key: Key | string | number, callback: () => void | Promise<void>, options?: KeysOptions): EventHandle;
-    /**
-     * Registers a listener that fires when all specified keys are pressed simultaneously.
-     * 
-     * ```ts
-     * const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => {
-     *   console.println("Ctrl+Alt+T pressed!");
-     * });
-     * 
-     * // Require exactly these keys and no others
-     * const h2 = keyboard.onKeys([Key.Control, "s"], () => save(), { exclusive: true });
-     * 
-     * h.cancel();
-     * ```
-     * @platform does not work on Wayland
-     */
-    onKeys(keys: (Key | string | number)[], callback: () => void | Promise<void>, options?: KeysOptions): EventHandle;
-    /**
-     * Unregisters all event handles registered on this keyboard instance.
-     * 
-     * ```ts
-     * keyboard.onText("btw", "by the way");
-     * keyboard.onKeys([Key.Control, "s"], () => save());
-     * keyboard.clearEventHandles(); // removes both
-     * ```
-     */
-    clearEventHandles(): void;
-    toString(): string;
+  /**
+   * Types the given text string using simulated key events.
+   * @platform does not work on Wayland
+   */
+  writeText(text: string): void;
+  /**
+   * Presses and holds a key until `release` is called.
+   *
+   * Accepts a `Key` constant, a single character string, or a raw keycode number.
+   * @platform does not work on Wayland
+   */
+  press(key: Key | string | number): void;
+  /**
+   * Releases a key previously held with `press`.
+   *
+   * Accepts a `Key` constant, a single character string, or a raw keycode number.
+   * @platform does not work on Wayland
+   */
+  release(key: Key | string | number): void;
+  /**
+   * Presses and releases a key in one action.
+   *
+   * Accepts a `Key` constant, a single character string, or a raw keycode number.
+   * @platform does not work on Wayland
+   */
+  tap(key: Key | string | number): void;
+  /**
+   * Presses and holds a raw keycode until `releaseRaw` is called.
+   *
+   * Use this for keys not covered by the `Key` enum.
+   * @platform does not work on Wayland
+   */
+  pressRaw(keycode: number): void;
+  /**
+   * Releases a raw keycode previously held with `pressRaw`.
+   * @platform does not work on Wayland
+   */
+  releaseRaw(keycode: number): void;
+  /**
+   * Presses and releases a raw keycode in one action.
+   *
+   * Use this for keys not covered by the `Key` enum.
+   * @platform does not work on Wayland
+   */
+  tapRaw(keycode: number): void;
+  /**
+   * Returns whether a key is currently pressed.
+   * @platform does not work on Wayland
+   */
+  isKeyPressed(key: Key | string | number): boolean;
+  /**
+   * Returns the list of keys that are currently pressed.
+   * @platform does not work on Wayland
+   */
+  getPressedKeys(): Key[];
+  /**
+   * Waits until the specified keys are all pressed simultaneously.
+   *
+   * ```ts
+   * await keyboard.waitForKeys([Key.Control, "s"]);
+   * ```
+   *
+   * ```ts
+   * // Wait for exactly these keys and no others, with abort support
+   * const controller = new AbortController();
+   * await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
+   *   exclusive: true,
+   *   signal: controller.signal
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  waitForKeys(keys: (Key | string | number)[]): Task<void>;
+  /**
+   * Registers a listener that fires when the specified text is typed.
+   *
+   * By default the typed text is erased and replaced with `handler`. Pass
+   * `{ erase: false }` to trigger an action without replacing the text.
+   *
+   * `handler` can be a string, an `Image`, or a callback returning either.
+   * A callback that returns nothing (void) fires without inserting anything.
+   *
+   * ```ts
+   * // Simple text replacement
+   * const h = keyboard.onText("btw", "by the way");
+   *
+   * // Dynamic replacement via callback
+   * const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
+   *
+   * // Trigger only — don't erase the typed text
+   * const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
+   *
+   * h.cancel(); // unregister
+   * ```
+   * @platform does not work on Wayland
+   */
+  onText(
+    text: string,
+    handler:
+      | string
+      | Image
+      | (() => string | Image | void | Promise<string | Image | void>),
+    options?: OnTextOptions,
+  ): EventHandle;
+  /**
+   * Registers a listener that fires when a single key is pressed.
+   *
+   * ```ts
+   * const h = keyboard.onKey(Key.F5, () => console.println("F5 pressed!"));
+   * h.cancel();
+   * ```
+   * @platform does not work on Wayland
+   */
+  onKey(
+    key: Key | string | number,
+    callback: () => void | Promise<void>,
+    options?: KeysOptions,
+  ): EventHandle;
+  /**
+   * Registers a listener that fires when all specified keys are pressed simultaneously.
+   *
+   * ```ts
+   * const h = keyboard.onKeys([Key.Control, Key.Alt, "t"], () => {
+   *   console.println("Ctrl+Alt+T pressed!");
+   * });
+   *
+   * // Require exactly these keys and no others
+   * const h2 = keyboard.onKeys([Key.Control, "s"], () => save(), { exclusive: true });
+   *
+   * h.cancel();
+   * ```
+   * @platform does not work on Wayland
+   */
+  onKeys(
+    keys: (Key | string | number)[],
+    callback: () => void | Promise<void>,
+    options?: KeysOptions,
+  ): EventHandle;
+  /**
+   * Unregisters all event handles registered on this keyboard instance.
+   *
+   * ```ts
+   * keyboard.onText("btw", "by the way");
+   * keyboard.onKeys([Key.Control, "s"], () => save());
+   * keyboard.clearEventHandles(); // removes both
+   * ```
+   */
+  clearEventHandles(): void;
+  toString(): string;
 }
 /**
  * @category Keyboard
@@ -5893,32 +6296,32 @@ declare const keyboard: Keyboard;
  * @expand
  */
 declare interface OnTextOptions {
-    /**
-     * Erase the typed text before inserting the replacement.
-     * Set to `false` to trigger an action without replacing the typed text.
-     * @defaultValue `true`
-     */
-    erase?: boolean;
-    /**
-     * When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
-     * Replacing with an image always uses the clipboard.
-     * @defaultValue `false`
-     */
-    useClipboardForText?: boolean;
-    /**
-     * Save and restore the clipboard contents around a clipboard-based replacement.
-     * @defaultValue `true`
-     */
-    saveRestoreClipboard?: boolean;
-    /**
-     * Abort signal to automatically cancel this listener when signalled.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Erase the typed text before inserting the replacement.
+   * Set to `false` to trigger an action without replacing the typed text.
+   * @defaultValue `true`
+   */
+  erase?: boolean;
+  /**
+   * When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
+   * Replacing with an image always uses the clipboard.
+   * @defaultValue `false`
+   */
+  useClipboardForText?: boolean;
+  /**
+   * Save and restore the clipboard contents around a clipboard-based replacement.
+   * @defaultValue `true`
+   */
+  saveRestoreClipboard?: boolean;
+  /**
+   * Abort signal to automatically cancel this listener when signalled.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for key-based methods: `onKey`, `onKeys`, and `waitForKeys`.
- * 
+ *
  * ```ts
  * // Wait for exactly Ctrl+S and no other keys
  * await keyboard.waitForKeys([Key.Control, "s"], { exclusive: true });
@@ -5927,75 +6330,75 @@ declare interface OnTextOptions {
  * @expand
  */
 declare interface KeysOptions {
-    /**
-     * Require exactly these keys and no others to be pressed simultaneously.
-     * @defaultValue `false`
-     */
-    exclusive?: boolean;
-    /**
-     * Abort signal to cancel the operation.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Require exactly these keys and no others to be pressed simultaneously.
+   * @defaultValue `false`
+   */
+  exclusive?: boolean;
+  /**
+   * Abort signal to cancel the operation.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * A recorded macro that can be replayed or saved to disk.
- * 
+ *
  * ```ts
  * // Record a macro
  * const m = await macros.record({ stopKeys: [Key.Escape] });
- * 
+ *
  * // Save and reload
- * await m.save("my_macro.amacro");
- * const loaded = await Macro.load("my_macro.amacro");
- * 
+ * await m.save("my_macro.amac");
+ * const loaded = await Macro.load("my_macro.amac");
+ *
  * // Play back
  * await macros.play(loaded, { speed: 1.5 });
  * ```
  * @category Macros
  */
 declare class Macro {
-    private constructor();
-    /**
-     * Saves this macro to a gzip-compressed JSON file.
-     * 
-     * ```ts
-     * await macro.save("recording.amacro");
-     * ```
-     */
-    save(path: string): Promise<void>;
-    /**
-     * Loads a macro from a gzip-compressed JSON file previously written by `save()`.
-     * 
-     * ```ts
-     * const loaded = await Macro.load("recording.amacro");
-     * await macros.play(loaded);
-     * ```
-     */
-    static load(path: string): Promise<Macro>;
-    /**
-     * Returns the total number of events in this macro.
-     */
-    eventCount(): number;
-    /**
-     * Returns the total duration of the recording in seconds.
-     */
-    duration(): number;
-    /**
-     * Returns when this macro was recorded.
-     */
-    recordedAt(): Date;
-    /**
-     * Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
-     */
-    platform(): string;
-    toString(): string;
+  private constructor();
+  /**
+   * Saves this macro to a gzip-compressed JSON file.
+   *
+   * ```ts
+   * await macro.save("recording.amac");
+   * ```
+   */
+  save(path: string): Promise<void>;
+  /**
+   * Loads a macro from a gzip-compressed JSON file previously written by `save()`.
+   *
+   * ```ts
+   * const loaded = await Macro.load("recording.amac");
+   * await macros.play(loaded);
+   * ```
+   */
+  static load(path: string): Promise<Macro>;
+  /**
+   * Returns the total number of events in this macro.
+   */
+  eventCount(): number;
+  /**
+   * Returns the total duration of the recording in seconds.
+   */
+  duration(): number;
+  /**
+   * Returns when this macro was recorded.
+   */
+  recordedAt(): Date;
+  /**
+   * Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
+   */
+  platform(): string;
+  toString(): string;
 }
 /**
  * Progress of a `macros.play()` operation.
- * 
+ *
  * Received by iterating over the async iterator returned by `play`.
- * 
+ *
  * ```ts
  * const task = macros.play(macro);
  * for await (const progress of task) {
@@ -6007,28 +6410,28 @@ declare class Macro {
  * @category Macros
  */
 declare class PlayProgress {
-    private constructor();
-    /**
-     * Number of events replayed so far.
-     */
-    eventsDone(): number;
-    /**
-     * Total number of events to replay.
-     */
-    totalEvents(): number;
-    /**
-     * Replay ratio, in the range `[0, 1]`.
-     */
-    ratio(): number;
-    /**
-     * Whether all events have been replayed.
-     */
-    finished(): boolean;
-    toString(): string;
+  private constructor();
+  /**
+   * Number of events replayed so far.
+   */
+  eventsDone(): number;
+  /**
+   * Total number of events to replay.
+   */
+  totalEvents(): number;
+  /**
+   * Replay ratio, in the range `[0, 1]`.
+   */
+  ratio(): number;
+  /**
+   * Whether all events have been replayed.
+   */
+  finished(): boolean;
+  toString(): string;
 }
 /**
  * Options for `macros.record()`.
- * 
+ *
  * ```ts
  * const m = await macros.record({
  *     stopKeys: [Key.Escape],
@@ -6039,51 +6442,51 @@ declare class PlayProgress {
  * @expand
  */
 declare interface RecordOptions {
-    /**
-     * Key combination that stops the recording.
-     * All listed keys must be pressed simultaneously.
-     * @defaultValue `[Key.Escape]`
-     */
-    stopKeys?: Key[];
-    /**
-     * Maximum recording duration before automatically stopping.
-     * @defaultValue `undefined`
-     */
-    timeout?: number | string;
-    /**
-     * How often to sample the mouse position.
-     * @defaultValue `"16ms"`
-     */
-    mousePositionInterval?: number | string;
-    /**
-     * Record mouse button press and release events.
-     * @defaultValue `true`
-     */
-    mouseButtons?: boolean;
-    /**
-     * Record mouse cursor position.
-     * @defaultValue `true`
-     */
-    mousePosition?: boolean;
-    /**
-     * Record mouse scroll wheel events.
-     * @defaultValue `true`
-     */
-    mouseScroll?: boolean;
-    /**
-     * Record keyboard key press and release events.
-     * @defaultValue `true`
-     */
-    keyboardKeys?: boolean;
-    /**
-     * Abort signal to cancel recording.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Key combination that stops the recording.
+   * All listed keys must be pressed simultaneously.
+   * @defaultValue `[Key.Escape]`
+   */
+  stopKeys?: Key[];
+  /**
+   * Maximum recording duration before automatically stopping.
+   * @defaultValue `undefined`
+   */
+  timeout?: number | string;
+  /**
+   * How often to sample the mouse position.
+   * @defaultValue `"16ms"`
+   */
+  mousePositionInterval?: number | string;
+  /**
+   * Record mouse button press and release events.
+   * @defaultValue `true`
+   */
+  mouseButtons?: boolean;
+  /**
+   * Record mouse cursor position.
+   * @defaultValue `true`
+   */
+  mousePosition?: boolean;
+  /**
+   * Record mouse scroll wheel events.
+   * @defaultValue `true`
+   */
+  mouseScroll?: boolean;
+  /**
+   * Record keyboard key press and release events.
+   * @defaultValue `true`
+   */
+  keyboardKeys?: boolean;
+  /**
+   * Abort signal to cancel recording.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for `macros.play()`.
- * 
+ *
  * ```ts
  * await macros.play(macro, { speed: 2.0 });
  * ```
@@ -6091,117 +6494,117 @@ declare interface RecordOptions {
  * @expand
  */
 declare interface PlayOptions {
-    /**
-     * Playback speed multiplier. `1.0` is real-time, `2.0` is twice as fast.
-     * Must be greater than zero.
-     * @defaultValue `1`
-     */
-    speed?: number;
-    /**
-     * Replay mouse button events.
-     * @defaultValue `true`
-     */
-    mouseButtons?: boolean;
-    /**
-     * Replay mouse cursor movements.
-     * @defaultValue `true`
-     */
-    mousePosition?: boolean;
-    /**
-     * Replay mouse movements relative to the current cursor position instead of absolute
-     * screen coordinates. The offset is computed from the difference between the cursor's
-     * position at playback start and the first recorded mouse position.
-     * @defaultValue `false`
-     */
-    relativeMousePosition?: boolean;
-    /**
-     * Replay mouse scroll events.
-     * @defaultValue `true`
-     */
-    mouseScroll?: boolean;
-    /**
-     * Replay keyboard key events.
-     * @defaultValue `true`
-     */
-    keyboardKeys?: boolean;
-    /**
-     * Abort signal to cancel playback.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Playback speed multiplier. `1.0` is real-time, `2.0` is twice as fast.
+   * Must be greater than zero.
+   * @defaultValue `1`
+   */
+  speed?: number;
+  /**
+   * Replay mouse button events.
+   * @defaultValue `true`
+   */
+  mouseButtons?: boolean;
+  /**
+   * Replay mouse cursor movements.
+   * @defaultValue `true`
+   */
+  mousePosition?: boolean;
+  /**
+   * Replay mouse movements relative to the current cursor position instead of absolute
+   * screen coordinates. The offset is computed from the difference between the cursor's
+   * position at playback start and the first recorded mouse position.
+   * @defaultValue `false`
+   */
+  relativeMousePosition?: boolean;
+  /**
+   * Replay mouse scroll events.
+   * @defaultValue `true`
+   */
+  mouseScroll?: boolean;
+  /**
+   * Replay keyboard key events.
+   * @defaultValue `true`
+   */
+  keyboardKeys?: boolean;
+  /**
+   * Abort signal to cancel playback.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Records and replays input macros.
- * 
+ *
  * ```ts
  * // Record until Escape is pressed
  * const m = await macros.record();
  * await macros.play(m);
  * ```
- * 
+ *
  * ```ts
  * // Save and reload a macro
  * const m = await macros.record({ timeout: "30s" });
- * await m.save("workflow.amacro");
- * const loaded = await Macro.load("workflow.amacro");
+ * await m.save("workflow.amac");
+ * const loaded = await Macro.load("workflow.amac");
  * await macros.play(loaded, { speed: 2.0 });
  * ```
  * @category Macros
  */
 declare interface Macros {
-    /**
-     * Records user input until the stop key combination is pressed (or the timeout elapses).
-     * 
-     * ```ts
-     * // Record with default settings (stop with Escape)
-     * const m = await macros.record();
-     * ```
-     * 
-     * ```ts
-     * // Record with a 30-second timeout
-     * const m = await macros.record({ timeout: "30s" });
-     * ```
-     * 
-     * ```ts
-     * // Record only keyboard events
-     * const m = await macros.record({
-     *     mouseButtons: false,
-     *     mousePosition: false,
-     *     mouseScroll: false,
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    record(options?: RecordOptions): Task<Macro>;
-    /**
-     * Replays a previously recorded macro.
-     * 
-     * Only one playback can be active at a time; calling `play()` while another
-     * playback is already running throws an error.
-     * 
-     * ```ts
-     * await macros.play(macro);
-     * ```
-     * 
-     * ```ts
-     * // Play at twice the original speed, skipping mouse movements
-     * await macros.play(macro, { speed: 2.0, mousePosition: false });
-     * ```
-     * 
-     * ```ts
-     * // Cancellable playback with progress tracking
-     * const controller = new AbortController();
-     * const task = macros.play(macro, { signal: controller.signal });
-     * for await (const progress of task) {
-     *     console.println(`${Math.round(progress.ratio() * 100)}%`);
-     *     if (progress.finished()) break;
-     * }
-     * await task;
-     * ```
-     * @platform does not work on Wayland
-     */
-    play(macro: Macro, options?: PlayOptions): ProgressTask<void, PlayProgress>;
-    toString(): string;
+  /**
+   * Records user input until the stop key combination is pressed (or the timeout elapses).
+   *
+   * ```ts
+   * // Record with default settings (stop with Escape)
+   * const m = await macros.record();
+   * ```
+   *
+   * ```ts
+   * // Record with a 30-second timeout
+   * const m = await macros.record({ timeout: "30s" });
+   * ```
+   *
+   * ```ts
+   * // Record only keyboard events
+   * const m = await macros.record({
+   *     mouseButtons: false,
+   *     mousePosition: false,
+   *     mouseScroll: false,
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  record(options?: RecordOptions): Task<Macro>;
+  /**
+   * Replays a previously recorded macro.
+   *
+   * Only one playback can be active at a time; calling `play()` while another
+   * playback is already running throws an error.
+   *
+   * ```ts
+   * await macros.play(macro);
+   * ```
+   *
+   * ```ts
+   * // Play at twice the original speed, skipping mouse movements
+   * await macros.play(macro, { speed: 2.0, mousePosition: false });
+   * ```
+   *
+   * ```ts
+   * // Cancellable playback with progress tracking
+   * const controller = new AbortController();
+   * const task = macros.play(macro, { signal: controller.signal });
+   * for await (const progress of task) {
+   *     console.println(`${Math.round(progress.ratio() * 100)}%`);
+   *     if (progress.finished()) break;
+   * }
+   * await task;
+   * ```
+   * @platform does not work on Wayland
+   */
+  play(macro: Macro, options?: PlayOptions): ProgressTask<void, PlayProgress>;
+  toString(): string;
 }
 /**
  * @category Macros
@@ -6209,18 +6612,18 @@ declare interface Macros {
 declare const macros: Macros;
 /**
  * Controls mouse input: movement, clicking, scrolling, and position queries.
- * 
+ *
  * ```ts
  * // Move and click
  * await mouse.move(500, 300);
  * await mouse.click();
  * ```
- * 
+ *
  * ```ts
  * // Right-click at a specific position
  * await mouse.click({ button: Button.Right, position: { x: 100, y: 200 } });
  * ```
- * 
+ *
  * ```ts
  * // Smooth movement with custom tween
  * await mouse.move(800, 600, {
@@ -6231,230 +6634,257 @@ declare const macros: Macros;
  * @category Mouse
  */
 declare interface Mouse {
-    /**
-     * Returns whether a mouse button is currently pressed.
-     * @platform does not work on Wayland
-     */
-    isPressed(button: Button): boolean;
-    /**
-     * Scrolls the mouse wheel by the given amount.
-     * @platform does not work on Wayland
-     */
-    scroll(length: number, axis?: Axis): void;
-    /**
-     * Returns the current mouse cursor position.
-     * @platform does not work on Wayland
-     */
-    position(): Readonly<Point>;
-    /**
-     * Measures the mouse movement speed over a duration (in pixels per second).
-     * @platform does not work on Wayland
-     */
-    measureSpeed(options?: MeasureSpeedOptions): Task<number>;
-    /**
-     * Moves the mouse cursor smoothly to the given position.
-     * @platform does not work on Wayland
-     */
-    move(point: PointLike, options?: MoveOptions): Task<void>;
-    /**
-     * Moves the mouse cursor smoothly to the given position.
-     * @platform does not work on Wayland
-     */
-    move(x: number, y: number, options?: MoveOptions): Task<void>;
-    /**
-     * Sets the mouse cursor position instantly (absolute coordinates).
-     * @platform does not work on Wayland
-     */
-    setPosition(point: PointLike): void;
-    /**
-     * Sets the mouse cursor position instantly (absolute coordinates).
-     * @platform does not work on Wayland
-     */
-    setPosition(x: number, y: number): void;
-    /**
-     * Moves the mouse cursor by the given offset (relative coordinates).
-     * @platform does not work on Wayland
-     */
-    setRelativePosition(point: PointLike): void;
-    /**
-     * Moves the mouse cursor by the given offset (relative coordinates).
-     * @platform does not work on Wayland
-     */
-    setRelativePosition(x: number, y: number): void;
-    /**
-     * Clicks a mouse button.
-     * @platform does not work on Wayland
-     */
-    click(options?: ClickOptions): Task<void>;
-    /**
-     * Double-clicks a mouse button.
-     * @platform does not work on Wayland
-     */
-    doubleClick(options?: DoubleClickOptions): Task<void>;
-    /**
-     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
-     * 
-     * ```ts
-     * // Drag an element from one position to another
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
-     * ```
-     * 
-     * ```ts
-     * // Drag with custom speed and right button
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
-     *   button: Button.Right,
-     *   speed: 500,
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    dragAndDrop(start: PointLike, end: PointLike, options?: DragOptions): Task<void>;
-    /**
-     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
-     * 
-     * ```ts
-     * // Drag an element from one position to another
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
-     * ```
-     * 
-     * ```ts
-     * // Drag with custom speed and right button
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
-     *   button: Button.Right,
-     *   speed: 500,
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    dragAndDrop(start: PointLike, x: number, y: number, options?: DragOptions): Task<void>;
-    /**
-     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
-     * 
-     * ```ts
-     * // Drag an element from one position to another
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
-     * ```
-     * 
-     * ```ts
-     * // Drag with custom speed and right button
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
-     *   button: Button.Right,
-     *   speed: 500,
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    dragAndDrop(x: number, y: number, end: PointLike, options?: DragOptions): Task<void>;
-    /**
-     * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
-     * 
-     * ```ts
-     * // Drag an element from one position to another
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
-     * ```
-     * 
-     * ```ts
-     * // Drag with custom speed and right button
-     * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
-     *   button: Button.Right,
-     *   speed: 500,
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    dragAndDrop(x1: number, y1: number, x2: number, y2: number, options?: DragOptions): Task<void>;
-    /**
-     * Presses and holds a mouse button.
-     * @platform does not work on Wayland
-     */
-    press(options?: PressOptions): void;
-    /**
-     * Releases a mouse button.
-     * @platform does not work on Wayland
-     */
-    release(button?: Button): void;
-    /**
-     * Waits until a mouse button is pressed.
-     * 
-     * ```ts
-     * // Wait for any button press
-     * const button = await mouse.waitForButton();
-     * ```
-     * 
-     * ```ts
-     * // Wait for left button with abort support
-     * const controller = new AbortController();
-     * const button = await mouse.waitForButton({
-     *   button: Button.Left,
-     *   signal: controller.signal
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    waitForButton(options?: WaitForButtonOptions): Task<Button>;
-    /**
-     * Waits until the mouse wheel is scrolled.
-     * 
-     * ```ts
-     * // Wait for any scroll event
-     * const event = await mouse.waitForScroll();
-     * console.println(`Scrolled ${event.length} on axis ${event.axis}`);
-     * ```
-     * 
-     * ```ts
-     * // Wait for vertical scroll with abort support
-     * const controller = new AbortController();
-     * const event = await mouse.waitForScroll({
-     *   axis: Axis.Vertical,
-     *   signal: controller.signal
-     * });
-     * ```
-     * @platform does not work on Wayland
-     */
-    waitForScroll(options?: WaitForScrollOptions): Task<ScrollEvent>;
-    /**
-     * Registers a listener that fires when a mouse button is pressed.
-     * 
-     * ```ts
-     * const handle = mouse.onButton(Button.Left, () => {
-     *   console.println("Left button pressed!");
-     * });
-     * // ... later:
-     * handle.cancel();
-     * ```
-     * @platform does not work on Wayland
-     */
-    onButton(button: Button, callback: () => void | Promise<void>, options?: OnButtonOptions): EventHandle;
-    /**
-     * Registers a listener that fires when the mouse wheel is scrolled.
-     * 
-     * ```ts
-     * const handle = mouse.onScroll((length) => {
-     *   console.println(`Scrolled ${length} units`);
-     * });
-     * // ... later:
-     * handle.cancel();
-     * ```
-     * 
-     * ```ts
-     * // Listen for horizontal scroll only
-     * const handle = mouse.onScroll((length) => {
-     *   console.println(`Horizontal scroll: ${length}`);
-     * }, { axis: Axis.Horizontal });
-     * ```
-     * @platform does not work on Wayland
-     */
-    onScroll(callback: (length: number) => void | Promise<void>, options?: OnScrollOptions): EventHandle;
-    /**
-     * Unregisters all event handles registered on this mouse instance.
-     * 
-     * ```ts
-     * mouse.onButton(Button.Left, () => console.println("left"));
-     * mouse.clearEventHandles();
-     * ```
-     */
-    clearEventHandles(): void;
-    toString(): string;
+  /**
+   * Returns whether a mouse button is currently pressed.
+   * @platform does not work on Wayland
+   */
+  isPressed(button: Button): boolean;
+  /**
+   * Scrolls the mouse wheel by the given amount.
+   * @platform does not work on Wayland
+   */
+  scroll(length: number, axis?: Axis): void;
+  /**
+   * Returns the current mouse cursor position.
+   * @platform does not work on Wayland
+   */
+  position(): Readonly<Point>;
+  /**
+   * Measures the mouse movement speed over a duration (in pixels per second).
+   * @platform does not work on Wayland
+   */
+  measureSpeed(options?: MeasureSpeedOptions): Task<number>;
+  /**
+   * Moves the mouse cursor smoothly to the given position.
+   * @platform does not work on Wayland
+   */
+  move(point: PointLike, options?: MoveOptions): Task<void>;
+  /**
+   * Moves the mouse cursor smoothly to the given position.
+   * @platform does not work on Wayland
+   */
+  move(x: number, y: number, options?: MoveOptions): Task<void>;
+  /**
+   * Sets the mouse cursor position instantly (absolute coordinates).
+   * @platform does not work on Wayland
+   */
+  setPosition(point: PointLike): void;
+  /**
+   * Sets the mouse cursor position instantly (absolute coordinates).
+   * @platform does not work on Wayland
+   */
+  setPosition(x: number, y: number): void;
+  /**
+   * Moves the mouse cursor by the given offset (relative coordinates).
+   * @platform does not work on Wayland
+   */
+  setRelativePosition(point: PointLike): void;
+  /**
+   * Moves the mouse cursor by the given offset (relative coordinates).
+   * @platform does not work on Wayland
+   */
+  setRelativePosition(x: number, y: number): void;
+  /**
+   * Clicks a mouse button.
+   * @platform does not work on Wayland
+   */
+  click(options?: ClickOptions): Task<void>;
+  /**
+   * Double-clicks a mouse button.
+   * @platform does not work on Wayland
+   */
+  doubleClick(options?: DoubleClickOptions): Task<void>;
+  /**
+   * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+   *
+   * ```ts
+   * // Drag an element from one position to another
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+   * ```
+   *
+   * ```ts
+   * // Drag with custom speed and right button
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+   *   button: Button.Right,
+   *   speed: 500,
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  dragAndDrop(
+    start: PointLike,
+    end: PointLike,
+    options?: DragOptions,
+  ): Task<void>;
+  /**
+   * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+   *
+   * ```ts
+   * // Drag an element from one position to another
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+   * ```
+   *
+   * ```ts
+   * // Drag with custom speed and right button
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+   *   button: Button.Right,
+   *   speed: 500,
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  dragAndDrop(
+    start: PointLike,
+    x: number,
+    y: number,
+    options?: DragOptions,
+  ): Task<void>;
+  /**
+   * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+   *
+   * ```ts
+   * // Drag an element from one position to another
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+   * ```
+   *
+   * ```ts
+   * // Drag with custom speed and right button
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+   *   button: Button.Right,
+   *   speed: 500,
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  dragAndDrop(
+    x: number,
+    y: number,
+    end: PointLike,
+    options?: DragOptions,
+  ): Task<void>;
+  /**
+   * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
+   *
+   * ```ts
+   * // Drag an element from one position to another
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 });
+   * ```
+   *
+   * ```ts
+   * // Drag with custom speed and right button
+   * await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
+   *   button: Button.Right,
+   *   speed: 500,
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  dragAndDrop(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    options?: DragOptions,
+  ): Task<void>;
+  /**
+   * Presses and holds a mouse button.
+   * @platform does not work on Wayland
+   */
+  press(options?: PressOptions): void;
+  /**
+   * Releases a mouse button.
+   * @platform does not work on Wayland
+   */
+  release(button?: Button): void;
+  /**
+   * Waits until a mouse button is pressed.
+   *
+   * ```ts
+   * // Wait for any button press
+   * const button = await mouse.waitForButton();
+   * ```
+   *
+   * ```ts
+   * // Wait for left button with abort support
+   * const controller = new AbortController();
+   * const button = await mouse.waitForButton({
+   *   button: Button.Left,
+   *   signal: controller.signal
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  waitForButton(options?: WaitForButtonOptions): Task<Button>;
+  /**
+   * Waits until the mouse wheel is scrolled.
+   *
+   * ```ts
+   * // Wait for any scroll event
+   * const event = await mouse.waitForScroll();
+   * console.println(`Scrolled ${event.length} on axis ${event.axis}`);
+   * ```
+   *
+   * ```ts
+   * // Wait for vertical scroll with abort support
+   * const controller = new AbortController();
+   * const event = await mouse.waitForScroll({
+   *   axis: Axis.Vertical,
+   *   signal: controller.signal
+   * });
+   * ```
+   * @platform does not work on Wayland
+   */
+  waitForScroll(options?: WaitForScrollOptions): Task<ScrollEvent>;
+  /**
+   * Registers a listener that fires when a mouse button is pressed.
+   *
+   * ```ts
+   * const handle = mouse.onButton(Button.Left, () => {
+   *   console.println("Left button pressed!");
+   * });
+   * // ... later:
+   * handle.cancel();
+   * ```
+   * @platform does not work on Wayland
+   */
+  onButton(
+    button: Button,
+    callback: () => void | Promise<void>,
+    options?: OnButtonOptions,
+  ): EventHandle;
+  /**
+   * Registers a listener that fires when the mouse wheel is scrolled.
+   *
+   * ```ts
+   * const handle = mouse.onScroll((length) => {
+   *   console.println(`Scrolled ${length} units`);
+   * });
+   * // ... later:
+   * handle.cancel();
+   * ```
+   *
+   * ```ts
+   * // Listen for horizontal scroll only
+   * const handle = mouse.onScroll((length) => {
+   *   console.println(`Horizontal scroll: ${length}`);
+   * }, { axis: Axis.Horizontal });
+   * ```
+   * @platform does not work on Wayland
+   */
+  onScroll(
+    callback: (length: number) => void | Promise<void>,
+    options?: OnScrollOptions,
+  ): EventHandle;
+  /**
+   * Unregisters all event handles registered on this mouse instance.
+   *
+   * ```ts
+   * mouse.onButton(Button.Left, () => console.println("left"));
+   * mouse.clearEventHandles();
+   * ```
+   */
+  clearEventHandles(): void;
+  toString(): string;
 }
 /**
  * @category Mouse
@@ -6466,16 +6896,16 @@ declare const mouse: Mouse;
  * @expand
  */
 declare interface OnButtonOptions {
-    /**
-     * Require exactly this button and no others to be pressed simultaneously.
-     * @defaultValue `false`
-     */
-    exclusive?: boolean;
-    /**
-     * Abort signal to automatically cancel this listener when signalled.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Require exactly this button and no others to be pressed simultaneously.
+   * @defaultValue `false`
+   */
+  exclusive?: boolean;
+  /**
+   * Abort signal to automatically cancel this listener when signalled.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for `onScroll`.
@@ -6483,20 +6913,20 @@ declare interface OnButtonOptions {
  * @expand
  */
 declare interface OnScrollOptions {
-    /**
-     * Axis to listen on.
-     * @defaultValue `Axis.Vertical`
-     */
-    axis?: Axis;
-    /**
-     * Abort signal to automatically cancel this listener when signalled.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Axis to listen on.
+   * @defaultValue `Axis.Vertical`
+   */
+  axis?: Axis;
+  /**
+   * Abort signal to automatically cancel this listener when signalled.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for measuring mouse movement speed.
- * 
+ *
  * ```ts
  * const speed = await mouse.measureSpeed({ duration: "3s" });
  * ```
@@ -6504,16 +6934,16 @@ declare interface OnScrollOptions {
  * @expand
  */
 declare interface MeasureSpeedOptions {
-    /**
-     * Measurement duration.
-     * @defaultValue `2s`
-     */
-    duration?: number | string;
-    /**
-     * Abort signal to cancel the measurement.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Measurement duration.
+   * @defaultValue `2s`
+   */
+  duration?: number | string;
+  /**
+   * Abort signal to cancel the measurement.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for `waitForButton`.
@@ -6521,16 +6951,16 @@ declare interface MeasureSpeedOptions {
  * @expand
  */
 declare interface WaitForButtonOptions {
-    /**
-     * Mouse button to wait for. If not specified, waits for any button.
-     * @defaultValue `undefined`
-     */
-    button?: Button;
-    /**
-     * Abort signal to cancel the wait.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Mouse button to wait for. If not specified, waits for any button.
+   * @defaultValue `undefined`
+   */
+  button?: Button;
+  /**
+   * Abort signal to cancel the wait.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for `waitForScroll`.
@@ -6538,20 +6968,20 @@ declare interface WaitForButtonOptions {
  * @expand
  */
 declare interface WaitForScrollOptions {
-    /**
-     * Scroll axis to wait for. If not specified, waits for any axis.
-     * @defaultValue `undefined`
-     */
-    axis?: Axis;
-    /**
-     * Abort signal to cancel the wait.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Scroll axis to wait for. If not specified, waits for any axis.
+   * @defaultValue `undefined`
+   */
+  axis?: Axis;
+  /**
+   * Abort signal to cancel the wait.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * The result of a `waitForScroll` call.
- * 
+ *
  * ```ts
  * const event = await mouse.waitForScroll();
  * console.println(`Scrolled ${event.length} on axis ${event.axis}`);
@@ -6559,19 +6989,19 @@ declare interface WaitForScrollOptions {
  * @category Mouse
  */
 declare interface ScrollEvent {
-    /**
-     * The scroll axis.
-     */
-    readonly axis: Axis;
-    /**
-     * The scroll amount. Positive values scroll down/right, negative values scroll up/left.
-     */
-    readonly length: number;
-    toString(): string;
+  /**
+   * The scroll axis.
+   */
+  readonly axis: Axis;
+  /**
+   * The scroll amount. Positive values scroll down/right, negative values scroll up/left.
+   */
+  readonly length: number;
+  toString(): string;
 }
 /**
  * Options for clicking a mouse button.
- * 
+ *
  * ```ts
  * // Click and hold for 0.5 seconds
  * await mouse.click({ duration: 0.5 });
@@ -6580,30 +7010,30 @@ declare interface ScrollEvent {
  * @expand
  */
 declare interface ClickOptions extends PressOptions {
-    /**
-     * Number of times to click.
-     * @defaultValue `1`
-     */
-    amount?: number;
-    /**
-     * Delay between consecutive clicks, in seconds.
-     * @defaultValue `0`
-     */
-    interval?: number | string;
-    /**
-     * How long to hold each click, in seconds.
-     * @defaultValue `0`
-     */
-    duration?: number | string;
-    /**
-     * Abort signal to cancel the click.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Number of times to click.
+   * @defaultValue `1`
+   */
+  amount?: number;
+  /**
+   * Delay between consecutive clicks, in seconds.
+   * @defaultValue `0`
+   */
+  interval?: number | string;
+  /**
+   * How long to hold each click, in seconds.
+   * @defaultValue `0`
+   */
+  duration?: number | string;
+  /**
+   * Abort signal to cancel the click.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for double-clicking a mouse button.
- * 
+ *
  * ```ts
  * await mouse.doubleClick({ delay: 0.1 });
  * ```
@@ -6611,15 +7041,15 @@ declare interface ClickOptions extends PressOptions {
  * @expand
  */
 declare interface DoubleClickOptions extends ClickOptions {
-    /**
-     * Delay between the two clicks, in seconds.
-     * @defaultValue `0.25`
-     */
-    delay?: number | string;
+  /**
+   * Delay between the two clicks, in seconds.
+   * @defaultValue `0.25`
+   */
+  delay?: number | string;
 }
 /**
  * Options for drag and drop operations.
- * 
+ *
  * ```ts
  * await mouse.dragAndDrop({ x: 100, y: 100 }, { x: 500, y: 500 }, {
  *   speed: 500,
@@ -6630,21 +7060,21 @@ declare interface DoubleClickOptions extends ClickOptions {
  * @expand
  */
 declare interface DragOptions extends MoveOptions {
-    /**
-     * Mouse button to use for dragging.
-     * @defaultValue `Button.Left`
-     */
-    button?: Button;
+  /**
+   * Mouse button to use for dragging.
+   * @defaultValue `Button.Left`
+   */
+  button?: Button;
 }
 /**
  * A wildcard pattern for matching strings.
- * 
+ *
  * Supports `*` (match any sequence) and `?` (match any single character).
- * 
+ *
  * ```ts
  * const pattern = new Wildcard("*.txt");
  * ```
- * 
+ *
  * ```ts
  * // Used in APIs that accept a NameLike parameter
  * const pattern = new Wildcard("my_app*");
@@ -6652,11 +7082,11 @@ declare interface DragOptions extends MoveOptions {
  * @category Name
  */
 declare class Wildcard {
-    /**
-     * Constructor.
-     */
-    constructor(pattern: string);
-    toString(): string;
+  /**
+   * Constructor.
+   */
+  constructor(pattern: string);
+  toString(): string;
 }
 /**
  * A custom string hint for Linux notifications.
@@ -6665,16 +7095,16 @@ declare class Wildcard {
  * @platform only works on Linux
  */
 declare interface NotificationCustomHint {
-    /**
-     * Hint name.
-     * @defaultValue `""`
-     */
-    name?: string;
-    /**
-     * Hint value.
-     * @defaultValue `""`
-     */
-    value?: string;
+  /**
+   * Hint name.
+   * @defaultValue `""`
+   */
+  name?: string;
+  /**
+   * Hint value.
+   * @defaultValue `""`
+   */
+  value?: string;
 }
 /**
  * A custom integer hint for Linux notifications.
@@ -6683,16 +7113,16 @@ declare interface NotificationCustomHint {
  * @platform only works on Linux
  */
 declare interface NotificationCustomIntHint {
-    /**
-     * Hint name.
-     * @defaultValue `""`
-     */
-    name?: string;
-    /**
-     * Integer hint value.
-     * @defaultValue `0`
-     */
-    value?: number;
+  /**
+   * Hint name.
+   * @defaultValue `""`
+   */
+  name?: string;
+  /**
+   * Integer hint value.
+   * @defaultValue `0`
+   */
+  value?: number;
 }
 /**
  * A notification action button.
@@ -6700,46 +7130,46 @@ declare interface NotificationCustomIntHint {
  * @expand
  */
 declare interface NotificationAction {
-    /**
-     * Action identifier (used as arguments on Windows).
-     * @defaultValue `""`
-     */
-    identifier?: string;
-    /**
-     * Action label visible to the user.
-     * @defaultValue `""`
-     */
-    label?: string;
-    /**
-     * Action type string (Windows-specific, e.g. for protocol activation).
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    actionType?: string;
-    /**
-     * Activation type for this action.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    activationType?: NotificationActivationType;
-    /**
-     * Placement of this action button.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    placement?: NotificationActionPlacement;
-    /**
-     * Visual style of the button.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    buttonStyle?: NotificationButtonStyle;
-    /**
-     * ID of the input element this action is associated with.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    inputId?: string;
+  /**
+   * Action identifier (used as arguments on Windows).
+   * @defaultValue `""`
+   */
+  identifier?: string;
+  /**
+   * Action label visible to the user.
+   * @defaultValue `""`
+   */
+  label?: string;
+  /**
+   * Action type string (Windows-specific, e.g. for protocol activation).
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  actionType?: string;
+  /**
+   * Activation type for this action.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  activationType?: NotificationActivationType;
+  /**
+   * Placement of this action button.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  placement?: NotificationActionPlacement;
+  /**
+   * Visual style of the button.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  buttonStyle?: NotificationButtonStyle;
+  /**
+   * ID of the input element this action is associated with.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  inputId?: string;
 }
 /**
  * A notification header for grouping toasts in Action Center.
@@ -6748,21 +7178,21 @@ declare interface NotificationAction {
  * @platform only works on Windows
  */
 declare interface NotificationHeader {
-    /**
-     * Unique identifier for this header group.
-     * @defaultValue `""`
-     */
-    id?: string;
-    /**
-     * Title displayed for the header group.
-     * @defaultValue `""`
-     */
-    title?: string;
-    /**
-     * Arguments passed when the header is clicked.
-     * @defaultValue `""`
-     */
-    arguments?: string;
+  /**
+   * Unique identifier for this header group.
+   * @defaultValue `""`
+   */
+  id?: string;
+  /**
+   * Title displayed for the header group.
+   * @defaultValue `""`
+   */
+  title?: string;
+  /**
+   * Arguments passed when the header is clicked.
+   * @defaultValue `""`
+   */
+  arguments?: string;
 }
 /**
  * A toast input field.
@@ -6771,31 +7201,31 @@ declare interface NotificationHeader {
  * @platform only works on Windows
  */
 declare interface NotificationInput {
-    /**
-     * Unique identifier for this input.
-     * @defaultValue `""`
-     */
-    id?: string;
-    /**
-     * Type of input field.
-     * @defaultValue `undefined`
-     */
-    inputType?: NotificationInputType;
-    /**
-     * Placeholder text shown when the input is empty.
-     * @defaultValue `undefined`
-     */
-    placeholder?: string;
-    /**
-     * Title displayed above the input.
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Default value for the input.
-     * @defaultValue `undefined`
-     */
-    defaultInput?: string;
+  /**
+   * Unique identifier for this input.
+   * @defaultValue `""`
+   */
+  id?: string;
+  /**
+   * Type of input field.
+   * @defaultValue `undefined`
+   */
+  inputType?: NotificationInputType;
+  /**
+   * Placeholder text shown when the input is empty.
+   * @defaultValue `undefined`
+   */
+  placeholder?: string;
+  /**
+   * Title displayed above the input.
+   * @defaultValue `undefined`
+   */
+  title?: string;
+  /**
+   * Default value for the input.
+   * @defaultValue `undefined`
+   */
+  defaultInput?: string;
 }
 /**
  * A selection option for a dropdown input.
@@ -6804,16 +7234,16 @@ declare interface NotificationInput {
  * @platform only works on Windows
  */
 declare interface NotificationSelection {
-    /**
-     * Unique identifier for this selection option.
-     * @defaultValue `""`
-     */
-    id?: string;
-    /**
-     * Display text for this selection option.
-     * @defaultValue `""`
-     */
-    content?: string;
+  /**
+   * Unique identifier for this selection option.
+   * @defaultValue `""`
+   */
+  id?: string;
+  /**
+   * Display text for this selection option.
+   * @defaultValue `""`
+   */
+  content?: string;
 }
 /**
  * Options for a notification.
@@ -6821,233 +7251,233 @@ declare interface NotificationSelection {
  * @expand
  */
 declare interface NotificationOptions {
-    /**
-     * Title of the notification (summary line).
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Application name, filled by default with executable name.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    appName?: string;
-    /**
-     * Body text of the notification.
-     * Multiple lines possible, may support simple markup.
-     * On Linux, check `notification.capabilities()` for a list.
-     * @defaultValue `undefined`
-     */
-    body?: string;
-    /**
-     * Icon name/path assigned to the notification icon field.
-     * Usually available in /usr/share/icons.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    iconName?: string;
-    /**
-     * Whether to set the icon automatically from executable name.
-     * @defaultValue `false`
-     * @platform only works on Linux
-     */
-    autoIcon?: boolean;
-    /**
-     * Icon image to display with the notification.
-     * @defaultValue `undefined`
-     */
-    icon?: Image;
-    /**
-     * Timeout before the notification is automatically dismissed.
-     * Note that most servers don't respect this setting.
-     * @defaultValue `undefined`
-     */
-    timeout?: number | string;
-    /**
-     * If `true`, action identifiers may be interpreted as icon names.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    actionIcons?: boolean;
-    /**
-     * Notification category such as `email`, `im`, or `device`.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    category?: string;
-    /**
-     * Desktop entry id (usually app `.desktop` name without extension).
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    desktopEntry?: string;
-    /**
-     * If `true`, keep notification resident until explicitly dismissed.
-     * Also automatically sets the timeout to never expire unless an explicit
-     * timeout is provided.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    resident?: boolean;
-    /**
-     * Absolute path to a sound file to play for this notification.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    soundFile?: string;
-    /**
-     * Themeable freedesktop sound name, e.g. `message-new-instant`.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    soundName?: string;
-    /**
-     * If `true`, suppress notification sounds.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    suppressSound?: boolean;
-    /**
-     * If `true`, request non-persistent behavior from the server.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    transient?: boolean;
-    /**
-     * Target screen position for the notification.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    point?: Point;
-    /**
-     * Urgency level.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    urgency?: NotificationUrgency;
-    /**
-     * Custom string key/value pairs forwarded as-is.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    customHints?: NotificationCustomHint[];
-    /**
-     * Custom integer key/value pairs forwarded as-is.
-     * @defaultValue `undefined`
-     * @platform only works on Linux
-     */
-    customIntHints?: NotificationCustomIntHint[];
-    /**
-     * Notification actions.
-     * @defaultValue `undefined`
-     */
-    actions?: NotificationAction[];
-    /**
-     * Attribution text displayed at the bottom of the notification.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    attributionText?: string;
-    /**
-     * Hero image displayed prominently at the top of the notification.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    heroImage?: Image;
-    /**
-     * Whether to crop the icon into a circle.
-     * @defaultValue `false`
-     * @platform only works on Windows
-     */
-    iconCropCircle?: boolean;
-    /**
-     * Toast scenario that adjusts notification behavior.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    scenario?: NotificationScenario;
-    /**
-     * Sound to play with the notification.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    sound?: NotificationSound;
-    /**
-     * Whether to loop the notification sound.
-     * @defaultValue `false`
-     * @platform only works on Windows
-     */
-    soundLooping?: boolean;
-    /**
-     * Whether to suppress all notification sound.
-     * @defaultValue `false`
-     * @platform only works on Windows
-     */
-    silent?: boolean;
-    /**
-     * Header for grouping notifications in Action Center.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    header?: NotificationHeader;
-    /**
-     * Input fields displayed in the notification.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    inputs?: NotificationInput[];
-    /**
-     * Selection options for dropdown inputs.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    selections?: NotificationSelection[];
-    /**
-     * Tag for identifying and replacing notifications.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    tag?: string;
-    /**
-     * Group identifier for organizing notifications.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    group?: string;
-    /**
-     * Remote ID for cross-device notification correlation.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    remoteId?: string;
-    /**
-     * Launch string passed to the app when the notification is clicked.
-     * @defaultValue `undefined`
-     * @platform only works on Windows
-     */
-    launch?: string;
-    /**
-     * Whether to enable button styling on actions.
-     * @defaultValue `false`
-     * @platform only works on Windows
-     */
-    useButtonStyle?: boolean;
+  /**
+   * Title of the notification (summary line).
+   * @defaultValue `undefined`
+   */
+  title?: string;
+  /**
+   * Application name, filled by default with executable name.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  appName?: string;
+  /**
+   * Body text of the notification.
+   * Multiple lines possible, may support simple markup.
+   * On Linux, check `notification.capabilities()` for a list.
+   * @defaultValue `undefined`
+   */
+  body?: string;
+  /**
+   * Icon name/path assigned to the notification icon field.
+   * Usually available in /usr/share/icons.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  iconName?: string;
+  /**
+   * Whether to set the icon automatically from executable name.
+   * @defaultValue `false`
+   * @platform only works on Linux
+   */
+  autoIcon?: boolean;
+  /**
+   * Icon image to display with the notification.
+   * @defaultValue `undefined`
+   */
+  icon?: Image;
+  /**
+   * Timeout before the notification is automatically dismissed.
+   * Note that most servers don't respect this setting.
+   * @defaultValue `undefined`
+   */
+  timeout?: number | string;
+  /**
+   * If `true`, action identifiers may be interpreted as icon names.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  actionIcons?: boolean;
+  /**
+   * Notification category such as `email`, `im`, or `device`.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  category?: string;
+  /**
+   * Desktop entry id (usually app `.desktop` name without extension).
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  desktopEntry?: string;
+  /**
+   * If `true`, keep notification resident until explicitly dismissed.
+   * Also automatically sets the timeout to never expire unless an explicit
+   * timeout is provided.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  resident?: boolean;
+  /**
+   * Absolute path to a sound file to play for this notification.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  soundFile?: string;
+  /**
+   * Themeable freedesktop sound name, e.g. `message-new-instant`.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  soundName?: string;
+  /**
+   * If `true`, suppress notification sounds.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  suppressSound?: boolean;
+  /**
+   * If `true`, request non-persistent behavior from the server.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  transient?: boolean;
+  /**
+   * Target screen position for the notification.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  point?: Point;
+  /**
+   * Urgency level.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  urgency?: NotificationUrgency;
+  /**
+   * Custom string key/value pairs forwarded as-is.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  customHints?: NotificationCustomHint[];
+  /**
+   * Custom integer key/value pairs forwarded as-is.
+   * @defaultValue `undefined`
+   * @platform only works on Linux
+   */
+  customIntHints?: NotificationCustomIntHint[];
+  /**
+   * Notification actions.
+   * @defaultValue `undefined`
+   */
+  actions?: NotificationAction[];
+  /**
+   * Attribution text displayed at the bottom of the notification.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  attributionText?: string;
+  /**
+   * Hero image displayed prominently at the top of the notification.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  heroImage?: Image;
+  /**
+   * Whether to crop the icon into a circle.
+   * @defaultValue `false`
+   * @platform only works on Windows
+   */
+  iconCropCircle?: boolean;
+  /**
+   * Toast scenario that adjusts notification behavior.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  scenario?: NotificationScenario;
+  /**
+   * Sound to play with the notification.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  sound?: NotificationSound;
+  /**
+   * Whether to loop the notification sound.
+   * @defaultValue `false`
+   * @platform only works on Windows
+   */
+  soundLooping?: boolean;
+  /**
+   * Whether to suppress all notification sound.
+   * @defaultValue `false`
+   * @platform only works on Windows
+   */
+  silent?: boolean;
+  /**
+   * Header for grouping notifications in Action Center.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  header?: NotificationHeader;
+  /**
+   * Input fields displayed in the notification.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  inputs?: NotificationInput[];
+  /**
+   * Selection options for dropdown inputs.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  selections?: NotificationSelection[];
+  /**
+   * Tag for identifying and replacing notifications.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  tag?: string;
+  /**
+   * Group identifier for organizing notifications.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  group?: string;
+  /**
+   * Remote ID for cross-device notification correlation.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  remoteId?: string;
+  /**
+   * Launch string passed to the app when the notification is clicked.
+   * @defaultValue `undefined`
+   * @platform only works on Windows
+   */
+  launch?: string;
+  /**
+   * Whether to enable button styling on actions.
+   * @defaultValue `false`
+   * @platform only works on Windows
+   */
+  useButtonStyle?: boolean;
 }
 /**
  * The global notification singleton for sending desktop notifications.
  * @category Notification
  */
 declare interface Notification {
-    /**
-     * Shows a desktop notification.
-     */
-    show(options?: NotificationOptions): Promise<NotificationHandle>;
-    /**
-     * Server capabilities.
-     * @platform only works on Linux
-     */
-    capabilities(): string[];
-    toString(): string;
+  /**
+   * Shows a desktop notification.
+   */
+  show(options?: NotificationOptions): Promise<NotificationHandle>;
+  /**
+   * Server capabilities.
+   * @platform only works on Linux
+   */
+  capabilities(): string[];
+  toString(): string;
 }
 /**
  * @category Notification
@@ -7059,69 +7489,69 @@ declare const notification: Notification;
  * @expand
  */
 declare interface WaitForActionOptions {
-    /**
-     * Abort signal to cancel waiting.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Abort signal to cancel waiting.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * A handle for a shown desktop notification.
  * @category Notification
  */
 declare interface NotificationHandle {
-    /**
-     * Programmatically closes the notification.
-     * 
-     * ```ts
-     * const handle = await notification.show({ title: "Hello", resident: true });
-     * await sleep("5s");
-     * await handle.close();
-     * ```
-     */
-    close(): Promise<void>;
-    /**
-     * Updates the notification with new options.
-     * 
-     * ```ts
-     * const handle = await notification.show({ title: "Initial" });
-     * await handle.update({ title: "Updated", body: "New body" });
-     * ```
-     * @platform only works on Linux
-     */
-    update(options?: NotificationOptions): Promise<void>;
-    /**
-     * Waits for an action to be invoked on this notification, or for the notification to close.
-     * Returns the action identifier, or `null` if the notification was closed without an action.
-     * 
-     * ```ts
-     * const handle = await notification.show({ title: "Update available", actions: [{ identifier: "update", label: "Update now" }] });
-     * const action = await handle.waitForAction();
-     * if (action === "update") { await runUpdate(); }
-     * ```
-     */
-    waitForAction(options?: WaitForActionOptions): Task<string | null>;
-    /**
-     * Waits until this notification is closed or the optional abort signal is triggered.
-     * 
-     * ```ts
-     * const handle = await notification.show({ title: "Waiting..." });
-     * await handle.waitUntilClosed();
-     * ```
-     */
-    waitUntilClosed(options?: WaitForActionOptions): Task<void>;
-    toString(): string;
+  /**
+   * Programmatically closes the notification.
+   *
+   * ```ts
+   * const handle = await notification.show({ title: "Hello", resident: true });
+   * await sleep("5s");
+   * await handle.close();
+   * ```
+   */
+  close(): Promise<void>;
+  /**
+   * Updates the notification with new options.
+   *
+   * ```ts
+   * const handle = await notification.show({ title: "Initial" });
+   * await handle.update({ title: "Updated", body: "New body" });
+   * ```
+   * @platform only works on Linux
+   */
+  update(options?: NotificationOptions): Promise<void>;
+  /**
+   * Waits for an action to be invoked on this notification, or for the notification to close.
+   * Returns the action identifier, or `null` if the notification was closed without an action.
+   *
+   * ```ts
+   * const handle = await notification.show({ title: "Update available", actions: [{ identifier: "update", label: "Update now" }] });
+   * const action = await handle.waitForAction();
+   * if (action === "update") { await runUpdate(); }
+   * ```
+   */
+  waitForAction(options?: WaitForActionOptions): Task<string | null>;
+  /**
+   * Waits until this notification is closed or the optional abort signal is triggered.
+   *
+   * ```ts
+   * const handle = await notification.show({ title: "Waiting..." });
+   * await handle.waitUntilClosed();
+   * ```
+   */
+  waitUntilClosed(options?: WaitForActionOptions): Task<void>;
+  toString(): string;
 }
 /**
  * Utilities for manipulating file paths. All methods are static.
- * 
+ *
  * ```ts
  * const full = Path.join("/home/user", "documents", "file.txt");
  * const dir = Path.parent(full);   // "/home/user/documents"
  * const name = Path.filename(full); // "file.txt"
  * const ext = Path.extension(full); // "txt"
  * ```
- * 
+ *
  * ```ts
  * // Change a file's extension
  * const newPath = Path.setExtension("/tmp/data.csv", "json");
@@ -7130,92 +7560,92 @@ declare interface NotificationHandle {
  * @category Path
  */
 declare class Path {
-    private constructor();
-    /**
-     * Joins path segments into a single path.
-     * 
-     * ```ts
-     * Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
-     * ```
-     */
-    static join(...args: string[]): string;
-    /**
-     * Returns the file name component of a path.
-     * 
-     * ```ts
-     * Path.filename("/home/user/file.txt"); // "file.txt"
-     * ```
-     */
-    static filename(path: string): string;
-    /**
-     * Alias for `filename`.
-     */
-    static basename(path: string): string;
-    /**
-     * Returns the parent directory of a path.
-     * 
-     * ```ts
-     * Path.parent("/home/user/file.txt"); // "/home/user"
-     * ```
-     */
-    static parent(path: string): string;
-    /**
-     * Alias for `parent`.
-     */
-    static dirname(path: string): string;
-    /**
-     * Returns whether the path is absolute.
-     * 
-     * ```ts
-     * Path.isAbsolute("/home/user"); // true
-     * Path.isAbsolute("relative/path"); // false
-     * ```
-     */
-    static isAbsolute(path: string): boolean;
-    /**
-     * Returns whether the path is relative.
-     * 
-     * ```ts
-     * Path.isRelative("relative/path"); // true
-     * Path.isRelative("/absolute/path"); // false
-     * ```
-     */
-    static isRelative(path: string): boolean;
-    /**
-     * Returns the file extension of a path (without the leading dot).
-     * 
-     * ```ts
-     * Path.extension("/home/user/file.txt"); // "txt"
-     * Path.extension("/home/user/file"); // ""
-     * ```
-     */
-    static extension(path: string): string;
-    /**
-     * Alias for `extension`.
-     */
-    static extname(path: string): string;
-    /**
-     * Returns the path with a different extension. Returns an empty string on failure.
-     * 
-     * ```ts
-     * Path.setExtension("/tmp/data.csv", "json"); // "/tmp/data.json"
-     * Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
-     * ```
-     */
-    static setExtension(path: string, extension: string): string;
-    toString(): string;
+  private constructor();
+  /**
+   * Joins path segments into a single path.
+   *
+   * ```ts
+   * Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
+   * ```
+   */
+  static join(...args: string[]): string;
+  /**
+   * Returns the file name component of a path.
+   *
+   * ```ts
+   * Path.filename("/home/user/file.txt"); // "file.txt"
+   * ```
+   */
+  static filename(path: string): string;
+  /**
+   * Alias for `filename`.
+   */
+  static basename(path: string): string;
+  /**
+   * Returns the parent directory of a path.
+   *
+   * ```ts
+   * Path.parent("/home/user/file.txt"); // "/home/user"
+   * ```
+   */
+  static parent(path: string): string;
+  /**
+   * Alias for `parent`.
+   */
+  static dirname(path: string): string;
+  /**
+   * Returns whether the path is absolute.
+   *
+   * ```ts
+   * Path.isAbsolute("/home/user"); // true
+   * Path.isAbsolute("relative/path"); // false
+   * ```
+   */
+  static isAbsolute(path: string): boolean;
+  /**
+   * Returns whether the path is relative.
+   *
+   * ```ts
+   * Path.isRelative("relative/path"); // true
+   * Path.isRelative("/absolute/path"); // false
+   * ```
+   */
+  static isRelative(path: string): boolean;
+  /**
+   * Returns the file extension of a path (without the leading dot).
+   *
+   * ```ts
+   * Path.extension("/home/user/file.txt"); // "txt"
+   * Path.extension("/home/user/file"); // ""
+   * ```
+   */
+  static extension(path: string): string;
+  /**
+   * Alias for `extension`.
+   */
+  static extname(path: string): string;
+  /**
+   * Returns the path with a different extension. Returns an empty string on failure.
+   *
+   * ```ts
+   * Path.setExtension("/tmp/data.csv", "json"); // "/tmp/data.json"
+   * Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
+   * ```
+   */
+  static setExtension(path: string, extension: string): string;
+  toString(): string;
 }
 /**
  * A 2D point with integer coordinates.
- * 
+ *
  * Points can be constructed from two numbers, an object with `x`/`y`, or another Point.
- * 
+ *
  * ```ts
  * const p1 = new Point(10, 20);
  * const p2 = new Point({ x: 10, y: 20 });
  * const p3 = new Point(p1);
  * ```
- * 
+ *
  * ```ts
  * const a = new Point(1, 2);
  * const b = new Point(4, 6);
@@ -7225,134 +7655,134 @@ declare class Path {
  * @category Point
  */
 declare class Point {
-    /**
-     * X coordinate
-     */
-    x: number;
-    /**
-     * Y coordinate
-     */
-    y: number;
-    /**
-     * Constructor with two numbers.
-     */
-    constructor(x: number, y: number);
-    /**
-     * Constructor with anything Point-like.
-     */
-    constructor(p: PointLike);
-    /**
-     * Length of this point (distance from origin).
-     * 
-     * ```ts
-     * const p = new Point(3, 4);
-     * println(p.length()); // 5
-     * ```
-     */
-    length(): number;
-    /**
-     * Returns a random point within a circle of the given radius around a center point.
-     * 
-     * ```ts
-     * const p = Point.randomInCircle(100, 100, 50);
-     * ```
-     */
-    static randomInCircle(center: PointLike, radius: number): Point;
-    /**
-     * Returns a random point within a circle of the given radius around a center point.
-     * 
-     * ```ts
-     * const p = Point.randomInCircle(100, 100, 50);
-     * ```
-     */
-    static randomInCircle(x: number, y: number, radius: number): Point;
-    /**
-     * Calculates the distance between this point and another.
-     * 
-     * ```ts
-     * const a = new Point(0, 0);
-     * const b = new Point(3, 4);
-     * println(a.distanceTo(b)); // 5
-     * ```
-     */
-    distanceTo(other: Point): number;
-    /**
-     * Returns a JSON representation of this Point.
-     * 
-     * ```ts
-     * const p = new Point(1, 2);
-     * println(p.toJson()); // '{"x":1,"y":2}'
-     * ```
-     */
-    toJson(): string;
-    /**
-     * Returns true if this Point is at the origin, (0, 0).
-     * 
-     * ```ts
-     * println(new Point(0, 0).isOrigin()); // true
-     * println(new Point(1, 0).isOrigin()); // false
-     * ```
-     */
-    isOrigin(): boolean;
-    /**
-     * Computes the distance between two points.
-     * 
-     * ```ts
-     * const d = Point.distance(new Point(0, 0), new Point(3, 4));
-     * println(d); // 5
-     * ```
-     */
-    static distance(a: Point, b: Point): number;
-    /**
-     * Returns true if a Point equals another.
-     * 
-     * ```ts
-     * const a = new Point(1, 2);
-     * const b = new Point(1, 2);
-     * println(a.equals(b)); // true
-     * ```
-     */
-    equals(other: Point): boolean;
-    /**
-     * Adds two points and returns a new Point.
-     * 
-     * ```ts
-     * const sum = new Point(1, 2).add(new Point(3, 4));
-     * println(sum); // "Point(4, 6)"
-     * ```
-     */
-    add(other: Point): Point;
-    /**
-     * Subtracts two points and returns a new Point.
-     * 
-     * ```ts
-     * const diff = new Point(5, 7).subtract(new Point(2, 3));
-     * println(diff); // "Point(3, 4)"
-     * ```
-     */
-    subtract(other: Point): Point;
-    /**
-     * Scales this point by a factor and returns a new Point.
-     * 
-     * ```ts
-     * const p = new Point(3, 4).scaled(2);
-     * println(p); // "Point(6, 8)"
-     * ```
-     */
-    scaled(factor: number): Point;
-    /**
-     * Returns a string representation of this Point.
-     */
-    toString(): string;
-    /**
-     * Clones this Point.
-     * 
-     * ```ts
-     * const original = new Point(1, 2);
-     * const copy = original.clone();
-     * ```
-     */
-    clone(): Point;
+  /**
+   * X coordinate
+   */
+  x: number;
+  /**
+   * Y coordinate
+   */
+  y: number;
+  /**
+   * Constructor with two numbers.
+   */
+  constructor(x: number, y: number);
+  /**
+   * Constructor with anything Point-like.
+   */
+  constructor(p: PointLike);
+  /**
+   * Length of this point (distance from origin).
+   *
+   * ```ts
+   * const p = new Point(3, 4);
+   * println(p.length()); // 5
+   * ```
+   */
+  length(): number;
+  /**
+   * Returns a random point within a circle of the given radius around a center point.
+   *
+   * ```ts
+   * const p = Point.randomInCircle(100, 100, 50);
+   * ```
+   */
+  static randomInCircle(center: PointLike, radius: number): Point;
+  /**
+   * Returns a random point within a circle of the given radius around a center point.
+   *
+   * ```ts
+   * const p = Point.randomInCircle(100, 100, 50);
+   * ```
+   */
+  static randomInCircle(x: number, y: number, radius: number): Point;
+  /**
+   * Calculates the distance between this point and another.
+   *
+   * ```ts
+   * const a = new Point(0, 0);
+   * const b = new Point(3, 4);
+   * println(a.distanceTo(b)); // 5
+   * ```
+   */
+  distanceTo(other: Point): number;
+  /**
+   * Returns a JSON representation of this Point.
+   *
+   * ```ts
+   * const p = new Point(1, 2);
+   * println(p.toJson()); // '{"x":1,"y":2}'
+   * ```
+   */
+  toJson(): string;
+  /**
+   * Returns true if this Point is at the origin, (0, 0).
+   *
+   * ```ts
+   * println(new Point(0, 0).isOrigin()); // true
+   * println(new Point(1, 0).isOrigin()); // false
+   * ```
+   */
+  isOrigin(): boolean;
+  /**
+   * Computes the distance between two points.
+   *
+   * ```ts
+   * const d = Point.distance(new Point(0, 0), new Point(3, 4));
+   * println(d); // 5
+   * ```
+   */
+  static distance(a: Point, b: Point): number;
+  /**
+   * Returns true if a Point equals another.
+   *
+   * ```ts
+   * const a = new Point(1, 2);
+   * const b = new Point(1, 2);
+   * println(a.equals(b)); // true
+   * ```
+   */
+  equals(other: Point): boolean;
+  /**
+   * Adds two points and returns a new Point.
+   *
+   * ```ts
+   * const sum = new Point(1, 2).add(new Point(3, 4));
+   * println(sum); // "Point(4, 6)"
+   * ```
+   */
+  add(other: Point): Point;
+  /**
+   * Subtracts two points and returns a new Point.
+   *
+   * ```ts
+   * const diff = new Point(5, 7).subtract(new Point(2, 3));
+   * println(diff); // "Point(3, 4)"
+   * ```
+   */
+  subtract(other: Point): Point;
+  /**
+   * Scales this point by a factor and returns a new Point.
+   *
+   * ```ts
+   * const p = new Point(3, 4).scaled(2);
+   * println(p); // "Point(6, 8)"
+   * ```
+   */
+  scaled(factor: number): Point;
+  /**
+   * Returns a string representation of this Point.
+   */
+  toString(): string;
+  /**
+   * Clones this Point.
+   *
+   * ```ts
+   * const original = new Point(1, 2);
+   * const copy = original.clone();
+   * ```
+   */
+  clone(): Point;
 }
 /**
  * Options for starting a process.
@@ -7360,26 +7790,26 @@ declare class Point {
  * @expand
  */
 declare interface StartProcessOptions {
-    /**
-     * Arguments to pass to the command.
-     * @defaultValue `[]`
-     */
-    args?: string[];
-    /**
-     * Working directory for the process.
-     * @defaultValue `undefined`
-     */
-    workingDirectory?: string;
-    /**
-     * Environment variables for the process.
-     * @defaultValue `undefined`
-     */
-    env?: Record<string, string | undefined>;
-    /**
-     * Abort signal to kill the process.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Arguments to pass to the command.
+   * @defaultValue `[]`
+   */
+  args?: string[];
+  /**
+   * Working directory for the process.
+   * @defaultValue `undefined`
+   */
+  workingDirectory?: string;
+  /**
+   * Environment variables for the process.
+   * @defaultValue `undefined`
+   */
+  env?: Record<string, string | undefined>;
+  /**
+   * Abort signal to kill the process.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Options for running a shell command.
@@ -7387,21 +7817,21 @@ declare interface StartProcessOptions {
  * @expand
  */
 declare interface ShellOptions {
-    /**
-     * Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
-     * On Windows defaults to `powershell`.
-     * @defaultValue `undefined`
-     */
-    shell?: string;
-    /**
-     * Abort signal to cancel the operation.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
+   * On Windows defaults to `powershell`.
+   * @defaultValue `undefined`
+   */
+  shell?: string;
+  /**
+   * Abort signal to cancel the operation.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * Start and manage child processes.
- * 
+ *
  * ```ts
  * const handle = process.start("echo", { args: ["hello world"] });
  * for await (const line of handle.stdout) {
@@ -7410,12 +7840,12 @@ declare interface ShellOptions {
  * const result = await handle.closed;
  * println(result.exitCode);
  * ```
- * 
+ *
  * ```ts
  * const result = await process.startAndWait("ls", { args: ["-la"] });
  * println(result.stdout);
  * ```
- * 
+ *
  * ```ts
  * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
  * println(pid);
@@ -7423,100 +7853,103 @@ declare interface ShellOptions {
  * @category Process
  */
 declare interface Process {
-    /**
-     * Starts a process and returns a `ProcessHandle` for interacting with it.
-     * 
-     * ```ts
-     * const handle = process.start("echo", { args: ["hello world"] });
-     * for await (const line of handle.stdout) {
-     *     println(line);
-     * }
-     * const result = await handle.closed;
-     * println(result.exitCode);
-     * ```
-     * 
-     * ```ts
-     * const handle = process.start("cat");
-     * await handle.write("hello\n");
-     * await handle.closeStdin();
-     * for await (const line of handle.stdout) {
-     *     println(line);
-     * }
-     * await handle.closed;
-     * ```
-     */
-    start(command: string, options?: StartProcessOptions): ProcessHandle;
-    /**
-     * Starts a process, waits for it to finish, and returns the exit result
-     * including captured stdout and stderr.
-     * 
-     * ```ts
-     * const result = await process.startAndWait("ls", { args: ["-la"] });
-     * println(result.stdout);
-     * println(result.exitCode);
-     * ```
-     */
-    startAndWait(command: string, options?: StartProcessOptions): Task<ProcessExitResult>;
-    /**
-     * Starts a detached process and returns its PID.
-     * The process will continue running after the script exits.
-     * 
-     * ```ts
-     * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
-     * println(`Started server with PID: ${pid}`);
-     * ```
-     */
-    startDetached(command: string, options?: StartProcessOptions): number;
-    /**
-     * Runs a command through the system shell, similar to C's `system()` function.
-     * 
-     * Stdio is inherited from the current process: if a console window is open the
-     * command runs inside it; otherwise the OS opens a new console window for it.
-     * 
-     * The default shell is platform-specific:
-     * - **Linux** – the value of `$SHELL`, falling back to `bash`.
-     * - **Windows** – `powershell`.
-     * 
-     * A custom shell can be supplied via `options.shell`. On Windows the command
-     * flag (`/C`, `-Command`, or `-c`) is inferred automatically from the shell name.
-     * 
-     * ```ts
-     * // Clear the screen (works on Windows with cmd/powershell and on Unix)
-     * await process.shell("cls");
-     * ```
-     * 
-     * ```ts
-     * // Use a specific shell
-     * await process.shell("echo hello", { shell: "zsh" });
-     * ```
-     */
-    shell(command: string, options?: ShellOptions): Task<number | undefined>;
-    /**
-     * Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
-     * 
-     * ```ts
-     * process.kill(1234);
-     * ```
-     */
-    kill(pid: number): void;
-    /**
-     * Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
-     * 
-     * ```ts
-     * process.terminate(1234);
-     * ```
-     */
-    terminate(pid: number): void;
-    /**
-     * Send a signal to a process by PID.
-     * 
-     * ```ts
-     * process.sendSignal(1234, Signal.Term);
-     * ```
-     * @platform only works on Linux
-     */
-    sendSignal(pid: number, signal: Signal): void;
-    toString(): string;
+  /**
+   * Starts a process and returns a `ProcessHandle` for interacting with it.
+   *
+   * ```ts
+   * const handle = process.start("echo", { args: ["hello world"] });
+   * for await (const line of handle.stdout) {
+   *     println(line);
+   * }
+   * const result = await handle.closed;
+   * println(result.exitCode);
+   * ```
+   *
+   * ```ts
+   * const handle = process.start("cat");
+   * await handle.write("hello\n");
+   * await handle.closeStdin();
+   * for await (const line of handle.stdout) {
+   *     println(line);
+   * }
+   * await handle.closed;
+   * ```
+   */
+  start(command: string, options?: StartProcessOptions): ProcessHandle;
+  /**
+   * Starts a process, waits for it to finish, and returns the exit result
+   * including captured stdout and stderr.
+   *
+   * ```ts
+   * const result = await process.startAndWait("ls", { args: ["-la"] });
+   * println(result.stdout);
+   * println(result.exitCode);
+   * ```
+   */
+  startAndWait(
+    command: string,
+    options?: StartProcessOptions,
+  ): Task<ProcessExitResult>;
+  /**
+   * Starts a detached process and returns its PID.
+   * The process will continue running after the script exits.
+   *
+   * ```ts
+   * const pid = process.startDetached("my-server", { args: ["--port", "8080"] });
+   * println(`Started server with PID: ${pid}`);
+   * ```
+   */
+  startDetached(command: string, options?: StartProcessOptions): number;
+  /**
+   * Runs a command through the system shell, similar to C's `system()` function.
+   *
+   * Stdio is inherited from the current process: if a console window is open the
+   * command runs inside it; otherwise the OS opens a new console window for it.
+   *
+   * The default shell is platform-specific:
+   * - **Linux** – the value of `$SHELL`, falling back to `bash`.
+   * - **Windows** – `powershell`.
+   *
+   * A custom shell can be supplied via `options.shell`. On Windows the command
+   * flag (`/C`, `-Command`, or `-c`) is inferred automatically from the shell name.
+   *
+   * ```ts
+   * // Clear the screen (works on Windows with cmd/powershell and on Unix)
+   * await process.shell("cls");
+   * ```
+   *
+   * ```ts
+   * // Use a specific shell
+   * await process.shell("echo hello", { shell: "zsh" });
+   * ```
+   */
+  shell(command: string, options?: ShellOptions): Task<number | undefined>;
+  /**
+   * Kill a process by PID (SIGKILL on Unix, TerminateProcess on Windows).
+   *
+   * ```ts
+   * process.kill(1234);
+   * ```
+   */
+  kill(pid: number): void;
+  /**
+   * Gracefully terminate a process by PID (SIGTERM on Unix, WM_CLOSE on Windows).
+   *
+   * ```ts
+   * process.terminate(1234);
+   * ```
+   */
+  terminate(pid: number): void;
+  /**
+   * Send a signal to a process by PID.
+   *
+   * ```ts
+   * process.sendSignal(1234, Signal.Term);
+   * ```
+   * @platform only works on Linux
+   */
+  sendSignal(pid: number, signal: Signal): void;
+  toString(): string;
 }
 /**
  * @category Process
@@ -7524,10 +7957,10 @@ declare interface Process {
 declare const process: Process;
 /**
  * A handle to a running process.
- * 
+ *
  * Provides access to the process's PID, stdin, stdout, stderr, and allows
  * waiting for the process to exit or killing it.
- * 
+ *
  * ```ts
  * const handle = process.start("echo", { args: ["hello"] });
  * for await (const line of handle.stdout) {
@@ -7539,85 +7972,85 @@ declare const process: Process;
  * @category Process
  */
 declare interface ProcessHandle {
-    /**
-     * Process ID.
-     */
-    readonly pid: number;
-    /**
-     * An async iterator that yields lines from the process's standard output.
-     * 
-     * ```ts
-     * const handle = process.start("echo", { args: ["hello"] });
-     * for await (const line of handle.stdout) {
-     *     println(line);
-     * }
-     * ```
-     */
-    readonly stdout: AsyncIterableIterator<string>;
-    /**
-     * An async iterator that yields lines from the process's standard error.
-     * 
-     * ```ts
-     * const handle = process.start("my-command");
-     * for await (const line of handle.stderr) {
-     *     println(`error: ${line}`);
-     * }
-     * ```
-     */
-    readonly stderr: AsyncIterableIterator<string>;
-    /**
-     * A promise that resolves with the exit result when the process closes.
-     * 
-     * ```ts
-     * const handle = process.start("ls");
-     * const result = await handle.closed;
-     * println(result.exitCode);
-     * ```
-     */
-    readonly closed: Task<ProcessExitResult>;
-    /**
-     * Write data to the process's stdin.
-     * 
-     * ```ts
-     * const handle = process.start("cat");
-     * await handle.write("hello\n");
-     * ```
-     */
-    write(data: string): Promise<void>;
-    /**
-     * Close the process's stdin. This signals EOF to the child process,
-     * which is necessary for programs that read until EOF (like `cat`).
-     * 
-     * ```ts
-     * const handle = process.start("cat");
-     * await handle.write("hello\n");
-     * await handle.closeStdin();
-     * ```
-     */
-    closeStdin(): Promise<void>;
-    /**
-     * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
-     * 
-     * ```ts
-     * const handle = process.start("sleep", { args: ["100"] });
-     * handle.kill();
-     * ```
-     */
-    kill(): void;
-    /**
-     * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
-     * 
-     * ```ts
-     * const handle = process.start("sleep", { args: ["100"] });
-     * handle.terminate();
-     * ```
-     */
-    terminate(): void;
-    toString(): string;
+  /**
+   * Process ID.
+   */
+  readonly pid: number;
+  /**
+   * An async iterator that yields lines from the process's standard output.
+   *
+   * ```ts
+   * const handle = process.start("echo", { args: ["hello"] });
+   * for await (const line of handle.stdout) {
+   *     println(line);
+   * }
+   * ```
+   */
+  readonly stdout: AsyncIterableIterator<string>;
+  /**
+   * An async iterator that yields lines from the process's standard error.
+   *
+   * ```ts
+   * const handle = process.start("my-command");
+   * for await (const line of handle.stderr) {
+   *     println(`error: ${line}`);
+   * }
+   * ```
+   */
+  readonly stderr: AsyncIterableIterator<string>;
+  /**
+   * A promise that resolves with the exit result when the process closes.
+   *
+   * ```ts
+   * const handle = process.start("ls");
+   * const result = await handle.closed;
+   * println(result.exitCode);
+   * ```
+   */
+  readonly closed: Task<ProcessExitResult>;
+  /**
+   * Write data to the process's stdin.
+   *
+   * ```ts
+   * const handle = process.start("cat");
+   * await handle.write("hello\n");
+   * ```
+   */
+  write(data: string): Promise<void>;
+  /**
+   * Close the process's stdin. This signals EOF to the child process,
+   * which is necessary for programs that read until EOF (like `cat`).
+   *
+   * ```ts
+   * const handle = process.start("cat");
+   * await handle.write("hello\n");
+   * await handle.closeStdin();
+   * ```
+   */
+  closeStdin(): Promise<void>;
+  /**
+   * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
+   *
+   * ```ts
+   * const handle = process.start("sleep", { args: ["100"] });
+   * handle.kill();
+   * ```
+   */
+  kill(): void;
+  /**
+   * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
+   *
+   * ```ts
+   * const handle = process.start("sleep", { args: ["100"] });
+   * handle.terminate();
+   * ```
+   */
+  terminate(): void;
+  toString(): string;
 }
 /**
  * The result of a process that has finished.
- * 
+ *
  * ```ts
  * const handle = process.start("ls");
  * const result = await handle.closed;
@@ -7625,7 +8058,7 @@ declare interface ProcessHandle {
  *     println("success");
  * }
  * ```
- * 
+ *
  * ```ts
  * const result = await process.startAndWait("echo", { args: ["hello"] });
  * println(result.stdout);
@@ -7633,27 +8066,27 @@ declare interface ProcessHandle {
  * @category Process
  */
 declare interface ProcessExitResult {
-    /**
-     * The process ID. Only available when using `handle.closed`.
-     */
-    readonly pid?: number;
-    /**
-     * The exit code of the process. `undefined` if the process was killed by a signal.
-     */
-    readonly exitCode?: number;
-    /**
-     * The captured stdout output. Only available when using `startAndWait`.
-     */
-    readonly stdout?: string;
-    /**
-     * The captured stderr output. Only available when using `startAndWait`.
-     */
-    readonly stderr?: string;
-    toString(): string;
+  /**
+   * The process ID. Only available when using `handle.closed`.
+   */
+  readonly pid?: number;
+  /**
+   * The exit code of the process. `undefined` if the process was killed by a signal.
+   */
+  readonly exitCode?: number;
+  /**
+   * The captured stdout output. Only available when using `startAndWait`.
+   */
+  readonly stdout?: string;
+  /**
+   * The captured stderr output. Only available when using `startAndWait`.
+   */
+  readonly stderr?: string;
+  toString(): string;
 }
 /**
  * Options for generating random strings.
- * 
+ *
  * ```ts
  * const token = random.string(32);
  * const pin = random.string(6, { characters: "0123456789" });
@@ -7662,45 +8095,45 @@ declare interface ProcessExitResult {
  * @expand
  */
 declare interface RandomStringOptions {
-    /**
-     * Possible characters to pick from.
-     * Can contain any Unicode grapheme cluster.
-     * When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
-     * Defaults to all printable ASCII characters.
-     * @defaultValue `undefined`
-     */
-    characters?: string;
-    /**
-     * Include digits `0-9` in the default character set.
-     * Ignored when `characters` is specified.
-     * @defaultValue `true`
-     */
-    allowNumbers?: boolean;
-    /**
-     * Include letters `A-Z` and `a-z` in the default character set.
-     * Ignored when `characters` is specified.
-     * @defaultValue `true`
-     */
-    allowLetters?: boolean;
-    /**
-     * Include printable ASCII non-alphanumeric characters in the default character set.
-     * Ignored when `characters` is specified.
-     * @defaultValue `true`
-     */
-    allowSpecialCharacters?: boolean;
+  /**
+   * Possible characters to pick from.
+   * Can contain any Unicode grapheme cluster.
+   * When `characters` is specified, `allowNumbers`, `allowLetters` and `allowSpecialCharacters` are ignored.
+   * Defaults to all printable ASCII characters.
+   * @defaultValue `undefined`
+   */
+  characters?: string;
+  /**
+   * Include digits `0-9` in the default character set.
+   * Ignored when `characters` is specified.
+   * @defaultValue `true`
+   */
+  allowNumbers?: boolean;
+  /**
+   * Include letters `A-Z` and `a-z` in the default character set.
+   * Ignored when `characters` is specified.
+   * @defaultValue `true`
+   */
+  allowLetters?: boolean;
+  /**
+   * Include printable ASCII non-alphanumeric characters in the default character set.
+   * Ignored when `characters` is specified.
+   * @defaultValue `true`
+   */
+  allowSpecialCharacters?: boolean;
 }
 /**
  * Random number generator.
- * 
+ *
  * Provides methods for generating random numbers, integers, positions, and choices.
  * The generator is deterministic when seeded.
- * 
+ *
  * ```ts
  * const n = random.number(); // 0..1
  * const i = random.integer(1, 10); // 1..10
  * const item = random.choice(["a", "b", "c"]);
  * ```
- * 
+ *
  * ```ts
  * random.setSeed(42);
  * println(random.number()); // always the same value
@@ -7709,108 +8142,108 @@ declare interface RandomStringOptions {
  * @category Random
  */
 declare interface Random {
-    /**
-     * Returns a number between 0 (inclusive) and 1 (exclusive)
-     */
-    number(): number;
-    /**
-     * Returns a number between 0 (inclusive) and max (exclusive)
-     */
-    number(max: number): number;
-    /**
-     * Returns a number between min (inclusive) and max (exclusive)
-     */
-    number(min: number, max: number): number;
-    /**
-     * Returns an integer between 0 (inclusive) and max (inclusive)
-     */
-    integer(max: number): number;
-    /**
-     * Returns an integer between min (inclusive) and max (inclusive)
-     */
-    integer(min: number, max: number): number;
-    /**
-     * Sets the seed to a value.
-     * This seed is used for all random number generation. Since the random number generator is
-     * deterministic that means that setting it to a particular number will always generate the same
-     * random numbers.
-     * 
-     * ```ts
-     * random.setSeed(42);
-     * ```
-     */
-    setSeed(seed: number): void;
-    /**
-     * Resets the seed to be a random one.
-     * 
-     * ```ts
-     * random.resetSeed();
-     * ```
-     */
-    resetSeed(): void;
-    /**
-     * Returns a random position on any display.
-     * 
-     * ```ts
-     * const pos = await random.position();
-     * println(pos);
-     * ```
-     */
-    position(): Promise<Readonly<Point>>;
-    /**
-     * Returns a random color with full opacity.
-     * 
-     * ```ts
-     * const c = random.color();
-     * println(c); // Color(r: ?, g: ?, b: ?, a: 255)
-     * ```
-     */
-    color(): Readonly<Color>;
-    /**
-     * Returns a random color including a random alpha channel.
-     * 
-     * ```ts
-     * const c = random.colorWithAlpha();
-     * println(c); // Color(r: ?, g: ?, b: ?, a: ?)
-     * ```
-     */
-    colorWithAlpha(): Readonly<Color>;
-    /**
-     * Returns a random string of the given length.
-     * 
-     * ```ts
-     * const token = random.string(16);
-     * ```
-     * 
-     * ```ts
-     * const code = random.string(8, { characters: "ABCDEF0123456789" });
-     * ```
-     */
-    string(length: number, options?: RandomStringOptions): string;
-    /**
-     * Returns a random UUID (v4).
-     * 
-     * ```ts
-     * const id = random.uuid();
-     * println(id); // e.g. "f47ac10b-58cc-4372-a567-0e02b2c3d479"
-     * ```
-     */
-    uuid(): string;
-    /**
-     * Chooses one random entry in an array.
-     * A fallback can be provided, in case the array is empty.
-     * 
-     * ```ts
-     * const item = random.choice(["apple", "banana", "cherry"]);
-     * ```
-     * 
-     * ```ts
-     * const item = random.choice([], "default");
-     * println(item); // "default"
-     * ```
-     */
-    choice<T>(array: Array<T>, fallback?: T): T;
-    toString(): string;
+  /**
+   * Returns a number between 0 (inclusive) and 1 (exclusive)
+   */
+  number(): number;
+  /**
+   * Returns a number between 0 (inclusive) and max (exclusive)
+   */
+  number(max: number): number;
+  /**
+   * Returns a number between min (inclusive) and max (exclusive)
+   */
+  number(min: number, max: number): number;
+  /**
+   * Returns an integer between 0 (inclusive) and max (inclusive)
+   */
+  integer(max: number): number;
+  /**
+   * Returns an integer between min (inclusive) and max (inclusive)
+   */
+  integer(min: number, max: number): number;
+  /**
+   * Sets the seed to a value.
+   * This seed is used for all random number generation. Since the random number generator is
+   * deterministic that means that setting it to a particular number will always generate the same
+   * random numbers.
+   *
+   * ```ts
+   * random.setSeed(42);
+   * ```
+   */
+  setSeed(seed: number): void;
+  /**
+   * Resets the seed to be a random one.
+   *
+   * ```ts
+   * random.resetSeed();
+   * ```
+   */
+  resetSeed(): void;
+  /**
+   * Returns a random position on any display.
+   *
+   * ```ts
+   * const pos = await random.position();
+   * println(pos);
+   * ```
+   */
+  position(): Promise<Readonly<Point>>;
+  /**
+   * Returns a random color with full opacity.
+   *
+   * ```ts
+   * const c = random.color();
+   * println(c); // Color(r: ?, g: ?, b: ?, a: 255)
+   * ```
+   */
+  color(): Readonly<Color>;
+  /**
+   * Returns a random color including a random alpha channel.
+   *
+   * ```ts
+   * const c = random.colorWithAlpha();
+   * println(c); // Color(r: ?, g: ?, b: ?, a: ?)
+   * ```
+   */
+  colorWithAlpha(): Readonly<Color>;
+  /**
+   * Returns a random string of the given length.
+   *
+   * ```ts
+   * const token = random.string(16);
+   * ```
+   *
+   * ```ts
+   * const code = random.string(8, { characters: "ABCDEF0123456789" });
+   * ```
+   */
+  string(length: number, options?: RandomStringOptions): string;
+  /**
+   * Returns a random UUID (v4).
+   *
+   * ```ts
+   * const id = random.uuid();
+   * println(id); // e.g. "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+   * ```
+   */
+  uuid(): string;
+  /**
+   * Chooses one random entry in an array.
+   * A fallback can be provided, in case the array is empty.
+   *
+   * ```ts
+   * const item = random.choice(["apple", "banana", "cherry"]);
+   * ```
+   *
+   * ```ts
+   * const item = random.choice([], "default");
+   * println(item); // "default"
+   * ```
+   */
+  choice<T>(array: Array<T>, fallback?: T): T;
+  toString(): string;
 }
 /**
  * @category Random
@@ -7818,14 +8251,14 @@ declare interface Random {
 declare const random: Random;
 /**
  * A 2D rectangle with position and size.
- * 
+ *
  * Rects can be constructed from four numbers, an object with `x`/`y`/`width`/`height`, or another Rect.
- * 
+ *
  * ```ts
  * const r1 = new Rect(0, 0, 100, 50);
  * const r2 = new Rect({ x: 0, y: 0, width: 100, height: 50 });
  * ```
- * 
+ *
  * ```ts
  * const a = new Rect(0, 0, 100, 100);
  * const b = new Rect(50, 50, 100, 100);
@@ -7835,179 +8268,179 @@ declare const random: Random;
  * @category Rect
  */
 declare class Rect {
-    /**
-     * X coordinate
-     */
-    x: number;
-    /**
-     * Y coordinate
-     */
-    y: number;
-    /**
-     * Width
-     */
-    width: number;
-    /**
-     * Height
-     */
-    height: number;
-    /**
-     * Top-left origin
-     */
-    topLeft: Point;
-    /**
-     * Size
-     */
-    size: Size;
-    /**
-     * Constructor with a position and a size.
-     */
-    constructor(x: number, y: number, width: number, height: number);
-    /**
-     * Constructor with anything Rect-like.
-     */
-    constructor(r: RectLike);
-    /**
-     * Returns true if this Rect equals another.
-     * 
-     * ```ts
-     * const a = new Rect(0, 0, 10, 10);
-     * const b = new Rect(0, 0, 10, 10);
-     * println(a.equals(b)); // true
-     * ```
-     */
-    equals(other: Rect): boolean;
-    /**
-     * Returns true if this Rect contains the given point.
-     * 
-     * ```ts
-     * const r = new Rect(0, 0, 100, 100);
-     * println(r.contains(new Point(50, 50)));  // true
-     * println(r.contains(new Point(150, 50))); // false
-     * ```
-     */
-    contains(point: Point): boolean;
-    /**
-     * Returns a string representation of this Rect.
-     */
-    toString(): string;
-    /**
-     * Clones this Rect.
-     * 
-     * ```ts
-     * const original = new Rect(0, 0, 100, 100);
-     * const copy = original.clone();
-     * ```
-     */
-    clone(): Rect;
-    /**
-     * Returns true if this Rect intersects with another.
-     * 
-     * ```ts
-     * const a = new Rect(0, 0, 100, 100);
-     * const b = new Rect(50, 50, 100, 100);
-     * println(a.intersects(b)); // true
-     * ```
-     */
-    intersects(other: Rect): boolean;
-    /**
-     * Returns the intersection of two Rects, or undefined if they don't overlap.
-     * 
-     * ```ts
-     * const a = new Rect(0, 0, 100, 100);
-     * const b = new Rect(50, 50, 100, 100);
-     * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
-     * ```
-     */
-    intersection(other: Rect): Rect | undefined;
-    /**
-     * Returns the smallest Rect containing both this and another Rect.
-     * 
-     * ```ts
-     * const a = new Rect(0, 0, 50, 50);
-     * const b = new Rect(25, 25, 50, 50);
-     * const u = a.union(b); // Rect(0, 0, 75, 75)
-     * ```
-     */
-    union(other: Rect): Rect;
+  /**
+   * X coordinate
+   */
+  x: number;
+  /**
+   * Y coordinate
+   */
+  y: number;
+  /**
+   * Width
+   */
+  width: number;
+  /**
+   * Height
+   */
+  height: number;
+  /**
+   * Top-left origin
+   */
+  topLeft: Point;
+  /**
+   * Size
+   */
+  size: Size;
+  /**
+   * Constructor with a position and a size.
+   */
+  constructor(x: number, y: number, width: number, height: number);
+  /**
+   * Constructor with anything Rect-like.
+   */
+  constructor(r: RectLike);
+  /**
+   * Returns true if this Rect equals another.
+   *
+   * ```ts
+   * const a = new Rect(0, 0, 10, 10);
+   * const b = new Rect(0, 0, 10, 10);
+   * println(a.equals(b)); // true
+   * ```
+   */
+  equals(other: Rect): boolean;
+  /**
+   * Returns true if this Rect contains the given point.
+   *
+   * ```ts
+   * const r = new Rect(0, 0, 100, 100);
+   * println(r.contains(new Point(50, 50)));  // true
+   * println(r.contains(new Point(150, 50))); // false
+   * ```
+   */
+  contains(point: Point): boolean;
+  /**
+   * Returns a string representation of this Rect.
+   */
+  toString(): string;
+  /**
+   * Clones this Rect.
+   *
+   * ```ts
+   * const original = new Rect(0, 0, 100, 100);
+   * const copy = original.clone();
+   * ```
+   */
+  clone(): Rect;
+  /**
+   * Returns true if this Rect intersects with another.
+   *
+   * ```ts
+   * const a = new Rect(0, 0, 100, 100);
+   * const b = new Rect(50, 50, 100, 100);
+   * println(a.intersects(b)); // true
+   * ```
+   */
+  intersects(other: Rect): boolean;
+  /**
+   * Returns the intersection of two Rects, or undefined if they don't overlap.
+   *
+   * ```ts
+   * const a = new Rect(0, 0, 100, 100);
+   * const b = new Rect(50, 50, 100, 100);
+   * const inter = a.intersection(b); // Rect(50, 50, 50, 50)
+   * ```
+   */
+  intersection(other: Rect): Rect | undefined;
+  /**
+   * Returns the smallest Rect containing both this and another Rect.
+   *
+   * ```ts
+   * const a = new Rect(0, 0, 50, 50);
+   * const b = new Rect(25, 25, 50, 50);
+   * const u = a.union(b); // Rect(0, 0, 75, 75)
+   * ```
+   */
+  union(other: Rect): Rect;
 }
 /**
  * Specifies the screen area to search within for find-image operations.
- * 
+ *
  * ```ts
  * // Search the entire desktop
  * const match = await image.findOnScreen(SearchIn.desktop());
- * 
+ *
  * // Search a specific display
  * const display = displays.primary();
  * const match = await image.findOnScreen(SearchIn.display(display));
- * 
+ *
  * // Search a specific rectangle
  * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
  * ```
  * @category Screen
  */
 declare class SearchIn {
-    private constructor();
-    /**
-     * Searches within the entire desktop (the bounding rectangle of all connected displays).
-     * 
-     * ```ts
-     * const match = await image.findOnScreen(SearchIn.desktop());
-     * ```
-     */
-    static desktop(): SearchIn;
-    /**
-     * Searches within a specific display.
-     * 
-     * ```ts
-     * const display = displays.primary();
-     * const match = await image.findOnScreen(SearchIn.display(display));
-     * ```
-     */
-    static display(display: DisplayInfo): SearchIn;
-    /**
-     * Searches within the given screen rectangle.
-     * 
-     * ```ts
-     * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
-     * ```
-     */
-    static rect(rect: RectLike): SearchIn;
-    /**
-     * Searches within the given screen rectangle.
-     * 
-     * ```ts
-     * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
-     * ```
-     */
-    static rect(x: number, y: number, width: number, height: number): SearchIn;
-    /**
-     * Searches within the bounding rectangle of the given window.
-     * 
-     * ```ts
-     * const win = windows.activeWindow();
-     * const match = await image.findOnScreen(SearchIn.window(win));
-     * ```
-     */
-    static window(handle: WindowHandle): SearchIn;
-    toString(): string;
+  private constructor();
+  /**
+   * Searches within the entire desktop (the bounding rectangle of all connected displays).
+   *
+   * ```ts
+   * const match = await image.findOnScreen(SearchIn.desktop());
+   * ```
+   */
+  static desktop(): SearchIn;
+  /**
+   * Searches within a specific display.
+   *
+   * ```ts
+   * const display = displays.primary();
+   * const match = await image.findOnScreen(SearchIn.display(display));
+   * ```
+   */
+  static display(display: DisplayInfo): SearchIn;
+  /**
+   * Searches within the given screen rectangle.
+   *
+   * ```ts
+   * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+   * ```
+   */
+  static rect(rect: RectLike): SearchIn;
+  /**
+   * Searches within the given screen rectangle.
+   *
+   * ```ts
+   * const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+   * ```
+   */
+  static rect(x: number, y: number, width: number, height: number): SearchIn;
+  /**
+   * Searches within the bounding rectangle of the given window.
+   *
+   * ```ts
+   * const win = windows.activeWindow();
+   * const match = await image.findOnScreen(SearchIn.window(win));
+   * ```
+   */
+  static window(handle: WindowHandle): SearchIn;
+  toString(): string;
 }
 /**
  * Provides methods to capture the entire desktop, a specific display, a screen
  * region, or a single pixel.
- * 
+ *
  * ```ts
  * const image = await screen.captureDesktop();
  * println(image.size());
  * ```
- * 
+ *
  * ```ts
  * const display = displays.primary();
  * const image = await screen.captureDisplay(display);
  * println(image.size());
  * ```
- * 
+ *
  * ```ts
  * const pixel = await screen.capturePixel(100, 100);
  * println(pixel);
@@ -8015,75 +8448,80 @@ declare class SearchIn {
  * @category Screen
  */
 declare interface Screen {
-    /**
-     * Captures a screenshot of the entire desktop.
-     * 
-     * ```ts
-     * const image = await screen.captureDesktop();
-     * ```
-     * @platform does not work on Wayland
-     */
-    captureDesktop(): Promise<Image>;
-    /**
-     * Captures a screenshot of the given display.
-     * 
-     * ```ts
-     * const image = await screen.captureDisplay(displays.primary());
-     * const image = await screen.captureDisplay(displays.fromId(474));
-     * const image = await screen.captureDisplay(displays.largest());
-     * ```
-     * @platform does not work on Wayland
-     */
-    captureDisplay(display: DisplayInfo): Promise<Image>;
-    /**
-     * Captures a screenshot of a screen rectangle.
-     * 
-     * ```ts
-     * const image = await screen.captureRect(0, 0, 1920, 1080);
-     * ```
-     * @platform does not work on Wayland
-     */
-    captureRect(rect: RectLike): Promise<Image>;
-    /**
-     * Captures a screenshot of a screen rectangle.
-     * 
-     * ```ts
-     * const image = await screen.captureRect(0, 0, 1920, 1080);
-     * ```
-     * @platform does not work on Wayland
-     */
-    captureRect(x: number, y: number, width: number, height: number): Promise<Image>;
-    /**
-     * Captures a screenshot of the bounding rectangle of the given window.
-     * 
-     * ```ts
-     * const win = windows.activeWindow();
-     * const image = await screen.captureWindow(win);
-     * ```
-     * @platform does not work on Wayland
-     */
-    captureWindow(handle: WindowHandle): Promise<Image>;
-    /**
-     * Captures the color of a single pixel on screen.
-     * 
-     * ```ts
-     * const color = await screen.capturePixel(100, 200);
-     * println(color);
-     * ```
-     * @platform does not work on Wayland
-     */
-    capturePixel(position: PointLike): Promise<Color>;
-    /**
-     * Captures the color of a single pixel on screen.
-     * 
-     * ```ts
-     * const color = await screen.capturePixel(100, 200);
-     * println(color);
-     * ```
-     * @platform does not work on Wayland
-     */
-    capturePixel(x: number, y: number): Promise<Color>;
-    toString(): string;
+  /**
+   * Captures a screenshot of the entire desktop.
+   *
+   * ```ts
+   * const image = await screen.captureDesktop();
+   * ```
+   * @platform does not work on Wayland
+   */
+  captureDesktop(): Promise<Image>;
+  /**
+   * Captures a screenshot of the given display.
+   *
+   * ```ts
+   * const image = await screen.captureDisplay(displays.primary());
+   * const image = await screen.captureDisplay(displays.fromId(474));
+   * const image = await screen.captureDisplay(displays.largest());
+   * ```
+   * @platform does not work on Wayland
+   */
+  captureDisplay(display: DisplayInfo): Promise<Image>;
+  /**
+   * Captures a screenshot of a screen rectangle.
+   *
+   * ```ts
+   * const image = await screen.captureRect(0, 0, 1920, 1080);
+   * ```
+   * @platform does not work on Wayland
+   */
+  captureRect(rect: RectLike): Promise<Image>;
+  /**
+   * Captures a screenshot of a screen rectangle.
+   *
+   * ```ts
+   * const image = await screen.captureRect(0, 0, 1920, 1080);
+   * ```
+   * @platform does not work on Wayland
+   */
+  captureRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ): Promise<Image>;
+  /**
+   * Captures a screenshot of the bounding rectangle of the given window.
+   *
+   * ```ts
+   * const win = windows.activeWindow();
+   * const image = await screen.captureWindow(win);
+   * ```
+   * @platform does not work on Wayland
+   */
+  captureWindow(handle: WindowHandle): Promise<Image>;
+  /**
+   * Captures the color of a single pixel on screen.
+   *
+   * ```ts
+   * const color = await screen.capturePixel(100, 200);
+   * println(color);
+   * ```
+   * @platform does not work on Wayland
+   */
+  capturePixel(position: PointLike): Promise<Color>;
+  /**
+   * Captures the color of a single pixel on screen.
+   *
+   * ```ts
+   * const color = await screen.capturePixel(100, 200);
+   * println(color);
+   * ```
+   * @platform does not work on Wayland
+   */
+  capturePixel(x: number, y: number): Promise<Color>;
+  toString(): string;
 }
 /**
  * @category Screen
@@ -8091,15 +8529,15 @@ declare interface Screen {
 declare const screen: Screen;
 /**
  * A 2D size with width and height.
- * 
+ *
  * Sizes can be constructed from two numbers, an object with `width`/`height`, or another Size.
- * 
+ *
  * ```ts
  * const s1 = new Size(100, 50);
  * const s2 = new Size({ width: 100, height: 50 });
  * const s3 = new Size(s1);
  * ```
- * 
+ *
  * ```ts
  * const a = new Size(10, 20);
  * const b = new Size(5, 10);
@@ -8109,87 +8547,87 @@ declare const screen: Screen;
  * @category Size
  */
 declare class Size {
-    /**
-     * width
-     */
-    width: number;
-    /**
-     * height
-     */
-    height: number;
-    /**
-     * Constructor with two numbers.
-     */
-    constructor(width: number, height: number);
-    /**
-     * Constructor with anything Size-like.
-     */
-    constructor(s: SizeLike);
-    /**
-     * Returns a JSON representation of this Size.
-     * 
-     * ```ts
-     * const s = new Size(100, 50);
-     * println(s.toJson()); // '{"width":100,"height":50}'
-     * ```
-     */
-    toJson(): string;
-    /**
-     * Returns true if a Size equals another.
-     * 
-     * ```ts
-     * const a = new Size(10, 20);
-     * const b = new Size(10, 20);
-     * println(a.equals(b)); // true
-     * ```
-     */
-    equals(other: Size): boolean;
-    /**
-     * Adds two sizes and returns a new Size.
-     * 
-     * ```ts
-     * const sum = new Size(10, 20).add(new Size(5, 10));
-     * println(sum); // "Size(15, 30)"
-     * ```
-     */
-    add(other: Size): Size;
-    /**
-     * Subtracts two sizes and returns a new Size.
-     * 
-     * ```ts
-     * const diff = new Size(100, 50).subtract(new Size(30, 20));
-     * println(diff); // "Size(70, 30)"
-     * ```
-     */
-    subtract(other: Size): Size;
-    /**
-     * Scales this size by a factor and returns a new Size.
-     * 
-     * ```ts
-     * const s = new Size(10, 20).scale(3);
-     * println(s); // "Size(30, 60)"
-     * ```
-     */
-    scale(factor: number): Size;
-    /**
-     * Returns a string representation of this Size.
-     */
-    toString(): string;
-    /**
-     * Clones this Size.
-     * 
-     * ```ts
-     * const original = new Size(100, 50);
-     * const copy = original.clone();
-     * ```
-     */
-    clone(): Size;
+  /**
+   * width
+   */
+  width: number;
+  /**
+   * height
+   */
+  height: number;
+  /**
+   * Constructor with two numbers.
+   */
+  constructor(width: number, height: number);
+  /**
+   * Constructor with anything Size-like.
+   */
+  constructor(s: SizeLike);
+  /**
+   * Returns a JSON representation of this Size.
+   *
+   * ```ts
+   * const s = new Size(100, 50);
+   * println(s.toJson()); // '{"width":100,"height":50}'
+   * ```
+   */
+  toJson(): string;
+  /**
+   * Returns true if a Size equals another.
+   *
+   * ```ts
+   * const a = new Size(10, 20);
+   * const b = new Size(10, 20);
+   * println(a.equals(b)); // true
+   * ```
+   */
+  equals(other: Size): boolean;
+  /**
+   * Adds two sizes and returns a new Size.
+   *
+   * ```ts
+   * const sum = new Size(10, 20).add(new Size(5, 10));
+   * println(sum); // "Size(15, 30)"
+   * ```
+   */
+  add(other: Size): Size;
+  /**
+   * Subtracts two sizes and returns a new Size.
+   *
+   * ```ts
+   * const diff = new Size(100, 50).subtract(new Size(30, 20));
+   * println(diff); // "Size(70, 30)"
+   * ```
+   */
+  subtract(other: Size): Size;
+  /**
+   * Scales this size by a factor and returns a new Size.
+   *
+   * ```ts
+   * const s = new Size(10, 20).scale(3);
+   * println(s); // "Size(30, 60)"
+   * ```
+   */
+  scale(factor: number): Size;
+  /**
+   * Returns a string representation of this Size.
+   */
+  toString(): string;
+  /**
+   * Clones this Size.
+   *
+   * ```ts
+   * const original = new Size(100, 50);
+   * const copy = original.clone();
+   * ```
+   */
+  clone(): Size;
 }
 /**
  * Platform-specific standard directory paths.
- * 
+ *
  * All properties return the path as a string, or undefined if unavailable.
- * 
+ *
  * ```ts
  * println(standardPaths.home);       // e.g. "/home/user"
  * println(standardPaths.downloads);   // e.g. "/home/user/Downloads"
@@ -8198,58 +8636,58 @@ declare class Size {
  * @category StandardPaths
  */
 declare interface StandardPaths {
-    /**
-     * Home directory
-     */
-    readonly home?: string;
-    /**
-     * Temporary directory
-     */
-    readonly temp?: string;
-    /**
-     * Music directory
-     */
-    readonly music?: string;
-    /**
-     * Desktop directory
-     */
-    readonly desktop?: string;
-    /**
-     * Documents directory
-     */
-    readonly documents?: string;
-    /**
-     * Downloads directory
-     */
-    readonly downloads?: string;
-    /**
-     * Pictures directory
-     */
-    readonly pictures?: string;
-    /**
-     * Public directory
-     */
-    readonly public?: string;
-    /**
-     * Videos directory
-     */
-    readonly videos?: string;
-    /**
-     * Cache directory
-     */
-    readonly cache?: string;
-    /**
-     * Config directory
-     */
-    readonly config?: string;
-    /**
-     * Local config directory
-     */
-    readonly localConfig?: string;
-    /**
-     * Returns a string representation of all standard paths.
-     */
-    toString(): string;
+  /**
+   * Home directory
+   */
+  readonly home?: string;
+  /**
+   * Temporary directory
+   */
+  readonly temp?: string;
+  /**
+   * Music directory
+   */
+  readonly music?: string;
+  /**
+   * Desktop directory
+   */
+  readonly desktop?: string;
+  /**
+   * Documents directory
+   */
+  readonly documents?: string;
+  /**
+   * Downloads directory
+   */
+  readonly downloads?: string;
+  /**
+   * Pictures directory
+   */
+  readonly pictures?: string;
+  /**
+   * Public directory
+   */
+  readonly public?: string;
+  /**
+   * Videos directory
+   */
+  readonly videos?: string;
+  /**
+   * Cache directory
+   */
+  readonly cache?: string;
+  /**
+   * Config directory
+   */
+  readonly config?: string;
+  /**
+   * Local config directory
+   */
+  readonly localConfig?: string;
+  /**
+   * Returns a string representation of all standard paths.
+   */
+  toString(): string;
 }
 /**
  * @category StandardPaths
@@ -8257,12 +8695,12 @@ declare interface StandardPaths {
 declare const standard_paths: StandardPaths;
 /**
  * CPU metrics and topology.
- * 
+ *
  * ```ts
  * const globalUsage = await system.cpu.usage();
  * const core0Usage = await system.cpu.coreUsage(0);
  * const freqs = await system.cpu.frequencies();
- * 
+ *
  * println(
  *   system.cpu.logicalCoreCount,
  *   formatPercent(globalUsage),
@@ -8273,73 +8711,75 @@ declare const standard_paths: StandardPaths;
  * @category System
  */
 declare interface Cpu {
-    /**
-     * Logical core count
-     */
-    readonly logicalCoreCount: number;
-    /**
-     * Physical core count
-     */
-    readonly physicalCoreCount?: number;
-    /**
-     * Architecture
-     */
-    readonly architecture: string;
-    usage(): Promise<number>;
-    coreUsage(logicalCoreIndex: number): Promise<number>;
-    frequencies(): Promise<readonly number[]>;
-    toString(): string;
+  /**
+   * Logical core count
+   */
+  readonly logicalCoreCount: number;
+  /**
+   * Physical core count
+   */
+  readonly physicalCoreCount?: number;
+  /**
+   * Architecture
+   */
+  readonly architecture: string;
+  usage(): Promise<number>;
+  coreUsage(logicalCoreIndex: number): Promise<number>;
+  frequencies(): Promise<readonly number[]>;
+  toString(): string;
 }
 /**
  * Hardware information.
- * 
+ *
  * ```ts
  * const hw = system.hardware;
  * const board = hw.motherboard;
  * const temperatureSensors = await hw.listTemperatureSensors();
- * 
+ *
  * println(hw.vendorName, board.name, temperatureSensors.length);
  * ```
  * @category System
  */
 declare interface Hardware {
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Family
-     */
-    readonly family?: string;
-    /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
-    /**
-     * Stock keeping unit
-     */
-    readonly stockKeepingUnit?: string;
-    /**
-     * Version
-     */
-    readonly version?: string;
-    /**
-     * Uuid
-     */
-    readonly uuid?: string;
-    /**
-     * Vendor name
-     */
-    readonly vendorName?: string;
-    /**
-     * Motherboard
-     */
-    readonly motherboard: Readonly<Motherboard>;
-    /**
-     * Hardware temperature sensors
-     */
-    listTemperatureSensors(options?: ListTemperatureSensorsOptions): Promise<readonly TemperatureSensor[]>;
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name?: string;
+  /**
+   * Family
+   */
+  readonly family?: string;
+  /**
+   * Serial number
+   */
+  readonly serialNumber?: string;
+  /**
+   * Stock keeping unit
+   */
+  readonly stockKeepingUnit?: string;
+  /**
+   * Version
+   */
+  readonly version?: string;
+  /**
+   * Uuid
+   */
+  readonly uuid?: string;
+  /**
+   * Vendor name
+   */
+  readonly vendorName?: string;
+  /**
+   * Motherboard
+   */
+  readonly motherboard: Readonly<Motherboard>;
+  /**
+   * Hardware temperature sensors
+   */
+  listTemperatureSensors(
+    options?: ListTemperatureSensorsOptions,
+  ): Promise<readonly TemperatureSensor[]>;
+  toString(): string;
 }
 /**
  * List temperature sensors options
@@ -8347,15 +8787,15 @@ declare interface Hardware {
  * @expand
  */
 declare interface ListTemperatureSensorsOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
+  /**
+   * Rescan
+   * @defaultValue `true`
+   */
+  rescan?: boolean;
 }
 /**
  * Motherboard details.
- * 
+ *
  * ```ts
  * const board = system.hardware.motherboard;
  * println(board.vendorName, board.name, board.version);
@@ -8363,31 +8803,31 @@ declare interface ListTemperatureSensorsOptions {
  * @category System
  */
 declare interface Motherboard {
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Vendor name
-     */
-    readonly vendorName?: string;
-    /**
-     * Version
-     */
-    readonly version?: string;
-    /**
-     * Serial number
-     */
-    readonly serialNumber?: string;
-    /**
-     * Asset tag
-     */
-    readonly assetTag?: string;
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name?: string;
+  /**
+   * Vendor name
+   */
+  readonly vendorName?: string;
+  /**
+   * Version
+   */
+  readonly version?: string;
+  /**
+   * Serial number
+   */
+  readonly serialNumber?: string;
+  /**
+   * Asset tag
+   */
+  readonly assetTag?: string;
+  toString(): string;
 }
 /**
  * A hardware temperature sensor.
- * 
+ *
  * ```ts
  * const temperatureSensors = await system.hardware.listTemperatureSensors();
  * const temperatureSensor = temperatureSensors[0];
@@ -8398,58 +8838,58 @@ declare interface Motherboard {
  * @category System
  */
 declare interface TemperatureSensor {
-    /**
-     * Label
-     */
-    readonly label: string;
-    /**
-     * ID
-     */
-    readonly id?: string;
-    /**
-     * Temperature
-     */
-    readonly temperature?: number;
-    /**
-     * Maximum temperature
-     */
-    readonly maxTemperature?: number;
-    /**
-     * Critical temperature
-     */
-    readonly criticalTemperature?: number;
-    toString(): string;
+  /**
+   * Label
+   */
+  readonly label: string;
+  /**
+   * ID
+   */
+  readonly id?: string;
+  /**
+   * Temperature
+   */
+  readonly temperature?: number;
+  /**
+   * Maximum temperature
+   */
+  readonly maxTemperature?: number;
+  /**
+   * Critical temperature
+   */
+  readonly criticalTemperature?: number;
+  toString(): string;
 }
 /**
  * Memory metrics.
- * 
+ *
  * ```ts
  * const usage = await system.memory.usage();
  * const swap = await system.memory.swapUsage();
- * 
+ *
  * println(formatBytes(usage.used), formatBytes(swap.used));
  * ```
  * @category System
  */
 declare interface Memory {
-    /**
-     * CGroup limits
-     * @platform only works on Linux
-     */
-    readonly cgroupLimits?: CGroupLimits;
-    /**
-     * Memory usage
-     */
-    usage(): Promise<MemoryUsage>;
-    /**
-     * Swap usage
-     */
-    swapUsage(): Promise<MemoryUsage>;
-    toString(): string;
+  /**
+   * CGroup limits
+   * @platform only works on Linux
+   */
+  readonly cgroupLimits?: CGroupLimits;
+  /**
+   * Memory usage
+   */
+  usage(): Promise<MemoryUsage>;
+  /**
+   * Swap usage
+   */
+  swapUsage(): Promise<MemoryUsage>;
+  toString(): string;
 }
 /**
  * A memory usage snapshot.
- * 
+ *
  * ```ts
  * const usage = await system.memory.usage();
  * println(
@@ -8462,27 +8902,27 @@ declare interface Memory {
  * @category System
  */
 declare interface MemoryUsage {
-    /**
-     * Used
-     */
-    readonly used: number;
-    /**
-     * Free
-     */
-    readonly free: number;
-    /**
-     * Available
-     */
-    readonly available: number;
-    /**
-     * Total
-     */
-    readonly total: number;
-    toString(): string;
+  /**
+   * Used
+   */
+  readonly used: number;
+  /**
+   * Free
+   */
+  readonly free: number;
+  /**
+   * Available
+   */
+  readonly available: number;
+  /**
+   * Total
+   */
+  readonly total: number;
+  toString(): string;
 }
 /**
  * CGroup memory and swap limits.
- * 
+ *
  * ```ts
  * const limits = system.memory.cgroupLimits;
  * if (limits) {
@@ -8493,40 +8933,40 @@ declare interface MemoryUsage {
  *   );
  * }
  * ```
- * 
+ *
  * CGroup limits
  * @category System
  * @platform only works on Linux
  */
 declare interface CGroupLimits {
-    /**
-     * Total memory
-     */
-    readonly totalMemory: number;
-    /**
-     * Free memory
-     */
-    readonly freeMemory: number;
-    /**
-     * Free swap
-     */
-    readonly freeSwap: number;
-    /**
-     * RSS
-     */
-    readonly rss: number;
-    toString(): string;
+  /**
+   * Total memory
+   */
+  readonly totalMemory: number;
+  /**
+   * Free memory
+   */
+  readonly freeMemory: number;
+  /**
+   * Free swap
+   */
+  readonly freeSwap: number;
+  /**
+   * RSS
+   */
+  readonly rss: number;
+  toString(): string;
 }
 /**
  * System information and power/session operations.
- * 
+ *
  * ```ts
  * const cpuUsage = await system.cpu.usage();
  * const memory = await system.memory.usage();
- * 
+ *
  * println(formatPercent(cpuUsage), formatBytes(memory.used));
  * ```
- * 
+ *
  * ```ts
  * const interfaces = await system.network.listInterfaces();
  * println(`interfaces: ${interfaces.length}`);
@@ -8534,42 +8974,42 @@ declare interface CGroupLimits {
  * @category System
  */
 declare interface System {
-    /**
-     * Cpu information
-     */
-    readonly cpu: Cpu;
-    /**
-     * Hardware information
-     */
-    readonly hardware: Hardware;
-    /**
-     * Memory information
-     */
-    readonly memory: Memory;
-    /**
-     * Network information
-     */
-    readonly network: Network;
-    /**
-     * Os information
-     */
-    readonly os: Os;
-    /**
-     * Processes information
-     */
-    readonly processes: Processes;
-    /**
-     * Storage information
-     */
-    readonly storage: Storage;
-    shutdown(force?: boolean): void;
-    reboot(force?: boolean): void;
-    logout(force?: boolean): void;
-    hibernate(): void;
-    sleep(): void;
-    open(path: string, withApp?: string): void;
-    openPath(path: string, withApp?: string): void;
-    toString(): string;
+  /**
+   * Cpu information
+   */
+  readonly cpu: Cpu;
+  /**
+   * Hardware information
+   */
+  readonly hardware: Hardware;
+  /**
+   * Memory information
+   */
+  readonly memory: Memory;
+  /**
+   * Network information
+   */
+  readonly network: Network;
+  /**
+   * Os information
+   */
+  readonly os: Os;
+  /**
+   * Processes information
+   */
+  readonly processes: Processes;
+  /**
+   * Storage information
+   */
+  readonly storage: Storage;
+  shutdown(force?: boolean): void;
+  reboot(force?: boolean): void;
+  logout(force?: boolean): void;
+  hibernate(): void;
+  sleep(): void;
+  open(path: string, withApp?: string): void;
+  openPath(path: string, withApp?: string): void;
+  toString(): string;
 }
 /**
  * @category System
@@ -8577,7 +9017,7 @@ declare interface System {
 declare const system: System;
 /**
  * Network information and interfaces.
- * 
+ *
  * ```ts
  * println(system.network.hostname);
  * const interfaces = await system.network.listInterfaces();
@@ -8586,15 +9026,17 @@ declare const system: System;
  * @category System
  */
 declare interface Network {
-    /**
-     * Host name
-     */
-    readonly hostname?: string;
-    /**
-     * Interfaces
-     */
-    listInterfaces(options?: ListInterfacesOptions): Promise<readonly NetworkInterface[]>;
-    toString(): string;
+  /**
+   * Host name
+   */
+  readonly hostname?: string;
+  /**
+   * Interfaces
+   */
+  listInterfaces(
+    options?: ListInterfacesOptions,
+  ): Promise<readonly NetworkInterface[]>;
+  toString(): string;
 }
 /**
  * List network interfaces options
@@ -8602,15 +9044,15 @@ declare interface Network {
  * @expand
  */
 declare interface ListInterfacesOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
+  /**
+   * Rescan
+   * @defaultValue `true`
+   */
+  rescan?: boolean;
 }
 /**
  * A network interface.
- * 
+ *
  * ```ts
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
@@ -8621,35 +9063,35 @@ declare interface ListInterfacesOptions {
  * @category System
  */
 declare interface NetworkInterface {
-    /**
-     * Name
-     */
-    readonly name: string;
-    /**
-     * Inbound
-     */
-    readonly inbound: Readonly<Traffic>;
-    /**
-     * Outbound
-     */
-    readonly outbound: Readonly<Traffic>;
-    /**
-     * MTU
-     */
-    readonly mtu: number;
-    /**
-     * MAC address
-     */
-    readonly macAddress?: string;
-    /**
-     * Subnets
-     */
-    readonly subnets: readonly string[];
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name: string;
+  /**
+   * Inbound
+   */
+  readonly inbound: Readonly<Traffic>;
+  /**
+   * Outbound
+   */
+  readonly outbound: Readonly<Traffic>;
+  /**
+   * MTU
+   */
+  readonly mtu: number;
+  /**
+   * MAC address
+   */
+  readonly macAddress?: string;
+  /**
+   * Subnets
+   */
+  readonly subnets: readonly string[];
+  toString(): string;
 }
 /**
  * Byte/packet/error counters.
- * 
+ *
  * ```ts
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
@@ -8661,23 +9103,23 @@ declare interface NetworkInterface {
  * @category System
  */
 declare interface Counters {
-    /**
-     * Data
-     */
-    readonly data: number;
-    /**
-     * Packets
-     */
-    readonly packets: number;
-    /**
-     * Errors
-     */
-    readonly errors: number;
-    toString(): string;
+  /**
+   * Data
+   */
+  readonly data: number;
+  /**
+   * Packets
+   */
+  readonly packets: number;
+  /**
+   * Errors
+   */
+  readonly errors: number;
+  toString(): string;
 }
 /**
  * Traffic statistics.
- * 
+ *
  * ```ts
  * const interfaces = await system.network.listInterfaces();
  * const iface = interfaces[0];
@@ -8691,22 +9133,22 @@ declare interface Counters {
  * @category System
  */
 declare interface Traffic {
-    /**
-     * Total
-     */
-    readonly total: Readonly<Counters>;
-    /**
-     * Delta
-     */
-    readonly delta: Readonly<Counters>;
-    toString(): string;
+  /**
+   * Total
+   */
+  readonly total: Readonly<Counters>;
+  /**
+   * Delta
+   */
+  readonly delta: Readonly<Counters>;
+  toString(): string;
 }
 /**
  * OS-level information.
- * 
+ *
  * ```ts
  * println(system.os.name, system.os.version, system.os.kernelVersion);
- * 
+ *
  * const users = await system.os.listUsers();
  * const groups = await system.os.listGroups();
  * println(users.length, groups.length);
@@ -8714,59 +9156,59 @@ declare interface Traffic {
  * @category System
  */
 declare interface Os {
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Kernel version
-     */
-    readonly kernelVersion?: string;
-    /**
-     * Version
-     */
-    readonly version?: string;
-    /**
-     * Long version
-     */
-    readonly longVersion?: string;
-    /**
-     * Distribution ID
-     */
-    readonly distributionId: string;
-    /**
-     * Distribution ID like
-     */
-    readonly distributionIdLike: readonly string[];
-    /**
-     * Kernel long version
-     */
-    readonly kernelLongVersion: string;
-    /**
-     * Uptime in seconds
-     */
-    readonly uptime: number;
-    /**
-     * Boot time
-     */
-    readonly bootTime: Date;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
-    /**
-     * Users
-     */
-    listUsers(): Promise<readonly User[]>;
-    /**
-     * Groups
-     */
-    listGroups(): Promise<readonly Group[]>;
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name?: string;
+  /**
+   * Kernel version
+   */
+  readonly kernelVersion?: string;
+  /**
+   * Version
+   */
+  readonly version?: string;
+  /**
+   * Long version
+   */
+  readonly longVersion?: string;
+  /**
+   * Distribution ID
+   */
+  readonly distributionId: string;
+  /**
+   * Distribution ID like
+   */
+  readonly distributionIdLike: readonly string[];
+  /**
+   * Kernel long version
+   */
+  readonly kernelLongVersion: string;
+  /**
+   * Uptime in seconds
+   */
+  readonly uptime: number;
+  /**
+   * Boot time
+   */
+  readonly bootTime: Date;
+  /**
+   * Open files limit
+   */
+  readonly openFilesLimit?: number;
+  /**
+   * Users
+   */
+  listUsers(): Promise<readonly User[]>;
+  /**
+   * Groups
+   */
+  listGroups(): Promise<readonly Group[]>;
+  toString(): string;
 }
 /**
  * A system user.
- * 
+ *
  * ```ts
  * const users = await system.os.listUsers();
  * const user = users[0];
@@ -8777,37 +9219,37 @@ declare interface Os {
  * @category System
  */
 declare interface User {
-    /**
-     * Name
-     */
-    readonly name: string;
-    /**
-     * ID
-     */
-    readonly id: string;
-    /**
-     * Group ID
-     * @platform does not work on Windows
-     */
-    readonly groupId?: number;
-    /**
-     * Group name
-     * @platform does not work on Windows
-     */
-    readonly groupName?: string;
-    /**
-     * Groups
-     */
-    readonly groups: readonly number[];
-    /**
-     * Group names
-     */
-    readonly groupNames: readonly string[];
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name: string;
+  /**
+   * ID
+   */
+  readonly id: string;
+  /**
+   * Group ID
+   * @platform does not work on Windows
+   */
+  readonly groupId?: number;
+  /**
+   * Group name
+   * @platform does not work on Windows
+   */
+  readonly groupName?: string;
+  /**
+   * Groups
+   */
+  readonly groups: readonly number[];
+  /**
+   * Group names
+   */
+  readonly groupNames: readonly string[];
+  toString(): string;
 }
 /**
  * A system group.
- * 
+ *
  * ```ts
  * const groups = await system.os.listGroups();
  * const group = groups[0];
@@ -8818,19 +9260,19 @@ declare interface User {
  * @category System
  */
 declare interface Group {
-    /**
-     * Name
-     */
-    readonly name: string;
-    /**
-     * ID
-     */
-    readonly id: number;
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name: string;
+  /**
+   * ID
+   */
+  readonly id: number;
+  toString(): string;
 }
 /**
  * Process listing and inspection.
- * 
+ *
  * ```ts
  * const processes = await system.processes.list();
  * println(processes.length);
@@ -8838,22 +9280,22 @@ declare interface Group {
  * @category System
  */
 declare interface Processes {
-    /**
-     * Lists all processes
-     */
-    list(options?: ListProcessesOptions): Promise<readonly ProcessInfo[]>;
-    /**
-     * Finds processes matching the provided criteria.
-     * ```ts
-     * const byPid = await system.processes.find({ pid: 12345 });
-     * const byParent = await system.processes.find({ parentPid: 1 });
-     * const byName = await system.processes.find({ name: new Wildcard("my-app*") });
-     * const running = await system.processes.find({ status: ProcessStatus.Run });
-     * const exact = await system.processes.find({ pid: 12345, name: "my-app" });
-     * ```
-     */
-    find(options: ProcessesFindOptions): Promise<readonly ProcessInfo[]>;
-    toString(): string;
+  /**
+   * Lists all processes
+   */
+  list(options?: ListProcessesOptions): Promise<readonly ProcessInfo[]>;
+  /**
+   * Finds processes matching the provided criteria.
+   * ```ts
+   * const byPid = await system.processes.find({ pid: 12345 });
+   * const byParent = await system.processes.find({ parentPid: 1 });
+   * const byName = await system.processes.find({ name: new Wildcard("my-app*") });
+   * const running = await system.processes.find({ status: ProcessStatus.Run });
+   * const exact = await system.processes.find({ pid: 12345, name: "my-app" });
+   * ```
+   */
+  find(options: ProcessesFindOptions): Promise<readonly ProcessInfo[]>;
+  toString(): string;
 }
 /**
  * List processes options
@@ -8861,11 +9303,11 @@ declare interface Processes {
  * @expand
  */
 declare interface ListProcessesOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
+  /**
+   * Rescan
+   * @defaultValue `true`
+   */
+  rescan?: boolean;
 }
 /**
  * Process search options.
@@ -8873,39 +9315,39 @@ declare interface ListProcessesOptions {
  * @expand
  */
 declare interface ProcessesFindOptions {
-    /**
-     * Match by process ID.
-     * When undefined, any PID is accepted.
-     * @defaultValue `undefined`
-     */
-    pid?: number;
-    /**
-     * Match by parent process ID.
-     * When undefined, parent PID is not filtered.
-     * @defaultValue `undefined`
-     */
-    parentPid?: number;
-    /**
-     * Match by process name.
-     * When undefined, name is not filtered.
-     * @defaultValue `undefined`
-     */
-    name?: NameLike;
-    /**
-     * Match by process status.
-     * When undefined, status is not filtered.
-     * @defaultValue `undefined`
-     */
-    status?: ProcessStatus;
-    /**
-     * Refresh process list before filtering.
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
+  /**
+   * Match by process ID.
+   * When undefined, any PID is accepted.
+   * @defaultValue `undefined`
+   */
+  pid?: number;
+  /**
+   * Match by parent process ID.
+   * When undefined, parent PID is not filtered.
+   * @defaultValue `undefined`
+   */
+  parentPid?: number;
+  /**
+   * Match by process name.
+   * When undefined, name is not filtered.
+   * @defaultValue `undefined`
+   */
+  name?: NameLike;
+  /**
+   * Match by process status.
+   * When undefined, status is not filtered.
+   * @defaultValue `undefined`
+   */
+  status?: ProcessStatus;
+  /**
+   * Refresh process list before filtering.
+   * @defaultValue `true`
+   */
+  rescan?: boolean;
 }
 /**
  * A process information entry.
- * 
+ *
  * ```ts
  * const processes = await system.processes.list();
  * const process = processes[0];
@@ -8916,143 +9358,143 @@ declare interface ProcessesFindOptions {
  * @category System
  */
 declare interface ProcessInfo {
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * Cmd
-     */
-    readonly cmd: readonly string[];
-    /**
-     * Exe
-     */
-    readonly exe?: string;
-    /**
-     * Pid
-     */
-    readonly pid: number;
-    /**
-     * Env
-     */
-    readonly env: readonly string[];
-    /**
-     * Cwd
-     */
-    readonly cwd?: string;
-    /**
-     * Root
-     */
-    readonly root?: string;
-    /**
-     * Memory
-     */
-    readonly memory: number;
-    /**
-     * Virtual memory
-     */
-    readonly virtualMemory: number;
-    /**
-     * Parent
-     */
-    readonly parent?: number;
-    /**
-     * Status
-     */
-    readonly status: ProcessStatus;
-    /**
-     * Start time
-     */
-    readonly startTime: Object;
-    /**
-     * Run time in seconds
-     */
-    readonly runTime: number;
-    /**
-     * CPU usage
-     */
-    readonly cpuUsage: number;
-    /**
-     * Accumulated CPU time in seconds
-     */
-    readonly accumulatedCpuTime: number;
-    /**
-     * Disk usage
-     */
-    readonly diskUsage: Readonly<DiskUsage>;
-    /**
-     * User ID
-     */
-    readonly userId?: string;
-    /**
-     * Effective user ID
-     * @platform only works on Linux
-     */
-    readonly effectiveUserId?: string;
-    /**
-     * Group ID
-     * @platform only works on Linux
-     */
-    readonly groupId?: number;
-    /**
-     * Effective group ID
-     * @platform only works on Linux
-     */
-    readonly effectiveGroupId?: number;
-    /**
-     * Session ID
-     */
-    readonly sessionId?: number;
-    /**
-     * Exists
-     */
-    readonly exists: boolean;
-    /**
-     * Open files
-     */
-    readonly openFiles?: number;
-    /**
-     * Open files limit
-     */
-    readonly openFilesLimit?: number;
-    /**
-     * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
-     * 
-     * ```ts
-     * // Force-stop a specific PID if it is still running.
-     * const targetPid = 12345;
-     * const proc = (await system.processes.find({ pid: targetPid }))[0];
-     * if (proc) proc.kill();
-     * ```
-     */
-    kill(): void;
-    /**
-     * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
-     * 
-     * ```ts
-     * // Ask a specific PID to shut down cleanly.
-     * const targetPid = 12345;
-     * const proc = (await system.processes.find({ pid: targetPid }))[0];
-     * if (proc) proc.terminate();
-     * ```
-     */
-    terminate(): void;
-    /**
-     * Send a signal to the process.
-     * 
-     * ```ts
-     * const targetPid = 12345;
-     * const proc = (await system.processes.find({ pid: targetPid }))[0];
-     * if (proc) proc.sendSignal(Signal.Term);
-     * ```
-     * @platform only works on Linux
-     */
-    sendSignal(signal: Signal): void;
-    toString(): string;
+  /**
+   * Name
+   */
+  readonly name?: string;
+  /**
+   * Cmd
+   */
+  readonly cmd: readonly string[];
+  /**
+   * Exe
+   */
+  readonly exe?: string;
+  /**
+   * Pid
+   */
+  readonly pid: number;
+  /**
+   * Env
+   */
+  readonly env: readonly string[];
+  /**
+   * Cwd
+   */
+  readonly cwd?: string;
+  /**
+   * Root
+   */
+  readonly root?: string;
+  /**
+   * Memory
+   */
+  readonly memory: number;
+  /**
+   * Virtual memory
+   */
+  readonly virtualMemory: number;
+  /**
+   * Parent
+   */
+  readonly parent?: number;
+  /**
+   * Status
+   */
+  readonly status: ProcessStatus;
+  /**
+   * Start time
+   */
+  readonly startTime: Object;
+  /**
+   * Run time in seconds
+   */
+  readonly runTime: number;
+  /**
+   * CPU usage
+   */
+  readonly cpuUsage: number;
+  /**
+   * Accumulated CPU time in seconds
+   */
+  readonly accumulatedCpuTime: number;
+  /**
+   * Disk usage
+   */
+  readonly diskUsage: Readonly<DiskUsage>;
+  /**
+   * User ID
+   */
+  readonly userId?: string;
+  /**
+   * Effective user ID
+   * @platform only works on Linux
+   */
+  readonly effectiveUserId?: string;
+  /**
+   * Group ID
+   * @platform only works on Linux
+   */
+  readonly groupId?: number;
+  /**
+   * Effective group ID
+   * @platform only works on Linux
+   */
+  readonly effectiveGroupId?: number;
+  /**
+   * Session ID
+   */
+  readonly sessionId?: number;
+  /**
+   * Exists
+   */
+  readonly exists: boolean;
+  /**
+   * Open files
+   */
+  readonly openFiles?: number;
+  /**
+   * Open files limit
+   */
+  readonly openFilesLimit?: number;
+  /**
+   * Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
+   *
+   * ```ts
+   * // Force-stop a specific PID if it is still running.
+   * const targetPid = 12345;
+   * const proc = (await system.processes.find({ pid: targetPid }))[0];
+   * if (proc) proc.kill();
+   * ```
+   */
+  kill(): void;
+  /**
+   * Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
+   *
+   * ```ts
+   * // Ask a specific PID to shut down cleanly.
+   * const targetPid = 12345;
+   * const proc = (await system.processes.find({ pid: targetPid }))[0];
+   * if (proc) proc.terminate();
+   * ```
+   */
+  terminate(): void;
+  /**
+   * Send a signal to the process.
+   *
+   * ```ts
+   * const targetPid = 12345;
+   * const proc = (await system.processes.find({ pid: targetPid }))[0];
+   * if (proc) proc.sendSignal(Signal.Term);
+   * ```
+   * @platform only works on Linux
+   */
+  sendSignal(signal: Signal): void;
+  toString(): string;
 }
 /**
  * Storage devices and disk usage information.
- * 
+ *
  * ```ts
  * const disks = await system.storage.listDisks();
  * println(disks.length);
@@ -9060,11 +9502,11 @@ declare interface ProcessInfo {
  * @category System
  */
 declare interface Storage {
-    /**
-     * Disks
-     */
-    listDisks(options?: ListDisksOptions): Promise<readonly Disk[]>;
-    toString(): string;
+  /**
+   * Disks
+   */
+  listDisks(options?: ListDisksOptions): Promise<readonly Disk[]>;
+  toString(): string;
 }
 /**
  * List disks options
@@ -9072,15 +9514,15 @@ declare interface Storage {
  * @expand
  */
 declare interface ListDisksOptions {
-    /**
-     * Rescan
-     * @defaultValue `true`
-     */
-    rescan?: boolean;
+  /**
+   * Rescan
+   * @defaultValue `true`
+   */
+  rescan?: boolean;
 }
 /**
  * A disk device.
- * 
+ *
  * ```ts
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
@@ -9097,47 +9539,47 @@ declare interface ListDisksOptions {
  * @category System
  */
 declare interface Disk {
-    /**
-     * Kind
-     */
-    readonly kind: DiskKind;
-    /**
-     * Name
-     */
-    readonly name?: string;
-    /**
-     * File system
-     */
-    readonly fileSystem?: string;
-    /**
-     * Mount point
-     */
-    readonly mountPoint: string;
-    /**
-     * Total space
-     */
-    readonly totalSpace: number;
-    /**
-     * Available space
-     */
-    readonly availableSpace: number;
-    /**
-     * Is removable
-     */
-    readonly isRemovable: boolean;
-    /**
-     * Is read-only
-     */
-    readonly isReadOnly: boolean;
-    /**
-     * Usage
-     */
-    readonly usage: Readonly<DiskUsage>;
-    toString(): string;
+  /**
+   * Kind
+   */
+  readonly kind: DiskKind;
+  /**
+   * Name
+   */
+  readonly name?: string;
+  /**
+   * File system
+   */
+  readonly fileSystem?: string;
+  /**
+   * Mount point
+   */
+  readonly mountPoint: string;
+  /**
+   * Total space
+   */
+  readonly totalSpace: number;
+  /**
+   * Available space
+   */
+  readonly availableSpace: number;
+  /**
+   * Is removable
+   */
+  readonly isRemovable: boolean;
+  /**
+   * Is read-only
+   */
+  readonly isReadOnly: boolean;
+  /**
+   * Usage
+   */
+  readonly usage: Readonly<DiskUsage>;
+  toString(): string;
 }
 /**
  * Disk I/O statistics (bytes).
- * 
+ *
  * ```ts
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
@@ -9151,19 +9593,19 @@ declare interface Disk {
  * @category System
  */
 declare interface IoStats {
-    /**
-     * Total
-     */
-    readonly total: number;
-    /**
-     * Delta
-     */
-    readonly delta: number;
-    toString(): string;
+  /**
+   * Total
+   */
+  readonly total: number;
+  /**
+   * Delta
+   */
+  readonly delta: number;
+  toString(): string;
 }
 /**
  * Read/write usage for a disk.
- * 
+ *
  * ```ts
  * const disks = await system.storage.listDisks();
  * const disk = disks[0];
@@ -9177,19 +9619,19 @@ declare interface IoStats {
  * @category System
  */
 declare interface DiskUsage {
-    /**
-     * Written
-     */
-    readonly written: Readonly<IoStats>;
-    /**
-     * Read
-     */
-    readonly read: Readonly<IoStats>;
-    toString(): string;
+  /**
+   * Written
+   */
+  readonly written: Readonly<IoStats>;
+  /**
+   * Read
+   */
+  readonly read: Readonly<IoStats>;
+  toString(): string;
 }
 /**
  * Message box options.
- * 
+ *
  * ```ts
  * await Ui.messageBox("Delete this file?", {
  *   title: "Confirm",
@@ -9201,37 +9643,37 @@ declare interface DiskUsage {
  * @expand
  */
 declare interface MessageBoxOptions {
-    /**
-     * Title displayed in the message box title bar.
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Buttons displayed in the message box.
-     * @defaultValue `MessageBoxButtons.ok()`
-     */
-    buttons?: MessageBoxButtons;
-    /**
-     * Icon displayed in the message box.
-     * @defaultValue `MessageBoxIcon.Info`
-     */
-    icon?: MessageBoxIcon;
-    /**
-     * Abort signal to cancel the message box.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
+  /**
+   * Title displayed in the message box title bar.
+   * @defaultValue `undefined`
+   */
+  title?: string;
+  /**
+   * Buttons displayed in the message box.
+   * @defaultValue `MessageBoxButtons.ok()`
+   */
+  buttons?: MessageBoxButtons;
+  /**
+   * Icon displayed in the message box.
+   * @defaultValue `MessageBoxIcon.Info`
+   */
+  icon?: MessageBoxIcon;
+  /**
+   * Abort signal to cancel the message box.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
 }
 /**
  * User interface utilities.
- * 
+ *
  * Provides methods for displaying message boxes and other UI elements.
  * Only available when running with the Tauri UI.
- * 
+ *
  * ```ts
  * const result = await Ui.messageBox("Hello, world!");
  * ```
- * 
+ *
  * ```ts
  * const result = await Ui.messageBox("Delete this file?", {
  *   title: "Confirm",
@@ -9245,16 +9687,19 @@ declare interface MessageBoxOptions {
  * @category UI
  */
 declare class Ui {
-    private constructor();
-    /**
-     * Displays a message box and returns the user's response.
-     * 
-     * ```ts
-     * const result = await Ui.messageBox("Operation complete");
-     * ```
-     */
-    static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
-    toString(): string;
+  private constructor();
+  /**
+   * Displays a message box and returns the user's response.
+   *
+   * ```ts
+   * const result = await Ui.messageBox("Operation complete");
+   * ```
+   */
+  static messageBox(
+    text: string,
+    options?: MessageBoxOptions,
+  ): Task<MessageBoxResult>;
+  toString(): string;
 }
 /**
  * @category UI
@@ -9262,9 +9707,9 @@ declare class Ui {
 declare const ui: Ui;
 /**
  * Button configurations for message boxes.
- * 
+ *
  * Use the static factory methods to create button sets.
- * 
+ *
  * ```ts
  * const buttons = MessageBoxButtons.ok();
  * const buttons2 = MessageBoxButtons.yesNoCancel();
@@ -9273,40 +9718,47 @@ declare const ui: Ui;
  * @category UI
  */
 declare class MessageBoxButtons {
-    private constructor();
-    /**
-     * Creates an OK button.
-     */
-    static ok(): MessageBoxButtons;
-    /**
-     * Creates an OK button with a custom label.
-     */
-    static okCustom(okLabel: string): MessageBoxButtons;
-    /**
-     * Creates OK and Cancel buttons.
-     */
-    static okCancel(): MessageBoxButtons;
-    /**
-     * Creates OK and Cancel buttons with custom labels.
-     */
-    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
-    /**
-     * Creates Yes and No buttons.
-     */
-    static yesNo(): MessageBoxButtons;
-    /**
-     * Creates Yes, No, and Cancel buttons.
-     */
-    static yesNoCancel(): MessageBoxButtons;
-    /**
-     * Creates Yes, No, and Cancel buttons with custom labels.
-     */
-    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
-    toString(): string;
+  private constructor();
+  /**
+   * Creates an OK button.
+   */
+  static ok(): MessageBoxButtons;
+  /**
+   * Creates an OK button with a custom label.
+   */
+  static okCustom(okLabel: string): MessageBoxButtons;
+  /**
+   * Creates OK and Cancel buttons.
+   */
+  static okCancel(): MessageBoxButtons;
+  /**
+   * Creates OK and Cancel buttons with custom labels.
+   */
+  static okCancelCustom(
+    okLabel: string,
+    cancelLabel: string,
+  ): MessageBoxButtons;
+  /**
+   * Creates Yes and No buttons.
+   */
+  static yesNo(): MessageBoxButtons;
+  /**
+   * Creates Yes, No, and Cancel buttons.
+   */
+  static yesNoCancel(): MessageBoxButtons;
+  /**
+   * Creates Yes, No, and Cancel buttons with custom labels.
+   */
+  static yesNoCancelCustom(
+    yesLabel: string,
+    noLabel: string,
+    cancelLabel: string,
+  ): MessageBoxButtons;
+  toString(): string;
 }
 /**
  * Multipart form for uploading files and data.
- * 
+ *
  * ```ts
  * const form = new MultipartForm();
  * form.addText("title", "My Upload");
@@ -9319,36 +9771,51 @@ declare class MessageBoxButtons {
  * @category Web
  */
 declare class MultipartForm {
-    constructor();
-    /**
-     * Adds a text field.
-     * 
-     * ```ts
-     * const form = new MultipartForm();
-     * form.addText("username", "john");
-     * ```
-     */
-    addText(name: string, value: string, filename?: string, mimetype?: string): void;
-    /**
-     * Adds a file field.
-     * 
-     * ```ts
-     * const form = new MultipartForm();
-     * form.addFile("document", "/path/to/report.pdf");
-     * ```
-     */
-    addFile(name: string, path: string, filename?: string, mimetype?: string): void;
-    /**
-     * Adds a byte field.
-     * 
-     * ```ts
-     * const form = new MultipartForm();
-     * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
-     * form.addBytes("data", bytes, "hello.bin");
-     * ```
-     */
-    addBytes(name: string, bytes: Uint8Array, filename?: string, mimetype?: string): void;
-    toString(): string;
+  constructor();
+  /**
+   * Adds a text field.
+   *
+   * ```ts
+   * const form = new MultipartForm();
+   * form.addText("username", "john");
+   * ```
+   */
+  addText(
+    name: string,
+    value: string,
+    filename?: string,
+    mimetype?: string,
+  ): void;
+  /**
+   * Adds a file field.
+   *
+   * ```ts
+   * const form = new MultipartForm();
+   * form.addFile("document", "/path/to/report.pdf");
+   * ```
+   */
+  addFile(
+    name: string,
+    path: string,
+    filename?: string,
+    mimetype?: string,
+  ): void;
+  /**
+   * Adds a byte field.
+   *
+   * ```ts
+   * const form = new MultipartForm();
+   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+   * form.addBytes("data", bytes, "hello.bin");
+   * ```
+   */
+  addBytes(
+    name: string,
+    bytes: Uint8Array,
+    filename?: string,
+    mimetype?: string,
+  ): void;
+  toString(): string;
 }
 /**
  * Web request options.
@@ -9356,63 +9823,63 @@ declare class MultipartForm {
  * @expand
  */
 declare interface WebOptions {
-    /**
-     * Abort signal to cancel the request.
-     * @defaultValue `undefined`
-     */
-    signal?: AbortSignal;
-    /**
-     * User name for HTTP basic authentication.
-     * @defaultValue `undefined`
-     */
-    userName?: string;
-    /**
-     * Password for HTTP basic authentication.
-     * @defaultValue `undefined`
-     */
-    password?: string;
-    /**
-     * Additional HTTP headers to send with the request.
-     * @defaultValue `undefined`
-     */
-    headers?: Record<string, string | undefined>;
-    /**
-     * HTTP method to use for the request.
-     * @defaultValue `Method.Get`
-     */
-    method?: Method;
-    /**
-     * Request timeout duration.
-     * @defaultValue `undefined`
-     */
-    timeout?: number | string;
-    /**
-     * Sets the content-type header.
-     * Overrides any content-type set by other fields.
-     * @defaultValue `undefined`
-     */
-    contentType?: string;
-    /**
-     * Form data as strings.
-     * Sets content-type to "application/x-www-form-urlencoded".
-     * @defaultValue `undefined`
-     */
-    form?: Record<string, string | undefined>;
-    /**
-     * Additional query parameters.
-     * @defaultValue `undefined`
-     */
-    query?: Record<string, string | undefined>;
-    /**
-     * Form multipart data.
-     * Sets content-type and content-length appropriately.
-     * @defaultValue `undefined`
-     */
-    multipart?: MultipartForm;
+  /**
+   * Abort signal to cancel the request.
+   * @defaultValue `undefined`
+   */
+  signal?: AbortSignal;
+  /**
+   * User name for HTTP basic authentication.
+   * @defaultValue `undefined`
+   */
+  userName?: string;
+  /**
+   * Password for HTTP basic authentication.
+   * @defaultValue `undefined`
+   */
+  password?: string;
+  /**
+   * Additional HTTP headers to send with the request.
+   * @defaultValue `undefined`
+   */
+  headers?: Record<string, string | undefined>;
+  /**
+   * HTTP method to use for the request.
+   * @defaultValue `Method.Get`
+   */
+  method?: Method;
+  /**
+   * Request timeout duration.
+   * @defaultValue `undefined`
+   */
+  timeout?: number | string;
+  /**
+   * Sets the content-type header.
+   * Overrides any content-type set by other fields.
+   * @defaultValue `undefined`
+   */
+  contentType?: string;
+  /**
+   * Form data as strings.
+   * Sets content-type to "application/x-www-form-urlencoded".
+   * @defaultValue `undefined`
+   */
+  form?: Record<string, string | undefined>;
+  /**
+   * Additional query parameters.
+   * @defaultValue `undefined`
+   */
+  query?: Record<string, string | undefined>;
+  /**
+   * Form multipart data.
+   * Sets content-type and content-length appropriately.
+   * @defaultValue `undefined`
+   */
+  multipart?: MultipartForm;
 }
 /**
  * Progress information for web downloads and uploads.
- * 
+ *
  * ```ts
  * const task = web.download("https://example.com/file.bin");
  * for await (const progress of task) {
@@ -9426,29 +9893,29 @@ declare interface WebOptions {
  * @category Web
  */
 declare interface WebProgress {
-    /**
-     * Total bytes expected (0 if unknown).
-     */
-    readonly total: number;
-    /**
-     * Bytes transferred so far.
-     */
-    readonly current: number;
-    /**
-     * Whether the transfer is complete.
-     */
-    readonly finished: boolean;
-    toString(): string;
+  /**
+   * Total bytes expected (0 if unknown).
+   */
+  readonly total: number;
+  /**
+   * Bytes transferred so far.
+   */
+  readonly current: number;
+  /**
+   * Whether the transfer is complete.
+   */
+  readonly finished: boolean;
+  toString(): string;
 }
 /**
  * HTTP client for downloading files, text, images, and binary data.
- * 
+ *
  * Supports progress tracking, authentication, custom headers, and multipart uploads.
- * 
+ *
  * ```ts
  * const text = await web.downloadText("https://example.com/data.json");
  * ```
- * 
+ *
  * ```ts
  * const image = await web.downloadImage("https://example.com/photo.png");
  * println(image.size());
@@ -9456,71 +9923,84 @@ declare interface WebProgress {
  * @category Web
  */
 declare interface Web {
-    /**
-     * Downloads a binary file.
-     * 
-     * ```ts
-     * const bytes = await web.download("https://example.com/file.bin");
-     * ```
-     * 
-     * ```ts
-     * const task = web.download("https://example.com/file.bin");
-     * for await (const progress of task) {
-     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
-     * }
-     * const bytes = await task;
-     * ```
-     */
-    download(url: string, options?: WebOptions): ProgressTask<Uint8Array, WebProgress>;
-    /**
-     * Downloads a text file.
-     * 
-     * ```ts
-     * const text = await web.downloadText("https://example.com/data.json");
-     * ```
-     * 
-     * ```ts
-     * const task = web.downloadText("https://example.com/data.json");
-     * for await (const progress of task) {
-     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
-     * }
-     * const text = await task;
-     * ```
-     */
-    downloadText(url: string, options?: WebOptions): ProgressTask<string, WebProgress>;
-    /**
-     * Downloads an image.
-     * 
-     * ```ts
-     * const image = await web.downloadImage("https://example.com/photo.png");
-     * ```
-     * 
-     * ```ts
-     * const task = web.downloadImage("https://example.com/photo.png");
-     * for await (const progress of task) {
-     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
-     * }
-     * const image = await task;
-     * ```
-     */
-    downloadImage(url: string, options?: WebOptions): ProgressTask<Image, WebProgress>;
-    /**
-     * Downloads a file to a directory.
-     * 
-     * ```ts
-     * const filePath = await web.downloadFile("https://example.com/file.zip");
-     * ```
-     * 
-     * ```ts
-     * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
-     * for await (const progress of task) {
-     *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
-     * }
-     * const filePath = await task;
-     * ```
-     */
-    downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
-    toString(): string;
+  /**
+   * Downloads a binary file.
+   *
+   * ```ts
+   * const bytes = await web.download("https://example.com/file.bin");
+   * ```
+   *
+   * ```ts
+   * const task = web.download("https://example.com/file.bin");
+   * for await (const progress of task) {
+   *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+   * }
+   * const bytes = await task;
+   * ```
+   */
+  download(
+    url: string,
+    options?: WebOptions,
+  ): ProgressTask<Uint8Array, WebProgress>;
+  /**
+   * Downloads a text file.
+   *
+   * ```ts
+   * const text = await web.downloadText("https://example.com/data.json");
+   * ```
+   *
+   * ```ts
+   * const task = web.downloadText("https://example.com/data.json");
+   * for await (const progress of task) {
+   *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+   * }
+   * const text = await task;
+   * ```
+   */
+  downloadText(
+    url: string,
+    options?: WebOptions,
+  ): ProgressTask<string, WebProgress>;
+  /**
+   * Downloads an image.
+   *
+   * ```ts
+   * const image = await web.downloadImage("https://example.com/photo.png");
+   * ```
+   *
+   * ```ts
+   * const task = web.downloadImage("https://example.com/photo.png");
+   * for await (const progress of task) {
+   *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+   * }
+   * const image = await task;
+   * ```
+   */
+  downloadImage(
+    url: string,
+    options?: WebOptions,
+  ): ProgressTask<Image, WebProgress>;
+  /**
+   * Downloads a file to a directory.
+   *
+   * ```ts
+   * const filePath = await web.downloadFile("https://example.com/file.zip");
+   * ```
+   *
+   * ```ts
+   * const task = web.downloadFile("https://example.com/file.zip", "/tmp");
+   * for await (const progress of task) {
+   *   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
+   * }
+   * const filePath = await task;
+   * ```
+   */
+  downloadFile(
+    url: string,
+    directory?: string,
+    options?: WebOptions,
+  ): ProgressTask<string, WebProgress>;
+  toString(): string;
 }
 /**
  * @category Web
@@ -9532,40 +10012,40 @@ declare const web: Web;
  * @expand
  */
 declare interface WindowsFindOptions {
-    /**
-     * Match by internal window ID.
-     * When undefined, any window ID is accepted.
-     * @defaultValue `undefined`
-     */
-    id?: number;
-    /**
-     * Match by window process ID.
-     * When undefined, any process ID is accepted.
-     * @defaultValue `undefined`
-     */
-    processId?: number;
-    /**
-     * Match by window visibility.
-     * When undefined, visibility is not filtered.
-     * @defaultValue `undefined`
-     */
-    visible?: boolean;
-    /**
-     * Match by window title.
-     * When undefined, title is not filtered.
-     * @defaultValue `undefined`
-     */
-    title?: NameLike;
-    /**
-     * Match by window class name.
-     * When undefined, class name is not filtered.
-     * @defaultValue `undefined`
-     */
-    className?: NameLike;
+  /**
+   * Match by internal window ID.
+   * When undefined, any window ID is accepted.
+   * @defaultValue `undefined`
+   */
+  id?: number;
+  /**
+   * Match by window process ID.
+   * When undefined, any process ID is accepted.
+   * @defaultValue `undefined`
+   */
+  processId?: number;
+  /**
+   * Match by window visibility.
+   * When undefined, visibility is not filtered.
+   * @defaultValue `undefined`
+   */
+  visible?: boolean;
+  /**
+   * Match by window title.
+   * When undefined, title is not filtered.
+   * @defaultValue `undefined`
+   */
+  title?: NameLike;
+  /**
+   * Match by window class name.
+   * When undefined, class name is not filtered.
+   * @defaultValue `undefined`
+   */
+  className?: NameLike;
 }
 /**
  * Manages desktop windows: enumerate, focus, move, resize, and close windows.
- * 
+ *
  * ```ts
  * // Get all windows
  * const allWindows = windows.all();
@@ -9573,14 +10053,14 @@ declare interface WindowsFindOptions {
  *     println(win.title());
  * }
  * ```
- * 
+ *
  * ```ts
  * // Get the active window and move it
  * const win = windows.activeWindow();
  * win.setPosition(100, 100);
  * win.setSize(800, 600);
  * ```
- * 
+ *
  * ```ts
  * // Find and close a window by title
  * const matches = windows.find({ title: new Wildcard("*Notepad*") });
@@ -9591,73 +10071,73 @@ declare interface WindowsFindOptions {
  * @category Windows
  */
 declare interface Windows {
-    /**
-     * Returns all currently open windows.
-     * 
-     * ```ts
-     * const allWindows = windows.all();
-     * println(`Found ${allWindows.length} windows`);
-     * ```
-     * @platform does not work on Wayland
-     */
-    all(): readonly WindowHandle[];
-    /**
-     * Returns the currently active (focused) window.
-     * 
-     * ```ts
-     * const win = windows.active();
-     * println(win.title());
-     * ```
-     * @platform does not work on Wayland
-     */
-    active(): Readonly<WindowHandle>;
-    /**
-     * Returns the currently active (focused) window. Alias for `active()`.
-     * 
-     * ```ts
-     * const win = windows.foreground();
-     * println(win.title());
-     * ```
-     * @platform does not work on Wayland
-     */
-    foreground(): Readonly<WindowHandle>;
-    /**
-     * Finds windows matching the provided criteria.
-     * 
-     * `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
-     * 
-     * ```ts
-     * const byId = windows.find({ id: 1 });
-     * const visibleCode = windows.find({ visible: true, title: new Wildcard("*Code*") });
-     * const byPid = windows.find({ processId: 12345 });
-     * const byTitle = windows.find({ title: new Wildcard("*Code*") });
-     * const byClass = windows.find({ className: /^gnome-terminal/i });
-     * const exact = windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
-     * ```
-     * @platform does not work on Wayland
-     */
-    find(options: WindowsFindOptions): readonly WindowHandle[];
-    /**
-     * Finds windows whose rectangle contains the given screen point.
-     * 
-     * ```ts
-     * const underMouse = windows.findAt(mouse.position());
-     * const atOrigin = windows.findAt(0, 0);
-     * ```
-     * @platform does not work on Wayland
-     */
-    findAt(point: PointLike): readonly WindowHandle[];
-    /**
-     * Finds windows whose rectangle contains the given screen point.
-     * 
-     * ```ts
-     * const underMouse = windows.findAt(mouse.position());
-     * const atOrigin = windows.findAt(0, 0);
-     * ```
-     * @platform does not work on Wayland
-     */
-    findAt(x: number, y: number): readonly WindowHandle[];
-    toString(): string;
+  /**
+   * Returns all currently open windows.
+   *
+   * ```ts
+   * const allWindows = windows.all();
+   * println(`Found ${allWindows.length} windows`);
+   * ```
+   * @platform does not work on Wayland
+   */
+  all(): readonly WindowHandle[];
+  /**
+   * Returns the currently active (focused) window.
+   *
+   * ```ts
+   * const win = windows.active();
+   * println(win.title());
+   * ```
+   * @platform does not work on Wayland
+   */
+  active(): Readonly<WindowHandle>;
+  /**
+   * Returns the currently active (focused) window. Alias for `active()`.
+   *
+   * ```ts
+   * const win = windows.foreground();
+   * println(win.title());
+   * ```
+   * @platform does not work on Wayland
+   */
+  foreground(): Readonly<WindowHandle>;
+  /**
+   * Finds windows matching the provided criteria.
+   *
+   * `title` and `className` support NameLike matching (`string | Wildcard | RegExp`).
+   *
+   * ```ts
+   * const byId = windows.find({ id: 1 });
+   * const visibleCode = windows.find({ visible: true, title: new Wildcard("*Code*") });
+   * const byPid = windows.find({ processId: 12345 });
+   * const byTitle = windows.find({ title: new Wildcard("*Code*") });
+   * const byClass = windows.find({ className: /^gnome-terminal/i });
+   * const exact = windows.find({ title: "Calculator", className: "ApplicationFrameWindow" });
+   * ```
+   * @platform does not work on Wayland
+   */
+  find(options: WindowsFindOptions): readonly WindowHandle[];
+  /**
+   * Finds windows whose rectangle contains the given screen point.
+   *
+   * ```ts
+   * const underMouse = windows.findAt(mouse.position());
+   * const atOrigin = windows.findAt(0, 0);
+   * ```
+   * @platform does not work on Wayland
+   */
+  findAt(point: PointLike): readonly WindowHandle[];
+  /**
+   * Finds windows whose rectangle contains the given screen point.
+   *
+   * ```ts
+   * const underMouse = windows.findAt(mouse.position());
+   * const atOrigin = windows.findAt(0, 0);
+   * ```
+   * @platform does not work on Wayland
+   */
+  findAt(x: number, y: number): readonly WindowHandle[];
+  toString(): string;
 }
 /**
  * @category Windows
@@ -9665,10 +10145,10 @@ declare interface Windows {
 declare const windows: Windows;
 /**
  * A handle to a specific desktop window.
- * 
+ *
  * Obtained from `windows.all()` or `windows.activeWindow()`.
  * Provides methods to query and manipulate the window.
- * 
+ *
  * ```ts
  * const win = windows.activeWindow();
  * println(win.title());
@@ -9678,198 +10158,198 @@ declare const windows: Windows;
  * @category Windows
  */
 declare interface WindowHandle {
-    /**
-     * A promise that resolves when the window is closed.
-     * 
-     * ```ts
-     * const win = windows.activeWindow();
-     * await win.closed;
-     * ```
-     * @platform does not work on Wayland
-     */
-    readonly closed: Task<void>;
-    /**
-     * Returns whether this window is visible.
-     * 
-     * ```ts
-     * const visible = win.isVisible();
-     * ```
-     * @platform does not work on Wayland
-     */
-    isVisible(): boolean;
-    /**
-     * Returns the window title.
-     * 
-     * ```ts
-     * const title = win.title();
-     * ```
-     * @platform does not work on Wayland
-     */
-    title(): string;
-    /**
-     * Returns the window class name.
-     * 
-     * ```ts
-     * const className = win.className();
-     * ```
-     * @platform does not work on Wayland
-     */
-    className(): string;
-    /**
-     * Closes this window.
-     * 
-     * ```ts
-     * win.close();
-     * ```
-     * @platform does not work on Wayland
-     */
-    close(): void;
-    /**
-     * Returns the process ID of the window's owning process.
-     * 
-     * ```ts
-     * const pid = win.processId();
-     * ```
-     * @platform does not work on Wayland
-     */
-    processId(): number;
-    /**
-     * Returns the window's bounding rectangle.
-     * 
-     * ```ts
-     * const r = win.rect();
-     * println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
-     * ```
-     * @platform does not work on Wayland
-     */
-    rect(): Readonly<Rect>;
-    /**
-     * Captures a screenshot of the window's bounding rectangle.
-     * 
-     * ```ts
-     * const win = windows.activeWindow();
-     * const image = await win.capture();
-     * ```
-     * @platform does not work on Wayland
-     */
-    capture(): Promise<Image>;
-    /**
-     * Makes this window the active (focused) window.
-     * 
-     * ```ts
-     * win.setActive();
-     * ```
-     * @platform does not work on Wayland
-     */
-    setActive(): void;
-    /**
-     * Makes this window the active (focused) window. Alias for `setActive()`.
-     * 
-     * ```ts
-     * win.setForeground();
-     * ```
-     * @platform does not work on Wayland
-     */
-    setForeground(): void;
-    /**
-     * Minimizes this window.
-     * 
-     * ```ts
-     * win.minimize();
-     * ```
-     * @platform does not work on Wayland
-     */
-    minimize(): void;
-    /**
-     * Maximizes this window.
-     * 
-     * ```ts
-     * win.maximize();
-     * ```
-     * @platform does not work on Wayland
-     */
-    maximize(): void;
-    /**
-     * Sets the window position.
-     * 
-     * ```ts
-     * win.setPosition(100, 200);
-     * win.setPosition(new Point(100, 200));
-     * win.setPosition({x: 100, y: 200});
-     * ```
-     * @platform does not work on Wayland
-     */
-    setPosition(position: PointLike): void;
-    /**
-     * Sets the window position.
-     * 
-     * ```ts
-     * win.setPosition(100, 200);
-     * win.setPosition(new Point(100, 200));
-     * win.setPosition({x: 100, y: 200});
-     * ```
-     * @platform does not work on Wayland
-     */
-    setPosition(x: number, y: number): void;
-    /**
-     * Returns the window position.
-     * 
-     * ```ts
-     * const pos = win.position();
-     * println(`${pos.x}, ${pos.y}`);
-     * ```
-     * @platform does not work on Wayland
-     */
-    position(): Readonly<Point>;
-    /**
-     * Sets the window size.
-     * 
-     * ```ts
-     * win.setSize(800, 600);
-     * win.setSize(new Size(800, 600));
-     * win.setSize({width: 800, height: 600});
-     * ```
-     * @platform does not work on Wayland
-     */
-    setSize(size: SizeLike): void;
-    /**
-     * Sets the window size.
-     * 
-     * ```ts
-     * win.setSize(800, 600);
-     * win.setSize(new Size(800, 600));
-     * win.setSize({width: 800, height: 600});
-     * ```
-     * @platform does not work on Wayland
-     */
-    setSize(width: number, height: number): void;
-    /**
-     * Returns the window size.
-     * 
-     * ```ts
-     * const s = win.size();
-     * println(`${s.width}x${s.height}`);
-     * ```
-     * @platform does not work on Wayland
-     */
-    size(): Readonly<Size>;
-    /**
-     * Returns whether this window is the active (focused) window.
-     * 
-     * ```ts
-     * const active = win.isActive();
-     * ```
-     * @platform does not work on Wayland
-     */
-    isActive(): boolean;
-    /**
-     * Returns a string representation of this window handle.
-     */
-    toString(): string;
+  /**
+   * A promise that resolves when the window is closed.
+   *
+   * ```ts
+   * const win = windows.activeWindow();
+   * await win.closed;
+   * ```
+   * @platform does not work on Wayland
+   */
+  readonly closed: Task<void>;
+  /**
+   * Returns whether this window is visible.
+   *
+   * ```ts
+   * const visible = win.isVisible();
+   * ```
+   * @platform does not work on Wayland
+   */
+  isVisible(): boolean;
+  /**
+   * Returns the window title.
+   *
+   * ```ts
+   * const title = win.title();
+   * ```
+   * @platform does not work on Wayland
+   */
+  title(): string;
+  /**
+   * Returns the window class name.
+   *
+   * ```ts
+   * const className = win.className();
+   * ```
+   * @platform does not work on Wayland
+   */
+  className(): string;
+  /**
+   * Closes this window.
+   *
+   * ```ts
+   * win.close();
+   * ```
+   * @platform does not work on Wayland
+   */
+  close(): void;
+  /**
+   * Returns the process ID of the window's owning process.
+   *
+   * ```ts
+   * const pid = win.processId();
+   * ```
+   * @platform does not work on Wayland
+   */
+  processId(): number;
+  /**
+   * Returns the window's bounding rectangle.
+   *
+   * ```ts
+   * const r = win.rect();
+   * println(`${r.x}, ${r.y}, ${r.width}x${r.height}`);
+   * ```
+   * @platform does not work on Wayland
+   */
+  rect(): Readonly<Rect>;
+  /**
+   * Captures a screenshot of the window's bounding rectangle.
+   *
+   * ```ts
+   * const win = windows.activeWindow();
+   * const image = await win.capture();
+   * ```
+   * @platform does not work on Wayland
+   */
+  capture(): Promise<Image>;
+  /**
+   * Makes this window the active (focused) window.
+   *
+   * ```ts
+   * win.setActive();
+   * ```
+   * @platform does not work on Wayland
+   */
+  setActive(): void;
+  /**
+   * Makes this window the active (focused) window. Alias for `setActive()`.
+   *
+   * ```ts
+   * win.setForeground();
+   * ```
+   * @platform does not work on Wayland
+   */
+  setForeground(): void;
+  /**
+   * Minimizes this window.
+   *
+   * ```ts
+   * win.minimize();
+   * ```
+   * @platform does not work on Wayland
+   */
+  minimize(): void;
+  /**
+   * Maximizes this window.
+   *
+   * ```ts
+   * win.maximize();
+   * ```
+   * @platform does not work on Wayland
+   */
+  maximize(): void;
+  /**
+   * Sets the window position.
+   *
+   * ```ts
+   * win.setPosition(100, 200);
+   * win.setPosition(new Point(100, 200));
+   * win.setPosition({x: 100, y: 200});
+   * ```
+   * @platform does not work on Wayland
+   */
+  setPosition(position: PointLike): void;
+  /**
+   * Sets the window position.
+   *
+   * ```ts
+   * win.setPosition(100, 200);
+   * win.setPosition(new Point(100, 200));
+   * win.setPosition({x: 100, y: 200});
+   * ```
+   * @platform does not work on Wayland
+   */
+  setPosition(x: number, y: number): void;
+  /**
+   * Returns the window position.
+   *
+   * ```ts
+   * const pos = win.position();
+   * println(`${pos.x}, ${pos.y}`);
+   * ```
+   * @platform does not work on Wayland
+   */
+  position(): Readonly<Point>;
+  /**
+   * Sets the window size.
+   *
+   * ```ts
+   * win.setSize(800, 600);
+   * win.setSize(new Size(800, 600));
+   * win.setSize({width: 800, height: 600});
+   * ```
+   * @platform does not work on Wayland
+   */
+  setSize(size: SizeLike): void;
+  /**
+   * Sets the window size.
+   *
+   * ```ts
+   * win.setSize(800, 600);
+   * win.setSize(new Size(800, 600));
+   * win.setSize({width: 800, height: 600});
+   * ```
+   * @platform does not work on Wayland
+   */
+  setSize(width: number, height: number): void;
+  /**
+   * Returns the window size.
+   *
+   * ```ts
+   * const s = win.size();
+   * println(`${s.width}x${s.height}`);
+   * ```
+   * @platform does not work on Wayland
+   */
+  size(): Readonly<Size>;
+  /**
+   * Returns whether this window is the active (focused) window.
+   *
+   * ```ts
+   * const active = win.isActive();
+   * ```
+   * @platform does not work on Wayland
+   */
+  isActive(): boolean;
+  /**
+   * Returns a string representation of this window handle.
+   */
+  toString(): string;
 }
 /**
  * Options for smooth mouse movement.
- * 
+ *
  * ```ts
  * await mouse.move(500, 300, {
  *   speed: 1000,
@@ -9881,44 +10361,44 @@ declare interface WindowHandle {
  * @expand
  */
 declare interface MoveOptions {
-    /**
-     * Movement speed in pixels per second.
-     * @defaultValue `2000`
-     */
-    speed?: number;
-    /**
-     * Easing function used for the movement.
-     * @defaultValue `Tween.SineOut`
-     */
-    tween?: Tween;
-    /**
-     * Scale of the Perlin noise applied to the movement path.
-     * @defaultValue `50`
-     */
-    perlinScale?: number;
-    /**
-     * Amplitude of the Perlin noise applied to the movement path.
-     * @defaultValue `5`
-     */
-    perlinAmplitude?: number;
-    /**
-     * Random offset applied to the target position, in pixels.
-     * @defaultValue `0`
-     */
-    targetRandomness?: number;
-    /**
-     * Interval in seconds
-     * @defaultValue `0.01`
-     */
-    interval?: number | string;
+  /**
+   * Movement speed in pixels per second.
+   * @defaultValue `2000`
+   */
+  speed?: number;
+  /**
+   * Easing function used for the movement.
+   * @defaultValue `Tween.SineOut`
+   */
+  tween?: Tween;
+  /**
+   * Scale of the Perlin noise applied to the movement path.
+   * @defaultValue `50`
+   */
+  perlinScale?: number;
+  /**
+   * Amplitude of the Perlin noise applied to the movement path.
+   * @defaultValue `5`
+   */
+  perlinAmplitude?: number;
+  /**
+   * Random offset applied to the target position, in pixels.
+   * @defaultValue `0`
+   */
+  targetRandomness?: number;
+  /**
+   * Interval in seconds
+   * @defaultValue `0.01`
+   */
+  interval?: number | string;
 }
 /**
  * Options for pressing (and holding) a mouse button.
- * 
+ *
  * ```ts
  * // Press the right button at a specific position
  * mouse.press({ button: Button.Right, position: new Point(100, 200) });
- * 
+ *
  * // Press at coordinates using PointLike shorthand
  * mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
  * ```
@@ -9926,19 +10406,19 @@ declare interface MoveOptions {
  * @expand
  */
 declare interface PressOptions {
-    /**
-     * Mouse button to press.
-     * @defaultValue `Button.Left`
-     */
-    button?: Button;
-    /**
-     * Position to move the cursor to before pressing.
-     * @defaultValue `undefined`
-     */
-    position?: Point;
-    /**
-     * Whether the position is relative to the current cursor position.
-     * @defaultValue `false`
-     */
-    relativePosition?: boolean;
+  /**
+   * Mouse button to press.
+   * @defaultValue `Button.Left`
+   */
+  button?: Button;
+  /**
+   * Position to move the cursor to before pressing.
+   * @defaultValue `undefined`
+   */
+  position?: Point;
+  /**
+   * Whether the position is relative to the current cursor position.
+   * @defaultValue `false`
+   */
+  relativePosition?: boolean;
 }
