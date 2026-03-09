@@ -11,14 +11,10 @@ Find Image:
 Solve // TODOs
 Create an installer for Windows
 
-Keyboard:
-- record & playback
-
 Macro
 - recordedAt should be a getter
 
  Mouse:
-- record & playback
 - drag and drop?
 
 Select rect on screen

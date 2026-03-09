@@ -1,3 +1,1 @@
-- Wayland/WSL: run hangs on start
 - @options with non-optional fields doesn't work
-- cargo test is a bit flaky

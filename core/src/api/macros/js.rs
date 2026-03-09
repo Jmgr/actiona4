@@ -114,18 +114,21 @@ impl JsMacro {
 
     /// Returns the total number of events in this macro.
     #[must_use]
+    #[get]
     pub fn event_count(&self) -> u64 {
         u64::try_from(self.data.events.len()).unwrap_or(u64::MAX)
     }
 
     /// Returns the total duration of the recording in seconds.
     #[must_use]
+    #[get]
     pub fn duration(&self) -> f64 {
         Duration::from_millis(self.data.metadata.duration_ms).as_secs_f64()
     }
 
     /// Returns when this macro was recorded.
     /// @returns Date
+    #[get]
     pub fn recorded_at<'js>(&self, ctx: Ctx<'js>) -> Result<Object<'js>> {
         let recorded_at = self.data.metadata.recorded_at.into();
         date_from_system_time(&ctx, &recorded_at)
@@ -133,6 +136,7 @@ impl JsMacro {
 
     /// Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
     #[must_use]
+    #[get]
     pub fn platform(&self) -> String {
         self.data.metadata.platform.clone()
     }

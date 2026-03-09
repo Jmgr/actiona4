@@ -6064,6 +6064,22 @@ interface KeysOptions {
  * @category Macros
  */
 class Macro {
+    /**
+     * Returns the total number of events in this macro.
+     */
+    readonly eventCount: number;
+    /**
+     * Returns the total duration of the recording in seconds.
+     */
+    readonly duration: number;
+    /**
+     * Returns when this macro was recorded.
+     */
+    readonly recordedAt: Date;
+    /**
+     * Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
+     */
+    readonly platform: string;
     private constructor();
     /**
      * Saves this macro to a gzip-compressed JSON file.
@@ -6082,22 +6098,6 @@ class Macro {
      * ```
      */
     static load(path: string): Promise<Macro>;
-    /**
-     * Returns the total number of events in this macro.
-     */
-    eventCount(): number;
-    /**
-     * Returns the total duration of the recording in seconds.
-     */
-    duration(): number;
-    /**
-     * Returns when this macro was recorded.
-     */
-    recordedAt(): Date;
-    /**
-     * Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
-     */
-    platform(): string;
     toString(): string;
 }
 /**
