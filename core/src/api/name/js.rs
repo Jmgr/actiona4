@@ -1,5 +1,11 @@
 //! @verbatim /**
-//! @verbatim  * NameLike
+//! @verbatim  * A name matcher: an exact string, a {@link Wildcard} pattern, or a {@link RegExp}.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * windows.find("Notepad");              // exact name
+//! @verbatim  * windows.find(new Wildcard("Note*"));  // wildcard
+//! @verbatim  * windows.find(/^Note/);                // regex
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type NameLike = string | Wildcard | RegExp;
 

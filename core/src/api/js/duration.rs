@@ -1,3 +1,14 @@
+//! @verbatim /**
+//! @verbatim  * A duration as milliseconds (number) or a humantime string.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * sleep(500);     // 500 milliseconds
+//! @verbatim  * sleep("1s");    // 1 second
+//! @verbatim  * sleep("500ms"); // 500 milliseconds
+//! @verbatim  * ```
+//! @verbatim  */
+//! @verbatim type DurationLike = number | string;
+
 use std::time::Duration;
 
 use humantime::parse_duration;

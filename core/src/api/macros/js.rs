@@ -1,11 +1,16 @@
-use std::{
-    collections::HashSet,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
-    time::Duration,
-};
+//! @verbatim /**
+//! @verbatim  * An action that fires when a trigger is activated: either a {@link Macro} to play
+//! @verbatim  * directly, or a (possibly async) callback that optionally returns one.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * keyboard.onKey(Key.F5, myMacro);               // play macro directly
+//! @verbatim  * keyboard.onKey(Key.F5, () => myMacro);         // callback returning macro
+//! @verbatim  * keyboard.onKey(Key.F5, async () => { ... });   // async callback
+//! @verbatim  * ```
+//! @verbatim  */
+//! @verbatim type TriggerAction = Macro | (() => Macro | void | Promise<Macro | void>);
+
+use std::{collections::HashSet, sync::Arc, time::Duration};
 
 use humantime::format_duration;
 use macros::{FromJsObject, js_class, js_methods, options, platform};
@@ -18,7 +23,7 @@ use rquickjs::{
 use tokio::sync::watch;
 use tracing::instrument;
 
-use super::{MacroData, PlayConfig, PlayProgress, RecordConfig, play_impl, record_impl};
+use super::{MacroData, PlayConfig, PlayProgress, RecordConfig, player::MacroPlayer, record_impl};
 use crate::{
     IntoJsResult,
     api::{
@@ -52,13 +57,19 @@ use crate::{
 #[derive(Clone, Debug, JsLifetime)]
 #[js_class]
 pub struct JsMacro {
-    pub(super) data: Arc<MacroData>,
+    data: Arc<MacroData>,
 }
 
 impl<'js> HostClass<'js> for JsMacro {}
 
 impl<'js> Trace<'js> for JsMacro {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl JsMacro {
+    pub(crate) fn data(&self) -> Arc<MacroData> {
+        self.data.clone()
+    }
 }
 
 #[js_methods]
@@ -309,11 +320,22 @@ pub struct JsPlayOptions {
     pub signal: Option<JsAbortSignal>,
 }
 
-struct IsPlayingGuard(Arc<AtomicBool>);
+impl From<JsPlayOptions> for PlayConfig {
+    fn from(options: JsPlayOptions) -> Self {
+        Self {
+            speed: options.speed,
+            mouse_buttons: options.mouse_buttons,
+            mouse_position: options.mouse_position,
+            relative_mouse_position: options.relative_mouse_position,
+            mouse_scroll: options.mouse_scroll,
+            keyboard_keys: options.keyboard_keys,
+        }
+    }
+}
 
-impl Drop for IsPlayingGuard {
-    fn drop(&mut self) {
-        self.0.store(false, Ordering::Release);
+impl Default for PlayConfig {
+    fn default() -> Self {
+        Self::from(JsPlayOptions::default())
     }
 }
 
@@ -338,7 +360,7 @@ impl Drop for IsPlayingGuard {
 pub struct JsMacros {
     runtime: Arc<Runtime>,
     mouse: Mouse,
-    is_playing: Arc<AtomicBool>,
+    macro_player: Arc<MacroPlayer>,
 }
 
 impl<'js> Trace<'js> for JsMacros {
@@ -357,12 +379,15 @@ impl<'js> SingletonClass<'js> for JsMacros {
 impl JsMacros {
     /// @skip
     #[instrument(skip_all)]
-    pub async fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
-        let mouse = Mouse::new(runtime.clone()).await?;
+    pub async fn new(
+        runtime: Arc<Runtime>,
+        mouse: Mouse,
+        macro_player: Arc<MacroPlayer>,
+    ) -> super::Result<Self> {
         Ok(Self {
             runtime,
             mouse,
-            is_playing: Arc::new(AtomicBool::new(false)),
+            macro_player,
         })
     }
 }
@@ -439,8 +464,7 @@ impl JsMacros {
 
     /// Replays a previously recorded macro.
     ///
-    /// Only one playback can be active at a time; calling `play()` while another
-    /// playback is already running throws an error.
+    /// Starting a new playback cancels any previous one before the new macro starts.
     ///
     /// ```ts
     /// await macros.play(macro);
@@ -461,6 +485,13 @@ impl JsMacros {
     /// }
     /// await task;
     /// ```
+    ///
+    /// ```ts
+    /// // Starting a second playback cancels the first
+    /// const first = macros.play(macroA);
+    /// const second = macros.play(macroB);
+    /// await second;
+    /// ```
     /// @returns ProgressTask<void, PlayProgress>
     #[platform(not = "wayland")]
     pub fn play<'js>(
@@ -478,33 +509,10 @@ impl JsMacros {
             ));
         }
 
-        if self
-            .is_playing
-            .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
-            .is_err()
-        {
-            return Err(Exception::throw_message(
-                &ctx,
-                "a macro is already playing; only one playback at a time is supported",
-            ));
-        }
-
         let signal = options.signal.clone();
-        let macro_data = r#macro.data;
-        let mouse = self.mouse.clone();
-        let is_playing_guard = IsPlayingGuard(self.is_playing.clone());
-        let runtime = self.runtime.clone();
-
-        let displays = ctx.user_data().displays();
-
-        let config = PlayConfig {
-            speed: options.speed,
-            mouse_buttons: options.mouse_buttons,
-            mouse_position: options.mouse_position,
-            relative_mouse_position: options.relative_mouse_position,
-            mouse_scroll: options.mouse_scroll,
-            keyboard_keys: options.keyboard_keys,
-        };
+        let macro_data = r#macro.data();
+        let player = self.macro_player.clone();
+        let config = PlayConfig::from(options);
 
         let (progress_tx, progress_rx) = watch::channel(PlayProgress::default());
 
@@ -513,18 +521,10 @@ impl JsMacros {
             signal,
             progress_rx,
             async move |ctx, token| {
-                let _guard = is_playing_guard;
-                let result = play_impl(
-                    runtime,
-                    mouse,
-                    &macro_data,
-                    &config,
-                    displays,
-                    progress_tx,
-                    token,
-                )
-                .await;
-                result.into_js_result(&ctx)
+                player
+                    .play(macro_data, config, progress_tx, token)
+                    .await
+                    .into_js_result(&ctx)
             },
         )
     }
@@ -647,27 +647,31 @@ mod tests {
         });
     }
 
-    /// Manual test: concurrent playback should error.
+    /// Manual test: starting a new playback cancels the previous one.
     #[test]
     #[traced_test]
     #[ignore]
-    fn test_concurrent_play_error() {
+    fn test_concurrent_play_cancels_previous() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
                     r#"
                     console.println("Recording a short macro (press Escape)…");
                     const m = await macros.record({ timeout: "3s" });
-                    // Start two playbacks simultaneously; second should throw.
-                    const p1 = macros.play(m);
+                    console.println("Starting a slow playback, then restarting it.");
+                    const first = macros.play(m, { speed: 0.1 });
+                    await sleep("500ms");
+                    const second = macros.play(m);
+
                     try {
-                        await macros.play(m);
-                        console.println("ERROR: expected an error but got none");
+                        await first;
+                        console.println("First playback unexpectedly completed.");
                     } catch (e) {
-                        console.println(`Got expected error: ${e.message}`);
+                        console.println(`First playback cancelled as expected: ${e.message}`);
                     }
-                    await p1;
-                    console.println("Done.");
+
+                    await second;
+                    console.println("Second playback completed.");
                 "#,
                 )
                 .await

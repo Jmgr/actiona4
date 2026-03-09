@@ -225,55 +225,44 @@ impl Callbacks {
         function_key: FunctionKey,
         arg: Value<'js>,
     ) {
-        let function = {
-            let functions = self.functions.lock();
-            functions.get(function_key).cloned()
+        self.call_sync_fire_and_forget(ctx, function_key, &[arg], "call_sync_with_arg");
+    }
+
+    /// Call a registered function synchronously and return its raw result.
+    ///
+    /// Like `call_sync`, this executes directly without yielding inside `async_with!`, so the
+    /// rquickjs scheduler's queue waker is not overwritten.
+    ///
+    /// Unlike `call_sync`, the return value is given back to the caller. If the function returns
+    /// a Promise, the caller is responsible for spawning it (e.g. via `ctx.spawn`). Returns
+    /// `undefined` on any error.
+    pub fn call_sync_returning<'js>(
+        &self,
+        ctx: &Ctx<'js>,
+        function_key: FunctionKey,
+        args: Vec<Value<'js>>,
+    ) -> Value<'js> {
+        let Some(function) = self.get_function(ctx, function_key, "call_sync_returning") else {
+            return Value::new_undefined(ctx.clone());
         };
-        let Some(function) = function else {
+        let mut args_obj = Args::new(ctx.clone(), args.len());
+        if let Err(error) = args_obj.push_args(args.iter()) {
             warn!(
                 ?function_key,
-                "call_sync_with_arg: callback function is not registered"
+                error = %error,
+                "call_sync_returning: failed to push arguments"
             );
-            return;
-        };
-        let function = match function.restore(ctx) {
-            Ok(function) => function,
+            return Value::new_undefined(ctx.clone());
+        }
+        match function.call_arg::<Value<'_>>(args_obj) {
+            Ok(result) => result,
             Err(error) => {
                 warn!(
                     ?function_key,
                     error = %error,
-                    "call_sync_with_arg: failed to restore callback function"
+                    "call_sync_returning: callback failed"
                 );
-                return;
-            }
-        };
-        let arg_slice = [arg];
-        let mut args = Args::new(ctx.clone(), 1);
-        if let Err(error) = args.push_args(arg_slice.iter()) {
-            warn!(
-                ?function_key,
-                error = %error,
-                "call_sync_with_arg: failed to push argument"
-            );
-            return;
-        }
-        match function.call_arg::<Value<'_>>(args) {
-            Ok(result) => {
-                if let Some(promise) = result.as_promise() {
-                    let promise = promise.clone();
-                    ctx.spawn(async move {
-                        if let Err(error) = promise.into_future::<Value<'_>>().await {
-                            warn!(
-                                ?function_key,
-                                error = %error,
-                                "call_sync_with_arg: async callback failed"
-                            );
-                        }
-                    });
-                }
-            }
-            Err(error) => {
-                warn!(?function_key, error = %error, "call_sync_with_arg: callback failed");
+                Value::new_undefined(ctx.clone())
             }
         }
     }
@@ -287,6 +276,15 @@ impl Callbacks {
     /// If the callback returns a Promise it is spawned into the scheduler for background
     /// execution.
     pub fn call_sync<'js>(&self, ctx: &Ctx<'js>, function_key: FunctionKey) {
+        self.call_sync_fire_and_forget(ctx, function_key, &[], "call_sync");
+    }
+
+    fn get_function<'js>(
+        &self,
+        ctx: &Ctx<'js>,
+        function_key: FunctionKey,
+        caller: &str,
+    ) -> Option<Function<'js>> {
         let function = {
             let functions = self.functions.lock();
             functions.get(function_key).cloned()
@@ -294,38 +292,51 @@ impl Callbacks {
         let Some(function) = function else {
             warn!(
                 ?function_key,
-                "call_sync: callback function is not registered"
+                "{caller}: callback function is not registered"
             );
-            return;
+            return None;
         };
-        let function = match function.restore(ctx) {
-            Ok(function) => function,
+        match function.restore(ctx) {
+            Ok(function) => Some(function),
             Err(error) => {
                 warn!(
                     ?function_key,
                     error = %error,
-                    "call_sync: failed to restore callback function"
+                    "{caller}: failed to restore callback function"
                 );
-                return;
+                None
             }
+        }
+    }
+
+    fn call_sync_fire_and_forget<'js>(
+        &self,
+        ctx: &Ctx<'js>,
+        function_key: FunctionKey,
+        args: &[Value<'js>],
+        caller: &'js str,
+    ) {
+        let Some(function) = self.get_function(ctx, function_key, caller) else {
+            return;
         };
-        match function.call_arg::<Value<'_>>(Args::new(ctx.clone(), 0)) {
+        let mut args_obj = Args::new(ctx.clone(), args.len());
+        if let Err(error) = args_obj.push_args(args.iter()) {
+            warn!(?function_key, error = %error, "{caller}: failed to push arguments");
+            return;
+        }
+        match function.call_arg::<Value<'_>>(args_obj) {
             Ok(result) => {
                 if let Some(promise) = result.as_promise() {
                     let promise = promise.clone();
                     ctx.spawn(async move {
                         if let Err(error) = promise.into_future::<Value<'_>>().await {
-                            warn!(
-                                ?function_key,
-                                error = %error,
-                                "call_sync: async callback failed"
-                            );
+                            warn!(?function_key, error = %error, "{caller}: async callback failed");
                         }
                     });
                 }
             }
             Err(error) => {
-                warn!(?function_key, error = %error, "call_sync: callback failed");
+                warn!(?function_key, error = %error, "{caller}: callback failed");
             }
         }
     }

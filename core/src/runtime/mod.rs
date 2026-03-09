@@ -1,7 +1,5 @@
-#[cfg(test)]
-use std::sync::OnceLock;
 use std::sync::{
-    Arc,
+    Arc, OnceLock,
     atomic::{AtomicBool, AtomicU8, AtomicU64, Ordering},
 };
 
@@ -52,9 +50,9 @@ use crate::{
             concurrency::JsConcurrency,
             global,
         },
-        keyboard::js::JsKeyboard,
-        macros::js::JsMacros,
-        mouse::js::JsMouse,
+        keyboard::{Keyboard, js::JsKeyboard},
+        macros::{js::JsMacros, player::MacroPlayer},
+        mouse::{Mouse, js::JsMouse},
         name::js::JsWildcard,
         notification::js::JsNotification,
         path::js::JsPath,
@@ -294,6 +292,8 @@ pub struct Runtime {
 
     displays: Displays,
     platform: Platform,
+    mouse: OnceLock<Mouse>,       // FIX: circular dependency
+    keyboard: OnceLock<Keyboard>, // FIX: circular dependency
 }
 
 #[instrument(skip_all)]
@@ -383,6 +383,8 @@ impl Runtime {
             clipboard: clipboard.clone(),
             displays: displays.clone(),
             platform,
+            mouse: OnceLock::new(),
+            keyboard: OnceLock::new(),
         });
 
         #[allow(clippy::option_if_let_else)]
@@ -391,10 +393,20 @@ impl Runtime {
             None => SharedRng::default(),
         };
 
+        let mouse_inner = Mouse::new(runtime.clone()).await?;
+        let keyboard_inner = Keyboard::new(runtime.clone())?;
+        runtime.mouse.set(mouse_inner.clone()).ok();
+        runtime.keyboard.set(keyboard_inner.clone()).ok();
+        let macro_player = Arc::new(
+            MacroPlayer::new(runtime.clone(), keyboard_inner.clone(), mouse_inner.clone()).await?,
+        );
         let app = JsApp::new(runtime.clone());
-        let mouse = JsMouse::new(runtime.clone()).await?;
+        let mouse =
+            JsMouse::new(runtime.clone(), mouse_inner.clone(), macro_player.clone()).await?;
         let keyboard = JsKeyboard::new(
             runtime.clone(),
+            keyboard_inner,
+            macro_player.clone(),
             task_tracker.clone(),
             cancellation_token.clone(),
         )?;
@@ -415,7 +427,7 @@ impl Runtime {
         let notification = JsNotification::new(task_tracker.clone());
         let standard_paths = JsStandardPaths::default();
         let windows = JsWindows::new(windows_inner, screen_inner.clone());
-        let macros = JsMacros::new(runtime.clone()).await?;
+        let macros = JsMacros::new(runtime.clone(), mouse_inner.clone(), macro_player).await?;
 
         let script_engine = ScriptEngine::new().await?;
 
@@ -788,6 +800,16 @@ impl Runtime {
     #[must_use]
     pub fn keyboard_text(&self) -> Guard<KeyboardTextTopic> {
         self.platform().keyboard_text()
+    }
+
+    #[must_use]
+    pub fn mouse(&self) -> Option<Mouse> {
+        self.mouse.get().cloned()
+    }
+
+    #[must_use]
+    pub fn keyboard(&self) -> Option<Keyboard> {
+        self.keyboard.get().cloned()
     }
 
     #[must_use]

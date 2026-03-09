@@ -8,9 +8,10 @@ use std::{
 };
 
 use color_eyre::{Result, eyre::eyre};
-use enigo::Coordinate;
+use enigo::{Coordinate, Key};
 use flate2::{Compression, read::GzDecoder, write::GzEncoder};
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 use time::OffsetDateTime;
 use tokio::{select, sync::watch, time::sleep};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -19,7 +20,7 @@ use tracing::warn;
 use crate::{
     api::{
         displays::Displays,
-        keyboard::{Keyboard, js::JsKey},
+        keyboard::{KeyExt, Keyboard, js::JsKey},
         mouse::{Axis, Button, Mouse, PressOptions},
         point::point,
     },
@@ -35,6 +36,7 @@ use crate::{
 };
 
 pub mod js;
+pub mod player;
 
 pub const MACRO_VERSION: u32 = 1;
 
@@ -211,6 +213,7 @@ pub struct RecordConfig {
 }
 
 /// Configuration for `play_impl`.
+#[derive(Clone, Copy, Debug)]
 pub struct PlayConfig {
     pub speed: f64,
     pub mouse_buttons: bool,
@@ -221,6 +224,7 @@ pub struct PlayConfig {
     pub mouse_scroll: bool,
     pub keyboard_keys: bool,
 }
+
 
 /// Progress of a `play_impl` operation.
 #[derive(Clone, Copy, Debug, Default)]
@@ -397,7 +401,11 @@ fn relative_mouse_offset(config: &PlayConfig, data: &MacroData, mouse: &Mouse) -
         return (Si32::ZERO, Si32::ZERO);
     }
     let Some((fx, fy)) = data.events.iter().find_map(|e| {
-        if let MacroEvent::MouseMove { x, y, .. } = e { Some((*x, *y)) } else { None }
+        if let MacroEvent::MouseMove { x, y, .. } = e {
+            Some((*x, *y))
+        } else {
+            None
+        }
     }) else {
         return (Si32::ZERO, Si32::ZERO);
     };
@@ -413,9 +421,83 @@ fn relative_mouse_offset(config: &PlayConfig, data: &MacroData, mouse: &Mouse) -
     }
 }
 
+#[derive(Debug)]
+struct PlaybackCleanup {
+    keyboard: Keyboard,
+    mouse: Mouse,
+    initial_pressed_keys: HashSet<Key>,
+    initial_pressed_buttons: HashSet<Button>,
+    macro_pressed_keys: HashSet<Key>,
+    macro_pressed_buttons: HashSet<Button>,
+}
+
+impl PlaybackCleanup {
+    fn new(keyboard: Keyboard, mouse: Mouse) -> Result<Self> {
+        let initial_pressed_keys = keyboard
+            .get_pressed_keys()?
+            .into_iter()
+            .map(KeyExt::normalize)
+            .collect();
+        let initial_pressed_buttons = Button::iter()
+            .filter_map(|button| match mouse.is_pressed(button) {
+                Ok(true) => Some(Ok(button)),
+                Ok(false) => None,
+                Err(error) => Some(Err(error)),
+            })
+            .collect::<Result<HashSet<_>>>()?;
+
+        Ok(Self {
+            keyboard,
+            mouse,
+            initial_pressed_keys,
+            initial_pressed_buttons,
+            macro_pressed_keys: HashSet::new(),
+            macro_pressed_buttons: HashSet::new(),
+        })
+    }
+
+    fn on_key_press(&mut self, key: Key) {
+        if !self.initial_pressed_keys.contains(&key.normalize()) {
+            self.macro_pressed_keys.insert(key);
+        }
+    }
+
+    fn on_key_release(&mut self, key: Key) {
+        self.macro_pressed_keys.remove(&key);
+    }
+
+    fn on_button_press(&mut self, button: Button) {
+        if !self.initial_pressed_buttons.contains(&button) {
+            self.macro_pressed_buttons.insert(button);
+        }
+    }
+
+    fn on_button_release(&mut self, button: Button) {
+        self.macro_pressed_buttons.remove(&button);
+    }
+
+    fn release_remaining_inputs(&mut self) {
+        for key in self.macro_pressed_keys.drain() {
+            if let Err(error) = self.keyboard.release(key) {
+                warn!(?key, error = %error, "failed to release key during macro cleanup");
+            }
+        }
+
+        for button in self.macro_pressed_buttons.drain() {
+            if let Err(error) = self.mouse.release(Some(button)) {
+                warn!(
+                    ?button,
+                    error = %error,
+                    "failed to release mouse button during macro cleanup"
+                );
+            }
+        }
+    }
+}
+
 /// Replays a `MacroData`, reporting progress through `progress_tx`.
 pub async fn play_impl(
-    runtime: Arc<Runtime>,
+    keyboard: Keyboard,
     mouse: Mouse,
     data: &MacroData,
     config: &PlayConfig,
@@ -435,7 +517,7 @@ pub async fn play_impl(
         );
     }
 
-    let keyboard = Keyboard::new(runtime)?;
+    let mut cleanup = PlaybackCleanup::new(keyboard.clone(), mouse.clone())?;
     let total_events = u64::try_from(data.events.len()).unwrap_or(u64::MAX);
 
     if data.events.is_empty() {
@@ -450,81 +532,106 @@ pub async fn play_impl(
 
     let mut last_time_ms = 0u64;
 
-    for (index, event) in data.events.iter().enumerate() {
-        let event_time_ms = event.time_ms();
-        let delay_ms = event_time_ms.saturating_sub(last_time_ms);
-
-        if delay_ms > 0 {
-            #[allow(clippy::as_conversions)]
-            let scaled_ms = (delay_ms as f64 / config.speed) as u64;
-            cancel_on(&token, sleep(Duration::from_millis(scaled_ms)))
-                .await
-                .map_err(|_| CommonError::Cancelled)?;
-        }
-
-        last_time_ms = event_time_ms;
-
-        match event {
-            MacroEvent::MouseMove { x, y, .. } => {
-                if config.mouse_position {
-                    mouse
-                        .set_position(
-                            point(*x + mouse_offset.0, *y + mouse_offset.1),
-                            Coordinate::Abs,
-                        )
-                        .map_err(|err| eyre!("mouse move failed: {err}"))?;
-                }
+    let playback_result: Result<()> = async {
+        for (index, event) in data.events.iter().enumerate() {
+            if token.is_cancelled() {
+                return Err(CommonError::Cancelled.into());
             }
-            MacroEvent::MouseButton {
-                button, direction, ..
-            } => {
-                if config.mouse_buttons {
-                    match direction {
-                        Direction::Press => mouse
-                            .press(PressOptions {
-                                button: *button,
-                                position: None,
-                                relative_position: false,
-                            })
-                            .map_err(|err| eyre!("mouse press failed: {err}"))?,
-                        Direction::Release => mouse
-                            .release(Some(*button))
-                            .map_err(|err| eyre!("mouse release failed: {err}"))?,
+
+            let event_time_ms = event.time_ms();
+            let delay_ms = event_time_ms.saturating_sub(last_time_ms);
+
+            if delay_ms > 0 {
+                #[allow(clippy::as_conversions)]
+                let scaled_ms = (delay_ms as f64 / config.speed) as u64;
+                cancel_on(&token, sleep(Duration::from_millis(scaled_ms)))
+                    .await
+                    .map_err(|_| CommonError::Cancelled)?;
+            }
+
+            last_time_ms = event_time_ms;
+
+            match event {
+                MacroEvent::MouseMove { x, y, .. } => {
+                    if config.mouse_position {
+                        mouse
+                            .set_position(
+                                point(*x + mouse_offset.0, *y + mouse_offset.1),
+                                Coordinate::Abs,
+                            )
+                            .map_err(|err| eyre!("mouse move failed: {err}"))?;
                     }
                 }
-            }
-            MacroEvent::MouseScroll { axis, length, .. } => {
-                if config.mouse_scroll {
-                    mouse
-                        .scroll((*length).into(), *axis)
-                        .map_err(|err| eyre!("mouse scroll failed: {err}"))?;
+                MacroEvent::MouseButton {
+                    button, direction, ..
+                } => {
+                    if config.mouse_buttons {
+                        match direction {
+                            Direction::Press => {
+                                mouse
+                                    .press(PressOptions {
+                                        button: *button,
+                                        position: None,
+                                        relative_position: false,
+                                    })
+                                    .map_err(|err| eyre!("mouse press failed: {err}"))?;
+                                cleanup.on_button_press(*button);
+                            }
+                            Direction::Release => {
+                                mouse
+                                    .release(Some(*button))
+                                    .map_err(|err| eyre!("mouse release failed: {err}"))?;
+                                cleanup.on_button_release(*button);
+                            }
+                        }
+                    }
                 }
-            }
-            MacroEvent::KeyboardKey { key, direction, .. } => {
-                if config.keyboard_keys {
-                    match enigo::Key::try_from(*key) {
-                        Ok(enigo_key) => match direction {
-                            Direction::Press => keyboard
-                                .press(enigo_key)
-                                .map_err(|err| eyre!("key press failed: {err}"))?,
-                            Direction::Release => keyboard
-                                .release(enigo_key)
-                                .map_err(|err| eyre!("key release failed: {err}"))?,
-                        },
-                        Err(err) => {
-                            warn!("Skipping unsupported key during playback: {err:?}");
+                MacroEvent::MouseScroll { axis, length, .. } => {
+                    if config.mouse_scroll {
+                        mouse
+                            .scroll((*length).into(), *axis)
+                            .map_err(|err| eyre!("mouse scroll failed: {err}"))?;
+                    }
+                }
+                MacroEvent::KeyboardKey { key, direction, .. } => {
+                    if config.keyboard_keys {
+                        match enigo::Key::try_from(*key) {
+                            Ok(enigo_key) => match direction {
+                                Direction::Press => {
+                                    keyboard
+                                        .press(enigo_key)
+                                        .map_err(|err| eyre!("key press failed: {err}"))?;
+                                    cleanup.on_key_press(enigo_key);
+                                }
+                                Direction::Release => {
+                                    keyboard
+                                        .release(enigo_key)
+                                        .map_err(|err| eyre!("key release failed: {err}"))?;
+                                    cleanup.on_key_release(enigo_key);
+                                }
+                            },
+                            Err(err) => {
+                                warn!("Skipping unsupported key during playback: {err:?}");
+                            }
                         }
                     }
                 }
             }
+
+            let events_done = u64::try_from(index + 1).unwrap_or(u64::MAX);
+            progress_tx.send_replace(PlayProgress {
+                events_done,
+                total_events,
+            });
         }
 
-        let events_done = u64::try_from(index + 1).unwrap_or(u64::MAX);
-        progress_tx.send_replace(PlayProgress {
-            events_done,
-            total_events,
-        });
+        Ok(())
+    }
+    .await;
+
+    if playback_result.is_err() {
+        cleanup.release_remaining_inputs();
     }
 
-    Ok(())
+    playback_result
 }

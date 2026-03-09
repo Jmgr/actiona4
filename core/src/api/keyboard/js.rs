@@ -1,3 +1,46 @@
+//! @verbatim /**
+//! @verbatim  * A key as a {@link Key} enum value, a character string, or a numeric key code.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * keyboard.tap(Key.F5); // enum value
+//! @verbatim  * keyboard.tap("a");    // character
+//! @verbatim  * keyboard.tap(65);     // key code
+//! @verbatim  * ```
+//! @verbatim  */
+//! @verbatim type KeyLike = Key | string | number;
+//! @verbatim
+//! @verbatim /**
+//! @verbatim  * An array of {@link KeyLike} values representing a key combination.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * keyboard.onKeys([Key.Control, Key.Alt, "t"], () => console.println("Ctrl+Alt+T"));
+//! @verbatim  * ```
+//! @verbatim  */
+//! @verbatim type Keys = KeyLike[];
+//! @verbatim
+//! @verbatim /**
+//! @verbatim  * A value that can replace typed text: a string, an {@link Image}, or a {@link Macro}.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * keyboard.onText("btw", "by the way"); // string
+//! @verbatim  * keyboard.onText("logo", myImage);     // image
+//! @verbatim  * keyboard.onText("greet", myMacro);    // macro
+//! @verbatim  * ```
+//! @verbatim  */
+//! @verbatim type ReplacementValue = string | Image | Macro;
+//! @verbatim
+//! @verbatim /**
+//! @verbatim  * A text replacement: either a {@link ReplacementValue} directly, or a (possibly async)
+//! @verbatim  * function that returns one.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * keyboard.onText("btw", "by the way");                                 // direct value
+//! @verbatim  * keyboard.onText("date", () => new Date().toLocaleDateString());        // function
+//! @verbatim  * keyboard.onText("img", async () => await Image.load("logo.png"));      // async function
+//! @verbatim  * ```
+//! @verbatim  */
+//! @verbatim type ReplacementHandler = ReplacementValue | (() => ReplacementValue | void | Promise<ReplacementValue | void>);
+
 use std::{collections::HashSet, str::FromStr, sync::Arc};
 
 use derive_more::Display;
@@ -29,6 +72,8 @@ use crate::{
             event_handle::{HandleId, JsEventHandle},
             task::task_with_token,
         },
+        macros::{js::JsMacro, player::MacroPlayer},
+        triggers::TriggerAction,
     },
     runtime::{Runtime, WithUserData},
     types::display::display_with_type,
@@ -119,17 +164,21 @@ impl JsKeyboard {
     #[instrument(skip_all)]
     pub fn new(
         runtime: Arc<Runtime>,
+        inner: super::Keyboard,
+        macro_player: Arc<MacroPlayer>,
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> super::Result<Self> {
         let text_replacements = TextReplacements::new(
             runtime.clone(),
+            macro_player.clone(),
             task_tracker.clone(),
             cancellation_token.clone(),
         );
-        let key_triggers = KeyTriggers::new(runtime.clone(), task_tracker, cancellation_token);
+        let key_triggers =
+            KeyTriggers::new(runtime, macro_player, task_tracker, cancellation_token);
         Ok(Self {
-            inner: super::Keyboard::new(runtime)?,
+            inner,
             text_replacements,
             key_triggers,
         })
@@ -210,7 +259,7 @@ impl JsKeyboard {
     /// Presses and holds a key until `release` is called.
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
-    /// @param key: Key | string | number
+    /// @param key: KeyLike
     #[platform(not = "wayland")]
     pub fn press(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
@@ -222,7 +271,7 @@ impl JsKeyboard {
     /// Releases a key previously held with `press`.
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
-    /// @param key: Key | string | number
+    /// @param key: KeyLike
     #[platform(not = "wayland")]
     pub fn release(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
@@ -234,7 +283,7 @@ impl JsKeyboard {
     /// Presses and releases a key in one action.
     ///
     /// Accepts a `Key` constant, a single character string, or a raw keycode number.
-    /// @param key: Key | string | number
+    /// @param key: KeyLike
     #[platform(not = "wayland")]
     pub fn tap(&self, ctx: Ctx<'_>, key: JsKey) -> Result<()> {
         let key = Self::parse_key(&ctx, key)?;
@@ -272,7 +321,7 @@ impl JsKeyboard {
     }
 
     /// Returns whether a key is currently pressed.
-    /// @param key: Key | string | number
+    /// @param key: KeyLike
     #[platform(not = "wayland")]
     pub fn is_key_pressed(&self, ctx: Ctx<'_>, key: JsKey) -> Result<bool> {
         let key = Self::parse_key(&ctx, key)?;
@@ -316,7 +365,7 @@ impl JsKeyboard {
     ///   signal: controller.signal
     /// });
     /// ```
-    /// @param keys: (Key | string | number)[]
+    /// @param keys: Keys
     /// @returns Task<void>
     #[platform(not = "wayland")]
     pub fn wait_for_keys<'js>(
@@ -350,7 +399,7 @@ impl JsKeyboard {
     /// By default the typed text is erased and replaced with `handler`. Pass
     /// `{ erase: false }` to trigger an action without replacing the text.
     ///
-    /// `handler` can be a string, an `Image`, or a callback returning either.
+    /// `handler` can be a string, an `Image`, a `Macro`, or a callback returning any of those.
     /// A callback that returns nothing (void) fires without inserting anything.
     ///
     /// ```ts
@@ -360,14 +409,17 @@ impl JsKeyboard {
     /// // Dynamic replacement via callback
     /// const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
     ///
+    /// // Play a macro when the trigger text is typed
+    /// const h2 = keyboard.onText("sig", loadedMacro);
+    ///
     /// // Trigger only — don't erase the typed text
-    /// const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
+    /// const h3 = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
     ///
     /// h.cancel(); // unregister
     /// ```
     ///
     /// @param text: string
-    /// @param handler: string | Image | (() => string | Image | void | Promise<string | Image | void>)
+    /// @param handler: ReplacementHandler
     /// @param options?: OnTextOptions
     /// @returns EventHandle
     #[platform(not = "wayland")]
@@ -391,6 +443,8 @@ impl JsKeyboard {
             let user_data = ctx.user_data();
             let function_key = user_data.callbacks().register(&ctx, func.clone());
             Replacement::JsCallback((user_data.script_engine().context(), function_key))
+        } else if let Ok(r#macro) = handler.get::<JsMacro>() {
+            Replacement::Macro(r#macro.data())
         } else if let Ok(image) = handler.get::<JsImage>() {
             Replacement::Image(image.into_inner())
         } else {
@@ -414,8 +468,8 @@ impl JsKeyboard {
     /// h.cancel();
     /// ```
     ///
-    /// @param key: Key | string | number
-    /// @param callback: () => void | Promise<void>
+    /// @param key: KeyLike
+    /// @param callback: TriggerAction
     /// @param options?: KeysOptions
     /// @returns EventHandle
     #[platform(not = "wayland")]
@@ -445,8 +499,8 @@ impl JsKeyboard {
     /// h.cancel();
     /// ```
     ///
-    /// @param keys: (Key | string | number)[]
-    /// @param callback: () => void | Promise<void>
+    /// @param keys: Keys
+    /// @param callback: TriggerAction
     /// @param options?: KeysOptions
     /// @returns EventHandle
     #[platform(not = "wayland")]
@@ -500,17 +554,23 @@ impl JsKeyboard {
             return Err(Exception::throw_type(&ctx, "keys must not be empty"));
         }
 
-        let Some(func) = callback.as_function() else {
-            return Err(Exception::throw_type(&ctx, "callback must be a function"));
-        };
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
         let id = HandleId::default();
-        let user_data = ctx.user_data();
-        let function_key = user_data.callbacks().register(&ctx, func.clone());
-        let context = user_data.script_engine().context();
-        self.key_triggers
-            .add(id, keys, context, function_key, options.into());
+        let action = if let Some(func) = callback.as_function() {
+            let user_data = ctx.user_data();
+            let function_key = user_data.callbacks().register(&ctx, func.clone());
+            let context = user_data.script_engine().context();
+            TriggerAction::Callback(context, function_key)
+        } else if let Ok(r#macro) = callback.get::<JsMacro>() {
+            TriggerAction::Macro(r#macro.data())
+        } else {
+            return Err(Exception::throw_type(
+                &ctx,
+                "callback must be a function or Macro",
+            ));
+        };
+        self.key_triggers.add(id, keys, action, options.into());
 
         let handle = JsEventHandle::new(id, Arc::new(self.key_triggers.clone()));
         Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
@@ -2981,6 +3041,30 @@ mod tests {
                     console.println("Registering keyboard.onKey for F8.");
                     console.println("Press Escape to end this manual test.");
                     const handle = keyboard.onKey(Key.F8, async () => {await sleep(250); console.println("F8 pressed");});
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    handle.cancel();
+                    console.println("END");
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_key_return_macro() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Record a short macro first. Press Escape to stop recording.");
+                    const recordedMacro = await macros.record({ timeout: "5s" });
+                    console.println("Press F8 to replay the recorded macro, or Escape to end the test.");
+
+                    const handle = keyboard.onKey(Key.F8, () => recordedMacro);
 
                     await keyboard.waitForKeys([Key.Escape]);
                     console.println("STOPPING");

@@ -13,7 +13,7 @@ mod key_triggers;
 mod text_replacements;
 
 pub use enigo::Coordinate;
-use key_triggers::KeyExt;
+pub(crate) use key_triggers::KeyExt;
 #[cfg(windows)]
 use platform::win::KeyboardImpl;
 #[cfg(unix)]

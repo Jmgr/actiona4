@@ -4,7 +4,6 @@ use actiona_core::{
     api::{
         keyboard::js::{JsKey, JsStandardKey},
         macros::{MacroData, PlayConfig, PlayProgress, RecordConfig, play_impl, record_impl},
-        mouse::Mouse,
     },
     runtime::{Runtime, WaitAtEnd},
 };
@@ -61,7 +60,9 @@ pub async fn run_record(
         keyboard_keys,
     };
 
-    let mouse = Mouse::new(runtime.clone()).await?;
+    let mouse = runtime
+        .mouse()
+        .ok_or_else(|| eyre!("mouse not initialized"))?;
     let token = runtime.cancellation_token();
 
     let data = record_impl(runtime.clone(), mouse, config, runtime.displays(), token).await?;
@@ -106,7 +107,12 @@ pub async fn run_play(
     );
     println!("Replaying at {speed}x speed...");
 
-    let mouse = Mouse::new(runtime.clone()).await?;
+    let keyboard = runtime
+        .keyboard()
+        .ok_or_else(|| eyre!("keyboard not initialized"))?;
+    let mouse = runtime
+        .mouse()
+        .ok_or_else(|| eyre!("mouse not initialized"))?;
     let token = runtime.cancellation_token();
 
     let config = PlayConfig {
@@ -139,7 +145,7 @@ pub async fn run_play(
     });
 
     play_impl(
-        runtime.clone(),
+        keyboard,
         mouse,
         &data,
         &config,

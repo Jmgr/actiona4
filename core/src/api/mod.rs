@@ -25,6 +25,7 @@ pub mod screen;
 pub mod size;
 pub mod standardpaths;
 pub mod system;
+pub(crate) mod triggers;
 pub mod ui;
 pub mod web;
 pub mod windows;

@@ -1,5 +1,10 @@
 //! @verbatim /**
-//! @verbatim  * RectLike
+//! @verbatim  * A rectangle as a {@link Rect} instance or a plain `{x, y, width, height}` object.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * screen.capture(new Rect(0, 0, 800, 600));                 // Rect instance
+//! @verbatim  * screen.capture({ x: 0, y: 0, width: 800, height: 600 }); // plain object
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type RectLike = Rect | { x: number; y: number; width: number; height: number };
 

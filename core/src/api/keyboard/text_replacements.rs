@@ -20,6 +20,7 @@ use crate::{
     api::{
         image::{Image, js::JsImage},
         js::event_handle::{HandleId, HandleRegistry},
+        macros::{MacroData, PlayConfig, js::JsMacro, player::MacroPlayer},
     },
     runtime::{
         Runtime, WithUserData,
@@ -33,6 +34,7 @@ use crate::{
 pub enum Replacement {
     Text(String),
     Image(Image),
+    Macro(Arc<MacroData>),
     JsCallback(#[derive_where(skip)] (AsyncContext, FunctionKey)),
 }
 
@@ -83,6 +85,7 @@ pub struct TextReplacements {
 impl TextReplacements {
     pub fn new(
         runtime: Arc<Runtime>,
+        macro_player: Arc<MacroPlayer>,
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
@@ -106,7 +109,14 @@ impl TextReplacements {
                     _ = cancellation_token.cancelled() => { break; }
                     text = text_receiver.recv() => {
                         let Ok(text) = text else { break; };
-                        Self::on_text(text, &mut buffer, local_max_graphemes.clone(), local_registry.clone(), local_runtime.clone()).await?;
+                        Self::on_text(
+                            text,
+                            &mut buffer,
+                            local_max_graphemes.clone(),
+                            local_registry.clone(),
+                            local_runtime.clone(),
+                            macro_player.clone(),
+                        ).await?;
                     },
                     key = keys_receiver.recv() => {
                         let Ok(key) = key else { break; };
@@ -144,6 +154,7 @@ impl TextReplacements {
         max_graphemes: Arc<AtomicUsize>,
         registry: Arc<Mutex<Registry>>,
         runtime: Arc<Runtime>,
+        macro_player: Arc<MacroPlayer>,
     ) -> Result<()> {
         if event.is_injected {
             return Ok(());
@@ -184,6 +195,10 @@ impl TextReplacements {
             let replacement_data = match replacement {
                 Replacement::Text(text) => ReplacementData::Text(text),
                 Replacement::Image(image) => ReplacementData::Image(image),
+                Replacement::Macro(data) => {
+                    macro_player.play_detached(data, PlayConfig::default());
+                    ReplacementData::None
+                }
                 Replacement::JsCallback((context, function_key)) => {
                     let trigger_for_callback = trigger.clone();
 
@@ -244,6 +259,10 @@ impl TextReplacements {
                             return CallbackOutcome::Apply(ReplacementData::Image(image.into_inner()));
                         }
 
+                        if let Ok(r#macro) = value.get::<JsMacro>() {
+                            return CallbackOutcome::Macro(r#macro.data());
+                        }
+
                         match value.get::<Coerced<String>>() {
                             Ok(text) => CallbackOutcome::Apply(ReplacementData::Text(text.0)),
                             Err(error) => {
@@ -251,7 +270,7 @@ impl TextReplacements {
                                     trigger = %trigger_for_callback,
                                     ?function_key,
                                     error = %error,
-                                    "onText callback did not return image, string, or void; keeping typed text"
+                                    "onText callback did not return image, macro, string, or void; keeping typed text"
                                 );
                                 CallbackOutcome::KeepTypedText
                             }
@@ -259,11 +278,14 @@ impl TextReplacements {
                     })
                     .await;
 
-                    let CallbackOutcome::Apply(replacement_data) = callback_outcome else {
-                        continue;
-                    };
-
-                    replacement_data
+                    match callback_outcome {
+                        CallbackOutcome::Apply(replacement_data) => replacement_data,
+                        CallbackOutcome::Macro(data) => {
+                            macro_player.play_detached(data, PlayConfig::default());
+                            ReplacementData::None
+                        }
+                        CallbackOutcome::KeepTypedText => continue,
+                    }
                 }
             };
             let (backspaces, replacement_data) =
@@ -435,6 +457,7 @@ enum ReplacementData {
 
 enum CallbackOutcome {
     Apply(ReplacementData),
+    Macro(Arc<MacroData>),
     KeepTypedText,
 }
 

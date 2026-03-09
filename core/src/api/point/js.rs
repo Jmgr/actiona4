@@ -1,5 +1,11 @@
 //! @verbatim /**
-//! @verbatim  * PointLike
+//! @verbatim  * A point as a {@link Point} instance, a plain `{x, y}` object, or a {@link Match}.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * mouse.move(new Point(100, 200)); // Point instance
+//! @verbatim  * mouse.move({ x: 100, y: 200 });  // plain object
+//! @verbatim  * mouse.move(match);               // Match from findImage
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type PointLike = Point | { x: number; y: number } | Match;
 

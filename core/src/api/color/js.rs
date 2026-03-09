@@ -1,5 +1,11 @@
 //! @verbatim /**
-//! @verbatim  * ColorLike
+//! @verbatim  * A color as a {@link Color} instance or a plain RGBA object.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * image.fill(Color.Red);                              // Color instance
+//! @verbatim  * image.fill({ r: 255, g: 0, b: 0 });                // plain RGB object
+//! @verbatim  * image.fill({ r: 255, g: 0, b: 0, a: 128 });        // with alpha
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type ColorLike = Color | { r: number; g: number; b: number; a?: number };
 

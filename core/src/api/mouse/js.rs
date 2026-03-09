@@ -20,12 +20,14 @@ use crate::{
             event_handle::{HandleId, JsEventHandle},
             task::{task, task_with_token},
         },
+        macros::{js::JsMacro, player::MacroPlayer},
         mouse::{
             ButtonConditions, ScrollConditions,
             click_triggers::{ClickTriggers, OnButtonOptions},
             scroll_triggers::ScrollTriggers,
         },
         point::js::{JsPoint, JsPointLike},
+        triggers::TriggerAction,
     },
     runtime::{Runtime, WithUserData},
     types::{
@@ -97,20 +99,26 @@ impl<'js> Trace<'js> for ScrollTriggers {
 impl JsMouse {
     /// @skip
     #[instrument(skip_all)]
-    pub async fn new(runtime: Arc<Runtime>) -> super::Result<Self> {
+    pub async fn new(
+        runtime: Arc<Runtime>,
+        inner: super::Mouse,
+        macro_player: Arc<MacroPlayer>,
+    ) -> super::Result<Self> {
         let click_triggers = ClickTriggers::new(
             runtime.clone(),
+            macro_player.clone(),
             runtime.task_tracker(),
             runtime.cancellation_token(),
         );
         let scroll_triggers = ScrollTriggers::new(
             runtime.clone(),
+            macro_player,
             runtime.task_tracker(),
             runtime.cancellation_token(),
         );
 
         Ok(Self {
-            inner: super::Mouse::new(runtime).await?,
+            inner,
             click_triggers,
             scroll_triggers,
         })
@@ -600,7 +608,7 @@ impl JsMouse {
     /// ```
     ///
     /// @param button: Button
-    /// @param callback: () => void | Promise<void>
+    /// @param callback: TriggerAction
     /// @param options?: OnButtonOptions
     /// @returns EventHandle
     #[platform(not = "wayland")]
@@ -612,19 +620,25 @@ impl JsMouse {
         options: Opt<JsOnButtonOptions>,
     ) -> Result<JsEventHandle> {
         self.inner.check_platform().into_js_result(&ctx)?;
-        let Some(function) = callback.as_function() else {
-            return Err(Exception::throw_type(&ctx, "callback must be a function"));
-        };
 
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
         let button_options = options.into();
         let id = HandleId::default();
-        let user_data = ctx.user_data();
-        let function_key = user_data.callbacks().register(&ctx, function.clone());
-        let context = user_data.script_engine().context();
-        self.click_triggers
-            .add(id, button, context, function_key, button_options);
+        let action = if let Some(function) = callback.as_function() {
+            let user_data = ctx.user_data();
+            let function_key = user_data.callbacks().register(&ctx, function.clone());
+            let context = user_data.script_engine().context();
+            TriggerAction::Callback(context, function_key)
+        } else if let Ok(r#macro) = callback.get::<JsMacro>() {
+            TriggerAction::Macro(r#macro.data())
+        } else {
+            return Err(Exception::throw_type(
+                &ctx,
+                "callback must be a function or Macro",
+            ));
+        };
+        self.click_triggers.add(id, button, action, button_options);
 
         let handle = JsEventHandle::new(id, Arc::new(self.click_triggers.clone()));
         Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
@@ -649,7 +663,7 @@ impl JsMouse {
     /// }, { axis: Axis.Horizontal });
     /// ```
     ///
-    /// @param callback: (length: number) => void | Promise<void>
+    /// @param callback: Macro | ((length: number) => Macro | void | Promise<Macro | void>)
     /// @param options?: OnScrollOptions
     /// @returns EventHandle
     #[platform(not = "wayland")]
@@ -660,18 +674,24 @@ impl JsMouse {
         options: Opt<JsOnScrollOptions>,
     ) -> Result<JsEventHandle> {
         self.inner.check_platform().into_js_result(&ctx)?;
-        let Some(function) = callback.as_function() else {
-            return Err(Exception::throw_type(&ctx, "callback must be a function"));
-        };
 
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
         let id = HandleId::default();
-        let user_data = ctx.user_data();
-        let function_key = user_data.callbacks().register(&ctx, function.clone());
-        let context = user_data.script_engine().context();
-        self.scroll_triggers
-            .add(id, options.axis, context, function_key);
+        let action = if let Some(function) = callback.as_function() {
+            let user_data = ctx.user_data();
+            let function_key = user_data.callbacks().register(&ctx, function.clone());
+            let context = user_data.script_engine().context();
+            TriggerAction::Callback(context, function_key)
+        } else if let Ok(r#macro) = callback.get::<JsMacro>() {
+            TriggerAction::Macro(r#macro.data())
+        } else {
+            return Err(Exception::throw_type(
+                &ctx,
+                "callback must be a function or Macro",
+            ));
+        };
+        self.scroll_triggers.add(id, options.axis, action);
 
         let handle = JsEventHandle::new(id, Arc::new(self.scroll_triggers.clone()));
         Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
@@ -872,6 +892,30 @@ mod tests {
                         await sleep(250);
                         console.println("Left button pressed");
                     });
+
+                    await keyboard.waitForKeys([Key.Escape]);
+                    console.println("STOPPING");
+                    handle.cancel();
+                    console.println("END");
+                "#,
+                )
+                .await;
+        });
+    }
+
+    #[test]
+    #[traced_test]
+    #[ignore]
+    fn test_on_button_return_macro() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            _ = script_engine
+                .eval_async::<()>(
+                    r#"
+                    console.println("Record a short macro first. Press Escape to stop recording.");
+                    const recordedMacro = await macros.record({ timeout: "5s" });
+                    console.println("Click the left mouse button to replay the recorded macro, or press Escape to end the test.");
+
+                    const handle = mouse.onButton(Button.Left, () => recordedMacro);
 
                     await keyboard.waitForKeys([Key.Escape]);
                     console.println("STOPPING");

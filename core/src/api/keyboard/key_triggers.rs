@@ -8,14 +8,16 @@ use color_eyre::Result;
 use enigo::Key;
 use macros::options;
 use parking_lot::Mutex;
-use rquickjs::{AsyncContext, async_with};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
-    api::js::event_handle::{HandleId, HandleRegistry},
+    api::{
+        js::event_handle::{HandleId, HandleRegistry},
+        macros::player::MacroPlayer,
+        triggers::TriggerAction,
+    },
     cancel_on,
-    runtime::{Runtime, WithUserData, events::KeyboardKeyEvent},
-    scripting::callbacks::FunctionKey,
+    runtime::{Runtime, events::KeyboardKeyEvent},
 };
 
 /// Options for a key trigger.
@@ -28,8 +30,7 @@ pub struct OnKeysOptions {
 
 struct KeyHandler {
     id: HandleId,
-    context: AsyncContext,
-    function_key: FunctionKey,
+    action: TriggerAction,
     options: OnKeysOptions,
 }
 
@@ -51,6 +52,7 @@ impl fmt::Debug for KeyTriggers {
 impl KeyTriggers {
     pub fn new(
         runtime: Arc<Runtime>,
+        macro_player: Arc<MacroPlayer>,
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
@@ -70,7 +72,14 @@ impl KeyTriggers {
                 let Ok(event) = cancel_on(&cancellation_token, receiver.recv()).await? else {
                     break;
                 };
-                Self::on_key(event, &mut pressed_keys, &mut fired, &local_triggers).await?;
+                Self::on_key(
+                    event,
+                    &mut pressed_keys,
+                    &mut fired,
+                    &local_triggers,
+                    &macro_player,
+                )
+                .await?;
             }
 
             Result::<()>::Ok(())
@@ -84,6 +93,7 @@ impl KeyTriggers {
         pressed_keys: &mut HashSet<Key>,
         fired: &mut HashSet<(Vec<Key>, HandleId)>,
         triggers: &Arc<Mutex<TriggerMap>>,
+        macro_player: &Arc<MacroPlayer>,
     ) -> Result<()> {
         if event.is_injected || event.is_repeat {
             return Ok(());
@@ -100,7 +110,7 @@ impl KeyTriggers {
         pressed_keys.insert(key);
 
         // Collect handlers to fire: those whose trigger matches and haven't fired yet.
-        let to_fire: Vec<(Vec<Key>, HandleId, AsyncContext, FunctionKey)> = {
+        let to_fire: Vec<(Vec<Key>, HandleId, TriggerAction)> = {
             let trigger_registry = triggers.lock();
             let mut pending_callbacks = Vec::new();
 
@@ -118,8 +128,7 @@ impl KeyTriggers {
                     pending_callbacks.push((
                         trigger_keys.clone(),
                         handler.id,
-                        handler.context.clone(),
-                        handler.function_key,
+                        handler.action.clone(),
                     ));
                 }
             }
@@ -127,31 +136,15 @@ impl KeyTriggers {
             pending_callbacks
         };
 
-        for (trigger_keys, handle_id, context, function_key) in to_fire {
+        for (trigger_keys, handle_id, action) in to_fire {
             fired.insert((trigger_keys, handle_id));
-
-            // Use call_sync so the async_with! closure completes without yielding.
-            // If the closure were to .await (as callbacks.call() does), WithFuture::poll
-            // would reach opaque.poll(cx) and overwrite the scheduler's queue waker with
-            // this task's waker. That would prevent eval_async from driving wait_for_keys
-            // when no trigger fires for a subsequent key (e.g. Escape after F8).
-            async_with!(context => |ctx| {
-                ctx.user_data().callbacks().call_sync(&ctx, function_key);
-            })
-            .await;
+            action.fire(macro_player, "onKey/onKeys").await;
         }
 
         Ok(())
     }
 
-    pub fn add(
-        &self,
-        id: HandleId,
-        keys: Vec<Key>,
-        context: AsyncContext,
-        function_key: FunctionKey,
-        options: OnKeysOptions,
-    ) {
+    pub fn add(&self, id: HandleId, keys: Vec<Key>, action: TriggerAction, options: OnKeysOptions) {
         let mut triggers = self.triggers.lock();
         let was_empty = triggers.is_empty();
 
@@ -161,8 +154,7 @@ impl KeyTriggers {
 
         triggers.entry(normalized).or_default().push(KeyHandler {
             id,
-            context,
-            function_key,
+            action,
             options,
         });
 
@@ -215,7 +207,7 @@ fn keys_match(trigger_keys: &[Key], pressed_keys: &HashSet<Key>, exclusive: bool
     }
 }
 
-pub(super) trait KeyExt {
+pub trait KeyExt {
     /// Normalizes a physical modifier key to its generic form.
     ///
     /// For example, `LControl` and `RControl` both become `Control`, so that

@@ -1,5 +1,10 @@
 //! @verbatim /**
-//! @verbatim  * SizeLike
+//! @verbatim  * A size as a {@link Size} instance or a plain `{width, height}` object.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * image.resize(new Size(800, 600));           // Size instance
+//! @verbatim  * image.resize({ width: 800, height: 600 }); // plain object
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type SizeLike = Size | { width: number; height: number };
 

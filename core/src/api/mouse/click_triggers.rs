@@ -3,24 +3,23 @@ use std::{collections::HashSet, fmt, sync::Arc};
 use color_eyre::Result;
 use macros::options;
 use parking_lot::Mutex;
-use rquickjs::{AsyncContext, async_with};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
     api::{
         js::event_handle::{HandleId, HandleRegistry},
+        macros::player::MacroPlayer,
         mouse::Button,
+        triggers::TriggerAction,
     },
     cancel_on,
-    runtime::{Runtime, WithUserData, events::MouseButtonEvent},
-    scripting::callbacks::FunctionKey,
+    runtime::{Runtime, events::MouseButtonEvent},
 };
 
 struct ClickHandler {
     id: HandleId,
     button: Button,
-    context: AsyncContext,
-    function_key: FunctionKey,
+    action: TriggerAction,
     options: OnButtonOptions,
 }
 
@@ -49,12 +48,14 @@ impl fmt::Debug for ClickTriggers {
 impl ClickTriggers {
     pub fn new(
         runtime: Arc<Runtime>,
+        macro_player: Arc<MacroPlayer>,
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
         let triggers: Arc<Mutex<TriggerList>> = Arc::new(Mutex::new(Vec::new()));
 
         let local_runtime = runtime.clone();
+        let local_macro_player = macro_player;
         let local_triggers = triggers.clone();
 
         task_tracker.spawn(async move {
@@ -69,7 +70,14 @@ impl ClickTriggers {
                     break;
                 };
 
-                Self::on_button(event, &mut pressed_buttons, &mut fired, &local_triggers).await?;
+                Self::on_button(
+                    event,
+                    &mut pressed_buttons,
+                    &mut fired,
+                    &local_triggers,
+                    &local_macro_player,
+                )
+                .await?;
             }
 
             Result::<()>::Ok(())
@@ -83,6 +91,7 @@ impl ClickTriggers {
         pressed_buttons: &mut HashSet<Button>,
         fired: &mut HashSet<(Button, HandleId)>,
         triggers: &Arc<Mutex<TriggerList>>,
+        macro_player: &Arc<MacroPlayer>,
     ) -> Result<()> {
         if event.is_injected {
             return Ok(());
@@ -97,7 +106,7 @@ impl ClickTriggers {
         pressed_buttons.insert(event.button);
 
         // Collect handlers to fire: those whose trigger matches and haven't fired yet.
-        let to_fire: Vec<(HandleId, AsyncContext, FunctionKey)> = {
+        let to_fire: Vec<(HandleId, TriggerAction)> = {
             let trigger_registry = triggers.lock();
 
             trigger_registry
@@ -107,18 +116,13 @@ impl ClickTriggers {
                         && handler.button == event.button
                         && (!handler.options.exclusive || pressed_buttons.len() == 1)
                 })
-                .map(|handler| (handler.id, handler.context.clone(), handler.function_key))
+                .map(|handler| (handler.id, handler.action.clone()))
                 .collect()
         };
 
-        for (handle_id, context, function_key) in to_fire {
+        for (handle_id, action) in to_fire {
             fired.insert((event.button, handle_id));
-
-            // Keep this synchronous to avoid yielding inside the callback dispatch loop.
-            async_with!(context => |ctx| {
-                ctx.user_data().callbacks().call_sync(&ctx, function_key);
-            })
-            .await;
+            action.fire(macro_player, "onButton").await;
         }
 
         Ok(())
@@ -128,8 +132,7 @@ impl ClickTriggers {
         &self,
         id: HandleId,
         button: Button,
-        context: AsyncContext,
-        function_key: FunctionKey,
+        action: TriggerAction,
         options: OnButtonOptions,
     ) {
         let mut triggers = self.triggers.lock();
@@ -138,8 +141,7 @@ impl ClickTriggers {
         triggers.push(ClickHandler {
             id,
             button,
-            context,
-            function_key,
+            action,
             options,
         });
 

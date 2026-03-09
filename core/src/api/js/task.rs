@@ -1,12 +1,26 @@
 //! @verbatim /**
-//! @verbatim  * Task: cancellable promise.
+//! @verbatim  * A cancellable promise.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * const task = sleep("5s");
+//! @verbatim  * task.cancel(); // cancel early
+//! @verbatim  * await task;    // or await it
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type Task<Result> = Promise<Result> & {
 //! @verbatim     cancel(): void;
 //! @verbatim };
 //! @verbatim
 //! @verbatim /**
-//! @verbatim  * ProgressTask: task with progress.
+//! @verbatim  * A cancellable promise that also emits progress updates.
+//! @verbatim  *
+//! @verbatim  * ```ts
+//! @verbatim  * const task = source.find(template);
+//! @verbatim  * for await (const progress of task) {
+//! @verbatim  *   console.println(`Stage: ${progress.stage}`);
+//! @verbatim  * }
+//! @verbatim  * const match = await task;
+//! @verbatim  * ```
 //! @verbatim  */
 //! @verbatim type ProgressTask<Result, Progress> = Task<Result> & {
 //! @verbatim     [Symbol.asyncIterator](): AsyncIterator<Progress>;
