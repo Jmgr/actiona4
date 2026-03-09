@@ -260,7 +260,7 @@ impl Updater {
         // actiona-run is not translated for now.
         // params.insert("app_locale", "en".to_string());
 
-        let request = client.get(UPDATER_URL).query(&params).build()?;
+        let request = client.post(UPDATER_URL).json(&params).build()?;
         let response = client
             .execute(request)
             .await
@@ -269,15 +269,11 @@ impl Updater {
         let body = response.text().await?;
 
         if !status.is_success() {
-            if let Some(body) = summarize_response_body(&body) {
-                return Err(eyre!(
-                    "update server returned HTTP {status}\nresponse body:\n{body}"
-                ));
-            } else {
-                return Err(eyre!(
-                    "update server returned HTTP {status}\nresponse body:\n{body}"
-                ));
-            }
+            let response_body = summarize_response_body(&body).unwrap_or(body);
+
+            return Err(eyre!(
+                "update server returned HTTP {status}\nresponse body:\n{response_body}"
+            ));
         }
 
         let response = serde_json::from_str::<UpdateResponse>(&body).map_err(|err| {
