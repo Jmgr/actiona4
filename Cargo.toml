@@ -29,7 +29,7 @@ clap_complete = "4.5.66"
 color-eyre = "0.6.5"
 console = "0.16.2"
 convert_case = "0.11.0"
-darling = "0.21.3"
+darling = "0.23.0"
 derive-where = "1.6.0"
 derive_more = { version = "2.1.1", default-features = false, features = [
     "add",
@@ -45,7 +45,7 @@ derive_more = { version = "2.1.1", default-features = false, features = [
     "constructor",
 ] }
 directories = "6.0.0"
-display-info = "0.5.7"
+display-info = "0.5.8"
 encoding_rs = "0.8.35"
 enigo = { git = "https://github.com/enigo-rs/enigo.git", rev = "17fc1d5d3d2319fb23b5dffee1bf347b42b40ce4" }
 env_logger = "0.11.9"
@@ -100,7 +100,7 @@ reqwest = { version = "0.13.2", default-features = false, features = [
     "form",
     "query",
 ] }
-rodio = { version = "0.22.1", features = ["tracing", "symphonia"] }
+rodio = { version = "0.22.2", features = ["tracing", "symphonia"] }
 rquickjs = { version = "0.11.0", default-features = false, features = [
     "macro",
     "futures",
@@ -108,7 +108,7 @@ rquickjs = { version = "0.11.0", default-features = false, features = [
     "indexmap",
 ] }
 rquickjs-serde = { version = "0.5.0" }
-rustdoc-types = "0.57.0"
+rustdoc-types = "0.57.1"
 rustyline = { version = "17.0.2", features = ["derive"] }
 serde = "1.0.228"
 serde-name = "0.2.1"
@@ -126,7 +126,7 @@ swc_ecma_transforms_typescript = "42.0.0"
 swc_sourcemap = "10.0.2"
 syn = "2.0.117"
 sys-locale = "0.3.2"
-sysinfo = "0.38.3"
+sysinfo = "0.38.4"
 system_shutdown = { version = "4.1.0" }
 tauri = { version = "2.10.3", default-features = false, features = [
     "wry",
@@ -148,7 +148,7 @@ tokio = { version = "1.50.0", features = [
     "io-util",
 ] }
 tokio-util = { version = "0.7.18", features = ["rt"] }
-toml = "1.0.3"
+toml = "1.0.6"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.22", features = [
     "env-filter",
@@ -158,7 +158,7 @@ tracing-subscriber = { version = "0.3.22", features = [
 tween = "2.2.0"
 two-face = "0.5.1"
 unicode-segmentation = "1.12.0"
-uuid = { version = "1.21.0", features = ["v4", "serde"] }
+uuid = { version = "1.22.0", features = ["v4", "serde"] }
 versions = { version = "7.0.0", features = ["serde"] }
 wildmatch = "2.6.1"
 
