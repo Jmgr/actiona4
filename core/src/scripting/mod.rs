@@ -527,8 +527,6 @@ impl Engine {
             .await
     }
 
-    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-    #[allow(unsafe_op_in_unsafe_fn)]
     #[instrument(skip_all)]
     pub async fn eval_async<T>(&self, script: &str) -> Result<T>
     where
@@ -537,8 +535,6 @@ impl Engine {
         self.eval_async_with_filename(script, None).await
     }
 
-    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-    #[allow(unsafe_op_in_unsafe_fn)]
     #[instrument(skip_all)]
     pub async fn eval_async_with_filename<T>(
         &self,
@@ -551,6 +547,8 @@ impl Engine {
         let (hash, js_code) = self.prepare_script(script, filename, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
+        // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+        #[allow(unsafe_op_in_unsafe_fn)]
         async_with!(self.context => |ctx| {
             let mut options = EvalOptions::default();
             options.promise = true;
@@ -567,8 +565,6 @@ impl Engine {
         .await
     }
 
-    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-    #[allow(unsafe_op_in_unsafe_fn)]
     #[instrument(skip_all)]
     pub async fn eval_async_fn<T>(
         &self,
@@ -581,6 +577,8 @@ impl Engine {
         let (hash, js_code) = self.prepare_script(script, None, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
+        // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+        #[allow(unsafe_op_in_unsafe_fn)]
         async_with!(self.context => |ctx| {
             let mut options = EvalOptions::default();
             options.promise = true;

@@ -96,6 +96,9 @@ impl ScrollTriggers {
                 }
                 TriggerAction::Callback(context, function_key) => {
                     let player_clone = macro_player.clone();
+
+                    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+                    #[allow(unsafe_op_in_unsafe_fn)]
                     async_with!(context => |ctx| {
                         let args = length.into_js(&ctx).map_or_else(|_| {
                             warn!(?function_key, "failed to convert scroll length for callback");

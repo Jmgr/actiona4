@@ -28,6 +28,9 @@ impl TriggerAction {
             Self::Macro(data) => macro_player.play_detached(data, PlayConfig::default()),
             Self::Callback(context, function_key) => {
                 let macro_player_clone = macro_player.clone();
+
+                // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+                #[allow(unsafe_op_in_unsafe_fn)]
                 async_with!(context => |ctx| {
                     fire_callback(&ctx, function_key, &macro_player_clone, vec![], label);
                 })

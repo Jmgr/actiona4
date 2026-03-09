@@ -66,6 +66,8 @@ impl Callbacks {
 
                 info!("Callbacks::call");
 
+                // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+                #[allow(unsafe_op_in_unsafe_fn)]
                 async_with!(context => |ctx| {
                     let user_data = ctx.user_data();
                     let mut result = Value::new_undefined(ctx.clone());

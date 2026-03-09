@@ -204,6 +204,9 @@ impl TextReplacements {
 
                     // Phase 1: queue the call inside a non-yielding async_with! so the
                     // rquickjs scheduler's waker is not overwritten by this task's waker.
+                    //
+                    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+                    #[allow(unsafe_op_in_unsafe_fn)]
                     let prepare_result = async_with!(context => |ctx| {
                         ctx.user_data()
                             .callbacks()
@@ -232,6 +235,9 @@ impl TextReplacements {
                     }
 
                     // Phase 3: retrieve and process the result inside a non-yielding async_with!.
+                    //
+                    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
+                    #[allow(unsafe_op_in_unsafe_fn)]
                     let callback_outcome = async_with!(context => |ctx| {
                         let value = match ctx
                             .user_data()
