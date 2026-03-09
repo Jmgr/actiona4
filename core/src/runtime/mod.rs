@@ -274,7 +274,7 @@ impl Default for RuntimeOptions {
 #[derive_where(Debug)]
 pub struct Runtime {
     #[cfg(unix)]
-    runtime: x11::Runtime,
+    runtime: Arc<x11::Runtime>,
 
     #[cfg(windows)]
     runtime: Arc<win::Runtime>,
@@ -317,20 +317,117 @@ fn setup_opencv_threading() -> Result<()> {
     Ok(())
 }
 
+#[cfg(all(test, unix))]
+static TEST_X11_RUNTIME: OnceLock<Arc<x11::Runtime>> = OnceLock::new();
+
+/// Shared clipboard for all tests.
+///
+/// `arboard::Clipboard` on Linux spawns a background OS thread to serve
+/// clipboard selection requests. That thread is joined – and therefore *dies*
+/// – when the last `arboard::Clipboard` handle is dropped. If the OS reuses
+/// the dead thread's ID for the next test's clipboard thread, glibc's
+/// per-thread tcache aliasing causes a double-free crash.
+///
+/// By keeping one `Clipboard` alive for the entire test-binary lifetime the
+/// clipboard server thread never dies and the tcache is never corrupted.
+#[cfg(test)]
+static TEST_CLIPBOARD: OnceLock<Clipboard> = OnceLock::new();
+
 impl Runtime {
     #[cfg(test)]
     fn test_tokio_runtime() -> &'static tokio::runtime::Runtime {
         static TOKIO_RUNTIME: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
 
         TOKIO_RUNTIME.get_or_init(|| {
-            // Tests spin up native resources such as X11 and QuickJS. Sharing one
-            // multithreaded runtime avoids per-test runtime teardown crashes while
-            // still supporting block_in_place and background task progress.
+            // A single shared multi-thread runtime avoids per-test teardown
+            // crashes (e.g. X11 connection exhaustion) and allows
+            // block_in_place (which current_thread runtimes forbid).
             tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
                 .build()
                 .expect("failed to build shared Tokio test runtime")
         })
+    }
+
+    /// Initialises the single shared `x11::Runtime` used across all tests.
+    ///
+    /// Must be called from a **bare test thread** (not from within a Tokio
+    /// `block_on` context) so that the inner `block_on` call is allowed.
+    ///
+    /// By reusing the same X11 connection and dedicated event-loop thread for
+    /// the entire test binary we avoid two classes of failure:
+    ///
+    /// 1. **X11 "Maximum number of clients reached"** – each `X11Connection`
+    ///    opens three sockets (async, sync, XCB). With hundreds of tests the
+    ///    server-side limit of 256 clients is quickly exhausted if every test
+    ///    opens its own connection.
+    ///
+    /// 2. **glibc tcache double-free / SIGSEGV** – `spawn_on_dedicated_thread`
+    ///    creates an OS thread per `x11::Runtime`. When that thread dies glibc
+    ///    doesn't fully flush its per-thread allocation cache (`tcache`).
+    ///    If the OS reuses the thread ID for the next test's thread the two
+    ///    tcache entries alias and a double-free is triggered.
+    ///
+    /// Both issues disappear when the thread (and its connections) live for the
+    /// entire test-binary lifetime.
+    #[cfg(all(test, unix))]
+    fn test_x11_runtime_init() {
+        if TEST_X11_RUNTIME.get().is_some() {
+            return;
+        }
+        let cancellation_token = CancellationToken::new();
+        let task_tracker = TaskTracker::new();
+        let displays =
+            crate::api::displays::Displays::new(cancellation_token.clone(), task_tracker.clone())
+                .expect("failed to create Displays for shared test X11 runtime");
+        let rt = Self::test_tokio_runtime()
+            .block_on(x11::Runtime::new(
+                cancellation_token,
+                task_tracker,
+                None,
+                displays,
+            ))
+            .map(Arc::new)
+            .expect("failed to create shared test X11 runtime");
+        TEST_X11_RUNTIME.get_or_init(|| rt);
+        Self::test_clipboard_init();
+    }
+
+    #[cfg(all(test, unix))]
+    fn test_x11_runtime() -> Arc<x11::Runtime> {
+        TEST_X11_RUNTIME
+            .get()
+            .cloned()
+            .expect("test_x11_runtime_init() must be called before entering the async context")
+    }
+
+    /// Initialises the single shared `Clipboard` used across all tests.
+    ///
+    /// Must be called from a **bare test thread** before entering any
+    /// `block_on` context.
+    ///
+    /// On Linux, `arboard::Clipboard::new()` spawns a background OS thread to
+    /// serve clipboard-selection requests. That thread is joined – and therefore
+    /// *dies* – when the last clipboard handle is dropped at the end of each test.
+    /// glibc does not fully flush a dying thread's per-thread allocation cache
+    /// (`tcache`). If the OS reuses the same thread ID for the next test's
+    /// clipboard thread, the two tcache entries alias and a double-free results.
+    ///
+    /// Keeping one `Clipboard` alive for the entire test-binary lifetime
+    /// prevents the clipboard thread from ever dying and eliminates the crash.
+    #[cfg(test)]
+    fn test_clipboard_init() {
+        TEST_CLIPBOARD.get_or_init(|| {
+            Clipboard::new().expect("failed to create shared test clipboard")
+        });
+    }
+
+    #[cfg(test)]
+    fn test_clipboard() -> Clipboard {
+        TEST_CLIPBOARD
+            .get()
+            .cloned()
+            .expect("test_clipboard_init() must be called before entering the async context")
     }
 
     // TODO: make private
@@ -344,13 +441,24 @@ impl Runtime {
         let displays = Displays::new(cancellation_token.clone(), task_tracker.clone())?;
 
         #[cfg(unix)]
-        let runtime = x11::Runtime::new(
-            cancellation_token.clone(),
-            task_tracker.clone(),
-            options.display_name.as_deref(),
-            displays.clone(),
-        )
-        .await?;
+        let runtime = {
+            #[cfg(test)]
+            {
+                Self::test_x11_runtime()
+            }
+            #[cfg(not(test))]
+            {
+                Arc::new(
+                    x11::Runtime::new(
+                        cancellation_token.clone(),
+                        task_tracker.clone(),
+                        options.display_name.as_deref(),
+                        displays.clone(),
+                    )
+                    .await?,
+                )
+            }
+        };
 
         #[cfg(windows)]
         let runtime = win::Runtime::new(
@@ -368,7 +476,16 @@ impl Runtime {
             }
         });
 
-        let clipboard = Clipboard::new()?;
+        let clipboard = {
+            #[cfg(test)]
+            {
+                Self::test_clipboard()
+            }
+            #[cfg(not(test))]
+            {
+                Clipboard::new()?
+            }
+        };
         let platform = Platform::detect();
         let runtime = Arc::new(Self {
             runtime,
@@ -666,9 +783,21 @@ impl Runtime {
         let task_tracker = TaskTracker::new();
 
         #[cfg(test)]
-        let unhandled_exceptions = Self::test_tokio_runtime().handle().block_on(async move {
-            Self::run_impl(f, cancellation_token, task_tracker, None, runtime_options).await
-        })?;
+        let unhandled_exceptions = {
+            // Initialise the shared X11 runtime while we are still on the bare
+            // test thread, before entering block_on where a nested block_on
+            // would panic.
+            // test_x11_runtime_init() also calls test_clipboard_init() on unix.
+            #[cfg(unix)]
+            Self::test_x11_runtime_init();
+            // On non-unix platforms the clipboard must be initialised separately.
+            #[cfg(not(unix))]
+            Self::test_clipboard_init();
+
+            Self::test_tokio_runtime().handle().block_on(async move {
+                Self::run_impl(f, cancellation_token, task_tracker, None, runtime_options).await
+            })?
+        };
 
         #[cfg(not(test))]
         let unhandled_exceptions = tokio::runtime::Builder::new_multi_thread()
@@ -754,20 +883,30 @@ impl Runtime {
             })
             .await
             .ok();
-        drop(script_engine);
-        drop(runtime);
-
+        // Cancel and wait for all background tasks (including the drive task)
+        // BEFORE dropping script_engine or runtime.  The drive task holds the
+        // InnerRuntime lock and executes QuickJS code; if the QuickJS context
+        // is freed (via JS_FreeContext) while the drive task is still running,
+        // the result is a use-after-free that manifests as the glibc
+        // "double free detected in tcache 2" crash.
+        //
+        // Cancelling before dropping the runtime also ensures the X11 main
+        // loop thread sees the cancellation and exits, so X11Runtime::drop's
+        // thread.join() returns promptly.
         task_tracker.close();
         cancellation_token.cancel();
 
         task_tracker.wait().await;
+
+        drop(script_engine);
+        drop(runtime);
 
         Result::Ok(unhandled_exceptions)
     }
 
     #[cfg(unix)]
     #[must_use]
-    pub const fn platform(&self) -> &x11::Runtime {
+    pub fn platform(&self) -> &x11::Runtime {
         &self.runtime
     }
 

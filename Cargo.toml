@@ -2,6 +2,13 @@
 resolver = "3"
 members = ["core", "doc-generator", "macros", "run"]
 
+[patch.crates-io]
+# Patch for double-free bug in WithFuture::poll: after ManuallyDrop::drop(fut) the
+# assignment `this.lock_state = LockState::Initial` triggers LockState::drop which
+# calls ManuallyDrop::drop a second time, double-freeing EventListener's heap allocation
+# when the async-lock mutex was contended (slow path / AcquireSlow).
+rquickjs-core = { path = "vendor/rquickjs-core" }
+
 [workspace.package]
 version = "0.1.7"
 edition = "2024"
