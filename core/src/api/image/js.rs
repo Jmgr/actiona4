@@ -25,7 +25,9 @@ use crate::{
         },
         js::{
             abort_controller::JsAbortSignal,
-            classes::{HostClass, ValueClass, register_enum, register_host_class},
+            classes::{
+                HostClass, ValueClass, register_enum, register_host_class, register_value_class,
+            },
             task::{IsDone, progress_task_with_token},
         },
         point::js::{JsPoint, JsPointLike},
@@ -401,16 +403,24 @@ impl From<JsTextVerticalAlign> for TextVerticalAlign {
 /// Options for drawing text on an image.
 ///
 /// ```ts
-/// // Draw large, centered text
-/// image.drawText(100, 50, "Hello", fontPath, Color.White, {
+/// // Draw large, centered text with default font
+/// image.drawText(100, 50, "Hello", Color.White, {
 ///   fontSize: 32,
 ///   horizontalAlign: TextHorizontalAlign.Center,
 ///   verticalAlign: TextVerticalAlign.Middle
 /// });
+///
+/// // Draw text with a custom font
+/// const font = await Font.load("/path/to/font.ttf");
+/// image.drawText(100, 50, "Hello", Color.White, { font, fontSize: 32 });
 /// ```
 #[options]
-#[derive(Clone, Copy, Debug, FromJsObject)]
+#[derive(Clone, Debug, FromJsObject)]
 pub struct JsDrawTextOptions {
+    /// Font to use. Defaults to the built-in DejaVu Sans.
+    #[default(JsFont::default(), ts = "Font.default()")]
+    pub font: JsFont,
+
     /// Font size in pixels.
     #[default(16.0, ts = "16")]
     pub font_size: f32,
@@ -431,6 +441,7 @@ pub struct JsDrawTextOptions {
 impl From<JsDrawTextOptions> for DrawTextOptions {
     fn from(value: JsDrawTextOptions) -> Self {
         Self {
+            font: value.font.inner,
             font_size: value.font_size,
             line_spacing: value.line_spacing,
             horizontal_align: value.horizontal_align.into(),
@@ -695,6 +706,62 @@ impl JsFindImageProgress {
     }
 }
 
+/// A font loaded from a file, used to draw text on images.
+///
+/// ```ts
+/// const font = await Font.load("/path/to/font.ttf");
+/// image.drawText(10, 10, "Hello", font, Color.Black);
+/// ```
+#[derive(Clone, Debug, Default, JsLifetime)]
+#[js_class]
+pub struct JsFont {
+    pub(crate) inner: super::Font,
+}
+
+impl<'js> Trace<'js> for JsFont {
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
+}
+
+impl<'js> ValueClass<'js> for JsFont {}
+
+#[js_methods]
+impl JsFont {
+    /// @constructor
+    /// @private
+    #[qjs(constructor)]
+    pub fn new(ctx: Ctx<'_>) -> Result<Self> {
+        Err(Exception::throw_message(
+            &ctx,
+            "Font cannot be instantiated directly",
+        ))
+    }
+
+    /// Loads a font from a file.
+    ///
+    /// ```ts
+    /// const font = await Font.load("/path/to/font.ttf");
+    /// ```
+    #[qjs(static)]
+    pub async fn load(ctx: Ctx<'_>, path: String) -> Result<Self> {
+        let font = super::Font::load(path).await.into_js_result(&ctx)?;
+        Ok(Self { inner: font })
+    }
+
+    /// Returns the built-in default font (DejaVu Sans).
+    #[qjs(static, rename = "default")]
+    #[must_use]
+    pub fn default_font() -> Self {
+        <Self as Default>::default()
+    }
+
+    /// Returns a string representation of this font.
+    #[qjs(rename = PredefinedAtom::ToString)]
+    #[must_use]
+    pub fn to_string_js(&self) -> String {
+        display_with_type("Font", &self.inner)
+    }
+}
+
 /// An image that can be loaded, created, manipulated, and saved.
 ///
 /// Provides methods for image processing (blur, rotate, resize, color adjustments),
@@ -708,7 +775,7 @@ impl JsFindImageProgress {
 /// let image = new Image(200, 100);
 /// image.fill(Color.White)
 ///      .drawCircle(100, 50, 30, Color.Red)
-///      .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
+///      .drawText(10, 10, "Hello", Color.Black);
 /// await image.save("output.png");
 /// ```
 ///
@@ -752,6 +819,7 @@ impl JsImage {
 
 impl<'js> ValueClass<'js> for JsImage {
     fn register_dependencies(ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+        register_value_class::<JsFont>(ctx)?;
         register_enum::<JsFlipDirection>(ctx)?;
         register_enum::<JsResizeFilter>(ctx)?;
         register_enum::<JsInterpolation>(ctx)?;
@@ -1170,7 +1238,7 @@ impl JsImage {
                 center.0,
                 radius,
                 color.0,
-                options.unwrap_or_default().into(),
+                options.0.unwrap_or_default().into(),
             )
             .into()
     }
@@ -1212,7 +1280,7 @@ impl JsImage {
                 width_radius,
                 height_radius,
                 color.0,
-                options.unwrap_or_default().into(),
+                options.0.unwrap_or_default().into(),
             )
             .into()
     }
@@ -1247,14 +1315,13 @@ impl JsImage {
             .map(Into::into)
     }
 
-    /// Draw text on this image using the provided font.
+    /// Draw text on this image.
     pub fn draw_text<'js>(
         &mut self,
         ctx: Ctx<'js>,
         this: This<Class<'js, Self>>,
         position: JsPointLike,
         text: String,
-        font_path: String,
         color: JsColorLike,
         options: Opt<JsDrawTextOptions>,
     ) -> Result<Class<'js, Self>> {
@@ -1262,9 +1329,8 @@ impl JsImage {
             .draw_text_mut(
                 position.0,
                 &text,
-                &font_path,
                 color.0,
-                options.unwrap_or_default().into(),
+                options.0.unwrap_or_default().into(),
             )
             .into_js_result(&ctx)?;
 
@@ -1277,7 +1343,6 @@ impl JsImage {
         ctx: Ctx<'_>,
         position: JsPointLike,
         text: String,
-        font_path: String,
         color: JsColorLike,
         options: Opt<JsDrawTextOptions>,
     ) -> Result<Self> {
@@ -1285,9 +1350,8 @@ impl JsImage {
             .with_text(
                 position.0,
                 &text,
-                &font_path,
                 color.0,
-                options.unwrap_or_default().into(),
+                options.0.unwrap_or_default().into(),
             )
             .into_js_result(&ctx)
             .map(Into::into)
@@ -1668,7 +1732,7 @@ mod tests {
         r#"drawRectangle(new Rect(5, 5, 30, 15), Color.Black, {hollow: true})"#
     )]
     #[case::draw_text(
-        r#"drawText(new Point(5, 25), "Test", fontPath, Color.White, {fontSize: 12, horizontalAlign: TextHorizontalAlign.Left})"#
+        r#"drawText(new Point(5, 25), "Test", Color.White, {fontSize: 12, horizontalAlign: TextHorizontalAlign.Left})"#
     )]
     #[case::draw_image(
         r#"drawImage(new Point(10, 10), overlay, {sourceRect: new Rect(0, 0, 16, 16)})"#
@@ -1737,6 +1801,18 @@ mod tests {
                 .eval_async::<()>(r#"await input.save(outputPath)"#)
                 .await
                 .unwrap();
+        })
+    }
+
+    #[test]
+    #[serial]
+    fn test_font_to_string() {
+        Runtime::test_with_script_engine(async move |script_engine| {
+            let result = script_engine
+                .eval_async::<String>("String(Font.default())")
+                .await
+                .unwrap();
+            assert_eq!(result, "Font(path: <built-in>)");
         })
     }
 

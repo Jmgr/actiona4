@@ -1,6 +1,6 @@
-use std::{fmt::Display, io::Cursor, ops::DerefMut, path::Path, sync::Arc};
+use std::{fmt::Display, io::Cursor, ops::DerefMut, path::Path, sync::{Arc, OnceLock}};
 
-use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
+use ab_glyph::{Font as AbGlyphFont, FontArc, PxScale, ScaleFont};
 use arc_swap::ArcSwapOption;
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Deref;
@@ -148,8 +148,9 @@ pub enum TextVerticalAlign {
     Bottom,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct DrawTextOptions {
+    pub font: Font,
     pub font_size: f32,
     pub line_spacing: f32,
     pub horizontal_align: TextHorizontalAlign,
@@ -159,10 +160,64 @@ pub struct DrawTextOptions {
 impl Default for DrawTextOptions {
     fn default() -> Self {
         Self {
+            font: Font::default(),
             font_size: 16.0,
             line_spacing: 1.0,
             horizontal_align: TextHorizontalAlign::Left,
             vertical_align: TextVerticalAlign::Top,
+        }
+    }
+}
+
+/// A font loaded from a file, used for drawing text on images.
+#[derive(Clone)]
+pub struct Font {
+    pub(crate) inner: FontArc,
+    path: String,
+}
+
+impl std::fmt::Debug for Font {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Font")
+            .field("path", &self.path)
+            .finish()
+    }
+}
+
+impl Display for Font {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        DisplayFields::default()
+            .display("path", &self.path)
+            .finish(f)
+    }
+}
+
+impl Font {
+    pub async fn load(path: impl AsRef<Path>) -> Result<Self> {
+        let path_str = path.as_ref().to_string_lossy().into_owned();
+        let data = fs::read(path).await?;
+        let inner = FontArc::try_from_vec(data)
+            .map_err(|_| eyre!("Unable to parse font \"{path_str}\""))?;
+        Ok(Self { inner, path: path_str })
+    }
+
+    fn builtin() -> FontArc {
+        static FONT: OnceLock<FontArc> = OnceLock::new();
+        FONT.get_or_init(|| {
+            FontArc::try_from_vec(
+                include_bytes!("../../../assets/DejaVuSans.ttf").to_vec(),
+            )
+            .expect("built-in DejaVu Sans font is valid")
+        })
+        .clone()
+    }
+}
+
+impl Default for Font {
+    fn default() -> Self {
+        Self {
+            inner: Self::builtin(),
+            path: "<built-in>".to_string(),
         }
     }
 }
@@ -754,7 +809,6 @@ impl Image {
         &mut self,
         position: Point,
         text: &str,
-        font_path: &str,
         color: Color,
         options: DrawTextOptions,
     ) -> Result<()> {
@@ -762,20 +816,18 @@ impl Image {
             return Ok(());
         }
 
-        let font = Self::load_font(font_path)?;
-        Self::render_text(self, position, text, &font, color, options)
+        Self::render_text(self, position, text, color, options)
     }
 
     pub fn with_text(
         &self,
         position: Point,
         text: &str,
-        font_path: &str,
         color: Color,
         options: DrawTextOptions,
     ) -> Result<Self> {
         let mut clone = self.clone();
-        clone.draw_text_mut(position, text, font_path, color, options)?;
+        clone.draw_text_mut(position, text, color, options)?;
         Ok(clone)
     }
 
@@ -861,23 +913,14 @@ impl Image {
         Ok(())
     }
 
-    // TODO: expose a JsFont
-    fn load_font(font_path: &str) -> Result<FontArc> {
-        let data = std::fs::read(font_path)
-            .map_err(|err| eyre!("Unable to read font \"{font_path}\": {err}"))?;
-
-        FontArc::try_from_vec(data)
-            .map_err(|err| eyre!("Unable to parse font \"{font_path}\": {err}"))
-    }
-
     fn render_text(
         image: &mut Self,
         position: Point,
         text: &str,
-        font: &FontArc,
         color: Color,
         options: DrawTextOptions,
     ) -> Result<()> {
+        let font = &options.font.inner;
         let scale = PxScale::from(options.font_size.max(1.0));
         let scaled_font = font.as_scaled(scale);
 
@@ -1408,5 +1451,20 @@ mod tests {
         assert!(!inv.has_cached_template());
         assert!(img.has_cached_source());
         assert!(img.has_cached_template());
+    }
+
+    #[test]
+    fn font_display_builtin() {
+        let font = Font::default();
+        assert_eq!(font.to_string(), "(path: <built-in>)");
+    }
+
+    #[test]
+    fn font_display_loaded_path() {
+        let font = Font {
+            inner: Font::builtin(),
+            path: "/usr/share/fonts/MyFont.ttf".to_string(),
+        };
+        assert_eq!(font.to_string(), "(path: /usr/share/fonts/MyFont.ttf)");
     }
 }

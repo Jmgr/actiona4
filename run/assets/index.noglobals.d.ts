@@ -4981,17 +4981,26 @@ interface DrawingOptions {
  * Options for drawing text on an image.
  * 
  * ```ts
- * // Draw large, centered text
- * image.drawText(100, 50, "Hello", fontPath, Color.White, {
+ * // Draw large, centered text with default font
+ * image.drawText(100, 50, "Hello", Color.White, {
  *   fontSize: 32,
  *   horizontalAlign: TextHorizontalAlign.Center,
  *   verticalAlign: TextVerticalAlign.Middle
  * });
+ * 
+ * // Draw text with a custom font
+ * const font = await Font.load("/path/to/font.ttf");
+ * image.drawText(100, 50, "Hello", Color.White, { font, fontSize: 32 });
  * ```
  * @category Image
  * @expand
  */
 interface DrawTextOptions {
+    /**
+     * Font to use. Defaults to the built-in DejaVu Sans.
+     * @defaultValue `Font.default()`
+     */
+    font?: Font;
     /**
      * Font size in pixels.
      * @defaultValue `16`
@@ -5131,6 +5140,34 @@ interface FindImageProgress {
     toString(): string;
 }
 /**
+ * A font loaded from a file, used to draw text on images.
+ * 
+ * ```ts
+ * const font = await Font.load("/path/to/font.ttf");
+ * image.drawText(10, 10, "Hello", font, Color.Black);
+ * ```
+ * @category Image
+ */
+class Font {
+    private constructor();
+    /**
+     * Loads a font from a file.
+     * 
+     * ```ts
+     * const font = await Font.load("/path/to/font.ttf");
+     * ```
+     */
+    static load(path: string): Promise<Font>;
+    /**
+     * Returns the built-in default font (DejaVu Sans).
+     */
+    static defaultFont(): Font;
+    /**
+     * Returns a string representation of this font.
+     */
+    toString(): string;
+}
+/**
  * An image that can be loaded, created, manipulated, and saved.
  * 
  * Provides methods for image processing (blur, rotate, resize, color adjustments),
@@ -5144,7 +5181,7 @@ interface FindImageProgress {
  * let image = new Image(200, 100);
  * image.fill(Color.White)
  *      .drawCircle(100, 50, 30, Color.Red)
- *      .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
+ *      .drawText(10, 10, "Hello", Color.Black);
  * await image.save("output.png");
  * ```
  * 
@@ -5556,37 +5593,37 @@ class Image {
      */
     withRectangle(x: number, y: number, width: number, height: number, r: number, g: number, b: number, a?: number, options?: DrawingOptions): Image;
     /**
-     * Draw text on this image using the provided font.
+     * Draw text on this image.
      */
-    drawText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
+    drawText(position: PointLike, text: string, color: ColorLike, options?: DrawTextOptions): this;
     /**
-     * Draw text on this image using the provided font.
+     * Draw text on this image.
      */
-    drawText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
+    drawText(position: PointLike, text: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
     /**
-     * Draw text on this image using the provided font.
+     * Draw text on this image.
      */
-    drawText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): this;
+    drawText(x: number, y: number, text: string, color: ColorLike, options?: DrawTextOptions): this;
     /**
-     * Draw text on this image using the provided font.
+     * Draw text on this image.
      */
-    drawText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
-    /**
-     * Draw text on a copy of this image.
-     */
-    withText(position: PointLike, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
+    drawText(x: number, y: number, text: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): this;
     /**
      * Draw text on a copy of this image.
      */
-    withText(position: PointLike, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
+    withText(position: PointLike, text: string, color: ColorLike, options?: DrawTextOptions): Image;
     /**
      * Draw text on a copy of this image.
      */
-    withText(x: number, y: number, text: string, fontPath: string, color: ColorLike, options?: DrawTextOptions): Image;
+    withText(position: PointLike, text: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
     /**
      * Draw text on a copy of this image.
      */
-    withText(x: number, y: number, text: string, fontPath: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
+    withText(x: number, y: number, text: string, color: ColorLike, options?: DrawTextOptions): Image;
+    /**
+     * Draw text on a copy of this image.
+     */
+    withText(x: number, y: number, text: string, r: number, g: number, b: number, a?: number, options?: DrawTextOptions): Image;
     /**
      * Draw another image on this image.
      */

@@ -11,12 +11,6 @@ Find Image:
 Solve // TODOs
 Create an installer for Windows
 
-Macro
-- recordedAt should be a getter
-
- Mouse:
-- drag and drop?
-
 Select rect on screen
 - https://github.com/neXromancers/hacksaw/tree/master
 
@@ -27,7 +21,6 @@ Update
 - check we don't await without a cancellation token
 
 - impl DPI awareness
-- 90 MB appimage...
 
 // TODO: check all token cancellation return a Cancelled error
 // TODO: display a tray icon, enabled by default when waitAtEnd is true
