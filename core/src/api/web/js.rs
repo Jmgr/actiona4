@@ -162,6 +162,7 @@ impl JsMultipartForm {
         Ok(())
     }
 
+    /// Returns a string representation of this multipart form.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -371,6 +372,7 @@ impl JsWebProgress {
         self.finished
     }
 
+    /// Returns a string representation of this web transfer progress.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -594,6 +596,7 @@ impl JsWeb {
         )
     }
 
+    /// Returns a string representation of the `web` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

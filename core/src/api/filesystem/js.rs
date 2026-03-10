@@ -64,6 +64,7 @@ impl JsFilesystem {
             .is_ok_and(|metadata| metadata.is_symlink())
     }
 
+    /// Returns a string representation of this filesystem.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

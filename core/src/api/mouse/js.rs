@@ -232,6 +232,7 @@ impl JsScrollEvent {
         self.length
     }
 
+    /// Returns a string representation of this scroll event.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -710,6 +711,7 @@ impl JsMouse {
         self.scroll_triggers.clear();
     }
 
+    /// Returns a string representation of the `mouse` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -112,7 +112,7 @@ Videos directory
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of all standard paths.
+Returns a string representation of the `standardPaths` singleton.
 
 #### Returns
 

@@ -242,6 +242,8 @@ Returns the display furthest to the top (minimum top edge), or throws if none.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+Returns a string representation of the `displays` singleton.
+
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

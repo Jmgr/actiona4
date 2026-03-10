@@ -80,6 +80,7 @@ impl JsNetwork {
             .collect_vec())
     }
 
+    /// Returns a string representation of this network.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -168,6 +169,7 @@ impl JsNetworkInterface {
             .collect_vec()
     }
 
+    /// Returns a string representation of this network interface.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -226,6 +228,7 @@ impl JsCounters {
         self.inner.errors()
     }
 
+    /// Returns a string representation of these counters.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -286,6 +289,7 @@ impl JsTraffic {
         self.inner.delta().into()
     }
 
+    /// Returns a string representation of this traffic.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

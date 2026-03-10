@@ -222,6 +222,7 @@ impl JsClipboard {
         })
     }
 
+    /// Returns a string representation of the `clipboard` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -267,6 +268,7 @@ impl JsClipboardText {
         self.inner.get_text(*mode).into_js_result(&ctx)
     }
 
+    /// Returns a string representation of this clipboard text.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -317,6 +319,7 @@ impl JsClipboardImage {
         Ok(image.into())
     }
 
+    /// Returns a string representation of this clipboard image.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -370,6 +373,7 @@ impl JsClipboardFileList {
         self.inner.get_file_list(*mode).into_js_result(&ctx)
     }
 
+    /// Returns a string representation of this clipboard file list.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -428,6 +432,7 @@ impl JsClipboardHtml {
         self.inner.get_html(*mode).into_js_result(&ctx)
     }
 
+    /// Returns a string representation of this clipboard html.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

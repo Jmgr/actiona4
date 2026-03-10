@@ -514,7 +514,7 @@ impl JsColor {
         *self == other
     }
 
-    /// Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
+    /// Returns a string representation of this color.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

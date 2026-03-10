@@ -80,6 +80,7 @@ impl JsWildcard {
         })
     }
 
+    /// Returns a string representation of this wildcard.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -203,6 +204,7 @@ mod tests {
             name.0.matches(&ctx, &text)
         }
 
+        /// Returns a string representation of this test.
         #[qjs(rename = PredefinedAtom::ToString)]
         #[must_use]
         pub fn to_string_js(&self) -> String {

@@ -184,6 +184,7 @@ impl JsSystem {
         Ok(())
     }
 
+    /// Returns a string representation of the `system` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

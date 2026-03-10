@@ -43,6 +43,8 @@ The current stage of the find image operation.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+Returns a string representation of this image search progress.
+
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

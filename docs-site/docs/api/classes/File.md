@@ -389,7 +389,7 @@ Returns the file size in bytes.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of the file handle.
+Returns a string representation of this file.
 
 #### Returns
 

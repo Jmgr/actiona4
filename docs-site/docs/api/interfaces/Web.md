@@ -955,6 +955,8 @@ User name for HTTP basic authentication.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+Returns a string representation of the `web` singleton.
+
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

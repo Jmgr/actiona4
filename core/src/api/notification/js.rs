@@ -856,6 +856,7 @@ impl JsNotification {
         super::Notification::capabilities().into_js_result(&ctx)
     }
 
+    /// Returns a string representation of the `notification` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -1007,6 +1008,7 @@ impl JsNotificationHandle {
         })
     }
 
+    /// Returns a string representation of this notification handle.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -187,6 +187,7 @@ impl JsProcesses {
         Ok(matching)
     }
 
+    /// Returns a string representation of this process list.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -466,6 +467,7 @@ impl JsProcessInfo {
         }
     }
 
+    /// Returns a string representation of this process info.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

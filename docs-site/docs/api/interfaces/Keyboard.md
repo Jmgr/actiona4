@@ -511,6 +511,8 @@ Use this for keys not covered by the `Key` enum.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+Returns a string representation of the `keyboard` singleton.
+
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

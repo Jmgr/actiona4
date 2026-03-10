@@ -419,6 +419,7 @@ impl JsProcess {
         }
     }
 
+    /// Returns a string representation of the `process` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -653,6 +654,7 @@ impl JsProcessHandle {
         })
     }
 
+    /// Returns a string representation of this process handle.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -724,6 +726,7 @@ impl JsProcessExitResult {
         self.stderr.as_deref()
     }
 
+    /// Returns a string representation of this process exit result.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -535,6 +535,7 @@ impl JsKeyboard {
         self.key_triggers.clear();
     }
 
+    /// Returns a string representation of the `keyboard` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

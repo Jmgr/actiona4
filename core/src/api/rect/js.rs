@@ -251,7 +251,7 @@ impl JsRect {
         self.inner.contains(point.into())
     }
 
-    /// Returns a string representation of this Rect.
+    /// Returns a string representation of this rect.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

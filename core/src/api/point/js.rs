@@ -272,7 +272,7 @@ impl JsPoint {
             .into_js_result(&ctx)
     }
 
-    /// Returns a string representation of this Point.
+    /// Returns a string representation of this point.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

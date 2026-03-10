@@ -166,6 +166,7 @@ impl JsOs {
             .collect_vec())
     }
 
+    /// Returns a string representation of this OS.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -263,6 +264,7 @@ impl JsUser {
         &self.group_names
     }
 
+    /// Returns a string representation of this user.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -325,6 +327,7 @@ impl JsGroup {
         self.id
     }
 
+    /// Returns a string representation of this group.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

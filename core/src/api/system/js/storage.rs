@@ -78,6 +78,7 @@ impl JsStorage {
             .collect_vec())
     }
 
+    /// Returns a string representation of this storage.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -190,6 +191,7 @@ impl JsDisk {
         self.inner.usage().into()
     }
 
+    /// Returns a string representation of this disk.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -295,6 +297,7 @@ impl JsIoStats {
         *self.inner.delta()
     }
 
+    /// Returns a string representation of these I/O stats.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -355,6 +358,7 @@ impl JsDiskUsage {
         self.inner.read().into()
     }
 
+    /// Returns a string representation of this disk usage.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

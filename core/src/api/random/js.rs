@@ -367,6 +367,7 @@ impl JsRandom {
         Ok(value)
     }
 
+    /// Returns a string representation of the `random` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -151,6 +151,7 @@ impl JsSearchIn {
         }
     }
 
+    /// Returns a string representation of this search area.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -278,6 +279,7 @@ impl JsScreen {
             .into())
     }
 
+    /// Returns a string representation of the `screen` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

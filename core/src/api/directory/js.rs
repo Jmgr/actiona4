@@ -75,6 +75,7 @@ impl JsDirectoryEntry {
         self.size
     }
 
+    /// Returns a string representation of this directory entry.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -267,6 +268,7 @@ impl JsDirectory {
         Ok(result)
     }
 
+    /// Returns a string representation of this directory.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -141,6 +141,7 @@ impl JsMacro {
         self.data.metadata.platform.clone()
     }
 
+    /// Returns a string representation of this macro.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -233,6 +234,7 @@ impl JsPlayProgress {
         self.is_done()
     }
 
+    /// Returns a string representation of this playback progress.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -533,6 +535,7 @@ impl JsMacros {
         )
     }
 
+    /// Returns a string representation of the `macros` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

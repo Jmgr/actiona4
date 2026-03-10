@@ -550,7 +550,7 @@ impl JsMatch {
         *self == other
     }
 
-    /// Returns a string representation of this Match.
+    /// Returns a string representation of this match.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -699,6 +699,7 @@ impl JsFindImageProgress {
         self.inner.stage.is_finished()
     }
 
+    /// Returns a string representation of this image search progress.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

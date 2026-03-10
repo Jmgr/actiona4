@@ -61,6 +61,7 @@ impl JsEventHandle {
         self.registry.remove_handle(self.id);
     }
 
+    /// Returns a string representation of this event handle.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

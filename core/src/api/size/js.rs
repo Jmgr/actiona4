@@ -200,7 +200,7 @@ impl JsSize {
             .into_js_result(&ctx)
     }
 
-    /// Returns a string representation of this Size.
+    /// Returns a string representation of this size.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

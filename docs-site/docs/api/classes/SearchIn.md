@@ -20,6 +20,8 @@ const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+Returns a string representation of this search area.
+
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

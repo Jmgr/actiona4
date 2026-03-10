@@ -528,6 +528,7 @@ impl JsConsole {
         println!("{label}: {value}");
     }
 
+    /// Returns a string representation of the `console` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

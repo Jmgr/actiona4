@@ -16,6 +16,8 @@ const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+Returns a string representation of this set of message box buttons.
+
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

@@ -204,7 +204,7 @@ println(s.toJson()); // '{"width":100,"height":50}'
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of this Size.
+Returns a string representation of this size.
 
 #### Returns
 

@@ -72,6 +72,7 @@ impl JsMemory {
         Ok(self.inner.cgroup_limits().map(JsCGroupLimits::from))
     }
 
+    /// Returns a string representation of this memory.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -138,6 +139,7 @@ impl JsMemoryUsage {
         *self.inner.total()
     }
 
+    /// Returns a string representation of this memory usage.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -208,6 +210,7 @@ impl JsCGroupLimits {
         *self.inner.rss()
     }
 
+    /// Returns a string representation of these cgroup limits.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

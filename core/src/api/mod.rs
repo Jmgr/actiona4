@@ -112,6 +112,7 @@ pub(crate) mod test_helpers {
             self.count
         }
 
+        /// Returns a string representation of this counter.
         #[qjs(rename = PredefinedAtom::ToString)]
         #[must_use]
         pub fn to_string_js(&self) -> String {

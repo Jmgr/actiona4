@@ -733,7 +733,7 @@ impl JsFile {
         self.inner == other.inner
     }
 
-    /// Returns a string representation of the file handle.
+    /// Returns a string representation of this file.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

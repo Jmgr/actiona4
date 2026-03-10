@@ -42,6 +42,7 @@ impl JsAbortSignal {
 
 #[js_methods]
 impl JsAbortSignal {
+    /// Returns a string representation of this abort signal.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -106,6 +107,7 @@ impl JsAbortController {
         }
     }
 
+    /// Returns a string representation of this abort controller.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

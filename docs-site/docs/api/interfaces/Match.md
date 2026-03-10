@@ -72,7 +72,7 @@ Returns true if a Match equals another.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of this Match.
+Returns a string representation of this match.
 
 #### Returns
 

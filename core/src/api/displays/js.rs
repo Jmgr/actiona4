@@ -252,6 +252,7 @@ impl JsDisplays {
             .collect_vec())
     }
 
+    /// Returns a string representation of the `displays` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -394,7 +395,7 @@ impl JsDisplayInfo {
         (point.0 + self.inner.rect.top_left).into()
     }
 
-    /// Returns a string representation of the display.
+    /// Returns a string representation of this display.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

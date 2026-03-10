@@ -182,6 +182,7 @@ impl JsAudio {
         })
     }
 
+    /// Returns a string representation of the `audio` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -302,6 +303,7 @@ impl JsPlayingSound {
         })
     }
 
+    /// Returns a string representation of this playing sound.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -270,7 +270,7 @@ println(p.toJson()); // '{"x":1,"y":2}'
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of this Point.
+Returns a string representation of this point.
 
 #### Returns
 

@@ -132,6 +132,7 @@ impl JsUi {
         })
     }
 
+    /// Returns a string representation of the `ui` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -248,6 +249,7 @@ impl JsMessageBoxButtons {
         }
     }
 
+    /// Returns a string representation of this set of message box buttons.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

@@ -3100,6 +3100,9 @@ interface App {
      * ```
      */
     setCwd(cwd: string): void;
+    /**
+     * Returns a string representation of the `app` singleton.
+     */
     toString(): string;
 }
 /**
@@ -3203,6 +3206,9 @@ interface Audio {
      * ```
      */
     playFileAndWait(path: string, options?: PlaySoundOptions): Task<void>;
+    /**
+     * Returns a string representation of the `audio` singleton.
+     */
     toString(): string;
 }
 /**
@@ -3264,6 +3270,9 @@ interface PlayingSound {
      * Stops the sound permanently.
      */
     stop(): void;
+    /**
+     * Returns a string representation of this playing sound.
+     */
     toString(): string;
 }
 /**
@@ -3373,6 +3382,9 @@ interface Clipboard {
      * ```
      */
     waitForChanged(options?: WaitForChangedOptions): Task<void>;
+    /**
+     * Returns a string representation of the `clipboard` singleton.
+     */
     toString(): string;
 }
 /**
@@ -3397,6 +3409,9 @@ interface ClipboardText {
      * Gets the clipboard text content.
      */
     get(mode?: ClipboardMode): string;
+    /**
+     * Returns a string representation of this clipboard text.
+     */
     toString(): string;
 }
 /**
@@ -3418,6 +3433,9 @@ interface ClipboardImage {
      * Gets the clipboard image content.
      */
     get(mode?: ClipboardMode): Image;
+    /**
+     * Returns a string representation of this clipboard image.
+     */
     toString(): string;
 }
 /**
@@ -3438,6 +3456,9 @@ interface ClipboardFileList {
      * Gets the clipboard file list content.
      */
     get(mode?: ClipboardMode): readonly string[];
+    /**
+     * Returns a string representation of this clipboard file list.
+     */
     toString(): string;
 }
 /**
@@ -3463,6 +3484,9 @@ interface ClipboardHtml {
      * Gets the clipboard HTML content.
      */
     get(mode?: ClipboardMode): string;
+    /**
+     * Returns a string representation of this clipboard html.
+     */
     toString(): string;
 }
 /**
@@ -4103,7 +4127,7 @@ class Color {
      */
     equals(other: Color): boolean;
     /**
-     * Returns a string representation of the color: `"Color(r: R, g: G, b: B, a: A)"`.
+     * Returns a string representation of this color.
      */
     toString(): string;
     /**
@@ -4193,6 +4217,9 @@ interface Console {
      * ```
      */
     count(label?: string): void;
+    /**
+     * Returns a string representation of the `console` singleton.
+     */
     toString(): string;
 }
 /**
@@ -4236,6 +4263,9 @@ interface DirectoryEntry {
      * The size of the entry in bytes.
      */
     readonly size: number;
+    /**
+     * Returns a string representation of this directory entry.
+     */
     toString(): string;
 }
 /**
@@ -4337,6 +4367,9 @@ class Directory {
      * ```
      */
     static listEntries(path: string, options?: DirectoryListOptions): Promise<readonly DirectoryEntry[]>;
+    /**
+     * Returns a string representation of this directory.
+     */
     toString(): string;
 }
 /**
@@ -4424,6 +4457,9 @@ interface Displays {
      * Returns all displays.
      */
     all(): readonly DisplayInfo[];
+    /**
+     * Returns a string representation of the `displays` singleton.
+     */
     toString(): string;
 }
 /**
@@ -4541,7 +4577,7 @@ interface DisplayInfo {
      */
     toGlobal(x: number, y: number): Point;
     /**
-     * Returns a string representation of the display.
+     * Returns a string representation of this display.
      */
     toString(): string;
 }
@@ -4816,7 +4852,7 @@ class File {
      */
     equals(other: File): boolean;
     /**
-     * Returns a string representation of the file handle.
+     * Returns a string representation of this file.
      */
     toString(): string;
 }
@@ -4854,6 +4890,9 @@ class Filesystem {
      * Returns `true` if the path points to a symbolic link.
      */
     static isSymlink(path: string): Promise<boolean>;
+    /**
+     * Returns a string representation of this filesystem.
+     */
     toString(): string;
 }
 /**
@@ -5101,7 +5140,7 @@ interface Match {
      */
     equals(other: Match): boolean;
     /**
-     * Returns a string representation of this Match.
+     * Returns a string representation of this match.
      */
     toString(): string;
     /**
@@ -5137,6 +5176,9 @@ interface FindImageProgress {
      * Whether the operation has finished.
      */
     readonly finished: boolean;
+    /**
+     * Returns a string representation of this image search progress.
+     */
     toString(): string;
 }
 /**
@@ -5747,6 +5789,9 @@ class Image {
  * @category Core
  */
 interface AbortSignal {
+    /**
+     * Returns a string representation of this abort signal.
+     */
     toString(): string;
 }
 /**
@@ -5774,6 +5819,9 @@ class AbortController {
      * Signals cancellation to all operations using this controller's signal.
      */
     abort(): void;
+    /**
+     * Returns a string representation of this abort controller.
+     */
     toString(): string;
 }
 /**
@@ -5855,6 +5903,9 @@ interface EventHandle {
      * Unregisters this event listener.
      */
     cancel(): void;
+    /**
+     * Returns a string representation of this event handle.
+     */
     toString(): string;
 }
 /**
@@ -6027,6 +6078,9 @@ interface Keyboard {
      * ```
      */
     clearEventHandles(): void;
+    /**
+     * Returns a string representation of the `keyboard` singleton.
+     */
     toString(): string;
 }
 /**
@@ -6135,6 +6189,9 @@ class Macro {
      * ```
      */
     static load(path: string): Promise<Macro>;
+    /**
+     * Returns a string representation of this macro.
+     */
     toString(): string;
 }
 /**
@@ -6170,6 +6227,9 @@ class PlayProgress {
      * Whether all events have been replayed.
      */
     finished(): boolean;
+    /**
+     * Returns a string representation of this playback progress.
+     */
     toString(): string;
 }
 /**
@@ -6353,6 +6413,9 @@ interface Macros {
      * @platform does not work on Wayland
      */
     play(macro: Macro, options?: PlayOptions): ProgressTask<void, PlayProgress>;
+    /**
+     * Returns a string representation of the `macros` singleton.
+     */
     toString(): string;
 }
 /**
@@ -6606,6 +6669,9 @@ interface Mouse {
      * ```
      */
     clearEventHandles(): void;
+    /**
+     * Returns a string representation of the `mouse` singleton.
+     */
     toString(): string;
 }
 /**
@@ -6719,6 +6785,9 @@ interface ScrollEvent {
      * The scroll amount. Positive values scroll down/right, negative values scroll up/left.
      */
     readonly length: number;
+    /**
+     * Returns a string representation of this scroll event.
+     */
     toString(): string;
 }
 /**
@@ -6808,6 +6877,9 @@ class Wildcard {
      * Constructor.
      */
     constructor(pattern: string);
+    /**
+     * Returns a string representation of this wildcard.
+     */
     toString(): string;
 }
 /**
@@ -7199,6 +7271,9 @@ interface Notification {
      * @platform only works on Linux
      */
     capabilities(): string[];
+    /**
+     * Returns a string representation of the `notification` singleton.
+     */
     toString(): string;
 }
 /**
@@ -7262,6 +7337,9 @@ interface NotificationHandle {
      * ```
      */
     waitUntilClosed(options?: WaitForActionOptions): Task<void>;
+    /**
+     * Returns a string representation of this notification handle.
+     */
     toString(): string;
 }
 /**
@@ -7355,6 +7433,9 @@ class Path {
      * ```
      */
     static setExtension(path: string, extension: string): string;
+    /**
+     * Returns a string representation of this path.
+     */
     toString(): string;
 }
 /**
@@ -7497,7 +7578,7 @@ class Point {
      */
     scaled(factor: number): Point;
     /**
-     * Returns a string representation of this Point.
+     * Returns a string representation of this point.
      */
     toString(): string;
     /**
@@ -7672,6 +7753,9 @@ interface Process {
      * @platform only works on Linux
      */
     sendSignal(pid: number, signal: Signal): void;
+    /**
+     * Returns a string representation of the `process` singleton.
+     */
     toString(): string;
 }
 /**
@@ -7769,6 +7853,9 @@ interface ProcessHandle {
      * ```
      */
     terminate(): void;
+    /**
+     * Returns a string representation of this process handle.
+     */
     toString(): string;
 }
 /**
@@ -7805,6 +7892,9 @@ interface ProcessExitResult {
      * The captured stderr output. Only available when using `startAndWait`.
      */
     readonly stderr?: string;
+    /**
+     * Returns a string representation of this process exit result.
+     */
     toString(): string;
 }
 /**
@@ -7966,6 +8056,9 @@ interface Random {
      * ```
      */
     choice<T>(array: Array<T>, fallback?: T): T;
+    /**
+     * Returns a string representation of the `random` singleton.
+     */
     toString(): string;
 }
 /**
@@ -8044,7 +8137,7 @@ class Rect {
      */
     contains(point: Point): boolean;
     /**
-     * Returns a string representation of this Rect.
+     * Returns a string representation of this rect.
      */
     toString(): string;
     /**
@@ -8147,6 +8240,9 @@ class SearchIn {
      * ```
      */
     static window(handle: WindowHandle): SearchIn;
+    /**
+     * Returns a string representation of this search area.
+     */
     toString(): string;
 }
 /**
@@ -8239,6 +8335,9 @@ interface Screen {
      * @platform does not work on Wayland
      */
     capturePixel(x: number, y: number): Promise<Color>;
+    /**
+     * Returns a string representation of the `screen` singleton.
+     */
     toString(): string;
 }
 /**
@@ -8328,7 +8427,7 @@ class Size {
      */
     scale(factor: number): Size;
     /**
-     * Returns a string representation of this Size.
+     * Returns a string representation of this size.
      */
     toString(): string;
     /**
@@ -8403,7 +8502,7 @@ interface StandardPaths {
      */
     readonly localConfig?: string;
     /**
-     * Returns a string representation of all standard paths.
+     * Returns a string representation of the `standardPaths` singleton.
      */
     toString(): string;
 }
@@ -8444,6 +8543,9 @@ interface Cpu {
     usage(): Promise<number>;
     coreUsage(logicalCoreIndex: number): Promise<number>;
     frequencies(): Promise<readonly number[]>;
+    /**
+     * Returns a string representation of this CPU.
+     */
     toString(): string;
 }
 /**
@@ -8495,6 +8597,9 @@ interface Hardware {
      * Hardware temperature sensors
      */
     listTemperatureSensors(options?: ListTemperatureSensorsOptions): Promise<readonly TemperatureSensor[]>;
+    /**
+     * Returns a string representation of this hardware.
+     */
     toString(): string;
 }
 /**
@@ -8539,6 +8644,9 @@ interface Motherboard {
      * Asset tag
      */
     readonly assetTag?: string;
+    /**
+     * Returns a string representation of this motherboard.
+     */
     toString(): string;
 }
 /**
@@ -8574,6 +8682,9 @@ interface TemperatureSensor {
      * Critical temperature
      */
     readonly criticalTemperature?: number;
+    /**
+     * Returns a string representation of this temperature sensor.
+     */
     toString(): string;
 }
 /**
@@ -8601,6 +8712,9 @@ interface Memory {
      * Swap usage
      */
     swapUsage(): Promise<MemoryUsage>;
+    /**
+     * Returns a string representation of this memory.
+     */
     toString(): string;
 }
 /**
@@ -8634,6 +8748,9 @@ interface MemoryUsage {
      * Total
      */
     readonly total: number;
+    /**
+     * Returns a string representation of this memory usage.
+     */
     toString(): string;
 }
 /**
@@ -8671,6 +8788,9 @@ interface CGroupLimits {
      * RSS
      */
     readonly rss: number;
+    /**
+     * Returns a string representation of these cgroup limits.
+     */
     toString(): string;
 }
 /**
@@ -8725,6 +8845,9 @@ interface System {
     sleep(): void;
     open(path: string, withApp?: string): void;
     openPath(path: string, withApp?: string): void;
+    /**
+     * Returns a string representation of the `system` singleton.
+     */
     toString(): string;
 }
 /**
@@ -8750,6 +8873,9 @@ interface Network {
      * Interfaces
      */
     listInterfaces(options?: ListInterfacesOptions): Promise<readonly NetworkInterface[]>;
+    /**
+     * Returns a string representation of this network.
+     */
     toString(): string;
 }
 /**
@@ -8801,6 +8927,9 @@ interface NetworkInterface {
      * Subnets
      */
     readonly subnets: readonly string[];
+    /**
+     * Returns a string representation of this network interface.
+     */
     toString(): string;
 }
 /**
@@ -8829,6 +8958,9 @@ interface Counters {
      * Errors
      */
     readonly errors: number;
+    /**
+     * Returns a string representation of these counters.
+     */
     toString(): string;
 }
 /**
@@ -8855,6 +8987,9 @@ interface Traffic {
      * Delta
      */
     readonly delta: Readonly<Counters>;
+    /**
+     * Returns a string representation of this traffic.
+     */
     toString(): string;
 }
 /**
@@ -8918,6 +9053,9 @@ interface Os {
      * Groups
      */
     listGroups(): Promise<readonly Group[]>;
+    /**
+     * Returns a string representation of this OS.
+     */
     toString(): string;
 }
 /**
@@ -8959,6 +9097,9 @@ interface User {
      * Group names
      */
     readonly groupNames: readonly string[];
+    /**
+     * Returns a string representation of this user.
+     */
     toString(): string;
 }
 /**
@@ -8982,6 +9123,9 @@ interface Group {
      * ID
      */
     readonly id: number;
+    /**
+     * Returns a string representation of this group.
+     */
     toString(): string;
 }
 /**
@@ -9009,6 +9153,9 @@ interface Processes {
      * ```
      */
     find(options: ProcessesFindOptions): Promise<readonly ProcessInfo[]>;
+    /**
+     * Returns a string representation of this process list.
+     */
     toString(): string;
 }
 /**
@@ -9204,6 +9351,9 @@ interface ProcessInfo {
      * @platform only works on Linux
      */
     sendSignal(signal: Signal): void;
+    /**
+     * Returns a string representation of this process info.
+     */
     toString(): string;
 }
 /**
@@ -9220,6 +9370,9 @@ interface Storage {
      * Disks
      */
     listDisks(options?: ListDisksOptions): Promise<readonly Disk[]>;
+    /**
+     * Returns a string representation of this storage.
+     */
     toString(): string;
 }
 /**
@@ -9289,6 +9442,9 @@ interface Disk {
      * Usage
      */
     readonly usage: Readonly<DiskUsage>;
+    /**
+     * Returns a string representation of this disk.
+     */
     toString(): string;
 }
 /**
@@ -9315,6 +9471,9 @@ interface IoStats {
      * Delta
      */
     readonly delta: number;
+    /**
+     * Returns a string representation of these I/O stats.
+     */
     toString(): string;
 }
 /**
@@ -9341,6 +9500,9 @@ interface DiskUsage {
      * Read
      */
     readonly read: Readonly<IoStats>;
+    /**
+     * Returns a string representation of this disk usage.
+     */
     toString(): string;
 }
 /**
@@ -9410,6 +9572,9 @@ class Ui {
      * ```
      */
     static messageBox(text: string, options?: MessageBoxOptions): Task<MessageBoxResult>;
+    /**
+     * Returns a string representation of the `ui` singleton.
+     */
     toString(): string;
 }
 /**
@@ -9458,6 +9623,9 @@ class MessageBoxButtons {
      * Creates Yes, No, and Cancel buttons with custom labels.
      */
     static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
+    /**
+     * Returns a string representation of this set of message box buttons.
+     */
     toString(): string;
 }
 /**
@@ -9504,6 +9672,9 @@ class MultipartForm {
      * ```
      */
     addBytes(name: string, bytes: Uint8Array, filename?: string, mimetype?: string): void;
+    /**
+     * Returns a string representation of this multipart form.
+     */
     toString(): string;
 }
 /**
@@ -9594,6 +9765,9 @@ interface WebProgress {
      * Whether the transfer is complete.
      */
     readonly finished: boolean;
+    /**
+     * Returns a string representation of this web transfer progress.
+     */
     toString(): string;
 }
 /**
@@ -9676,6 +9850,9 @@ interface Web {
      * ```
      */
     downloadFile(url: string, directory?: string, options?: WebOptions): ProgressTask<string, WebProgress>;
+    /**
+     * Returns a string representation of the `web` singleton.
+     */
     toString(): string;
 }
 /**
@@ -9813,6 +9990,9 @@ interface Windows {
      * @platform does not work on Wayland
      */
     findAt(x: number, y: number): readonly WindowHandle[];
+    /**
+     * Returns a string representation of the `windows` singleton.
+     */
     toString(): string;
 }
 /**

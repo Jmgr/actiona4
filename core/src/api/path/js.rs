@@ -162,6 +162,7 @@ impl JsPath {
         path.to_string_lossy().into_owned()
     }
 
+    /// Returns a string representation of this path.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

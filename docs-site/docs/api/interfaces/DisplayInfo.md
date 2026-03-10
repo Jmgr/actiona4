@@ -217,7 +217,7 @@ println(local.x, local.y); // position within the display
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of the display.
+Returns a string representation of this display.
 
 #### Returns
 

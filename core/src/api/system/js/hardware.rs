@@ -137,6 +137,7 @@ impl JsHardware {
             .collect_vec())
     }
 
+    /// Returns a string representation of this hardware.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -205,6 +206,7 @@ impl JsMotherboard {
         self.inner.asset_tag()
     }
 
+    /// Returns a string representation of this motherboard.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
@@ -276,6 +278,7 @@ impl JsTemperatureSensor {
         self.inner.critical_temperature().as_deref().copied()
     }
 
+    /// Returns a string representation of this temperature sensor.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

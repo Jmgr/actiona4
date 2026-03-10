@@ -103,6 +103,7 @@ impl JsCpu {
         self.inner.architecture()
     }
 
+    /// Returns a string representation of this CPU.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {

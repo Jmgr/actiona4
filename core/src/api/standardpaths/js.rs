@@ -122,7 +122,7 @@ impl JsStandardPaths {
             .map(|path| path.to_string())
     }
 
-    /// Returns a string representation of all standard paths.
+    /// Returns a string representation of the `standardPaths` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
