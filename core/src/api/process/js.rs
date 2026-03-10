@@ -76,7 +76,6 @@ pub struct JsShellOptions {
 /// await process.sendSignal(1234, Signal.Term);
 /// ```
 ///
-#[platform(only = "linux")]
 #[derive(
     Clone,
     Copy,
@@ -92,6 +91,7 @@ pub struct JsShellOptions {
     Serialize,
 )]
 #[serde(rename = "Signal")]
+#[platform(only = "linux")]
 pub enum JsSignal {
     /// `SIGHUP` - hang up; often used to request config reload.
     /// `Signal.Hup`

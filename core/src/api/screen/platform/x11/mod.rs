@@ -19,6 +19,7 @@ use crate::{
 };
 
 mod capture;
+pub mod portal;
 
 #[derive(Debug)]
 pub struct X11Display {

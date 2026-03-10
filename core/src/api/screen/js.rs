@@ -1,9 +1,14 @@
-use macros::{js_class, js_methods, platform};
+use macros::{
+    FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_methods, options, platform,
+};
 use rquickjs::{
     Ctx, JsLifetime, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
+    prelude::Opt,
 };
+use serde::{Deserialize, Serialize};
+use strum::{Display, EnumIter};
 
 use crate::{
     IntoJsResult,
@@ -11,14 +16,81 @@ use crate::{
         color::js::JsColor,
         displays::js::JsDisplayInfo,
         image::{find_image::SearchIn, js::JsImage},
-        js::classes::{HostClass, SingletonClass, register_host_class},
+        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
         point::js::JsPointLike,
         rect::{Rect, js::JsRectLike},
-        screen::Screen,
+        screen::{AskScreenshotMethod, AskScreenshotOptions, Screen},
         windows::js::JsWindowHandle,
     },
     types::display::DisplayFields,
 };
+
+/// Controls which interactive screenshot method is used.
+///
+/// ```ts
+/// const image = await screen.askScreenshot({ method: ScreenshotMethod.Portal });
+/// ```
+///
+/// @expand
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+    PlatformValidate,
+)]
+#[serde(rename = "AskScreenshotMethod")]
+#[options]
+pub enum JsAskScreenshotMethod {
+    /// `AskScreenshotMethod.Auto`
+    ///
+    /// Try the XDG Desktop Portal first; fall back to the X11 overlay.
+    Auto,
+    /// `AskScreenshotMethod.Portal`
+    ///
+    /// Use the XDG Desktop Portal only.
+    #[platform(only = "linux")]
+    Portal,
+    /// `AskScreenshotMethod.Overlay`
+    ///
+    /// Use the X11 overlay only.
+    Overlay,
+}
+
+impl From<JsAskScreenshotMethod> for AskScreenshotMethod {
+    fn from(value: JsAskScreenshotMethod) -> Self {
+        match value {
+            JsAskScreenshotMethod::Auto => Self::Auto,
+            JsAskScreenshotMethod::Portal => Self::Portal,
+            JsAskScreenshotMethod::Overlay => Self::Overlay,
+        }
+    }
+}
+
+/// Options for [`screen.askScreenshot`].
+#[derive(Clone, Copy, Debug, FromJsObject, PlatformValidate)]
+#[options]
+pub struct JsAskScreenshotOptions {
+    /// Controls which capture method to use.
+    #[default(ts = "AskScreenshotMethod.Auto")]
+    pub method: Option<JsAskScreenshotMethod>,
+}
+
+impl From<JsAskScreenshotOptions> for AskScreenshotOptions {
+    fn from(value: JsAskScreenshotOptions) -> Self {
+        Self {
+            method: value.method.unwrap_or(JsAskScreenshotMethod::Auto).into(),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 enum JsSearchInInner {
     Desktop,
@@ -192,6 +264,7 @@ pub struct JsScreen {
 impl SingletonClass<'_> for JsScreen {
     fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
         register_host_class::<JsSearchIn>(ctx)?;
+        register_enum::<JsAskScreenshotMethod>(ctx)?;
         Ok(())
     }
 }
@@ -277,6 +350,37 @@ impl JsScreen {
             .await
             .into_js_result(&ctx)?
             .into())
+    }
+
+    /// Asks the user to interactively select a screen area and returns a
+    /// screenshot of that area, or `null` if the user cancels.
+    ///
+    /// On Linux the XDG Desktop Portal is used by default, which works on both
+    /// X11 and Wayland. The portal presents the compositor's native region
+    /// picker; the user can cancel at any time.
+    ///
+    /// ```ts
+    /// const image = await screen.askScreenshot();
+    /// if (image) {
+    ///   await image.save("/tmp/selection.png");
+    /// }
+    /// ```
+    ///
+    /// ```ts
+    /// // Force the portal (error if unavailable)
+    /// const image = await screen.askScreenshot({ method: AskScreenshotMethod.Portal });
+    /// ```
+    pub async fn ask_screenshot(
+        &self,
+        ctx: Ctx<'_>,
+        options: Opt<JsAskScreenshotOptions>,
+    ) -> Result<Option<JsImage>> {
+        Ok(self
+            .inner
+            .ask_screenshot(options.unwrap_or_default().into())
+            .await
+            .into_js_result(&ctx)?
+            .map(JsImage::new))
     }
 
     /// Returns a string representation of the `screen` singleton.
@@ -470,6 +574,28 @@ mod tests {
                 .await
                 .unwrap();
             println!("saved capture to {}", output_path.display());
+        });
+    }
+
+    #[test]
+    #[ignore]
+    #[traced_test]
+    fn test_ask_screenshot_to_file() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            let output_path =
+                temp_dir().join(format!("actiona4_ask_screenshot_{}.png", random_name()));
+            script_engine
+                .eval_async::<()>(&format!(
+                    r#"
+                    const image = await screen.askScreenshot();
+                    if (!image) throw new Error("user cancelled");
+                    await image.save({});
+                    "#,
+                    js_path(&output_path)
+                ))
+                .await
+                .unwrap();
+            println!("saved screenshot to {}", output_path.display());
         });
     }
 

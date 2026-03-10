@@ -18,6 +18,10 @@ Update
 - show notification if new version
 - Update fallback: check website if new version 
 
+For enums we shouldn't have #[options] but an #[enum] that handles platforms and does #[serde(rename = "ScreenshotMethod")]
+
+- check if we should pause at end for other things
+
 - check we don't await without a cancellation token
 
 - impl DPI awareness

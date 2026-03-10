@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use color_eyre::Result;
+use color_eyre::eyre::bail;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 
@@ -29,6 +30,25 @@ use crate::{
     api::{color::Color, point::Point},
     runtime::Runtime,
 };
+
+/// Controls which interactive screenshot method is used.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum AskScreenshotMethod {
+    /// Try the XDG Desktop Portal first; fall back to the X11 overlay.
+    #[default]
+    Auto,
+    /// Use the XDG Desktop Portal only (fails if the portal is unavailable).
+    Portal,
+    /// Use the X11 overlay only.
+    Overlay,
+}
+
+/// Options for [`Screen::ask_screenshot`].
+#[derive(Clone, Debug, Default)]
+pub struct AskScreenshotOptions {
+    /// Controls which capture method to use.
+    pub method: AskScreenshotMethod,
+}
 
 #[derive(Clone, Debug)]
 pub struct Screen {
@@ -107,6 +127,35 @@ impl Screen {
         let origin = area_rect.top_left;
         let matches = source.find_template_all(template, options, cancellation_token, progress)?;
         Ok(matches.into_iter().map(|m| m.offset(origin)).collect())
+    }
+
+    /// Asks the user to interactively select a screen area and returns a
+    /// screenshot of that area, or `None` if the user cancels.
+    pub async fn ask_screenshot(&self, options: AskScreenshotOptions) -> Result<Option<Image>> {
+        #[cfg(unix)]
+        {
+            use crate::api::screen::platform::x11::portal::ask_screenshot;
+            use AskScreenshotMethod::*;
+
+            match options.method {
+                Portal => return ask_screenshot().await,
+                Auto => {
+                    let result = ask_screenshot().await;
+                    if result.is_ok() {
+                        return result;
+                    }
+                    // Portal unavailable — fall through to overlay once implemented
+                    let _ = result;
+                }
+                Overlay => {}
+            }
+            bail!("X11 overlay screenshot is not yet implemented")
+        }
+        #[cfg(windows)]
+        {
+            let _ = options;
+            bail!("interactive screenshot is not yet implemented on Windows")
+        }
     }
 
     async fn capture_search_in_to_source(

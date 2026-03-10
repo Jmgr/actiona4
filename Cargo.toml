@@ -180,6 +180,7 @@ windows-result = "0.4.1"
 winrt-toast-reborn = "0.3.8"
 
 # Unix
+ashpd = { version = "0.13.4", features = ["screenshot"] }
 libwmctl = "0.0.51"
 memfd = "0.6.5"
 memmap2 = "0.9.10"
