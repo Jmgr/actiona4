@@ -664,6 +664,51 @@ impl Runtime {
         Ok(())
     }
 
+    /// On Windows, when the OS re-launches this binary as a deep-link handler
+    /// (e.g. Snipping Tool redirecting to `actiona-run://…`), writes the
+    /// callback URL directly to the local socket that the originating
+    /// `ask_screenshot` call is listening on, then returns `true` so the
+    /// caller can exit immediately.
+    ///
+    /// Each `ask_screenshot` call owns its own uniquely-named socket, so
+    /// routing is correct even when multiple actiona instances run in parallel.
+    #[cfg(windows)]
+    #[must_use]
+    pub fn relay_deep_link_if_needed() -> bool {
+        use std::io::Write as _;
+
+        use interprocess::local_socket::{ConnectOptions, GenericNamespaced, ToNsName};
+
+        let url_str = match std::env::args()
+            .skip(1)
+            .find(|arg| arg.starts_with("actiona-run://"))
+        {
+            Some(value) => value,
+            None => return false,
+        };
+
+        // Extract the correlation ID to locate the right socket.
+        let correlation_id = tauri::Url::parse(&url_str).ok().and_then(|u| {
+            u.query_pairs()
+                .find(|(key, _)| key == "x-request-correlation-id")
+                .map(|(_, value)| value.into_owned())
+        });
+
+        let Some(correlation_id) = correlation_id else {
+            return true; // our scheme but malformed — consume it
+        };
+
+        let socket_name = format!("actiona-screenclip-{correlation_id}");
+
+        if let Ok(name) = socket_name.as_str().to_ns_name::<GenericNamespaced>()
+            && let Ok(mut connection) = ConnectOptions::new().name(name).connect_sync()
+        {
+            let _ = connection.write_all(url_str.as_bytes());
+        }
+
+        true
+    }
+
     #[instrument(skip_all)]
     pub fn run_with_ui<F, Fut>(
         f: F,
@@ -684,8 +729,34 @@ impl Runtime {
         let setup_is_shutting_down = is_shutting_down.clone();
         let show_tray_icon = runtime_options.show_tray_icon;
         let app = tauri::Builder::default()
+            .plugin(tauri_plugin_deep_link::init())
             .plugin(tauri_plugin_dialog::init())
+            .plugin(tauri_plugin_opener::init())
             .setup(move |app| {
+                #[cfg(windows)]
+                {
+                    use tauri_plugin_deep_link::DeepLinkExt;
+                    app.deep_link().register_all()?;
+
+                    // If the windowless sibling binary exists (actiona-runw.exe),
+                    // re-register the URI scheme to use it as the handler so the
+                    // OS doesn't flash a console window when the callback fires.
+                    if let Ok(current_exe) = std::env::current_exe()
+                        && let Some(dir) = current_exe.parent()
+                    {
+                        // Test binaries live in target/debug/deps/; also
+                        // check target/debug/ (one level up) so that a
+                        // previously-built actiona-runw.exe is found there.
+                        let runw = std::iter::once(dir.to_path_buf())
+                            .chain(dir.parent().map(|p| p.to_path_buf()))
+                            .map(|d| d.join("actiona-runw.exe"))
+                            .find(|p| p.exists());
+                        if let Some(runw) = runw {
+                            register_scheme_windowless_handler("actiona-run", &runw);
+                        }
+                    }
+                }
+
                 let app_handle = app.handle().clone();
                 let task_is_shutting_down = setup_is_shutting_down.clone();
 
@@ -1112,6 +1183,52 @@ impl Runtime {
             return Err(CommonError::UnsupportedPlatform("not supported on Linux".into()).into());
         }
         Ok(())
+    }
+}
+
+/// Rewrites the `HKCU\Software\Classes\{scheme}\shell\open\command` registry
+/// key so the OS launches `handler_exe` (a windowless binary) instead of the
+/// current executable when the URI scheme is opened.
+///
+/// Silently ignores errors — the worst outcome is that the console binary is
+/// used as the fallback.
+#[cfg(windows)]
+fn register_scheme_windowless_handler(scheme: &str, handler_exe: &std::path::Path) {
+    use windows::{
+        Win32::System::Registry::{
+            HKEY, HKEY_CURRENT_USER, KEY_SET_VALUE, REG_SZ, RegCloseKey, RegOpenKeyExW,
+            RegSetValueExW,
+        },
+        core::HSTRING,
+    };
+
+    let key_path = format!(r"Software\Classes\{scheme}\shell\open\command");
+    let mut hkey = HKEY::default();
+
+    #[allow(unsafe_code)]
+    let opened = unsafe {
+        RegOpenKeyExW(
+            HKEY_CURRENT_USER,
+            &HSTRING::from(key_path.as_str()),
+            None,
+            KEY_SET_VALUE,
+            &mut hkey,
+        )
+    };
+    if opened.is_err() {
+        return;
+    }
+
+    let command = format!("\"{}\" \"%1\"", handler_exe.display());
+    // REG_SZ value as UTF-16 bytes (including null terminator)
+    let wide: Vec<u16> = command.encode_utf16().chain(std::iter::once(0)).collect();
+
+    #[allow(unsafe_code)]
+    unsafe {
+        let bytes =
+            std::slice::from_raw_parts(wide.as_ptr().cast::<u8>(), wide.len() * size_of::<u16>());
+        let _ = RegSetValueExW(hkey, &HSTRING::from(""), None, REG_SZ, Some(bytes));
+        let _ = RegCloseKey(hkey);
     }
 }
 

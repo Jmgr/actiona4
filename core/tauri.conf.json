@@ -3,5 +3,10 @@
   "productName": "core",
   "version": "0.1.0",
   "identifier": "tools.actiona.core",
-  "build": {}
+  "build": {},
+  "plugins": {
+    "deep-link": {
+      "desktop": [{ "schemes": ["actiona-run"] }]
+    }
+  }
 }

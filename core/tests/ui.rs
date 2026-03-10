@@ -1,6 +1,9 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
-use actiona_core::runtime::Runtime;
+use actiona_core::{
+    api::{displays::Displays, screen::Screen, windows::Windows},
+    runtime::Runtime,
+};
 use askama::Template;
 use libtest_mimic_collect::libtest_mimic::Arguments;
 
@@ -94,6 +97,22 @@ fn test_success() {
 }
     */
 
+ignored_ui_test!(test_ask_screenshot, || {
+    Runtime::test_with_ui(|runtime, _| async move {
+        let screen = Screen::new(
+            runtime.clone(),
+            Displays::new(runtime.cancellation_token(), runtime.task_tracker()).unwrap(),
+            Windows::new(runtime.clone()),
+        )
+        .await
+        .unwrap();
+
+        let image = screen.ask_screenshot(Default::default()).await.unwrap();
+
+        println!("result: {:?}", image.map(|i| i.size()));
+    });
+});
+
 // Run with cargo test -p core --test ui -- --ignored test_success
 ignored_ui_test!(test_success, || {
     Runtime::test_with_ui(|_, scripting_engine| async move {
@@ -105,6 +124,13 @@ ignored_ui_test!(test_success, || {
 });
 
 pub fn main() {
+    // When Snipping Tool (or similar) re-launches this binary as a deep-link
+    // handler, forward the URI to the running first instance and exit.
+    #[cfg(windows)]
+    if Runtime::relay_deep_link_if_needed() {
+        return;
+    }
+
     let mut args = Arguments::from_args();
     args.test_threads = Some(1);
     libtest_mimic_collect::TestCollection::run_with_args(args);

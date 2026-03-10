@@ -15,6 +15,7 @@ use crate::{
     runtime::{Runtime, events::DisplayInfo},
 };
 
+pub mod ask_screenshot;
 mod capture;
 
 #[derive(Debug)]

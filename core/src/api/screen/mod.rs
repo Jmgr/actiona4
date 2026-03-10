@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use color_eyre::Result;
+#[cfg(unix)]
 use color_eyre::eyre::bail;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
@@ -134,8 +135,9 @@ impl Screen {
     pub async fn ask_screenshot(&self, options: AskScreenshotOptions) -> Result<Option<Image>> {
         #[cfg(unix)]
         {
-            use crate::api::screen::platform::x11::portal::ask_screenshot;
             use AskScreenshotMethod::*;
+
+            use crate::api::screen::platform::x11::portal::ask_screenshot;
 
             match options.method {
                 Portal => return ask_screenshot().await,
@@ -154,7 +156,10 @@ impl Screen {
         #[cfg(windows)]
         {
             let _ = options;
-            bail!("interactive screenshot is not yet implemented on Windows")
+            use crate::api::screen::platform::win::ask_screenshot::ask_screenshot;
+
+            return ask_screenshot(self.runtime.tauri_app(), self.runtime.cancellation_token())
+                .await;
         }
     }
 

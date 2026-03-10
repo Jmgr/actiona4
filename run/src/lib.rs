@@ -10,10 +10,12 @@
 
 use std::{ffi::OsString, path::Path, sync::Arc};
 
+#[cfg(windows)]
+use actiona_core::runtime::Runtime;
 use actiona_core::{
     config::Config,
     format_js_value_for_console,
-    runtime::{Runtime, RuntimeOptions, WaitAtEnd},
+    runtime::{RuntimeOptions, WaitAtEnd},
     scripting,
     scripting::pragma::parse_pragmas,
 };
@@ -56,6 +58,14 @@ fn is_windows10_1607_or_newer() -> Option<bool> {
 
 pub fn run_cli() -> Result<()> {
     init_tracing();
+
+    // When the OS re-launches this binary as a deep-link handler (e.g. Snipping
+    // Tool redirecting to `actiona-run://…`), forward the URL to the running
+    // first instance and exit before arg parsing attempts to interpret the URI.
+    #[cfg(windows)]
+    if Runtime::relay_deep_link_if_needed() {
+        return Ok(());
+    }
 
     let args = Arc::new(parse_args_with_default_run());
 
