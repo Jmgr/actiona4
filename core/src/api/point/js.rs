@@ -472,10 +472,7 @@ mod tests {
     #[test]
     fn test_zero() {
         Runtime::test_with_script_engine(async |script_engine| {
-            let result = script_engine
-                .eval::<JsPoint>("Point.Zero")
-                .await
-                .unwrap();
+            let result = script_engine.eval::<JsPoint>("Point.Zero").await.unwrap();
             assert_eq!(result, point(0, 0).into());
 
             let result = script_engine

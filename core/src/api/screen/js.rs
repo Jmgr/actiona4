@@ -43,8 +43,8 @@ use crate::{
     FromSerde,
     IntoSerde,
     PartialEq,
-    Serialize,
     PlatformValidate,
+    Serialize,
 )]
 #[serde(rename = "AskScreenshotMethod")]
 #[options]

@@ -8,7 +8,7 @@ pub enum Platform {
 
 impl Platform {
     #[must_use]
-    pub fn detect() -> Self {
+    pub const fn detect() -> Self {
         #[cfg(windows)]
         return Self::Windows;
 

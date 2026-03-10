@@ -225,7 +225,6 @@ pub struct PlayConfig {
     pub keyboard_keys: bool,
 }
 
-
 /// Progress of a `play_impl` operation.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PlayProgress {

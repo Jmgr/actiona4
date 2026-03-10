@@ -1,4 +1,10 @@
-use std::{fmt::Display, io::Cursor, ops::DerefMut, path::Path, sync::{Arc, OnceLock}};
+use std::{
+    fmt::Display,
+    io::Cursor,
+    ops::DerefMut,
+    path::Path,
+    sync::{Arc, OnceLock},
+};
 
 use ab_glyph::{Font as AbGlyphFont, FontArc, PxScale, ScaleFont};
 use arc_swap::ArcSwapOption;
@@ -178,9 +184,7 @@ pub struct Font {
 
 impl std::fmt::Debug for Font {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Font")
-            .field("path", &self.path)
-            .finish()
+        f.debug_struct("Font").field("path", &self.path).finish()
     }
 }
 
@@ -198,16 +202,17 @@ impl Font {
         let data = fs::read(path).await?;
         let inner = FontArc::try_from_vec(data)
             .map_err(|_| eyre!("Unable to parse font \"{path_str}\""))?;
-        Ok(Self { inner, path: path_str })
+        Ok(Self {
+            inner,
+            path: path_str,
+        })
     }
 
     fn builtin() -> FontArc {
         static FONT: OnceLock<FontArc> = OnceLock::new();
         FONT.get_or_init(|| {
-            FontArc::try_from_vec(
-                include_bytes!("../../../assets/DejaVuSans.ttf").to_vec(),
-            )
-            .expect("built-in DejaVu Sans font is valid")
+            FontArc::try_from_vec(include_bytes!("../../../assets/DejaVuSans.ttf").to_vec())
+                .expect("built-in DejaVu Sans font is valid")
         })
         .clone()
     }

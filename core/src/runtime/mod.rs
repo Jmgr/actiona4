@@ -417,9 +417,8 @@ impl Runtime {
     /// prevents the clipboard thread from ever dying and eliminates the crash.
     #[cfg(test)]
     fn test_clipboard_init() {
-        TEST_CLIPBOARD.get_or_init(|| {
-            Clipboard::new().expect("failed to create shared test clipboard")
-        });
+        TEST_CLIPBOARD
+            .get_or_init(|| Clipboard::new().expect("failed to create shared test clipboard"));
     }
 
     #[cfg(test)]

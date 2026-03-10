@@ -41,7 +41,7 @@ fn is_virtual_key_pressed(key: VIRTUAL_KEY) -> bool {
     }
 }
 
-fn skip_virtual_key(virtual_key: u16) -> bool {
+const fn skip_virtual_key(virtual_key: u16) -> bool {
     matches!(
         VIRTUAL_KEY(virtual_key),
         // Generic modifiers duplicate the side-specific variants.

@@ -1064,9 +1064,6 @@ Comment for the last overload
 
         let type_ = convert_type(&rustdoc_type, None).unwrap();
         assert_eq!(type_, Type::Verbatim("DurationLike".to_string()));
-        assert_eq!(
-            type_.to_string(Context::Property).unwrap(),
-            "DurationLike"
-        );
+        assert_eq!(type_.to_string(Context::Property).unwrap(), "DurationLike");
     }
 }
