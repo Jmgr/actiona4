@@ -25,7 +25,6 @@ Update
 // TODO: check all token cancellation return a Cancelled error
 // TODO: display a tray icon, enabled by default when waitAtEnd is true
 // TODO: check behaviour on DPI displays on Windows
-// TODO: create a JsFont class
 /*
 Note that the top-left hand corner of the desktop is not necessarily the same as the screen.
 If the user uses a desktop with multiple monitors, the top-left hand corner of the desktop is

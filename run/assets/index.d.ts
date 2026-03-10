@@ -7377,6 +7377,10 @@ declare class Path {
  */
 declare class Point {
     /**
+     * Point(0, 0)
+     */
+    static readonly Zero: Point;
+    /**
      * X coordinate
      */
     x: number;

@@ -11,7 +11,7 @@
 
 use macros::{js_class, js_methods};
 use rquickjs::{
-    Ctx, JsLifetime, Result,
+    Ctx, JsLifetime, Object, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
@@ -92,13 +92,20 @@ impl<'js> FromParam<'js> for JsPointLike {
 ///
 /// @prop x: number // X coordinate
 /// @prop y: number // Y coordinate
+///
+/// @const Zero // Point(0, 0)
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[js_class]
 pub struct JsPoint {
     inner: super::Point,
 }
 
-impl ValueClass<'_> for JsPoint {}
+impl<'js> ValueClass<'js> for JsPoint {
+    fn extra_registration(object: &Object<'js>) -> rquickjs::Result<()> {
+        object.prop("Zero", Self::from(super::Point::default()))?;
+        Ok(())
+    }
+}
 
 #[js_methods]
 impl JsPoint {
@@ -459,6 +466,23 @@ mod tests {
                 .eval::<JsPoint>("Point.randomInCircle(0, 0, 10)")
                 .await
                 .unwrap();
+        });
+    }
+
+    #[test]
+    fn test_zero() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            let result = script_engine
+                .eval::<JsPoint>("Point.Zero")
+                .await
+                .unwrap();
+            assert_eq!(result, point(0, 0).into());
+
+            let result = script_engine
+                .eval::<bool>("Point.Zero.isOrigin()")
+                .await
+                .unwrap();
+            assert!(result);
         });
     }
 }
