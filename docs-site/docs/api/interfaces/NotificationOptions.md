@@ -561,7 +561,7 @@ Tag for identifying and replacing notifications.
 
 ### timeout?
 
-> `optional` **timeout**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Timeout before the notification is automatically dismissed.
 Note that most servers don't respect this setting.

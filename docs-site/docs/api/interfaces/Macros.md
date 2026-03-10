@@ -20,12 +20,11 @@ await macros.play(loaded, { speed: 2.0 });
 
 ### play()
 
-> <span class="async-badge">async</span> **play**(`macroArg`: [`Macro`](../classes/Macro.md), `options?`: [`PlayOptions`](PlayOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void), [`PlayProgress`](../classes/PlayProgress.md)\>
+> <span class="async-badge">async</span> **play**(`macro`: [`Macro`](../classes/Macro.md), `options?`: [`PlayOptions`](PlayOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void), [`PlayProgress`](../classes/PlayProgress.md)\>
 
 Replays a previously recorded macro.
 
-Only one playback can be active at a time; calling `play()` while another
-playback is already running throws an error.
+Starting a new playback cancels any previous one before the new macro starts.
 
 ```ts
 await macros.play(macro);
@@ -47,9 +46,16 @@ for await (const progress of task) {
 await task;
 ```
 
+```ts
+// Starting a second playback cancels the first
+const first = macros.play(macroA);
+const second = macros.play(macroB);
+await second;
+```
+
 #### Parameters
 
-##### macroArg
+##### macro
 
 [`Macro`](../classes/Macro.md)
 
@@ -231,7 +237,7 @@ Record mouse cursor position.
 
 ###### mousePositionInterval?
 
-> `optional` **mousePositionInterval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **mousePositionInterval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How often to sample the mouse position.
 
@@ -280,7 +286,7 @@ All listed keys must be pressed simultaneously.
 
 ###### timeout?
 
-> `optional` **timeout**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Maximum recording duration before automatically stopping.
 

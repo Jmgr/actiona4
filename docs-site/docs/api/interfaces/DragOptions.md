@@ -30,7 +30,7 @@ Mouse button to use for dragging.
 
 ### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 

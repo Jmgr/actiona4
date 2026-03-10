@@ -2,7 +2,13 @@
 
 > **Task**\<`Result`\> = [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Result`\> & [`object`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
-Task: cancellable promise.
+A cancellable promise.
+
+```ts
+const task = sleep("5s");
+task.cancel(); // cancel early
+await task;    // or await it
+```
 
 ## Type Declaration
 

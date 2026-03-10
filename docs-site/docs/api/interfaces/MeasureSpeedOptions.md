@@ -11,7 +11,7 @@ const speed = await mouse.measureSpeed({ duration: "3s" });
 
 ### duration?
 
-> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Measurement duration.
 

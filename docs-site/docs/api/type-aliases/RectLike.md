@@ -2,4 +2,9 @@
 
 > **RectLike** = [`Rect`](../classes/Rect.md) \| \{ `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); `x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); \}
 
-RectLike
+A rectangle as a [Rect](../classes/Rect.md) instance or a plain `{x, y, width, height}` object.
+
+```ts
+screen.capture(new Rect(0, 0, 800, 600));                 // Rect instance
+screen.capture({ x: 0, y: 0, width: 800, height: 600 }); // plain object
+```

@@ -14,55 +14,39 @@ const loaded = await Macro.load("my_macro.amac");
 await macros.play(loaded, { speed: 1.5 });
 ```
 
-## Methods
+## Properties
 
-### duration()
+### duration
 
-> **duration**(): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Returns the total duration of the recording in seconds.
 
-#### Returns
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
 ***
 
-### eventCount()
+### eventCount
 
-> **eventCount**(): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` **eventCount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Returns the total number of events in this macro.
 
-#### Returns
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
 ***
 
-### platform()
+### platform
 
-> **platform**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **platform**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
 
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
 ***
 
-### recordedAt()
+### recordedAt
 
-> **recordedAt**(): [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
+> `readonly` **recordedAt**: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
 Returns when this macro was recorded.
 
-#### Returns
-
-[`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
-
-***
+## Methods
 
 ### save()
 

@@ -50,7 +50,7 @@ Record mouse cursor position.
 
 ### mousePositionInterval?
 
-> `optional` **mousePositionInterval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **mousePositionInterval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How often to sample the mouse position.
 
@@ -99,7 +99,7 @@ All listed keys must be pressed simultaneously.
 
 ### timeout?
 
-> `optional` **timeout**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Maximum recording duration before automatically stopping.
 

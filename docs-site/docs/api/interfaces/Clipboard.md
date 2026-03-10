@@ -147,7 +147,7 @@ await task;
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Polling interval in seconds.
 

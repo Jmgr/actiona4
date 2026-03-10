@@ -75,6 +75,7 @@
 - [ResizeFilter](enumerations/ResizeFilter.md)
 - [TextHorizontalAlign](enumerations/TextHorizontalAlign.md)
 - [TextVerticalAlign](enumerations/TextVerticalAlign.md)
+- [Font](classes/Font.md)
 - [Image](classes/Image.md)
 - [BlurOptions](interfaces/BlurOptions.md)
 - [DrawImageOptions](interfaces/DrawImageOptions.md)
@@ -107,12 +108,18 @@
 ## Misc
 
 - [ColorLike](type-aliases/ColorLike.md)
+- [DurationLike](type-aliases/DurationLike.md)
+- [KeyLike](type-aliases/KeyLike.md)
+- [Keys](type-aliases/Keys.md)
 - [NameLike](type-aliases/NameLike.md)
 - [PointLike](type-aliases/PointLike.md)
 - [ProgressTask](type-aliases/ProgressTask.md)
 - [RectLike](type-aliases/RectLike.md)
+- [ReplacementHandler](type-aliases/ReplacementHandler.md)
+- [ReplacementValue](type-aliases/ReplacementValue.md)
 - [SizeLike](type-aliases/SizeLike.md)
 - [Task](type-aliases/Task.md)
+- [TriggerAction](type-aliases/TriggerAction.md)
 
 ## Mouse
 

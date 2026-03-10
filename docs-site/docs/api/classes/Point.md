@@ -71,6 +71,14 @@ X coordinate
 
 Y coordinate
 
+***
+
+### Zero
+
+> `readonly` `static` **Zero**: `Point`
+
+Point(0, 0)
+
 ## Methods
 
 ### add()

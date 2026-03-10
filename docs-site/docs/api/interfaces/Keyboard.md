@@ -73,7 +73,7 @@ Returns the list of keys that are currently pressed.
 
 ### isKeyPressed()
 
-> **isKeyPressed**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **isKeyPressed**(`key`: [`KeyLike`](../type-aliases/KeyLike.md)): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Returns whether a key is currently pressed.
 
@@ -81,7 +81,7 @@ Returns whether a key is currently pressed.
 
 ##### key
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+[`KeyLike`](../type-aliases/KeyLike.md)
 
 #### Returns
 
@@ -99,7 +99,7 @@ Returns whether a key is currently pressed.
 
 ### onKey()
 
-> **onKey**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md), `callback`: () => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`KeysOptions`](KeysOptions.md)): [`EventHandle`](EventHandle.md)
+> **onKey**(`key`: [`KeyLike`](../type-aliases/KeyLike.md), `callback`: [`TriggerAction`](../type-aliases/TriggerAction.md), `options?`: [`KeysOptions`](KeysOptions.md)): [`EventHandle`](EventHandle.md)
 
 Registers a listener that fires when a single key is pressed.
 
@@ -112,11 +112,11 @@ h.cancel();
 
 ##### key
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+[`KeyLike`](../type-aliases/KeyLike.md)
 
 ##### callback
 
-() => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`TriggerAction`](../type-aliases/TriggerAction.md)
 
 ##### options?
 
@@ -164,7 +164,7 @@ Abort signal to cancel the operation.
 
 ### onKeys()
 
-> **onKeys**(`keys`: ([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[], `callback`: () => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`KeysOptions`](KeysOptions.md)): [`EventHandle`](EventHandle.md)
+> **onKeys**(`keys`: [`Keys`](../type-aliases/Keys.md), `callback`: [`TriggerAction`](../type-aliases/TriggerAction.md), `options?`: [`KeysOptions`](KeysOptions.md)): [`EventHandle`](EventHandle.md)
 
 Registers a listener that fires when all specified keys are pressed simultaneously.
 
@@ -183,11 +183,11 @@ h.cancel();
 
 ##### keys
 
-([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[]
+[`Keys`](../type-aliases/Keys.md)
 
 ##### callback
 
-() => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`TriggerAction`](../type-aliases/TriggerAction.md)
 
 ##### options?
 
@@ -235,14 +235,14 @@ Abort signal to cancel the operation.
 
 ### onText()
 
-> **onText**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `handler`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`Image`](../classes/Image.md) \| () => [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md)\>, `options?`: [`OnTextOptions`](OnTextOptions.md)): [`EventHandle`](EventHandle.md)
+> **onText**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `handler`: [`ReplacementHandler`](../type-aliases/ReplacementHandler.md), `options?`: [`OnTextOptions`](OnTextOptions.md)): [`EventHandle`](EventHandle.md)
 
 Registers a listener that fires when the specified text is typed.
 
 By default the typed text is erased and replaced with `handler`. Pass
 `{ erase: false }` to trigger an action without replacing the text.
 
-`handler` can be a string, an `Image`, or a callback returning either.
+`handler` can be a string, an `Image`, a `Macro`, or a callback returning any of those.
 A callback that returns nothing (void) fires without inserting anything.
 
 ```ts
@@ -252,8 +252,11 @@ const h = keyboard.onText("btw", "by the way");
 // Dynamic replacement via callback
 const h = keyboard.onText("time", () => new Date().toLocaleTimeString());
 
+// Play a macro when the trigger text is typed
+const h2 = keyboard.onText("sig", loadedMacro);
+
 // Trigger only — don't erase the typed text
-const h = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
+const h3 = keyboard.onText("hello", () => console.println("hello typed!"), { erase: false });
 
 h.cancel(); // unregister
 ```
@@ -266,7 +269,7 @@ h.cancel(); // unregister
 
 ##### handler
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`Image`](../classes/Image.md) | () => [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Image`](../classes/Image.md)\>
+[`ReplacementHandler`](../type-aliases/ReplacementHandler.md)
 
 ##### options?
 
@@ -340,7 +343,7 @@ Replacing with an image always uses the clipboard.
 
 ### press()
 
-> **press**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **press**(`key`: [`KeyLike`](../type-aliases/KeyLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Presses and holds a key until `release` is called.
 
@@ -350,7 +353,7 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 ##### key
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+[`KeyLike`](../type-aliases/KeyLike.md)
 
 #### Returns
 
@@ -396,7 +399,7 @@ Use this for keys not covered by the `Key` enum.
 
 ### release()
 
-> **release**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **release**(`key`: [`KeyLike`](../type-aliases/KeyLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Releases a key previously held with `press`.
 
@@ -406,7 +409,7 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 ##### key
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+[`KeyLike`](../type-aliases/KeyLike.md)
 
 #### Returns
 
@@ -450,7 +453,7 @@ Releases a raw keycode previously held with `pressRaw`.
 
 ### tap()
 
-> **tap**(`key`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **tap**(`key`: [`KeyLike`](../type-aliases/KeyLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 Presses and releases a key in one action.
 
@@ -460,7 +463,7 @@ Accepts a `Key` constant, a single character string, or a raw keycode number.
 
 ##### key
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [`Key`](../enumerations/Key.md)
+[`KeyLike`](../type-aliases/KeyLike.md)
 
 #### Returns
 
@@ -516,7 +519,7 @@ Use this for keys not covered by the `Key` enum.
 
 ### waitForKeys()
 
-> <span class="async-badge">async</span> **waitForKeys**(`keys`: ([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[]): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> <span class="async-badge">async</span> **waitForKeys**(`keys`: [`Keys`](../type-aliases/Keys.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
 Waits until the specified keys are all pressed simultaneously.
 
@@ -537,7 +540,7 @@ await keyboard.waitForKeys([Key.Control, Key.Alt, Key.Delete], {
 
 ##### keys
 
-([`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [`Key`](../enumerations/Key.md))[]
+[`Keys`](../type-aliases/Keys.md)
 
 #### Returns
 

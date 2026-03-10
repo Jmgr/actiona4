@@ -19,7 +19,7 @@ audio.playFile("music.mp3", {
 
 ### fadeIn?
 
-> `optional` **fadeIn**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fadeIn**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Fade in duration
 
@@ -31,7 +31,7 @@ Fade in duration
 
 ### fadeOut?
 
-> `optional` **fadeOut**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fadeOut**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Fade out duration
 

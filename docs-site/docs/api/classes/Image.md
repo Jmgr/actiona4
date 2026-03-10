@@ -13,7 +13,7 @@ that returns a new `Image` (e.g., `blur()` vs `blurred()`).
 let image = new Image(200, 100);
 image.fill(Color.White)
      .drawCircle(100, 50, 30, Color.Red)
-     .drawText(10, 10, "Hello", "/path/to/font.ttf", Color.Black);
+     .drawText(10, 10, "Hello", Color.Black);
 await image.save("output.png");
 ```
 
@@ -1487,9 +1487,9 @@ Draw a hollow shape instead of a filled one
 
 #### Call Signature
 
-> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
 
-Draw text on this image using the provided font.
+Draw text on this image.
 
 ##### Parameters
 
@@ -1498,10 +1498,6 @@ Draw text on this image using the provided font.
 [`PointLike`](../type-aliases/PointLike.md)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -1514,6 +1510,18 @@ Draw text on this image using the provided font.
 [`DrawTextOptions`](../interfaces/DrawTextOptions.md)
 
 <div class="options-fields">
+
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
 
 ###### fontSize?
 
@@ -1621,9 +1629,9 @@ Vertical alignment relative to the provided position.
 
 #### Call Signature
 
-> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
 
-Draw text on this image using the provided font.
+Draw text on this image.
 
 ##### Parameters
 
@@ -1632,10 +1640,6 @@ Draw text on this image using the provided font.
 [`PointLike`](../type-aliases/PointLike.md)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -1661,6 +1665,18 @@ Draw text on this image using the provided font.
 
 <div class="options-fields">
 
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
 ###### fontSize?
 
 > `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1767,9 +1783,9 @@ Vertical alignment relative to the provided position.
 
 #### Call Signature
 
-> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
 
-Draw text on this image using the provided font.
+Draw text on this image.
 
 ##### Parameters
 
@@ -1782,10 +1798,6 @@ Draw text on this image using the provided font.
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -1799,6 +1811,18 @@ Draw text on this image using the provided font.
 
 <div class="options-fields">
 
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
 ###### fontSize?
 
 > `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1905,9 +1929,9 @@ Vertical alignment relative to the provided position.
 
 #### Call Signature
 
-> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
 
-Draw text on this image using the provided font.
+Draw text on this image.
 
 ##### Parameters
 
@@ -1920,10 +1944,6 @@ Draw text on this image using the provided font.
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -1948,6 +1968,18 @@ Draw text on this image using the provided font.
 [`DrawTextOptions`](../interfaces/DrawTextOptions.md)
 
 <div class="options-fields">
+
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
 
 ###### fontSize?
 
@@ -4503,7 +4535,7 @@ Draw a hollow shape instead of a filled one
 
 #### Call Signature
 
-> **withText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
+> **withText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
 
 Draw text on a copy of this image.
 
@@ -4517,10 +4549,6 @@ Draw text on a copy of this image.
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-###### fontPath
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
 ###### color
 
 [`ColorLike`](../type-aliases/ColorLike.md)
@@ -4530,6 +4558,18 @@ Draw text on a copy of this image.
 [`DrawTextOptions`](../interfaces/DrawTextOptions.md)
 
 <div class="options-fields">
+
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
 
 ###### fontSize?
 
@@ -4637,7 +4677,7 @@ Vertical alignment relative to the provided position.
 
 #### Call Signature
 
-> **withText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
+> **withText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
 
 Draw text on a copy of this image.
 
@@ -4648,10 +4688,6 @@ Draw text on a copy of this image.
 [`PointLike`](../type-aliases/PointLike.md)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -4677,6 +4713,18 @@ Draw text on a copy of this image.
 
 <div class="options-fields">
 
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
 ###### fontSize?
 
 > `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -4783,7 +4831,7 @@ Vertical alignment relative to the provided position.
 
 #### Call Signature
 
-> **withText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
+> **withText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
 
 Draw text on a copy of this image.
 
@@ -4798,10 +4846,6 @@ Draw text on a copy of this image.
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -4815,6 +4859,18 @@ Draw text on a copy of this image.
 
 <div class="options-fields">
 
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
 ###### fontSize?
 
 > `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -4921,7 +4977,7 @@ Vertical alignment relative to the provided position.
 
 #### Call Signature
 
-> **withText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `fontPath`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
+> **withText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `Image`
 
 Draw text on a copy of this image.
 
@@ -4936,10 +4992,6 @@ Draw text on a copy of this image.
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### fontPath
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -4964,6 +5016,18 @@ Draw text on a copy of this image.
 [`DrawTextOptions`](../interfaces/DrawTextOptions.md)
 
 <div class="options-fields">
+
+###### font?
+
+> `optional` **font**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
 
 ###### fontSize?
 

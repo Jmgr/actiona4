@@ -131,7 +131,7 @@ Mouse button to press.
 
 ###### duration?
 
-> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How long to hold each click, in seconds.
 
@@ -143,7 +143,7 @@ How long to hold each click, in seconds.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between consecutive clicks, in seconds.
 
@@ -306,7 +306,7 @@ Mouse button to press.
 
 ###### delay?
 
-> `optional` **delay**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **delay**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between the two clicks, in seconds.
 
@@ -318,7 +318,7 @@ Delay between the two clicks, in seconds.
 
 ###### duration?
 
-> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How long to hold each click, in seconds.
 
@@ -334,7 +334,7 @@ How long to hold each click, in seconds.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between consecutive clicks, in seconds.
 
@@ -508,7 +508,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -714,7 +714,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -920,7 +920,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1130,7 +1130,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1327,7 +1327,7 @@ Measures the mouse movement speed over a duration (in pixels per second).
 
 ###### duration?
 
-> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Measurement duration.
 
@@ -1385,7 +1385,7 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1491,7 +1491,7 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1577,7 +1577,7 @@ Easing function used for the movement.
 
 ### onButton()
 
-> **onButton**(`button`: [`Button`](../enumerations/Button.md), `callback`: () => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`OnButtonOptions`](OnButtonOptions.md)): [`EventHandle`](EventHandle.md)
+> **onButton**(`button`: [`Button`](../enumerations/Button.md), `callback`: [`TriggerAction`](../type-aliases/TriggerAction.md), `options?`: [`OnButtonOptions`](OnButtonOptions.md)): [`EventHandle`](EventHandle.md)
 
 Registers a listener that fires when a mouse button is pressed.
 
@@ -1644,7 +1644,7 @@ Right button
 
 ##### callback
 
-() => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`TriggerAction`](../type-aliases/TriggerAction.md)
 
 ##### options?
 
@@ -1692,7 +1692,7 @@ Abort signal to automatically cancel this listener when signalled.
 
 ### onScroll()
 
-> **onScroll**(`callback`: (`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>, `options?`: [`OnScrollOptions`](OnScrollOptions.md)): [`EventHandle`](EventHandle.md)
+> **onScroll**(`callback`: [`Macro`](../classes/Macro.md) \| (`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md)\>, `options?`: [`OnScrollOptions`](OnScrollOptions.md)): [`EventHandle`](EventHandle.md)
 
 Registers a listener that fires when the mouse wheel is scrolled.
 
@@ -1715,7 +1715,7 @@ const handle = mouse.onScroll((length) => {
 
 ##### callback
 
-(`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`Macro`](../classes/Macro.md) | (`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md)\>
 
 ##### options?
 

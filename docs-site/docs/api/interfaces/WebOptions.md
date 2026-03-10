@@ -106,7 +106,7 @@ Abort signal to cancel the request.
 
 ### timeout?
 
-> `optional` **timeout**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Request timeout duration.
 

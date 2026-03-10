@@ -48,7 +48,7 @@ Mouse button to press.
 
 ### duration?
 
-> `optional` **duration**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How long to hold each click, in seconds.
 
@@ -60,7 +60,7 @@ How long to hold each click, in seconds.
 
 ### interval?
 
-> `optional` **interval**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between consecutive clicks, in seconds.
 

@@ -2,4 +2,9 @@
 
 > **SizeLike** = [`Size`](../classes/Size.md) \| \{ `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number); \}
 
-SizeLike
+A size as a [Size](../classes/Size.md) instance or a plain `{width, height}` object.
+
+```ts
+image.resize(new Size(800, 600));           // Size instance
+image.resize({ width: 800, height: 600 }); // plain object
+```
