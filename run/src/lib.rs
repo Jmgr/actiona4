@@ -10,14 +10,11 @@
 
 use std::{ffi::OsString, path::Path, sync::Arc};
 
-#[cfg(windows)]
-use actiona_core::runtime::Runtime;
 use actiona_core::{
     config::Config,
     format_js_value_for_console,
-    runtime::{RuntimeOptions, WaitAtEnd},
-    scripting,
-    scripting::pragma::parse_pragmas,
+    runtime::{Runtime, RuntimeOptions, WaitAtEnd},
+    scripting::{self, pragma::parse_pragmas},
 };
 use clap::{CommandFactory, Parser};
 use color_eyre::{Result, config::HookBuilder, eyre::Context};

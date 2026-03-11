@@ -7,8 +7,9 @@ pub enum Platform {
 }
 
 impl Platform {
+    #[allow(clippy::missing_const_for_fn)]
     #[must_use]
-    pub const fn detect() -> Self {
+    pub fn detect() -> Self {
         #[cfg(windows)]
         return Self::Windows;
 
