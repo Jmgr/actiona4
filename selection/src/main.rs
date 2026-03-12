@@ -1,5 +1,8 @@
+#![cfg_attr(windows, windows_subsystem = "console")]
+
 mod app;
 mod cli;
+#[cfg(not(windows))]
 mod cursor_tracker;
 mod events;
 mod magnifier;

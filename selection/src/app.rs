@@ -12,7 +12,6 @@ use winit::{
 
 use crate::{
     cli::Mode,
-    cursor_tracker::{get_window_xid, spawn_cursor_tracker},
     events::AppEvent,
     magnifier::{
         MagnifierPipeline, MagnifierRenderInput, create_magnifier_pipeline, update_magnifier_params,
@@ -29,10 +28,11 @@ const DEFAULT_ZOOM: f32 = 10.0;
 pub struct App {
     mode: Mode,
     screenshot: Option<Screenshot>,
+    #[cfg(not(windows))]
     proxy: EventLoopProxy<AppEvent>,
     window: Option<Arc<Window>>,
     pixels: Option<Pixels<'static>>,
-    /// Pre-computed RGBA(0, 0, 0, alpha) overlay, only used in rect mode.
+    /// Pre-computed darkened-screenshot overlay, only used in rect mode.
     overlay: Vec<u8>,
     magnifier: Option<MagnifierPipeline>,
     desktop_origin: PhysicalPosition<i32>,
@@ -47,9 +47,12 @@ impl App {
         screenshot: Option<Screenshot>,
         proxy: EventLoopProxy<AppEvent>,
     ) -> Self {
+        #[cfg(windows)]
+        let _ = proxy;
         Self {
             mode,
             screenshot,
+            #[cfg(not(windows))]
             proxy,
             window: None,
             pixels: None,
@@ -79,15 +82,26 @@ impl App {
             return;
         };
         let frame = pixels.frame_mut();
+        let screenshot_rgba = self
+            .screenshot
+            .as_ref()
+            .map_or(&[] as &[u8], |s| s.rgba.as_slice());
 
         match (&self.mode, self.is_dragging) {
             (Mode::Rect, false) | (Mode::Pos { .. }, _) => {
-                draw_crosshair(frame, window_width, window_height, self.current_cursor);
+                draw_crosshair(
+                    frame,
+                    screenshot_rgba,
+                    window_width,
+                    window_height,
+                    self.current_cursor,
+                );
             }
             (Mode::Rect, true) => {
                 draw_rect_selection(
                     frame,
                     &self.overlay,
+                    screenshot_rgba,
                     self.drag_start,
                     self.current_cursor,
                     window_width,
@@ -192,16 +206,24 @@ impl App {
 
 impl ApplicationHandler<AppEvent> for App {
     fn user_event(&mut self, event_loop: &ActiveEventLoop, event: AppEvent) {
-        match event {
-            AppEvent::CursorMoved(position) => {
-                self.current_cursor = position;
-                self.request_redraw();
+        #[cfg(not(windows))]
+        {
+            match event {
+                AppEvent::CursorMoved(position) => {
+                    self.current_cursor = position;
+                    self.request_redraw();
+                }
+                AppEvent::Click(position) if matches!(self.mode, Mode::Pos { .. }) => {
+                    self.print_position_selection(position);
+                    event_loop.exit();
+                }
+                AppEvent::Click(_) => {}
             }
-            AppEvent::Click(position) if matches!(self.mode, Mode::Pos { .. }) => {
-                self.print_position_selection(position);
-                event_loop.exit();
-            }
-            AppEvent::Click(_) => {}
+        }
+        #[cfg(windows)]
+        {
+            let _ = event_loop;
+            let _ = event;
         }
     }
 
@@ -218,8 +240,8 @@ impl ApplicationHandler<AppEvent> for App {
             .with_inner_size(desktop_size)
             .with_window_level(WindowLevel::AlwaysOnTop)
             .with_decorations(false)
-            .with_transparent(true)
             .with_resizable(false)
+            .with_visible(false)
             .with_title("Select");
 
         let window = Arc::new(event_loop.create_window(window_attributes).unwrap());
@@ -228,17 +250,16 @@ impl ApplicationHandler<AppEvent> for App {
         let surface_texture =
             SurfaceTexture::new(window_size.width, window_size.height, Arc::clone(&window));
         let pixels = PixelsBuilder::new(window_size.width, window_size.height, surface_texture)
-            .clear_color(wgpu::Color {
-                r: 0.0,
-                g: 0.0,
-                b: 0.0,
-                a: 0.0,
-            })
             .build()
             .unwrap();
 
         if matches!(self.mode, Mode::Rect) {
-            self.overlay = build_rect_overlay(window_size.width, window_size.height);
+            let screenshot_rgba = self
+                .screenshot
+                .as_ref()
+                .map_or(&[] as &[u8], |s| s.rgba.as_slice());
+            self.overlay =
+                build_rect_overlay(screenshot_rgba, window_size.width, window_size.height);
         }
 
         if let Some(screenshot) = &self.screenshot {
@@ -253,15 +274,24 @@ impl ApplicationHandler<AppEvent> for App {
 
         window.set_cursor_visible(false);
 
+        #[cfg(not(windows))]
         if matches!(self.mode, Mode::Pos { .. })
-            && let Some(window_xid) = get_window_xid(&window)
+            && let Some(window_xid) = crate::cursor_tracker::get_window_xid(&window)
         {
-            spawn_cursor_tracker(self.proxy.clone(), window_xid, self.desktop_origin);
+            crate::cursor_tracker::spawn_cursor_tracker(
+                self.proxy.clone(),
+                window_xid,
+                self.desktop_origin,
+            );
         }
 
-        window.request_redraw();
         self.window = Some(window);
         self.pixels = Some(pixels);
+        self.render();
+        if let Some(w) = &self.window {
+            w.set_visible(true);
+            w.request_redraw();
+        }
     }
 
     fn window_event(
@@ -318,11 +348,14 @@ impl ApplicationHandler<AppEvent> for App {
 
 fn draw_crosshair(
     frame: &mut [u8],
+    screenshot_rgba: &[u8],
     window_width: u32,
     window_height: u32,
     cursor_position: PhysicalPosition<f64>,
 ) {
-    frame.fill(0);
+    let copy_len = frame.len().min(screenshot_rgba.len());
+    frame[..copy_len].copy_from_slice(&screenshot_rgba[..copy_len]);
+    frame[copy_len..].fill(0);
 
     let cursor_x = cursor_position.x as u32;
     let cursor_y = cursor_position.y as u32;
@@ -351,6 +384,7 @@ fn draw_crosshair(
 fn draw_rect_selection(
     frame: &mut [u8],
     overlay: &[u8],
+    screenshot_rgba: &[u8],
     drag_start: Option<PhysicalPosition<f64>>,
     cursor_position: PhysicalPosition<f64>,
     window_width: u32,
@@ -372,7 +406,11 @@ fn draw_rect_selection(
         let row_start = ((y_position * window_width + left) * 4) as usize;
         let row_length = ((right - left + 1) * 4) as usize;
         if let Some(selection_row) = frame.get_mut(row_start..row_start + row_length) {
-            selection_row.fill(0);
+            if let Some(src) = screenshot_rgba.get(row_start..row_start + row_length) {
+                selection_row.copy_from_slice(src);
+            } else {
+                selection_row.fill(0);
+            }
         }
     }
 
@@ -418,10 +456,18 @@ fn paint_pixel(
     }
 }
 
-fn build_rect_overlay(window_width: u32, window_height: u32) -> Vec<u8> {
-    let mut overlay = vec![0u8; (window_width * window_height * 4) as usize];
-    for pixel in overlay.chunks_exact_mut(4) {
-        pixel[3] = RECT_OVERLAY_ALPHA;
+fn build_rect_overlay(screenshot_rgba: &[u8], window_width: u32, window_height: u32) -> Vec<u8> {
+    let size = (window_width * window_height * 4) as usize;
+    let mut overlay = vec![0u8; size];
+    let factor = (255 - RECT_OVERLAY_ALPHA) as u32;
+    for (i, pixel) in overlay.chunks_exact_mut(4).enumerate() {
+        let src = i * 4;
+        if src + 3 < screenshot_rgba.len() {
+            pixel[0] = (screenshot_rgba[src] as u32 * factor / 255) as u8;
+            pixel[1] = (screenshot_rgba[src + 1] as u32 * factor / 255) as u8;
+            pixel[2] = (screenshot_rgba[src + 2] as u32 * factor / 255) as u8;
+        }
+        pixel[3] = 255;
     }
     overlay
 }

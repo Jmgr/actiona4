@@ -53,17 +53,21 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
         return vec4<f32>(1.0, 1.0, 1.0, 1.0);
     }
 
-    // Red crosshair at center (1 source-pixel wide)
+    // Red crosshair at center (1 output-pixel wide, with a 1 source-pixel gap at the center)
     let cx = 1.0 / box_size.x;
     let cy = 1.0 / box_size.y;
-    if abs(in.box_uv.x - 0.5) < cx || abs(in.box_uv.y - 0.5) < cy {
+    let gx = zoom / (2.0 * box_size.x); // half a source pixel in UV
+    let gy = zoom / (2.0 * box_size.y);
+    let on_h = abs(in.box_uv.y - 0.5) < cy && abs(in.box_uv.x - 0.5) >= gx;
+    let on_v = abs(in.box_uv.x - 0.5) < cx && abs(in.box_uv.y - 0.5) >= gy;
+    if on_h || on_v {
         return vec4<f32>(1.0, 0.0, 0.0, 1.0);
     }
 
     // Sample screenshot at zoomed coordinate
-    // Center of magnifier = cursor; each output pixel = 1/zoom source pixels
+    // Center of magnifier = pixel center of cursor; each output pixel = 1/zoom source pixels
     let rel = (in.box_uv - vec2<f32>(0.5)) * box_size / zoom;
-    let source_px = cursor + rel;
+    let source_px = cursor + vec2<f32>(0.5, 0.5) + rel;
     let uv = source_px / screen_sz;
 
     if uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0 {

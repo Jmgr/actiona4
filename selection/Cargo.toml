@@ -12,4 +12,9 @@ bytemuck.workspace = true
 clap.workspace = true
 pixels.workspace = true
 winit.workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
 x11rb.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows.workspace = true
