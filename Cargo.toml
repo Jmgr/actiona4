@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["core", "doc-generator", "macros", "run"]
+members = ["core", "doc-generator", "macros", "run", "selection"]
 
 [workspace.package]
 version = "0.1.7"
@@ -15,6 +15,7 @@ ab_glyph = "0.2.32"
 arboard = "3.6.1"
 arc-swap = "1.8.2"
 bimap = "0.6.3"
+bytemuck = { version = "1.25.0", features = ["derive"] }
 bytes = "1.11.1"
 chrono = "0.4.44"
 clap = { version = "4.5.60", features = ["cargo", "derive"] }
@@ -190,8 +191,13 @@ notify-rust = { version = "4.12.0", default-features = false, features = [
     "async",
     "images",
 ] }
+pixels = "0.15.0"
 procfs = { version = "0.18.0", default-features = false, features = ["flate2"] }
 rustix = { version = "1.1.4", default-features = false, features = ["process"] }
+winit = { version = "0.30.13", default-features = false, features = [
+    "x11",
+    "rwh_06",
+] }
 x11rb = "0.13.2"
 x11rb-async = { version = "0.13.2", features = [
     "xinput",
@@ -228,6 +234,9 @@ tauri-build = "2.5.6"
 # calls ManuallyDrop::drop a second time, double-freeing EventListener's heap allocation
 # when the async-lock mutex was contended (slow path / AcquireSlow).
 rquickjs-core = { path = "vendor/rquickjs-core" }
+# Patch for hardcoded alpha_mode = alpha_modes[0] which always picks Opaque, preventing
+# transparent windows from working with the OS compositor (upstream issue #370).
+pixels = { path = "vendor/pixels" }
 
 [profile.release]
 strip = true

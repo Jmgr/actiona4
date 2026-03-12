@@ -1,0 +1,15 @@
+[package]
+name = "selection"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[dependencies]
+bytemuck.workspace = true
+clap.workspace = true
+pixels.workspace = true
+winit.workspace = true
+x11rb.workspace = true
