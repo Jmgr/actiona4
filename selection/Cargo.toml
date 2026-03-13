@@ -18,4 +18,5 @@ bytemuck.workspace = true
 clap.workspace = true
 common = { path = "../common" }
 pixels.workspace = true
+serde_json.workspace = true
 winit.workspace = true

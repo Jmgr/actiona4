@@ -12,3 +12,5 @@ name = "actiona_common"
 
 [dependencies]
 ab_glyph.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true

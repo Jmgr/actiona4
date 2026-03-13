@@ -10,6 +10,8 @@ use winit::{
     window::{Window, WindowId, WindowLevel},
 };
 
+use actiona_common::selection::{Color, PositionSelection, RectSelection};
+
 use crate::{
     cli::Mode,
     events::AppEvent,
@@ -198,12 +200,11 @@ impl App {
         let color = self
             .screenshot
             .as_ref()
-            .and_then(|screenshot| screenshot_color_at(screenshot, global_x, global_y));
+            .and_then(|screenshot| screenshot_color_at(screenshot, global_x, global_y))
+            .map(|[r, g, b]| Color { r, g, b });
 
-        match color {
-            Some([red, green, blue]) => println!("{global_x} {global_y} {red} {green} {blue}"),
-            None => println!("{global_x} {global_y}"),
-        }
+        let result = PositionSelection { x: global_x, y: global_y, color };
+        println!("{}", serde_json::to_string(&result).expect("serialization failed"));
     }
 
     fn print_rect_selection(&self) {
@@ -217,7 +218,8 @@ impl App {
             (drag_start.y.min(self.current_cursor.y) + f64::from(self.desktop_origin.y)) as i32;
         let width = (drag_start.x - self.current_cursor.x).abs() as i32;
         let height = (drag_start.y - self.current_cursor.y).abs() as i32;
-        println!("{global_x} {global_y} {width} {height}");
+        let result = RectSelection { x: global_x, y: global_y, width, height };
+        println!("{}", serde_json::to_string(&result).expect("serialization failed"));
     }
 
     fn request_redraw(&self) {

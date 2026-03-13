@@ -1,3 +1,5 @@
+pub mod selection;
+
 use std::sync::OnceLock;
 
 use ab_glyph::{Font, FontRef, PxScale, ScaleFont};
