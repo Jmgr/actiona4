@@ -1,0 +1,14 @@
+[package]
+name = "common"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[lib]
+name = "actiona_common"
+
+[dependencies]
+ab_glyph.workspace = true

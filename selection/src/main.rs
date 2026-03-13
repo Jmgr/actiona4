@@ -7,6 +7,7 @@ mod cursor_tracker;
 mod events;
 mod magnifier;
 mod screenshot;
+mod text;
 
 use clap::Parser;
 use winit::event_loop::EventLoop;

@@ -2516,6 +2516,38 @@ declare enum Signal {
     Usr2,
 }
 /**
+ * Controls which interactive screenshot method is used.
+ * 
+ * ```ts
+ * const image = await screen.askScreenshot({ method: ScreenshotMethod.Portal });
+ * ```
+ * @category Screen
+ * @expand
+ */
+declare enum AskScreenshotMethod {
+    /**
+     * `AskScreenshotMethod.Auto`
+     * 
+     * Use the platform-default interactive screenshot picker.
+     */
+    Auto,
+
+    /**
+     * `AskScreenshotMethod.Portal`
+     * 
+     * Use the XDG Desktop Portal only.
+     * @platform only works on Linux
+     */
+    Portal,
+
+    /**
+     * `AskScreenshotMethod.Overlay`
+     * 
+     * Use the bundled overlay selector only.
+     */
+    Overlay,
+}
+/**
  * Process status.
  * 
  * ```ts
@@ -8180,6 +8212,18 @@ declare class Rect {
     union(other: Rect): Rect;
 }
 /**
+ * Options for [`screen.askScreenshot`].
+ * @category Screen
+ * @expand
+ */
+declare interface AskScreenshotOptions {
+    /**
+     * Controls which capture method to use.
+     * @defaultValue `AskScreenshotMethod.Auto`
+     */
+    method?: AskScreenshotMethod;
+}
+/**
  * Specifies the screen area to search within for find-image operations.
  * 
  * ```ts
@@ -8334,6 +8378,27 @@ declare interface Screen {
      * @platform does not work on Wayland
      */
     capturePixel(x: number, y: number): Promise<Color>;
+    /**
+     * Asks the user to interactively select a screen area and returns a
+     * screenshot of that area, or `null` if the user cancels.
+     * 
+     * On Linux the XDG Desktop Portal is used by default, which works on both
+     * X11 and Wayland. On Windows the system screenshot picker is used by
+     * default. In both cases the user can cancel at any time.
+     * 
+     * ```ts
+     * const image = await screen.askScreenshot();
+     * if (image) {
+     *   await image.save("/tmp/selection.png");
+     * }
+     * ```
+     * 
+     * ```ts
+     * // Force the portal (error if unavailable)
+     * const image = await screen.askScreenshot({ method: AskScreenshotMethod.Portal });
+     * ```
+     */
+    askScreenshot(options?: AskScreenshotOptions): Promise<Image | undefined>;
     /**
      * Returns a string representation of the `screen` singleton.
      */

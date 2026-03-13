@@ -3,8 +3,8 @@ use pixels::{PixelsContext, wgpu};
 
 use crate::screenshot::Screenshot;
 
-const MAGNIFIER_BOX_SIZE: f32 = 200.0;
-const MAGNIFIER_OFFSET: f32 = 24.0;
+pub const MAGNIFIER_BOX_SIZE: f32 = 200.0;
+pub const MAGNIFIER_OFFSET: f32 = 24.0;
 
 /// Matches the WGSL `Params` struct layout (3 x vec4 = 48 bytes).
 #[repr(C)]
@@ -214,7 +214,7 @@ pub fn update_magnifier_params(
     queue.write_buffer(&pipeline.params_buffer, 0, bytemuck::bytes_of(&params));
 }
 
-fn compute_magnifier_origin(
+pub fn compute_magnifier_origin(
     cursor_position: [f32; 2],
     window_size: [f32; 2],
     magnifier_box_size: f32,

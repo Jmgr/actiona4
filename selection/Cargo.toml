@@ -16,5 +16,6 @@ windows.workspace = true
 [dependencies]
 bytemuck.workspace = true
 clap.workspace = true
+common = { path = "../common" }
 pixels.workspace = true
 winit.workspace = true

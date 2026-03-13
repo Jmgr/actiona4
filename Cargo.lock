@@ -1212,6 +1212,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "common"
+version = "0.1.7"
+dependencies = [
+ "ab_glyph",
+]
+
+[[package]]
 name = "compact_str"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1356,6 +1363,7 @@ dependencies = [
  "cfg_aliases 0.2.1",
  "chrono",
  "color-eyre",
+ "common",
  "console",
  "console-subscriber",
  "convert_case 0.11.0",
@@ -6816,6 +6824,7 @@ version = "0.1.7"
 dependencies = [
  "bytemuck",
  "clap",
+ "common",
  "pixels",
  "windows 0.62.2",
  "winit",

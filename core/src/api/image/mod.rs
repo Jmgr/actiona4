@@ -211,7 +211,7 @@ impl Font {
     fn builtin() -> FontArc {
         static FONT: OnceLock<FontArc> = OnceLock::new();
         FONT.get_or_init(|| {
-            FontArc::try_from_vec(include_bytes!("../../../assets/DejaVuSans.ttf").to_vec())
+            FontArc::try_from_vec(actiona_common::FONT_BYTES.to_vec())
                 .expect("built-in DejaVu Sans font is valid")
         })
         .clone()

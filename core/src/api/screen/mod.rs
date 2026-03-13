@@ -145,15 +145,14 @@ impl Screen {
             };
 
             match options.method {
-                Portal => return ask_portal_screenshot().await,
+                Portal => ask_portal_screenshot().await,
                 Auto => {
                     let portal_result = ask_portal_screenshot().await;
                     if portal_result.is_ok() {
                         return portal_result;
                     }
-                    let portal_error = portal_result
-                        .err()
-                        .expect("portal_result error should be present");
+                    let portal_error =
+                        portal_result.expect_err("portal_result error should be present");
 
                     let rect = ask_overlay_screenshot(
                         self.runtime.tauri_app(),
@@ -166,10 +165,10 @@ impl Screen {
                             portal_error
                         )
                     })?;
-                    return match rect {
+                    match rect {
                         Some(rect) => self.implementation.capture_rect(rect).await.map(Some),
                         None => Ok(None),
-                    };
+                    }
                 }
                 Overlay => {
                     let rect = ask_overlay_screenshot(
@@ -177,10 +176,10 @@ impl Screen {
                         self.runtime.cancellation_token(),
                     )
                     .await?;
-                    return match rect {
+                    match rect {
                         Some(rect) => self.implementation.capture_rect(rect).await.map(Some),
                         None => Ok(None),
-                    };
+                    }
                 }
             }
         }
@@ -207,10 +206,10 @@ impl Screen {
                         self.runtime.cancellation_token(),
                     )
                     .await?;
-                    return match rect {
+                    match rect {
                         Some(rect) => self.implementation.capture_rect(rect).await.map(Some),
                         None => Ok(None),
-                    };
+                    }
                 }
                 Portal => bail!("portal screenshots are only available on Linux"),
             }

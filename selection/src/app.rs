@@ -14,9 +14,11 @@ use crate::{
     cli::Mode,
     events::AppEvent,
     magnifier::{
-        MagnifierPipeline, MagnifierRenderInput, create_magnifier_pipeline, update_magnifier_params,
+        MAGNIFIER_BOX_SIZE, MAGNIFIER_OFFSET, MagnifierPipeline, MagnifierRenderInput,
+        compute_magnifier_origin, create_magnifier_pipeline, update_magnifier_params,
     },
     screenshot::{Screenshot, screenshot_color_at},
+    text::{draw_text, line_height},
 };
 
 const CROSSHAIR_GAP: u32 = 5;
@@ -109,6 +111,27 @@ impl App {
                 );
             }
         }
+
+        let global_x = self.current_cursor.x as i32 + self.desktop_origin.x;
+        let global_y = self.current_cursor.y as i32 + self.desktop_origin.y;
+        let rect_size = if self.is_dragging {
+            self.drag_start.map(|start| {
+                let w = (start.x - self.current_cursor.x).abs() as i32;
+                let h = (start.y - self.current_cursor.y).abs() as i32;
+                (w, h)
+            })
+        } else {
+            None
+        };
+        draw_cursor_coords(
+            frame,
+            window_width,
+            window_height,
+            self.current_cursor,
+            global_x,
+            global_y,
+            rect_size,
+        );
     }
 
     fn render_surface(&mut self, window_width: u32, window_height: u32) {
@@ -453,6 +476,73 @@ fn paint_pixel(
     let pixel_index = ((y_position * window_width + x_position) * 4) as usize;
     if let Some(pixel) = frame.get_mut(pixel_index..pixel_index + 4) {
         pixel.copy_from_slice(&color);
+    }
+}
+
+const COORD_TEXT_COLOR: [u8; 4] = [255, 255, 255, 255];
+const COORD_SHADOW_COLOR: [u8; 4] = [0, 0, 0, 255];
+const COORD_BELOW_GAP: i32 = 4;
+
+fn draw_cursor_coords(
+    frame: &mut [u8],
+    window_width: u32,
+    window_height: u32,
+    cursor: PhysicalPosition<f64>,
+    global_x: i32,
+    global_y: i32,
+    rect_size: Option<(i32, i32)>,
+) {
+    let [mag_x, mag_y] = compute_magnifier_origin(
+        [cursor.x as f32, cursor.y as f32],
+        [window_width as f32, window_height as f32],
+        MAGNIFIER_BOX_SIZE,
+        MAGNIFIER_OFFSET,
+    );
+
+    let text_x = mag_x as i32;
+    let text_y = mag_y as i32 + MAGNIFIER_BOX_SIZE as i32 + COORD_BELOW_GAP;
+
+    let coord_text = format!("X:{global_x}  Y:{global_y}");
+    draw_text(
+        frame,
+        window_width,
+        window_height,
+        text_x + 1,
+        text_y + 1,
+        &coord_text,
+        COORD_SHADOW_COLOR,
+    );
+    draw_text(
+        frame,
+        window_width,
+        window_height,
+        text_x,
+        text_y,
+        &coord_text,
+        COORD_TEXT_COLOR,
+    );
+
+    if let Some((w, h)) = rect_size {
+        let size_text = format!("{w} x {h}");
+        let size_y = text_y + line_height() + 2;
+        draw_text(
+            frame,
+            window_width,
+            window_height,
+            text_x + 1,
+            size_y + 1,
+            &size_text,
+            COORD_SHADOW_COLOR,
+        );
+        draw_text(
+            frame,
+            window_width,
+            window_height,
+            text_x,
+            size_y,
+            &size_text,
+            COORD_TEXT_COLOR,
+        );
     }
 }
 

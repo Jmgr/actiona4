@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["core", "doc-generator", "macros", "run", "selection"]
+members = ["common", "core", "doc-generator", "macros", "run", "selection"]
 
 [workspace.package]
 version = "0.1.7"

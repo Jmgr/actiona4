@@ -36,6 +36,7 @@ name = "actiona_core"
 
 [dependencies]
 ab_glyph.workspace = true
+common = { path = "../common" }
 macros = { path = "../macros" }
 
 arboard.workspace = true
