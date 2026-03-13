@@ -1,7 +1,7 @@
 #[cfg(not(windows))]
 use winit::dpi::PhysicalPosition;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum AppEvent {
     /// Pointer moved in the selection window or from the X11 grab thread.
     #[cfg(not(windows))]

@@ -14,6 +14,7 @@ use crate::{
 };
 
 mod convert;
+pub mod overlay;
 
 #[cfg(unix)]
 pub mod x11;

@@ -66,14 +66,42 @@ script_runner = "bash"
 script_extension = "sh"
 script = ["./scripts/generate_doc.sh"]
 
+[tasks.prepare-selection-sidecar]
+description = "Build and stage the selection sidecar for Tauri bundling."
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/run"
+script_runner = "bash"
+script_extension = "sh"
+script = [
+    "set -euo pipefail",
+    "target_triple=\"$(rustc -vV | sed -n 's/^host: //p')\"",
+    "extension=''",
+    "case \"$target_triple\" in *windows*) extension='.exe' ;; esac",
+    "cargo build -p selection --release --target \"$target_triple\"",
+    "mkdir -p binaries",
+    "cp \"../target/$target_triple/release/selection$extension\" \"binaries/selection-$target_triple$extension\"",
+]
+
 [tasks.appimage-run]
 condition = { platforms = ["linux"] }
 description = "Build an AppImage for the actiona-run executable."
 cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/run"
-dependencies = ["install-tauri-cli"]
+dependencies = ["install-tauri-cli", "prepare-selection-sidecar"]
 script_runner = "bash"
 script_extension = "sh"
-script = ["cargo tauri build --bundles appimage"]
+script = [
+    "TAURI_CONFIG='{\"bundle\":{\"externalBin\":[\"binaries/selection\"]}}' cargo tauri build --bundles appimage",
+]
+
+[tasks.bundle-run]
+condition = { platforms = ["windows"] }
+description = "Build the Windows bundle for actiona-run, including the selection sidecar."
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/run"
+dependencies = ["install-tauri-cli", "prepare-selection-sidecar"]
+script_runner = "bash"
+script_extension = "sh"
+script = [
+    "TAURI_CONFIG='{\"bundle\":{\"externalBin\":[\"binaries/selection\"]}}' cargo tauri build",
+]
 
 [tasks.release-run]
 description = "Build the actiona-run binary in release mode."

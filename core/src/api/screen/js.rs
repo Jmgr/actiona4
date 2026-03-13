@@ -51,7 +51,7 @@ use crate::{
 pub enum JsAskScreenshotMethod {
     /// `AskScreenshotMethod.Auto`
     ///
-    /// Try the XDG Desktop Portal first; fall back to the X11 overlay.
+    /// Use the platform-default interactive screenshot picker.
     Auto,
     /// `AskScreenshotMethod.Portal`
     ///
@@ -60,7 +60,7 @@ pub enum JsAskScreenshotMethod {
     Portal,
     /// `AskScreenshotMethod.Overlay`
     ///
-    /// Use the X11 overlay only.
+    /// Use the bundled overlay selector only.
     Overlay,
 }
 
@@ -356,8 +356,8 @@ impl JsScreen {
     /// screenshot of that area, or `null` if the user cancels.
     ///
     /// On Linux the XDG Desktop Portal is used by default, which works on both
-    /// X11 and Wayland. The portal presents the compositor's native region
-    /// picker; the user can cancel at any time.
+    /// X11 and Wayland. On Windows the system screenshot picker is used by
+    /// default. In both cases the user can cancel at any time.
     ///
     /// ```ts
     /// const image = await screen.askScreenshot();

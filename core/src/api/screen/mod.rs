@@ -2,6 +2,8 @@ use std::sync::Arc;
 
 use color_eyre::Result;
 #[cfg(unix)]
+use color_eyre::eyre::WrapErr;
+#[cfg(windows)]
 use color_eyre::eyre::bail;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
@@ -35,12 +37,12 @@ use crate::{
 /// Controls which interactive screenshot method is used.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum AskScreenshotMethod {
-    /// Try the XDG Desktop Portal first; fall back to the X11 overlay.
+    /// Use the platform-default interactive screenshot picker.
     #[default]
     Auto,
     /// Use the XDG Desktop Portal only (fails if the portal is unavailable).
     Portal,
-    /// Use the X11 overlay only.
+    /// Use the bundled overlay selector only.
     Overlay,
 }
 
@@ -137,29 +139,81 @@ impl Screen {
         {
             use AskScreenshotMethod::*;
 
-            use crate::api::screen::platform::x11::portal::ask_screenshot;
+            use crate::api::screen::platform::{
+                overlay::ask_screenshot as ask_overlay_screenshot,
+                x11::portal::ask_screenshot as ask_portal_screenshot,
+            };
 
             match options.method {
-                Portal => return ask_screenshot().await,
+                Portal => return ask_portal_screenshot().await,
                 Auto => {
-                    let result = ask_screenshot().await;
-                    if result.is_ok() {
-                        return result;
+                    let portal_result = ask_portal_screenshot().await;
+                    if portal_result.is_ok() {
+                        return portal_result;
                     }
-                    // Portal unavailable — fall through to overlay once implemented
-                    let _ = result;
+                    let portal_error = portal_result
+                        .err()
+                        .expect("portal_result error should be present");
+
+                    let rect = ask_overlay_screenshot(
+                        self.runtime.tauri_app(),
+                        self.runtime.cancellation_token(),
+                    )
+                    .await
+                    .wrap_err_with(|| {
+                        format!(
+                            "portal screenshot failed and overlay fallback was unavailable: {}",
+                            portal_error
+                        )
+                    })?;
+                    return match rect {
+                        Some(rect) => self.implementation.capture_rect(rect).await.map(Some),
+                        None => Ok(None),
+                    };
                 }
-                Overlay => {}
+                Overlay => {
+                    let rect = ask_overlay_screenshot(
+                        self.runtime.tauri_app(),
+                        self.runtime.cancellation_token(),
+                    )
+                    .await?;
+                    return match rect {
+                        Some(rect) => self.implementation.capture_rect(rect).await.map(Some),
+                        None => Ok(None),
+                    };
+                }
             }
-            bail!("X11 overlay screenshot is not yet implemented")
         }
         #[cfg(windows)]
         {
-            let _ = options;
-            use crate::api::screen::platform::win::ask_screenshot::ask_screenshot;
+            use AskScreenshotMethod::*;
 
-            return ask_screenshot(self.runtime.tauri_app(), self.runtime.cancellation_token())
-                .await;
+            use crate::api::screen::platform::{
+                overlay::ask_screenshot as ask_overlay_screenshot,
+                win::ask_screenshot::ask_screenshot as ask_system_screenshot,
+            };
+
+            match options.method {
+                Auto => {
+                    return ask_system_screenshot(
+                        self.runtime.tauri_app(),
+                        self.runtime.cancellation_token(),
+                    )
+                    .await;
+                }
+                Overlay => {
+                    let rect = ask_overlay_screenshot(
+                        self.runtime.tauri_app(),
+                        self.runtime.cancellation_token(),
+                    )
+                    .await?;
+                    return match rect {
+                        Some(rect) => self.implementation.capture_rect(rect).await.map(Some),
+                        None => Ok(None),
+                    };
+                }
+                Portal => bail!("portal screenshots are only available on Linux"),
+            }
         }
     }
 

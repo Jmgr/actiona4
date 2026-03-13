@@ -1,7 +1,11 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
 use actiona_core::{
-    api::{displays::Displays, screen::Screen, windows::Windows},
+    api::{
+        displays::Displays,
+        screen::{AskScreenshotOptions, Screen},
+        windows::Windows,
+    },
     runtime::Runtime,
 };
 use askama::Template;
@@ -107,7 +111,12 @@ ignored_ui_test!(test_ask_screenshot, || {
         .await
         .unwrap();
 
-        let image = screen.ask_screenshot(Default::default()).await.unwrap();
+        let image = screen
+            .ask_screenshot(AskScreenshotOptions {
+                method: actiona_core::api::screen::AskScreenshotMethod::Overlay,
+            })
+            .await
+            .unwrap();
 
         println!("result: {:?}", image.map(|i| i.size()));
     });
