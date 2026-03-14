@@ -45,7 +45,9 @@ use std::{collections::HashSet, str::FromStr, sync::Arc};
 
 use derive_more::Display;
 use enigo::Key;
-use macros::{FromJsObject, IntoSerde, PlatformValidate, js_class, js_enum, js_methods, options, platform};
+use macros::{
+    FromJsObject, IntoSerde, PlatformValidate, js_class, js_enum, js_methods, options, platform,
+};
 use rquickjs::{
     Class, Coerced, Ctx, Exception, FromJs, IntoJs, JsLifetime, Object, Promise, Result, Value,
     atom::PredefinedAtom,

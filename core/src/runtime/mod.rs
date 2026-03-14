@@ -39,6 +39,7 @@ use crate::{
         clipboard::{Clipboard, js::JsClipboard},
         color::js::JsColor,
         console::js::JsConsole,
+        datetime::js::JsDatetime,
         directory::js::JsDirectory,
         displays::{Displays, js::JsDisplays},
         file::js::JsFile,
@@ -652,6 +653,7 @@ impl Runtime {
         register_singleton_class::<JsScreen>(&ctx, screen)?;
         register_singleton_class::<JsClipboard>(&ctx, clipboard)?;
         register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
+        register_singleton_class::<JsDatetime>(&ctx, JsDatetime::default())?;
         register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
         register_singleton_class::<JsSystem>(&ctx, system)?;
         register_singleton_class::<JsAudio>(&ctx, audio)?;

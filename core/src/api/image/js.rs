@@ -2,7 +2,9 @@ use std::{io, sync::Arc};
 
 use image::ImageResult;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform};
+use macros::{
+    FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform,
+};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Promise, Result, TypedArray,
     atom::PredefinedAtom,

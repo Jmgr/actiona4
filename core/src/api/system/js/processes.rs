@@ -1,6 +1,8 @@
 use derive_more::Display;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform};
+use macros::{
+    FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform,
+};
 use rquickjs::{
     Ctx, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace, prelude::Opt,
 };
@@ -554,6 +556,17 @@ impl From<Status> for JsProcessStatus {
 #[cfg(test)]
 mod tests {
     use crate::runtime::Runtime;
+
+    #[test]
+    fn test_process_status_enum_accessible() {
+        Runtime::test_with_script_engine(async |script_engine| {
+            let value = script_engine
+                .eval::<String>("ProcessStatus.Run")
+                .await
+                .unwrap();
+            assert_eq!(value, "Run");
+        });
+    }
 
     #[test]
     fn test_find() {

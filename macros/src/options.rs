@@ -2,9 +2,9 @@ use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
-    Attribute, Expr, ExprLit, ExprPath, ExprUnary, Field, Fields, Item, ItemStruct, Lit,
-    LitFloat, LitInt, Meta, Path, PathArguments, Type, UnOp, Visibility, parse::Parser,
-    parse_macro_input, parse_quote, punctuated::Punctuated, token::Comma,
+    Attribute, Expr, ExprLit, ExprPath, ExprUnary, Field, Fields, Item, ItemStruct, Lit, LitFloat,
+    LitInt, Meta, Path, PathArguments, Type, UnOp, Visibility, parse::Parser, parse_macro_input,
+    parse_quote, punctuated::Punctuated, token::Comma,
 };
 
 use crate::{
@@ -165,7 +165,9 @@ fn is_default_attribute(attribute: &Attribute) -> bool {
 }
 
 /// Extract `platform(only = "...")` from a field or variant.
-pub(crate) fn platform_only_from_attributes(attributes: &[Attribute]) -> syn::Result<Option<String>> {
+pub(crate) fn platform_only_from_attributes(
+    attributes: &[Attribute],
+) -> syn::Result<Option<String>> {
     let mut only_platform: Option<String> = None;
 
     for attribute in attributes {

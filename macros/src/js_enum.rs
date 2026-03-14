@@ -54,10 +54,10 @@ fn expand_enum(item_enum: &mut ItemEnum, rename: Option<String>) -> syn::Result<
     // Determine the JS name:
     // - explicit `rename` param → use it and inject @rename
     // - `Js` prefix → strip it, no @rename
-    // - no prefix, no rename → nothing
+    // - no prefix, no rename → keep the Rust enum name
     let enum_name = item_enum.ident.to_string();
-    let (js_name, inject_rename_instr) = if let Some(r) = rename {
-        (Some(r), true)
+    let (serde_name, inject_rename_instr) = if let Some(rename) = rename {
+        (Some(rename), true)
     } else if let Some(stripped) = enum_name.strip_prefix(JS_TYPE_PREFIX) {
         if stripped.is_empty() {
             return Err(syn::Error::new_spanned(
@@ -70,7 +70,7 @@ fn expand_enum(item_enum: &mut ItemEnum, rename: Option<String>) -> syn::Result<
         (None, false)
     };
 
-    if let Some(name) = js_name {
+    if let Some(name) = serde_name {
         let rename_lit = LitStr::new(&name, item_enum.ident.span());
         let serde_attr = parse_quote! { #[serde(rename = #rename_lit)] };
         item_enum.attrs.push(serde_attr);

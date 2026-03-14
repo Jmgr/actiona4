@@ -222,6 +222,52 @@ function formatPercent(percent: number, precision?: number): string;
  */
 function formatBytes(bytes: number): string;
 /**
+ * Day of the week, used with `datetime.waitForDayOfWeek`.
+ * 
+ * ```ts
+ * // Wait until next Monday at midnight
+ * await datetime.waitForDayOfWeek(DayOfWeek.Monday);
+ * ```
+ * @category Datetime
+ * @expand
+ */
+enum DayOfWeek {
+    /**
+     * `DayOfWeek.Monday`
+     */
+    Monday,
+
+    /**
+     * `DayOfWeek.Tuesday`
+     */
+    Tuesday,
+
+    /**
+     * `DayOfWeek.Wednesday`
+     */
+    Wednesday,
+
+    /**
+     * `DayOfWeek.Thursday`
+     */
+    Thursday,
+
+    /**
+     * `DayOfWeek.Friday`
+     */
+    Friday,
+
+    /**
+     * `DayOfWeek.Saturday`
+     */
+    Saturday,
+
+    /**
+     * `DayOfWeek.Sunday`
+     */
+    Sunday,
+}
+/**
  * Direction to flip an image.
  * 
  * ```ts
@@ -4258,6 +4304,151 @@ interface Console {
  * @category Console
  */
 const console: Console;
+/**
+ * Options for datetime wait methods.
+ * @category Datetime
+ * @expand
+ */
+interface WaitOptions {
+    /**
+     * Abort signal to cancel the wait.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
+ * Provides time-condition based waiting.
+ * 
+ * All `waitFor*` methods return a cancellable `Task` that resolves at the
+ * next occurrence of the specified time condition.
+ * 
+ * ```ts
+ * // Wait until next 13:00:00
+ * await datetime.waitForHour(13);
+ * ```
+ * 
+ * ```ts
+ * // Wait for a duration (alias for sleep)
+ * await datetime.waitFor("2s");
+ * ```
+ * 
+ * ```ts
+ * // Wait until a specific date
+ * await datetime.waitUntil(new Date("2026-12-31T23:59:59"));
+ * ```
+ * @category Datetime
+ */
+interface Datetime {
+    /**
+     * Waits for the given duration. Alias for `sleep`.
+     * 
+     * ```ts
+     * await datetime.waitFor(500);     // 500 ms
+     * await datetime.waitFor("1s");    // 1 second
+     * await datetime.waitFor("30m");   // 30 minutes
+     * ```
+     * 
+     * Numeric values are interpreted as milliseconds.
+     */
+    waitFor(duration: DurationLike, options?: WaitOptions): Task<void>;
+    /**
+     * Waits until a specific `Date` is reached.
+     * 
+     * Resolves immediately if the date is in the past.
+     * 
+     * ```ts
+     * await datetime.waitUntil(new Date("2026-12-31T23:59:59"));
+     * ```
+     * 
+     * ```ts
+     * // Wait until 1 second from now
+     * const target = new Date(Date.now() + 1000);
+     * await datetime.waitUntil(target);
+     * ```
+     */
+    waitUntil(date: Date): Task<void>;
+    /**
+     * Waits until the next occurrence of the given hour (0–23) at minute 0, second 0.
+     * 
+     * Always waits for the *next* occurrence: if the current time is already past
+     * `hour:00:00` today, it waits until tomorrow.
+     * 
+     * ```ts
+     * // Run something every day at 09:00
+     * while (true) {
+     *   await datetime.waitForHour(9);
+     *   doMorningTask();
+     * }
+     * ```
+     * 
+     * ```ts
+     * // With cancellation support
+     * const controller = new AbortController();
+     * await datetime.waitForHour(13, { signal: controller.signal });
+     * ```
+     */
+    waitForHour(hour: number, options?: WaitOptions): Task<void>;
+    /**
+     * Waits until the next occurrence of the given minute (0–59), at second 0.
+     * 
+     * Always waits for the *next* occurrence: if the current minute is already
+     * past `minute:00`, it waits until the same minute in the next hour.
+     * 
+     * ```ts
+     * // Run something every hour at HH:30:00
+     * while (true) {
+     *   await datetime.waitForMinute(30);
+     *   doHalfHourTask();
+     * }
+     * ```
+     */
+    waitForMinute(minute: number, options?: WaitOptions): Task<void>;
+    /**
+     * Waits until the next occurrence of the given day of the month (1–31) at midnight.
+     * 
+     * Always waits for the *next* occurrence: if the current day of month is
+     * already past (or equal to) `day`, it waits until that day in the next month.
+     * Months that are shorter than `day` are skipped automatically.
+     * 
+     * ```ts
+     * // Run something on the 1st of every month
+     * while (true) {
+     *   await datetime.waitForDayOfMonth(1);
+     *   doMonthlyTask();
+     * }
+     * ```
+     */
+    waitForDayOfMonth(day: number, options?: WaitOptions): Task<void>;
+    /**
+     * Waits until the next occurrence of the given weekday at midnight.
+     * 
+     * Always waits for the *next* occurrence: if today is already that weekday,
+     * it waits until the same weekday next week.
+     * 
+     * ```ts
+     * // Run something every Monday
+     * while (true) {
+     *   await datetime.waitForDayOfWeek(DayOfWeek.Monday);
+     *   doWeeklyTask();
+     * }
+     * ```
+     * 
+     * ```ts
+     * // With cancellation
+     * const controller = new AbortController();
+     * await datetime.waitForDayOfWeek(DayOfWeek.Friday, { signal: controller.signal });
+     * ```
+     */
+    waitForDayOfWeek(day: DayOfWeek, options?: WaitOptions): Task<void>;
+    /**
+     * Returns a string representation of the `datetime` singleton.
+     */
+    toString(): string;
+}
+/**
+ * @category Datetime
+ */
+const datetime: Datetime;
 /**
  * An entry returned by `Directory.listEntries()`, representing a file, directory,
  * or symlink within a directory.

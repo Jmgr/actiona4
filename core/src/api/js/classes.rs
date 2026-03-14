@@ -2,7 +2,6 @@ use color_eyre::eyre::Context;
 use convert_case::{Case, Casing};
 use rquickjs::{Class, Ctx, Exception, IntoJs, Object, class::JsClass};
 use serde::{Deserialize, Serialize};
-use serde_name::trace_name;
 use strum::IntoEnumIterator;
 use tracing::instrument;
 
@@ -186,8 +185,19 @@ where
         // Set both the property name and the value to that canonical string
         obj.set(&key, key.clone())?;
     }
-    let name = trace_name::<E>().ok_or_else(|| {
-        Exception::throw_message(ctx, "Failed to derive enum trace name for registration")
-    })?;
-    target.set(name, obj)
+
+    target.set(enum_registration_name::<E>(), obj)
+}
+
+fn enum_registration_name<E>() -> String {
+    let type_name = std::any::type_name::<E>();
+    let enum_name = type_name
+        .rsplit("::")
+        .next()
+        .expect("type_name should always contain a final segment");
+
+    enum_name
+        .strip_prefix("Js")
+        .unwrap_or(enum_name)
+        .to_string()
 }

@@ -5,6 +5,7 @@ pub mod audio;
 pub mod clipboard;
 pub mod color;
 pub mod console;
+pub mod datetime;
 pub mod directory;
 pub mod displays;
 pub mod file;
