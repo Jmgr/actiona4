@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use actiona_common::selection::{Color, PositionSelection, RectSelection};
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture, wgpu};
 #[cfg(not(windows))]
 use winit::platform::x11::WindowAttributesExtX11;
@@ -11,8 +12,6 @@ use winit::{
     keyboard::{KeyCode, PhysicalKey},
     window::{Window, WindowId, WindowLevel},
 };
-
-use actiona_common::selection::{Color, PositionSelection, RectSelection};
 
 use crate::{
     cli::Mode,
