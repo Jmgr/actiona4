@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture, wgpu};
+#[cfg(not(windows))]
+use winit::platform::x11::WindowAttributesExtX11;
 use winit::{
     application::ApplicationHandler,
     dpi::{PhysicalPosition, PhysicalSize},
@@ -203,8 +205,15 @@ impl App {
             .and_then(|screenshot| screenshot_color_at(screenshot, global_x, global_y))
             .map(|[r, g, b]| Color { r, g, b });
 
-        let result = PositionSelection { x: global_x, y: global_y, color };
-        println!("{}", serde_json::to_string(&result).expect("serialization failed"));
+        let result = PositionSelection {
+            x: global_x,
+            y: global_y,
+            color,
+        };
+        println!(
+            "{}",
+            serde_json::to_string(&result).expect("serialization failed")
+        );
     }
 
     fn print_rect_selection(&self) {
@@ -218,8 +227,16 @@ impl App {
             (drag_start.y.min(self.current_cursor.y) + f64::from(self.desktop_origin.y)) as i32;
         let width = (drag_start.x - self.current_cursor.x).abs() as i32;
         let height = (drag_start.y - self.current_cursor.y).abs() as i32;
-        let result = RectSelection { x: global_x, y: global_y, width, height };
-        println!("{}", serde_json::to_string(&result).expect("serialization failed"));
+        let result = RectSelection {
+            x: global_x,
+            y: global_y,
+            width,
+            height,
+        };
+        println!(
+            "{}",
+            serde_json::to_string(&result).expect("serialization failed")
+        );
     }
 
     fn request_redraw(&self) {
@@ -268,6 +285,8 @@ impl ApplicationHandler<AppEvent> for App {
             .with_resizable(false)
             .with_visible(false)
             .with_title("Select");
+        #[cfg(not(windows))]
+        let window_attributes = window_attributes.with_override_redirect(true);
 
         let window = Arc::new(event_loop.create_window(window_attributes).unwrap());
         let window_size = window.inner_size();
