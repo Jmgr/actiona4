@@ -1082,7 +1082,7 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                await file.setModifiedTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
+                await file.setModifiedTime(new Date(Date.UTC({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND})));
                 var result = await file.modifiedTime()
                 "#
                 ))
@@ -1108,7 +1108,7 @@ mod tests {
             script_engine
                 .eval_async::<()>(&format!(
                     r#"
-                await file.setAccessedTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
+                await file.setAccessedTime(new Date(Date.UTC({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND})));
                 var result = await file.accessedTime()
                 "#
                 ))
@@ -1136,7 +1136,7 @@ mod tests {
                 script_engine
                     .eval_async::<()>(&format!(
                         r#"
-                await file.setCreationTime(new Date({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND}));
+                await file.setCreationTime(new Date(Date.UTC({YEAR}, {MONTH}, {DAY}, {HOUR}, {MINUTE}, {SECOND}, {MILLISECOND})));
                 var result = await file.creationTime()
                 "#
                     ))
