@@ -1,6 +1,6 @@
 use derive_more::Display;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options, platform};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform};
 use rquickjs::{
     Ctx, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace, prelude::Opt,
 };
@@ -498,7 +498,7 @@ impl JsProcessInfo {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "ProcessStatus")]
+#[js_enum]
 pub enum JsProcessStatus {
     /// `ProcessStatus.Idle`
     Idle,

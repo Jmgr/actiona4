@@ -14,7 +14,7 @@ use color_eyre::{Result, eyre::eyre};
 use derive_more::Display;
 use image::RgbaImage;
 use itertools::Itertools;
-use macros::{FromSerde, IntoSerde, PlatformValidate, options};
+use macros::{FromSerde, IntoSerde, PlatformValidate, js_enum};
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -48,7 +48,7 @@ pub struct ContentNotAvailable;
     PlatformValidate,
     Serialize,
 )]
-#[options]
+#[js_enum]
 /// @expand
 pub enum ClipboardMode {
     #[default]

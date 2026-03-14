@@ -1,6 +1,6 @@
 use derive_more::Display;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options};
 use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -226,7 +226,7 @@ impl JsDisk {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "DiskKind")]
+#[js_enum]
 pub enum JsDiskKind {
     /// Hard disk drive
     /// `DiskKind.HDD`

@@ -1,5 +1,6 @@
 use macros::{
-    FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_methods, options, platform,
+    FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_enum, js_methods, options,
+    platform,
 };
 use rquickjs::{
     Ctx, JsLifetime, Result,
@@ -46,8 +47,7 @@ use crate::{
     PlatformValidate,
     Serialize,
 )]
-#[serde(rename = "AskScreenshotMethod")]
-#[options]
+#[js_enum]
 pub enum JsAskScreenshotMethod {
     /// `AskScreenshotMethod.Auto`
     ///

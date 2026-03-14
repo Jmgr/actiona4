@@ -2,7 +2,7 @@ use std::{io, sync::Arc};
 
 use image::ImageResult;
 use itertools::Itertools;
-use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options, platform};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Promise, Result, TypedArray,
     atom::PredefinedAtom,
@@ -64,7 +64,7 @@ use crate::{
 /// ```
 ///
 /// @expand
-#[serde(rename = "FlipDirection")]
+#[js_enum]
 pub enum JsFlipDirection {
     /// `FlipDirection.Horizontal`
     Horizontal,
@@ -105,7 +105,7 @@ impl From<JsFlipDirection> for FlipDirection {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "ResizeFilter")]
+#[js_enum]
 pub enum JsResizeFilter {
     /// `ResizeFilter.Nearest`
     Nearest,
@@ -155,7 +155,7 @@ impl From<JsResizeFilter> for ResizeFilter {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "Interpolation")]
+#[js_enum]
 pub enum JsInterpolation {
     /// `Interpolation.Nearest`
     Nearest,
@@ -338,7 +338,7 @@ impl From<JsDrawingOptions> for DrawingOptions {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "TextHorizontalAlign")]
+#[js_enum]
 pub enum JsTextHorizontalAlign {
     /// `TextHorizontalAlign.Left`
     Left,
@@ -380,7 +380,7 @@ impl From<JsTextHorizontalAlign> for TextHorizontalAlign {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "TextVerticalAlign")]
+#[js_enum]
 pub enum JsTextVerticalAlign {
     /// `TextVerticalAlign.Top`
     Top,
@@ -607,7 +607,7 @@ impl From<super::find_image::Match> for JsMatch {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "FindImageStage")]
+#[js_enum]
 pub enum JsFindImageStage {
     /// `FindImageStage.Capturing`
     Capturing,

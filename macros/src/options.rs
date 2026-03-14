@@ -2,7 +2,7 @@ use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
-    Attribute, Expr, ExprLit, ExprPath, ExprUnary, Field, Fields, Item, ItemEnum, ItemStruct, Lit,
+    Attribute, Expr, ExprLit, ExprPath, ExprUnary, Field, Fields, Item, ItemStruct, Lit,
     LitFloat, LitInt, Meta, Path, PathArguments, Type, UnOp, Visibility, parse::Parser,
     parse_macro_input, parse_quote, punctuated::Punctuated, token::Comma,
 };
@@ -34,10 +34,13 @@ pub(crate) fn expand(
     let mut item = parse_macro_input!(item as Item);
     let expansion_result = match &mut item {
         Item::Struct(item_struct) => expand_struct(item_struct, add_options_instruction),
-        Item::Enum(item_enum) => expand_enum(item_enum),
+        Item::Enum(_) => Err(syn::Error::new_spanned(
+            &item,
+            format!("`{attribute_name}` does not support enums; use `#[js_enum]` instead"),
+        )),
         _ => Err(syn::Error::new_spanned(
             &item,
-            format!("`{attribute_name}` only supports structs and enums"),
+            format!("`{attribute_name}` only supports structs"),
         )),
     };
 
@@ -129,26 +132,8 @@ fn expand_struct(
     Ok(extra_tokens)
 }
 
-/// Expand an enum by injecting `@platforms` rustdoc on variants.
-fn expand_enum(item_enum: &mut ItemEnum) -> syn::Result<TokenStream2> {
-    for variant in &mut item_enum.variants {
-        if doc_contains(&variant.attrs, INSTR_PLATFORMS) {
-            continue;
-        }
-
-        if let Some(platform_name) = platform_only_from_attributes(&variant.attrs)? {
-            append_doc_line(
-                &mut variant.attrs,
-                format!("{INSTR_PLATFORMS} ={platform_name}"),
-            );
-        }
-    }
-
-    Ok(TokenStream2::new())
-}
-
 /// Append a single `#[doc = "..."]` line to an item.
-fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: String) {
+pub(crate) fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: String) {
     let doc_attribute: Attribute = parse_quote! {
         #[doc = #doc_line]
     };
@@ -180,7 +165,7 @@ fn is_default_attribute(attribute: &Attribute) -> bool {
 }
 
 /// Extract `platform(only = "...")` from a field or variant.
-fn platform_only_from_attributes(attributes: &[Attribute]) -> syn::Result<Option<String>> {
+pub(crate) fn platform_only_from_attributes(attributes: &[Attribute]) -> syn::Result<Option<String>> {
     let mut only_platform: Option<String> = None;
 
     for attribute in attributes {

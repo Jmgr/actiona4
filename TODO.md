@@ -1,5 +1,5 @@
 TODO:
-- select a rectangle UI
+- select a rectangle UI (review + finish)
 
 Find Image:
  1) search one or search multiple
@@ -17,8 +17,6 @@ Select rect on screen
 Update
 - show notification if new version
 - Update fallback: check website if new version 
-
-For enums we shouldn't have #[options] but an #[enum] that handles platforms and does #[serde(rename = "ScreenshotMethod")]
 
 - check if we should pause at end for other things
 

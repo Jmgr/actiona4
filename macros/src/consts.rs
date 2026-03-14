@@ -11,6 +11,8 @@ pub(crate) const INSTR_SKIP: &str = "@skip";
 pub(crate) const INSTR_PLATFORMS: &str = "@platforms";
 /// Marks a method as a getter in the generated docs.
 pub(crate) const INSTR_GET: &str = "@get";
+/// Marks an enum's JS-facing name (after stripping the `Js` prefix).
+pub(crate) const INSTR_RENAME: &str = "@rename";
 
 // ── rquickjs rename convention ───────────────────────────────────────────────
 /// Default `rename_all` value injected by `#[js_methods]`.

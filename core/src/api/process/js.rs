@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use derive_more::Display;
-use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_methods, options, platform};
+use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform};
 use rquickjs::{
     Ctx, Exception, Function, JsLifetime, Object, Promise, Result, Value, atom::PredefinedAtom,
     class::Trace, prelude::Opt,
@@ -90,7 +90,7 @@ pub struct JsShellOptions {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "Signal")]
+#[js_enum]
 #[platform(only = "linux")]
 pub enum JsSignal {
     /// `SIGHUP` - hang up; often used to request config reload.

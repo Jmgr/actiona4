@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use macros::{
-    FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_methods, options, platform,
+    FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_enum, js_methods, options,
+    platform,
 };
 use parking_lot::Mutex;
 use rquickjs::{
@@ -50,7 +51,7 @@ use crate::{
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationUrgency")]
+#[js_enum]
 pub enum JsNotificationUrgency {
     /// `NotificationUrgency.Low`
     Low,
@@ -87,7 +88,7 @@ impl From<JsNotificationUrgency> for NotificationUrgency {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationScenario")]
+#[js_enum]
 pub enum JsNotificationScenario {
     /// `NotificationScenario.Reminder`
     Reminder,
@@ -126,7 +127,7 @@ impl From<JsNotificationScenario> for NotificationScenario {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationSound")]
+#[js_enum]
 pub enum JsNotificationSound {
     /// `NotificationSound.Default`
     Default,
@@ -232,7 +233,7 @@ impl From<JsNotificationSound> for NotificationSound {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationActivationType")]
+#[js_enum]
 pub enum JsNotificationActivationType {
     /// `NotificationActivationType.Foreground`
     Foreground,
@@ -269,7 +270,7 @@ impl From<JsNotificationActivationType> for NotificationActivationType {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationActionPlacement")]
+#[js_enum]
 pub enum JsNotificationActionPlacement {
     /// `NotificationActionPlacement.ContextMenu`
     ContextMenu,
@@ -300,7 +301,7 @@ impl From<JsNotificationActionPlacement> for NotificationActionPlacement {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationButtonStyle")]
+#[js_enum]
 pub enum JsNotificationButtonStyle {
     /// `NotificationButtonStyle.Success`
     Success,
@@ -334,7 +335,7 @@ impl From<JsNotificationButtonStyle> for NotificationButtonStyle {
     PartialEq,
     Serialize,
 )]
-#[serde(rename = "NotificationInputType")]
+#[js_enum]
 pub enum JsNotificationInputType {
     /// `NotificationInputType.Text`
     Text,

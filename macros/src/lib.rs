@@ -8,6 +8,7 @@ mod class;
 mod consts;
 mod default_args;
 mod from_js_object;
+mod js_enum;
 mod methods;
 mod options;
 mod platform;
@@ -61,6 +62,27 @@ pub fn derive_from_js_object(input: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn options(arguments: TokenStream, item: TokenStream) -> TokenStream {
     options::expand(arguments, item, "options", true)
+}
+
+/// Expands enum variants with `@platforms` rustdoc instructions and, when the
+/// type name starts with `Js`, injects `#[serde(rename = "...")]` and `@rename`
+/// by stripping the prefix.
+///
+/// # Example
+/// ```rust,ignore
+/// use macros::{js_enum, PlatformValidate};
+///
+/// #[derive(PlatformValidate)]
+/// #[js_enum]
+/// pub enum JsClipboardMode {
+///     Clipboard,
+///     #[platform(only = "linux")]
+///     Selection,
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn js_enum(arguments: TokenStream, item: TokenStream) -> TokenStream {
+    js_enum::expand(arguments, item)
 }
 
 /// Adds a runtime platform guard to a function returning `Result<...>`.
