@@ -14,6 +14,9 @@ Create an installer for Windows
 Select rect on screen
 - https://github.com/neXromancers/hacksaw/tree/master
 
+* implement a better file copy/moves
+* detect "mark of the web" on scripts, expose it as a function in File
+
 Update
 - show notification if new version
 - Update fallback: check website if new version 
