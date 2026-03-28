@@ -248,13 +248,13 @@ impl From<JsBlurOptions> for BlurOptions {
 pub struct JsDrawImageOptions {
     /// Source rectangle.
     /// `undefined` means the whole image.
-    pub source_rect: Option<JsRect>,
+    pub source_rect: Option<JsRectLike>,
 }
 
 impl From<JsDrawImageOptions> for DrawImageOptions {
     fn from(value: JsDrawImageOptions) -> Self {
         Self {
-            source_rect: value.source_rect.map(Into::into),
+            source_rect: value.source_rect.map(|rect| rect.0),
         }
     }
 }
@@ -280,19 +280,22 @@ pub struct JsRotationOptions {
 
     /// Rotation center.
     /// Defaults to the center of the image.
-    pub center: Option<JsPoint>,
+    pub center: Option<JsPointLike>,
 
     /// Default color, used if the rotation triggers more pixels to be displayed
-    #[default(JsColor::new(0, 0, 0, 255), ts = "Color.Black")]
-    pub default_color: JsColor,
+    #[default(
+        crate::api::color::js::JsColorLike(crate::api::color::Color::new(0, 0, 0, 255)),
+        ts = "Color.Black"
+    )]
+    pub default_color: JsColorLike,
 }
 
 impl From<JsRotationOptions> for RotationOptions {
     fn from(value: JsRotationOptions) -> Self {
         Self {
             interpolation: value.interpolation.into(),
-            center: value.center.map(Into::into),
-            default_color: value.default_color.into(),
+            center: value.center.map(|point| point.0),
+            default_color: value.default_color.0,
         }
     }
 }

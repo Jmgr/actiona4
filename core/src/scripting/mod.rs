@@ -13,7 +13,7 @@ use parking_lot::Mutex;
 use regex::Regex;
 use rquickjs::{
     AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
-    Promise, Value, async_with, context::EvalOptions, markers::ParallelSend,
+    Promise, Value, context::EvalOptions, markers::ParallelSend,
 };
 use swc_common::{
     BytePos, FileName, FilePathMapping, SourceMap, Span,
@@ -547,22 +547,22 @@ impl Engine {
         let (hash, js_code) = self.prepare_script(script, filename, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
-        // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-        #[allow(unsafe_op_in_unsafe_fn)]
-        async_with!(self.context => |ctx| {
-            let mut options = EvalOptions::default();
-            options.promise = true;
-            options.filename = Some(format!("{hash}"));
+        self.context
+            .async_with(async |ctx| {
+                let mut options = EvalOptions::default();
+                options.promise = true;
+                options.filename = Some(format!("{hash}"));
 
-            let result = async {
-                let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
-                let future: Object = func.into_future().await.catch(&ctx)?;
-                future.get::<_, T>("value").catch(&ctx)
-            }.await;
+                let result = async {
+                    let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
+                    let future: Object = func.into_future().await.catch(&ctx)?;
+                    future.get::<_, T>("value").catch(&ctx)
+                }
+                .await;
 
-            Self::process_caught_result(result, sourcemaps)
-        })
-        .await
+                Self::process_caught_result(result, sourcemaps)
+            })
+            .await
     }
 
     #[instrument(skip_all)]
@@ -577,24 +577,24 @@ impl Engine {
         let (hash, js_code) = self.prepare_script(script, None, false)?;
         let sourcemaps = self.sourcemaps.clone();
 
-        // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-        #[allow(unsafe_op_in_unsafe_fn)]
-        async_with!(self.context => |ctx| {
-            let mut options = EvalOptions::default();
-            options.promise = true;
-            options.filename = Some(format!("{hash}"));
+        self.context
+            .async_with(async |ctx| {
+                let mut options = EvalOptions::default();
+                options.promise = true;
+                options.filename = Some(format!("{hash}"));
 
-            let result = async {
-                let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
-                let future: Object = func.into_future().await.catch(&ctx)?;
-                future.get::<_, Value>("value").catch(&ctx)
-            }.await;
+                let result = async {
+                    let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
+                    let future: Object = func.into_future().await.catch(&ctx)?;
+                    future.get::<_, Value>("value").catch(&ctx)
+                }
+                .await;
 
-            let result = Self::process_caught_result(result, sourcemaps)?;
+                let result = Self::process_caught_result(result, sourcemaps)?;
 
-            f(result)
-        })
-        .await
+                f(result)
+            })
+            .await
     }
 
     #[allow(clippy::significant_drop_tightening)]

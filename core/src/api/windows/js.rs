@@ -15,7 +15,7 @@ use crate::{
             classes::{HostClass, SingletonClass, register_host_class},
             task::task,
         },
-        name::js::JsName,
+        name::js::{JsNameLike, value_to_name_like},
         point::js::{JsPoint, JsPointLike},
         rect::js::JsRect,
         screen::Screen,
@@ -42,11 +42,11 @@ pub struct JsWindowsFindOptions<'js> {
 
     /// Match by window title.
     /// When undefined, title is not filtered.
-    pub title: Option<JsName<'js>>,
+    pub title: Option<JsNameLike<'js>>,
 
     /// Match by window class name.
     /// When undefined, class name is not filtered.
-    pub class_name: Option<JsName<'js>>,
+    pub class_name: Option<JsNameLike<'js>>,
 }
 
 impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
@@ -63,8 +63,22 @@ impl<'js> rquickjs::FromJs<'js> for JsWindowsFindOptions<'js> {
             id: object.get("id")?,
             process_id: object.get("processId")?,
             visible: object.get("visible")?,
-            title: object.get("title")?,
-            class_name: object.get("className")?,
+            title: if object.contains_key("title")? {
+                Some(JsNameLike(value_to_name_like(
+                    &ctx.clone(),
+                    object.get("title")?,
+                )?))
+            } else {
+                None
+            },
+            class_name: if object.contains_key("className")? {
+                Some(JsNameLike(value_to_name_like(
+                    &ctx.clone(),
+                    object.get("className")?,
+                )?))
+            } else {
+                None
+            },
         })
     }
 }
@@ -227,7 +241,7 @@ impl JsWindows {
                 let Ok(window_title) = self.inner.title(id) else {
                     continue;
                 };
-                if !title.inner().matches(&ctx, &window_title)? {
+                if !title.0.matches(&ctx, &window_title)? {
                     continue;
                 }
             }
@@ -236,7 +250,7 @@ impl JsWindows {
                 let Ok(window_class_name) = self.inner.classname(id) else {
                     continue;
                 };
-                if !class_name.inner().matches(&ctx, &window_class_name)? {
+                if !class_name.0.matches(&ctx, &window_class_name)? {
                     continue;
                 }
             }

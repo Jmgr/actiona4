@@ -23,12 +23,9 @@ Update
 
 - check if we should pause at end for other things
 
-- check we don't await without a cancellation token
-
 - impl DPI awareness
 
 // TODO: check all token cancellation return a Cancelled error
-// TODO: display a tray icon, enabled by default when waitAtEnd is true
 // TODO: check behaviour on DPI displays on Windows
 /*
 Note that the top-left hand corner of the desktop is not necessarily the same as the screen.

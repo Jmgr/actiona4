@@ -17,7 +17,7 @@ use crate::{
             classes::{HostClass, register_enum, register_host_class},
             date::date_from_system_time,
         },
-        name::js::JsName,
+        name::js::{JsNameLike, value_to_name_like},
         process::js::JsSignal,
         system::{
             js::storage::JsDiskUsage,
@@ -81,7 +81,7 @@ pub struct JsProcessesFindOptions<'js> {
 
     /// Match by process name.
     /// When undefined, name is not filtered.
-    pub name: Option<JsName<'js>>,
+    pub name: Option<JsNameLike<'js>>,
 
     /// Match by process status.
     /// When undefined, status is not filtered.
@@ -107,7 +107,14 @@ impl<'js> rquickjs::FromJs<'js> for JsProcessesFindOptions<'js> {
         Ok(Self {
             pid: object.get("pid")?,
             parent_pid: object.get("parentPid")?,
-            name: object.get("name")?,
+            name: if object.contains_key("name")? {
+                Some(JsNameLike(value_to_name_like(
+                    &ctx.clone(),
+                    object.get("name")?,
+                )?))
+            } else {
+                None
+            },
             status: object.get("status")?,
             rescan: rescan.unwrap_or(true),
         })
@@ -178,7 +185,7 @@ impl JsProcesses {
 
             if let Some(filter_name) = options.name.as_ref() {
                 let process_name = process.name().as_deref().unwrap_or_default();
-                if !filter_name.inner().matches(&ctx, process_name)? {
+                if !filter_name.0.matches(&ctx, process_name)? {
                     continue;
                 }
             }

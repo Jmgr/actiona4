@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use rquickjs::{AsyncContext, Ctx, Value, async_with};
+use rquickjs::{AsyncContext, Ctx, Value};
 use tracing::warn;
 
 use crate::{
@@ -29,12 +29,11 @@ impl TriggerAction {
             Self::Callback(context, function_key) => {
                 let macro_player_clone = macro_player.clone();
 
-                // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-                #[allow(unsafe_op_in_unsafe_fn)]
-                async_with!(context => |ctx| {
-                    fire_callback(&ctx, function_key, &macro_player_clone, vec![], label);
-                })
-                .await;
+                context
+                    .async_with(async |ctx| {
+                        fire_callback(&ctx, function_key, &macro_player_clone, vec![], label);
+                    })
+                    .await;
             }
         }
     }

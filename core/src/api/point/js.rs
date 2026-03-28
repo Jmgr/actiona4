@@ -11,7 +11,7 @@
 
 use macros::{js_class, js_methods};
 use rquickjs::{
-    Ctx, JsLifetime, Object, Result,
+    Ctx, JsLifetime, Object, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
@@ -19,11 +19,59 @@ use rquickjs::{
 
 use crate::{
     IntoJsResult,
-    api::{ResultExt, image::js::JsMatch, js::classes::ValueClass, point::try_point},
+    api::{
+        ResultExt,
+        image::js::JsMatch,
+        js::{FromJsField, classes::ValueClass},
+        point::try_point,
+    },
     runtime::WithUserData,
     types::display::display_with_type,
 };
+
+#[derive(Clone, Copy, Debug)]
 pub struct JsPointLike(pub super::Point);
+
+fn point_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Point> {
+    if let Some(object) = value.as_object() {
+        let globals = ctx.globals();
+
+        let point_constructor: Object<'js> = globals.get("Point")?;
+        if object.is_instance_of(&point_constructor) {
+            return value.clone().get::<JsPoint>().map(Into::into);
+        }
+
+        let match_constructor: Object<'js> = globals.get("Match")?;
+        if object.is_instance_of(&match_constructor) {
+            return value
+                .clone()
+                .get::<JsMatch>()
+                .map(|matched_point| matched_point.position().into());
+        }
+
+        let x: f64 = object.get("x")?;
+        let y: f64 = object.get("y")?;
+        return try_point(x, y).into_js_result(ctx);
+    }
+
+    Err(rquickjs::Error::new_from_js_message(
+        value.type_name(),
+        "Point",
+        "Expected a Point, Match, or object with x/y",
+    ))
+}
+
+impl<'js> FromJsField<'js> for JsPointLike {
+    fn from_js_field(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        point_from_value(ctx, &value).map(Self)
+    }
+}
+
+impl From<super::Point> for JsPointLike {
+    fn from(value: super::Point) -> Self {
+        Self(value)
+    }
+}
 
 impl<'js> FromParam<'js> for JsPointLike {
     fn param_requirement() -> ParamRequirement {
@@ -53,23 +101,7 @@ impl<'js> FromParam<'js> for JsPointLike {
             return Ok(Self(point));
         }
 
-        // Also accept a JsPoint as a parameter.
-        if let Ok(js_point) = value.get::<JsPoint>() {
-            return Ok(Self(js_point.into()));
-        }
-
-        if let Ok(_match) = value.get::<JsMatch>() {
-            return Ok(Self(_match.position().into()));
-        }
-
-        let object = value
-            .as_object()
-            .or_throw_message(params.ctx(), "Expected an object")?;
-
-        let x: f64 = object.get("x")?;
-        let y: f64 = object.get("y")?;
-        let point = try_point(x, y).into_js_result(params.ctx())?;
-        Ok(Self(point))
+        point_from_value(params.ctx(), &value).map(Self)
     }
 }
 

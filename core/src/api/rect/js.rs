@@ -10,7 +10,7 @@
 
 use macros::{js_class, js_methods};
 use rquickjs::{
-    Ctx, JsLifetime, Result,
+    Ctx, JsLifetime, Object, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
@@ -21,13 +21,46 @@ use crate::{
     IntoJsResult,
     api::{
         ResultExt,
-        js::classes::ValueClass,
+        js::{FromJsField, classes::ValueClass},
         point::{js::JsPoint, point, try_point},
         size::{js::JsSize, size, try_size},
     },
     types::display::display_with_type,
 };
+#[derive(Clone, Copy, Debug)]
 pub struct JsRectLike(pub super::Rect);
+
+fn rect_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Rect> {
+    if let Some(object) = value.as_object() {
+        let globals = ctx.globals();
+
+        let rect_constructor: Object<'js> = globals.get("Rect")?;
+        if object.is_instance_of(&rect_constructor) {
+            return value.clone().get::<JsRect>().map(Into::into);
+        }
+
+        let x: f64 = object.get("x")?;
+        let y: f64 = object.get("y")?;
+        let width: f64 = object.get("width")?;
+        let height: f64 = object.get("height")?;
+
+        let origin = try_point(x, y).into_js_result(ctx)?;
+        let size = try_size(width, height).into_js_result(ctx)?;
+        return Ok(super::Rect::new(origin, size));
+    }
+
+    Err(rquickjs::Error::new_from_js_message(
+        value.type_name(),
+        "Rect",
+        "Expected a Rect or object with x/y/width/height",
+    ))
+}
+
+impl<'js> FromJsField<'js> for JsRectLike {
+    fn from_js_field(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        rect_from_value(ctx, &value).map(Self)
+    }
+}
 
 impl<'js> FromParam<'js> for JsRectLike {
     fn param_requirement() -> ParamRequirement {
@@ -67,23 +100,7 @@ impl<'js> FromParam<'js> for JsRectLike {
             return Ok(Self(super::Rect::new(origin, size)));
         }
 
-        // Also accept a js::Rect as a parameter
-        if let Ok(js_rect) = value.get::<JsRect>() {
-            return Ok(Self(js_rect.into()));
-        }
-
-        let object = value
-            .as_object()
-            .or_throw_message(params.ctx(), "Expected an object")?;
-
-        let x: f64 = object.get("x")?;
-        let y: f64 = object.get("y")?;
-        let width: f64 = object.get("width")?;
-        let height: f64 = object.get("height")?;
-
-        let origin = try_point(x, y).into_js_result(params.ctx())?;
-        let size = try_size(width, height).into_js_result(params.ctx())?;
-        Ok(Self(super::Rect::new(origin, size)))
+        rect_from_value(params.ctx(), &value).map(Self)
     }
 }
 

@@ -23,7 +23,7 @@ use tween::FixedTweener;
 use crate::{
     api::{
         js::duration::JsDuration,
-        point::{js::JsPoint, try_point},
+        point::{js::JsPointLike, try_point},
     },
     error::CommonError,
     runtime::{
@@ -658,8 +658,8 @@ impl Mouse {
         let mut action = {
             if let Some(position) = &options.press.position {
                 self.enigo.lock().move_mouse(
-                    position.inner().x.into(),
-                    position.inner().y.into(),
+                    position.0.x.into(),
+                    position.0.y.into(),
                     coordinate,
                 )?;
             }
@@ -771,7 +771,7 @@ pub struct PressOptions {
     pub button: Button,
 
     /// Position to move the cursor to before pressing.
-    pub position: Option<JsPoint>,
+    pub position: Option<JsPointLike>,
 
     /// Whether the position is relative to the current cursor position.
     pub relative_position: bool,
@@ -801,11 +801,9 @@ impl Mouse {
         };
 
         if let Some(position) = &options.position {
-            self.enigo.lock().move_mouse(
-                position.inner().x.into(),
-                position.inner().y.into(),
-                coordinate,
-            )?;
+            self.enigo
+                .lock()
+                .move_mouse(position.0.x.into(), position.0.y.into(), coordinate)?;
         }
 
         self.enigo

@@ -229,11 +229,7 @@ cfg_aliases = "0.2.1"
 tauri-build = "2.5.6"
 
 [patch.crates-io]
-# Patch for double-free bug in WithFuture::poll: after ManuallyDrop::drop(fut) the
-# assignment `this.lock_state = LockState::Initial` triggers LockState::drop which
-# calls ManuallyDrop::drop a second time, double-freeing EventListener's heap allocation
-# when the async-lock mutex was contended (slow path / AcquireSlow).
-rquickjs-core = { path = "vendor/rquickjs-core" }
+rquickjs-core = { git = "https://github.com/DelSkayn/rquickjs", rev = "69aed5c" }
 # Patch for hardcoded alpha_mode = alpha_modes[0] which always picks Opaque, preventing
 # transparent windows from working with the OS compositor (upstream issue #370).
 pixels = { path = "vendor/pixels" }

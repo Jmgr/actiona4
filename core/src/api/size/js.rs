@@ -10,19 +10,50 @@
 
 use macros::{js_class, js_methods};
 use rquickjs::{
-    JsLifetime, Result,
+    Ctx, JsLifetime, Object, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
-    prelude::*,
 };
 
 use crate::{
     IntoJsResult,
-    api::{ResultExt, js::classes::ValueClass, size::try_size},
+    api::{
+        ResultExt,
+        js::{FromJsField, classes::ValueClass},
+        size::try_size,
+    },
     types::display::display_with_type,
 };
+#[derive(Clone, Copy, Debug)]
 pub struct JsSizeLike(pub super::Size);
+
+fn size_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Size> {
+    if let Some(object) = value.as_object() {
+        let globals = ctx.globals();
+
+        let size_constructor: Object<'js> = globals.get("Size")?;
+        if object.is_instance_of(&size_constructor) {
+            return value.clone().get::<JsSize>().map(Into::into);
+        }
+
+        let width: f64 = object.get("width")?;
+        let height: f64 = object.get("height")?;
+        return try_size(width, height).into_js_result(ctx);
+    }
+
+    Err(rquickjs::Error::new_from_js_message(
+        value.type_name(),
+        "Size",
+        "Expected a Size or object with width/height",
+    ))
+}
+
+impl<'js> FromJsField<'js> for JsSizeLike {
+    fn from_js_field(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        size_from_value(ctx, &value).map(Self)
+    }
+}
 
 impl<'js> FromParam<'js> for JsSizeLike {
     fn param_requirement() -> ParamRequirement {
@@ -51,20 +82,7 @@ impl<'js> FromParam<'js> for JsSizeLike {
             return Ok(Self(size));
         }
 
-        // Also accept a JsSize as a parameter
-        if let Ok(js_size) = value.get::<JsSize>() {
-            return Ok(Self(js_size.into()));
-        }
-
-        let object = value
-            .as_object()
-            .or_throw_message(params.ctx(), "Expected an object")?;
-
-        let width: f64 = object.get("width")?;
-        let height: f64 = object.get("height")?;
-        let size = try_size(width, height).into_js_result(params.ctx())?;
-
-        Ok(Self(size))
+        size_from_value(params.ctx(), &value).map(Self)
     }
 }
 

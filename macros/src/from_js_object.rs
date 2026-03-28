@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Fields, parse_macro_input};
+use syn::{Data, DeriveInput, Fields, GenericArgument, PathArguments, Type, parse_macro_input};
 
 /// Derive `rquickjs::FromJs` for named-field option structs.
 pub(crate) fn derive(input: TokenStream) -> TokenStream {
@@ -33,12 +33,34 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
 
     let build_fields = fields.iter().map(|field| {
         let field_name = &field.ident;
+        let field_ty = &field.ty;
         let name_str = convert_case::Casing::to_case(
             &field_name.as_ref().unwrap().to_string(),
             convert_case::Case::Camel,
         );
+
+        if let Some(inner_ty) = option_inner_type(field_ty) {
+            return quote! {
+                if object.contains_key(#name_str)? {
+                    let field_value = object.get::<_, rquickjs::Value<'js>>(#name_str)?;
+                    result.#field_name = if field_value.is_null() || field_value.is_undefined() {
+                        None
+                    } else {
+                        Some(<#inner_ty as crate::api::js::FromJsField<'js>>::from_js_field(
+                            ctx,
+                            field_value,
+                        )?)
+                    };
+                }
+            };
+        }
+
         quote! {
-            if let Ok(field_value) = object.get(#name_str) {
+            if object.contains_key(#name_str)? {
+                let field_value = <#field_ty as crate::api::js::FromJsField<'js>>::from_js_field(
+                    ctx,
+                    object.get::<_, rquickjs::Value<'js>>(#name_str)?,
+                )?;
                 result.#field_name = field_value;
             }
         }
@@ -63,4 +85,25 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
     };
 
     expanded.into()
+}
+
+fn option_inner_type(ty: &Type) -> Option<&Type> {
+    let Type::Path(type_path) = ty else {
+        return None;
+    };
+
+    let segment = type_path.path.segments.last()?;
+    if segment.ident != "Option" {
+        return None;
+    }
+
+    let PathArguments::AngleBracketed(arguments) = &segment.arguments else {
+        return None;
+    };
+
+    let GenericArgument::Type(inner_ty) = arguments.args.first()? else {
+        return None;
+    };
+
+    Some(inner_ty)
 }

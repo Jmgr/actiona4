@@ -31,7 +31,7 @@ use crate::{
             duration::JsDuration,
             task::task_with_token,
         },
-        point::js::JsPoint,
+        point::js::JsPointLike,
     },
     runtime::WithUserData,
     types::display::display_with_type,
@@ -612,7 +612,7 @@ pub struct JsNotificationOptions {
     ///
 
     #[platform(only = "linux")]
-    pub point: Option<JsPoint>,
+    pub point: Option<JsPointLike>,
 
     /// Urgency level.
     ///
@@ -745,7 +745,7 @@ impl From<JsNotificationOptions> for NotificationOptions {
             sound_name: value.sound_name,
             suppress_sound: value.suppress_sound,
             transient: value.transient,
-            point: value.point.map(Into::into),
+            point: value.point.map(|point| point.0),
             urgency: value.urgency.map(Into::into),
             custom_hints: value
                 .custom_hints

@@ -5185,7 +5185,7 @@ declare interface DrawImageOptions {
      * `undefined` means the whole image.
      * @defaultValue `undefined`
      */
-    sourceRect?: Rect;
+    sourceRect?: RectLike;
 }
 /**
  * Options for rotating an image.
@@ -5214,12 +5214,12 @@ declare interface RotationOptions {
      * Defaults to the center of the image.
      * @defaultValue `undefined`
      */
-    center?: Point;
+    center?: PointLike;
     /**
      * Default color, used if the rotation triggers more pixels to be displayed
      * @defaultValue `Color.Black`
      */
-    defaultColor?: Color;
+    defaultColor?: ColorLike;
 }
 /**
  * Options for drawing shapes on an image.
@@ -7364,7 +7364,7 @@ declare interface NotificationOptions {
      * @defaultValue `undefined`
      * @platform only works on Linux
      */
-    point?: Point;
+    point?: PointLike;
     /**
      * Urgency level.
      * @defaultValue `undefined`
@@ -10526,7 +10526,7 @@ declare interface PressOptions {
      * Position to move the cursor to before pressing.
      * @defaultValue `undefined`
      */
-    position?: Point;
+    position?: PointLike;
     /**
      * Whether the position is relative to the current cursor position.
      * @defaultValue `false`

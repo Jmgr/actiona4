@@ -2,7 +2,7 @@ use std::{fmt, sync::Arc};
 
 use color_eyre::Result;
 use parking_lot::Mutex;
-use rquickjs::{IntoJs, async_with};
+use rquickjs::IntoJs;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::warn;
 
@@ -97,16 +97,21 @@ impl ScrollTriggers {
                 TriggerAction::Callback(context, function_key) => {
                     let player_clone = macro_player.clone();
 
-                    // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-                    #[allow(unsafe_op_in_unsafe_fn)]
-                    async_with!(context => |ctx| {
-                        let args = length.into_js(&ctx).map_or_else(|_| {
-                            warn!(?function_key, "failed to convert scroll length for callback");
-                            vec![]
-                        }, |v| vec![v]);
-                        fire_callback(&ctx, function_key, &player_clone, args, "onScroll");
-                    })
-                    .await;
+                    context
+                        .async_with(async |ctx| {
+                            let args = length.into_js(&ctx).map_or_else(
+                                |_| {
+                                    warn!(
+                                        ?function_key,
+                                        "failed to convert scroll length for callback"
+                                    );
+                                    vec![]
+                                },
+                                |v| vec![v],
+                            );
+                            fire_callback(&ctx, function_key, &player_clone, args, "onScroll");
+                        })
+                        .await;
                 }
             }
         }

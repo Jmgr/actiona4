@@ -19,7 +19,10 @@ use rquickjs::{
 use wildmatch::WildMatch;
 
 use crate::{
-    api::{ResultExt, js::classes::ValueClass},
+    api::{
+        ResultExt,
+        js::{FromJsField, classes::ValueClass},
+    },
     types::display::{DisplayFields, display_with_type},
 };
 /// A wildcard pattern for matching strings.
@@ -118,6 +121,7 @@ impl JsWildcard {
 /// @param regexp: RegExp
 */
 
+#[derive(Debug)]
 pub struct JsNameLike<'js>(pub super::Name<'js>);
 
 #[derive(Clone, Debug, JsLifetime)]
@@ -142,13 +146,15 @@ pub(crate) fn value_to_name_like<'js>(
         return Ok(super::Name::String(string));
     }
 
-    if let Ok(wildcard) = value.get::<JsWildcard>() {
-        return Ok(super::Name::Wildcard(wildcard));
-    }
-
     let object = value
         .into_object()
         .or_throw_message(ctx, "Expected an object")?;
+
+    let wildcard_constructor: Constructor = ctx.globals().get("Wildcard")?;
+    if object.is_instance_of(wildcard_constructor) {
+        let wildcard = object.into_value().get::<JsWildcard>()?;
+        return Ok(super::Name::Wildcard(wildcard));
+    }
 
     let regexp_ctor: Constructor = ctx.globals().get("RegExp")?;
     if object.is_instance_of(regexp_ctor) {
@@ -161,6 +167,12 @@ pub(crate) fn value_to_name_like<'js>(
 impl<'js> rquickjs::FromJs<'js> for JsName<'js> {
     fn from_js(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
         Ok(Self(value_to_name_like(ctx, value)?))
+    }
+}
+
+impl<'js> FromJsField<'js> for JsNameLike<'js> {
+    fn from_js_field(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        value_to_name_like(ctx, value).map(Self)
     }
 }
 

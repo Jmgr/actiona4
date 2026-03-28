@@ -12,17 +12,47 @@
 use image::Rgba;
 use macros::{js_class, js_methods};
 use rquickjs::{
-    JsLifetime, Object, Result,
+    Ctx, JsLifetime, Object, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
 
 use crate::{
-    api::{ResultExt, js::classes::ValueClass},
+    api::js::{FromJsField, classes::ValueClass},
     types::display::display_with_type,
 };
+#[derive(Clone, Copy, Debug)]
 pub struct JsColorLike(pub super::Color);
+
+fn color_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Color> {
+    if let Some(object) = value.as_object() {
+        let globals = ctx.globals();
+
+        let color_constructor: Object<'js> = globals.get("Color")?;
+        if object.is_instance_of(&color_constructor) {
+            return value.clone().get::<JsColor>().map(Into::into);
+        }
+
+        let r: u8 = object.get("r")?;
+        let g: u8 = object.get("g")?;
+        let b: u8 = object.get("b")?;
+        let a: u8 = object.get("a").unwrap_or(255);
+        return Ok(super::Color::new(r, g, b, a));
+    }
+
+    Err(rquickjs::Error::new_from_js_message(
+        value.type_name(),
+        "Color",
+        "Expected a Color or object with r/g/b[/a]",
+    ))
+}
+
+impl<'js> FromJsField<'js> for JsColorLike {
+    fn from_js_field(ctx: &Ctx<'js>, value: Value<'js>) -> Result<Self> {
+        color_from_value(ctx, &value).map(Self)
+    }
+}
 
 impl<'js> FromParam<'js> for JsColorLike {
     fn param_requirement() -> ParamRequirement {
@@ -58,22 +88,7 @@ impl<'js> FromParam<'js> for JsColorLike {
             return Ok(Self(super::Color::new(r, g, b, a)));
         }
 
-        // Also accept a js::Color as a parameter
-        if let Ok(js_color) = value.get::<JsColor>() {
-            return Ok(Self(js_color.into()));
-        }
-
-        // Or an object with r/g/b/a.
-        let object = value
-            .as_object()
-            .or_throw_message(params.ctx(), "Expected an object")?;
-
-        let r: u8 = object.get("r")?;
-        let g: u8 = object.get("g")?;
-        let b: u8 = object.get("b")?;
-        let a: u8 = object.get("a").unwrap_or(255);
-
-        Ok(Self(super::Color::new(r, g, b, a)))
+        color_from_value(params.ctx(), &value).map(Self)
     }
 }
 

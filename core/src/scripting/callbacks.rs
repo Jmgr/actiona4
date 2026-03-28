@@ -3,9 +3,7 @@ use std::{sync::Arc, time::Instant};
 use derive_where::derive_where;
 use humantime::format_duration;
 use parking_lot::Mutex;
-use rquickjs::{
-    AsyncContext, Ctx, Exception, Function, Persistent, Result, Value, async_with, function::Args,
-};
+use rquickjs::{AsyncContext, Ctx, Exception, Function, Persistent, Result, Value, function::Args};
 use slotmap::{SlotMap, new_key_type};
 use tokio::{
     select,
@@ -66,120 +64,116 @@ impl Callbacks {
 
                 info!("Callbacks::call");
 
-                // SAFETY: Required due to unsafe operations within rquickjs::async_with! macro
-                #[allow(unsafe_op_in_unsafe_fn)]
-                async_with!(context => |ctx| {
-                    let user_data = ctx.user_data();
-                    let mut result = Value::new_undefined(ctx.clone());
+                context
+                    .async_with(async |ctx| {
+                        let user_data = ctx.user_data();
+                        let mut result = Value::new_undefined(ctx.clone());
 
-                    let (function_key, parameters) = {
-                        let calls = &user_data.callbacks().calls;
-                        let mut calls_guard = calls.lock();
-                        let Some(call) = calls_guard.get_mut(call_key) else {
-                            warn!(?call_key, "callback call state was missing before execution");
-                            return;
-                        };
-                        (call.function_key, call.parameters.take())
-                    };
-
-                    let parameters = parameters.map_or_else(
-                        || {
-                            warn!(
-                                ?call_key,
-                                ?function_key,
-                                "callback call has no parameters"
-                            );
-                            None
-                        },
-                        |parameters| match parameters.restore(&ctx) {
-                            Ok(parameters) => Some(parameters),
-                            Err(error) => {
+                        let (function_key, parameters) = {
+                            let calls = &user_data.callbacks().calls;
+                            let mut calls_guard = calls.lock();
+                            let Some(call) = calls_guard.get_mut(call_key) else {
                                 warn!(
                                     ?call_key,
-                                    ?function_key,
-                                    error = %error,
-                                    "failed to restore callback parameters"
+                                    "callback call state was missing before execution"
                                 );
-                                None
-                            }
-                        },
-                    );
+                                return;
+                            };
+                            (call.function_key, call.parameters.take())
+                        };
 
-                    if let Some(parameters) = parameters {
-                        let functions = &user_data.callbacks().functions;
-                        let functions_guard = functions.lock();
-                        if let Some(function) = functions_guard.get(function_key) {
-                            match function.clone().restore(&ctx) {
-                                Ok(function) => {
-                                    let mut args = Args::new(ctx.clone(), parameters.len());
-                                    if let Err(error) = args.push_args(parameters.iter()) {
-                                        warn!(
-                                            ?call_key,
-                                            ?function_key,
-                                            error = %error,
-                                            argument_count = parameters.len(),
-                                            "failed to push callback arguments"
-                                        );
-                                    } else {
-                                        match function.call_arg::<Value<'_>>(args) {
-                                            Ok(call_result) => result = call_result,
-                                            Err(error) => {
-                                                warn!(
-                                                    ?call_key,
-                                                    ?function_key,
-                                                    error = %error,
-                                                    "callback function call failed"
-                                                );
-                                            }
-                                        }
-                                    }
-                                }
+                        let parameters = parameters.map_or_else(
+                            || {
+                                warn!(?call_key, ?function_key, "callback call has no parameters");
+                                None
+                            },
+                            |parameters| match parameters.restore(&ctx) {
+                                Ok(parameters) => Some(parameters),
                                 Err(error) => {
                                     warn!(
                                         ?call_key,
                                         ?function_key,
                                         error = %error,
-                                        "failed to restore callback function"
+                                        "failed to restore callback parameters"
                                     );
+                                    None
                                 }
-                            }
-                        } else {
-                            warn!(
-                                ?call_key,
-                                ?function_key,
-                                "callback function is not registered"
-                            );
-                        }
-                    }
+                            },
+                        );
 
-                    let result = if let Some(promise) = result.as_promise() {
-                        let promise = promise.clone();
-                        let promise_ctx = ctx.clone();
-                        let (sender, receiver) = oneshot::channel();
-                        let promise_call_key = call_key;
-                        ctx.spawn(async move {
-                            let result = promise
-                                .into_future::<Value<'_>>()
-                                .await
-                                .unwrap_or_else(|error| {
-                                    warn!(
-                                        ?promise_call_key,
-                                        error = %error,
-                                        fallback = "undefined",
-                                        "callback promise failed; defaulting to undefined"
-                                    );
-                                    Value::new_undefined(promise_ctx)
-                                });
-                            if sender.send(result).is_err() {
+                        if let Some(parameters) = parameters {
+                            let functions = &user_data.callbacks().functions;
+                            let functions_guard = functions.lock();
+                            if let Some(function) = functions_guard.get(function_key) {
+                                match function.clone().restore(&ctx) {
+                                    Ok(function) => {
+                                        let mut args = Args::new(ctx.clone(), parameters.len());
+                                        if let Err(error) = args.push_args(parameters.iter()) {
+                                            warn!(
+                                                ?call_key,
+                                                ?function_key,
+                                                error = %error,
+                                                argument_count = parameters.len(),
+                                                "failed to push callback arguments"
+                                            );
+                                        } else {
+                                            match function.call_arg::<Value<'_>>(args) {
+                                                Ok(call_result) => result = call_result,
+                                                Err(error) => {
+                                                    warn!(
+                                                        ?call_key,
+                                                        ?function_key,
+                                                        error = %error,
+                                                        "callback function call failed"
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Err(error) => {
+                                        warn!(
+                                            ?call_key,
+                                            ?function_key,
+                                            error = %error,
+                                            "failed to restore callback function"
+                                        );
+                                    }
+                                }
+                            } else {
                                 warn!(
-                                    ?promise_call_key,
-                                    "callback promise result receiver was dropped"
+                                    ?call_key,
+                                    ?function_key,
+                                    "callback function is not registered"
                                 );
                             }
-                        });
-                        receiver
-                            .await
-                            .unwrap_or_else(|error| {
+                        }
+
+                        let result = if let Some(promise) = result.as_promise() {
+                            let promise = promise.clone();
+                            let promise_ctx = ctx.clone();
+                            let (sender, receiver) = oneshot::channel();
+                            let promise_call_key = call_key;
+                            ctx.spawn(async move {
+                                let result = promise
+                                    .into_future::<Value<'_>>()
+                                    .await
+                                    .unwrap_or_else(|error| {
+                                        warn!(
+                                            ?promise_call_key,
+                                            error = %error,
+                                            fallback = "undefined",
+                                            "callback promise failed; defaulting to undefined"
+                                        );
+                                        Value::new_undefined(promise_ctx)
+                                    });
+                                if sender.send(result).is_err() {
+                                    warn!(
+                                        ?promise_call_key,
+                                        "callback promise result receiver was dropped"
+                                    );
+                                }
+                            });
+                            receiver.await.unwrap_or_else(|error| {
                                 warn!(
                                     ?call_key,
                                     error = %error,
@@ -188,26 +182,26 @@ impl Callbacks {
                                 );
                                 Value::new_undefined(ctx.clone())
                             })
-                    } else {
-                        result
-                    };
+                        } else {
+                            result
+                        };
 
-                    let calls = &user_data.callbacks().calls;
-                    let mut calls_guard = calls.lock();
-                    let Some(call) = calls_guard.get_mut(call_key) else {
-                        warn!(?call_key, "callback call state was missing after execution");
-                        return;
-                    };
+                        let calls = &user_data.callbacks().calls;
+                        let mut calls_guard = calls.lock();
+                        let Some(call) = calls_guard.get_mut(call_key) else {
+                            warn!(?call_key, "callback call state was missing after execution");
+                            return;
+                        };
 
-                    call.result = Some(Persistent::save(&ctx, result));
+                        call.result = Some(Persistent::save(&ctx, result));
 
-                    if let Some(finished) = call.finished.take()
-                        && finished.send(()).is_err()
-                    {
-                        warn!(?call_key, "callback completion receiver was dropped");
-                    }
-                })
-                .await;
+                        if let Some(finished) = call.finished.take()
+                            && finished.send(()).is_err()
+                        {
+                            warn!(?call_key, "callback completion receiver was dropped");
+                        }
+                    })
+                    .await;
             }
         });
 
