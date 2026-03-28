@@ -21,8 +21,6 @@ Update
 - show notification if new version
 - Update fallback: check website if new version 
 
-- use jiff to replace chrono/time/humantime
-
 - check if we should pause at end for other things
 
 - check we don't await without a cancellation token
