@@ -14,7 +14,7 @@ const m = await macros.record({
 
 ### keyboardKeys?
 
-> `optional` **keyboardKeys**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **keyboardKeys?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Record keyboard key press and release events.
 
@@ -26,7 +26,7 @@ Record keyboard key press and release events.
 
 ### mouseButtons?
 
-> `optional` **mouseButtons**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **mouseButtons?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Record mouse button press and release events.
 
@@ -38,7 +38,7 @@ Record mouse button press and release events.
 
 ### mousePosition?
 
-> `optional` **mousePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **mousePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Record mouse cursor position.
 
@@ -50,7 +50,7 @@ Record mouse cursor position.
 
 ### mousePositionInterval?
 
-> `optional` **mousePositionInterval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **mousePositionInterval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How often to sample the mouse position.
 
@@ -62,7 +62,7 @@ How often to sample the mouse position.
 
 ### mouseScroll?
 
-> `optional` **mouseScroll**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **mouseScroll?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Record mouse scroll wheel events.
 
@@ -74,7 +74,7 @@ Record mouse scroll wheel events.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel recording.
 
@@ -86,7 +86,7 @@ Abort signal to cancel recording.
 
 ### stopKeys?
 
-> `optional` **stopKeys**: [`Key`](../enumerations/Key.md)[]
+> `optional` **stopKeys?**: [`Key`](../enumerations/Key.md)[]
 
 Key combination that stops the recording.
 All listed keys must be pressed simultaneously.
@@ -99,7 +99,7 @@ All listed keys must be pressed simultaneously.
 
 ### timeout?
 
-> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Maximum recording duration before automatically stopping.
 

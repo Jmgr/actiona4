@@ -14,7 +14,7 @@ A custom integer hint for Linux notifications.
 
 ### name?
 
-> `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Hint name.
 
@@ -26,7 +26,7 @@ Hint name.
 
 ### value?
 
-> `optional` **value**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **value?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Integer hint value.
 

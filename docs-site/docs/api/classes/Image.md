@@ -149,7 +149,7 @@ Blur the image.
 
 ###### fast?
 
-> `optional` **fast**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **fast?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Perform a fast, lower quality blur
 
@@ -161,7 +161,7 @@ Perform a fast, lower quality blur
 
 ###### sigma?
 
-> `optional` **sigma**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **sigma?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Standard deviation of the (approximated) Gaussian
 
@@ -193,7 +193,7 @@ Blur the image and returns a new image.
 
 ###### fast?
 
-> `optional` **fast**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **fast?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Perform a fast, lower quality blur
 
@@ -205,7 +205,7 @@ Perform a fast, lower quality blur
 
 ###### sigma?
 
-> `optional` **sigma**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **sigma?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Standard deviation of the (approximated) Gaussian
 
@@ -407,7 +407,7 @@ Draw a circle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -461,7 +461,7 @@ Draw a circle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -507,7 +507,7 @@ Draw a circle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -565,7 +565,7 @@ Draw a circle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -731,7 +731,7 @@ Draw an ellipse on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -789,7 +789,7 @@ Draw an ellipse on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -839,7 +839,7 @@ Draw an ellipse on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -901,7 +901,7 @@ Draw an ellipse on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -943,7 +943,7 @@ Draw another image on this image.
 
 ###### sourceRect?
 
-> `optional` **sourceRect**: [`Rect`](Rect.md)
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
 
 Source rectangle.
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
@@ -986,7 +986,7 @@ Draw another image on this image.
 
 ###### sourceRect?
 
-> `optional` **sourceRect**: [`Rect`](Rect.md)
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
 
 Source rectangle.
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
@@ -1305,7 +1305,7 @@ Draw a rectangle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -1355,7 +1355,7 @@ Draw a rectangle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -1405,7 +1405,7 @@ Draw a rectangle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -1467,7 +1467,7 @@ Draw a rectangle on this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -1513,7 +1513,7 @@ Draw text on this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -1525,7 +1525,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -1537,7 +1537,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -1575,7 +1575,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -1587,7 +1587,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -1667,7 +1667,7 @@ Draw text on this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -1679,7 +1679,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -1691,7 +1691,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -1729,7 +1729,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -1741,7 +1741,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -1813,7 +1813,7 @@ Draw text on this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -1825,7 +1825,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -1837,7 +1837,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -1875,7 +1875,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -1887,7 +1887,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -1971,7 +1971,7 @@ Draw text on this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -1983,7 +1983,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -1995,7 +1995,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -2033,7 +2033,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -2045,7 +2045,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -2240,7 +2240,7 @@ const match = await task;
 
 ###### downscale?
 
-> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How many times should the source image and the template be downscaled?
 
@@ -2252,7 +2252,7 @@ How many times should the source image and the template be downscaled?
 
 ###### matchThreshold?
 
-> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Matching threshold.
 Values are between 0 (worst) to 1 (best).
@@ -2265,7 +2265,7 @@ Values are between 0 (worst) to 1 (best).
 
 ###### nonMaximumSuppressionRadius?
 
-> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Radius to consider proximity (in pixels).
 
@@ -2277,7 +2277,7 @@ Radius to consider proximity (in pixels).
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
 
 Abort signal to cancel the search.
 
@@ -2289,7 +2289,7 @@ Abort signal to cancel the search.
 
 ###### useColors?
 
-> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
 
@@ -2301,7 +2301,7 @@ Use color matching.
 
 ###### useTransparency?
 
-> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use template transparency.
 
@@ -2355,7 +2355,7 @@ const matches = await task;
 
 ###### downscale?
 
-> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How many times should the source image and the template be downscaled?
 
@@ -2367,7 +2367,7 @@ How many times should the source image and the template be downscaled?
 
 ###### matchThreshold?
 
-> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Matching threshold.
 Values are between 0 (worst) to 1 (best).
@@ -2380,7 +2380,7 @@ Values are between 0 (worst) to 1 (best).
 
 ###### nonMaximumSuppressionRadius?
 
-> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Radius to consider proximity (in pixels).
 
@@ -2392,7 +2392,7 @@ Radius to consider proximity (in pixels).
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
 
 Abort signal to cancel the search.
 
@@ -2404,7 +2404,7 @@ Abort signal to cancel the search.
 
 ###### useColors?
 
-> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
 
@@ -2416,7 +2416,7 @@ Use color matching.
 
 ###### useTransparency?
 
-> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use template transparency.
 
@@ -2469,7 +2469,7 @@ const matches = await task;
 
 ###### downscale?
 
-> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How many times should the source image and the template be downscaled?
 
@@ -2481,7 +2481,7 @@ How many times should the source image and the template be downscaled?
 
 ###### matchThreshold?
 
-> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Matching threshold.
 Values are between 0 (worst) to 1 (best).
@@ -2494,7 +2494,7 @@ Values are between 0 (worst) to 1 (best).
 
 ###### nonMaximumSuppressionRadius?
 
-> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Radius to consider proximity (in pixels).
 
@@ -2506,7 +2506,7 @@ Radius to consider proximity (in pixels).
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
 
 Abort signal to cancel the search.
 
@@ -2518,7 +2518,7 @@ Abort signal to cancel the search.
 
 ###### useColors?
 
-> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
 
@@ -2530,7 +2530,7 @@ Use color matching.
 
 ###### useTransparency?
 
-> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use template transparency.
 
@@ -2593,7 +2593,7 @@ const match = await task;
 
 ###### downscale?
 
-> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How many times should the source image and the template be downscaled?
 
@@ -2605,7 +2605,7 @@ How many times should the source image and the template be downscaled?
 
 ###### matchThreshold?
 
-> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Matching threshold.
 Values are between 0 (worst) to 1 (best).
@@ -2618,7 +2618,7 @@ Values are between 0 (worst) to 1 (best).
 
 ###### nonMaximumSuppressionRadius?
 
-> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Radius to consider proximity (in pixels).
 
@@ -2630,7 +2630,7 @@ Radius to consider proximity (in pixels).
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
 
 Abort signal to cancel the search.
 
@@ -2642,7 +2642,7 @@ Abort signal to cancel the search.
 
 ###### useColors?
 
-> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
 
@@ -2654,7 +2654,7 @@ Use color matching.
 
 ###### useTransparency?
 
-> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use template transparency.
 
@@ -2870,7 +2870,7 @@ Resizes this image.
 
 ###### filter?
 
-> `optional` **filter**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
+> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
 
 <div class="options-fields">
 
@@ -2924,7 +2924,7 @@ What filter to use
 
 ###### keepAspectRatio?
 
-> `optional` **keepAspectRatio**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the aspect ratio be kept?
 
@@ -2964,7 +2964,7 @@ Returns a resized version of this image.
 
 ###### filter?
 
-> `optional` **filter**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
+> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
 
 <div class="options-fields">
 
@@ -3018,7 +3018,7 @@ What filter to use
 
 ###### keepAspectRatio?
 
-> `optional` **keepAspectRatio**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the aspect ratio be kept?
 
@@ -3054,7 +3054,7 @@ Rotate the image.
 
 ###### center?
 
-> `optional` **center**: [`Point`](Point.md)
+> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Rotation center.
 Defaults to the center of the image.
@@ -3067,7 +3067,7 @@ Defaults to the center of the image.
 
 ###### defaultColor?
 
-> `optional` **defaultColor**: [`Color`](Color.md)
+> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
 
 Default color, used if the rotation triggers more pixels to be displayed
 
@@ -3079,7 +3079,7 @@ Default color, used if the rotation triggers more pixels to be displayed
 
 ###### interpolation?
 
-> `optional` **interpolation**: [`Interpolation`](../enumerations/Interpolation.md)
+> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
 
 <div class="options-fields">
 
@@ -3141,7 +3141,7 @@ Rotate the image and returns a new image.
 
 ###### center?
 
-> `optional` **center**: [`Point`](Point.md)
+> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Rotation center.
 Defaults to the center of the image.
@@ -3154,7 +3154,7 @@ Defaults to the center of the image.
 
 ###### defaultColor?
 
-> `optional` **defaultColor**: [`Color`](Color.md)
+> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
 
 Default color, used if the rotation triggers more pixels to be displayed
 
@@ -3166,7 +3166,7 @@ Default color, used if the rotation triggers more pixels to be displayed
 
 ###### interpolation?
 
-> `optional` **interpolation**: [`Interpolation`](../enumerations/Interpolation.md)
+> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
 
 <div class="options-fields">
 
@@ -3423,7 +3423,7 @@ Draw a circle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3477,7 +3477,7 @@ Draw a circle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3523,7 +3523,7 @@ Draw a circle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3581,7 +3581,7 @@ Draw a circle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3747,7 +3747,7 @@ Draw an ellipse on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3805,7 +3805,7 @@ Draw an ellipse on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3855,7 +3855,7 @@ Draw an ellipse on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3917,7 +3917,7 @@ Draw an ellipse on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -3991,7 +3991,7 @@ Draw another image on a copy of this image.
 
 ###### sourceRect?
 
-> `optional` **sourceRect**: [`Rect`](Rect.md)
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
 
 Source rectangle.
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
@@ -4034,7 +4034,7 @@ Draw another image on a copy of this image.
 
 ###### sourceRect?
 
-> `optional` **sourceRect**: [`Rect`](Rect.md)
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
 
 Source rectangle.
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
@@ -4353,7 +4353,7 @@ Draw a rectangle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -4403,7 +4403,7 @@ Draw a rectangle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -4453,7 +4453,7 @@ Draw a rectangle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -4515,7 +4515,7 @@ Draw a rectangle on a copy of this image.
 
 ###### hollow?
 
-> `optional` **hollow**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Draw a hollow shape instead of a filled one
 
@@ -4561,7 +4561,7 @@ Draw text on a copy of this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -4573,7 +4573,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -4585,7 +4585,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -4623,7 +4623,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -4635,7 +4635,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -4715,7 +4715,7 @@ Draw text on a copy of this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -4727,7 +4727,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -4739,7 +4739,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -4777,7 +4777,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -4789,7 +4789,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -4861,7 +4861,7 @@ Draw text on a copy of this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -4873,7 +4873,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -4885,7 +4885,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -4923,7 +4923,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -4935,7 +4935,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
@@ -5019,7 +5019,7 @@ Draw text on a copy of this image.
 
 ###### font?
 
-> `optional` **font**: [`Font`](Font.md)
+> `optional` **font?**: [`Font`](Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -5031,7 +5031,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ###### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -5043,7 +5043,7 @@ Font size in pixels.
 
 ###### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
@@ -5081,7 +5081,7 @@ Horizontal alignment relative to the provided position.
 
 ###### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -5093,7 +5093,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ###### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 

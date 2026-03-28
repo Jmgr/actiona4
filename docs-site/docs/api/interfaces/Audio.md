@@ -43,7 +43,7 @@ sound.volume = 0.5;
 
 ###### fadeIn?
 
-> `optional` **fadeIn**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **fadeIn?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Fade in duration
 
@@ -55,7 +55,7 @@ Fade in duration
 
 ###### fadeOut?
 
-> `optional` **fadeOut**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **fadeOut?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Fade out duration
 
@@ -67,7 +67,7 @@ Fade out duration
 
 ###### loop?
 
-> `optional` **loop**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **loop?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the sound loop
 
@@ -79,7 +79,7 @@ Should the sound loop
 
 ###### paused?
 
-> `optional` **paused**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **paused?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the sound start paused
 
@@ -91,7 +91,7 @@ Should the sound start paused
 
 ###### playbackRate?
 
-> `optional` **playbackRate**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **playbackRate?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Speed to play the sound at
 
@@ -103,7 +103,7 @@ Speed to play the sound at
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the sound playback.
 
@@ -115,7 +115,7 @@ Abort signal to cancel the sound playback.
 
 ###### volume?
 
-> `optional` **volume**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **volume?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume to play the sound at
 
@@ -162,7 +162,7 @@ await audio.playFileAndWait("long-track.mp3", {
 
 ###### fadeIn?
 
-> `optional` **fadeIn**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **fadeIn?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Fade in duration
 
@@ -174,7 +174,7 @@ Fade in duration
 
 ###### fadeOut?
 
-> `optional` **fadeOut**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **fadeOut?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Fade out duration
 
@@ -186,7 +186,7 @@ Fade out duration
 
 ###### loop?
 
-> `optional` **loop**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **loop?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the sound loop
 
@@ -198,7 +198,7 @@ Should the sound loop
 
 ###### paused?
 
-> `optional` **paused**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **paused?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the sound start paused
 
@@ -210,7 +210,7 @@ Should the sound start paused
 
 ###### playbackRate?
 
-> `optional` **playbackRate**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **playbackRate?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Speed to play the sound at
 
@@ -222,7 +222,7 @@ Speed to play the sound at
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the sound playback.
 
@@ -234,7 +234,7 @@ Abort signal to cancel the sound playback.
 
 ###### volume?
 
-> `optional` **volume**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **volume?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Volume to play the sound at
 

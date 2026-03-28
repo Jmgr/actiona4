@@ -14,7 +14,7 @@ if (user) {
 
 ### groupId?
 
-> `readonly` `optional` **groupId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **groupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Group ID
 
@@ -30,7 +30,7 @@ Group ID
 
 ### groupName?
 
-> `readonly` `optional` **groupName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **groupName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Group name
 

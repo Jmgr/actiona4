@@ -7,7 +7,7 @@ Options for `onScroll`.
 
 ### axis?
 
-> `optional` **axis**: [`Axis`](../enumerations/Axis.md)
+> `optional` **axis?**: [`Axis`](../enumerations/Axis.md)
 
 Axis to listen on.
 
@@ -19,7 +19,7 @@ Axis to listen on.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to automatically cancel this listener when signalled.
 

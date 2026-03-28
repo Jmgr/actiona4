@@ -45,6 +45,13 @@
 - [println](functions/println.md)
 - [sleep](functions/sleep.md)
 
+## Datetime
+
+- [DayOfWeek](enumerations/DayOfWeek.md)
+- [Datetime](interfaces/Datetime.md)
+- [WaitOptions](interfaces/WaitOptions.md)
+- [datetime](variables/datetime.md)
+
 ## Directory
 
 - [Directory](classes/Directory.md)
@@ -195,7 +202,9 @@
 
 ## Screen
 
+- [AskScreenshotMethod](enumerations/AskScreenshotMethod.md)
 - [SearchIn](classes/SearchIn.md)
+- [AskScreenshotOptions](interfaces/AskScreenshotOptions.md)
 - [Screen](interfaces/Screen.md)
 - [screen](variables/screen.md)
 

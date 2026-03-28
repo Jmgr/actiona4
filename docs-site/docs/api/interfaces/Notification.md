@@ -39,7 +39,7 @@ Shows a desktop notification.
 
 ###### actionIcons?
 
-> `optional` **actionIcons**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **actionIcons?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 If `true`, action identifiers may be interpreted as icon names.
 
@@ -58,7 +58,7 @@ If `true`, action identifiers may be interpreted as icon names.
 
 ###### actions?
 
-> `optional` **actions**: [`NotificationAction`](NotificationAction.md)[]
+> `optional` **actions?**: [`NotificationAction`](NotificationAction.md)[]
 
 Notification actions.
 
@@ -70,7 +70,7 @@ Notification actions.
 
 ###### appName?
 
-> `optional` **appName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **appName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Application name, filled by default with executable name.
 
@@ -89,7 +89,7 @@ Application name, filled by default with executable name.
 
 ###### attributionText?
 
-> `optional` **attributionText**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **attributionText?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Attribution text displayed at the bottom of the notification.
 
@@ -108,7 +108,7 @@ Attribution text displayed at the bottom of the notification.
 
 ###### autoIcon?
 
-> `optional` **autoIcon**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **autoIcon?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether to set the icon automatically from executable name.
 
@@ -127,7 +127,7 @@ Whether to set the icon automatically from executable name.
 
 ###### body?
 
-> `optional` **body**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **body?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Body text of the notification.
 Multiple lines possible, may support simple markup.
@@ -141,7 +141,7 @@ On Linux, check `notification.capabilities()` for a list.
 
 ###### category?
 
-> `optional` **category**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **category?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Notification category such as `email`, `im`, or `device`.
 
@@ -160,7 +160,7 @@ Notification category such as `email`, `im`, or `device`.
 
 ###### customHints?
 
-> `optional` **customHints**: [`NotificationCustomHint`](NotificationCustomHint.md)[]
+> `optional` **customHints?**: [`NotificationCustomHint`](NotificationCustomHint.md)[]
 
 Custom string key/value pairs forwarded as-is.
 
@@ -179,7 +179,7 @@ Custom string key/value pairs forwarded as-is.
 
 ###### customIntHints?
 
-> `optional` **customIntHints**: [`NotificationCustomIntHint`](NotificationCustomIntHint.md)[]
+> `optional` **customIntHints?**: [`NotificationCustomIntHint`](NotificationCustomIntHint.md)[]
 
 Custom integer key/value pairs forwarded as-is.
 
@@ -198,7 +198,7 @@ Custom integer key/value pairs forwarded as-is.
 
 ###### desktopEntry?
 
-> `optional` **desktopEntry**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **desktopEntry?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Desktop entry id (usually app `.desktop` name without extension).
 
@@ -217,7 +217,7 @@ Desktop entry id (usually app `.desktop` name without extension).
 
 ###### group?
 
-> `optional` **group**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **group?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Group identifier for organizing notifications.
 
@@ -236,13 +236,13 @@ Group identifier for organizing notifications.
 
 ###### header?
 
-> `optional` **header**: [`NotificationHeader`](NotificationHeader.md)
+> `optional` **header?**: [`NotificationHeader`](NotificationHeader.md)
 
 <div class="options-fields">
 
 ###### arguments?
 
-> `optional` **arguments**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **arguments?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Arguments passed when the header is clicked.
 
@@ -254,7 +254,7 @@ Arguments passed when the header is clicked.
 
 ###### id?
 
-> `optional` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **id?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Unique identifier for this header group.
 
@@ -266,7 +266,7 @@ Unique identifier for this header group.
 
 ###### title?
 
-> `optional` **title**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title displayed for the header group.
 
@@ -293,7 +293,7 @@ Header for grouping notifications in Action Center.
 
 ###### heroImage?
 
-> `optional` **heroImage**: [`Image`](../classes/Image.md)
+> `optional` **heroImage?**: [`Image`](../classes/Image.md)
 
 Hero image displayed prominently at the top of the notification.
 
@@ -312,7 +312,7 @@ Hero image displayed prominently at the top of the notification.
 
 ###### icon?
 
-> `optional` **icon**: [`Image`](../classes/Image.md)
+> `optional` **icon?**: [`Image`](../classes/Image.md)
 
 Icon image to display with the notification.
 
@@ -324,7 +324,7 @@ Icon image to display with the notification.
 
 ###### iconCropCircle?
 
-> `optional` **iconCropCircle**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **iconCropCircle?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether to crop the icon into a circle.
 
@@ -343,7 +343,7 @@ Whether to crop the icon into a circle.
 
 ###### iconName?
 
-> `optional` **iconName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **iconName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Icon name/path assigned to the notification icon field.
 Usually available in /usr/share/icons.
@@ -363,7 +363,7 @@ Usually available in /usr/share/icons.
 
 ###### inputs?
 
-> `optional` **inputs**: [`NotificationInput`](NotificationInput.md)[]
+> `optional` **inputs?**: [`NotificationInput`](NotificationInput.md)[]
 
 Input fields displayed in the notification.
 
@@ -382,7 +382,7 @@ Input fields displayed in the notification.
 
 ###### launch?
 
-> `optional` **launch**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **launch?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Launch string passed to the app when the notification is clicked.
 
@@ -401,7 +401,7 @@ Launch string passed to the app when the notification is clicked.
 
 ###### point?
 
-> `optional` **point**: [`Point`](../classes/Point.md)
+> `optional` **point?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Target screen position for the notification.
 
@@ -420,7 +420,7 @@ Target screen position for the notification.
 
 ###### remoteId?
 
-> `optional` **remoteId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **remoteId?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Remote ID for cross-device notification correlation.
 
@@ -439,7 +439,7 @@ Remote ID for cross-device notification correlation.
 
 ###### resident?
 
-> `optional` **resident**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **resident?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 If `true`, keep notification resident until explicitly dismissed.
 Also automatically sets the timeout to never expire unless an explicit
@@ -460,7 +460,7 @@ timeout is provided.
 
 ###### scenario?
 
-> `optional` **scenario**: [`NotificationScenario`](../enumerations/NotificationScenario.md)
+> `optional` **scenario?**: [`NotificationScenario`](../enumerations/NotificationScenario.md)
 
 <div class="options-fields">
 
@@ -513,7 +513,7 @@ Toast scenario that adjusts notification behavior.
 
 ###### selections?
 
-> `optional` **selections**: [`NotificationSelection`](NotificationSelection.md)[]
+> `optional` **selections?**: [`NotificationSelection`](NotificationSelection.md)[]
 
 Selection options for dropdown inputs.
 
@@ -532,7 +532,7 @@ Selection options for dropdown inputs.
 
 ###### silent?
 
-> `optional` **silent**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **silent?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether to suppress all notification sound.
 
@@ -551,7 +551,7 @@ Whether to suppress all notification sound.
 
 ###### sound?
 
-> `optional` **sound**: [`NotificationSound`](../enumerations/NotificationSound.md)
+> `optional` **sound?**: [`NotificationSound`](../enumerations/NotificationSound.md)
 
 Sound to play with the notification.
 
@@ -570,7 +570,7 @@ Sound to play with the notification.
 
 ###### soundFile?
 
-> `optional` **soundFile**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **soundFile?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Absolute path to a sound file to play for this notification.
 
@@ -589,7 +589,7 @@ Absolute path to a sound file to play for this notification.
 
 ###### soundLooping?
 
-> `optional` **soundLooping**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **soundLooping?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether to loop the notification sound.
 
@@ -608,7 +608,7 @@ Whether to loop the notification sound.
 
 ###### soundName?
 
-> `optional` **soundName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **soundName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Themeable freedesktop sound name, e.g. `message-new-instant`.
 
@@ -627,7 +627,7 @@ Themeable freedesktop sound name, e.g. `message-new-instant`.
 
 ###### suppressSound?
 
-> `optional` **suppressSound**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **suppressSound?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 If `true`, suppress notification sounds.
 
@@ -646,7 +646,7 @@ If `true`, suppress notification sounds.
 
 ###### tag?
 
-> `optional` **tag**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **tag?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Tag for identifying and replacing notifications.
 
@@ -665,7 +665,7 @@ Tag for identifying and replacing notifications.
 
 ###### timeout?
 
-> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Timeout before the notification is automatically dismissed.
 Note that most servers don't respect this setting.
@@ -678,7 +678,7 @@ Note that most servers don't respect this setting.
 
 ###### title?
 
-> `optional` **title**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title of the notification (summary line).
 
@@ -690,7 +690,7 @@ Title of the notification (summary line).
 
 ###### transient?
 
-> `optional` **transient**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **transient?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 If `true`, request non-persistent behavior from the server.
 
@@ -709,7 +709,7 @@ If `true`, request non-persistent behavior from the server.
 
 ###### urgency?
 
-> `optional` **urgency**: [`NotificationUrgency`](../enumerations/NotificationUrgency.md)
+> `optional` **urgency?**: [`NotificationUrgency`](../enumerations/NotificationUrgency.md)
 
 <div class="options-fields">
 
@@ -754,7 +754,7 @@ Urgency level.
 
 ###### useButtonStyle?
 
-> `optional` **useButtonStyle**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useButtonStyle?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether to enable button styling on actions.
 

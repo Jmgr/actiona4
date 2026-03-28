@@ -12,7 +12,7 @@ const pin = random.string(6, { characters: "0123456789" });
 
 ### allowLetters?
 
-> `optional` **allowLetters**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **allowLetters?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Include letters `A-Z` and `a-z` in the default character set.
 Ignored when `characters` is specified.
@@ -25,7 +25,7 @@ Ignored when `characters` is specified.
 
 ### allowNumbers?
 
-> `optional` **allowNumbers**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **allowNumbers?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Include digits `0-9` in the default character set.
 Ignored when `characters` is specified.
@@ -38,7 +38,7 @@ Ignored when `characters` is specified.
 
 ### allowSpecialCharacters?
 
-> `optional` **allowSpecialCharacters**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **allowSpecialCharacters?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Include printable ASCII non-alphanumeric characters in the default character set.
 Ignored when `characters` is specified.
@@ -51,7 +51,7 @@ Ignored when `characters` is specified.
 
 ### characters?
 
-> `optional` **characters**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **characters?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Possible characters to pick from.
 Can contain any Unicode grapheme cluster.

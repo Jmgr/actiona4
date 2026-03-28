@@ -11,7 +11,7 @@ println(board.vendorName, board.name, board.version);
 
 ### assetTag?
 
-> `readonly` `optional` **assetTag**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **assetTag?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Asset tag
 
@@ -19,7 +19,7 @@ Asset tag
 
 ### name?
 
-> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -27,7 +27,7 @@ Name
 
 ### serialNumber?
 
-> `readonly` `optional` **serialNumber**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **serialNumber?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Serial number
 
@@ -35,7 +35,7 @@ Serial number
 
 ### vendorName?
 
-> `readonly` `optional` **vendorName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **vendorName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Vendor name
 
@@ -43,7 +43,7 @@ Vendor name
 
 ### version?
 
-> `readonly` `optional` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Version
 

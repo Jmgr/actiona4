@@ -12,7 +12,7 @@ println(interfaces.length);
 
 ### hostname?
 
-> `readonly` `optional` **hostname**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **hostname?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Host name
 
@@ -34,7 +34,7 @@ Interfaces
 
 ###### rescan?
 
-> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **rescan?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Rescan
 

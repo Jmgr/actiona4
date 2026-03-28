@@ -56,7 +56,7 @@ Clicks a mouse button.
 
 ###### amount?
 
-> `optional` **amount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Number of times to click.
 
@@ -68,7 +68,7 @@ Number of times to click.
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -131,7 +131,7 @@ Mouse button to press.
 
 ###### duration?
 
-> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How long to hold each click, in seconds.
 
@@ -143,7 +143,7 @@ How long to hold each click, in seconds.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between consecutive clicks, in seconds.
 
@@ -155,7 +155,7 @@ Delay between consecutive clicks, in seconds.
 
 ###### position?
 
-> `optional` **position**: [`Point`](../classes/Point.md)
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Position to move the cursor to before pressing.
 
@@ -171,7 +171,7 @@ Position to move the cursor to before pressing.
 
 ###### relativePosition?
 
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 
@@ -187,7 +187,7 @@ Whether the position is relative to the current cursor position.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the click.
 
@@ -227,7 +227,7 @@ Double-clicks a mouse button.
 
 ###### amount?
 
-> `optional` **amount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Number of times to click.
 
@@ -243,7 +243,7 @@ Number of times to click.
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -306,7 +306,7 @@ Mouse button to press.
 
 ###### delay?
 
-> `optional` **delay**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **delay?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between the two clicks, in seconds.
 
@@ -318,7 +318,7 @@ Delay between the two clicks, in seconds.
 
 ###### duration?
 
-> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How long to hold each click, in seconds.
 
@@ -334,7 +334,7 @@ How long to hold each click, in seconds.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between consecutive clicks, in seconds.
 
@@ -350,7 +350,7 @@ Delay between consecutive clicks, in seconds.
 
 ###### position?
 
-> `optional` **position**: [`Point`](../classes/Point.md)
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Position to move the cursor to before pressing.
 
@@ -366,7 +366,7 @@ Position to move the cursor to before pressing.
 
 ###### relativePosition?
 
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 
@@ -382,7 +382,7 @@ Whether the position is relative to the current cursor position.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the click.
 
@@ -449,7 +449,7 @@ await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -508,7 +508,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -524,7 +524,7 @@ Interval in seconds
 
 ###### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -540,7 +540,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ###### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -556,7 +556,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ###### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -572,7 +572,7 @@ Movement speed in pixels per second.
 
 ###### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -588,7 +588,7 @@ Random offset applied to the target position, in pixels.
 
 ###### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 
@@ -655,7 +655,7 @@ await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -714,7 +714,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -730,7 +730,7 @@ Interval in seconds
 
 ###### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -746,7 +746,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ###### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -762,7 +762,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ###### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -778,7 +778,7 @@ Movement speed in pixels per second.
 
 ###### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -794,7 +794,7 @@ Random offset applied to the target position, in pixels.
 
 ###### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 
@@ -861,7 +861,7 @@ await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -920,7 +920,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -936,7 +936,7 @@ Interval in seconds
 
 ###### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -952,7 +952,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ###### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -968,7 +968,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ###### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -984,7 +984,7 @@ Movement speed in pixels per second.
 
 ###### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -1000,7 +1000,7 @@ Random offset applied to the target position, in pixels.
 
 ###### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 
@@ -1071,7 +1071,7 @@ await mouse.dragAndDrop({ x: 100, y: 200 }, { x: 500, y: 200 }, {
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -1130,7 +1130,7 @@ Mouse button to use for dragging.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1146,7 +1146,7 @@ Interval in seconds
 
 ###### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -1162,7 +1162,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ###### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -1178,7 +1178,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ###### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -1194,7 +1194,7 @@ Movement speed in pixels per second.
 
 ###### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -1210,7 +1210,7 @@ Random offset applied to the target position, in pixels.
 
 ###### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 
@@ -1327,7 +1327,7 @@ Measures the mouse movement speed over a duration (in pixels per second).
 
 ###### duration?
 
-> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Measurement duration.
 
@@ -1339,7 +1339,7 @@ Measurement duration.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the measurement.
 
@@ -1385,7 +1385,7 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1397,7 +1397,7 @@ Interval in seconds
 
 ###### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -1409,7 +1409,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ###### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -1421,7 +1421,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ###### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -1433,7 +1433,7 @@ Movement speed in pixels per second.
 
 ###### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -1445,7 +1445,7 @@ Random offset applied to the target position, in pixels.
 
 ###### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 
@@ -1491,7 +1491,7 @@ Moves the mouse cursor smoothly to the given position.
 
 ###### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -1503,7 +1503,7 @@ Interval in seconds
 
 ###### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -1515,7 +1515,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ###### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -1527,7 +1527,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ###### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -1539,7 +1539,7 @@ Movement speed in pixels per second.
 
 ###### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -1551,7 +1551,7 @@ Random offset applied to the target position, in pixels.
 
 ###### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 
@@ -1654,7 +1654,7 @@ Right button
 
 ###### exclusive?
 
-> `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **exclusive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Require exactly this button and no others to be pressed simultaneously.
 
@@ -1666,7 +1666,7 @@ Require exactly this button and no others to be pressed simultaneously.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to automatically cancel this listener when signalled.
 
@@ -1692,7 +1692,7 @@ Abort signal to automatically cancel this listener when signalled.
 
 ### onScroll()
 
-> **onScroll**(`callback`: [`Macro`](../classes/Macro.md) \| (`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md)\>, `options?`: [`OnScrollOptions`](OnScrollOptions.md)): [`EventHandle`](EventHandle.md)
+> **onScroll**(`callback`: [`Macro`](../classes/Macro.md) \| ((`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md)\>), `options?`: [`OnScrollOptions`](OnScrollOptions.md)): [`EventHandle`](EventHandle.md)
 
 Registers a listener that fires when the mouse wheel is scrolled.
 
@@ -1715,7 +1715,7 @@ const handle = mouse.onScroll((length) => {
 
 ##### callback
 
-[`Macro`](../classes/Macro.md) | (`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md)\>
+[`Macro`](../classes/Macro.md) \| ((`length`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)) => [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Macro`](../classes/Macro.md)\>)
 
 ##### options?
 
@@ -1725,7 +1725,7 @@ const handle = mouse.onScroll((length) => {
 
 ###### axis?
 
-> `optional` **axis**: [`Axis`](../enumerations/Axis.md)
+> `optional` **axis?**: [`Axis`](../enumerations/Axis.md)
 
 <div class="options-fields">
 
@@ -1755,7 +1755,7 @@ Axis to listen on.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to automatically cancel this listener when signalled.
 
@@ -1815,7 +1815,7 @@ Presses and holds a mouse button.
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -1874,7 +1874,7 @@ Mouse button to press.
 
 ###### position?
 
-> `optional` **position**: [`Point`](../classes/Point.md)
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Position to move the cursor to before pressing.
 
@@ -1886,7 +1886,7 @@ Position to move the cursor to before pressing.
 
 ###### relativePosition?
 
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 
@@ -2185,7 +2185,7 @@ const button = await mouse.waitForButton({
 
 ###### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 <div class="options-fields">
 
@@ -2244,7 +2244,7 @@ Mouse button to wait for. If not specified, waits for any button.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the wait.
 
@@ -2299,7 +2299,7 @@ const event = await mouse.waitForScroll({
 
 ###### axis?
 
-> `optional` **axis**: [`Axis`](../enumerations/Axis.md)
+> `optional` **axis?**: [`Axis`](../enumerations/Axis.md)
 
 <div class="options-fields">
 
@@ -2329,7 +2329,7 @@ Scroll axis to wait for. If not specified, waits for any axis.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the wait.
 

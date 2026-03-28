@@ -7,7 +7,7 @@ Options for starting a process.
 
 ### args?
 
-> `optional` **args**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+> `optional` **args?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
 Arguments to pass to the command.
 
@@ -19,7 +19,7 @@ Arguments to pass to the command.
 
 ### env?
 
-> `optional` **env**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **env?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Environment variables for the process.
 
@@ -31,7 +31,7 @@ Environment variables for the process.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to kill the process.
 
@@ -43,7 +43,7 @@ Abort signal to kill the process.
 
 ### workingDirectory?
 
-> `optional` **workingDirectory**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **workingDirectory?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Working directory for the process.
 

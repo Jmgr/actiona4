@@ -14,7 +14,7 @@ if (temperatureSensor) {
 
 ### criticalTemperature?
 
-> `readonly` `optional` **criticalTemperature**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **criticalTemperature?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Critical temperature
 
@@ -22,7 +22,7 @@ Critical temperature
 
 ### id?
 
-> `readonly` `optional` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **id?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ID
 
@@ -38,7 +38,7 @@ Label
 
 ### maxTemperature?
 
-> `readonly` `optional` **maxTemperature**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **maxTemperature?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Maximum temperature
 
@@ -46,7 +46,7 @@ Maximum temperature
 
 ### temperature?
 
-> `readonly` `optional` **temperature**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **temperature?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Temperature
 

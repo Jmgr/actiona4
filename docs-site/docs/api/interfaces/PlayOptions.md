@@ -11,7 +11,7 @@ await macros.play(macro, { speed: 2.0 });
 
 ### keyboardKeys?
 
-> `optional` **keyboardKeys**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **keyboardKeys?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Replay keyboard key events.
 
@@ -23,7 +23,7 @@ Replay keyboard key events.
 
 ### mouseButtons?
 
-> `optional` **mouseButtons**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **mouseButtons?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Replay mouse button events.
 
@@ -35,7 +35,7 @@ Replay mouse button events.
 
 ### mousePosition?
 
-> `optional` **mousePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **mousePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Replay mouse cursor movements.
 
@@ -47,7 +47,7 @@ Replay mouse cursor movements.
 
 ### mouseScroll?
 
-> `optional` **mouseScroll**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **mouseScroll?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Replay mouse scroll events.
 
@@ -59,7 +59,7 @@ Replay mouse scroll events.
 
 ### relativeMousePosition?
 
-> `optional` **relativeMousePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **relativeMousePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Replay mouse movements relative to the current cursor position instead of absolute
 screen coordinates. The offset is computed from the difference between the cursor's
@@ -73,7 +73,7 @@ position at playback start and the first recorded mouse position.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel playback.
 
@@ -85,7 +85,7 @@ Abort signal to cancel playback.
 
 ### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Playback speed multiplier. `1.0` is real-time, `2.0` is twice as fast.
 Must be greater than zero.

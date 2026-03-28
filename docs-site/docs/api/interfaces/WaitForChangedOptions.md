@@ -21,7 +21,7 @@ await Concurrency.race([
 
 ### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Polling interval in seconds.
 
@@ -33,7 +33,7 @@ Polling interval in seconds.
 
 ### mode?
 
-> `optional` **mode**: [`ClipboardMode`](../enumerations/ClipboardMode.md)
+> `optional` **mode?**: [`ClipboardMode`](../enumerations/ClipboardMode.md)
 
 Clipboard source to watch.
 
@@ -45,7 +45,7 @@ Clipboard source to watch.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the wait.
 

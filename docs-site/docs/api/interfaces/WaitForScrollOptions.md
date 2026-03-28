@@ -7,7 +7,7 @@ Options for `waitForScroll`.
 
 ### axis?
 
-> `optional` **axis**: [`Axis`](../enumerations/Axis.md)
+> `optional` **axis?**: [`Axis`](../enumerations/Axis.md)
 
 Scroll axis to wait for. If not specified, waits for any axis.
 
@@ -19,7 +19,7 @@ Scroll axis to wait for. If not specified, waits for any axis.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the wait.
 

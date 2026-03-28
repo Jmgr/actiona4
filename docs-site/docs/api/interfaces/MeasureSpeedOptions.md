@@ -11,7 +11,7 @@ const speed = await mouse.measureSpeed({ duration: "3s" });
 
 ### duration?
 
-> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Measurement duration.
 
@@ -23,7 +23,7 @@ Measurement duration.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the measurement.
 

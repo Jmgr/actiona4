@@ -7,7 +7,7 @@ A notification action button.
 
 ### actionType?
 
-> `optional` **actionType**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **actionType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Action type string (Windows-specific, e.g. for protocol activation).
 
@@ -26,7 +26,7 @@ Action type string (Windows-specific, e.g. for protocol activation).
 
 ### activationType?
 
-> `optional` **activationType**: [`NotificationActivationType`](../enumerations/NotificationActivationType.md)
+> `optional` **activationType?**: [`NotificationActivationType`](../enumerations/NotificationActivationType.md)
 
 Activation type for this action.
 
@@ -45,7 +45,7 @@ Activation type for this action.
 
 ### buttonStyle?
 
-> `optional` **buttonStyle**: [`NotificationButtonStyle`](../enumerations/NotificationButtonStyle.md)
+> `optional` **buttonStyle?**: [`NotificationButtonStyle`](../enumerations/NotificationButtonStyle.md)
 
 Visual style of the button.
 
@@ -64,7 +64,7 @@ Visual style of the button.
 
 ### identifier?
 
-> `optional` **identifier**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **identifier?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Action identifier (used as arguments on Windows).
 
@@ -76,7 +76,7 @@ Action identifier (used as arguments on Windows).
 
 ### inputId?
 
-> `optional` **inputId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **inputId?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ID of the input element this action is associated with.
 
@@ -95,7 +95,7 @@ ID of the input element this action is associated with.
 
 ### label?
 
-> `optional` **label**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **label?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Action label visible to the user.
 
@@ -107,7 +107,7 @@ Action label visible to the user.
 
 ### placement?
 
-> `optional` **placement**: [`ContextMenu`](../enumerations/NotificationActionPlacement.md#contextmenu)
+> `optional` **placement?**: [`ContextMenu`](../enumerations/NotificationActionPlacement.md#contextmenu)
 
 Placement of this action button.
 

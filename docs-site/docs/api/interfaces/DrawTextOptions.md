@@ -20,7 +20,7 @@ image.drawText(100, 50, "Hello", Color.White, { font, fontSize: 32 });
 
 ### font?
 
-> `optional` **font**: [`Font`](../classes/Font.md)
+> `optional` **font?**: [`Font`](../classes/Font.md)
 
 Font to use. Defaults to the built-in DejaVu Sans.
 
@@ -32,7 +32,7 @@ Font to use. Defaults to the built-in DejaVu Sans.
 
 ### fontSize?
 
-> `optional` **fontSize**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Font size in pixels.
 
@@ -44,7 +44,7 @@ Font size in pixels.
 
 ### horizontalAlign?
 
-> `optional` **horizontalAlign**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 Horizontal alignment relative to the provided position.
 
@@ -56,7 +56,7 @@ Horizontal alignment relative to the provided position.
 
 ### lineSpacing?
 
-> `optional` **lineSpacing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Multiplier applied to the default line height when rendering multi-line text.
 
@@ -68,7 +68,7 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ### verticalAlign?
 
-> `optional` **verticalAlign**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 Vertical alignment relative to the provided position.
 

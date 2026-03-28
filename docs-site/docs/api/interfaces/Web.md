@@ -47,7 +47,7 @@ const bytes = await task;
 
 ###### contentType?
 
-> `optional` **contentType**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Sets the content-type header.
 Overrides any content-type set by other fields.
@@ -60,7 +60,7 @@ Overrides any content-type set by other fields.
 
 ###### form?
 
-> `optional` **form**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **form?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Form data as strings.
 Sets content-type to "application/x-www-form-urlencoded".
@@ -73,7 +73,7 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ###### headers?
 
-> `optional` **headers**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional HTTP headers to send with the request.
 
@@ -85,7 +85,7 @@ Additional HTTP headers to send with the request.
 
 ###### method?
 
-> `optional` **method**: [`Method`](../enumerations/Method.md)
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
 
 <div class="options-fields">
 
@@ -171,7 +171,7 @@ HTTP method to use for the request.
 
 ###### multipart?
 
-> `optional` **multipart**: [`MultipartForm`](../classes/MultipartForm.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
 Form multipart data.
 Sets content-type and content-length appropriately.
@@ -184,7 +184,7 @@ Sets content-type and content-length appropriately.
 
 ###### password?
 
-> `optional` **password**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Password for HTTP basic authentication.
 
@@ -196,7 +196,7 @@ Password for HTTP basic authentication.
 
 ###### query?
 
-> `optional` **query**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional query parameters.
 
@@ -208,7 +208,7 @@ Additional query parameters.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the request.
 
@@ -220,7 +220,7 @@ Abort signal to cancel the request.
 
 ###### timeout?
 
-> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Request timeout duration.
 
@@ -232,7 +232,7 @@ Request timeout duration.
 
 ###### userName?
 
-> `optional` **userName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User name for HTTP basic authentication.
 
@@ -284,7 +284,7 @@ const filePath = await task;
 
 ###### contentType?
 
-> `optional` **contentType**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Sets the content-type header.
 Overrides any content-type set by other fields.
@@ -297,7 +297,7 @@ Overrides any content-type set by other fields.
 
 ###### form?
 
-> `optional` **form**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **form?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Form data as strings.
 Sets content-type to "application/x-www-form-urlencoded".
@@ -310,7 +310,7 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ###### headers?
 
-> `optional` **headers**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional HTTP headers to send with the request.
 
@@ -322,7 +322,7 @@ Additional HTTP headers to send with the request.
 
 ###### method?
 
-> `optional` **method**: [`Method`](../enumerations/Method.md)
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
 
 <div class="options-fields">
 
@@ -408,7 +408,7 @@ HTTP method to use for the request.
 
 ###### multipart?
 
-> `optional` **multipart**: [`MultipartForm`](../classes/MultipartForm.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
 Form multipart data.
 Sets content-type and content-length appropriately.
@@ -421,7 +421,7 @@ Sets content-type and content-length appropriately.
 
 ###### password?
 
-> `optional` **password**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Password for HTTP basic authentication.
 
@@ -433,7 +433,7 @@ Password for HTTP basic authentication.
 
 ###### query?
 
-> `optional` **query**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional query parameters.
 
@@ -445,7 +445,7 @@ Additional query parameters.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the request.
 
@@ -457,7 +457,7 @@ Abort signal to cancel the request.
 
 ###### timeout?
 
-> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Request timeout duration.
 
@@ -469,7 +469,7 @@ Request timeout duration.
 
 ###### userName?
 
-> `optional` **userName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User name for HTTP basic authentication.
 
@@ -517,7 +517,7 @@ const image = await task;
 
 ###### contentType?
 
-> `optional` **contentType**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Sets the content-type header.
 Overrides any content-type set by other fields.
@@ -530,7 +530,7 @@ Overrides any content-type set by other fields.
 
 ###### form?
 
-> `optional` **form**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **form?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Form data as strings.
 Sets content-type to "application/x-www-form-urlencoded".
@@ -543,7 +543,7 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ###### headers?
 
-> `optional` **headers**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional HTTP headers to send with the request.
 
@@ -555,7 +555,7 @@ Additional HTTP headers to send with the request.
 
 ###### method?
 
-> `optional` **method**: [`Method`](../enumerations/Method.md)
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
 
 <div class="options-fields">
 
@@ -641,7 +641,7 @@ HTTP method to use for the request.
 
 ###### multipart?
 
-> `optional` **multipart**: [`MultipartForm`](../classes/MultipartForm.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
 Form multipart data.
 Sets content-type and content-length appropriately.
@@ -654,7 +654,7 @@ Sets content-type and content-length appropriately.
 
 ###### password?
 
-> `optional` **password**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Password for HTTP basic authentication.
 
@@ -666,7 +666,7 @@ Password for HTTP basic authentication.
 
 ###### query?
 
-> `optional` **query**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional query parameters.
 
@@ -678,7 +678,7 @@ Additional query parameters.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the request.
 
@@ -690,7 +690,7 @@ Abort signal to cancel the request.
 
 ###### timeout?
 
-> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Request timeout duration.
 
@@ -702,7 +702,7 @@ Request timeout duration.
 
 ###### userName?
 
-> `optional` **userName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User name for HTTP basic authentication.
 
@@ -750,7 +750,7 @@ const text = await task;
 
 ###### contentType?
 
-> `optional` **contentType**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Sets the content-type header.
 Overrides any content-type set by other fields.
@@ -763,7 +763,7 @@ Overrides any content-type set by other fields.
 
 ###### form?
 
-> `optional` **form**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **form?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Form data as strings.
 Sets content-type to "application/x-www-form-urlencoded".
@@ -776,7 +776,7 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ###### headers?
 
-> `optional` **headers**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional HTTP headers to send with the request.
 
@@ -788,7 +788,7 @@ Additional HTTP headers to send with the request.
 
 ###### method?
 
-> `optional` **method**: [`Method`](../enumerations/Method.md)
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
 
 <div class="options-fields">
 
@@ -874,7 +874,7 @@ HTTP method to use for the request.
 
 ###### multipart?
 
-> `optional` **multipart**: [`MultipartForm`](../classes/MultipartForm.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
 Form multipart data.
 Sets content-type and content-length appropriately.
@@ -887,7 +887,7 @@ Sets content-type and content-length appropriately.
 
 ###### password?
 
-> `optional` **password**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Password for HTTP basic authentication.
 
@@ -899,7 +899,7 @@ Password for HTTP basic authentication.
 
 ###### query?
 
-> `optional` **query**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 Additional query parameters.
 
@@ -911,7 +911,7 @@ Additional query parameters.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the request.
 
@@ -923,7 +923,7 @@ Abort signal to cancel the request.
 
 ###### timeout?
 
-> `optional` **timeout**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Request timeout duration.
 
@@ -935,7 +935,7 @@ Request timeout duration.
 
 ###### userName?
 
-> `optional` **userName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User name for HTTP basic authentication.
 

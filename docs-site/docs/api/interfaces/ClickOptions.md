@@ -20,7 +20,7 @@ await mouse.click({ duration: 0.5 });
 
 ### amount?
 
-> `optional` **amount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Number of times to click.
 
@@ -32,7 +32,7 @@ Number of times to click.
 
 ### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 Mouse button to press.
 
@@ -48,7 +48,7 @@ Mouse button to press.
 
 ### duration?
 
-> `optional` **duration**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 How long to hold each click, in seconds.
 
@@ -60,7 +60,7 @@ How long to hold each click, in seconds.
 
 ### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Delay between consecutive clicks, in seconds.
 
@@ -72,7 +72,7 @@ Delay between consecutive clicks, in seconds.
 
 ### position?
 
-> `optional` **position**: [`Point`](../classes/Point.md)
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Position to move the cursor to before pressing.
 
@@ -88,7 +88,7 @@ Position to move the cursor to before pressing.
 
 ### relativePosition?
 
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 
@@ -104,7 +104,7 @@ Whether the position is relative to the current cursor position.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the click.
 

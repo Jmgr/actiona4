@@ -38,7 +38,7 @@ CPU usage
 
 ### cwd?
 
-> `readonly` `optional` **cwd**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **cwd?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Cwd
 
@@ -54,7 +54,7 @@ Disk usage
 
 ### effectiveGroupId?
 
-> `readonly` `optional` **effectiveGroupId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **effectiveGroupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Effective group ID
 
@@ -69,7 +69,7 @@ Effective group ID
 
 ### effectiveUserId?
 
-> `readonly` `optional` **effectiveUserId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **effectiveUserId?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Effective user ID
 
@@ -92,7 +92,7 @@ Env
 
 ### exe?
 
-> `readonly` `optional` **exe**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **exe?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Exe
 
@@ -108,7 +108,7 @@ Exists
 
 ### groupId?
 
-> `readonly` `optional` **groupId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **groupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Group ID
 
@@ -131,7 +131,7 @@ Memory
 
 ### name?
 
-> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -139,7 +139,7 @@ Name
 
 ### openFiles?
 
-> `readonly` `optional` **openFiles**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **openFiles?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Open files
 
@@ -147,7 +147,7 @@ Open files
 
 ### openFilesLimit?
 
-> `readonly` `optional` **openFilesLimit**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **openFilesLimit?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Open files limit
 
@@ -155,7 +155,7 @@ Open files limit
 
 ### parent?
 
-> `readonly` `optional` **parent**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **parent?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Parent
 
@@ -171,7 +171,7 @@ Pid
 
 ### root?
 
-> `readonly` `optional` **root**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **root?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Root
 
@@ -187,7 +187,7 @@ Run time in seconds
 
 ### sessionId?
 
-> `readonly` `optional` **sessionId**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **sessionId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Session ID
 
@@ -211,7 +211,7 @@ Status
 
 ### userId?
 
-> `readonly` `optional` **userId**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **userId?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 User ID
 

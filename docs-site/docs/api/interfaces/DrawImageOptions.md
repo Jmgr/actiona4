@@ -14,7 +14,7 @@ canvas.drawImage(0, 0, sprite, {
 
 ### sourceRect?
 
-> `optional` **sourceRect**: [`Rect`](../classes/Rect.md)
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
 
 Source rectangle.
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.

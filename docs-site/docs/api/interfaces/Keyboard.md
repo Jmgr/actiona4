@@ -126,7 +126,7 @@ h.cancel();
 
 ###### exclusive?
 
-> `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **exclusive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Require exactly these keys and no others to be pressed simultaneously.
 
@@ -138,7 +138,7 @@ Require exactly these keys and no others to be pressed simultaneously.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the operation.
 
@@ -197,7 +197,7 @@ h.cancel();
 
 ###### exclusive?
 
-> `optional` **exclusive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **exclusive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Require exactly these keys and no others to be pressed simultaneously.
 
@@ -209,7 +209,7 @@ Require exactly these keys and no others to be pressed simultaneously.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the operation.
 
@@ -279,7 +279,7 @@ h.cancel(); // unregister
 
 ###### erase?
 
-> `optional` **erase**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **erase?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Erase the typed text before inserting the replacement.
 Set to `false` to trigger an action without replacing the typed text.
@@ -292,7 +292,7 @@ Set to `false` to trigger an action without replacing the typed text.
 
 ###### saveRestoreClipboard?
 
-> `optional` **saveRestoreClipboard**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **saveRestoreClipboard?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Save and restore the clipboard contents around a clipboard-based replacement.
 
@@ -304,7 +304,7 @@ Save and restore the clipboard contents around a clipboard-based replacement.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to automatically cancel this listener when signalled.
 
@@ -316,7 +316,7 @@ Abort signal to automatically cancel this listener when signalled.
 
 ###### useClipboardForText?
 
-> `optional` **useClipboardForText**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useClipboardForText?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 When replacing with text, use the clipboard (Ctrl+V) instead of simulated keystrokes.
 Replacing with an image always uses the clipboard.

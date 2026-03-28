@@ -58,7 +58,7 @@ const result = await Ui.messageBox("Operation complete");
 
 ###### buttons?
 
-> `optional` **buttons**: [`MessageBoxButtons`](MessageBoxButtons.md)
+> `optional` **buttons?**: [`MessageBoxButtons`](MessageBoxButtons.md)
 
 Buttons displayed in the message box.
 
@@ -70,7 +70,7 @@ Buttons displayed in the message box.
 
 ###### icon?
 
-> `optional` **icon**: [`MessageBoxIcon`](../enumerations/MessageBoxIcon.md)
+> `optional` **icon?**: [`MessageBoxIcon`](../enumerations/MessageBoxIcon.md)
 
 <div class="options-fields">
 
@@ -108,7 +108,7 @@ Icon displayed in the message box.
 
 ###### signal?
 
-> `optional` **signal**: [`AbortSignal`](../interfaces/AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
 
 Abort signal to cancel the message box.
 
@@ -120,7 +120,7 @@ Abort signal to cancel the message box.
 
 ###### title?
 
-> `optional` **title**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title displayed in the message box title bar.
 

@@ -22,7 +22,7 @@ Inbound
 
 ### macAddress?
 
-> `readonly` `optional` **macAddress**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **macAddress?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 MAC address
 

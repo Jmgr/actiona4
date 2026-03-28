@@ -19,7 +19,7 @@ await mouse.move(500, 300, {
 
 ### interval?
 
-> `optional` **interval**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
 Interval in seconds
 
@@ -31,7 +31,7 @@ Interval in seconds
 
 ### perlinAmplitude?
 
-> `optional` **perlinAmplitude**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Amplitude of the Perlin noise applied to the movement path.
 
@@ -43,7 +43,7 @@ Amplitude of the Perlin noise applied to the movement path.
 
 ### perlinScale?
 
-> `optional` **perlinScale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinScale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Scale of the Perlin noise applied to the movement path.
 
@@ -55,7 +55,7 @@ Scale of the Perlin noise applied to the movement path.
 
 ### speed?
 
-> `optional` **speed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Movement speed in pixels per second.
 
@@ -67,7 +67,7 @@ Movement speed in pixels per second.
 
 ### targetRandomness?
 
-> `optional` **targetRandomness**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **targetRandomness?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Random offset applied to the target position, in pixels.
 
@@ -79,7 +79,7 @@ Random offset applied to the target position, in pixels.
 
 ### tween?
 
-> `optional` **tween**: [`Tween`](../enumerations/Tween.md)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
 Easing function used for the movement.
 

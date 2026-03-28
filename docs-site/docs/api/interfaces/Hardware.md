@@ -14,7 +14,7 @@ println(hw.vendorName, board.name, temperatureSensors.length);
 
 ### family?
 
-> `readonly` `optional` **family**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **family?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Family
 
@@ -30,7 +30,7 @@ Motherboard
 
 ### name?
 
-> `readonly` `optional` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
 
@@ -38,7 +38,7 @@ Name
 
 ### serialNumber?
 
-> `readonly` `optional` **serialNumber**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **serialNumber?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Serial number
 
@@ -46,7 +46,7 @@ Serial number
 
 ### stockKeepingUnit?
 
-> `readonly` `optional` **stockKeepingUnit**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **stockKeepingUnit?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Stock keeping unit
 
@@ -54,7 +54,7 @@ Stock keeping unit
 
 ### uuid?
 
-> `readonly` `optional` **uuid**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **uuid?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Uuid
 
@@ -62,7 +62,7 @@ Uuid
 
 ### vendorName?
 
-> `readonly` `optional` **vendorName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **vendorName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Vendor name
 
@@ -70,7 +70,7 @@ Vendor name
 
 ### version?
 
-> `readonly` `optional` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Version
 
@@ -92,7 +92,7 @@ Hardware temperature sensors
 
 ###### rescan?
 
-> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **rescan?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Rescan
 

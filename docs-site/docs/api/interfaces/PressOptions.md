@@ -19,7 +19,7 @@ mouse.press({ button: Button.Left, position: {x: 50, y: 100} });
 
 ### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 Mouse button to press.
 
@@ -31,7 +31,7 @@ Mouse button to press.
 
 ### position?
 
-> `optional` **position**: [`Point`](../classes/Point.md)
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Position to move the cursor to before pressing.
 
@@ -43,7 +43,7 @@ Position to move the cursor to before pressing.
 
 ### relativePosition?
 
-> `optional` **relativePosition**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether the position is relative to the current cursor position.
 

@@ -15,7 +15,7 @@ image.blur({ sigma: 5.0 });
 
 ### fast?
 
-> `optional` **fast**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **fast?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Perform a fast, lower quality blur
 
@@ -27,7 +27,7 @@ Perform a fast, lower quality blur
 
 ### sigma?
 
-> `optional` **sigma**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **sigma?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Standard deviation of the (approximated) Gaussian
 

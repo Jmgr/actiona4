@@ -15,7 +15,7 @@ image.resize(200, 150, { filter: ResizeFilter.Lanczos3, keepAspectRatio: true })
 
 ### filter?
 
-> `optional` **filter**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
+> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
 
 What filter to use
 
@@ -27,7 +27,7 @@ What filter to use
 
 ### keepAspectRatio?
 
-> `optional` **keepAspectRatio**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the aspect ratio be kept?
 

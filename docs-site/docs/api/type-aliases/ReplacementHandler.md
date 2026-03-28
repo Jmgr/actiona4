@@ -1,6 +1,6 @@
 # Type Alias: ReplacementHandler
 
-> **ReplacementHandler** = [`ReplacementValue`](ReplacementValue.md) \| () => [`ReplacementValue`](ReplacementValue.md) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ReplacementValue`](ReplacementValue.md) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **ReplacementHandler** = [`ReplacementValue`](ReplacementValue.md) \| (() => [`ReplacementValue`](ReplacementValue.md) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void) \| [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ReplacementValue`](ReplacementValue.md) \| [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>)
 
 A text replacement: either a [ReplacementValue](ReplacementValue.md) directly, or a (possibly async)
 function that returns one.

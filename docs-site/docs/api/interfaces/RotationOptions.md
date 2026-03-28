@@ -18,7 +18,7 @@ image.rotate(30, { defaultColor: Color.White });
 
 ### center?
 
-> `optional` **center**: [`Point`](../classes/Point.md)
+> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
 
 Rotation center.
 Defaults to the center of the image.
@@ -31,7 +31,7 @@ Defaults to the center of the image.
 
 ### defaultColor?
 
-> `optional` **defaultColor**: [`Color`](../classes/Color.md)
+> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
 
 Default color, used if the rotation triggers more pixels to be displayed
 
@@ -43,7 +43,7 @@ Default color, used if the rotation triggers more pixels to be displayed
 
 ### interpolation?
 
-> `optional` **interpolation**: [`Interpolation`](../enumerations/Interpolation.md)
+> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
 
 Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
 

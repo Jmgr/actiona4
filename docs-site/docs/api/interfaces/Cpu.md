@@ -35,7 +35,7 @@ Logical core count
 
 ### physicalCoreCount?
 
-> `readonly` `optional` **physicalCoreCount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **physicalCoreCount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Physical core count
 

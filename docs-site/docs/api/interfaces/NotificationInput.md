@@ -14,7 +14,7 @@ A toast input field.
 
 ### defaultInput?
 
-> `optional` **defaultInput**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **defaultInput?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Default value for the input.
 
@@ -26,7 +26,7 @@ Default value for the input.
 
 ### id?
 
-> `optional` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **id?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Unique identifier for this input.
 
@@ -38,7 +38,7 @@ Unique identifier for this input.
 
 ### inputType?
 
-> `optional` **inputType**: [`NotificationInputType`](../enumerations/NotificationInputType.md)
+> `optional` **inputType?**: [`NotificationInputType`](../enumerations/NotificationInputType.md)
 
 Type of input field.
 
@@ -50,7 +50,7 @@ Type of input field.
 
 ### placeholder?
 
-> `optional` **placeholder**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **placeholder?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Placeholder text shown when the input is empty.
 
@@ -62,7 +62,7 @@ Placeholder text shown when the input is empty.
 
 ### title?
 
-> `optional` **title**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title displayed above the input.
 

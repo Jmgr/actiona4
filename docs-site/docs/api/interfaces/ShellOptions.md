@@ -7,7 +7,7 @@ Options for running a shell command.
 
 ### shell?
 
-> `optional` **shell**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **shell?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Shell to use. On Linux defaults to `$SHELL` (or `bash` if unset).
 On Windows defaults to `powershell`.
@@ -20,7 +20,7 @@ On Windows defaults to `powershell`.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the operation.
 

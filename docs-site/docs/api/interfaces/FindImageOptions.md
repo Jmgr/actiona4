@@ -16,7 +16,7 @@ const match = await source.find(template, { signal: controller.signal });
 
 ### downscale?
 
-> `optional` **downscale**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 How many times should the source image and the template be downscaled?
 
@@ -28,7 +28,7 @@ How many times should the source image and the template be downscaled?
 
 ### matchThreshold?
 
-> `optional` **matchThreshold**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Matching threshold.
 Values are between 0 (worst) to 1 (best).
@@ -41,7 +41,7 @@ Values are between 0 (worst) to 1 (best).
 
 ### nonMaximumSuppressionRadius?
 
-> `optional` **nonMaximumSuppressionRadius**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Radius to consider proximity (in pixels).
 
@@ -53,7 +53,7 @@ Radius to consider proximity (in pixels).
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the search.
 
@@ -65,7 +65,7 @@ Abort signal to cancel the search.
 
 ### useColors?
 
-> `optional` **useColors**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
 
@@ -77,7 +77,7 @@ Use color matching.
 
 ### useTransparency?
 
-> `optional` **useTransparency**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use template transparency.
 

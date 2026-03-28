@@ -14,7 +14,7 @@ println(standardPaths.documents);   // e.g. "/home/user/Documents"
 
 ### cache?
 
-> `readonly` `optional` **cache**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **cache?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Cache directory
 
@@ -22,7 +22,7 @@ Cache directory
 
 ### config?
 
-> `readonly` `optional` **config**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **config?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Config directory
 
@@ -30,7 +30,7 @@ Config directory
 
 ### desktop?
 
-> `readonly` `optional` **desktop**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **desktop?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Desktop directory
 
@@ -38,7 +38,7 @@ Desktop directory
 
 ### documents?
 
-> `readonly` `optional` **documents**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **documents?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Documents directory
 
@@ -46,7 +46,7 @@ Documents directory
 
 ### downloads?
 
-> `readonly` `optional` **downloads**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **downloads?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Downloads directory
 
@@ -54,7 +54,7 @@ Downloads directory
 
 ### home?
 
-> `readonly` `optional` **home**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **home?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Home directory
 
@@ -62,7 +62,7 @@ Home directory
 
 ### localConfig?
 
-> `readonly` `optional` **localConfig**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **localConfig?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Local config directory
 
@@ -70,7 +70,7 @@ Local config directory
 
 ### music?
 
-> `readonly` `optional` **music**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **music?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Music directory
 
@@ -78,7 +78,7 @@ Music directory
 
 ### pictures?
 
-> `readonly` `optional` **pictures**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **pictures?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Pictures directory
 
@@ -86,7 +86,7 @@ Pictures directory
 
 ### public?
 
-> `readonly` `optional` **public**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **public?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Public directory
 
@@ -94,7 +94,7 @@ Public directory
 
 ### temp?
 
-> `readonly` `optional` **temp**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **temp?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Temporary directory
 
@@ -102,7 +102,7 @@ Temporary directory
 
 ### videos?
 
-> `readonly` `optional` **videos**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **videos?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Videos directory
 

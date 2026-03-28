@@ -24,7 +24,7 @@ const file = await File.open("log.txt", {
 
 ### append?
 
-> `optional` **append**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **append?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: open the file in append mode.
 Note that setting this to `true` implies setting `write` to `true`.
@@ -37,7 +37,7 @@ Note that setting this to `true` implies setting `write` to `true`.
 
 ### create?
 
-> `optional` **create**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **create?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: create a new file if it doesn't exist.
 Note that this only works if `write` or `append` are set to `true`.
@@ -50,7 +50,7 @@ Note that this only works if `write` or `append` are set to `true`.
 
 ### createNew?
 
-> `optional` **createNew**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **createNew?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: always create a new file, even if one already exists.
 Note that this only works if `write` or `append` are set to `true`.
@@ -64,7 +64,7 @@ Note that `create` and `truncate` are ignored if this is set to `true`.
 
 ### read?
 
-> `optional` **read**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **read?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the file be opened with read access?
 
@@ -76,7 +76,7 @@ Should the file be opened with read access?
 
 ### truncate?
 
-> `optional` **truncate**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **truncate?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: truncate (remove all contents of) the file.
 Note that this only works if `write` is `true`.
@@ -89,7 +89,7 @@ Note that this only works if `write` is `true`.
 
 ### write?
 
-> `optional` **write**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **write?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the file be opened with write access?
 

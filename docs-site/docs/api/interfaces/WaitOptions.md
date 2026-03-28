@@ -1,7 +1,7 @@
-# Interface: WaitForActionOptions
+# Interface: WaitOptions
 
 
-Options for waiting on a notification action or close event.
+Options for datetime wait methods.
 
 ## Properties
 
@@ -9,7 +9,7 @@ Options for waiting on a notification action or close event.
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
-Abort signal to cancel waiting.
+Abort signal to cancel the wait.
 
 #### Default Value
 

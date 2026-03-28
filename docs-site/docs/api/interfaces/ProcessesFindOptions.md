@@ -7,7 +7,7 @@ Process search options.
 
 ### name?
 
-> `optional` **name**: [`NameLike`](../type-aliases/NameLike.md)
+> `optional` **name?**: [`NameLike`](../type-aliases/NameLike.md)
 
 Match by process name.
 When undefined, name is not filtered.
@@ -20,7 +20,7 @@ When undefined, name is not filtered.
 
 ### parentPid?
 
-> `optional` **parentPid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **parentPid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Match by parent process ID.
 When undefined, parent PID is not filtered.
@@ -33,7 +33,7 @@ When undefined, parent PID is not filtered.
 
 ### pid?
 
-> `optional` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **pid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Match by process ID.
 When undefined, any PID is accepted.
@@ -46,7 +46,7 @@ When undefined, any PID is accepted.
 
 ### rescan?
 
-> `optional` **rescan**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **rescan?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Refresh process list before filtering.
 
@@ -58,7 +58,7 @@ Refresh process list before filtering.
 
 ### status?
 
-> `optional` **status**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
+> `optional` **status?**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
 
 Match by process status.
 When undefined, status is not filtered.

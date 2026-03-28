@@ -16,7 +16,7 @@ await sound.finished;  // wait until the sound ends
 
 ### duration?
 
-> `readonly` `optional` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **duration?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 The total duration of the sound in seconds, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if unknown.
 

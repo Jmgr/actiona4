@@ -13,7 +13,7 @@ println(formatBytes(usage.used), formatBytes(swap.used));
 
 ### cgroupLimits?
 
-> `readonly` `optional` **cgroupLimits**: [`CGroupLimits`](CGroupLimits.md)
+> `readonly` `optional` **cgroupLimits?**: [`CGroupLimits`](CGroupLimits.md)
 
 CGroup limits
 

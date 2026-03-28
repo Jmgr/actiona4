@@ -58,7 +58,7 @@ await Directory.create("/tmp/a/b/c", { recursive: false });
 
 ###### recursive?
 
-> `optional` **recursive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **recursive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the directories be created or removed recursively?
 
@@ -104,7 +104,7 @@ const entries = await Directory.listEntries("/home/user/docs", {
 
 ###### fetchSize?
 
-> `optional` **fetchSize**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **fetchSize?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should each entry's size be fetched?
 
@@ -116,7 +116,7 @@ Should each entry's size be fetched?
 
 ###### sort?
 
-> `optional` **sort**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **sort?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the entries be sorted?
 
@@ -159,7 +159,7 @@ await Directory.remove("/tmp/my/dir", { recursive: false });
 
 ###### recursive?
 
-> `optional` **recursive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **recursive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the directories be created or removed recursively?
 

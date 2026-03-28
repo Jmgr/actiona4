@@ -7,7 +7,7 @@ Options for `waitForButton`.
 
 ### button?
 
-> `optional` **button**: [`Button`](../enumerations/Button.md)
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
 
 Mouse button to wait for. If not specified, waits for any button.
 
@@ -19,7 +19,7 @@ Mouse button to wait for. If not specified, waits for any button.
 
 ### signal?
 
-> `optional` **signal**: [`AbortSignal`](AbortSignal.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel the wait.
 

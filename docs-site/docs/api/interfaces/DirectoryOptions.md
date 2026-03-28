@@ -12,7 +12,7 @@ await Directory.remove("/tmp/a", { recursive: false });
 
 ### recursive?
 
-> `optional` **recursive**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **recursive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Should the directories be created or removed recursively?
 
