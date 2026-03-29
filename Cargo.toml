@@ -230,9 +230,7 @@ tauri-build = "2.5.6"
 
 [patch.crates-io]
 rquickjs-core = { git = "https://github.com/DelSkayn/rquickjs", rev = "69aed5c" }
-# Patch for hardcoded alpha_mode = alpha_modes[0] which always picks Opaque, preventing
-# transparent windows from working with the OS compositor (upstream issue #370).
-pixels = { path = "vendor/pixels" }
+pixels = { git = "https://github.com/Jmgr/pixels", rev = "7f73a99" }
 
 [profile.release]
 strip = true

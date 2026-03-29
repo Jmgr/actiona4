@@ -57,12 +57,17 @@ pub fn create_magnifier_pipeline(
         view_formats: &[],
     });
     queue.write_texture(
-        texture.as_image_copy(),
+        wgpu::TexelCopyTextureInfo {
+            texture: &texture,
+            mip_level: 0,
+            origin: wgpu::Origin3d::ZERO,
+            aspect: wgpu::TextureAspect::All,
+        },
         &screenshot.rgba,
-        wgpu::ImageDataLayout {
+        wgpu::TexelCopyBufferLayout {
             offset: 0,
             bytes_per_row: Some(screenshot.width * 4),
-            rows_per_image: None,
+            rows_per_image: Some(screenshot.height),
         },
         texture_size,
     );
@@ -147,16 +152,19 @@ pub fn create_magnifier_pipeline(
     });
 
     let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+        cache: None,
         label: Some("magnifier_pipeline"),
         layout: Some(&pipeline_layout),
         vertex: wgpu::VertexState {
             module: &shader,
-            entry_point: "vs_main",
+            entry_point: Some("vs_main"),
             buffers: &[],
+            compilation_options: wgpu::PipelineCompilationOptions::default(),
         },
         fragment: Some(wgpu::FragmentState {
             module: &shader,
-            entry_point: "fs_main",
+            entry_point: Some("fs_main"),
+            compilation_options: wgpu::PipelineCompilationOptions::default(),
             targets: &[Some(wgpu::ColorTargetState {
                 format: surface_format,
                 blend: Some(wgpu::BlendState::ALPHA_BLENDING),
