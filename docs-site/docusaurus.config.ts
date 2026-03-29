@@ -95,6 +95,7 @@ const config: Config = {
         defaultCategory: "Misc",
         categorizeByGroup: false,
         disableSources: true,
+        sort: ["enum-value-ascending"],
         navigation: {
           includeCategories: true,
           includeGroups: false,

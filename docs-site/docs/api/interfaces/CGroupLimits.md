@@ -24,6 +24,14 @@ CGroup limits
 
 ## Properties
 
+### totalMemory
+
+> `readonly` **totalMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Total memory
+
+***
+
 ### freeMemory
 
 > `readonly` **freeMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -45,14 +53,6 @@ Free swap
 > `readonly` **rss**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 RSS
-
-***
-
-### totalMemory
-
-> `readonly` **totalMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Total memory
 
 ## Methods
 

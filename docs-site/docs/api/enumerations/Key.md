@@ -12,12 +12,327 @@ keyboard.tap("a");
 
 ## Enumeration Members
 
+### Num0
+
+> **Num0**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '0' key (not numpad)
+`Key.Num0`
+
+***
+
+### Num1
+
+> **Num1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '1' key (not numpad)
+`Key.Num1`
+
+***
+
+### Num2
+
+> **Num2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '2' key (not numpad)
+`Key.Num2`
+
+***
+
+### Num3
+
+> **Num3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '3' key (not numpad)
+`Key.Num3`
+
+***
+
+### Num4
+
+> **Num4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '4' key (not numpad)
+`Key.Num4`
+
+***
+
+### Num5
+
+> **Num5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '5' key (not numpad)
+`Key.Num5`
+
+***
+
+### Num6
+
+> **Num6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '6' key (not numpad)
+`Key.Num6`
+
+***
+
+### Num7
+
+> **Num7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '7' key (not numpad)
+`Key.Num7`
+
+***
+
+### Num8
+
+> **Num8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '8' key (not numpad)
+`Key.Num8`
+
+***
+
+### Num9
+
+> **Num9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Top-row digit '9' key (not numpad)
+`Key.Num9`
+
+***
+
 ### A
 
 > **A**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Letter key 'A'
 `Key.A`
+
+***
+
+### B
+
+> **B**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'B'
+`Key.B`
+
+***
+
+### C
+
+> **C**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'C'
+`Key.C`
+
+***
+
+### D
+
+> **D**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'D'
+`Key.D`
+
+***
+
+### E
+
+> **E**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'E'
+`Key.E`
+
+***
+
+### F
+
+> **F**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'F'
+`Key.F`
+
+***
+
+### G
+
+> **G**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'G'
+`Key.G`
+
+***
+
+### H
+
+> **H**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'H'
+`Key.H`
+
+***
+
+### I
+
+> **I**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'I'
+`Key.I`
+
+***
+
+### J
+
+> **J**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'J'
+`Key.J`
+
+***
+
+### K
+
+> **K**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'K'
+`Key.K`
+
+***
+
+### L
+
+> **L**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'L'
+`Key.L`
+
+***
+
+### M
+
+> **M**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'M'
+`Key.M`
+
+***
+
+### N
+
+> **N**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'N'
+`Key.N`
+
+***
+
+### O
+
+> **O**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'O'
+`Key.O`
+
+***
+
+### P
+
+> **P**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'P'
+`Key.P`
+
+***
+
+### Q
+
+> **Q**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'Q'
+`Key.Q`
+
+***
+
+### R
+
+> **R**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'R'
+`Key.R`
+
+***
+
+### S
+
+> **S**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'S'
+`Key.S`
+
+***
+
+### T
+
+> **T**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'T'
+`Key.T`
+
+***
+
+### U
+
+> **U**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'U'
+`Key.U`
+
+***
+
+### V
+
+> **V**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'V'
+`Key.V`
+
+***
+
+### W
+
+> **W**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'W'
+`Key.W`
+
+***
+
+### X
+
+> **X**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'X'
+`Key.X`
+
+***
+
+### Y
+
+> **Y**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'Y'
+`Key.Y`
+
+***
+
+### Z
+
+> **Z**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Letter key 'Z'
+`Key.Z`
 
 ***
 
@@ -119,15 +434,6 @@ Attention key (legacy/rare)
 
 ***
 
-### B
-
-> **B**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'B'
-`Key.B`
-
-***
-
 ### Backspace
 
 > **Backspace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -137,12 +443,12 @@ Backspace / Delete-previous-character
 
 ***
 
-### Begin
+### Break
 
-> **Begin**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Break**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Begin key
-`Key.Begin`
+Break key (X11/Linux)
+`Key.Break`
 
 #### Platform
 
@@ -153,12 +459,12 @@ Begin key
 
 ***
 
-### Break
+### Begin
 
-> **Break**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Begin**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Break key (X11/Linux)
-`Key.Break`
+Begin key
+`Key.Begin`
 
 #### Platform
 
@@ -281,15 +587,6 @@ Browser Stop
 
 ***
 
-### C
-
-> **C**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'C'
-`Key.C`
-
-***
-
 ### Cancel
 
 > **Cancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -355,15 +652,6 @@ Cursor Select (CRSel)
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
-
-***
-
-### D
-
-> **D**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'D'
-`Key.D`
 
 ***
 
@@ -627,15 +915,6 @@ Arrow: Down
 
 ***
 
-### E
-
-> **E**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'E'
-`Key.E`
-
-***
-
 ### End
 
 > **End**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -695,21 +974,84 @@ Extend Selection (ExSel)
 
 ***
 
-### F
-
-> **F**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'F'
-`Key.F`
-
-***
-
 ### F1
 
 > **F1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Function key F1
 `Key.F1`
+
+***
+
+### F2
+
+> **F2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F2
+`Key.F2`
+
+***
+
+### F3
+
+> **F3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F3
+`Key.F3`
+
+***
+
+### F4
+
+> **F4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F4
+`Key.F4`
+
+***
+
+### F5
+
+> **F5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F5
+`Key.F5`
+
+***
+
+### F6
+
+> **F6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F6
+`Key.F6`
+
+***
+
+### F7
+
+> **F7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F7
+`Key.F7`
+
+***
+
+### F8
+
+> **F8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F8
+`Key.F8`
+
+***
+
+### F9
+
+> **F9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Function key F9
+`Key.F9`
 
 ***
 
@@ -800,15 +1142,6 @@ Function key F18
 
 Function key F19
 `Key.F19`
-
-***
-
-### F2
-
-> **F2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F2
-`Key.F2`
 
 ***
 
@@ -937,15 +1270,6 @@ Function key F29
 
 ***
 
-### F3
-
-> **F3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F3
-`Key.F3`
-
-***
-
 ### F30
 
 > **F30**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1042,60 +1366,6 @@ Function key F35
 
 ***
 
-### F4
-
-> **F4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F4
-`Key.F4`
-
-***
-
-### F5
-
-> **F5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F5
-`Key.F5`
-
-***
-
-### F6
-
-> **F6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F6
-`Key.F6`
-
-***
-
-### F7
-
-> **F7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F7
-`Key.F7`
-
-***
-
-### F8
-
-> **F8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F8
-`Key.F8`
-
-***
-
-### F9
-
-> **F9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Function key F9
-`Key.F9`
-
-***
-
 ### Final
 
 > **Final**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1125,15 +1395,6 @@ Find key
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
-
-***
-
-### G
-
-> **G**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'G'
-`Key.G`
 
 ***
 
@@ -1521,15 +1782,6 @@ Gamepad: Y button
 
 ***
 
-### H
-
-> **H**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'H'
-`Key.H`
-
-***
-
 ### Hangeul
 
 > **Hangeul**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1579,15 +1831,6 @@ Help key
 
 Home key
 `Key.Home`
-
-***
-
-### I
-
-> **I**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'I'
-`Key.I`
 
 ***
 
@@ -1680,15 +1923,6 @@ Insert key
 
 ***
 
-### J
-
-> **J**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'J'
-`Key.J`
-
-***
-
 ### Junja
 
 > **Junja**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1702,15 +1936,6 @@ IME: Junja mode
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
-
-***
-
-### K
-
-> **K**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'K'
-`Key.K`
 
 ***
 
@@ -1736,15 +1961,6 @@ IME: Kana mode
 
 Kanji toggle (Japanese layout)
 `Key.Kanji`
-
-***
-
-### L
-
-> **L**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'L'
-`Key.L`
 
 ***
 
@@ -1812,12 +2028,12 @@ Launch media selector
 
 ***
 
-### LeftAlt
+### LeftControl
 
-> **LeftAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **LeftControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Left Alt/Menu
-`Key.LeftAlt`
+Left Control
+`Key.LeftControl`
 
 ***
 
@@ -1830,12 +2046,28 @@ Arrow: Left
 
 ***
 
-### LeftControl
+### Linefeed
 
-> **LeftControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Linefeed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Left Control
-`Key.LeftControl`
+Line Feed key
+`Key.Linefeed`
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+</div>
+
+***
+
+### LeftAlt
+
+> **LeftAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left Alt/Menu
+`Key.LeftAlt`
 
 ***
 
@@ -1861,31 +2093,6 @@ Left Windows / Super key
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
-
-***
-
-### Linefeed
-
-> **Linefeed**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Line Feed key
-`Key.Linefeed`
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-</div>
-
-***
-
-### M
-
-> **M**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'M'
-`Key.M`
 
 ***
 
@@ -1934,22 +2141,6 @@ Meta key (also known as "windows", "super", and "command")
 
 ***
 
-### MicrophoneMute
-
-> **MicrophoneMute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Microphone mute
-`Key.MicrophoneMute`
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-</div>
-
-***
-
 ### ModeChange
 
 > **ModeChange**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -1965,15 +2156,6 @@ IME mode change
 
 Numpad multiply '*'
 `Key.Multiply`
-
-***
-
-### N
-
-> **N**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'N'
-`Key.N`
 
 ***
 
@@ -2153,96 +2335,6 @@ Placeholder "no key"
 
 ***
 
-### Num0
-
-> **Num0**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '0' key (not numpad)
-`Key.Num0`
-
-***
-
-### Num1
-
-> **Num1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '1' key (not numpad)
-`Key.Num1`
-
-***
-
-### Num2
-
-> **Num2**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '2' key (not numpad)
-`Key.Num2`
-
-***
-
-### Num3
-
-> **Num3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '3' key (not numpad)
-`Key.Num3`
-
-***
-
-### Num4
-
-> **Num4**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '4' key (not numpad)
-`Key.Num4`
-
-***
-
-### Num5
-
-> **Num5**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '5' key (not numpad)
-`Key.Num5`
-
-***
-
-### Num6
-
-> **Num6**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '6' key (not numpad)
-`Key.Num6`
-
-***
-
-### Num7
-
-> **Num7**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '7' key (not numpad)
-`Key.Num7`
-
-***
-
-### Num8
-
-> **Num8**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '8' key (not numpad)
-`Key.Num8`
-
-***
-
-### Num9
-
-> **Num9**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Top-row digit '9' key (not numpad)
-`Key.Num9`
-
-***
-
 ### Numlock
 
 > **Numlock**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -2348,15 +2440,6 @@ Numpad digit '9'
 
 Numpad Enter
 `Key.NumpadEnter`
-
-***
-
-### O
-
-> **O**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'O'
-`Key.O`
 
 ***
 
@@ -2913,15 +2996,6 @@ Same as Alt
 
 ***
 
-### P
-
-> **P**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'P'
-`Key.P`
-
-***
-
 ### Pa1
 
 > **Pa1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -3022,21 +3096,12 @@ IME Process key
 
 ***
 
-### Q
+### RightControl
 
-> **Q**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **RightControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Letter key 'Q'
-`Key.Q`
-
-***
-
-### R
-
-> **R**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'R'
-`Key.R`
+Right Control
+`Key.RightControl`
 
 ***
 
@@ -3065,6 +3130,15 @@ Enter / Return
 
 ***
 
+### RightArrow
+
+> **RightArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Arrow: Right
+`Key.RightArrow`
+
+***
+
 ### RightAlt
 
 > **RightAlt**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -3078,24 +3152,6 @@ Right Alt/Menu
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
 </div>
-
-***
-
-### RightArrow
-
-> **RightArrow**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Arrow: Right
-`Key.RightArrow`
-
-***
-
-### RightControl
-
-> **RightControl**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Right Control
-`Key.RightControl`
 
 ***
 
@@ -3120,31 +3176,6 @@ Right Windows / Super key
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Linux" aria-label="Not supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Linux</span></span>
-</div>
-
-***
-
-### S
-
-> **S**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'S'
-`Key.S`
-
-***
-
-### ScriptSwitch
-
-> **ScriptSwitch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Script switch
-`Key.ScriptSwitch`
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
 
 ***
@@ -3187,6 +3218,22 @@ Scroll Lock
 
 Select key
 `Key.Select`
+
+***
+
+### ScriptSwitch
+
+> **ScriptSwitch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Script switch
+`Key.ScriptSwitch`
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+</div>
 
 ***
 
@@ -3281,30 +3328,12 @@ System Request (SysRq)
 
 ***
 
-### T
-
-> **T**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'T'
-`Key.T`
-
-***
-
 ### Tab
 
 > **Tab**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Tab / focus next
 `Key.Tab`
-
-***
-
-### U
-
-> **U**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'U'
-`Key.U`
 
 ***
 
@@ -3330,15 +3359,6 @@ Undo
 
 Arrow: Up
 `Key.UpArrow`
-
-***
-
-### V
-
-> **V**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'V'
-`Key.V`
 
 ***
 
@@ -3369,39 +3389,19 @@ Volume up
 
 ***
 
-### W
+### MicrophoneMute
 
-> **W**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **MicrophoneMute**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Letter key 'W'
-`Key.W`
+Microphone mute
+`Key.MicrophoneMute`
 
-***
+#### Platform
 
-### X
-
-> **X**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'X'
-`Key.X`
-
-***
-
-### Y
-
-> **Y**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'Y'
-`Key.Y`
-
-***
-
-### Z
-
-> **Z**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Letter key 'Z'
-`Key.Z`
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+</div>
 
 ***
 

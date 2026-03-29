@@ -24,93 +24,27 @@ const point = await displays.randomPoint();
 
 ## Methods
 
-### all()
+### randomPoint()
 
-> **all**(): readonly [`DisplayInfo`](DisplayInfo.md)[]
+> <span class="async-badge">async</span> **randomPoint**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
-Returns all displays.
+Returns a random point within the bounds of all connected displays.
 
 #### Returns
 
-readonly [`DisplayInfo`](DisplayInfo.md)[]
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
 
 ***
 
-### bottommost()
+### primary()
 
-> **bottommost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+> **primary**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
-Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
+Returns the primary display, or throws if no primary display is found.
 
 #### Returns
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-***
-
-### center()
-
-> **center**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-Returns the display whose center is closest to the center of the desktop, or throws if none.
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-***
-
-### fromDeviceName()
-
-> **fromDeviceName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Finds a display by its device name, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
-
-#### Parameters
-
-##### name
-
-[`NameLike`](../type-aliases/NameLike.md)
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-***
-
-### fromId()
-
-> **fromId**(`id`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Finds a display by its unique numeric ID, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
-
-#### Parameters
-
-##### id
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-***
-
-### fromName()
-
-> **fromName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Finds a display by its friendly name (e.g. `"HDMI-1"`), or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
-
-#### Parameters
-
-##### name
-
-[`NameLike`](../type-aliases/NameLike.md)
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 ***
 
@@ -154,6 +88,72 @@ Returns the display that contains the given point, or [`undefined`](https://deve
 
 ***
 
+### fromName()
+
+> **fromName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Finds a display by its friendly name (e.g. `"HDMI-1"`), or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
+
+#### Parameters
+
+##### name
+
+[`NameLike`](../type-aliases/NameLike.md)
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+***
+
+### fromDeviceName()
+
+> **fromDeviceName**(`name`: [`NameLike`](../type-aliases/NameLike.md)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Finds a display by its device name, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
+
+#### Parameters
+
+##### name
+
+[`NameLike`](../type-aliases/NameLike.md)
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+***
+
+### fromId()
+
+> **fromId**(`id`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Finds a display by its unique numeric ID, or [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if not found.
+
+#### Parameters
+
+##### id
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+***
+
+### smallest()
+
+> **smallest**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the smallest display by area, or throws if no displays are connected.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
 ### largest()
 
 > **largest**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
@@ -178,47 +178,11 @@ Returns the display furthest to the left (minimum left edge), or throws if none.
 
 ***
 
-### primary()
-
-> **primary**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-Returns the primary display, or throws if no primary display is found.
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-***
-
-### randomPoint()
-
-> <span class="async-badge">async</span> **randomPoint**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
-
-Returns a random point within the bounds of all connected displays.
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>\>
-
-***
-
 ### rightmost()
 
 > **rightmost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
 
 Returns the display furthest to the right (maximum right edge), or throws if none.
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-***
-
-### smallest()
-
-> **smallest**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
-
-Returns the smallest display by area, or throws if no displays are connected.
 
 #### Returns
 
@@ -235,6 +199,42 @@ Returns the display furthest to the top (minimum top edge), or throws if none.
 #### Returns
 
 [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### bottommost()
+
+> **bottommost**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### center()
+
+> **center**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+Returns the display whose center is closest to the center of the desktop, or throws if none.
+
+#### Returns
+
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DisplayInfo`](DisplayInfo.md)\>
+
+***
+
+### all()
+
+> **all**(): readonly [`DisplayInfo`](DisplayInfo.md)[]
+
+Returns all displays.
+
+#### Returns
+
+readonly [`DisplayInfo`](DisplayInfo.md)[]
 
 ***
 

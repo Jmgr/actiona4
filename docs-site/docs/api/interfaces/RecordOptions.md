@@ -12,15 +12,40 @@ const m = await macros.record({
 
 ## Properties
 
-### keyboardKeys?
+### stopKeys?
 
-> `optional` **keyboardKeys?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **stopKeys?**: [`Key`](../enumerations/Key.md)[]
 
-Record keyboard key press and release events.
+Key combination that stops the recording.
+All listed keys must be pressed simultaneously.
 
 #### Default Value
 
-`true`
+`[Key.Escape]`
+
+***
+
+### timeout?
+
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Maximum recording duration before automatically stopping.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### mousePositionInterval?
+
+> `optional` **mousePositionInterval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+How often to sample the mouse position.
+
+#### Default Value
+
+`"16ms"`
 
 ***
 
@@ -48,18 +73,6 @@ Record mouse cursor position.
 
 ***
 
-### mousePositionInterval?
-
-> `optional` **mousePositionInterval?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-How often to sample the mouse position.
-
-#### Default Value
-
-`"16ms"`
-
-***
-
 ### mouseScroll?
 
 > `optional` **mouseScroll?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
@@ -72,36 +85,23 @@ Record mouse scroll wheel events.
 
 ***
 
+### keyboardKeys?
+
+> `optional` **keyboardKeys?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Record keyboard key press and release events.
+
+#### Default Value
+
+`true`
+
+***
+
 ### signal?
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
 Abort signal to cancel recording.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### stopKeys?
-
-> `optional` **stopKeys?**: [`Key`](../enumerations/Key.md)[]
-
-Key combination that stops the recording.
-All listed keys must be pressed simultaneously.
-
-#### Default Value
-
-`[Key.Escape]`
-
-***
-
-### timeout?
-
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Maximum recording duration before automatically stopping.
 
 #### Default Value
 

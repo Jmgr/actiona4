@@ -42,18 +42,6 @@ Font size in pixels.
 
 ***
 
-### horizontalAlign?
-
-> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
-
-Horizontal alignment relative to the provided position.
-
-#### Default Value
-
-`TextHorizontalAlign.Left`
-
-***
-
 ### lineSpacing?
 
 > `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -63,6 +51,18 @@ Multiplier applied to the default line height when rendering multi-line text.
 #### Default Value
 
 `1`
+
+***
+
+### horizontalAlign?
+
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+
+Horizontal alignment relative to the provided position.
+
+#### Default Value
+
+`TextHorizontalAlign.Left`
 
 ***
 

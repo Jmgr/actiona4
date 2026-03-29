@@ -17,27 +17,27 @@ await mouse.move(500, 300, {
 
 ## Properties
 
-### interval?
+### speed?
 
-> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Interval in seconds
+Movement speed in pixels per second.
 
 #### Default Value
 
-`0.01`
+`2000`
 
 ***
 
-### perlinAmplitude?
+### tween?
 
-> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
-Amplitude of the Perlin noise applied to the movement path.
+Easing function used for the movement.
 
 #### Default Value
 
-`5`
+`Tween.SineOut`
 
 ***
 
@@ -53,15 +53,15 @@ Scale of the Perlin noise applied to the movement path.
 
 ***
 
-### speed?
+### perlinAmplitude?
 
-> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Movement speed in pixels per second.
+Amplitude of the Perlin noise applied to the movement path.
 
 #### Default Value
 
-`2000`
+`5`
 
 ***
 
@@ -77,12 +77,12 @@ Random offset applied to the target position, in pixels.
 
 ***
 
-### tween?
+### interval?
 
-> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
-Easing function used for the movement.
+Interval in seconds
 
 #### Default Value
 
-`Tween.SineOut`
+`0.01`

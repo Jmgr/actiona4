@@ -45,6 +45,152 @@ const bytes = await task;
 
 <div class="options-fields">
 
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### userName?
+
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+User name for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### password?
+
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Password for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### headers?
+
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Additional HTTP headers to send with the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### method?
+
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
+
+<div class="options-fields">
+
+###### Get
+
+> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Get`
+
+***
+
+###### Post
+
+> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Post`
+
+***
+
+###### Put
+
+> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Put`
+
+***
+
+###### Delete
+
+> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Delete`
+
+***
+
+###### Head
+
+> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Head`
+
+***
+
+###### Options
+
+> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Options`
+
+***
+
+###### Connect
+
+> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Connect`
+
+***
+
+###### Patch
+
+> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Patch`
+
+***
+
+###### Trace
+
+> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Trace`
+
+</div>
+
+HTTP method to use for the request.
+
+###### Default Value
+
+`Method.Get`
+
+***
+
+###### timeout?
+
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Request timeout duration.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
 ###### contentType?
 
 > `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -71,129 +217,6 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ***
 
-###### headers?
-
-> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Additional HTTP headers to send with the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### method?
-
-> `optional` **method?**: [`Method`](../enumerations/Method.md)
-
-<div class="options-fields">
-
-###### Connect
-
-> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Connect`
-
-***
-
-###### Delete
-
-> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Delete`
-
-***
-
-###### Get
-
-> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Get`
-
-***
-
-###### Head
-
-> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Head`
-
-***
-
-###### Options
-
-> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Options`
-
-***
-
-###### Patch
-
-> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Patch`
-
-***
-
-###### Post
-
-> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Post`
-
-***
-
-###### Put
-
-> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Put`
-
-***
-
-###### Trace
-
-> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Trace`
-
-</div>
-
-HTTP method to use for the request.
-
-###### Default Value
-
-`Method.Get`
-
-***
-
-###### multipart?
-
-> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
-
-Form multipart data.
-Sets content-type and content-length appropriately.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### password?
-
-> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Password for HTTP basic authentication.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ###### query?
 
 > `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
@@ -206,35 +229,12 @@ Additional query parameters.
 
 ***
 
-###### signal?
+###### multipart?
 
-> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
-Abort signal to cancel the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### timeout?
-
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Request timeout duration.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### userName?
-
-> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-User name for HTTP basic authentication.
+Form multipart data.
+Sets content-type and content-length appropriately.
 
 ###### Default Value
 
@@ -248,22 +248,22 @@ User name for HTTP basic authentication.
 
 ***
 
-### downloadFile()
+### downloadText()
 
-> <span class="async-badge">async</span> **downloadFile**(`url`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `directory?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`WebOptions`](WebOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
+> <span class="async-badge">async</span> **downloadText**(`url`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`WebOptions`](WebOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
 
-Downloads a file to a directory.
+Downloads a text file.
 
 ```ts
-const filePath = await web.downloadFile("https://example.com/file.zip");
+const text = await web.downloadText("https://example.com/data.json");
 ```
 
 ```ts
-const task = web.downloadFile("https://example.com/file.zip", "/tmp");
+const task = web.downloadText("https://example.com/data.json");
 for await (const progress of task) {
   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
 }
-const filePath = await task;
+const text = await task;
 ```
 
 #### Parameters
@@ -272,15 +272,157 @@ const filePath = await task;
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-##### directory?
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
 ##### options?
 
 [`WebOptions`](WebOptions.md)
 
 <div class="options-fields">
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### userName?
+
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+User name for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### password?
+
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Password for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### headers?
+
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Additional HTTP headers to send with the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### method?
+
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
+
+<div class="options-fields">
+
+###### Get
+
+> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Get`
+
+***
+
+###### Post
+
+> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Post`
+
+***
+
+###### Put
+
+> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Put`
+
+***
+
+###### Delete
+
+> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Delete`
+
+***
+
+###### Head
+
+> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Head`
+
+***
+
+###### Options
+
+> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Options`
+
+***
+
+###### Connect
+
+> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Connect`
+
+***
+
+###### Patch
+
+> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Patch`
+
+***
+
+###### Trace
+
+> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Trace`
+
+</div>
+
+HTTP method to use for the request.
+
+###### Default Value
+
+`Method.Get`
+
+***
+
+###### timeout?
+
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Request timeout duration.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
 
 ###### contentType?
 
@@ -308,129 +450,6 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ***
 
-###### headers?
-
-> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Additional HTTP headers to send with the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### method?
-
-> `optional` **method?**: [`Method`](../enumerations/Method.md)
-
-<div class="options-fields">
-
-###### Connect
-
-> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Connect`
-
-***
-
-###### Delete
-
-> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Delete`
-
-***
-
-###### Get
-
-> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Get`
-
-***
-
-###### Head
-
-> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Head`
-
-***
-
-###### Options
-
-> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Options`
-
-***
-
-###### Patch
-
-> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Patch`
-
-***
-
-###### Post
-
-> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Post`
-
-***
-
-###### Put
-
-> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Put`
-
-***
-
-###### Trace
-
-> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Trace`
-
-</div>
-
-HTTP method to use for the request.
-
-###### Default Value
-
-`Method.Get`
-
-***
-
-###### multipart?
-
-> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
-
-Form multipart data.
-Sets content-type and content-length appropriately.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### password?
-
-> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Password for HTTP basic authentication.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ###### query?
 
 > `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
@@ -443,35 +462,12 @@ Additional query parameters.
 
 ***
 
-###### signal?
+###### multipart?
 
-> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
-Abort signal to cancel the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### timeout?
-
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Request timeout duration.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### userName?
-
-> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-User name for HTTP basic authentication.
+Form multipart data.
+Sets content-type and content-length appropriately.
 
 ###### Default Value
 
@@ -515,6 +511,152 @@ const image = await task;
 
 <div class="options-fields">
 
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### userName?
+
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+User name for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### password?
+
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Password for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### headers?
+
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Additional HTTP headers to send with the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### method?
+
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
+
+<div class="options-fields">
+
+###### Get
+
+> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Get`
+
+***
+
+###### Post
+
+> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Post`
+
+***
+
+###### Put
+
+> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Put`
+
+***
+
+###### Delete
+
+> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Delete`
+
+***
+
+###### Head
+
+> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Head`
+
+***
+
+###### Options
+
+> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Options`
+
+***
+
+###### Connect
+
+> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Connect`
+
+***
+
+###### Patch
+
+> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Patch`
+
+***
+
+###### Trace
+
+> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Trace`
+
+</div>
+
+HTTP method to use for the request.
+
+###### Default Value
+
+`Method.Get`
+
+***
+
+###### timeout?
+
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Request timeout duration.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
 ###### contentType?
 
 > `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -541,129 +683,6 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ***
 
-###### headers?
-
-> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Additional HTTP headers to send with the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### method?
-
-> `optional` **method?**: [`Method`](../enumerations/Method.md)
-
-<div class="options-fields">
-
-###### Connect
-
-> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Connect`
-
-***
-
-###### Delete
-
-> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Delete`
-
-***
-
-###### Get
-
-> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Get`
-
-***
-
-###### Head
-
-> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Head`
-
-***
-
-###### Options
-
-> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Options`
-
-***
-
-###### Patch
-
-> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Patch`
-
-***
-
-###### Post
-
-> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Post`
-
-***
-
-###### Put
-
-> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Put`
-
-***
-
-###### Trace
-
-> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Trace`
-
-</div>
-
-HTTP method to use for the request.
-
-###### Default Value
-
-`Method.Get`
-
-***
-
-###### multipart?
-
-> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
-
-Form multipart data.
-Sets content-type and content-length appropriately.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### password?
-
-> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Password for HTTP basic authentication.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ###### query?
 
 > `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
@@ -676,35 +695,12 @@ Additional query parameters.
 
 ***
 
-###### signal?
+###### multipart?
 
-> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
-Abort signal to cancel the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### timeout?
-
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Request timeout duration.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### userName?
-
-> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-User name for HTTP basic authentication.
+Form multipart data.
+Sets content-type and content-length appropriately.
 
 ###### Default Value
 
@@ -718,22 +714,22 @@ User name for HTTP basic authentication.
 
 ***
 
-### downloadText()
+### downloadFile()
 
-> <span class="async-badge">async</span> **downloadText**(`url`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`WebOptions`](WebOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
+> <span class="async-badge">async</span> **downloadFile**(`url`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `directory?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`WebOptions`](WebOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`WebProgress`](WebProgress.md)\>
 
-Downloads a text file.
+Downloads a file to a directory.
 
 ```ts
-const text = await web.downloadText("https://example.com/data.json");
+const filePath = await web.downloadFile("https://example.com/file.zip");
 ```
 
 ```ts
-const task = web.downloadText("https://example.com/data.json");
+const task = web.downloadFile("https://example.com/file.zip", "/tmp");
 for await (const progress of task) {
   println(`${formatBytes(progress.current)}/${formatBytes(progress.total)}`);
 }
-const text = await task;
+const filePath = await task;
 ```
 
 #### Parameters
@@ -742,11 +738,161 @@ const text = await task;
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
+##### directory?
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
 ##### options?
 
 [`WebOptions`](WebOptions.md)
 
 <div class="options-fields">
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### userName?
+
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+User name for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### password?
+
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Password for HTTP basic authentication.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### headers?
+
+> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Additional HTTP headers to send with the request.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### method?
+
+> `optional` **method?**: [`Method`](../enumerations/Method.md)
+
+<div class="options-fields">
+
+###### Get
+
+> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Get`
+
+***
+
+###### Post
+
+> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Post`
+
+***
+
+###### Put
+
+> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Put`
+
+***
+
+###### Delete
+
+> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Delete`
+
+***
+
+###### Head
+
+> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Head`
+
+***
+
+###### Options
+
+> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Options`
+
+***
+
+###### Connect
+
+> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Connect`
+
+***
+
+###### Patch
+
+> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Patch`
+
+***
+
+###### Trace
+
+> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Trace`
+
+</div>
+
+HTTP method to use for the request.
+
+###### Default Value
+
+`Method.Get`
+
+***
+
+###### timeout?
+
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Request timeout duration.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
 
 ###### contentType?
 
@@ -774,129 +920,6 @@ Sets content-type to "application/x-www-form-urlencoded".
 
 ***
 
-###### headers?
-
-> `optional` **headers?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Additional HTTP headers to send with the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### method?
-
-> `optional` **method?**: [`Method`](../enumerations/Method.md)
-
-<div class="options-fields">
-
-###### Connect
-
-> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Connect`
-
-***
-
-###### Delete
-
-> **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Delete`
-
-***
-
-###### Get
-
-> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Get`
-
-***
-
-###### Head
-
-> **Head**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Head`
-
-***
-
-###### Options
-
-> **Options**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Options`
-
-***
-
-###### Patch
-
-> **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Patch`
-
-***
-
-###### Post
-
-> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Post`
-
-***
-
-###### Put
-
-> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Put`
-
-***
-
-###### Trace
-
-> **Trace**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Trace`
-
-</div>
-
-HTTP method to use for the request.
-
-###### Default Value
-
-`Method.Get`
-
-***
-
-###### multipart?
-
-> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
-
-Form multipart data.
-Sets content-type and content-length appropriately.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### password?
-
-> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Password for HTTP basic authentication.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ###### query?
 
 > `optional` **query?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
@@ -909,35 +932,12 @@ Additional query parameters.
 
 ***
 
-###### signal?
+###### multipart?
 
-> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
-Abort signal to cancel the request.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### timeout?
-
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Request timeout duration.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### userName?
-
-> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-User name for HTTP basic authentication.
+Form multipart data.
+Sets content-type and content-length appropriately.
 
 ###### Default Value
 

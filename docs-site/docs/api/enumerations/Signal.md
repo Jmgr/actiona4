@@ -15,15 +15,6 @@ await process.sendSignal(1234, Signal.Term);
 
 ## Enumeration Members
 
-### Cont
-
-> **Cont**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`SIGCONT` - continue a stopped process.
-`Signal.Cont`
-
-***
-
 ### Hup
 
 > **Hup**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -42,30 +33,12 @@ await process.sendSignal(1234, Signal.Term);
 
 ***
 
-### Kill
-
-> **Kill**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`SIGKILL` - force kill immediately.
-`Signal.Kill`
-
-***
-
 ### Quit
 
 > **Quit**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGQUIT` - quit; similar to `SIGINT`, often with core dump.
 `Signal.Quit`
-
-***
-
-### Stop
-
-> **Stop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`SIGSTOP` - stop/suspend execution immediately.
-`Signal.Stop`
 
 ***
 
@@ -78,12 +51,39 @@ await process.sendSignal(1234, Signal.Term);
 
 ***
 
+### Kill
+
+> **Kill**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`SIGKILL` - force kill immediately.
+`Signal.Kill`
+
+***
+
+### Stop
+
+> **Stop**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`SIGSTOP` - stop/suspend execution immediately.
+`Signal.Stop`
+
+***
+
 ### Tstp
 
 > **Tstp**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `SIGTSTP` - terminal stop (like Ctrl-Z).
 `Signal.Tstp`
+
+***
+
+### Cont
+
+> **Cont**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`SIGCONT` - continue a stopped process.
+`Signal.Cont`
 
 ***
 
@@ -105,6 +105,15 @@ await process.sendSignal(1234, Signal.Term);
 
 ***
 
+### Winch
+
+> **Winch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`SIGWINCH` - terminal window size changed.
+`Signal.Winch`
+
+***
+
 ### Usr1
 
 > **Usr1**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -120,12 +129,3 @@ await process.sendSignal(1234, Signal.Term);
 
 `SIGUSR2` - user-defined signal 2.
 `Signal.Usr2`
-
-***
-
-### Winch
-
-> **Winch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`SIGWINCH` - terminal window size changed.
-`Signal.Winch`

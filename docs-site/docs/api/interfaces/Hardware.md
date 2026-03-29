@@ -12,27 +12,19 @@ println(hw.vendorName, board.name, temperatureSensors.length);
 
 ## Properties
 
-### family?
-
-> `readonly` `optional` **family?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Family
-
-***
-
-### motherboard
-
-> `readonly` **motherboard**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Motherboard`](Motherboard.md)\>
-
-Motherboard
-
-***
-
 ### name?
 
 > `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
+
+***
+
+### family?
+
+> `readonly` `optional` **family?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Family
 
 ***
 
@@ -52,6 +44,14 @@ Stock keeping unit
 
 ***
 
+### version?
+
+> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Version
+
+***
+
 ### uuid?
 
 > `readonly` `optional` **uuid?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -68,11 +68,11 @@ Vendor name
 
 ***
 
-### version?
+### motherboard
 
-> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **motherboard**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Motherboard`](Motherboard.md)\>
 
-Version
+Motherboard
 
 ## Methods
 

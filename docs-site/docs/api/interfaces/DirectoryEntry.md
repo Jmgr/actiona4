@@ -12,19 +12,19 @@ for (const entry of entries) {
 
 ## Properties
 
+### path
+
+> `readonly` **path**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+The full path to the entry.
+
+***
+
 ### fileName
 
 > `readonly` **fileName**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The file name (last component of the path).
-
-***
-
-### isDirectory
-
-> `readonly` **isDirectory**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Whether this entry is a directory.
 
 ***
 
@@ -36,19 +36,19 @@ Whether this entry is a regular file.
 
 ***
 
+### isDirectory
+
+> `readonly` **isDirectory**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether this entry is a directory.
+
+***
+
 ### isSymlink
 
 > `readonly` **isSymlink**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Whether this entry is a symbolic link.
-
-***
-
-### path
-
-> `readonly` **path**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-The full path to the entry.
 
 ***
 

@@ -17,14 +17,6 @@ println(
 
 ## Properties
 
-### architecture
-
-> `readonly` **architecture**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Architecture
-
-***
-
 ### logicalCoreCount
 
 > `readonly` **logicalCoreCount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -39,7 +31,25 @@ Logical core count
 
 Physical core count
 
+***
+
+### architecture
+
+> `readonly` **architecture**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Architecture
+
 ## Methods
+
+### usage()
+
+> <span class="async-badge">async</span> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
+
+***
 
 ### coreUsage()
 
@@ -76,13 +86,3 @@ Returns a string representation of this CPU.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### usage()
-
-> <span class="async-badge">async</span> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)\>

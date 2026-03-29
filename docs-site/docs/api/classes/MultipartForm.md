@@ -24,16 +24,15 @@ const result = await web.downloadText("https://example.com/upload", {
 
 ## Methods
 
-### addBytes()
+### addText()
 
-> **addBytes**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **addText**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `value`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Adds a byte field.
+Adds a text field.
 
 ```ts
 const form = new MultipartForm();
-const bytes = new Uint8Array([72, 101, 108, 108, 111]);
-form.addBytes("data", bytes, "hello.bin");
+form.addText("username", "john");
 ```
 
 #### Parameters
@@ -42,9 +41,9 @@ form.addBytes("data", bytes, "hello.bin");
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-##### bytes
+##### value
 
-[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### filename?
 
@@ -95,15 +94,16 @@ form.addFile("document", "/path/to/report.pdf");
 
 ***
 
-### addText()
+### addBytes()
 
-> **addText**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `value`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **addBytes**(`name`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array), `filename?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `mimetype?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Adds a text field.
+Adds a byte field.
 
 ```ts
 const form = new MultipartForm();
-form.addText("username", "john");
+const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+form.addBytes("data", bytes, "hello.bin");
 ```
 
 #### Parameters
@@ -112,9 +112,9 @@ form.addText("username", "john");
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-##### value
+##### bytes
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 ##### filename?
 

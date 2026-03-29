@@ -15,19 +15,19 @@ if (disk) {
 
 ## Properties
 
-### read
-
-> `readonly` **read**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`IoStats`](IoStats.md)\>
-
-Read
-
-***
-
 ### written
 
 > `readonly` **written**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`IoStats`](IoStats.md)\>
 
 Written
+
+***
+
+### read
+
+> `readonly` **read**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`IoStats`](IoStats.md)\>
+
+Read
 
 ## Methods
 

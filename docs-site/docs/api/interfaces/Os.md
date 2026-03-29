@@ -12,11 +12,35 @@ println(users.length, groups.length);
 
 ## Properties
 
-### bootTime
+### name?
 
-> `readonly` **bootTime**: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
+> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Boot time
+Name
+
+***
+
+### kernelVersion?
+
+> `readonly` `optional` **kernelVersion?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Kernel version
+
+***
+
+### version?
+
+> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Version
+
+***
+
+### longVersion?
+
+> `readonly` `optional` **longVersion?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Long version
 
 ***
 
@@ -44,27 +68,19 @@ Kernel long version
 
 ***
 
-### kernelVersion?
+### uptime
 
-> `readonly` `optional` **kernelVersion?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **uptime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Kernel version
-
-***
-
-### longVersion?
-
-> `readonly` `optional` **longVersion?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Long version
+Uptime in seconds
 
 ***
 
-### name?
+### bootTime
 
-> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **bootTime**: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
-Name
+Boot time
 
 ***
 
@@ -74,35 +90,7 @@ Name
 
 Open files limit
 
-***
-
-### uptime
-
-> `readonly` **uptime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Uptime in seconds
-
-***
-
-### version?
-
-> `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Version
-
 ## Methods
-
-### listGroups()
-
-> <span class="async-badge">async</span> **listGroups**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
-
-Groups
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
-
-***
 
 ### listUsers()
 
@@ -113,6 +101,18 @@ Users
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`User`](User.md)[]\>
+
+***
+
+### listGroups()
+
+> <span class="async-badge">async</span> **listGroups**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
+
+Groups
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`Group`](Group.md)[]\>
 
 ***
 

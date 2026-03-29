@@ -16,25 +16,26 @@ println(result.exitCode);
 
 ## Properties
 
-### closed
-
-> `readonly` **closed**: [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
-
-A promise that resolves with the exit result when the process closes.
-
-```ts
-const handle = process.start("ls");
-const result = await handle.closed;
-println(result.exitCode);
-```
-
-***
-
 ### pid
 
 > `readonly` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Process ID.
+
+***
+
+### stdout
+
+> `readonly` **stdout**: `AsyncIterableIterator`\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+
+An async iterator that yields lines from the process's standard output.
+
+```ts
+const handle = process.start("echo", { args: ["hello"] });
+for await (const line of handle.stdout) {
+    println(line);
+}
+```
 
 ***
 
@@ -53,20 +54,42 @@ for await (const line of handle.stderr) {
 
 ***
 
-### stdout
+### closed
 
-> `readonly` **stdout**: `AsyncIterableIterator`\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)\>
+> `readonly` **closed**: [`Task`](../type-aliases/Task.md)\<[`ProcessExitResult`](ProcessExitResult.md)\>
 
-An async iterator that yields lines from the process's standard output.
+A promise that resolves with the exit result when the process closes.
 
 ```ts
-const handle = process.start("echo", { args: ["hello"] });
-for await (const line of handle.stdout) {
-    println(line);
-}
+const handle = process.start("ls");
+const result = await handle.closed;
+println(result.exitCode);
 ```
 
 ## Methods
+
+### write()
+
+> <span class="async-badge">async</span> **write**(`data`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Write data to the process's stdin.
+
+```ts
+const handle = process.start("cat");
+await handle.write("hello\n");
+```
+
+#### Parameters
+
+##### data
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
 
 ### closeStdin()
 
@@ -130,26 +153,3 @@ Returns a string representation of this process handle.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### write()
-
-> <span class="async-badge">async</span> **write**(`data`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
-
-Write data to the process's stdin.
-
-```ts
-const handle = process.start("cat");
-await handle.write("hello\n");
-```
-
-#### Parameters
-
-##### data
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>

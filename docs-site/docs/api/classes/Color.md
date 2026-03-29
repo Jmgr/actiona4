@@ -79,35 +79,51 @@ Constructor with anything Color-like.
 
 ## Properties
 
-### a
+### Red
 
-> **a**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `static` **Red**: `Color`
 
-Alpha (should be between 0-255)
-
-***
-
-### b
-
-> **b**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Blue (should be between 0-255)
+#FF0000FF
 
 ***
 
-### g
+### Green
 
-> **g**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `static` **Green**: `Color`
 
-Green (should be between 0-255)
+#008000FF
 
 ***
 
-### r
+### Blue
 
-> **r**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `static` **Blue**: `Color`
 
-Red (should be between 0-255)
+#0000FFFF
+
+***
+
+### White
+
+> `readonly` `static` **White**: `Color`
+
+#FFFFFFFF
+
+***
+
+### Black
+
+> `readonly` `static` **Black**: `Color`
+
+#000000FF
+
+***
+
+### Transparent
+
+> `readonly` `static` **Transparent**: `Color`
+
+#00000000
 
 ***
 
@@ -167,27 +183,11 @@ Red (should be between 0-255)
 
 ***
 
-### Black
-
-> `readonly` `static` **Black**: `Color`
-
-#000000FF
-
-***
-
 ### BlanchedAlmond
 
 > `readonly` `static` **BlanchedAlmond**: `Color`
 
 #FFEBCDFF
-
-***
-
-### Blue
-
-> `readonly` `static` **Blue**: `Color`
-
-#0000FFFF
 
 ***
 
@@ -516,14 +516,6 @@ Red (should be between 0-255)
 > `readonly` `static` **Gray**: `Color`
 
 #808080FF
-
-***
-
-### Green
-
-> `readonly` `static` **Green**: `Color`
-
-#008000FF
 
 ***
 
@@ -1023,14 +1015,6 @@ Red (should be between 0-255)
 
 ***
 
-### Red
-
-> `readonly` `static` **Red**: `Color`
-
-#FF0000FF
-
-***
-
 ### RosyBrown
 
 > `readonly` `static` **RosyBrown**: `Color`
@@ -1183,14 +1167,6 @@ Red (should be between 0-255)
 
 ***
 
-### Transparent
-
-> `readonly` `static` **Transparent**: `Color`
-
-#00000000
-
-***
-
 ### Turquoise
 
 > `readonly` `static` **Turquoise**: `Color`
@@ -1212,14 +1188,6 @@ Red (should be between 0-255)
 > `readonly` `static` **Wheat**: `Color`
 
 #F5DEB3FF
-
-***
-
-### White
-
-> `readonly` `static` **White**: `Color`
-
-#FFFFFFFF
 
 ***
 
@@ -1245,19 +1213,39 @@ Red (should be between 0-255)
 
 #9ACD32FF
 
-## Methods
+***
 
-### clone()
+### r
 
-> **clone**(): `Color`
+> **r**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Returns a copy of this color.
-
-#### Returns
-
-`Color`
+Red (should be between 0-255)
 
 ***
+
+### g
+
+> **g**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Green (should be between 0-255)
+
+***
+
+### b
+
+> **b**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Blue (should be between 0-255)
+
+***
+
+### a
+
+> **a**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Alpha (should be between 0-255)
+
+## Methods
 
 ### equals()
 
@@ -1290,3 +1278,15 @@ Returns a string representation of this color.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### clone()
+
+> **clone**(): `Color`
+
+Returns a copy of this color.
+
+#### Returns
+
+`Color`

@@ -5,12 +5,12 @@ Process search options.
 
 ## Properties
 
-### name?
+### pid?
 
-> `optional` **name?**: [`NameLike`](../type-aliases/NameLike.md)
+> `optional` **pid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Match by process name.
-When undefined, name is not filtered.
+Match by process ID.
+When undefined, any PID is accepted.
 
 #### Default Value
 
@@ -31,12 +31,25 @@ When undefined, parent PID is not filtered.
 
 ***
 
-### pid?
+### name?
 
-> `optional` **pid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **name?**: [`NameLike`](../type-aliases/NameLike.md)
 
-Match by process ID.
-When undefined, any PID is accepted.
+Match by process name.
+When undefined, name is not filtered.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### status?
+
+> `optional` **status?**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
+
+Match by process status.
+When undefined, status is not filtered.
 
 #### Default Value
 
@@ -53,16 +66,3 @@ Refresh process list before filtering.
 #### Default Value
 
 `true`
-
-***
-
-### status?
-
-> `optional` **status?**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
-
-Match by process status.
-When undefined, status is not filtered.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

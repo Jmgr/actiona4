@@ -16,14 +16,6 @@ await macros.play(loaded, { speed: 1.5 });
 
 ## Properties
 
-### duration
-
-> `readonly` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Returns the total duration of the recording in seconds.
-
-***
-
 ### eventCount
 
 > `readonly` **eventCount**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -32,11 +24,11 @@ Returns the total number of events in this macro.
 
 ***
 
-### platform
+### duration
 
-> `readonly` **platform**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **duration**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
+Returns the total duration of the recording in seconds.
 
 ***
 
@@ -46,7 +38,38 @@ Returns the platform on which this macro was recorded (`"linux"` or `"windows"`)
 
 Returns when this macro was recorded.
 
+***
+
+### platform
+
+> `readonly` **platform**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns the platform on which this macro was recorded (`"linux"` or `"windows"`).
+
 ## Methods
+
+### load()
+
+> <span class="async-badge">async</span> `static` **load**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Macro`\>
+
+Loads a macro from a gzip-compressed JSON file previously written by `save()`.
+
+```ts
+const loaded = await Macro.load("recording.amac");
+await macros.play(loaded);
+```
+
+#### Parameters
+
+##### path
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Macro`\>
+
+***
 
 ### save()
 
@@ -79,26 +102,3 @@ Returns a string representation of this macro.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### load()
-
-> <span class="async-badge">async</span> `static` **load**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Macro`\>
-
-Loads a macro from a gzip-compressed JSON file previously written by `save()`.
-
-```ts
-const loaded = await Macro.load("recording.amac");
-await macros.play(loaded);
-```
-
-#### Parameters
-
-##### path
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Macro`\>

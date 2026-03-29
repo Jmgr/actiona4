@@ -17,6 +17,54 @@ audio.playFile("music.mp3", {
 
 ## Properties
 
+### volume?
+
+> `optional` **volume?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Volume to play the sound at
+
+#### Default Value
+
+`1`
+
+***
+
+### playbackRate?
+
+> `optional` **playbackRate?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Speed to play the sound at
+
+#### Default Value
+
+`1`
+
+***
+
+### paused?
+
+> `optional` **paused?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the sound start paused
+
+#### Default Value
+
+`false`
+
+***
+
+### loop?
+
+> `optional` **loop?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the sound loop
+
+#### Default Value
+
+`false`
+
+***
+
 ### fadeIn?
 
 > `optional` **fadeIn?**: [`DurationLike`](../type-aliases/DurationLike.md)
@@ -41,42 +89,6 @@ Fade out duration
 
 ***
 
-### loop?
-
-> `optional` **loop?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the sound loop
-
-#### Default Value
-
-`false`
-
-***
-
-### paused?
-
-> `optional` **paused?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the sound start paused
-
-#### Default Value
-
-`false`
-
-***
-
-### playbackRate?
-
-> `optional` **playbackRate?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Speed to play the sound at
-
-#### Default Value
-
-`1`
-
-***
-
 ### signal?
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
@@ -86,15 +98,3 @@ Abort signal to cancel the sound playback.
 #### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### volume?
-
-> `optional` **volume?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Volume to play the sound at
-
-#### Default Value
-
-`1`

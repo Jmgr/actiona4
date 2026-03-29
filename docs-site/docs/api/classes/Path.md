@@ -17,11 +17,43 @@ const newPath = Path.setExtension("/tmp/data.csv", "json");
 
 ## Methods
 
-### toString()
+### join()
 
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `static` **join**(...`args`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of this path.
+Joins path segments into a single path.
+
+```ts
+Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
+```
+
+#### Parameters
+
+##### args
+
+...[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### filename()
+
+> `static` **filename**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns the file name component of a path.
+
+```ts
+Path.filename("/home/user/file.txt"); // "file.txt"
+```
+
+#### Parameters
+
+##### path
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
@@ -47,74 +79,33 @@ Alias for `filename`.
 
 ***
 
+### parent()
+
+> `static` **parent**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns the parent directory of a path.
+
+```ts
+Path.parent("/home/user/file.txt"); // "/home/user"
+```
+
+#### Parameters
+
+##### path
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
 ### dirname()
 
 > `static` **dirname**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Alias for `parent`.
-
-#### Parameters
-
-##### path
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### extension()
-
-> `static` **extension**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns the file extension of a path (without the leading dot).
-
-```ts
-Path.extension("/home/user/file.txt"); // "txt"
-Path.extension("/home/user/file"); // ""
-```
-
-#### Parameters
-
-##### path
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### extname()
-
-> `static` **extname**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Alias for `extension`.
-
-#### Parameters
-
-##### path
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### filename()
-
-> `static` **filename**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns the file name component of a path.
-
-```ts
-Path.filename("/home/user/file.txt"); // "file.txt"
-```
 
 #### Parameters
 
@@ -174,21 +165,22 @@ Path.isRelative("/absolute/path"); // false
 
 ***
 
-### join()
+### extension()
 
-> `static` **join**(...`args`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `static` **extension**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Joins path segments into a single path.
+Returns the file extension of a path (without the leading dot).
 
 ```ts
-Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
+Path.extension("/home/user/file.txt"); // "txt"
+Path.extension("/home/user/file"); // ""
 ```
 
 #### Parameters
 
-##### args
+##### path
 
-...[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
@@ -196,15 +188,11 @@ Path.join("/home", "user", "file.txt"); // "/home/user/file.txt"
 
 ***
 
-### parent()
+### extname()
 
-> `static` **parent**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `static` **extname**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns the parent directory of a path.
-
-```ts
-Path.parent("/home/user/file.txt"); // "/home/user"
-```
+Alias for `extension`.
 
 #### Parameters
 
@@ -238,6 +226,18 @@ Path.setExtension("/tmp/archive.tar.gz", "xz"); // "/tmp/archive.tar.xz"
 ##### extension
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this path.
 
 #### Returns
 

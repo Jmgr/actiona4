@@ -57,59 +57,36 @@ Constructor with anything Size-like.
 
 ## Properties
 
-### height
-
-> **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-height
-
-***
-
 ### width
 
 > **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 width
 
-## Methods
-
-### add()
-
-> **add**(`other`: `Size`): `Size`
-
-Adds two sizes and returns a new Size.
-
-```ts
-const sum = new Size(10, 20).add(new Size(5, 10));
-println(sum); // "Size(15, 30)"
-```
-
-#### Parameters
-
-##### other
-
-`Size`
-
-#### Returns
-
-`Size`
-
 ***
 
-### clone()
+### height
 
-> **clone**(): `Size`
+> **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Clones this Size.
+height
+
+## Methods
+
+### toJson()
+
+> **toJson**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a JSON representation of this Size.
 
 ```ts
-const original = new Size(100, 50);
-const copy = original.clone();
+const s = new Size(100, 50);
+println(s.toJson()); // '{"width":100,"height":50}'
 ```
 
 #### Returns
 
-`Size`
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 
@@ -137,22 +114,22 @@ println(a.equals(b)); // true
 
 ***
 
-### scale()
+### add()
 
-> **scale**(`factor`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Size`
+> **add**(`other`: `Size`): `Size`
 
-Scales this size by a factor and returns a new Size.
+Adds two sizes and returns a new Size.
 
 ```ts
-const s = new Size(10, 20).scale(3);
-println(s); // "Size(30, 60)"
+const sum = new Size(10, 20).add(new Size(5, 10));
+println(sum); // "Size(15, 30)"
 ```
 
 #### Parameters
 
-##### factor
+##### other
 
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+`Size`
 
 #### Returns
 
@@ -183,20 +160,26 @@ println(diff); // "Size(70, 30)"
 
 ***
 
-### toJson()
+### scale()
 
-> **toJson**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> **scale**(`factor`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Size`
 
-Returns a JSON representation of this Size.
+Scales this size by a factor and returns a new Size.
 
 ```ts
-const s = new Size(100, 50);
-println(s.toJson()); // '{"width":100,"height":50}'
+const s = new Size(10, 20).scale(3);
+println(s); // "Size(30, 60)"
 ```
+
+#### Parameters
+
+##### factor
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 #### Returns
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+`Size`
 
 ***
 
@@ -209,3 +192,20 @@ Returns a string representation of this size.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### clone()
+
+> **clone**(): `Size`
+
+Clones this Size.
+
+```ts
+const original = new Size(100, 50);
+const copy = original.clone();
+```
+
+#### Returns
+
+`Size`

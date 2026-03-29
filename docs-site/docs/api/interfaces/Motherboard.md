@@ -9,27 +9,11 @@ println(board.vendorName, board.name, board.version);
 
 ## Properties
 
-### assetTag?
-
-> `readonly` `optional` **assetTag?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Asset tag
-
-***
-
 ### name?
 
 > `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
-
-***
-
-### serialNumber?
-
-> `readonly` `optional` **serialNumber?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Serial number
 
 ***
 
@@ -46,6 +30,22 @@ Vendor name
 > `readonly` `optional` **version?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Version
+
+***
+
+### serialNumber?
+
+> `readonly` `optional` **serialNumber?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Serial number
+
+***
+
+### assetTag?
+
+> `readonly` `optional` **assetTag?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Asset tag
 
 ## Methods
 

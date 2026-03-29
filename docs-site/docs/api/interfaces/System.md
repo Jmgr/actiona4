@@ -72,9 +72,31 @@ Storage information
 
 ## Methods
 
-### hibernate()
+### shutdown()
 
-> **hibernate**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **shutdown**(`force?`: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Parameters
+
+##### force?
+
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### reboot()
+
+> **reboot**(`force?`: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Parameters
+
+##### force?
+
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 #### Returns
 
@@ -91,6 +113,26 @@ Storage information
 ##### force?
 
 [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### hibernate()
+
+> **hibernate**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### sleep()
+
+> **sleep**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Returns
 
@@ -131,48 +173,6 @@ Storage information
 ##### withApp?
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-***
-
-### reboot()
-
-> **reboot**(`force?`: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-#### Parameters
-
-##### force?
-
-[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-***
-
-### shutdown()
-
-> **shutdown**(`force?`: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-#### Parameters
-
-##### force?
-
-[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-***
-
-### sleep()
-
-> **sleep**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 #### Returns
 

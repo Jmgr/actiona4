@@ -11,19 +11,19 @@ image.drawText(100, 50, "Centered", fontPath, Color.Black, {
 
 ## Enumeration Members
 
-### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
 ### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `TextHorizontalAlign.Left`
+
+***
+
+### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
 
 ***
 

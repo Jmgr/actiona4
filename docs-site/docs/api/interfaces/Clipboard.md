@@ -32,6 +32,22 @@ await clipboard.waitForChanged();
 
 ## Properties
 
+### text
+
+> `readonly` **text**: [`ClipboardText`](ClipboardText.md)
+
+Sub-object for text clipboard operations.
+
+***
+
+### image
+
+> `readonly` **image**: [`ClipboardImage`](ClipboardImage.md)
+
+Sub-object for image clipboard operations.
+
+***
+
 ### fileList
 
 > `readonly` **fileList**: [`ClipboardFileList`](ClipboardFileList.md)
@@ -45,22 +61,6 @@ Sub-object for file list clipboard operations.
 > `readonly` **html**: [`ClipboardHtml`](ClipboardHtml.md)
 
 Sub-object for HTML clipboard operations.
-
-***
-
-### image
-
-> `readonly` **image**: [`ClipboardImage`](ClipboardImage.md)
-
-Sub-object for image clipboard operations.
-
-***
-
-### text
-
-> `readonly` **text**: [`ClipboardText`](ClipboardText.md)
-
-Sub-object for text clipboard operations.
 
 ## Methods
 
@@ -114,18 +114,6 @@ clipboard.clear(ClipboardMode.Selection);
 
 ***
 
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of the `clipboard` singleton.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
 ### waitForChanged()
 
 > <span class="async-badge">async</span> **waitForChanged**(`options?`: [`WaitForChangedOptions`](WaitForChangedOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -146,18 +134,6 @@ await task;
 [`WaitForChangedOptions`](WaitForChangedOptions.md)
 
 <div class="options-fields">
-
-###### interval?
-
-> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Polling interval in seconds.
-
-###### Default Value
-
-`0.2`
-
-***
 
 ###### mode?
 
@@ -196,6 +172,18 @@ Clipboard source to watch.
 
 ***
 
+###### interval?
+
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Polling interval in seconds.
+
+###### Default Value
+
+`0.2`
+
+***
+
 ###### signal?
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
@@ -211,3 +199,15 @@ Abort signal to cancel the wait.
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of the `clipboard` singleton.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

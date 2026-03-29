@@ -12,6 +12,22 @@ if (user) {
 
 ## Properties
 
+### name
+
+> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Name
+
+***
+
+### id
+
+> `readonly` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+ID
+
+***
+
 ### groupId?
 
 > `readonly` `optional` **groupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -44,14 +60,6 @@ Group name
 
 ***
 
-### groupNames
-
-> `readonly` **groupNames**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
-
-Group names
-
-***
-
 ### groups
 
 > `readonly` **groups**: readonly [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)[]
@@ -60,19 +68,11 @@ Groups
 
 ***
 
-### id
+### groupNames
 
-> `readonly` **id**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **groupNames**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
-ID
-
-***
-
-### name
-
-> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Name
+Group names
 
 ## Methods
 

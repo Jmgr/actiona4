@@ -16,18 +16,6 @@ const match = await image.findOnScreen(SearchIn.rect(0, 0, 1920, 1080));
 
 ## Methods
 
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of this search area.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
 ### desktop()
 
 > `static` **desktop**(): `SearchIn`
@@ -143,3 +131,15 @@ const match = await image.findOnScreen(SearchIn.window(win));
 #### Returns
 
 `SearchIn`
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this search area.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

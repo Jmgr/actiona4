@@ -11,11 +11,11 @@ image.drawText(50, 100, "Middle", fontPath, Color.Black, {
 
 ## Enumeration Members
 
-### Bottom
+### Top
 
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Bottom`
+`TextVerticalAlign.Top`
 
 ***
 
@@ -27,8 +27,8 @@ image.drawText(50, 100, "Middle", fontPath, Color.Black, {
 
 ***
 
-### Top
+### Bottom
 
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Top`
+`TextVerticalAlign.Bottom`

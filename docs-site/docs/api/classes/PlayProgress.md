@@ -27,15 +27,15 @@ Number of events replayed so far.
 
 ***
 
-### finished()
+### totalEvents()
 
-> **finished**(): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **totalEvents**(): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Whether all events have been replayed.
+Total number of events to replay.
 
 #### Returns
 
-[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
@@ -51,6 +51,18 @@ Replay ratio, in the range `[0, 1]`.
 
 ***
 
+### finished()
+
+> **finished**(): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether all events have been replayed.
+
+#### Returns
+
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+***
+
 ### toString()
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -60,15 +72,3 @@ Returns a string representation of this playback progress.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### totalEvents()
-
-> **totalEvents**(): [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Total number of events to replay.
-
-#### Returns
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)

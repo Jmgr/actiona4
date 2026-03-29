@@ -15,11 +15,11 @@ const result = await task;
 
 ## Properties
 
-### finished
+### stage
 
-> `readonly` **finished**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `readonly` **stage**: [`FindImageStage`](../enumerations/FindImageStage.md)
 
-Whether the operation has finished.
+The current stage of the find image operation.
 
 ***
 
@@ -31,11 +31,11 @@ Completion percentage (0-100).
 
 ***
 
-### stage
+### finished
 
-> `readonly` **stage**: [`FindImageStage`](../enumerations/FindImageStage.md)
+> `readonly` **finished**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-The current stage of the find image operation.
+Whether the operation has finished.
 
 ## Methods
 

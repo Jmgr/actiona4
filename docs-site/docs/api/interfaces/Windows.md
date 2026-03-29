@@ -27,6 +27,31 @@ for (const win of matches) {
 
 ## Methods
 
+### all()
+
+> **all**(): readonly [`WindowHandle`](WindowHandle.md)[]
+
+Returns all currently open windows.
+
+```ts
+const allWindows = windows.all();
+println(`Found ${allWindows.length} windows`);
+```
+
+#### Returns
+
+readonly [`WindowHandle`](WindowHandle.md)[]
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
 ### active()
 
 > **active**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
@@ -52,20 +77,20 @@ println(win.title());
 
 ***
 
-### all()
+### foreground()
 
-> **all**(): readonly [`WindowHandle`](WindowHandle.md)[]
+> **foreground**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
 
-Returns all currently open windows.
+Returns the currently active (focused) window. Alias for `active()`.
 
 ```ts
-const allWindows = windows.all();
-println(`Found ${allWindows.length} windows`);
+const win = windows.foreground();
+println(win.title());
 ```
 
 #### Returns
 
-readonly [`WindowHandle`](WindowHandle.md)[]
+[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
 
 #### Platform
 
@@ -102,19 +127,6 @@ const exact = windows.find({ title: "Calculator", className: "ApplicationFrameWi
 
 <div class="options-fields">
 
-###### className?
-
-> `optional` **className?**: [`NameLike`](../type-aliases/NameLike.md)
-
-Match by window class name.
-When undefined, class name is not filtered.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ###### id?
 
 > `optional` **id?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -141,6 +153,19 @@ When undefined, any process ID is accepted.
 
 ***
 
+###### visible?
+
+> `optional` **visible?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Match by window visibility.
+When undefined, visibility is not filtered.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
 ###### title?
 
 > `optional` **title?**: [`NameLike`](../type-aliases/NameLike.md)
@@ -154,12 +179,12 @@ When undefined, title is not filtered.
 
 ***
 
-###### visible?
+###### className?
 
-> `optional` **visible?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **className?**: [`NameLike`](../type-aliases/NameLike.md)
 
-Match by window visibility.
-When undefined, visibility is not filtered.
+Match by window class name.
+When undefined, class name is not filtered.
 
 ###### Default Value
 
@@ -238,31 +263,6 @@ const atOrigin = windows.findAt(0, 0);
 readonly [`WindowHandle`](WindowHandle.md)[]
 
 ##### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
-</div>
-
-***
-
-### foreground()
-
-> **foreground**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
-
-Returns the currently active (focused) window. Alias for `active()`.
-
-```ts
-const win = windows.foreground();
-println(win.title());
-```
-
-#### Returns
-
-[`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`WindowHandle`](WindowHandle.md)\>
-
-#### Platform
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>

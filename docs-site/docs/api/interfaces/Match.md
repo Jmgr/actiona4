@@ -38,18 +38,6 @@ the score for this match, goes from 0 (worst) to 1 (best)
 
 ## Methods
 
-### clone()
-
-> **clone**(): `Match`
-
-Clones this Match.
-
-#### Returns
-
-`Match`
-
-***
-
 ### equals()
 
 > **equals**(`other`: `Match`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
@@ -77,3 +65,15 @@ Returns a string representation of this match.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### clone()
+
+> **clone**(): `Match`
+
+Clones this Match.
+
+#### Returns
+
+`Match`

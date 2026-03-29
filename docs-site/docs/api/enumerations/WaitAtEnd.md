@@ -19,18 +19,18 @@ Setting hotstrings will have the script wait.
 
 ***
 
-### No
-
-> **No**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Never wait.
-`WaitAtEnd.No`
-
-***
-
 ### Yes
 
 > **Yes**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Always wait.
 `WaitAtEnd.Yes`
+
+***
+
+### No
+
+> **No**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Never wait.
+`WaitAtEnd.No`

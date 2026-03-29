@@ -27,19 +27,43 @@ Notification sound.
 
 ***
 
+### Mail
+
+> **Mail**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationSound.Mail`
+
+***
+
+### Reminder
+
+> **Reminder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationSound.Reminder`
+
+***
+
+### Sms
+
+> **Sms**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationSound.SMS`
+
+***
+
+### None
+
+> **None**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationSound.None`
+
+***
+
 ### LoopingAlarm
 
 > **LoopingAlarm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `NotificationSound.LoopingAlarm`
-
-***
-
-### LoopingAlarm10
-
-> **LoopingAlarm10**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationSound.LoopingAlarm10`
 
 ***
 
@@ -107,19 +131,19 @@ Notification sound.
 
 ***
 
+### LoopingAlarm10
+
+> **LoopingAlarm10**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationSound.LoopingAlarm10`
+
+***
+
 ### LoopingCall
 
 > **LoopingCall**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `NotificationSound.LoopingCall`
-
-***
-
-### LoopingCall10
-
-> **LoopingCall10**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationSound.LoopingCall10`
 
 ***
 
@@ -187,32 +211,8 @@ Notification sound.
 
 ***
 
-### Mail
+### LoopingCall10
 
-> **Mail**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **LoopingCall10**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`NotificationSound.Mail`
-
-***
-
-### None
-
-> **None**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationSound.None`
-
-***
-
-### Reminder
-
-> **Reminder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationSound.Reminder`
-
-***
-
-### Sms
-
-> **Sms**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationSound.SMS`
+`NotificationSound.LoopingCall10`

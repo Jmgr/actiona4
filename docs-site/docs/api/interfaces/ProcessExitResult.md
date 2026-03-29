@@ -17,14 +17,6 @@ println(result.stdout);
 
 ## Properties
 
-### exitCode?
-
-> `readonly` `optional` **exitCode?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-The exit code of the process. [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if the process was killed by a signal.
-
-***
-
 ### pid?
 
 > `readonly` `optional` **pid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -33,11 +25,11 @@ The process ID. Only available when using `handle.closed`.
 
 ***
 
-### stderr?
+### exitCode?
 
-> `readonly` `optional` **stderr?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **exitCode?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-The captured stderr output. Only available when using `startAndWait`.
+The exit code of the process. [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if the process was killed by a signal.
 
 ***
 
@@ -46,6 +38,14 @@ The captured stderr output. Only available when using `startAndWait`.
 > `readonly` `optional` **stdout?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 The captured stdout output. Only available when using `startAndWait`.
+
+***
+
+### stderr?
+
+> `readonly` `optional` **stderr?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+The captured stderr output. Only available when using `startAndWait`.
 
 ## Methods
 

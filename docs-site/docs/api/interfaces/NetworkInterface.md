@@ -12,6 +12,14 @@ if (iface) {
 
 ## Properties
 
+### name
+
+> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Name
+
+***
+
 ### inbound
 
 > `readonly` **inbound**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Traffic`](Traffic.md)\>
@@ -20,11 +28,11 @@ Inbound
 
 ***
 
-### macAddress?
+### outbound
 
-> `readonly` `optional` **macAddress?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` **outbound**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Traffic`](Traffic.md)\>
 
-MAC address
+Outbound
 
 ***
 
@@ -36,19 +44,11 @@ MTU
 
 ***
 
-### name
+### macAddress?
 
-> `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **macAddress?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Name
-
-***
-
-### outbound
-
-> `readonly` **outbound**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Traffic`](Traffic.md)\>
-
-Outbound
+MAC address
 
 ***
 

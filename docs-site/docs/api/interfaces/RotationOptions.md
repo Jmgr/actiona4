@@ -16,6 +16,18 @@ image.rotate(30, { defaultColor: Color.White });
 
 ## Properties
 
+### interpolation?
+
+> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
+
+Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
+
+#### Default Value
+
+`Interpolation.Bilinear`
+
+***
+
 ### center?
 
 > `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
@@ -38,15 +50,3 @@ Default color, used if the rotation triggers more pixels to be displayed
 #### Default Value
 
 `Color.Black`
-
-***
-
-### interpolation?
-
-> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
-
-Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-
-#### Default Value
-
-`Interpolation.Bilinear`

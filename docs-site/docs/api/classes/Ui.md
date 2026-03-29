@@ -22,18 +22,6 @@ if (result === MessageBoxResult.Yes) {
 
 ## Methods
 
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of the `ui` singleton.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
 ### messageBox()
 
 > <span class="async-badge">async</span> `static` **messageBox**(`text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`MessageBoxOptions`](../interfaces/MessageBoxOptions.md)): [`Task`](../type-aliases/Task.md)\<[`MessageBoxResult`](../enumerations/MessageBoxResult.md)\>
@@ -56,6 +44,18 @@ const result = await Ui.messageBox("Operation complete");
 
 <div class="options-fields">
 
+###### title?
+
+> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Title displayed in the message box title bar.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
 ###### buttons?
 
 > `optional` **buttons?**: [`MessageBoxButtons`](MessageBoxButtons.md)
@@ -74,14 +74,6 @@ Buttons displayed in the message box.
 
 <div class="options-fields">
 
-###### Error
-
-> **Error**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`MessageBoxIcon.Error`
-
-***
-
 ###### Info
 
 > **Info**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -95,6 +87,14 @@ Buttons displayed in the message box.
 > **Warning**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `MessageBoxIcon.Warning`
+
+***
+
+###### Error
+
+> **Error**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`MessageBoxIcon.Error`
 
 </div>
 
@@ -116,20 +116,20 @@ Abort signal to cancel the message box.
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
-***
-
-###### title?
-
-> `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Title displayed in the message box title bar.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
 </div>
 
 #### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`MessageBoxResult`](../enumerations/MessageBoxResult.md)\>
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of the `ui` singleton.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

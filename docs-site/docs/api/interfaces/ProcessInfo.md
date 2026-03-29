@@ -12,11 +12,11 @@ if (process) {
 
 ## Properties
 
-### accumulatedCpuTime
+### name?
 
-> `readonly` **accumulatedCpuTime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Accumulated CPU time in seconds
+Name
 
 ***
 
@@ -28,11 +28,27 @@ Cmd
 
 ***
 
-### cpuUsage
+### exe?
 
-> `readonly` **cpuUsage**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **exe?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-CPU usage
+Exe
+
+***
+
+### pid
+
+> `readonly` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Pid
+
+***
+
+### env
+
+> `readonly` **env**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
+
+Env
 
 ***
 
@@ -44,6 +60,78 @@ Cwd
 
 ***
 
+### root?
+
+> `readonly` `optional` **root?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Root
+
+***
+
+### memory
+
+> `readonly` **memory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Memory
+
+***
+
+### virtualMemory
+
+> `readonly` **virtualMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Virtual memory
+
+***
+
+### parent?
+
+> `readonly` `optional` **parent?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Parent
+
+***
+
+### status
+
+> `readonly` **status**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
+
+Status
+
+***
+
+### startTime
+
+> `readonly` **startTime**: [`Object`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+Start time
+
+***
+
+### runTime
+
+> `readonly` **runTime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Run time in seconds
+
+***
+
+### cpuUsage
+
+> `readonly` **cpuUsage**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+CPU usage
+
+***
+
+### accumulatedCpuTime
+
+> `readonly` **accumulatedCpuTime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Accumulated CPU time in seconds
+
+***
+
 ### diskUsage
 
 > `readonly` **diskUsage**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`DiskUsage`](DiskUsage.md)\>
@@ -52,18 +140,11 @@ Disk usage
 
 ***
 
-### effectiveGroupId?
+### userId?
 
-> `readonly` `optional` **effectiveGroupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **userId?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Effective group ID
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-</div>
+User ID
 
 ***
 
@@ -82,30 +163,6 @@ Effective user ID
 
 ***
 
-### env
-
-> `readonly` **env**: readonly [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
-
-Env
-
-***
-
-### exe?
-
-> `readonly` `optional` **exe?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Exe
-
-***
-
-### exists
-
-> `readonly` **exists**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Exists
-
-***
-
 ### groupId?
 
 > `readonly` `optional` **groupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -121,19 +178,34 @@ Group ID
 
 ***
 
-### memory
+### effectiveGroupId?
 
-> `readonly` **memory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` `optional` **effectiveGroupId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Memory
+Effective group ID
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+</div>
 
 ***
 
-### name?
+### sessionId?
 
-> `readonly` `optional` **name?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `readonly` `optional` **sessionId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Name
+Session ID
+
+***
+
+### exists
+
+> `readonly` **exists**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Exists
 
 ***
 
@@ -151,78 +223,6 @@ Open files
 
 Open files limit
 
-***
-
-### parent?
-
-> `readonly` `optional` **parent?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Parent
-
-***
-
-### pid
-
-> `readonly` **pid**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Pid
-
-***
-
-### root?
-
-> `readonly` `optional` **root?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Root
-
-***
-
-### runTime
-
-> `readonly` **runTime**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Run time in seconds
-
-***
-
-### sessionId?
-
-> `readonly` `optional` **sessionId?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Session ID
-
-***
-
-### startTime
-
-> `readonly` **startTime**: [`Object`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
-
-Start time
-
-***
-
-### status
-
-> `readonly` **status**: [`ProcessStatus`](../enumerations/ProcessStatus.md)
-
-Status
-
-***
-
-### userId?
-
-> `readonly` `optional` **userId?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-User ID
-
-***
-
-### virtualMemory
-
-> `readonly` **virtualMemory**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Virtual memory
-
 ## Methods
 
 ### kill()
@@ -236,6 +236,25 @@ Kill the process immediately (SIGKILL on Unix, TerminateProcess on Windows).
 const targetPid = 12345;
 const proc = (await system.processes.find({ pid: targetPid }))[0];
 if (proc) proc.kill();
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### terminate()
+
+> **terminate**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
+
+```ts
+// Ask a specific PID to shut down cleanly.
+const targetPid = 12345;
+const proc = (await system.processes.find({ pid: targetPid }))[0];
+if (proc) proc.terminate();
 ```
 
 #### Returns
@@ -272,25 +291,6 @@ if (proc) proc.sendSignal(Signal.Term);
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
-
-***
-
-### terminate()
-
-> **terminate**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
-
-```ts
-// Ask a specific PID to shut down cleanly.
-const targetPid = 12345;
-const proc = (await system.processes.find({ pid: targetPid }))[0];
-if (proc) proc.terminate();
-```
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
 ***
 

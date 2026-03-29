@@ -13,11 +13,11 @@ image.rotate(45, { interpolation: Interpolation.Bilinear });
 
 ## Enumeration Members
 
-### Bicubic
+### Nearest
 
-> **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`Interpolation.Bicubic`
+`Interpolation.Nearest`
 
 ***
 
@@ -29,8 +29,8 @@ image.rotate(45, { interpolation: Interpolation.Bilinear });
 
 ***
 
-### Nearest
+### Bicubic
 
-> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`Interpolation.Nearest`
+`Interpolation.Bicubic`

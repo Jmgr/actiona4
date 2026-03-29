@@ -5,11 +5,27 @@ HTTP request method.
 
 ## Enumeration Members
 
-### Connect
+### Get
 
-> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`Method.Connect`
+`Method.Get`
+
+***
+
+### Post
+
+> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Post`
+
+***
+
+### Put
+
+> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Put`
 
 ***
 
@@ -18,14 +34,6 @@ HTTP request method.
 > **Delete**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `Method.Delete`
-
-***
-
-### Get
-
-> **Get**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Get`
 
 ***
 
@@ -45,27 +53,19 @@ HTTP request method.
 
 ***
 
+### Connect
+
+> **Connect**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Method.Connect`
+
+***
+
 ### Patch
 
 > **Patch**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `Method.Patch`
-
-***
-
-### Post
-
-> **Post**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Post`
-
-***
-
-### Put
-
-> **Put**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Method.Put`
 
 ***
 

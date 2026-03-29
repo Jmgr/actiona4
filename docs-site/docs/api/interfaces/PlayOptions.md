@@ -9,15 +9,16 @@ await macros.play(macro, { speed: 2.0 });
 
 ## Properties
 
-### keyboardKeys?
+### speed?
 
-> `optional` **keyboardKeys?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Replay keyboard key events.
+Playback speed multiplier. `1.0` is real-time, `2.0` is twice as fast.
+Must be greater than zero.
 
 #### Default Value
 
-`true`
+`1`
 
 ***
 
@@ -45,18 +46,6 @@ Replay mouse cursor movements.
 
 ***
 
-### mouseScroll?
-
-> `optional` **mouseScroll?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Replay mouse scroll events.
-
-#### Default Value
-
-`true`
-
-***
-
 ### relativeMousePosition?
 
 > `optional` **relativeMousePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
@@ -71,6 +60,30 @@ position at playback start and the first recorded mouse position.
 
 ***
 
+### mouseScroll?
+
+> `optional` **mouseScroll?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Replay mouse scroll events.
+
+#### Default Value
+
+`true`
+
+***
+
+### keyboardKeys?
+
+> `optional` **keyboardKeys?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Replay keyboard key events.
+
+#### Default Value
+
+`true`
+
+***
+
 ### signal?
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
@@ -80,16 +93,3 @@ Abort signal to cancel playback.
 #### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### speed?
-
-> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Playback speed multiplier. `1.0` is real-time, `2.0` is twice as fast.
-Must be greater than zero.
-
-#### Default Value
-
-`1`

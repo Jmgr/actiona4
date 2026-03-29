@@ -19,16 +19,6 @@ Use the platform-default interactive screenshot picker.
 
 ***
 
-### Overlay
-
-> **Overlay**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`AskScreenshotMethod.Overlay`
-
-Use the bundled overlay selector only.
-
-***
-
 ### Portal
 
 > **Portal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -43,3 +33,13 @@ Use the XDG Desktop Portal only.
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
 <span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 </div>
+
+***
+
+### Overlay
+
+> **Overlay**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`AskScreenshotMethod.Overlay`
+
+Use the bundled overlay selector only.

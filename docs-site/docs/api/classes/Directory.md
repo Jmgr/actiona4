@@ -18,18 +18,6 @@ await Directory.remove("/tmp/my");
 
 ## Methods
 
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of this directory.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
 ### create()
 
 > <span class="async-badge">async</span> `static` **create**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`DirectoryOptions`](../interfaces/DirectoryOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
@@ -42,6 +30,49 @@ await Directory.create("/tmp/a/b/c");
 
 // Non-recursive: fails if parent doesn't exist
 await Directory.create("/tmp/a/b/c", { recursive: false });
+```
+
+#### Parameters
+
+##### path
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+##### options?
+
+[`DirectoryOptions`](../interfaces/DirectoryOptions.md)
+
+<div class="options-fields">
+
+###### recursive?
+
+> `optional` **recursive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the directories be created or removed recursively?
+
+###### Default Value
+
+`true`
+
+</div>
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### remove()
+
+> <span class="async-badge">async</span> `static` **remove**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`DirectoryOptions`](../interfaces/DirectoryOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Removes a directory. By default, removes all contents recursively.
+
+```ts
+await Directory.remove("/tmp/my/dir");
+
+// Non-recursive: fails if the directory is not empty
+await Directory.remove("/tmp/my/dir", { recursive: false });
 ```
 
 #### Parameters
@@ -102,11 +133,11 @@ const entries = await Directory.listEntries("/home/user/docs", {
 
 <div class="options-fields">
 
-###### fetchSize?
+###### sort?
 
-> `optional` **fetchSize?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **sort?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Should each entry's size be fetched?
+Should the entries be sorted?
 
 ###### Default Value
 
@@ -114,11 +145,11 @@ Should each entry's size be fetched?
 
 ***
 
-###### sort?
+###### fetchSize?
 
-> `optional` **sort?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **fetchSize?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Should the entries be sorted?
+Should each entry's size be fetched?
 
 ###### Default Value
 
@@ -132,43 +163,12 @@ Should the entries be sorted?
 
 ***
 
-### remove()
+### toString()
 
-> <span class="async-badge">async</span> `static` **remove**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `options?`: [`DirectoryOptions`](../interfaces/DirectoryOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Removes a directory. By default, removes all contents recursively.
-
-```ts
-await Directory.remove("/tmp/my/dir");
-
-// Non-recursive: fails if the directory is not empty
-await Directory.remove("/tmp/my/dir", { recursive: false });
-```
-
-#### Parameters
-
-##### path
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-##### options?
-
-[`DirectoryOptions`](../interfaces/DirectoryOptions.md)
-
-<div class="options-fields">
-
-###### recursive?
-
-> `optional` **recursive?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the directories be created or removed recursively?
-
-###### Default Value
-
-`true`
-
-</div>
+Returns a string representation of this directory.
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

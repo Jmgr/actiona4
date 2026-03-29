@@ -5,12 +5,11 @@ Web request options.
 
 ## Properties
 
-### contentType?
+### signal?
 
-> `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
-Sets the content-type header.
-Overrides any content-type set by other fields.
+Abort signal to cancel the request.
 
 #### Default Value
 
@@ -18,12 +17,23 @@ Overrides any content-type set by other fields.
 
 ***
 
-### form?
+### userName?
 
-> `optional` **form?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Form data as strings.
-Sets content-type to "application/x-www-form-urlencoded".
+User name for HTTP basic authentication.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### password?
+
+> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Password for HTTP basic authentication.
 
 #### Default Value
 
@@ -55,12 +65,11 @@ HTTP method to use for the request.
 
 ***
 
-### multipart?
+### timeout?
 
-> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
-Form multipart data.
-Sets content-type and content-length appropriately.
+Request timeout duration.
 
 #### Default Value
 
@@ -68,11 +77,25 @@ Sets content-type and content-length appropriately.
 
 ***
 
-### password?
+### contentType?
 
-> `optional` **password?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **contentType?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Password for HTTP basic authentication.
+Sets the content-type header.
+Overrides any content-type set by other fields.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### form?
+
+> `optional` **form?**: [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)\<[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Form data as strings.
+Sets content-type to "application/x-www-form-urlencoded".
 
 #### Default Value
 
@@ -92,35 +115,12 @@ Additional query parameters.
 
 ***
 
-### signal?
+### multipart?
 
-> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+> `optional` **multipart?**: [`MultipartForm`](../classes/MultipartForm.md)
 
-Abort signal to cancel the request.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### timeout?
-
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Request timeout duration.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### userName?
-
-> `optional` **userName?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-User name for HTTP basic authentication.
+Form multipart data.
+Sets content-type and content-length appropriately.
 
 #### Default Value
 

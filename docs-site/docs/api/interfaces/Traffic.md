@@ -15,19 +15,19 @@ if (iface) {
 
 ## Properties
 
-### delta
-
-> `readonly` **delta**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Counters`](Counters.md)\>
-
-Delta
-
-***
-
 ### total
 
 > `readonly` **total**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Counters`](Counters.md)\>
 
 Total
+
+***
+
+### delta
+
+> `readonly` **delta**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Counters`](Counters.md)\>
+
+Delta
 
 ## Methods
 

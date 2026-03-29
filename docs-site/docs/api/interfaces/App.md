@@ -21,14 +21,22 @@ app.waitAtEnd = WaitAtEnd.Automatic;
 
 ## Properties
 
-### cwd
+### waitAtEnd
 
-> `readonly` **cwd**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> **waitAtEnd**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean) \| [`WaitAtEnd`](../enumerations/WaitAtEnd.md)
 
-The current working directory.
+Should the app wait at the end of execution
+
+***
+
+### version
+
+> `readonly` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+The version of Actiona-cli.
 
 ```ts
-println(app.cwd); // e.g. "/home/user/project"
+println(app.version); // e.g. "0.1.0"
 ```
 
 ***
@@ -47,6 +55,18 @@ println(env["PATH"]);
 
 ***
 
+### cwd
+
+> `readonly` **cwd**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+The current working directory.
+
+```ts
+println(app.cwd); // e.g. "/home/user/project"
+```
+
+***
+
 ### executablePath
 
 > `readonly` **executablePath**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -56,26 +76,6 @@ The path to the running executable.
 ```ts
 println(app.executablePath); // e.g. "/usr/bin/actiona-run"
 ```
-
-***
-
-### version
-
-> `readonly` **version**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-The version of Actiona-cli.
-
-```ts
-println(app.version); // e.g. "0.1.0"
-```
-
-***
-
-### waitAtEnd
-
-> **waitAtEnd**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean) \| [`WaitAtEnd`](../enumerations/WaitAtEnd.md)
-
-Should the app wait at the end of execution
 
 ## Methods
 

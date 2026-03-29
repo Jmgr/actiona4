@@ -13,11 +13,11 @@ const entries = await Directory.listEntries("/tmp", {
 
 ## Properties
 
-### fetchSize?
+### sort?
 
-> `optional` **fetchSize?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **sort?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Should each entry's size be fetched?
+Should the entries be sorted?
 
 #### Default Value
 
@@ -25,11 +25,11 @@ Should each entry's size be fetched?
 
 ***
 
-### sort?
+### fetchSize?
 
-> `optional` **sort?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **fetchSize?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Should the entries be sorted?
+Should each entry's size be fetched?
 
 #### Default Value
 

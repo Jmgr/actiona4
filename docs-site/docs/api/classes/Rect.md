@@ -64,38 +64,6 @@ Constructor with anything Rect-like.
 
 ## Properties
 
-### height
-
-> **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Height
-
-***
-
-### size
-
-> **size**: [`Size`](Size.md)
-
-Size
-
-***
-
-### topLeft
-
-> **topLeft**: [`Point`](Point.md)
-
-Top-left origin
-
-***
-
-### width
-
-> **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Width
-
-***
-
 ### x
 
 > **x**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -110,22 +78,61 @@ X coordinate
 
 Y coordinate
 
+***
+
+### width
+
+> **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Width
+
+***
+
+### height
+
+> **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Height
+
+***
+
+### topLeft
+
+> **topLeft**: [`Point`](Point.md)
+
+Top-left origin
+
+***
+
+### size
+
+> **size**: [`Size`](Size.md)
+
+Size
+
 ## Methods
 
-### clone()
+### equals()
 
-> **clone**(): `Rect`
+> **equals**(`other`: `Rect`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Clones this Rect.
+Returns true if this Rect equals another.
 
 ```ts
-const original = new Rect(0, 0, 100, 100);
-const copy = original.clone();
+const a = new Rect(0, 0, 10, 10);
+const b = new Rect(0, 0, 10, 10);
+println(a.equals(b)); // true
 ```
+
+#### Parameters
+
+##### other
+
+`Rect`
 
 #### Returns
 
-`Rect`
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 ***
 
@@ -153,16 +160,45 @@ println(r.contains(new Point(150, 50))); // false
 
 ***
 
-### equals()
+### toString()
 
-> **equals**(`other`: `Rect`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns true if this Rect equals another.
+Returns a string representation of this rect.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### clone()
+
+> **clone**(): `Rect`
+
+Clones this Rect.
 
 ```ts
-const a = new Rect(0, 0, 10, 10);
-const b = new Rect(0, 0, 10, 10);
-println(a.equals(b)); // true
+const original = new Rect(0, 0, 100, 100);
+const copy = original.clone();
+```
+
+#### Returns
+
+`Rect`
+
+***
+
+### intersects()
+
+> **intersects**(`other`: `Rect`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Returns true if this Rect intersects with another.
+
+```ts
+const a = new Rect(0, 0, 100, 100);
+const b = new Rect(50, 50, 100, 100);
+println(a.intersects(b)); // true
 ```
 
 #### Parameters
@@ -198,42 +234,6 @@ const inter = a.intersection(b); // Rect(50, 50, 50, 50)
 #### Returns
 
 `Rect` \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### intersects()
-
-> **intersects**(`other`: `Rect`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Returns true if this Rect intersects with another.
-
-```ts
-const a = new Rect(0, 0, 100, 100);
-const b = new Rect(50, 50, 100, 100);
-println(a.intersects(b)); // true
-```
-
-#### Parameters
-
-##### other
-
-`Rect`
-
-#### Returns
-
-[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-***
-
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of this rect.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ***
 

@@ -14,6 +14,38 @@ await sound.finished;  // wait until the sound ends
 
 ## Properties
 
+### volume
+
+> **volume**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Sound volume
+
+#### Default Value
+
+`1`
+
+***
+
+### playbackRate
+
+> **playbackRate**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Sound playing speed
+
+#### Default Value
+
+`1`
+
+***
+
+### paused
+
+> `readonly` **paused**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the sound is currently paused.
+
+***
+
 ### duration?
 
 > `readonly` `optional` **duration?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -33,38 +65,6 @@ const sound = audio.playFile("music.mp3");
 await sound.finished;
 println("Sound finished!");
 ```
-
-***
-
-### paused
-
-> `readonly` **paused**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Whether the sound is currently paused.
-
-***
-
-### playbackRate
-
-> **playbackRate**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Sound playing speed
-
-#### Default Value
-
-`1`
-
-***
-
-### volume
-
-> **volume**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Sound volume
-
-#### Default Value
-
-`1`
 
 ## Methods
 

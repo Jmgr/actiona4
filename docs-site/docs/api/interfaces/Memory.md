@@ -26,6 +26,18 @@ CGroup limits
 
 ## Methods
 
+### usage()
+
+> <span class="async-badge">async</span> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
+
+Memory usage
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
+
+***
+
 ### swapUsage()
 
 > <span class="async-badge">async</span> **swapUsage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
@@ -47,15 +59,3 @@ Returns a string representation of this memory.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### usage()
-
-> <span class="async-badge">async</span> **usage**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>
-
-Memory usage
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`MemoryUsage`](MemoryUsage.md)\>

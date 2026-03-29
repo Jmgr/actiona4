@@ -65,17 +65,15 @@ let image = new Image(100, 100);
 
 ## Properties
 
-### height
+### width
 
-> `readonly` **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
-### rect
+### height
 
-> `readonly` **rect**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](Rect.md)\>
-
-Returns a Rect representing this image.
+> `readonly` **height**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ***
 
@@ -85,26 +83,120 @@ Returns a Rect representing this image.
 
 ***
 
-### width
+### rect
 
-> `readonly` **width**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` **rect**: [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](Rect.md)\>
+
+Returns a Rect representing this image.
 
 ## Methods
 
-### adjustBrightness()
+### fromBytes()
 
-> **adjustBrightness**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
+> `static` **fromBytes**(`bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)): `Image`
 
-Brightens or darkens the pixels of this image.
+Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
 
-`value` is added to each RGB channel and clamped to 0–255.
-Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
+```ts
+const bytes = await file.readAll();
+const image = Image.fromBytes(bytes);
+```
 
 #### Parameters
 
-##### value
+##### bytes
 
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+
+#### Returns
+
+`Image`
+
+***
+
+### load()
+
+> <span class="async-badge">async</span> `static` **load**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Image`\>
+
+Loads an image from a file. The format is guessed from the file contents.
+
+#### Parameters
+
+##### path
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Image`\>
+
+***
+
+### save()
+
+> <span class="async-badge">async</span> **save**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Saves this image to a file. The format is inferred from the file extension.
+
+#### Parameters
+
+##### path
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+***
+
+### equals()
+
+> **equals**(`other`: `Image`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Returns true if this image equals another (same dimensions and pixel data).
+
+#### Parameters
+
+##### other
+
+`Image`
+
+#### Returns
+
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this image.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+***
+
+### clone()
+
+> **clone**(): `Image`
+
+Clones this image.
+
+#### Returns
+
+`Image`
+
+***
+
+### invertColors()
+
+> **invertColors**(): `this`
+
+Invert the colors of this image.
 
 #### Returns
 
@@ -112,24 +204,15 @@ Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
 
 ***
 
-### adjustContrast()
+### invertedColors()
 
-> **adjustContrast**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
+> **invertedColors**(): `Image`
 
-Adjusts the contrast of this image.
-
-`value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
-and negative values decrease it. At -100 all pixels collapse to 50% gray.
-
-#### Parameters
-
-##### value
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+Invert the colors of this image and returns a new image.
 
 #### Returns
 
-`this`
+`Image`
 
 ***
 
@@ -221,11 +304,173 @@ Standard deviation of the (approximated) Gaussian
 
 ***
 
-### clone()
+### rotate()
 
-> **clone**(): `Image`
+> **rotate**(`angle`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`RotationOptions`](../interfaces/RotationOptions.md)): `this`
 
-Clones this image.
+Rotate the image.
+
+#### Parameters
+
+##### angle
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### options?
+
+[`RotationOptions`](../interfaces/RotationOptions.md)
+
+<div class="options-fields">
+
+###### interpolation?
+
+> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
+
+<div class="options-fields">
+
+###### Nearest
+
+> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Nearest`
+
+***
+
+###### Bilinear
+
+> **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Bilinear`
+
+***
+
+###### Bicubic
+
+> **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Bicubic`
+
+</div>
+
+Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
+
+###### Default Value
+
+`Interpolation.Bilinear`
+
+***
+
+###### center?
+
+> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Rotation center.
+Defaults to the center of the image.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### defaultColor?
+
+> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
+
+Default color, used if the rotation triggers more pixels to be displayed
+
+###### Default Value
+
+`Color.Black`
+
+</div>
+
+#### Returns
+
+`this`
+
+***
+
+### rotated()
+
+> **rotated**(`angle`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`RotationOptions`](../interfaces/RotationOptions.md)): `Image`
+
+Rotate the image and returns a new image.
+
+#### Parameters
+
+##### angle
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### options?
+
+[`RotationOptions`](../interfaces/RotationOptions.md)
+
+<div class="options-fields">
+
+###### interpolation?
+
+> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
+
+<div class="options-fields">
+
+###### Nearest
+
+> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Nearest`
+
+***
+
+###### Bilinear
+
+> **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Bilinear`
+
+***
+
+###### Bicubic
+
+> **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`Interpolation.Bicubic`
+
+</div>
+
+Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
+
+###### Default Value
+
+`Interpolation.Bilinear`
+
+***
+
+###### center?
+
+> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Rotation center.
+Defaults to the center of the image.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### defaultColor?
+
+> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
+
+Default color, used if the rotation triggers more pixels to be displayed
+
+###### Default Value
+
+`Color.Black`
+
+</div>
 
 #### Returns
 
@@ -233,49 +478,137 @@ Clones this image.
 
 ***
 
-### copyRegion()
+### flip()
 
-#### Call Signature
+> **flip**(`flipDirection`: [`FlipDirection`](../enumerations/FlipDirection.md)): `this`
 
-> **copyRegion**(`rect`: [`RectLike`](../type-aliases/RectLike.md)): `Image`
+Flip the image.
 
-Creates a new image from a part of this image.
+#### Parameters
 
-##### Parameters
+##### flipDirection
 
-###### rect
+[`FlipDirection`](../enumerations/FlipDirection.md)
 
-[`RectLike`](../type-aliases/RectLike.md)
+<div class="options-fields">
 
-##### Returns
+###### Horizontal
+
+> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Horizontal`
+
+***
+
+###### Vertical
+
+> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Vertical`
+
+</div>
+
+#### Returns
+
+`this`
+
+***
+
+### flipped()
+
+> **flipped**(`flipDirection`: [`FlipDirection`](../enumerations/FlipDirection.md)): `Image`
+
+Flip the image and returns a new image.
+
+#### Parameters
+
+##### flipDirection
+
+[`FlipDirection`](../enumerations/FlipDirection.md)
+
+<div class="options-fields">
+
+###### Horizontal
+
+> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Horizontal`
+
+***
+
+###### Vertical
+
+> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`FlipDirection.Vertical`
+
+</div>
+
+#### Returns
 
 `Image`
 
-#### Call Signature
+***
 
-> **copyRegion**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+### hueRotate()
 
-Creates a new image from a part of this image.
+> **hueRotate**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
 
-##### Parameters
+Rotates the hue of each pixel by `value` degrees.
 
-###### x
+`value` is in degrees and wraps around, so 360 is equivalent to 0.
 
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+#### Parameters
 
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### width
+##### value
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### height
+#### Returns
+
+`this`
+
+***
+
+### withHueRotation()
+
+> **withHueRotation**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+
+Returns a hue-rotated copy of this image.
+
+`value` is in degrees and wraps around, so 360 is equivalent to 0.
+
+#### Parameters
+
+##### value
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-##### Returns
+#### Returns
+
+`Image`
+
+***
+
+### grayscale()
+
+> **grayscale**(): `this`
+
+Transform this image into a grayscale.
+
+#### Returns
+
+`this`
+
+***
+
+### withGrayscale()
+
+> **withGrayscale**(): `Image`
+
+Returns a grayscale version of this image.
+
+#### Returns
 
 `Image`
 
@@ -377,45 +710,288 @@ Returns a cropped version of this image.
 
 ***
 
-### drawCircle()
+### resize()
 
-#### Call Signature
+> **resize**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`ResizeOptions`](../interfaces/ResizeOptions.md)): `this`
 
-> **drawCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+Resizes this image.
 
-Draw a circle on this image.
+#### Parameters
 
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### radius
+##### width
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### color
+##### height
 
-[`ColorLike`](../type-aliases/ColorLike.md)
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### options?
+##### options?
 
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
+[`ResizeOptions`](../interfaces/ResizeOptions.md)
 
 <div class="options-fields">
 
-###### hollow?
+###### keepAspectRatio?
 
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Draw a hollow shape instead of a filled one
+Should the aspect ratio be kept?
 
 ###### Default Value
 
 `false`
 
+***
+
+###### filter?
+
+> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
+
+<div class="options-fields">
+
+###### Nearest
+
+> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Nearest`
+
+***
+
+###### Linear
+
+> **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Linear`
+
+***
+
+###### Cubic
+
+> **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Cubic`
+
+***
+
+###### Gaussian
+
+> **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Gaussian`
+
+***
+
+###### Lanczos3
+
+> **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Lanczos3`
+
 </div>
+
+What filter to use
+
+###### Default Value
+
+`ResizeFilter.Cubic`
+
+</div>
+
+#### Returns
+
+`this`
+
+***
+
+### resized()
+
+> **resized**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`ResizeOptions`](../interfaces/ResizeOptions.md)): `Image`
+
+Returns a resized version of this image.
+
+#### Parameters
+
+##### width
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### height
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### options?
+
+[`ResizeOptions`](../interfaces/ResizeOptions.md)
+
+<div class="options-fields">
+
+###### keepAspectRatio?
+
+> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the aspect ratio be kept?
+
+###### Default Value
+
+`false`
+
+***
+
+###### filter?
+
+> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
+
+<div class="options-fields">
+
+###### Nearest
+
+> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Nearest`
+
+***
+
+###### Linear
+
+> **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Linear`
+
+***
+
+###### Cubic
+
+> **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Cubic`
+
+***
+
+###### Gaussian
+
+> **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Gaussian`
+
+***
+
+###### Lanczos3
+
+> **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ResizeFilter.Lanczos3`
+
+</div>
+
+What filter to use
+
+###### Default Value
+
+`ResizeFilter.Cubic`
+
+</div>
+
+#### Returns
+
+`Image`
+
+***
+
+### adjustBrightness()
+
+> **adjustBrightness**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
+
+Brightens or darkens the pixels of this image.
+
+`value` is added to each RGB channel and clamped to 0–255.
+Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
+
+#### Parameters
+
+##### value
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Returns
+
+`this`
+
+***
+
+### withAdjustedBrightness()
+
+> **withAdjustedBrightness**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+
+Returns a brightened or darkened copy of this image.
+
+`value` is added to each RGB channel and clamped to 0–255.
+Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
+
+#### Parameters
+
+##### value
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Returns
+
+`Image`
+
+***
+
+### adjustContrast()
+
+> **adjustContrast**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
+
+Adjusts the contrast of this image.
+
+`value` is an arbitrary adjustment where 0 = no change, positive values increase contrast,
+and negative values decrease it. At -100 all pixels collapse to 50% gray.
+
+#### Parameters
+
+##### value
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Returns
+
+`this`
+
+***
+
+### withAdjustedContrast()
+
+> **withAdjustedContrast**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+
+Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
+
+#### Parameters
+
+##### value
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+#### Returns
+
+`Image`
+
+***
+
+### fill()
+
+#### Call Signature
+
+> **fill**(`color`: [`ColorLike`](../type-aliases/ColorLike.md)): `this`
+
+Fill this image with a color.
+
+##### Parameters
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
 
 ##### Returns
 
@@ -423,17 +999,213 @@ Draw a hollow shape instead of a filled one
 
 #### Call Signature
 
-> **drawCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+> **fill**(`r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
 
-Draw a circle on this image.
+Fill this image with a color.
 
 ##### Parameters
 
-###### center
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+`this`
+
+***
+
+### filled()
+
+#### Call Signature
+
+> **filled**(`color`: [`ColorLike`](../type-aliases/ColorLike.md)): `Image`
+
+Returns a copy of this image filled with a color.
+
+##### Parameters
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **filled**(`r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+
+Returns a copy of this image filled with a color.
+
+##### Parameters
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+`Image`
+
+***
+
+### getPixel()
+
+#### Call Signature
+
+> **getPixel**(`position`: [`PointLike`](../type-aliases/PointLike.md)): [`Color`](Color.md)
+
+Returns the value of a pixel.
+
+##### Parameters
+
+###### position
 
 [`PointLike`](../type-aliases/PointLike.md)
 
-###### radius
+##### Returns
+
+[`Color`](Color.md)
+
+#### Call Signature
+
+> **getPixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Color`](Color.md)
+
+Returns the value of a pixel.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+[`Color`](Color.md)
+
+***
+
+### setPixel()
+
+#### Call Signature
+
+> **setPixel**(`position`: [`PointLike`](../type-aliases/PointLike.md), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `this`
+
+Sets the color of a pixel.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **setPixel**(`position`: [`PointLike`](../type-aliases/PointLike.md), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
+
+Sets the color of a pixel.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **setPixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `this`
+
+Sets the color of a pixel.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **setPixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
+
+Sets the color of a pixel.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
@@ -453,33 +1225,35 @@ Draw a circle on this image.
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
 ##### Returns
 
 `this`
 
+***
+
+### copyRegion()
+
 #### Call Signature
 
-> **drawCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+> **copyRegion**(`rect`: [`RectLike`](../type-aliases/RectLike.md)): `Image`
 
-Draw a circle on this image.
+Creates a new image from a part of this image.
+
+##### Parameters
+
+###### rect
+
+[`RectLike`](../type-aliases/RectLike.md)
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **copyRegion**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+
+Creates a new image from a part of this image.
 
 ##### Parameters
 
@@ -491,93 +1265,17 @@ Draw a circle on this image.
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### radius
+###### width
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### color
+###### height
 
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ##### Returns
 
-`this`
-
-#### Call Signature
-
-> **drawCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw a circle on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### radius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
+`Image`
 
 ***
 
@@ -697,233 +1395,13 @@ Draw a cross on this image.
 
 ***
 
-### drawEllipse()
+### withCross()
 
 #### Call Signature
 
-> **drawEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+> **withCross**(`position`: [`PointLike`](../type-aliases/PointLike.md), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `Image`
 
-Draw an ellipse on this image.
-
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw an ellipse on this image.
-
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw an ellipse on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw an ellipse on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-***
-
-### drawImage()
-
-#### Call Signature
-
-> **drawImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
-
-Draw another image on this image.
+Draw a cross on a copy of this image.
 
 ##### Parameters
 
@@ -931,38 +1409,51 @@ Draw another image on this image.
 
 [`PointLike`](../type-aliases/PointLike.md)
 
-###### image
+###### color
 
-`Image`
-
-###### options?
-
-[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
-
-<div class="options-fields">
-
-###### sourceRect?
-
-> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
-
-Source rectangle.
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-</div>
+[`ColorLike`](../type-aliases/ColorLike.md)
 
 ##### Returns
 
-`this`
+`Image`
 
 #### Call Signature
 
-> **drawImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
+> **withCross**(`position`: [`PointLike`](../type-aliases/PointLike.md), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
 
-Draw another image on this image.
+Draw a cross on a copy of this image.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withCross**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `Image`
+
+Draw a cross on a copy of this image.
 
 ##### Parameters
 
@@ -974,32 +1465,49 @@ Draw another image on this image.
 
 [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-###### image
+###### color
 
-`Image`
-
-###### options?
-
-[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
-
-<div class="options-fields">
-
-###### sourceRect?
-
-> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
-
-Source rectangle.
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-</div>
+[`ColorLike`](../type-aliases/ColorLike.md)
 
 ##### Returns
 
-`this`
+`Image`
+
+#### Call Signature
+
+> **withCross**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
+
+Draw a cross on a copy of this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+`Image`
 
 ***
 
@@ -1279,2778 +1787,6 @@ Draw a line on this image.
 
 ***
 
-### drawRectangle()
-
-#### Call Signature
-
-> **drawRectangle**(`rect`: [`RectLike`](../type-aliases/RectLike.md), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw a rectangle on this image.
-
-##### Parameters
-
-###### rect
-
-[`RectLike`](../type-aliases/RectLike.md)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawRectangle**(`rect`: [`RectLike`](../type-aliases/RectLike.md), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw a rectangle on this image.
-
-##### Parameters
-
-###### rect
-
-[`RectLike`](../type-aliases/RectLike.md)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawRectangle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw a rectangle on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### width
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### height
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawRectangle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
-
-Draw a rectangle on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### width
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### height
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`this`
-
-***
-
-### drawText()
-
-#### Call Signature
-
-> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
-
-Draw text on this image.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
-
-<div class="options-fields">
-
-###### font?
-
-> `optional` **font?**: [`Font`](Font.md)
-
-Font to use. Defaults to the built-in DejaVu Sans.
-
-###### Default Value
-
-`Font.default()`
-
-***
-
-###### fontSize?
-
-> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Font size in pixels.
-
-###### Default Value
-
-`16`
-
-***
-
-###### horizontalAlign?
-
-> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
-
-<div class="options-fields">
-
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
-###### Left
-
-> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### Right
-
-> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Right`
-
-</div>
-
-Horizontal alignment relative to the provided position.
-
-###### Default Value
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
-###### verticalAlign?
-
-> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
-
-<div class="options-fields">
-
-###### Bottom
-
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Bottom`
-
-***
-
-###### Middle
-
-> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Middle`
-
-***
-
-###### Top
-
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Top`
-
-</div>
-
-Vertical alignment relative to the provided position.
-
-###### Default Value
-
-`TextVerticalAlign.Top`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
-
-Draw text on this image.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
-
-<div class="options-fields">
-
-###### font?
-
-> `optional` **font?**: [`Font`](Font.md)
-
-Font to use. Defaults to the built-in DejaVu Sans.
-
-###### Default Value
-
-`Font.default()`
-
-***
-
-###### fontSize?
-
-> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Font size in pixels.
-
-###### Default Value
-
-`16`
-
-***
-
-###### horizontalAlign?
-
-> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
-
-<div class="options-fields">
-
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
-###### Left
-
-> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### Right
-
-> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Right`
-
-</div>
-
-Horizontal alignment relative to the provided position.
-
-###### Default Value
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
-###### verticalAlign?
-
-> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
-
-<div class="options-fields">
-
-###### Bottom
-
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Bottom`
-
-***
-
-###### Middle
-
-> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Middle`
-
-***
-
-###### Top
-
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Top`
-
-</div>
-
-Vertical alignment relative to the provided position.
-
-###### Default Value
-
-`TextVerticalAlign.Top`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
-
-Draw text on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
-
-<div class="options-fields">
-
-###### font?
-
-> `optional` **font?**: [`Font`](Font.md)
-
-Font to use. Defaults to the built-in DejaVu Sans.
-
-###### Default Value
-
-`Font.default()`
-
-***
-
-###### fontSize?
-
-> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Font size in pixels.
-
-###### Default Value
-
-`16`
-
-***
-
-###### horizontalAlign?
-
-> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
-
-<div class="options-fields">
-
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
-###### Left
-
-> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### Right
-
-> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Right`
-
-</div>
-
-Horizontal alignment relative to the provided position.
-
-###### Default Value
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
-###### verticalAlign?
-
-> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
-
-<div class="options-fields">
-
-###### Bottom
-
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Bottom`
-
-***
-
-###### Middle
-
-> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Middle`
-
-***
-
-###### Top
-
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Top`
-
-</div>
-
-Vertical alignment relative to the provided position.
-
-###### Default Value
-
-`TextVerticalAlign.Top`
-
-</div>
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
-
-Draw text on this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### text
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
-
-<div class="options-fields">
-
-###### font?
-
-> `optional` **font?**: [`Font`](Font.md)
-
-Font to use. Defaults to the built-in DejaVu Sans.
-
-###### Default Value
-
-`Font.default()`
-
-***
-
-###### fontSize?
-
-> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Font size in pixels.
-
-###### Default Value
-
-`16`
-
-***
-
-###### horizontalAlign?
-
-> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
-
-<div class="options-fields">
-
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
-###### Left
-
-> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### Right
-
-> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Right`
-
-</div>
-
-Horizontal alignment relative to the provided position.
-
-###### Default Value
-
-`TextHorizontalAlign.Left`
-
-***
-
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
-###### verticalAlign?
-
-> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
-
-<div class="options-fields">
-
-###### Bottom
-
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Bottom`
-
-***
-
-###### Middle
-
-> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Middle`
-
-***
-
-###### Top
-
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextVerticalAlign.Top`
-
-</div>
-
-Vertical alignment relative to the provided position.
-
-###### Default Value
-
-`TextVerticalAlign.Top`
-
-</div>
-
-##### Returns
-
-`this`
-
-***
-
-### equals()
-
-> **equals**(`other`: `Image`): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Returns true if this image equals another (same dimensions and pixel data).
-
-#### Parameters
-
-##### other
-
-`Image`
-
-#### Returns
-
-[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-***
-
-### fill()
-
-#### Call Signature
-
-> **fill**(`color`: [`ColorLike`](../type-aliases/ColorLike.md)): `this`
-
-Fill this image with a color.
-
-##### Parameters
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **fill**(`r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
-
-Fill this image with a color.
-
-##### Parameters
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-`this`
-
-***
-
-### filled()
-
-#### Call Signature
-
-> **filled**(`color`: [`ColorLike`](../type-aliases/ColorLike.md)): `Image`
-
-Returns a copy of this image filled with a color.
-
-##### Parameters
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **filled**(`r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
-
-Returns a copy of this image filled with a color.
-
-##### Parameters
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-`Image`
-
-***
-
-### find()
-
-> <span class="async-badge">async</span> **find**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-Finds the best match of an image inside this image.
-
-Returns a `ProgressTask` that can be awaited for the result and iterated
-for progress updates. Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
-
-```ts
-const match = await source.find(template);
-if (match) {
-  println(`Found at ${match.position} with score ${match.score}`);
-}
-```
-
-```ts
-// Track progress while searching
-const task = source.find(template);
-for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-}
-const match = await task;
-```
-
-#### Parameters
-
-##### image
-
-`Image`
-
-##### options?
-
-[`FindImageOptions`](../interfaces/FindImageOptions.md)
-
-<div class="options-fields">
-
-###### downscale?
-
-> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-How many times should the source image and the template be downscaled?
-
-###### Default Value
-
-`0`
-
-***
-
-###### matchThreshold?
-
-> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Matching threshold.
-Values are between 0 (worst) to 1 (best).
-
-###### Default Value
-
-`0.8`
-
-***
-
-###### nonMaximumSuppressionRadius?
-
-> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Radius to consider proximity (in pixels).
-
-###### Default Value
-
-`10`
-
-***
-
-###### signal?
-
-> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
-
-Abort signal to cancel the search.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### useColors?
-
-> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use color matching.
-
-###### Default Value
-
-`false`
-
-***
-
-###### useTransparency?
-
-> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use template transparency.
-
-###### Default Value
-
-`true`
-
-</div>
-
-#### Returns
-
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-***
-
-### findAll()
-
-> <span class="async-badge">async</span> **findAll**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-Finds all occurrences of an image inside this image.
-
-Returns a `ProgressTask` that can be awaited for an array of matches.
-
-```ts
-const matches = await source.findAll(template, { matchThreshold: 0.85 });
-for (const match of matches) {
-  println(`Found at ${match.position}`);
-}
-```
-
-```ts
-// Track progress while searching
-const task = source.findAll(template);
-for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-}
-const matches = await task;
-```
-
-#### Parameters
-
-##### image
-
-`Image`
-
-##### options?
-
-[`FindImageOptions`](../interfaces/FindImageOptions.md)
-
-<div class="options-fields">
-
-###### downscale?
-
-> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-How many times should the source image and the template be downscaled?
-
-###### Default Value
-
-`0`
-
-***
-
-###### matchThreshold?
-
-> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Matching threshold.
-Values are between 0 (worst) to 1 (best).
-
-###### Default Value
-
-`0.8`
-
-***
-
-###### nonMaximumSuppressionRadius?
-
-> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Radius to consider proximity (in pixels).
-
-###### Default Value
-
-`10`
-
-***
-
-###### signal?
-
-> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
-
-Abort signal to cancel the search.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### useColors?
-
-> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use color matching.
-
-###### Default Value
-
-`false`
-
-***
-
-###### useTransparency?
-
-> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use template transparency.
-
-###### Default Value
-
-`true`
-
-</div>
-
-#### Returns
-
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-***
-
-### findAllOnScreen()
-
-> <span class="async-badge">async</span> **findAllOnScreen**(`searchIn`: [`SearchIn`](SearchIn.md), `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-Finds all matches of this image within the given screen area.
-
-Takes a live screenshot of the specified area and searches for all occurrences.
-
-```ts
-const matches = await image.findAllOnScreen(SearchIn.desktop());
-for (const match of matches) {
-  println(`Found at ${match.position}`);
-}
-```
-
-```ts
-const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
-for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-}
-const matches = await task;
-```
-
-#### Parameters
-
-##### searchIn
-
-[`SearchIn`](SearchIn.md)
-
-##### options?
-
-[`FindImageOptions`](../interfaces/FindImageOptions.md)
-
-<div class="options-fields">
-
-###### downscale?
-
-> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-How many times should the source image and the template be downscaled?
-
-###### Default Value
-
-`0`
-
-***
-
-###### matchThreshold?
-
-> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Matching threshold.
-Values are between 0 (worst) to 1 (best).
-
-###### Default Value
-
-`0.8`
-
-***
-
-###### nonMaximumSuppressionRadius?
-
-> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Radius to consider proximity (in pixels).
-
-###### Default Value
-
-`10`
-
-***
-
-###### signal?
-
-> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
-
-Abort signal to cancel the search.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### useColors?
-
-> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use color matching.
-
-###### Default Value
-
-`false`
-
-***
-
-###### useTransparency?
-
-> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use template transparency.
-
-###### Default Value
-
-`true`
-
-</div>
-
-#### Returns
-
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
-</div>
-
-***
-
-### findOnScreen()
-
-> <span class="async-badge">async</span> **findOnScreen**(`searchIn`: [`SearchIn`](SearchIn.md), `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-Finds the best match of this image within the given screen area.
-
-Takes a live screenshot of the specified area and searches for this image within it.
-Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
-
-```ts
-const match = await image.findOnScreen(SearchIn.desktop());
-if (match) {
-  println(`Found at ${match.position} with score ${match.score}`);
-}
-```
-
-```ts
-const display = displays.primary();
-const task = image.findOnScreen(SearchIn.display(display));
-for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
-}
-const match = await task;
-```
-
-#### Parameters
-
-##### searchIn
-
-[`SearchIn`](SearchIn.md)
-
-##### options?
-
-[`FindImageOptions`](../interfaces/FindImageOptions.md)
-
-<div class="options-fields">
-
-###### downscale?
-
-> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-How many times should the source image and the template be downscaled?
-
-###### Default Value
-
-`0`
-
-***
-
-###### matchThreshold?
-
-> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Matching threshold.
-Values are between 0 (worst) to 1 (best).
-
-###### Default Value
-
-`0.8`
-
-***
-
-###### nonMaximumSuppressionRadius?
-
-> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Radius to consider proximity (in pixels).
-
-###### Default Value
-
-`10`
-
-***
-
-###### signal?
-
-> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
-
-Abort signal to cancel the search.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### useColors?
-
-> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use color matching.
-
-###### Default Value
-
-`false`
-
-***
-
-###### useTransparency?
-
-> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use template transparency.
-
-###### Default Value
-
-`true`
-
-</div>
-
-#### Returns
-
-[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
-
-#### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
-</div>
-
-***
-
-### flip()
-
-> **flip**(`flipDirection`: [`FlipDirection`](../enumerations/FlipDirection.md)): `this`
-
-Flip the image.
-
-#### Parameters
-
-##### flipDirection
-
-[`FlipDirection`](../enumerations/FlipDirection.md)
-
-<div class="options-fields">
-
-###### Horizontal
-
-> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`FlipDirection.Horizontal`
-
-***
-
-###### Vertical
-
-> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`FlipDirection.Vertical`
-
-</div>
-
-#### Returns
-
-`this`
-
-***
-
-### flipped()
-
-> **flipped**(`flipDirection`: [`FlipDirection`](../enumerations/FlipDirection.md)): `Image`
-
-Flip the image and returns a new image.
-
-#### Parameters
-
-##### flipDirection
-
-[`FlipDirection`](../enumerations/FlipDirection.md)
-
-<div class="options-fields">
-
-###### Horizontal
-
-> **Horizontal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`FlipDirection.Horizontal`
-
-***
-
-###### Vertical
-
-> **Vertical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`FlipDirection.Vertical`
-
-</div>
-
-#### Returns
-
-`Image`
-
-***
-
-### getPixel()
-
-#### Call Signature
-
-> **getPixel**(`position`: [`PointLike`](../type-aliases/PointLike.md)): [`Color`](Color.md)
-
-Returns the value of a pixel.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-##### Returns
-
-[`Color`](Color.md)
-
-#### Call Signature
-
-> **getPixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Color`](Color.md)
-
-Returns the value of a pixel.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-[`Color`](Color.md)
-
-***
-
-### grayscale()
-
-> **grayscale**(): `this`
-
-Transform this image into a grayscale.
-
-#### Returns
-
-`this`
-
-***
-
-### hueRotate()
-
-> **hueRotate**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
-
-Rotates the hue of each pixel by `value` degrees.
-
-`value` is in degrees and wraps around, so 360 is equivalent to 0.
-
-#### Parameters
-
-##### value
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-#### Returns
-
-`this`
-
-***
-
-### invertColors()
-
-> **invertColors**(): `this`
-
-Invert the colors of this image.
-
-#### Returns
-
-`this`
-
-***
-
-### invertedColors()
-
-> **invertedColors**(): `Image`
-
-Invert the colors of this image and returns a new image.
-
-#### Returns
-
-`Image`
-
-***
-
-### resize()
-
-> **resize**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`ResizeOptions`](../interfaces/ResizeOptions.md)): `this`
-
-Resizes this image.
-
-#### Parameters
-
-##### width
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### height
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### options?
-
-[`ResizeOptions`](../interfaces/ResizeOptions.md)
-
-<div class="options-fields">
-
-###### filter?
-
-> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
-
-<div class="options-fields">
-
-###### Cubic
-
-> **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Cubic`
-
-***
-
-###### Gaussian
-
-> **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Gaussian`
-
-***
-
-###### Lanczos3
-
-> **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Lanczos3`
-
-***
-
-###### Linear
-
-> **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Linear`
-
-***
-
-###### Nearest
-
-> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Nearest`
-
-</div>
-
-What filter to use
-
-###### Default Value
-
-`ResizeFilter.Cubic`
-
-***
-
-###### keepAspectRatio?
-
-> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the aspect ratio be kept?
-
-###### Default Value
-
-`false`
-
-</div>
-
-#### Returns
-
-`this`
-
-***
-
-### resized()
-
-> **resized**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`ResizeOptions`](../interfaces/ResizeOptions.md)): `Image`
-
-Returns a resized version of this image.
-
-#### Parameters
-
-##### width
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### height
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### options?
-
-[`ResizeOptions`](../interfaces/ResizeOptions.md)
-
-<div class="options-fields">
-
-###### filter?
-
-> `optional` **filter?**: [`ResizeFilter`](../enumerations/ResizeFilter.md)
-
-<div class="options-fields">
-
-###### Cubic
-
-> **Cubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Cubic`
-
-***
-
-###### Gaussian
-
-> **Gaussian**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Gaussian`
-
-***
-
-###### Lanczos3
-
-> **Lanczos3**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Lanczos3`
-
-***
-
-###### Linear
-
-> **Linear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Linear`
-
-***
-
-###### Nearest
-
-> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ResizeFilter.Nearest`
-
-</div>
-
-What filter to use
-
-###### Default Value
-
-`ResizeFilter.Cubic`
-
-***
-
-###### keepAspectRatio?
-
-> `optional` **keepAspectRatio?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the aspect ratio be kept?
-
-###### Default Value
-
-`false`
-
-</div>
-
-#### Returns
-
-`Image`
-
-***
-
-### rotate()
-
-> **rotate**(`angle`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`RotationOptions`](../interfaces/RotationOptions.md)): `this`
-
-Rotate the image.
-
-#### Parameters
-
-##### angle
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### options?
-
-[`RotationOptions`](../interfaces/RotationOptions.md)
-
-<div class="options-fields">
-
-###### center?
-
-> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
-
-Rotation center.
-Defaults to the center of the image.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### defaultColor?
-
-> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
-
-Default color, used if the rotation triggers more pixels to be displayed
-
-###### Default Value
-
-`Color.Black`
-
-***
-
-###### interpolation?
-
-> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
-
-<div class="options-fields">
-
-###### Bicubic
-
-> **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Interpolation.Bicubic`
-
-***
-
-###### Bilinear
-
-> **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Interpolation.Bilinear`
-
-***
-
-###### Nearest
-
-> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Interpolation.Nearest`
-
-</div>
-
-Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-
-###### Default Value
-
-`Interpolation.Bilinear`
-
-</div>
-
-#### Returns
-
-`this`
-
-***
-
-### rotated()
-
-> **rotated**(`angle`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`RotationOptions`](../interfaces/RotationOptions.md)): `Image`
-
-Rotate the image and returns a new image.
-
-#### Parameters
-
-##### angle
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### options?
-
-[`RotationOptions`](../interfaces/RotationOptions.md)
-
-<div class="options-fields">
-
-###### center?
-
-> `optional` **center?**: [`PointLike`](../type-aliases/PointLike.md)
-
-Rotation center.
-Defaults to the center of the image.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### defaultColor?
-
-> `optional` **defaultColor?**: [`ColorLike`](../type-aliases/ColorLike.md)
-
-Default color, used if the rotation triggers more pixels to be displayed
-
-###### Default Value
-
-`Color.Black`
-
-***
-
-###### interpolation?
-
-> `optional` **interpolation?**: [`Interpolation`](../enumerations/Interpolation.md)
-
-<div class="options-fields">
-
-###### Bicubic
-
-> **Bicubic**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Interpolation.Bicubic`
-
-***
-
-###### Bilinear
-
-> **Bilinear**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Interpolation.Bilinear`
-
-***
-
-###### Nearest
-
-> **Nearest**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`Interpolation.Nearest`
-
-</div>
-
-Interpolation algorithm (used if the rotation angle is different from 90, 180, and 270 degrees and no center position has been set)
-
-###### Default Value
-
-`Interpolation.Bilinear`
-
-</div>
-
-#### Returns
-
-`Image`
-
-***
-
-### save()
-
-> <span class="async-badge">async</span> **save**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
-
-Saves this image to a file. The format is inferred from the file extension.
-
-#### Parameters
-
-##### path
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
-
-***
-
-### setPixel()
-
-#### Call Signature
-
-> **setPixel**(`position`: [`PointLike`](../type-aliases/PointLike.md), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `this`
-
-Sets the color of a pixel.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **setPixel**(`position`: [`PointLike`](../type-aliases/PointLike.md), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
-
-Sets the color of a pixel.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **setPixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `this`
-
-Sets the color of a pixel.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-##### Returns
-
-`this`
-
-#### Call Signature
-
-> **setPixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `this`
-
-Sets the color of a pixel.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-`this`
-
-***
-
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of this image.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### withAdjustedBrightness()
-
-> **withAdjustedBrightness**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
-
-Returns a brightened or darkened copy of this image.
-
-`value` is added to each RGB channel and clamped to 0–255.
-Range: -255 to 255, where 0 = no change, positive = brighter, negative = darker.
-
-#### Parameters
-
-##### value
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-#### Returns
-
-`Image`
-
-***
-
-### withAdjustedContrast()
-
-> **withAdjustedContrast**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
-
-Returns a contrast-adjusted copy of this image (0 = no change, positive = more contrast, -100 = all pixels become 50% gray).
-
-#### Parameters
-
-##### value
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-#### Returns
-
-`Image`
-
-***
-
-### withCircle()
-
-#### Call Signature
-
-> **withCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw a circle on a copy of this image.
-
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### radius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw a circle on a copy of this image.
-
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### radius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw a circle on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### radius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw a circle on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### radius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-***
-
-### withCross()
-
-#### Call Signature
-
-> **withCross**(`position`: [`PointLike`](../type-aliases/PointLike.md), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `Image`
-
-Draw a cross on a copy of this image.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withCross**(`position`: [`PointLike`](../type-aliases/PointLike.md), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
-
-Draw a cross on a copy of this image.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withCross**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md)): `Image`
-
-Draw a cross on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withCross**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
-
-Draw a cross on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-`Image`
-
-***
-
-### withEllipse()
-
-#### Call Signature
-
-> **withEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw an ellipse on a copy of this image.
-
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw an ellipse on a copy of this image.
-
-##### Parameters
-
-###### center
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw an ellipse on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### color
-
-[`ColorLike`](../type-aliases/ColorLike.md)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
-
-Draw an ellipse on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### widthRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### heightRadius
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### r
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### g
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### b
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### a?
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### options?
-
-[`DrawingOptions`](../interfaces/DrawingOptions.md)
-
-<div class="options-fields">
-
-###### hollow?
-
-> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Draw a hollow shape instead of a filled one
-
-###### Default Value
-
-`false`
-
-</div>
-
-##### Returns
-
-`Image`
-
-***
-
-### withGrayscale()
-
-> **withGrayscale**(): `Image`
-
-Returns a grayscale version of this image.
-
-#### Returns
-
-`Image`
-
-***
-
-### withHueRotation()
-
-> **withHueRotation**(`value`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): `Image`
-
-Returns a hue-rotated copy of this image.
-
-`value` is in degrees and wraps around, so 360 is equivalent to 0.
-
-#### Parameters
-
-##### value
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-#### Returns
-
-`Image`
-
-***
-
-### withImage()
-
-#### Call Signature
-
-> **withImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `Image`
-
-Draw another image on a copy of this image.
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-###### image
-
-`Image`
-
-###### options?
-
-[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
-
-<div class="options-fields">
-
-###### sourceRect?
-
-> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
-
-Source rectangle.
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-</div>
-
-##### Returns
-
-`Image`
-
-#### Call Signature
-
-> **withImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `Image`
-
-Draw another image on a copy of this image.
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### image
-
-`Image`
-
-###### options?
-
-[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
-
-<div class="options-fields">
-
-###### sourceRect?
-
-> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
-
-Source rectangle.
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
-
-###### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-</div>
-
-##### Returns
-
-`Image`
-
-***
-
 ### withLine()
 
 #### Call Signature
@@ -4327,6 +2063,1058 @@ Draw a line on a copy of this image.
 
 ***
 
+### drawCircle()
+
+#### Call Signature
+
+> **drawCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a circle on this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a circle on this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a circle on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a circle on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+***
+
+### withCircle()
+
+#### Call Signature
+
+> **withCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw a circle on a copy of this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withCircle**(`center`: [`PointLike`](../type-aliases/PointLike.md), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw a circle on a copy of this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw a circle on a copy of this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withCircle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `radius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw a circle on a copy of this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### radius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+***
+
+### drawEllipse()
+
+#### Call Signature
+
+> **drawEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw an ellipse on this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw an ellipse on this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw an ellipse on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw an ellipse on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+***
+
+### withEllipse()
+
+#### Call Signature
+
+> **withEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw an ellipse on a copy of this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withEllipse**(`center`: [`PointLike`](../type-aliases/PointLike.md), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw an ellipse on a copy of this image.
+
+##### Parameters
+
+###### center
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw an ellipse on a copy of this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withEllipse**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `widthRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `heightRadius`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `Image`
+
+Draw an ellipse on a copy of this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### widthRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### heightRadius
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`Image`
+
+***
+
+### drawRectangle()
+
+#### Call Signature
+
+> **drawRectangle**(`rect`: [`RectLike`](../type-aliases/RectLike.md), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a rectangle on this image.
+
+##### Parameters
+
+###### rect
+
+[`RectLike`](../type-aliases/RectLike.md)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawRectangle**(`rect`: [`RectLike`](../type-aliases/RectLike.md), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a rectangle on this image.
+
+##### Parameters
+
+###### rect
+
+[`RectLike`](../type-aliases/RectLike.md)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawRectangle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a rectangle on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### width
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### height
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawRectangle**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawingOptions`](../interfaces/DrawingOptions.md)): `this`
+
+Draw a rectangle on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### width
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### height
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawingOptions`](../interfaces/DrawingOptions.md)
+
+<div class="options-fields">
+
+###### hollow?
+
+> `optional` **hollow?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Draw a hollow shape instead of a filled one
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+`this`
+
+***
+
 ### withRectangle()
 
 #### Call Signature
@@ -4531,6 +3319,610 @@ Draw a hollow shape instead of a filled one
 
 ***
 
+### drawText()
+
+#### Call Signature
+
+> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+
+Draw text on this image.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### text
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
+
+<div class="options-fields">
+
+###### font?
+
+> `optional` **font?**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
+###### fontSize?
+
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Font size in pixels.
+
+###### Default Value
+
+`16`
+
+***
+
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
+###### horizontalAlign?
+
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
+
+</div>
+
+Horizontal alignment relative to the provided position.
+
+###### Default Value
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### verticalAlign?
+
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+
+<div class="options-fields">
+
+###### Top
+
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Middle`
+
+***
+
+###### Bottom
+
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Bottom`
+
+</div>
+
+Vertical alignment relative to the provided position.
+
+###### Default Value
+
+`TextVerticalAlign.Top`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawText**(`position`: [`PointLike`](../type-aliases/PointLike.md), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+
+Draw text on this image.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### text
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
+
+<div class="options-fields">
+
+###### font?
+
+> `optional` **font?**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
+###### fontSize?
+
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Font size in pixels.
+
+###### Default Value
+
+`16`
+
+***
+
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
+###### horizontalAlign?
+
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
+
+</div>
+
+Horizontal alignment relative to the provided position.
+
+###### Default Value
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### verticalAlign?
+
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+
+<div class="options-fields">
+
+###### Top
+
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Middle`
+
+***
+
+###### Bottom
+
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Bottom`
+
+</div>
+
+Vertical alignment relative to the provided position.
+
+###### Default Value
+
+`TextVerticalAlign.Top`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `color`: [`ColorLike`](../type-aliases/ColorLike.md), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+
+Draw text on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### text
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+###### color
+
+[`ColorLike`](../type-aliases/ColorLike.md)
+
+###### options?
+
+[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
+
+<div class="options-fields">
+
+###### font?
+
+> `optional` **font?**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
+###### fontSize?
+
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Font size in pixels.
+
+###### Default Value
+
+`16`
+
+***
+
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
+###### horizontalAlign?
+
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
+
+</div>
+
+Horizontal alignment relative to the provided position.
+
+###### Default Value
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### verticalAlign?
+
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+
+<div class="options-fields">
+
+###### Top
+
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Middle`
+
+***
+
+###### Bottom
+
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Bottom`
+
+</div>
+
+Vertical alignment relative to the provided position.
+
+###### Default Value
+
+`TextVerticalAlign.Top`
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawText**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `text`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), `r`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `g`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `b`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `a?`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DrawTextOptions`](../interfaces/DrawTextOptions.md)): `this`
+
+Draw text on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### text
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+###### r
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### g
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### b
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### a?
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DrawTextOptions`](../interfaces/DrawTextOptions.md)
+
+<div class="options-fields">
+
+###### font?
+
+> `optional` **font?**: [`Font`](Font.md)
+
+Font to use. Defaults to the built-in DejaVu Sans.
+
+###### Default Value
+
+`Font.default()`
+
+***
+
+###### fontSize?
+
+> `optional` **fontSize?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Font size in pixels.
+
+###### Default Value
+
+`16`
+
+***
+
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
+###### horizontalAlign?
+
+> `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Right`
+
+</div>
+
+Horizontal alignment relative to the provided position.
+
+###### Default Value
+
+`TextHorizontalAlign.Left`
+
+***
+
+###### verticalAlign?
+
+> `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
+
+<div class="options-fields">
+
+###### Top
+
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Top`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Middle`
+
+***
+
+###### Bottom
+
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextVerticalAlign.Bottom`
+
+</div>
+
+Vertical alignment relative to the provided position.
+
+###### Default Value
+
+`TextVerticalAlign.Top`
+
+</div>
+
+##### Returns
+
+`this`
+
+***
+
 ### withText()
 
 #### Call Signature
@@ -4583,25 +3975,37 @@ Font size in pixels.
 
 ***
 
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
 ###### horizontalAlign?
 
 > `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
 
 ***
 
@@ -4621,29 +4025,17 @@ Horizontal alignment relative to the provided position.
 
 ***
 
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
 ###### verticalAlign?
 
 > `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
-###### Bottom
+###### Top
 
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Bottom`
+`TextVerticalAlign.Top`
 
 ***
 
@@ -4655,11 +4047,11 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ***
 
-###### Top
+###### Bottom
 
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Top`
+`TextVerticalAlign.Bottom`
 
 </div>
 
@@ -4737,25 +4129,37 @@ Font size in pixels.
 
 ***
 
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
 ###### horizontalAlign?
 
 > `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
 
 ***
 
@@ -4775,29 +4179,17 @@ Horizontal alignment relative to the provided position.
 
 ***
 
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
 ###### verticalAlign?
 
 > `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
-###### Bottom
+###### Top
 
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Bottom`
+`TextVerticalAlign.Top`
 
 ***
 
@@ -4809,11 +4201,11 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ***
 
-###### Top
+###### Bottom
 
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Top`
+`TextVerticalAlign.Bottom`
 
 </div>
 
@@ -4883,25 +4275,37 @@ Font size in pixels.
 
 ***
 
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
 ###### horizontalAlign?
 
 > `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
 
 ***
 
@@ -4921,29 +4325,17 @@ Horizontal alignment relative to the provided position.
 
 ***
 
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
 ###### verticalAlign?
 
 > `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
-###### Bottom
+###### Top
 
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Bottom`
+`TextVerticalAlign.Top`
 
 ***
 
@@ -4955,11 +4347,11 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ***
 
-###### Top
+###### Bottom
 
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Top`
+`TextVerticalAlign.Bottom`
 
 </div>
 
@@ -5041,25 +4433,37 @@ Font size in pixels.
 
 ***
 
+###### lineSpacing?
+
+> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Multiplier applied to the default line height when rendering multi-line text.
+
+###### Default Value
+
+`1`
+
+***
+
 ###### horizontalAlign?
 
 > `optional` **horizontalAlign?**: [`TextHorizontalAlign`](../enumerations/TextHorizontalAlign.md)
 
 <div class="options-fields">
 
-###### Center
-
-> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`TextHorizontalAlign.Center`
-
-***
-
 ###### Left
 
 > **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `TextHorizontalAlign.Left`
+
+***
+
+###### Center
+
+> **Center**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`TextHorizontalAlign.Center`
 
 ***
 
@@ -5079,29 +4483,17 @@ Horizontal alignment relative to the provided position.
 
 ***
 
-###### lineSpacing?
-
-> `optional` **lineSpacing?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Multiplier applied to the default line height when rendering multi-line text.
-
-###### Default Value
-
-`1`
-
-***
-
 ###### verticalAlign?
 
 > `optional` **verticalAlign?**: [`TextVerticalAlign`](../enumerations/TextVerticalAlign.md)
 
 <div class="options-fields">
 
-###### Bottom
+###### Top
 
-> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Bottom`
+`TextVerticalAlign.Top`
 
 ***
 
@@ -5113,11 +4505,11 @@ Multiplier applied to the default line height when rendering multi-line text.
 
 ***
 
-###### Top
+###### Bottom
 
-> **Top**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Bottom**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`TextVerticalAlign.Top`
+`TextVerticalAlign.Bottom`
 
 </div>
 
@@ -5135,41 +4527,649 @@ Vertical alignment relative to the provided position.
 
 ***
 
-### fromBytes()
+### drawImage()
 
-> `static` **fromBytes**(`bytes`: [`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)): `Image`
+#### Call Signature
 
-Creates a new image from raw encoded bytes (PNG, JPEG, etc.).
+> **drawImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
 
-```ts
-const bytes = await file.readAll();
-const image = Image.fromBytes(bytes);
-```
+Draw another image on this image.
 
-#### Parameters
+##### Parameters
 
-##### bytes
+###### position
 
-[`Uint8Array`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+[`PointLike`](../type-aliases/PointLike.md)
 
-#### Returns
+###### image
+
+`Image`
+
+###### options?
+
+[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
+
+<div class="options-fields">
+
+###### sourceRect?
+
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
+
+Source rectangle.
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **drawImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `this`
+
+Draw another image on this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### image
+
+`Image`
+
+###### options?
+
+[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
+
+<div class="options-fields">
+
+###### sourceRect?
+
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
+
+Source rectangle.
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+##### Returns
+
+`this`
+
+***
+
+### withImage()
+
+#### Call Signature
+
+> **withImage**(`position`: [`PointLike`](../type-aliases/PointLike.md), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `Image`
+
+Draw another image on a copy of this image.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### image
+
+`Image`
+
+###### options?
+
+[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
+
+<div class="options-fields">
+
+###### sourceRect?
+
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
+
+Source rectangle.
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+##### Returns
+
+`Image`
+
+#### Call Signature
+
+> **withImage**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `image`: `Image`, `options?`: [`DrawImageOptions`](../interfaces/DrawImageOptions.md)): `Image`
+
+Draw another image on a copy of this image.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### image
+
+`Image`
+
+###### options?
+
+[`DrawImageOptions`](../interfaces/DrawImageOptions.md)
+
+<div class="options-fields">
+
+###### sourceRect?
+
+> `optional` **sourceRect?**: [`RectLike`](../type-aliases/RectLike.md)
+
+Source rectangle.
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) means the whole image.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+##### Returns
 
 `Image`
 
 ***
 
-### load()
+### find()
 
-> <span class="async-badge">async</span> `static` **load**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Image`\>
+> <span class="async-badge">async</span> **find**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
 
-Loads an image from a file. The format is guessed from the file contents.
+Finds the best match of an image inside this image.
+
+Returns a `ProgressTask` that can be awaited for the result and iterated
+for progress updates. Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
+
+```ts
+const match = await source.find(template);
+if (match) {
+  println(`Found at ${match.position} with score ${match.score}`);
+}
+```
+
+```ts
+// Track progress while searching
+const task = source.find(template);
+for await (const progress of task) {
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+}
+const match = await task;
+```
 
 #### Parameters
 
-##### path
+##### image
 
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+`Image`
+
+##### options?
+
+[`FindImageOptions`](../interfaces/FindImageOptions.md)
+
+<div class="options-fields">
+
+###### useColors?
+
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`false`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### downscale?
+
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Image`\>
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+***
+
+### findAll()
+
+> <span class="async-badge">async</span> **findAll**(`image`: `Image`, `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+Finds all occurrences of an image inside this image.
+
+Returns a `ProgressTask` that can be awaited for an array of matches.
+
+```ts
+const matches = await source.findAll(template, { matchThreshold: 0.85 });
+for (const match of matches) {
+  println(`Found at ${match.position}`);
+}
+```
+
+```ts
+// Track progress while searching
+const task = source.findAll(template);
+for await (const progress of task) {
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+}
+const matches = await task;
+```
+
+#### Parameters
+
+##### image
+
+`Image`
+
+##### options?
+
+[`FindImageOptions`](../interfaces/FindImageOptions.md)
+
+<div class="options-fields">
+
+###### useColors?
+
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`false`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### downscale?
+
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+***
+
+### findOnScreen()
+
+> <span class="async-badge">async</span> **findOnScreen**(`searchIn`: [`SearchIn`](SearchIn.md), `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+Finds the best match of this image within the given screen area.
+
+Takes a live screenshot of the specified area and searches for this image within it.
+Returns [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined) if no match is found.
+
+```ts
+const match = await image.findOnScreen(SearchIn.desktop());
+if (match) {
+  println(`Found at ${match.position} with score ${match.score}`);
+}
+```
+
+```ts
+const display = displays.primary();
+const task = image.findOnScreen(SearchIn.display(display));
+for await (const progress of task) {
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+}
+const match = await task;
+```
+
+#### Parameters
+
+##### searchIn
+
+[`SearchIn`](SearchIn.md)
+
+##### options?
+
+[`FindImageOptions`](../interfaces/FindImageOptions.md)
+
+<div class="options-fields">
+
+###### useColors?
+
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`false`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### downscale?
+
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined), [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
+### findAllOnScreen()
+
+> <span class="async-badge">async</span> **findAllOnScreen**(`searchIn`: [`SearchIn`](SearchIn.md), `options?`: [`FindImageOptions`](../interfaces/FindImageOptions.md)): [`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+Finds all matches of this image within the given screen area.
+
+Takes a live screenshot of the specified area and searches for all occurrences.
+
+```ts
+const matches = await image.findAllOnScreen(SearchIn.desktop());
+for (const match of matches) {
+  println(`Found at ${match.position}`);
+}
+```
+
+```ts
+const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
+for await (const progress of task) {
+  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+}
+const matches = await task;
+```
+
+#### Parameters
+
+##### searchIn
+
+[`SearchIn`](SearchIn.md)
+
+##### options?
+
+[`FindImageOptions`](../interfaces/FindImageOptions.md)
+
+<div class="options-fields">
+
+###### useColors?
+
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use color matching.
+
+###### Default Value
+
+`false`
+
+***
+
+###### useTransparency?
+
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+###### Default Value
+
+`true`
+
+***
+
+###### matchThreshold?
+
+> `optional` **matchThreshold?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Matching threshold.
+Values are between 0 (worst) to 1 (best).
+
+###### Default Value
+
+`0.8`
+
+***
+
+###### nonMaximumSuppressionRadius?
+
+> `optional` **nonMaximumSuppressionRadius?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Radius to consider proximity (in pixels).
+
+###### Default Value
+
+`10`
+
+***
+
+###### downscale?
+
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+###### Default Value
+
+`0`
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](../interfaces/AbortSignal.md)
+
+Abort signal to cancel the search.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+</div>
+
+#### Returns
+
+[`ProgressTask`](../type-aliases/ProgressTask.md)\<[`Match`](../interfaces/Match.md)[], [`FindImageProgress`](../interfaces/FindImageProgress.md)\>
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>

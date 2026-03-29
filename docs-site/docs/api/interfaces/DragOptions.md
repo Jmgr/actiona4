@@ -28,35 +28,35 @@ Mouse button to use for dragging.
 
 ***
 
-### interval?
+### speed?
 
-> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Interval in seconds
+Movement speed in pixels per second.
 
 #### Default Value
 
-`0.01`
+`2000`
 
 #### Inherited from
 
-[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)
+[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
 
 ***
 
-### perlinAmplitude?
+### tween?
 
-> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
 
-Amplitude of the Perlin noise applied to the movement path.
+Easing function used for the movement.
 
 #### Default Value
 
-`5`
+`Tween.SineOut`
 
 #### Inherited from
 
-[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
+[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)
 
 ***
 
@@ -76,19 +76,19 @@ Scale of the Perlin noise applied to the movement path.
 
 ***
 
-### speed?
+### perlinAmplitude?
 
-> `optional` **speed?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **perlinAmplitude?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Movement speed in pixels per second.
+Amplitude of the Perlin noise applied to the movement path.
 
 #### Default Value
 
-`2000`
+`5`
 
 #### Inherited from
 
-[`MoveOptions`](MoveOptions.md).[`speed`](MoveOptions.md#speed)
+[`MoveOptions`](MoveOptions.md).[`perlinAmplitude`](MoveOptions.md#perlinamplitude)
 
 ***
 
@@ -108,16 +108,16 @@ Random offset applied to the target position, in pixels.
 
 ***
 
-### tween?
+### interval?
 
-> `optional` **tween?**: [`Tween`](../enumerations/Tween.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
-Easing function used for the movement.
+Interval in seconds
 
 #### Default Value
 
-`Tween.SineOut`
+`0.01`
 
 #### Inherited from
 
-[`MoveOptions`](MoveOptions.md).[`tween`](MoveOptions.md#tween)
+[`MoveOptions`](MoveOptions.md).[`interval`](MoveOptions.md#interval)

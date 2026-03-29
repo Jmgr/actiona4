@@ -14,15 +14,27 @@ const match = await source.find(template, { signal: controller.signal });
 
 ## Properties
 
-### downscale?
+### useColors?
 
-> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-How many times should the source image and the template be downscaled?
+Use color matching.
 
 #### Default Value
 
-`0`
+`false`
+
+***
+
+### useTransparency?
+
+> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use template transparency.
+
+#### Default Value
+
+`true`
 
 ***
 
@@ -51,6 +63,18 @@ Radius to consider proximity (in pixels).
 
 ***
 
+### downscale?
+
+> `optional` **downscale?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+How many times should the source image and the template be downscaled?
+
+#### Default Value
+
+`0`
+
+***
+
 ### signal?
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
@@ -60,27 +84,3 @@ Abort signal to cancel the search.
 #### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### useColors?
-
-> `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use color matching.
-
-#### Default Value
-
-`false`
-
-***
-
-### useTransparency?
-
-> `optional` **useTransparency?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Use template transparency.
-
-#### Default Value
-
-`true`

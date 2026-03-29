@@ -12,6 +12,14 @@ Toast notification scenario.
 
 ## Enumeration Members
 
+### Reminder
+
+> **Reminder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationScenario.Reminder`
+
+***
+
 ### Alarm
 
 > **Alarm**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -25,14 +33,6 @@ Toast notification scenario.
 > **IncomingCall**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `NotificationScenario.IncomingCall`
-
-***
-
-### Reminder
-
-> **Reminder**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationScenario.Reminder`
 
 ***
 

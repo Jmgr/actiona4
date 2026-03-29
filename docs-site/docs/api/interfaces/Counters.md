@@ -21,19 +21,19 @@ Data
 
 ***
 
-### errors
-
-> `readonly` **errors**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Errors
-
-***
-
 ### packets
 
 > `readonly` **packets**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Packets
+
+***
+
+### errors
+
+> `readonly` **errors**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Errors
 
 ## Methods
 

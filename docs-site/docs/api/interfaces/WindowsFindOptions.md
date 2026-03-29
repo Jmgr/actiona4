@@ -5,19 +5,6 @@ Window search options.
 
 ## Properties
 
-### className?
-
-> `optional` **className?**: [`NameLike`](../type-aliases/NameLike.md)
-
-Match by window class name.
-When undefined, class name is not filtered.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ### id?
 
 > `optional` **id?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -44,6 +31,19 @@ When undefined, any process ID is accepted.
 
 ***
 
+### visible?
+
+> `optional` **visible?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Match by window visibility.
+When undefined, visibility is not filtered.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
 ### title?
 
 > `optional` **title?**: [`NameLike`](../type-aliases/NameLike.md)
@@ -57,12 +57,12 @@ When undefined, title is not filtered.
 
 ***
 
-### visible?
+### className?
 
-> `optional` **visible?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+> `optional` **className?**: [`NameLike`](../type-aliases/NameLike.md)
 
-Match by window visibility.
-When undefined, visibility is not filtered.
+Match by window class name.
+When undefined, class name is not filtered.
 
 #### Default Value
 

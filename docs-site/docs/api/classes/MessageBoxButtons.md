@@ -12,23 +12,29 @@ const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
 
 ## Methods
 
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of this set of message box buttons.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
 ### ok()
 
 > `static` **ok**(): `MessageBoxButtons`
 
 Creates an OK button.
+
+#### Returns
+
+`MessageBoxButtons`
+
+***
+
+### okCustom()
+
+> `static` **okCustom**(`okLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): `MessageBoxButtons`
+
+Creates an OK button with a custom label.
+
+#### Parameters
+
+##### okLabel
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 #### Returns
 
@@ -61,24 +67,6 @@ Creates OK and Cancel buttons with custom labels.
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ##### cancelLabel
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-`MessageBoxButtons`
-
-***
-
-### okCustom()
-
-> `static` **okCustom**(`okLabel`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): `MessageBoxButtons`
-
-Creates an OK button with a custom label.
-
-#### Parameters
-
-##### okLabel
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
@@ -135,3 +123,15 @@ Creates Yes, No, and Cancel buttons with custom labels.
 #### Returns
 
 `MessageBoxButtons`
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this set of message box buttons.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

@@ -3,11 +3,11 @@
 
 ## Enumeration Members
 
-### Cancel
+### Yes
 
-> **Cancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Yes**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`MessageBoxResult.Cancel`
+`MessageBoxResult.Yes`
 
 ***
 
@@ -27,8 +27,8 @@
 
 ***
 
-### Yes
+### Cancel
 
-> **Yes**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Cancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`MessageBoxResult.Yes`
+`MessageBoxResult.Cancel`

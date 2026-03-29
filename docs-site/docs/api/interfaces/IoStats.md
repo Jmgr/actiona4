@@ -15,19 +15,19 @@ if (disk) {
 
 ## Properties
 
-### delta
-
-> `readonly` **delta**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Delta
-
-***
-
 ### total
 
 > `readonly` **total**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Total
+
+***
+
+### delta
+
+> `readonly` **delta**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Delta
 
 ## Methods
 

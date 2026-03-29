@@ -9,6 +9,38 @@ println(processes.length);
 
 ## Methods
 
+### list()
+
+> <span class="async-badge">async</span> **list**(`options?`: [`ListProcessesOptions`](ListProcessesOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
+
+Lists all processes
+
+#### Parameters
+
+##### options?
+
+[`ListProcessesOptions`](ListProcessesOptions.md)
+
+<div class="options-fields">
+
+###### rescan?
+
+> `optional` **rescan?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Rescan
+
+###### Default Value
+
+`true`
+
+</div>
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
+
+***
+
 ### find()
 
 > <span class="async-badge">async</span> **find**(`options`: [`ProcessesFindOptions`](ProcessesFindOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
@@ -30,12 +62,12 @@ const exact = await system.processes.find({ pid: 12345, name: "my-app" });
 
 <div class="options-fields">
 
-###### name?
+###### pid?
 
-> `optional` **name?**: [`NameLike`](../type-aliases/NameLike.md)
+> `optional` **pid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Match by process name.
-When undefined, name is not filtered.
+Match by process ID.
+When undefined, any PID is accepted.
 
 ###### Default Value
 
@@ -56,28 +88,16 @@ When undefined, parent PID is not filtered.
 
 ***
 
-###### pid?
+###### name?
 
-> `optional` **pid?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `optional` **name?**: [`NameLike`](../type-aliases/NameLike.md)
 
-Match by process ID.
-When undefined, any PID is accepted.
+Match by process name.
+When undefined, name is not filtered.
 
 ###### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-###### rescan?
-
-> `optional` **rescan?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Refresh process list before filtering.
-
-###### Default Value
-
-`true`
 
 ***
 
@@ -92,33 +112,13 @@ When undefined, status is not filtered.
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
-</div>
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
-
 ***
-
-### list()
-
-> <span class="async-badge">async</span> **list**(`options?`: [`ListProcessesOptions`](ListProcessesOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<readonly [`ProcessInfo`](ProcessInfo.md)[]\>
-
-Lists all processes
-
-#### Parameters
-
-##### options?
-
-[`ListProcessesOptions`](ListProcessesOptions.md)
-
-<div class="options-fields">
 
 ###### rescan?
 
 > `optional` **rescan?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Rescan
+Refresh process list before filtering.
 
 ###### Default Value
 

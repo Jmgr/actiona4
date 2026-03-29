@@ -22,12 +22,49 @@ const file = await File.open("log.txt", {
 
 ## Properties
 
+### read?
+
+> `optional` **read?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the file be opened with read access?
+
+#### Default Value
+
+`true`
+
+***
+
+### write?
+
+> `optional` **write?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Should the file be opened with write access?
+
+#### Default Value
+
+`false`
+
+***
+
 ### append?
 
 > `optional` **append?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Writing: open the file in append mode.
 Note that setting this to `true` implies setting `write` to `true`.
+
+#### Default Value
+
+`false`
+
+***
+
+### truncate?
+
+> `optional` **truncate?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Writing: truncate (remove all contents of) the file.
+Note that this only works if `write` is `true`.
 
 #### Default Value
 
@@ -55,43 +92,6 @@ Note that this only works if `write` or `append` are set to `true`.
 Writing: always create a new file, even if one already exists.
 Note that this only works if `write` or `append` are set to `true`.
 Note that `create` and `truncate` are ignored if this is set to `true`.
-
-#### Default Value
-
-`false`
-
-***
-
-### read?
-
-> `optional` **read?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the file be opened with read access?
-
-#### Default Value
-
-`true`
-
-***
-
-### truncate?
-
-> `optional` **truncate?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Writing: truncate (remove all contents of) the file.
-Note that this only works if `write` is `true`.
-
-#### Default Value
-
-`false`
-
-***
-
-### write?
-
-> `optional` **write?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
-
-Should the file be opened with write access?
 
 #### Default Value
 

@@ -12,19 +12,19 @@ Activation type for toast actions and headers.
 
 ## Enumeration Members
 
-### Background
-
-> **Background**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationActivationType.Background`
-
-***
-
 ### Foreground
 
 > **Foreground**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `NotificationActivationType.Foreground`
+
+***
+
+### Background
+
+> **Background**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationActivationType.Background`
 
 ***
 

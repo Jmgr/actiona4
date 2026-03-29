@@ -22,46 +22,11 @@ console.count("loop");
 
 ## Methods
 
-### clear()
+### print()
 
-> **clear**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **print**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Clears the terminal screen.
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-***
-
-### count()
-
-> **count**(`label?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-Increments and prints a counter for the given label (defaults to `"default"`).
-
-```ts
-console.count("loop"); // prints "loop: 1"
-console.count("loop"); // prints "loop: 2"
-```
-
-#### Parameters
-
-##### label?
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-***
-
-### error()
-
-> **error**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-Logs an error in bold red.
+Prints values without a trailing newline.
 
 #### Parameters
 
@@ -75,29 +40,11 @@ Logs an error in bold red.
 
 ***
 
-### info()
+### println()
 
-> **info**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **println**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Logs informational values. Alias for `log`.
-
-#### Parameters
-
-##### args
-
-...`unknown`[]
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-***
-
-### inspect()
-
-> **inspect**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-Pretty-prints values using an inspect-style multiline format.
+Prints values followed by a newline.
 
 #### Parameters
 
@@ -129,11 +76,11 @@ Logs values to stdout. Alias for `println`.
 
 ***
 
-### print()
+### info()
 
-> **print**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **info**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Prints values without a trailing newline.
+Logs informational values. Alias for `log`.
 
 #### Parameters
 
@@ -147,17 +94,65 @@ Prints values without a trailing newline.
 
 ***
 
-### println()
+### warn()
 
-> **println**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+> **warn**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Prints values followed by a newline.
+Logs a warning in yellow.
 
 #### Parameters
 
 ##### args
 
 ...`unknown`[]
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### error()
+
+> **error**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Logs an error in bold red.
+
+#### Parameters
+
+##### args
+
+...`unknown`[]
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### inspect()
+
+> **inspect**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Pretty-prints values using an inspect-style multiline format.
+
+#### Parameters
+
+##### args
+
+...`unknown`[]
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
+### clear()
+
+> **clear**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Clears the terminal screen.
 
 #### Returns
 
@@ -211,6 +206,29 @@ console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
 
 ***
 
+### count()
+
+> **count**(`label?`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Increments and prints a counter for the given label (defaults to `"default"`).
+
+```ts
+console.count("loop"); // prints "loop: 1"
+console.count("loop"); // prints "loop: 2"
+```
+
+#### Parameters
+
+##### label?
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+***
+
 ### toString()
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -220,21 +238,3 @@ Returns a string representation of the `console` singleton.
 #### Returns
 
 [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### warn()
-
-> **warn**(...`args`: `unknown`[]): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-Logs a warning in yellow.
-
-#### Parameters
-
-##### args
-
-...`unknown`[]
-
-#### Returns
-
-[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)

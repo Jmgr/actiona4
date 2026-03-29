@@ -9,30 +9,6 @@ image.drawText(10, 10, "Hello", font, Color.Black);
 
 ## Methods
 
-### toString()
-
-> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Returns a string representation of this font.
-
-#### Returns
-
-[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-***
-
-### defaultFont()
-
-> `static` **defaultFont**(): `Font`
-
-Returns the built-in default font (DejaVu Sans).
-
-#### Returns
-
-`Font`
-
-***
-
 ### load()
 
 > <span class="async-badge">async</span> `static` **load**(`path`: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Font`\>
@@ -52,3 +28,27 @@ const font = await Font.load("/path/to/font.ttf");
 #### Returns
 
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`Font`\>
+
+***
+
+### defaultFont()
+
+> `static` **defaultFont**(): `Font`
+
+Returns the built-in default font (DejaVu Sans).
+
+#### Returns
+
+`Font`
+
+***
+
+### toString()
+
+> **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Returns a string representation of this font.
+
+#### Returns
+
+[`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)

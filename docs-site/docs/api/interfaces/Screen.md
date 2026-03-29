@@ -21,94 +21,6 @@ println(pixel);
 
 ## Methods
 
-### askScreenshot()
-
-> <span class="async-badge">async</span> **askScreenshot**(`options?`: [`AskScreenshotOptions`](AskScreenshotOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-Asks the user to interactively select a screen area and returns a
-screenshot of that area, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if the user cancels.
-
-On Linux the XDG Desktop Portal is used by default, which works on both
-X11 and Wayland. On Windows the system screenshot picker is used by
-default. In both cases the user can cancel at any time.
-
-```ts
-const image = await screen.askScreenshot();
-if (image) {
-  await image.save("/tmp/selection.png");
-}
-```
-
-```ts
-// Force the portal (error if unavailable)
-const image = await screen.askScreenshot({ method: AskScreenshotMethod.Portal });
-```
-
-#### Parameters
-
-##### options?
-
-[`AskScreenshotOptions`](AskScreenshotOptions.md)
-
-<div class="options-fields">
-
-###### method?
-
-> `optional` **method?**: [`AskScreenshotMethod`](../enumerations/AskScreenshotMethod.md)
-
-<div class="options-fields">
-
-###### Auto
-
-> **Auto**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`AskScreenshotMethod.Auto`
-
-Use the platform-default interactive screenshot picker.
-
-***
-
-###### Overlay
-
-> **Overlay**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`AskScreenshotMethod.Overlay`
-
-Use the bundled overlay selector only.
-
-***
-
-###### Portal
-
-> **Portal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`AskScreenshotMethod.Portal`
-
-Use the XDG Desktop Portal only.
-
-###### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-</div>
-
-</div>
-
-Controls which capture method to use.
-
-###### Default Value
-
-`AskScreenshotMethod.Auto`
-
-</div>
-
-#### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
-
-***
-
 ### captureDesktop()
 
 > <span class="async-badge">async</span> **captureDesktop**(): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
@@ -156,72 +68,6 @@ const image = await screen.captureDisplay(displays.largest());
 [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md)\>
 
 #### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
-</div>
-
-***
-
-### capturePixel()
-
-#### Call Signature
-
-> <span class="async-badge">async</span> **capturePixel**(`position`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
-
-Captures the color of a single pixel on screen.
-
-```ts
-const color = await screen.capturePixel(100, 200);
-println(color);
-```
-
-##### Parameters
-
-###### position
-
-[`PointLike`](../type-aliases/PointLike.md)
-
-##### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
-
-##### Platform
-
-<div class="platform-badges">
-<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
-<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
-<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
-</div>
-
-#### Call Signature
-
-> <span class="async-badge">async</span> **capturePixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
-
-Captures the color of a single pixel on screen.
-
-```ts
-const color = await screen.capturePixel(100, 200);
-println(color);
-```
-
-##### Parameters
-
-###### x
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-###### y
-
-[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-##### Returns
-
-[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
-
-##### Platform
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
@@ -331,6 +177,160 @@ const image = await screen.captureWindow(win);
 <span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
 <span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
 </div>
+
+***
+
+### capturePixel()
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **capturePixel**(`position`: [`PointLike`](../type-aliases/PointLike.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
+
+Captures the color of a single pixel on screen.
+
+```ts
+const color = await screen.capturePixel(100, 200);
+println(color);
+```
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+##### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **capturePixel**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
+
+Captures the color of a single pixel on screen.
+
+```ts
+const color = await screen.capturePixel(100, 200);
+println(color);
+```
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+##### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Color`](../classes/Color.md)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
+### askScreenshot()
+
+> <span class="async-badge">async</span> **askScreenshot**(`options?`: [`AskScreenshotOptions`](AskScreenshotOptions.md)): [`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
+
+Asks the user to interactively select a screen area and returns a
+screenshot of that area, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if the user cancels.
+
+On Linux the XDG Desktop Portal is used by default, which works on both
+X11 and Wayland. On Windows the system screenshot picker is used by
+default. In both cases the user can cancel at any time.
+
+```ts
+const image = await screen.askScreenshot();
+if (image) {
+  await image.save("/tmp/selection.png");
+}
+```
+
+```ts
+// Force the portal (error if unavailable)
+const image = await screen.askScreenshot({ method: AskScreenshotMethod.Portal });
+```
+
+#### Parameters
+
+##### options?
+
+[`AskScreenshotOptions`](AskScreenshotOptions.md)
+
+<div class="options-fields">
+
+###### method?
+
+> `optional` **method?**: [`AskScreenshotMethod`](../enumerations/AskScreenshotMethod.md)
+
+<div class="options-fields">
+
+###### Auto
+
+> **Auto**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`AskScreenshotMethod.Auto`
+
+Use the platform-default interactive screenshot picker.
+
+***
+
+###### Portal
+
+> **Portal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`AskScreenshotMethod.Portal`
+
+Use the XDG Desktop Portal only.
+
+###### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Windows" aria-label="Not supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+</div>
+
+***
+
+###### Overlay
+
+> **Overlay**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`AskScreenshotMethod.Overlay`
+
+Use the bundled overlay selector only.
+
+</div>
+
+Controls which capture method to use.
+
+###### Default Value
+
+`AskScreenshotMethod.Auto`
+
+</div>
+
+#### Returns
+
+[`Promise`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`Image`](../classes/Image.md) \| [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)\>
 
 ***
 

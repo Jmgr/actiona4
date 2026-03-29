@@ -19,18 +19,6 @@ await Concurrency.race([
 
 ## Properties
 
-### interval?
-
-> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
-
-Polling interval in seconds.
-
-#### Default Value
-
-`0.2`
-
-***
-
 ### mode?
 
 > `optional` **mode?**: [`ClipboardMode`](../enumerations/ClipboardMode.md)
@@ -40,6 +28,18 @@ Clipboard source to watch.
 #### Default Value
 
 `ClipboardMode.Clipboard`
+
+***
+
+### interval?
+
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Polling interval in seconds.
+
+#### Default Value
+
+`0.2`
 
 ***
 

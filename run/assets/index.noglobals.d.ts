@@ -222,11 +222,11 @@ function formatPercent(percent: number, precision?: number): string;
  */
 function formatBytes(bytes: number): string;
 /**
- * Day of the week, used with `datetime.waitForDayOfWeek`.
+ * Day of the week, used with `datetime.waitForSchedule`.
  * 
  * ```ts
- * // Wait until next Monday at midnight
- * await datetime.waitForDayOfWeek(DayOfWeek.Monday);
+ * // Wait until next Monday at 09:00
+ * await datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday, hour: 9 });
  * ```
  * @category Datetime
  * @expand
@@ -4317,14 +4317,63 @@ interface WaitOptions {
     signal?: AbortSignal;
 }
 /**
+ * Schedule options for `datetime.waitForSchedule`.
+ * 
+ * All fields are optional. Missing day fields (`dayOfWeek`, `dayOfMonth`) match
+ * any day. Missing time fields (`hour`, `minute`, `second`) default to `0`.
+ * 
+ * The method always waits for the **next strictly future** occurrence that
+ * satisfies all specified constraints.
+ * @category Datetime
+ * @expand
+ */
+interface ScheduleOptions {
+    /**
+     * Target hour (0–23). Defaults to `0`.
+     * @defaultValue `undefined`
+     */
+    hour?: number;
+    /**
+     * Target minute (0–59). Defaults to `0`.
+     * @defaultValue `undefined`
+     */
+    minute?: number;
+    /**
+     * Target second (0–59). Defaults to `0`.
+     * @defaultValue `undefined`
+     */
+    second?: number;
+    /**
+     * Target weekday. Matches any weekday if omitted.
+     * @defaultValue `undefined`
+     */
+    dayOfWeek?: DayOfWeek;
+    /**
+     * Target day of the month (1–31). Matches any day if omitted.
+     * Months shorter than `dayOfMonth` are skipped automatically.
+     * @defaultValue `undefined`
+     */
+    dayOfMonth?: number;
+    /**
+     * Abort signal to cancel the wait.
+     * @defaultValue `undefined`
+     */
+    signal?: AbortSignal;
+}
+/**
  * Provides time-condition based waiting.
  * 
  * All `waitFor*` methods return a cancellable `Task` that resolves at the
  * next occurrence of the specified time condition.
  * 
  * ```ts
- * // Wait until next 13:00:00
- * await datetime.waitForHour(13);
+ * // Wait until next 13:15
+ * await datetime.waitForSchedule({ hour: 13, minute: 15 });
+ * ```
+ * 
+ * ```ts
+ * // Wait until next Monday at 09:30
+ * await datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday, hour: 9, minute: 30 });
  * ```
  * 
  * ```ts
@@ -4368,78 +4417,42 @@ interface Datetime {
      */
     waitUntil(date: Date): Task<void>;
     /**
-     * Waits until the next occurrence of the given hour (0–23) at minute 0, second 0.
+     * Waits until the next occurrence matching the given schedule.
      * 
-     * Always waits for the *next* occurrence: if the current time is already past
-     * `hour:00:00` today, it waits until tomorrow.
+     * Missing day fields (`dayOfWeek`, `dayOfMonth`) match any day.
+     * Missing time fields (`hour`, `minute`) default to `0`.
+     * Always waits for the *next strictly future* occurrence.
      * 
      * ```ts
-     * // Run something every day at 09:00
-     * while (true) {
-     *   await datetime.waitForHour(9);
-     *   doMorningTask();
-     * }
+     * // Wait until next 13:15 (any day)
+     * await datetime.waitForSchedule({ hour: 13, minute: 15 });
      * ```
      * 
      * ```ts
-     * // With cancellation support
-     * const controller = new AbortController();
-     * await datetime.waitForHour(13, { signal: controller.signal });
+     * // Wait until next Monday at 09:30
+     * await datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday, hour: 9, minute: 30 });
      * ```
-     */
-    waitForHour(hour: number, options?: WaitOptions): Task<void>;
-    /**
-     * Waits until the next occurrence of the given minute (0–59), at second 0.
-     * 
-     * Always waits for the *next* occurrence: if the current minute is already
-     * past `minute:00`, it waits until the same minute in the next hour.
      * 
      * ```ts
-     * // Run something every hour at HH:30:00
-     * while (true) {
-     *   await datetime.waitForMinute(30);
-     *   doHalfHourTask();
-     * }
+     * // Wait until the next :15 of any hour
+     * await datetime.waitForSchedule({ minute: 15 });
      * ```
-     */
-    waitForMinute(minute: number, options?: WaitOptions): Task<void>;
-    /**
-     * Waits until the next occurrence of the given day of the month (1–31) at midnight.
-     * 
-     * Always waits for the *next* occurrence: if the current day of month is
-     * already past (or equal to) `day`, it waits until that day in the next month.
-     * Months that are shorter than `day` are skipped automatically.
      * 
      * ```ts
-     * // Run something on the 1st of every month
+     * // Wait until the 1st of every month at midnight
      * while (true) {
-     *   await datetime.waitForDayOfMonth(1);
+     *   await datetime.waitForSchedule({ dayOfMonth: 1 });
      *   doMonthlyTask();
-     * }
-     * ```
-     */
-    waitForDayOfMonth(day: number, options?: WaitOptions): Task<void>;
-    /**
-     * Waits until the next occurrence of the given weekday at midnight.
-     * 
-     * Always waits for the *next* occurrence: if today is already that weekday,
-     * it waits until the same weekday next week.
-     * 
-     * ```ts
-     * // Run something every Monday
-     * while (true) {
-     *   await datetime.waitForDayOfWeek(DayOfWeek.Monday);
-     *   doWeeklyTask();
      * }
      * ```
      * 
      * ```ts
      * // With cancellation
      * const controller = new AbortController();
-     * await datetime.waitForDayOfWeek(DayOfWeek.Friday, { signal: controller.signal });
+     * await datetime.waitForSchedule({ hour: 9, signal: controller.signal });
      * ```
      */
-    waitForDayOfWeek(day: DayOfWeek, options?: WaitOptions): Task<void>;
+    waitForSchedule(options: ScheduleOptions): Task<void>;
     /**
      * Returns a string representation of the `datetime` singleton.
      */

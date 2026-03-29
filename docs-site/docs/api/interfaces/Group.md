@@ -12,19 +12,19 @@ if (group) {
 
 ## Properties
 
-### id
-
-> `readonly` **id**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-ID
-
-***
-
 ### name
 
 > `readonly` **name**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Name
+
+***
+
+### id
+
+> `readonly` **id**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+ID
 
 ## Methods
 

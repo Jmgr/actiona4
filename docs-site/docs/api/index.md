@@ -8,21 +8,21 @@
 
 ## Audio
 
-- [Audio](interfaces/Audio.md)
-- [PlayingSound](interfaces/PlayingSound.md)
 - [PlaySoundOptions](interfaces/PlaySoundOptions.md)
+- [Audio](interfaces/Audio.md)
 - [audio](variables/audio.md)
+- [PlayingSound](interfaces/PlayingSound.md)
 
 ## Clipboard
 
 - [ClipboardMode](enumerations/ClipboardMode.md)
+- [WaitForChangedOptions](interfaces/WaitForChangedOptions.md)
 - [Clipboard](interfaces/Clipboard.md)
+- [clipboard](variables/clipboard.md)
+- [ClipboardText](interfaces/ClipboardText.md)
+- [ClipboardImage](interfaces/ClipboardImage.md)
 - [ClipboardFileList](interfaces/ClipboardFileList.md)
 - [ClipboardHtml](interfaces/ClipboardHtml.md)
-- [ClipboardImage](interfaces/ClipboardImage.md)
-- [ClipboardText](interfaces/ClipboardText.md)
-- [WaitForChangedOptions](interfaces/WaitForChangedOptions.md)
-- [clipboard](variables/clipboard.md)
 
 ## Color
 
@@ -35,40 +35,41 @@
 
 ## Core
 
-- [AbortController](classes/AbortController.md)
-- [AbortSignal](interfaces/AbortSignal.md)
-- [Concurrency](interfaces/Concurrency.md)
-- [EventHandle](interfaces/EventHandle.md)
+- [sleep](functions/sleep.md)
 - [exit](functions/exit.md)
-- [inspect](functions/inspect.md)
 - [print](functions/print.md)
 - [println](functions/println.md)
-- [sleep](functions/sleep.md)
+- [inspect](functions/inspect.md)
+- [AbortSignal](interfaces/AbortSignal.md)
+- [AbortController](classes/AbortController.md)
+- [Concurrency](interfaces/Concurrency.md)
+- [EventHandle](interfaces/EventHandle.md)
 
 ## Datetime
 
 - [DayOfWeek](enumerations/DayOfWeek.md)
-- [Datetime](interfaces/Datetime.md)
 - [WaitOptions](interfaces/WaitOptions.md)
+- [ScheduleOptions](interfaces/ScheduleOptions.md)
+- [Datetime](interfaces/Datetime.md)
 - [datetime](variables/datetime.md)
 
 ## Directory
 
-- [Directory](classes/Directory.md)
 - [DirectoryEntry](interfaces/DirectoryEntry.md)
-- [DirectoryListOptions](interfaces/DirectoryListOptions.md)
 - [DirectoryOptions](interfaces/DirectoryOptions.md)
+- [DirectoryListOptions](interfaces/DirectoryListOptions.md)
+- [Directory](classes/Directory.md)
 
 ## Displays
 
-- [DisplayInfo](interfaces/DisplayInfo.md)
 - [Displays](interfaces/Displays.md)
 - [displays](variables/displays.md)
+- [DisplayInfo](interfaces/DisplayInfo.md)
 
 ## File
 
-- [File](classes/File.md)
 - [OpenOptions](interfaces/OpenOptions.md)
+- [File](classes/File.md)
 
 ## Filesystem
 
@@ -76,76 +77,76 @@
 
 ## Image
 
-- [FindImageStage](enumerations/FindImageStage.md)
 - [FlipDirection](enumerations/FlipDirection.md)
-- [Interpolation](enumerations/Interpolation.md)
 - [ResizeFilter](enumerations/ResizeFilter.md)
+- [Interpolation](enumerations/Interpolation.md)
 - [TextHorizontalAlign](enumerations/TextHorizontalAlign.md)
 - [TextVerticalAlign](enumerations/TextVerticalAlign.md)
-- [Font](classes/Font.md)
-- [Image](classes/Image.md)
+- [FindImageStage](enumerations/FindImageStage.md)
+- [ResizeOptions](interfaces/ResizeOptions.md)
 - [BlurOptions](interfaces/BlurOptions.md)
 - [DrawImageOptions](interfaces/DrawImageOptions.md)
+- [RotationOptions](interfaces/RotationOptions.md)
 - [DrawingOptions](interfaces/DrawingOptions.md)
 - [DrawTextOptions](interfaces/DrawTextOptions.md)
 - [FindImageOptions](interfaces/FindImageOptions.md)
-- [FindImageProgress](interfaces/FindImageProgress.md)
 - [Match](interfaces/Match.md)
-- [ResizeOptions](interfaces/ResizeOptions.md)
-- [RotationOptions](interfaces/RotationOptions.md)
+- [FindImageProgress](interfaces/FindImageProgress.md)
+- [Font](classes/Font.md)
+- [Image](classes/Image.md)
 
 ## Keyboard
 
 - [Key](enumerations/Key.md)
 - [KeyError](enumerations/KeyError.md)
 - [Keyboard](interfaces/Keyboard.md)
-- [KeysOptions](interfaces/KeysOptions.md)
-- [OnTextOptions](interfaces/OnTextOptions.md)
 - [keyboard](variables/keyboard.md)
+- [OnTextOptions](interfaces/OnTextOptions.md)
+- [KeysOptions](interfaces/KeysOptions.md)
 
 ## Macros
 
 - [Macro](classes/Macro.md)
 - [PlayProgress](classes/PlayProgress.md)
-- [Macros](interfaces/Macros.md)
-- [PlayOptions](interfaces/PlayOptions.md)
 - [RecordOptions](interfaces/RecordOptions.md)
+- [PlayOptions](interfaces/PlayOptions.md)
+- [Macros](interfaces/Macros.md)
 - [macros](variables/macros.md)
 
 ## Misc
 
 - [ColorLike](type-aliases/ColorLike.md)
 - [DurationLike](type-aliases/DurationLike.md)
+- [Task](type-aliases/Task.md)
+- [ProgressTask](type-aliases/ProgressTask.md)
 - [KeyLike](type-aliases/KeyLike.md)
 - [Keys](type-aliases/Keys.md)
+- [ReplacementValue](type-aliases/ReplacementValue.md)
+- [ReplacementHandler](type-aliases/ReplacementHandler.md)
+- [TriggerAction](type-aliases/TriggerAction.md)
 - [NameLike](type-aliases/NameLike.md)
 - [PointLike](type-aliases/PointLike.md)
-- [ProgressTask](type-aliases/ProgressTask.md)
 - [RectLike](type-aliases/RectLike.md)
-- [ReplacementHandler](type-aliases/ReplacementHandler.md)
-- [ReplacementValue](type-aliases/ReplacementValue.md)
 - [SizeLike](type-aliases/SizeLike.md)
-- [Task](type-aliases/Task.md)
-- [TriggerAction](type-aliases/TriggerAction.md)
 
 ## Mouse
 
-- [Axis](enumerations/Axis.md)
 - [Button](enumerations/Button.md)
+- [Axis](enumerations/Axis.md)
 - [Tween](enumerations/Tween.md)
+- [Mouse](interfaces/Mouse.md)
+- [mouse](variables/mouse.md)
+- [OnButtonOptions](interfaces/OnButtonOptions.md)
+- [OnScrollOptions](interfaces/OnScrollOptions.md)
+- [MeasureSpeedOptions](interfaces/MeasureSpeedOptions.md)
+- [WaitForButtonOptions](interfaces/WaitForButtonOptions.md)
+- [WaitForScrollOptions](interfaces/WaitForScrollOptions.md)
+- [ScrollEvent](interfaces/ScrollEvent.md)
 - [ClickOptions](interfaces/ClickOptions.md)
 - [DoubleClickOptions](interfaces/DoubleClickOptions.md)
 - [DragOptions](interfaces/DragOptions.md)
-- [MeasureSpeedOptions](interfaces/MeasureSpeedOptions.md)
-- [Mouse](interfaces/Mouse.md)
 - [MoveOptions](interfaces/MoveOptions.md)
-- [OnButtonOptions](interfaces/OnButtonOptions.md)
-- [OnScrollOptions](interfaces/OnScrollOptions.md)
 - [PressOptions](interfaces/PressOptions.md)
-- [ScrollEvent](interfaces/ScrollEvent.md)
-- [WaitForButtonOptions](interfaces/WaitForButtonOptions.md)
-- [WaitForScrollOptions](interfaces/WaitForScrollOptions.md)
-- [mouse](variables/mouse.md)
 
 ## Name
 
@@ -153,24 +154,24 @@
 
 ## Notification
 
-- [NotificationActionPlacement](enumerations/NotificationActionPlacement.md)
-- [NotificationActivationType](enumerations/NotificationActivationType.md)
-- [NotificationButtonStyle](enumerations/NotificationButtonStyle.md)
-- [NotificationInputType](enumerations/NotificationInputType.md)
+- [NotificationUrgency](enumerations/NotificationUrgency.md)
 - [NotificationScenario](enumerations/NotificationScenario.md)
 - [NotificationSound](enumerations/NotificationSound.md)
-- [NotificationUrgency](enumerations/NotificationUrgency.md)
-- [Notification](interfaces/Notification.md)
-- [NotificationAction](interfaces/NotificationAction.md)
+- [NotificationActivationType](enumerations/NotificationActivationType.md)
+- [NotificationActionPlacement](enumerations/NotificationActionPlacement.md)
+- [NotificationButtonStyle](enumerations/NotificationButtonStyle.md)
+- [NotificationInputType](enumerations/NotificationInputType.md)
 - [NotificationCustomHint](interfaces/NotificationCustomHint.md)
 - [NotificationCustomIntHint](interfaces/NotificationCustomIntHint.md)
-- [NotificationHandle](interfaces/NotificationHandle.md)
+- [NotificationAction](interfaces/NotificationAction.md)
 - [NotificationHeader](interfaces/NotificationHeader.md)
 - [NotificationInput](interfaces/NotificationInput.md)
-- [NotificationOptions](interfaces/NotificationOptions.md)
 - [NotificationSelection](interfaces/NotificationSelection.md)
-- [WaitForActionOptions](interfaces/WaitForActionOptions.md)
+- [NotificationOptions](interfaces/NotificationOptions.md)
+- [Notification](interfaces/Notification.md)
 - [notification](variables/notification.md)
+- [WaitForActionOptions](interfaces/WaitForActionOptions.md)
+- [NotificationHandle](interfaces/NotificationHandle.md)
 
 ## Path
 
@@ -183,17 +184,17 @@
 ## Process
 
 - [Signal](enumerations/Signal.md)
-- [Process](interfaces/Process.md)
-- [ProcessExitResult](interfaces/ProcessExitResult.md)
-- [ProcessHandle](interfaces/ProcessHandle.md)
-- [ShellOptions](interfaces/ShellOptions.md)
 - [StartProcessOptions](interfaces/StartProcessOptions.md)
+- [ShellOptions](interfaces/ShellOptions.md)
+- [Process](interfaces/Process.md)
 - [process](variables/process.md)
+- [ProcessHandle](interfaces/ProcessHandle.md)
+- [ProcessExitResult](interfaces/ProcessExitResult.md)
 
 ## Random
 
-- [Random](interfaces/Random.md)
 - [RandomStringOptions](interfaces/RandomStringOptions.md)
+- [Random](interfaces/Random.md)
 - [random](variables/random.md)
 
 ## Rect
@@ -203,8 +204,8 @@
 ## Screen
 
 - [AskScreenshotMethod](enumerations/AskScreenshotMethod.md)
-- [SearchIn](classes/SearchIn.md)
 - [AskScreenshotOptions](interfaces/AskScreenshotOptions.md)
+- [SearchIn](classes/SearchIn.md)
 - [Screen](interfaces/Screen.md)
 - [screen](variables/screen.md)
 
@@ -219,60 +220,60 @@
 
 ## System
 
-- [DiskKind](enumerations/DiskKind.md)
+- [formatFrequency](functions/formatFrequency.md)
+- [formatPercent](functions/formatPercent.md)
+- [formatBytes](functions/formatBytes.md)
 - [ProcessStatus](enumerations/ProcessStatus.md)
-- [CGroupLimits](interfaces/CGroupLimits.md)
-- [Counters](interfaces/Counters.md)
+- [DiskKind](enumerations/DiskKind.md)
 - [Cpu](interfaces/Cpu.md)
-- [Disk](interfaces/Disk.md)
-- [DiskUsage](interfaces/DiskUsage.md)
-- [Group](interfaces/Group.md)
 - [Hardware](interfaces/Hardware.md)
-- [IoStats](interfaces/IoStats.md)
-- [ListDisksOptions](interfaces/ListDisksOptions.md)
-- [ListInterfacesOptions](interfaces/ListInterfacesOptions.md)
-- [ListProcessesOptions](interfaces/ListProcessesOptions.md)
 - [ListTemperatureSensorsOptions](interfaces/ListTemperatureSensorsOptions.md)
+- [Motherboard](interfaces/Motherboard.md)
+- [TemperatureSensor](interfaces/TemperatureSensor.md)
 - [Memory](interfaces/Memory.md)
 - [MemoryUsage](interfaces/MemoryUsage.md)
-- [Motherboard](interfaces/Motherboard.md)
+- [CGroupLimits](interfaces/CGroupLimits.md)
+- [System](interfaces/System.md)
+- [system](variables/system.md)
 - [Network](interfaces/Network.md)
+- [ListInterfacesOptions](interfaces/ListInterfacesOptions.md)
 - [NetworkInterface](interfaces/NetworkInterface.md)
+- [Counters](interfaces/Counters.md)
+- [Traffic](interfaces/Traffic.md)
 - [Os](interfaces/Os.md)
+- [User](interfaces/User.md)
+- [Group](interfaces/Group.md)
 - [Processes](interfaces/Processes.md)
+- [ListProcessesOptions](interfaces/ListProcessesOptions.md)
 - [ProcessesFindOptions](interfaces/ProcessesFindOptions.md)
 - [ProcessInfo](interfaces/ProcessInfo.md)
 - [Storage](interfaces/Storage.md)
-- [System](interfaces/System.md)
-- [TemperatureSensor](interfaces/TemperatureSensor.md)
-- [Traffic](interfaces/Traffic.md)
-- [User](interfaces/User.md)
-- [system](variables/system.md)
-- [formatBytes](functions/formatBytes.md)
-- [formatFrequency](functions/formatFrequency.md)
-- [formatPercent](functions/formatPercent.md)
+- [ListDisksOptions](interfaces/ListDisksOptions.md)
+- [Disk](interfaces/Disk.md)
+- [IoStats](interfaces/IoStats.md)
+- [DiskUsage](interfaces/DiskUsage.md)
 
 ## UI
 
 - [MessageBoxIcon](enumerations/MessageBoxIcon.md)
 - [MessageBoxResult](enumerations/MessageBoxResult.md)
-- [MessageBoxButtons](classes/MessageBoxButtons.md)
-- [Ui](classes/Ui.md)
 - [MessageBoxOptions](interfaces/MessageBoxOptions.md)
+- [Ui](classes/Ui.md)
 - [ui](variables/ui.md)
+- [MessageBoxButtons](classes/MessageBoxButtons.md)
 
 ## Web
 
 - [Method](enumerations/Method.md)
 - [MultipartForm](classes/MultipartForm.md)
-- [Web](interfaces/Web.md)
 - [WebOptions](interfaces/WebOptions.md)
 - [WebProgress](interfaces/WebProgress.md)
+- [Web](interfaces/Web.md)
 - [web](variables/web.md)
 
 ## Windows
 
-- [WindowHandle](interfaces/WindowHandle.md)
-- [Windows](interfaces/Windows.md)
 - [WindowsFindOptions](interfaces/WindowsFindOptions.md)
+- [Windows](interfaces/Windows.md)
 - [windows](variables/windows.md)
+- [WindowHandle](interfaces/WindowHandle.md)

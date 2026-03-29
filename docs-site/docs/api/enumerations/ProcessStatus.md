@@ -12,35 +12,11 @@ if (process && process.status === ProcessStatus.Run) {
 
 ## Enumeration Members
 
-### Dead
-
-> **Dead**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ProcessStatus.Dead`
-
-***
-
 ### Idle
 
 > **Idle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `ProcessStatus.Idle`
-
-***
-
-### LockBlocked
-
-> **LockBlocked**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ProcessStatus.LockBlocked`
-
-***
-
-### Parked
-
-> **Parked**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ProcessStatus.Parked`
 
 ***
 
@@ -68,11 +44,11 @@ if (process && process.status === ProcessStatus.Run) {
 
 ***
 
-### Suspended
+### Zombie
 
-> **Suspended**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Zombie**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`ProcessStatus.Suspended`
+`ProcessStatus.Zombie`
 
 ***
 
@@ -84,19 +60,11 @@ if (process && process.status === ProcessStatus.Run) {
 
 ***
 
-### UninterruptibleDiskSleep
+### Dead
 
-> **UninterruptibleDiskSleep**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Dead**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`ProcessStatus.UninterruptibleDiskSleep`
-
-***
-
-### Unknown
-
-> **Unknown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`ProcessStatus.Unknown`
+`ProcessStatus.Dead`
 
 ***
 
@@ -116,8 +84,40 @@ if (process && process.status === ProcessStatus.Run) {
 
 ***
 
-### Zombie
+### Parked
 
-> **Zombie**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> **Parked**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`ProcessStatus.Zombie`
+`ProcessStatus.Parked`
+
+***
+
+### LockBlocked
+
+> **LockBlocked**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.LockBlocked`
+
+***
+
+### UninterruptibleDiskSleep
+
+> **UninterruptibleDiskSleep**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.UninterruptibleDiskSleep`
+
+***
+
+### Suspended
+
+> **Suspended**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Suspended`
+
+***
+
+### Unknown
+
+> **Unknown**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ProcessStatus.Unknown`

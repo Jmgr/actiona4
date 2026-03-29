@@ -12,18 +12,6 @@ A toast input field.
 
 ## Properties
 
-### defaultInput?
-
-> `optional` **defaultInput?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-Default value for the input.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
 ### id?
 
 > `optional` **id?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -65,6 +53,18 @@ Placeholder text shown when the input is empty.
 > `optional` **title?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 Title displayed above the input.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### defaultInput?
+
+> `optional` **defaultInput?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Default value for the input.
 
 #### Default Value
 

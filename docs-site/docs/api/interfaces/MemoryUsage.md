@@ -14,11 +14,11 @@ println(
 
 ## Properties
 
-### available
+### used
 
-> `readonly` **available**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` **used**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Available
+Used
 
 ***
 
@@ -30,19 +30,19 @@ Free
 
 ***
 
+### available
+
+> `readonly` **available**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Available
+
+***
+
 ### total
 
 > `readonly` **total**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 Total
-
-***
-
-### used
-
-> `readonly` **used**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-Used
 
 ## Methods
 

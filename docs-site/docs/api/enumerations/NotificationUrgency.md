@@ -3,14 +3,6 @@
 
 ## Enumeration Members
 
-### Critical
-
-> **Critical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
-
-`NotificationUrgency.Critical`
-
-***
-
 ### Low
 
 > **Low**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
@@ -24,3 +16,11 @@
 > **Normal**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `NotificationUrgency.Normal`
+
+***
+
+### Critical
+
+> **Critical**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`NotificationUrgency.Critical`

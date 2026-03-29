@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use chrono::{Datelike, Duration, Local, NaiveDate, NaiveTime, TimeZone, Timelike, Weekday};
+use chrono::{Datelike, Duration, Local, NaiveTime, TimeZone, Weekday};
 use derive_more::Display;
 use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options};
 use rquickjs::{
@@ -17,18 +17,17 @@ use crate::{
     api::js::{
         abort_controller::JsAbortSignal,
         classes::{SingletonClass, register_enum},
-        date::system_time_from_date,
         duration::JsDuration,
         task::task_with_token,
     },
     cancel_on,
 };
 
-/// Day of the week, used with `datetime.waitForDayOfWeek`.
+/// Day of the week, used with `datetime.waitForSchedule`.
 ///
 /// ```ts
-/// // Wait until next Monday at midnight
-/// await datetime.waitForDayOfWeek(DayOfWeek.Monday);
+/// // Wait until next Monday at 09:00
+/// await datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday, hour: 9 });
 /// ```
 ///
 /// @expand
@@ -86,14 +85,44 @@ pub struct JsWaitOptions {
     pub signal: Option<JsAbortSignal>,
 }
 
+/// Schedule options for `datetime.waitForSchedule`.
+///
+/// All fields are optional. Missing day fields (`dayOfWeek`, `dayOfMonth`) match
+/// any day. Missing time fields (`hour`, `minute`, `second`) default to `0`.
+///
+/// The method always waits for the **next strictly future** occurrence that
+/// satisfies all specified constraints.
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsScheduleOptions {
+    /// Target hour (0–23). Defaults to `0`.
+    pub hour: Option<u32>,
+    /// Target minute (0–59). Defaults to `0`.
+    pub minute: Option<u32>,
+    /// Target second (0–59). Defaults to `0`.
+    pub second: Option<u32>,
+    /// Target weekday. Matches any weekday if omitted.
+    pub day_of_week: Option<JsDayOfWeek>,
+    /// Target day of the month (1–31). Matches any day if omitted.
+    /// Months shorter than `dayOfMonth` are skipped automatically.
+    pub day_of_month: Option<u32>,
+    /// Abort signal to cancel the wait.
+    pub signal: Option<JsAbortSignal>,
+}
+
 /// Provides time-condition based waiting.
 ///
 /// All `waitFor*` methods return a cancellable `Task` that resolves at the
 /// next occurrence of the specified time condition.
 ///
 /// ```ts
-/// // Wait until next 13:00:00
-/// await datetime.waitForHour(13);
+/// // Wait until next 13:15
+/// await datetime.waitForSchedule({ hour: 13, minute: 15 });
+/// ```
+///
+/// ```ts
+/// // Wait until next Monday at 09:30
+/// await datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday, hour: 9, minute: 30 });
 /// ```
 ///
 /// ```ts
@@ -176,7 +205,7 @@ impl JsDatetime {
         date: Object<'js>,
         options: Opt<JsWaitOptions>,
     ) -> Result<Promise<'js>> {
-        let target = system_time_from_date(ctx.clone(), date)?;
+        let target = crate::api::js::date::system_time_from_date(ctx.clone(), date)?;
         let signal = options.0.and_then(|o| o.signal);
         task_with_token(ctx, signal, async move |ctx, token| {
             let duration = target.duration_since(SystemTime::now()).unwrap_or_default();
@@ -186,156 +215,83 @@ impl JsDatetime {
         })
     }
 
-    /// Waits until the next occurrence of the given hour (0–23) at minute 0, second 0.
+    /// Waits until the next occurrence matching the given schedule.
     ///
-    /// Always waits for the *next* occurrence: if the current time is already past
-    /// `hour:00:00` today, it waits until tomorrow.
+    /// Missing day fields (`dayOfWeek`, `dayOfMonth`) match any day.
+    /// Missing time fields (`hour`, `minute`) default to `0`.
+    /// Always waits for the *next strictly future* occurrence.
     ///
     /// ```ts
-    /// // Run something every day at 09:00
-    /// while (true) {
-    ///   await datetime.waitForHour(9);
-    ///   doMorningTask();
-    /// }
+    /// // Wait until next 13:15 (any day)
+    /// await datetime.waitForSchedule({ hour: 13, minute: 15 });
     /// ```
     ///
     /// ```ts
-    /// // With cancellation support
-    /// const controller = new AbortController();
-    /// await datetime.waitForHour(13, { signal: controller.signal });
+    /// // Wait until next Monday at 09:30
+    /// await datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday, hour: 9, minute: 30 });
     /// ```
     ///
-    /// @returns Task<void>
-    pub fn wait_for_hour<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        hour: u32,
-        options: Opt<JsWaitOptions>,
-    ) -> Result<Promise<'js>> {
-        if hour > 23 {
-            return Err(rquickjs::Exception::throw_range(
-                &ctx,
-                "hour must be between 0 and 23",
-            ));
-        }
-        let signal = options.0.and_then(|o| o.signal);
-        task_with_token(ctx, signal, async move |ctx, token| {
-            let duration = next_occurrence_of_hour(hour)
-                .duration_since(SystemTime::now())
-                .unwrap_or_default();
-            cancel_on(&token, tokio::time::sleep(duration))
-                .await
-                .into_js_result(&ctx)
-        })
-    }
-
-    /// Waits until the next occurrence of the given minute (0–59), at second 0.
-    ///
-    /// Always waits for the *next* occurrence: if the current minute is already
-    /// past `minute:00`, it waits until the same minute in the next hour.
-    ///
     /// ```ts
-    /// // Run something every hour at HH:30:00
-    /// while (true) {
-    ///   await datetime.waitForMinute(30);
-    ///   doHalfHourTask();
-    /// }
+    /// // Wait until the next :15 of any hour
+    /// await datetime.waitForSchedule({ minute: 15 });
     /// ```
     ///
-    /// @returns Task<void>
-    pub fn wait_for_minute<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        minute: u32,
-        options: Opt<JsWaitOptions>,
-    ) -> Result<Promise<'js>> {
-        if minute > 59 {
-            return Err(rquickjs::Exception::throw_range(
-                &ctx,
-                "minute must be between 0 and 59",
-            ));
-        }
-        let signal = options.0.and_then(|o| o.signal);
-        task_with_token(ctx, signal, async move |ctx, token| {
-            let duration = next_occurrence_of_minute(minute)
-                .duration_since(SystemTime::now())
-                .unwrap_or_default();
-            cancel_on(&token, tokio::time::sleep(duration))
-                .await
-                .into_js_result(&ctx)
-        })
-    }
-
-    /// Waits until the next occurrence of the given day of the month (1–31) at midnight.
-    ///
-    /// Always waits for the *next* occurrence: if the current day of month is
-    /// already past (or equal to) `day`, it waits until that day in the next month.
-    /// Months that are shorter than `day` are skipped automatically.
-    ///
     /// ```ts
-    /// // Run something on the 1st of every month
+    /// // Wait until the 1st of every month at midnight
     /// while (true) {
-    ///   await datetime.waitForDayOfMonth(1);
+    ///   await datetime.waitForSchedule({ dayOfMonth: 1 });
     ///   doMonthlyTask();
-    /// }
-    /// ```
-    ///
-    /// @returns Task<void>
-    pub fn wait_for_day_of_month<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        day: u32,
-        options: Opt<JsWaitOptions>,
-    ) -> Result<Promise<'js>> {
-        if !(1..=31).contains(&day) {
-            return Err(rquickjs::Exception::throw_range(
-                &ctx,
-                "day must be between 1 and 31",
-            ));
-        }
-        let signal = options.0.and_then(|o| o.signal);
-        task_with_token(ctx, signal, async move |ctx, token| {
-            let duration = next_occurrence_of_day_of_month(day)
-                .duration_since(SystemTime::now())
-                .unwrap_or_default();
-            cancel_on(&token, tokio::time::sleep(duration))
-                .await
-                .into_js_result(&ctx)
-        })
-    }
-
-    /// Waits until the next occurrence of the given weekday at midnight.
-    ///
-    /// Always waits for the *next* occurrence: if today is already that weekday,
-    /// it waits until the same weekday next week.
-    ///
-    /// ```ts
-    /// // Run something every Monday
-    /// while (true) {
-    ///   await datetime.waitForDayOfWeek(DayOfWeek.Monday);
-    ///   doWeeklyTask();
     /// }
     /// ```
     ///
     /// ```ts
     /// // With cancellation
     /// const controller = new AbortController();
-    /// await datetime.waitForDayOfWeek(DayOfWeek.Friday, { signal: controller.signal });
+    /// await datetime.waitForSchedule({ hour: 9, signal: controller.signal });
     /// ```
     ///
     /// @returns Task<void>
-    pub fn wait_for_day_of_week<'js>(
+    pub fn wait_for_schedule<'js>(
         &self,
         ctx: Ctx<'js>,
-        day: JsDayOfWeek,
-        options: Opt<JsWaitOptions>,
+        options: JsScheduleOptions,
     ) -> Result<Promise<'js>> {
-        let weekday = Weekday::from(day);
-        let signal = options.0.and_then(|o| o.signal);
+        if options.hour.is_some_and(|h| h > 23) {
+            return Err(rquickjs::Exception::throw_range(
+                &ctx,
+                "hour must be between 0 and 23",
+            ));
+        }
+        if options.minute.is_some_and(|m| m > 59) {
+            return Err(rquickjs::Exception::throw_range(
+                &ctx,
+                "minute must be between 0 and 59",
+            ));
+        }
+        if options.second.is_some_and(|s| s > 59) {
+            return Err(rquickjs::Exception::throw_range(
+                &ctx,
+                "second must be between 0 and 59",
+            ));
+        }
+        if options.day_of_month.is_some_and(|d| !(1..=31).contains(&d)) {
+            return Err(rquickjs::Exception::throw_range(
+                &ctx,
+                "dayOfMonth must be between 1 and 31",
+            ));
+        }
+
+        let signal = options.signal;
         task_with_token(ctx, signal, async move |ctx, token| {
-            let duration = next_occurrence_of_day_of_week(weekday)
-                .duration_since(SystemTime::now())
-                .unwrap_or_default();
+            let duration = next_occurrence_of_schedule(
+                options.hour,
+                options.minute,
+                options.second,
+                options.day_of_week,
+                options.day_of_month,
+            )
+            .duration_since(SystemTime::now())
+            .unwrap_or_default();
             cancel_on(&token, tokio::time::sleep(duration))
                 .await
                 .into_js_result(&ctx)
@@ -350,96 +306,53 @@ impl JsDatetime {
     }
 }
 
-/// Returns the next `SystemTime` at which the clock will read `hour:00:00` local time.
-/// Always returns a future time (never the current moment).
-fn next_occurrence_of_hour(hour: u32) -> SystemTime {
+/// Returns the next `SystemTime` that satisfies all non-`None` schedule constraints.
+///
+/// - `hour` / `minute` / `second`: target time of day; absent fields default to `0`.
+/// - `day_of_week` / `day_of_month`: day constraints; absent means any day.
+///
+/// Always returns a strictly future time.
+fn next_occurrence_of_schedule(
+    hour: Option<u32>,
+    minute: Option<u32>,
+    second: Option<u32>,
+    day_of_week: Option<JsDayOfWeek>,
+    day_of_month: Option<u32>,
+) -> SystemTime {
+    let target_time =
+        NaiveTime::from_hms_opt(hour.unwrap_or(0), minute.unwrap_or(0), second.unwrap_or(0))
+            .expect("hour, minute and second already validated");
     let now = Local::now();
-    let naive = now
-        .date_naive()
-        .and_time(NaiveTime::from_hms_opt(hour, 0, 0).expect("validated hour should be in range"));
-    let candidate = Local.from_local_datetime(&naive).unwrap();
-    if candidate > now {
-        SystemTime::from(candidate)
-    } else {
-        SystemTime::from(candidate + Duration::days(1))
-    }
-}
+    let mut candidate = now.date_naive();
 
-/// Returns the next `SystemTime` at which the clock will read `HH:minute:00` local time.
-/// Always returns a future time.
-fn next_occurrence_of_minute(minute: u32) -> SystemTime {
-    let now = Local::now();
-    let naive = now.date_naive().and_time(
-        NaiveTime::from_hms_opt(now.hour(), minute, 0)
-            .expect("validated minute should be in range"),
-    );
-    let candidate = Local.from_local_datetime(&naive).unwrap();
-    if candidate > now {
-        SystemTime::from(candidate)
-    } else {
-        SystemTime::from(candidate + Duration::hours(1))
-    }
-}
-
-/// Returns the next `SystemTime` at which the local date will be `day` (day-of-month), at midnight.
-/// Skips months that do not have that day (e.g. day 31 in April). Always returns a future time.
-fn next_occurrence_of_day_of_month(day: u32) -> SystemTime {
-    let now = Local::now();
-
-    // Try current month first.
-    if let Some(st) = date_at_midnight(now.year(), now.month(), day)
-        && st > SystemTime::now()
-    {
-        return st;
+    // If today's slot is not strictly in the future, start searching from tomorrow.
+    let today_dt = Local
+        .from_local_datetime(&candidate.and_time(target_time))
+        .unwrap();
+    if today_dt <= now {
+        candidate += Duration::days(1);
     }
 
-    // Walk forward month by month until we find a valid date.
-    let mut year = now.year();
-    let mut month = now.month() + 1;
     loop {
-        if month > 12 {
-            month = 1;
-            year += 1;
+        let dow_ok = day_of_week.is_none_or(|dow| candidate.weekday() == Weekday::from(dow));
+        let dom_ok = day_of_month.is_none_or(|dom| candidate.day() == dom);
+
+        if dow_ok && dom_ok {
+            let naive = candidate.and_time(target_time);
+            return SystemTime::from(Local.from_local_datetime(&naive).unwrap());
         }
-        if let Some(st) = date_at_midnight(year, month, day) {
-            return st;
-        }
-        month += 1;
+
+        candidate += Duration::days(1);
     }
-}
-
-/// Returns the next `SystemTime` at midnight on the given `weekday` in local time.
-/// Always returns a future time (never today).
-fn next_occurrence_of_day_of_week(weekday: Weekday) -> SystemTime {
-    let now = Local::now();
-    let today = now.weekday();
-    let days_from_mon_target = i64::from(weekday.num_days_from_monday());
-    let days_from_mon_today = i64::from(today.num_days_from_monday());
-    let days_until = (days_from_mon_target - days_from_mon_today).rem_euclid(7);
-    // Always wait for the *next* occurrence, never today.
-    let days_until = if days_until == 0 { 7 } else { days_until };
-
-    let target_date = now.date_naive() + Duration::days(days_until);
-    date_at_midnight_naive(target_date)
-}
-
-fn date_at_midnight(year: i32, month: u32, day: u32) -> Option<SystemTime> {
-    NaiveDate::from_ymd_opt(year, month, day)
-        .and_then(|d| d.and_hms_opt(0, 0, 0))
-        .map(|naive| SystemTime::from(Local.from_local_datetime(&naive).unwrap()))
-}
-
-fn date_at_midnight_naive(date: chrono::NaiveDate) -> SystemTime {
-    let naive = date
-        .and_hms_opt(0, 0, 0)
-        .expect("midnight should always be a valid time");
-    SystemTime::from(Local.from_local_datetime(&naive).unwrap())
 }
 
 #[cfg(test)]
 mod tests {
     use std::time::{Duration, SystemTime};
 
+    use chrono::{Datelike, Local, Timelike};
+
+    use super::JsDayOfWeek;
     use crate::runtime::Runtime;
 
     #[test]
@@ -457,7 +370,6 @@ mod tests {
     #[test]
     fn test_wait_until_past_date_resolves_immediately() {
         Runtime::test_with_script_engine(|script_engine| async move {
-            // A date in the past should resolve without delay.
             script_engine
                 .eval_async::<()>("await datetime.waitUntil(new Date(0))")
                 .await
@@ -510,26 +422,46 @@ mod tests {
     }
 
     #[test]
-    fn test_wait_for_hour_invalid() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let result = script_engine.eval::<()>("datetime.waitForHour(24)").await;
-            assert!(result.is_err());
-        });
-    }
-
-    #[test]
-    fn test_wait_for_minute_invalid() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let result = script_engine.eval::<()>("datetime.waitForMinute(60)").await;
-            assert!(result.is_err());
-        });
-    }
-
-    #[test]
-    fn test_wait_for_day_of_month_invalid() {
+    fn test_wait_for_schedule_can_be_cancelled() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
-                .eval::<()>("datetime.waitForDayOfMonth(0)")
+                .eval_async::<()>(
+                    r#"
+                    const task = datetime.waitForSchedule({ dayOfWeek: DayOfWeek.Monday });
+                    task.cancel();
+                    await task;
+                    "#,
+                )
+                .await;
+            assert_eq!(result.unwrap_err().to_string(), "Error: Cancelled");
+        });
+    }
+
+    #[test]
+    fn test_wait_for_schedule_invalid_hour() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine
+                .eval::<()>("datetime.waitForSchedule({ hour: 24 })")
+                .await;
+            assert!(result.is_err());
+        });
+    }
+
+    #[test]
+    fn test_wait_for_schedule_invalid_minute() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine
+                .eval::<()>("datetime.waitForSchedule({ minute: 60 })")
+                .await;
+            assert!(result.is_err());
+        });
+    }
+
+    #[test]
+    fn test_wait_for_schedule_invalid_day_of_month() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine
+                .eval::<()>("datetime.waitForSchedule({ dayOfMonth: 0 })")
                 .await;
             assert!(result.is_err());
         });
@@ -546,90 +478,96 @@ mod tests {
         });
     }
 
-    #[test]
-    fn test_wait_for_day_of_week_can_be_cancelled() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let result = script_engine
-                .eval_async::<()>(
-                    r#"
-                    const task = datetime.waitForDayOfWeek(DayOfWeek.Monday);
-                    task.cancel();
-                    await task;
-                    "#,
-                )
-                .await;
-            assert_eq!(result.unwrap_err().to_string(), "Error: Cancelled");
-        });
-    }
+    // ── Unit tests for next_occurrence_of_schedule ────────────────────────────
 
     #[test]
-    fn test_next_occurrence_of_hour_is_future() {
+    fn test_next_occurrence_is_always_future() {
         let now = SystemTime::now();
-        for hour in 0..24 {
-            let next = super::next_occurrence_of_hour(hour);
-            assert!(
-                next > now,
-                "hour {hour}: next occurrence should be in the future"
-            );
+        for hour in [0u32, 9, 13, 23] {
+            for minute in [0u32, 15, 30, 59] {
+                let next =
+                    super::next_occurrence_of_schedule(Some(hour), Some(minute), None, None, None);
+                assert!(
+                    next > now,
+                    "h={hour} m={minute}: next occurrence should be in the future"
+                );
+            }
         }
+        // No constraints: next midnight
+        assert!(super::next_occurrence_of_schedule(None, None, None, None, None) > now);
     }
 
     #[test]
-    fn test_next_occurrence_of_minute_is_future() {
-        let now = SystemTime::now();
-        for minute in 0..60 {
-            let next = super::next_occurrence_of_minute(minute);
-            assert!(
-                next > now,
-                "minute {minute}: next occurrence should be in the future"
-            );
-        }
-    }
-
-    #[test]
-    fn test_next_occurrence_of_day_of_month_is_future() {
-        let now = SystemTime::now();
-        for day in 1..=31 {
-            let next = super::next_occurrence_of_day_of_month(day);
-            assert!(
-                next > now,
-                "day {day}: next occurrence should be in the future"
-            );
-        }
-    }
-
-    #[test]
-    fn test_next_occurrence_of_day_of_week_is_future() {
+    fn test_next_occurrence_respects_day_of_week() {
         use chrono::Weekday;
-        let now = SystemTime::now();
-        for weekday in [
-            Weekday::Mon,
-            Weekday::Tue,
-            Weekday::Wed,
-            Weekday::Thu,
-            Weekday::Fri,
-            Weekday::Sat,
-            Weekday::Sun,
+        for dow in [
+            JsDayOfWeek::Monday,
+            JsDayOfWeek::Tuesday,
+            JsDayOfWeek::Wednesday,
+            JsDayOfWeek::Thursday,
+            JsDayOfWeek::Friday,
+            JsDayOfWeek::Saturday,
+            JsDayOfWeek::Sunday,
         ] {
-            let next = super::next_occurrence_of_day_of_week(weekday);
-            assert!(
-                next > now,
-                "{weekday}: next occurrence should be in the future"
+            let next = super::next_occurrence_of_schedule(None, None, None, Some(dow), None);
+            let next_local = chrono::DateTime::<Local>::from(next);
+            let expected = Weekday::from(dow);
+            assert_eq!(
+                next_local.weekday(),
+                expected,
+                "{dow}: weekday should match"
             );
         }
     }
 
     #[test]
-    fn test_next_occurrence_of_day_of_month_within_one_month() {
-        use std::time::Duration;
-        // The next occurrence of any day is at most ~62 days away (e.g. day 31 in Feb → skip to March 31).
+    fn test_next_occurrence_respects_day_of_month() {
+        for dom in [1u32, 15, 28] {
+            let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
+            let next_local = chrono::DateTime::<Local>::from(next);
+            assert_eq!(next_local.day(), dom, "day of month should match");
+        }
+    }
+
+    #[test]
+    fn test_next_occurrence_respects_hour_minute_second() {
+        let next = super::next_occurrence_of_schedule(Some(13), Some(15), Some(30), None, None);
+        let next_local = chrono::DateTime::<Local>::from(next);
+        assert_eq!(next_local.hour(), 13);
+        assert_eq!(next_local.minute(), 15);
+        assert_eq!(next_local.second(), 30);
+    }
+
+    #[test]
+    fn test_next_occurrence_day_of_week_within_one_week() {
         let now = SystemTime::now();
-        for day in 1..=31_u32 {
-            let next = super::next_occurrence_of_day_of_month(day);
+        for dow in [
+            JsDayOfWeek::Monday,
+            JsDayOfWeek::Tuesday,
+            JsDayOfWeek::Wednesday,
+            JsDayOfWeek::Thursday,
+            JsDayOfWeek::Friday,
+            JsDayOfWeek::Saturday,
+            JsDayOfWeek::Sunday,
+        ] {
+            let next = super::next_occurrence_of_schedule(None, None, None, Some(dow), None);
+            let diff = next.duration_since(now).unwrap();
+            assert!(
+                diff <= Duration::from_secs(7 * 24 * 3600),
+                "{dow}: next occurrence is unexpectedly far: {diff:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_next_occurrence_day_of_month_within_two_months() {
+        let now = SystemTime::now();
+        for dom in 1..=31u32 {
+            let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
             let diff = next.duration_since(now).unwrap();
             assert!(
                 diff <= Duration::from_secs(63 * 24 * 3600),
-                "day {day}: next occurrence is unexpectedly far: {diff:?}"
+                "day {dom}: next occurrence is unexpectedly far: {diff:?}"
             );
         }
     }

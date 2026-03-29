@@ -30,19 +30,15 @@ Number of times to click.
 
 ***
 
-### button?
+### interval?
 
-> `optional` **button?**: [`Button`](../enumerations/Button.md)
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
 
-Mouse button to press.
+Delay between consecutive clicks, in seconds.
 
 #### Default Value
 
-`Button.Left`
-
-#### Inherited from
-
-[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
+`0`
 
 ***
 
@@ -58,15 +54,31 @@ How long to hold each click, in seconds.
 
 ***
 
-### interval?
+### signal?
 
-> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
-Delay between consecutive clicks, in seconds.
+Abort signal to cancel the click.
 
 #### Default Value
 
-`0`
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+Mouse button to press.
+
+#### Default Value
+
+`Button.Left`
+
+#### Inherited from
+
+[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
 
 ***
 
@@ -99,15 +111,3 @@ Whether the position is relative to the current cursor position.
 #### Inherited from
 
 [`PressOptions`](PressOptions.md).[`relativePosition`](PressOptions.md#relativeposition)
-
-***
-
-### signal?
-
-> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
-
-Abort signal to cancel the click.
-
-#### Default Value
-
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
