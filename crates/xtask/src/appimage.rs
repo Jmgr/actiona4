@@ -42,7 +42,7 @@ fn assemble_app_dir(workspace_root: &Path, release_dir: &Path, app_dir: &Path) -
     std::fs::create_dir_all(&bin_dir)?;
 
     copy_binary(release_dir, &bin_dir, "actiona-run")?;
-    copy_binary(release_dir, &bin_dir, "selection")?;
+    copy_binary(release_dir, &bin_dir, "selection-tool")?;
 
     let icon_src = workspace_root
         .join("crates")

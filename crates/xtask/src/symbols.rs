@@ -11,10 +11,10 @@ use tempfile::TempDir;
 use zip::{ZipArchive, result::ZipError};
 
 #[cfg(unix)]
-const BINARY_NAMES: &[&str] = &["actiona-run", "selection"];
+const BINARY_NAMES: &[&str] = &["actiona-run", "selection-tool"];
 
 #[cfg(windows)]
-const BINARY_NAMES: &[&str] = &["actiona-run", "actiona-runw", "selection"];
+const BINARY_NAMES: &[&str] = &["actiona-run", "actiona-runw", "selection-tool"];
 
 #[cfg(unix)]
 const STACKWALK_MODULE_NAME: &str = "actiona-run";
