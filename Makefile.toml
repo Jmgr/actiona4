@@ -68,30 +68,19 @@ dependencies = ["install-cargo-edit"]
 command = "cargo"
 args = ["upgrade", "--incompatible"]
 
-[tasks.appimage-run]
+[tasks.appimage]
 condition = { platforms = ["linux"] }
 description = "Build a signed AppImage for the actiona-run executable."
 dependencies = ["release-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "app-image"]
 
-[tasks.appimage-run-nosign]
+[tasks.appimage-nosign]
 condition = { platforms = ["linux"] }
 description = "Build an unsigned AppImage for the actiona-run executable."
 dependencies = ["release-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "app-image-no-sign"]
-
-[tasks.bundle-run]
-condition = { platforms = ["windows"] }
-description = "Build the Windows bundle for actiona-run, including the selection sidecar."
-cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/crates/run"
-dependencies = ["install-tauri-cli", "prepare-selection-sidecar"]
-script_runner = "bash"
-script_extension = "sh"
-script = [
-    "TAURI_CONFIG='{\"bundle\":{\"externalBin\":[\"binaries/selection\"]}}' cargo tauri build",
-]
 
 [tasks.release-run]
 description = "Build the actiona-run binary in release mode."
