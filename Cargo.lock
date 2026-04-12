@@ -959,7 +959,7 @@ dependencies = [
 
 [[package]]
 name = "build-support"
-version = "0.1.9"
+version = "0.1.10"
 
 [[package]]
 name = "built"
@@ -1323,7 +1323,7 @@ dependencies = [
 
 [[package]]
 name = "common"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "ab_glyph",
  "built",
@@ -1359,7 +1359,7 @@ dependencies = [
 
 [[package]]
 name = "config"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "cfg_aliases 0.2.1",
  "color-eyre",
@@ -1446,7 +1446,7 @@ dependencies = [
 
 [[package]]
 name = "core"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "ab_glyph",
  "arboard",
@@ -2037,7 +2037,7 @@ dependencies = [
 
 [[package]]
 name = "doc-generator"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "built",
  "clap",
@@ -3835,7 +3835,7 @@ dependencies = [
 
 [[package]]
 name = "inno-plugin"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "eyre",
  "installer-tools",
@@ -3843,7 +3843,7 @@ dependencies = [
 
 [[package]]
 name = "installer-tools"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "config",
  "eyre",
@@ -4380,7 +4380,7 @@ dependencies = [
 
 [[package]]
 name = "macros"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "convert_case 0.11.0",
  "darling",
@@ -6692,7 +6692,7 @@ dependencies = [
 
 [[package]]
 name = "run"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "build-support",
  "built",
@@ -7001,7 +7001,7 @@ dependencies = [
 
 [[package]]
 name = "selection-tool"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "build-support",
  "built",
@@ -8834,7 +8834,7 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "updater"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "cfg_aliases 0.2.1",
  "color-eyre",
@@ -10326,7 +10326,7 @@ checksum = "3ae8337f8a065cfc972643663ea4279e04e7256de865aa66fe25cec5fb912d3f"
 
 [[package]]
 name = "xtask"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "clap",
  "color-eyre",
