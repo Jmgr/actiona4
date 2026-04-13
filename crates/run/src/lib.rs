@@ -125,6 +125,8 @@ fn ensure_x11_session_available(
 }
 
 async fn setup(config: &Config, current_path: &Path) -> Result<()> {
+    println!("*** First time setup ***");
+
     let path_added = if Confirm::with_theme(&ColorfulTheme::default())
         .with_prompt("Add actiona-run to the PATH?")
         .default(true)

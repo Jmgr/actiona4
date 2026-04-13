@@ -5,7 +5,6 @@ use std::{
 
 use color_eyre::{Result, eyre::OptionExt, owo_colors::OwoColorize};
 use config::{Config, VersionInfo, state::State};
-use console::Emoji;
 use indicatif::HumanDuration;
 use time::{Duration as TimeDuration, OffsetDateTime};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -129,21 +128,11 @@ pub async fn check_updates_now(config: &Config) -> Result<()> {
 
 fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
     if io::stdout().is_terminal() {
-        let warning_sign = Emoji("⚠️", "/!\\");
-        let up_arrow = Emoji("🠱", "^");
-        let down_arrow = Emoji("🠳", "v");
-        let left_arrow = Emoji("🠰", "<");
-        let right_arrow = Emoji("🠲", ">");
         for _ in 0..80 {
-            print!("{}", down_arrow);
+            print!("{}", "v");
         }
         println!();
-        println!(
-            "{}  {} {}",
-            warning_sign,
-            "NEW VERSION AVAILABLE".bold(),
-            warning_sign
-        );
+        println!("/!\\ {} /!\\", "NEW VERSION AVAILABLE".bold(),);
 
         let since = OffsetDateTime::now_utc() - version_info.release_date;
         let since = StdDuration::try_from(since).map_or_else(
@@ -160,12 +149,12 @@ fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
         );
         println!(
             "Download: {}  {}  {}",
-            right_arrow,
+            ">",
             version_info.download_url.bright_blue().underline(),
-            left_arrow
+            "<"
         );
         for _ in 0..80 {
-            print!("{}", up_arrow);
+            print!("{}", "^");
         }
         println!();
     } else {
