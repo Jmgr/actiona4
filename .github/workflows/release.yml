@@ -105,13 +105,17 @@ jobs:
         run: cargo make release-symbols
 
       - name: Upload Linux symbols to Sentry
-        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' && vars.SENTRY_ORG != '' && vars.SENTRY_PROJECT != '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
           SENTRY_URL: ${{ vars.SENTRY_URL || 'https://sentry.io/' }}
-        run: sentry-cli debug-files upload --wait target/symbols
+        run: |
+          if [ -z "$SENTRY_AUTH_TOKEN" ] || [ -z "$SENTRY_ORG" ] || [ -z "$SENTRY_PROJECT" ]; then
+            echo "Skipping Sentry upload: missing SENTRY_AUTH_TOKEN, SENTRY_ORG, or SENTRY_PROJECT."
+            exit 0
+          fi
+          sentry-cli debug-files upload --wait target/symbols
 
   windows-symbols:
     name: Windows Symbols
@@ -195,11 +199,15 @@ jobs:
         run: cargo make release-symbols
 
       - name: Upload Windows symbols to Sentry
-        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' && vars.SENTRY_ORG != '' && vars.SENTRY_PROJECT != '' }}
         shell: pwsh
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
           SENTRY_URL: ${{ vars.SENTRY_URL || 'https://sentry.io/' }}
-        run: sentry-cli debug-files upload --wait target/symbols target/release
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:SENTRY_AUTH_TOKEN) -or [string]::IsNullOrWhiteSpace($env:SENTRY_ORG) -or [string]::IsNullOrWhiteSpace($env:SENTRY_PROJECT)) {
+            Write-Host "Skipping Sentry upload: missing SENTRY_AUTH_TOKEN, SENTRY_ORG, or SENTRY_PROJECT."
+            exit 0
+          }
+          sentry-cli debug-files upload --wait target/symbols target/release
