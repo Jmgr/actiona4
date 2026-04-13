@@ -13,7 +13,7 @@ env:
 jobs:
   format:
     name: Format
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check out repository
@@ -28,8 +28,9 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
 
-      - name: Cache cargo format tools
-        uses: actions/cache@v4
+      - name: Restore cargo format tools cache
+        id: cache-format-tools
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -37,9 +38,9 @@ jobs:
             ~/.cargo/bin/cargo-sort
             ~/.cargo/.crates2.json
             ~/.cargo/.crates.toml
-          key: cargo-format-tools-linux-v1-${{ hashFiles('rust-toolchain.toml') }}
+          key: cargo-format-tools-linux-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml') }}
           restore-keys: |
-            cargo-format-tools-linux-
+            cargo-format-tools-linux-v2-
 
       - name: Install cargo-make
         run: |
@@ -59,12 +60,24 @@ jobs:
             cargo install --locked cargo-sort
           fi
 
+      - name: Save cargo format tools cache
+        if: ${{ success() && steps.cache-format-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/cargo-derivefmt
+            ~/.cargo/bin/cargo-sort
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: ${{ steps.cache-format-tools.outputs.cache-primary-key }}
+
       - name: Run format check
         run: cargo make format-check
 
-  linux:
-    name: Linux
-    runs-on: ubuntu-latest
+  linux-lint:
+    name: Linux Lint
+    runs-on: ubuntu-24.04
     needs: format
 
     steps:
@@ -77,50 +90,223 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
 
-      - name: Cache cargo tools
-        uses: actions/cache@v4
+      - name: Restore cargo tools cache
+        id: cache-linux-lint-tools
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.cargo/bin/cargo-make
             ~/.cargo/.crates2.json
             ~/.cargo/.crates.toml
-          key: cargo-tools-linux-v1-${{ hashFiles('rust-toolchain.toml') }}
+          key: cargo-tools-linux-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml') }}
           restore-keys: |
-            cargo-tools-linux-
+            cargo-tools-linux-v2-
 
       - name: Install Linux build dependencies
+        uses: ./.github/actions/install-linux-deps
+
+      - name: Install cargo-make
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            clang \
-            curl \
-            libasound2-dev \
-            libcairo2-dev \
-            libclang-dev \
-            libdbus-1-dev \
-            libglib2.0-dev \
-            libgraphene-1.0-dev \
-            libgtk-4-dev \
-            libnotify-dev \
-            libopencv-dev \
-            libpango1.0-dev \
-            libssl-dev \
-            libstdc++-12-dev \
-            libwayland-dev \
-            libx11-dev \
-            libx11-xcb-dev \
-            libxcb-randr0-dev \
-            libxdo-dev \
-            libxfixes-dev \
-            libxi-dev \
-            libxkbcommon-dev \
-            libxkbcommon-x11-dev \
-            libxtst-dev \
-            llvm-dev \
-            mold \
-            pkg-config \
-            xvfb
+          if ! command -v cargo-make >/dev/null 2>&1; then
+            cargo install --locked cargo-make
+          fi
+
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-linux-lint-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: ${{ steps.cache-linux-lint-tools.outputs.cache-primary-key }}
+
+      - name: Run lint
+        env:
+          RUSTFLAGS: -C link-arg=-fuse-ld=mold
+        run: cargo make lint
+
+  windows-lint:
+    name: Windows Lint
+    runs-on: windows-latest
+    needs: format
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Restore cargo tools cache
+        id: cache-windows-lint-tools
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\.crates2.json
+            ~\.cargo\.crates.toml
+          key: cargo-tools-windows-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml', '.github/actions/setup-vcpkg/action.yml') }}
+          restore-keys: |
+            cargo-tools-windows-v2-
+
+      - name: Install cargo-make
+        shell: pwsh
+        run: |
+          if (-not (Get-Command cargo-make -ErrorAction SilentlyContinue)) {
+            cargo install --locked cargo-make
+          }
+
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-windows-lint-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\.crates2.json
+            ~\.cargo\.crates.toml
+          key: ${{ steps.cache-windows-lint-tools.outputs.cache-primary-key }}
+
+      - name: Setup vcpkg with OpenCV
+        uses: ./.github/actions/setup-vcpkg
+
+      - name: Run lint
+        run: cargo make lint
+
+  doc:
+    name: Docs
+    runs-on: ubuntu-24.04
+    needs:
+      - linux-lint
+      - windows-lint
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Restore cargo tools cache
+        id: cache-doc-tools
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: cargo-tools-linux-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml') }}
+          restore-keys: |
+            cargo-tools-linux-v2-
+
+      - name: Install Linux build dependencies
+        uses: ./.github/actions/install-linux-deps
+
+      - name: Install cargo-make
+        run: |
+          if ! command -v cargo-make >/dev/null 2>&1; then
+            cargo install --locked cargo-make
+          fi
+
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-doc-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: ${{ steps.cache-doc-tools.outputs.cache-primary-key }}
+
+      - name: Build docs
+        env:
+          RUSTFLAGS: -C link-arg=-fuse-ld=mold
+        run: cargo make doc
+
+  linux-test:
+    name: Linux Test
+    runs-on: ubuntu-24.04
+    needs: doc
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Linux build dependencies
+        uses: ./.github/actions/install-linux-deps
+        with:
+          extra-packages: xvfb
+
+      - name: Run tests
+        env:
+          RUSTFLAGS: -C link-arg=-fuse-ld=mold
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" cargo test --locked --workspace
+
+  windows-test:
+    name: Windows Test
+    runs-on: windows-latest
+    needs: doc
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Setup vcpkg with OpenCV
+        uses: ./.github/actions/setup-vcpkg
+
+      - name: Run tests
+        run: cargo test --locked --workspace --features run/windows-bin
+
+  appimage:
+    name: Linux AppImage
+    runs-on: ubuntu-24.04
+    needs:
+      - linux-test
+      - windows-test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Restore cargo tools cache
+        id: cache-appimage-tools
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/dump_syms
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: package-cargo-tools-linux-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml') }}
+          restore-keys: |
+            package-cargo-tools-linux-v2-
+
+      - name: Install Linux build dependencies
+        uses: ./.github/actions/install-linux-deps
 
       - name: Install cargo-make
         run: |
@@ -134,35 +320,28 @@ jobs:
             cargo install --locked dump_syms
           fi
 
-      - name: Run lint
-        env:
-          RUSTFLAGS: -C link-arg=-fuse-ld=mold
-        run: cargo make lint
-
-      - name: Build docs
-        env:
-          RUSTFLAGS: -C link-arg=-fuse-ld=mold
-        run: cargo make doc
-
-      - name: Build release binaries
-        env:
-          RUSTFLAGS: -C link-arg=-fuse-ld=mold
-        run: cargo make release
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-appimage-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/dump_syms
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: ${{ steps.cache-appimage-tools.outputs.cache-primary-key }}
 
       - name: Build unsigned AppImage
         env:
           RUSTFLAGS: -C link-arg=-fuse-ld=mold
         run: cargo make appimage-nosign
 
-      - name: Run tests
-        env:
-          RUSTFLAGS: -C link-arg=-fuse-ld=mold
-        run: xvfb-run -a -s "-screen 0 1920x1080x24" cargo test --locked --workspace
-
-  windows:
-    name: Windows
+  windows-archive:
+    name: Windows Archive
     runs-on: windows-latest
-    needs: format
+    needs:
+      - linux-test
+      - windows-test
 
     steps:
       - name: Check out repository
@@ -171,33 +350,21 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install Windows x86 target
-        run: rustup target add i686-pc-windows-msvc
-
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
 
-      - name: Cache cargo tools
-        uses: actions/cache@v4
+      - name: Restore cargo tools cache
+        id: cache-windows-archive-tools
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
             ~\.cargo\.crates2.json
             ~\.cargo\.crates.toml
-          key: cargo-tools-windows-v1-${{ hashFiles('rust-toolchain.toml') }}
+          key: package-cargo-tools-windows-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml', '.github/workflows/release.yml', '.github/actions/setup-vcpkg/action.yml') }}
           restore-keys: |
-            cargo-tools-windows-
-
-      - name: Cache vcpkg artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.temp }}\vcpkg
-            ${{ github.workspace }}\vcpkg-downloads
-            ${{ github.workspace }}\vcpkg-bincache
-          key: vcpkg-windows-opencv4-v1
-          restore-keys: |
-            vcpkg-windows-opencv4-
+            package-cargo-tools-windows-v2-
 
       - name: Install cargo-make
         shell: pwsh
@@ -213,37 +380,83 @@ jobs:
             cargo install --locked dump_syms
           }
 
-      - name: Install OpenCV with vcpkg
-        shell: pwsh
-        env:
-          VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-bincache,readwrite
-          VCPKG_DOWNLOADS: ${{ github.workspace }}\vcpkg-downloads
-        run: |
-          $vcpkgRoot = Join-Path $env:RUNNER_TEMP vcpkg
-          if (-not (Test-Path (Join-Path $vcpkgRoot vcpkg.exe))) {
-            git clone --depth 1 https://github.com/microsoft/vcpkg $vcpkgRoot
-            & (Join-Path $vcpkgRoot bootstrap-vcpkg.bat)
-          }
-          & (Join-Path $vcpkgRoot vcpkg.exe) install opencv4:x64-windows
-          "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKG_BINARY_SOURCES=$env:VCPKG_BINARY_SOURCES" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKG_DOWNLOADS=$env:VCPKG_DOWNLOADS" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKGRS_DYNAMIC=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKGRS_TRIPLET=x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "OPENCV_VCPKG_NAME=opencv4" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          (Join-Path $vcpkgRoot installed/x64-windows/bin) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-windows-archive-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
+            ~\.cargo\.crates2.json
+            ~\.cargo\.crates.toml
+          key: ${{ steps.cache-windows-archive-tools.outputs.cache-primary-key }}
 
-      - name: Run lint
-        run: cargo make lint
-
-      - name: Build release binaries
-        run: cargo make release
+      - name: Setup vcpkg with OpenCV
+        uses: ./.github/actions/setup-vcpkg
 
       - name: Build unsigned archive
         run: cargo make archive-nosign
 
+  windows-installer:
+    name: Windows Installer
+    runs-on: windows-latest
+    needs:
+      - linux-test
+      - windows-test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Windows x86 target
+        run: rustup target add i686-pc-windows-msvc
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Restore cargo tools cache
+        id: cache-windows-installer-tools
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
+            ~\.cargo\.crates2.json
+            ~\.cargo\.crates.toml
+          key: package-cargo-tools-windows-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/build.yml', '.github/workflows/release.yml', '.github/actions/setup-vcpkg/action.yml') }}
+          restore-keys: |
+            package-cargo-tools-windows-v2-
+
+      - name: Install cargo-make
+        shell: pwsh
+        run: |
+          if (-not (Get-Command cargo-make -ErrorAction SilentlyContinue)) {
+            cargo install --locked cargo-make
+          }
+
+      - name: Install dump_syms
+        shell: pwsh
+        run: |
+          if (-not (Get-Command dump_syms -ErrorAction SilentlyContinue)) {
+            cargo install --locked dump_syms
+          }
+
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-windows-installer-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
+            ~\.cargo\.crates2.json
+            ~\.cargo\.crates.toml
+          key: ${{ steps.cache-windows-installer-tools.outputs.cache-primary-key }}
+
+      - name: Setup vcpkg with OpenCV
+        uses: ./.github/actions/setup-vcpkg
+
       - name: Build unsigned installer
         run: cargo make installer-nosign
-
-      - name: Run tests
-        run: cargo test --locked --workspace --features run/windows-bin

@@ -1,0 +1,46 @@
+name: Install Linux dependencies
+description: Install Linux build dependencies via apt-get
+
+inputs:
+  extra-packages:
+    description: 'Additional apt packages to install (space-separated)'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Install Linux build dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          clang \
+          curl \
+          libasound2-dev \
+          libcairo2-dev \
+          libclang-dev \
+          libdbus-1-dev \
+          libglib2.0-dev \
+          libgraphene-1.0-dev \
+          libgtk-4-dev \
+          libnotify-dev \
+          libopencv-dev \
+          libpango1.0-dev \
+          libssl-dev \
+          libstdc++-14-dev \
+          libwayland-dev \
+          libx11-dev \
+          libx11-xcb-dev \
+          libxcb-randr0-dev \
+          libxdo-dev \
+          libxfixes-dev \
+          libxi-dev \
+          libxkbcommon-dev \
+          libxkbcommon-x11-dev \
+          libxtst-dev \
+          llvm-dev \
+          mold \
+          pkg-config \
+          ${{ inputs.extra-packages }}

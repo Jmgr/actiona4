@@ -1,0 +1,68 @@
+name: Setup vcpkg with OpenCV
+description: Restore vcpkg cache, install OpenCV4 for Windows, and save cache
+
+inputs:
+  vcpkg-commit:
+    description: "Pinned microsoft/vcpkg commit to use"
+    required: false
+    default: "6d7bf7ef2193e2d1c5798a5ff8811d533104c861"
+
+runs:
+  using: composite
+  steps:
+    - name: Restore vcpkg artifacts cache
+      id: cache-vcpkg
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ${{ runner.temp }}\vcpkg
+          ${{ github.workspace }}\vcpkg-downloads
+          ${{ github.workspace }}\vcpkg-bincache
+        key: vcpkg-windows-opencv4-${{ inputs.vcpkg-commit }}-v1
+        restore-keys: |
+          vcpkg-windows-opencv4-${{ inputs.vcpkg-commit }}-
+
+    - name: Install OpenCV with vcpkg
+      shell: pwsh
+      env:
+        VCPKG_COMMIT: ${{ inputs.vcpkg-commit }}
+        VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-bincache,readwrite
+        VCPKG_DOWNLOADS: ${{ github.workspace }}\vcpkg-downloads
+      run: |
+        $vcpkgRoot = Join-Path $env:RUNNER_TEMP vcpkg
+        $bootstrap = $false
+
+        if (-not (Test-Path (Join-Path $vcpkgRoot .git))) {
+          git clone --depth 1 https://github.com/microsoft/vcpkg $vcpkgRoot
+          $bootstrap = $true
+        }
+
+        $currentCommit = git -C $vcpkgRoot rev-parse HEAD
+        if ($currentCommit -ne $env:VCPKG_COMMIT) {
+          git -C $vcpkgRoot fetch --depth 1 origin $env:VCPKG_COMMIT
+          git -C $vcpkgRoot checkout --detach $env:VCPKG_COMMIT
+          $bootstrap = $true
+        }
+
+        if ($bootstrap -or -not (Test-Path (Join-Path $vcpkgRoot vcpkg.exe))) {
+          & (Join-Path $vcpkgRoot bootstrap-vcpkg.bat)
+        }
+
+        & (Join-Path $vcpkgRoot vcpkg.exe) install opencv4:x64-windows
+        "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "VCPKG_BINARY_SOURCES=$env:VCPKG_BINARY_SOURCES" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "VCPKG_DOWNLOADS=$env:VCPKG_DOWNLOADS" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "VCPKGRS_DYNAMIC=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "VCPKGRS_TRIPLET=x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "OPENCV_VCPKG_NAME=opencv4" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        (Join-Path $vcpkgRoot installed/x64-windows/bin) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Save vcpkg artifacts cache
+      if: ${{ success() && steps.cache-vcpkg.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          ${{ runner.temp }}\vcpkg
+          ${{ github.workspace }}\vcpkg-downloads
+          ${{ github.workspace }}\vcpkg-bincache
+        key: ${{ steps.cache-vcpkg.outputs.cache-primary-key }}

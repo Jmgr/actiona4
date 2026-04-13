@@ -15,7 +15,7 @@ env:
 jobs:
   linux-symbols:
     name: Linux Symbols
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check out repository
@@ -32,50 +32,21 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
 
-      - name: Cache cargo tools
-        uses: actions/cache@v4
+      - name: Restore cargo tools cache
+        id: cache-linux-symbols-tools
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.cargo/bin/cargo-make
             ~/.cargo/bin/dump_syms
             ~/.cargo/.crates2.json
             ~/.cargo/.crates.toml
-          key: release-cargo-tools-linux-v1-${{ hashFiles('rust-toolchain.toml') }}
+          key: release-cargo-tools-linux-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/release.yml') }}
           restore-keys: |
-            release-cargo-tools-linux-
+            release-cargo-tools-linux-v2-
 
       - name: Install Linux release dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            clang \
-            curl \
-            libasound2-dev \
-            libcairo2-dev \
-            libclang-dev \
-            libdbus-1-dev \
-            libglib2.0-dev \
-            libgraphene-1.0-dev \
-            libgtk-4-dev \
-            libnotify-dev \
-            libopencv-dev \
-            libpango1.0-dev \
-            libssl-dev \
-            libstdc++-12-dev \
-            libwayland-dev \
-            libx11-dev \
-            libx11-xcb-dev \
-            libxcb-randr0-dev \
-            libxdo-dev \
-            libxfixes-dev \
-            libxi-dev \
-            libxkbcommon-dev \
-            libxkbcommon-x11-dev \
-            libxtst-dev \
-            llvm-dev \
-            mold \
-            pkg-config
+        uses: ./.github/actions/install-linux-deps
 
       - name: Install cargo-make
         run: |
@@ -88,6 +59,17 @@ jobs:
           if ! command -v dump_syms >/dev/null 2>&1; then
             cargo install --locked dump_syms
           fi
+
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-linux-symbols-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/dump_syms
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: ${{ steps.cache-linux-symbols-tools.outputs.cache-primary-key }}
 
       - name: Install sentry-cli
         run: npm install --global @sentry/cli
@@ -129,28 +111,18 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
 
-      - name: Cache cargo tools
-        uses: actions/cache@v4
+      - name: Restore cargo tools cache
+        id: cache-windows-symbols-tools
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
             ~\.cargo\bin\dump_syms.exe
             ~\.cargo\.crates2.json
             ~\.cargo\.crates.toml
-          key: release-cargo-tools-windows-v1-${{ hashFiles('rust-toolchain.toml') }}
+          key: release-cargo-tools-windows-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/release.yml', '.github/actions/setup-vcpkg/action.yml') }}
           restore-keys: |
-            release-cargo-tools-windows-
-
-      - name: Cache vcpkg artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.temp }}\vcpkg
-            ${{ github.workspace }}\vcpkg-downloads
-            ${{ github.workspace }}\vcpkg-bincache
-          key: vcpkg-windows-opencv4-v1
-          restore-keys: |
-            vcpkg-windows-opencv4-
+            release-cargo-tools-windows-v2-
 
       - name: Install cargo-make
         shell: pwsh
@@ -166,25 +138,19 @@ jobs:
             cargo install --locked dump_syms
           }
 
-      - name: Install OpenCV with vcpkg
-        shell: pwsh
-        env:
-          VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-bincache,readwrite
-          VCPKG_DOWNLOADS: ${{ github.workspace }}\vcpkg-downloads
-        run: |
-          $vcpkgRoot = Join-Path $env:RUNNER_TEMP vcpkg
-          if (-not (Test-Path (Join-Path $vcpkgRoot vcpkg.exe))) {
-            git clone --depth 1 https://github.com/microsoft/vcpkg $vcpkgRoot
-            & (Join-Path $vcpkgRoot bootstrap-vcpkg.bat)
-          }
-          & (Join-Path $vcpkgRoot vcpkg.exe) install opencv4:x64-windows
-          "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKG_BINARY_SOURCES=$env:VCPKG_BINARY_SOURCES" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKG_DOWNLOADS=$env:VCPKG_DOWNLOADS" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKGRS_DYNAMIC=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "VCPKGRS_TRIPLET=x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "OPENCV_VCPKG_NAME=opencv4" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          (Join-Path $vcpkgRoot installed/x64-windows/bin) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Save cargo tools cache
+        if: ${{ success() && steps.cache-windows-symbols-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
+            ~\.cargo\.crates2.json
+            ~\.cargo\.crates.toml
+          key: ${{ steps.cache-windows-symbols-tools.outputs.cache-primary-key }}
+
+      - name: Setup vcpkg with OpenCV
+        uses: ./.github/actions/setup-vcpkg
 
       - name: Install sentry-cli
         shell: pwsh
