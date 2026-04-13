@@ -129,7 +129,7 @@ pub async fn check_updates_now(config: &Config) -> Result<()> {
 fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
     if io::stdout().is_terminal() {
         for _ in 0..80 {
-            print!("{}", "v");
+            print!("v");
         }
         println!();
         println!("/!\\ {} /!\\", "NEW VERSION AVAILABLE".bold(),);
@@ -148,13 +148,11 @@ fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
             since
         );
         println!(
-            "Download: {}  {}  {}",
-            ">",
+            "Download: > {} <",
             version_info.download_url.bright_blue().underline(),
-            "<"
         );
         for _ in 0..80 {
-            print!("{}", "^");
+            print!("^");
         }
         println!();
     } else {

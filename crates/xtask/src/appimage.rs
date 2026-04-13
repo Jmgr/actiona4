@@ -144,6 +144,7 @@ async fn download_file(url: &str, dest: &Path) -> Result<()> {
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_linuxdeploy(
     tool_path: &Path,
     tools_dir: &Path,
