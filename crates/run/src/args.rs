@@ -164,10 +164,10 @@ pub enum Commands {
         command: MacrosCommands,
     },
 
-    /// Performs application setup
+    /// ⚙️ performs application setup
     Setup,
 
-    /// Trigger a synthetic crash to test crash dump collection (hidden, for development use)
+    /// 💥 triggers a synthetic crash to test crash dump collection (hidden, for development use)
     #[command(hide = true)]
     CrashTest {
         /// The type of crash to trigger
