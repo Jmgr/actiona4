@@ -21,6 +21,26 @@ args = ["sort", "-g", "-w"]
 [tasks.format]
 dependencies = ["deps", "fmt", "derivefmt", "sort"]
 
+[tasks.fmt-check]
+command = "cargo"
+toolchain = "nightly"
+args = ["fmt", "--all", "--check"]
+
+[tasks.derivefmt-check]
+script_runner = "@shell"
+script = '''
+set -e
+cargo derivefmt
+git diff --exit-code -- '*.rs'
+'''
+
+[tasks.sort-check]
+command = "cargo"
+args = ["sort", "-g", "-w", "--check", "--check-format"]
+
+[tasks.format-check]
+dependencies = ["deps", "fmt-check", "derivefmt-check", "sort-check"]
+
 [tasks.clippy]
 command = "cargo"
 args = ["clippy", "--all", "--all-targets", "--all-features"]
@@ -82,11 +102,6 @@ dependencies = ["release-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "app-image-no-sign"]
 
-[tasks.release-run]
-description = "Build the actiona-run binary in release mode."
-command = "cargo"
-args = ["build", "-p", "run", "--release", "--bin", "actiona-run"]
-
 [tasks.release-runw]
 condition = { platforms = ["windows"] }
 description = "Build the actiona-runw binary in release mode (Windows only)."
@@ -102,14 +117,18 @@ args = [
     "windows-bin",
 ]
 
-[tasks.release-selection]
-description = "Build the selection binary in release mode."
-command = "cargo"
-args = ["build", "-p", "selection-tool", "--release"]
-
 [tasks.release]
-description = "Build release binaries, including actiona-runw on Windows."
-dependencies = ["release-run", "release-runw"]
+description = "Build release binaries, including selection-tool and actiona-runw on Windows."
+dependencies = ["release-runw"]
+command = "cargo"
+args = [
+    "build",
+    "-p",
+    "run",
+    "-p",
+    "selection-tool",
+    "--release",
+]
 
 [tasks.symbols]
 description = "Generate Breakpad symbol files (.sym) and strip release binaries."
@@ -117,8 +136,8 @@ command = "cargo"
 args = ["run", "-p", "xtask", "--", "symbols"]
 
 [tasks.release-symbols]
-description = "Build all release binaries (including selection) and generate Breakpad symbol files."
-dependencies = ["release", "release-selection", "symbols"]
+description = "Build all release binaries and generate Breakpad symbol files."
+dependencies = ["release", "symbols"]
 
 [tasks.upload-symbols]
 description = "Build release binaries, generate Breakpad symbol files, and upload them to Sentry using sentry-cli."
