@@ -25,7 +25,7 @@ pub async fn build_archive(
     workspace_package_info: &WorkspacePackageInfo,
 ) -> Result<()> {
     let archive_path = workspace_root.join("target").join(format!(
-        "actiona-run-{}.zip",
+        "actiona-run-{}-x86_64-portable.zip",
         workspace_package_info.version
     ));
     let archive_entries = read_archive_entries(workspace_root).await?;
