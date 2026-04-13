@@ -7,15 +7,10 @@ use std::{
 
 use color_eyre::{Result, eyre::eyre};
 
-use crate::workspace::workspace_root;
-
-const APPIMAGETOOL_URL_BASE: &str =
-    "https://github.com/AppImage/appimagetool/releases/download/continuous";
-
-const APPRUN: &str = "\
-#!/bin/sh
-exec \"$(dirname \"$0\")/usr/bin/actiona-run\" \"$@\"
-";
+const LINUXDEPLOY_URL_BASE: &str =
+    "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous";
+const LINUXDEPLOY_PLUGIN_APPIMAGE_URL_BASE: &str =
+    "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous";
 
 pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
     let release_dir = workspace_root.join("target").join("release");
@@ -27,95 +22,121 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
     let output_path = appimage_dir.join(format!("actiona-run-{version}-{arch}.AppImage"));
 
     std::fs::create_dir_all(&appimage_dir)?;
-    assemble_app_dir(workspace_root, &release_dir, &app_dir)?;
+    reset_app_dir(&app_dir)?;
+    remove_output_if_exists(&output_path)?;
 
-    let appimagetool = ensure_appimagetool(arch).await?;
-    run_appimagetool(&appimagetool, &app_dir, &output_path, sign)?;
+    let tools_dir = workspace_root.join("target").join("tools");
+    std::fs::create_dir_all(&tools_dir)?;
+
+    let linuxdeploy = ensure_linuxdeploy(arch, &tools_dir).await?;
+    ensure_linuxdeploy_appimage_plugin(arch, &tools_dir).await?;
+    run_linuxdeploy(
+        &linuxdeploy,
+        &tools_dir,
+        workspace_root,
+        &release_dir,
+        &app_dir,
+        &output_path,
+        &version,
+        sign,
+    )?;
 
     println!("AppImage written to: {}", output_path.display());
 
     Ok(())
 }
 
-fn assemble_app_dir(workspace_root: &Path, release_dir: &Path, app_dir: &Path) -> Result<()> {
-    let bin_dir = app_dir.join("usr").join("bin");
-    std::fs::create_dir_all(&bin_dir)?;
-
-    copy_binary(release_dir, &bin_dir, "actiona-run")?;
-    copy_binary(release_dir, &bin_dir, "selection-tool")?;
-
-    let icon_src = workspace_root
-        .join("crates")
-        .join("core")
-        .join("icons")
-        .join("icon.png");
-    std::fs::copy(&icon_src, app_dir.join("actiona-run.png"))?;
-
-    let desktop_src = workspace_root.join("assets").join("actiona-run.desktop");
-    if !desktop_src.exists() {
-        return Err(eyre!("Desktop file not found: {}", desktop_src.display()));
+fn reset_app_dir(app_dir: &Path) -> Result<()> {
+    if app_dir.exists() {
+        std::fs::remove_dir_all(app_dir)?;
     }
-    std::fs::copy(&desktop_src, app_dir.join("actiona-run.desktop"))?;
 
-    let apprun_path = app_dir.join("AppRun");
-    std::fs::write(&apprun_path, APPRUN)?;
-    std::fs::set_permissions(&apprun_path, std::fs::Permissions::from_mode(0o755))?;
+    std::fs::create_dir_all(app_dir)?;
+    Ok(())
+}
+
+fn remove_output_if_exists(output_path: &Path) -> Result<()> {
+    if output_path.exists() {
+        std::fs::remove_file(output_path)?;
+    }
 
     Ok(())
 }
 
-fn copy_binary(release_dir: &Path, bin_dir: &Path, name: &str) -> Result<()> {
-    let src = release_dir.join(name);
-    if !src.exists() {
-        return Err(eyre!(
-            "Binary not found: {}. Run `cargo make release` first.",
-            src.display()
-        ));
-    }
-    let dst = bin_dir.join(name);
-    std::fs::copy(&src, &dst)?;
-    std::fs::set_permissions(&dst, std::fs::Permissions::from_mode(0o755))?;
-    Ok(())
-}
-
-async fn ensure_appimagetool(arch: &str) -> Result<PathBuf> {
-    if let Ok(path) = which_appimagetool() {
+async fn ensure_linuxdeploy(arch: &str, tools_dir: &Path) -> Result<PathBuf> {
+    if let Ok(path) = which_linuxdeploy() {
         return Ok(path);
     }
 
-    let tools_dir = workspace_root()?.join("target").join("tools");
-    std::fs::create_dir_all(&tools_dir)?;
-    let tool_path = tools_dir.join(format!("appimagetool-{arch}.AppImage"));
+    let tool_path = tools_dir.join(format!("linuxdeploy-{arch}.AppImage"));
 
     if !tool_path.exists() {
-        download_appimagetool(arch, &tool_path).await?;
+        download_linuxdeploy(arch, &tool_path).await?;
     }
 
     Ok(tool_path)
 }
 
-fn which_appimagetool() -> Result<PathBuf> {
-    let output = Command::new("which").arg("appimagetool").output()?;
+async fn ensure_linuxdeploy_appimage_plugin(arch: &str, tools_dir: &Path) -> Result<PathBuf> {
+    if let Ok(path) = which_linuxdeploy_appimage_plugin() {
+        return Ok(path);
+    }
+
+    let plugin_path = tools_dir.join(format!("linuxdeploy-plugin-appimage-{arch}.AppImage"));
+    if !plugin_path.exists() {
+        download_linuxdeploy_appimage_plugin(arch, &plugin_path).await?;
+    }
+
+    Ok(plugin_path)
+}
+
+fn which_linuxdeploy() -> Result<PathBuf> {
+    let output = Command::new("which").arg("linuxdeploy").output()?;
     if output.status.success() {
         let path = String::from_utf8(output.stdout)?.trim().to_owned();
         Ok(PathBuf::from(path))
     } else {
-        Err(eyre!("appimagetool not found on PATH"))
+        Err(eyre!("linuxdeploy not found on PATH"))
     }
 }
 
-async fn download_appimagetool(arch: &str, dest: &Path) -> Result<()> {
-    let url = format!("{APPIMAGETOOL_URL_BASE}/appimagetool-{arch}.AppImage");
-    eprintln!("Downloading appimagetool from {url}...");
+fn which_linuxdeploy_appimage_plugin() -> Result<PathBuf> {
+    let output = Command::new("which")
+        .arg("linuxdeploy-plugin-appimage")
+        .output()?;
+    if output.status.success() {
+        let path = String::from_utf8(output.stdout)?.trim().to_owned();
+        Ok(PathBuf::from(path))
+    } else {
+        Err(eyre!("linuxdeploy-plugin-appimage not found on PATH"))
+    }
+}
 
-    let bytes = reqwest::get(&url)
+async fn download_linuxdeploy(arch: &str, dest: &Path) -> Result<()> {
+    let url = format!("{LINUXDEPLOY_URL_BASE}/linuxdeploy-{arch}.AppImage");
+    eprintln!("Downloading linuxdeploy from {url}...");
+
+    download_file(&url, dest).await
+}
+
+async fn download_linuxdeploy_appimage_plugin(arch: &str, dest: &Path) -> Result<()> {
+    let url = format!(
+        "{LINUXDEPLOY_PLUGIN_APPIMAGE_URL_BASE}/linuxdeploy-plugin-appimage-{arch}.AppImage"
+    );
+    eprintln!("Downloading linuxdeploy AppImage plugin from {url}...");
+
+    download_file(&url, dest).await
+}
+
+async fn download_file(url: &str, dest: &Path) -> Result<()> {
+    let bytes = reqwest::get(url)
         .await
-        .map_err(|error| eyre!("Failed to download appimagetool: {error}"))?
+        .map_err(|error| eyre!("Failed to download {url}: {error}"))?
         .error_for_status()
-        .map_err(|error| eyre!("appimagetool download failed: {error}"))?
+        .map_err(|error| eyre!("Download failed for {url}: {error}"))?
         .bytes()
         .await
-        .map_err(|error| eyre!("Failed to read appimagetool response: {error}"))?;
+        .map_err(|error| eyre!("Failed to read download response for {url}: {error}"))?;
 
     tokio::fs::write(dest, &bytes).await?;
     tokio::fs::set_permissions(dest, std::fs::Permissions::from_mode(0o755)).await?;
@@ -123,43 +144,105 @@ async fn download_appimagetool(arch: &str, dest: &Path) -> Result<()> {
     Ok(())
 }
 
-fn run_appimagetool(
+fn run_linuxdeploy(
     tool_path: &Path,
+    tools_dir: &Path,
+    workspace_root: &Path,
+    release_dir: &Path,
     app_dir: &Path,
     output_path: &Path,
+    version: &str,
     sign: bool,
 ) -> Result<()> {
-    // APPIMAGE_EXTRACT_AND_RUN=1 avoids the FUSE requirement — appimagetool
-    // extracts itself to a temp dir and runs without needing /dev/fuse mounted.
-    // This works in CI and any environment where FUSE is not available.
+    let run_binary = require_binary(release_dir, "actiona-run")?;
+    let selection_binary = require_binary(release_dir, "selection-tool")?;
+    let desktop_file_path = workspace_root.join("assets").join("actiona-run.desktop");
+    let desktop_file = require_file(&desktop_file_path)?;
+    let icon_source_path = workspace_root
+        .join("crates")
+        .join("core")
+        .join("icons")
+        .join("icon.png");
+    let icon_file = prepare_linuxdeploy_icon(require_file(&icon_source_path)?, tools_dir)?;
+
+    // APPIMAGE_EXTRACT_AND_RUN=1 avoids the FUSE requirement when linuxdeploy
+    // and its AppImage output plugin are distributed as AppImages.
     let mut cmd = Command::new(tool_path);
-    cmd.arg(app_dir)
-        .arg(output_path)
+    cmd.arg("--appdir")
+        .arg(app_dir)
+        .arg("--desktop-file")
+        .arg(desktop_file)
+        .arg("--icon-file")
+        .arg(icon_file)
+        .arg("--executable")
+        .arg(run_binary)
+        .arg("--executable")
+        .arg(selection_binary)
+        .arg("--output")
+        .arg("appimage")
         .env("ARCH", appimage_arch()?)
         .env(
             "APPIMAGE_EXTRACT_AND_RUN",
             env::var("APPIMAGE_EXTRACT_AND_RUN").unwrap_or_else(|_| "1".to_owned()),
-        );
+        )
+        .env("LDAI_OUTPUT", output_path)
+        .env("LINUXDEPLOY_OUTPUT_VERSION", version)
+        .env("PATH", prepend_to_path(tools_dir)?);
 
     if sign {
-        cmd.arg("--sign");
-        // If ACTIONA_GPG_KEY is set, use that specific key (e.g. a dedicated
-        // signing subkey fingerprint). Otherwise appimagetool uses gpg's
-        // default key.
+        cmd.env("LDAI_SIGN", "1");
         if let Ok(key) = env::var("ACTIONA_GPG_KEY") {
-            cmd.arg("--sign-key").arg(key);
+            cmd.env("LDAI_SIGN_KEY", key);
         }
     }
 
     let status = cmd
         .status()
-        .map_err(|error| eyre!("Failed to run appimagetool: {error}"))?;
+        .map_err(|error| eyre!("Failed to run linuxdeploy: {error}"))?;
 
     if status.success() {
         Ok(())
     } else {
-        Err(eyre!("appimagetool exited with status {status}"))
+        Err(eyre!("linuxdeploy exited with status {status}"))
     }
+}
+
+fn prepare_linuxdeploy_icon(icon_source: &Path, tools_dir: &Path) -> Result<PathBuf> {
+    let icon_path = tools_dir.join("actiona-run.png");
+    std::fs::copy(icon_source, &icon_path)?;
+    std::fs::set_permissions(&icon_path, std::fs::Permissions::from_mode(0o644))?;
+    Ok(icon_path)
+}
+
+fn require_binary(release_dir: &Path, name: &str) -> Result<PathBuf> {
+    let path = release_dir.join(name);
+    if path.exists() {
+        Ok(path)
+    } else {
+        Err(eyre!(
+            "Binary not found: {}. Run `cargo make release` first.",
+            path.display()
+        ))
+    }
+}
+
+fn require_file(path: &Path) -> Result<&Path> {
+    if path.exists() {
+        Ok(path)
+    } else {
+        Err(eyre!("Required file not found: {}", path.display()))
+    }
+}
+
+fn prepend_to_path(dir: &Path) -> Result<String> {
+    let mut paths = vec![dir.to_path_buf()];
+    if let Some(existing) = env::var_os("PATH") {
+        paths.extend(env::split_paths(&existing));
+    }
+
+    env::join_paths(paths)
+        .map_err(|error| eyre!("Failed to construct PATH for linuxdeploy: {error}"))
+        .map(|value| value.to_string_lossy().into_owned())
 }
 
 fn appimage_arch() -> Result<&'static str> {
