@@ -34,6 +34,28 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
 
+      - name: Cache cargo-make
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/.crates2.json
+            ~/.cargo/.crates.toml
+          key: cargo-make-${{ runner.os }}-v1-${{ hashFiles('rust-toolchain.toml') }}
+          restore-keys: |
+            cargo-make-${{ runner.os }}-
+
+      - name: Cache vcpkg artifacts
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}\vcpkg-downloads
+            ${{ github.workspace }}\vcpkg-bincache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/build.yml') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
       - name: Install Linux build dependencies
         if: runner.os == 'Linux'
         run: |
