@@ -120,8 +120,9 @@ impl Displays {
         displays_info
             .iter()
             .find(|display| display.is_primary)
+            .or_else(|| displays_info.first())
             .cloned()
-            .ok_or_else(|| eyre!("no primary display found"))
+            .ok_or_else(|| eyre!("no displays detected"))
     }
 
     pub async fn wait_get_info(&self) -> Result<Arc<DisplayInfoVec>> {

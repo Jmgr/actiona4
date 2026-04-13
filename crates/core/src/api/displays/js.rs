@@ -82,8 +82,9 @@ impl JsDisplays {
         displays_info
             .iter()
             .find(|d| d.is_primary)
+            .or_else(|| displays_info.first())
             .cloned()
-            .ok_or_else(|| color_eyre::eyre::eyre!("no primary display found"))
+            .ok_or_else(|| color_eyre::eyre::eyre!("no displays detected"))
             .into_js_result(&ctx)
             .map(JsDisplayInfo::from)
     }
