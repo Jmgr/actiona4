@@ -38,7 +38,6 @@ jobs:
           path: |
             ~/.cargo/bin/cargo-make
             ~/.cargo/bin/dump_syms
-            ~/.cargo/bin/minidump-stackwalk
             ~/.cargo/.crates2.json
             ~/.cargo/.crates.toml
           key: release-cargo-tools-linux-v1-${{ hashFiles('rust-toolchain.toml') }}
@@ -88,12 +87,6 @@ jobs:
         run: |
           if ! command -v dump_syms >/dev/null 2>&1; then
             cargo install --locked dump_syms
-          fi
-
-      - name: Install minidump-stackwalk
-        run: |
-          if ! command -v minidump-stackwalk >/dev/null 2>&1; then
-            cargo install --locked minidump-stackwalk
           fi
 
       - name: Install sentry-cli
@@ -152,12 +145,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
+            ${{ runner.temp }}\vcpkg
             ${{ github.workspace }}\vcpkg-downloads
             ${{ github.workspace }}\vcpkg-bincache
-          key: vcpkg-windows-release-v1-${{ hashFiles('.github/workflows/build.yml', '.github/workflows/release.yml') }}
+          key: vcpkg-windows-opencv4-v1
           restore-keys: |
-            vcpkg-windows-release-
-            vcpkg-windows-
+            vcpkg-windows-opencv4-
 
       - name: Install cargo-make
         shell: pwsh
@@ -180,8 +173,10 @@ jobs:
           VCPKG_DOWNLOADS: ${{ github.workspace }}\vcpkg-downloads
         run: |
           $vcpkgRoot = Join-Path $env:RUNNER_TEMP vcpkg
-          git clone --depth 1 https://github.com/microsoft/vcpkg $vcpkgRoot
-          & (Join-Path $vcpkgRoot bootstrap-vcpkg.bat)
+          if (-not (Test-Path (Join-Path $vcpkgRoot vcpkg.exe))) {
+            git clone --depth 1 https://github.com/microsoft/vcpkg $vcpkgRoot
+            & (Join-Path $vcpkgRoot bootstrap-vcpkg.bat)
+          }
           & (Join-Path $vcpkgRoot vcpkg.exe) install opencv4:x64-windows
           "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VCPKG_BINARY_SOURCES=$env:VCPKG_BINARY_SOURCES" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
