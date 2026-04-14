@@ -6,3 +6,9 @@ updates:
       interval: "weekly"
     exclude-paths:
       - "docs-site/**"
+  - package-ecosystem: "npm"
+    directory: "/docs-site"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
