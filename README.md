@@ -12,6 +12,8 @@ Actiona 4 is still considered **unstable**. Expect bugs, incomplete features, an
 
 This is a Rust rewrite of the tool. See the [previous version (Actiona 3)](https://github.com/Jmgr/actiona).
 
+Join the [Discord server](https://discord.gg/ubTjJu3dVZ) for support, discussion, and development updates.
+
 ## Examples
 
 **Visual automation** — find a UI element by its image and click it:
