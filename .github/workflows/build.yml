@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -30,7 +30,7 @@ jobs:
 
       - name: Restore cargo format tools cache
         id: cache-format-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -62,7 +62,7 @@ jobs:
 
       - name: Save cargo format tools cache
         if: ${{ success() && steps.cache-format-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -82,17 +82,19 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: linux-dev
 
       - name: Restore cargo tools cache
         id: cache-linux-lint-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -113,7 +115,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-linux-lint-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -133,17 +135,19 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: windows-dev
 
       - name: Restore cargo tools cache
         id: cache-windows-lint-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
@@ -162,7 +166,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-windows-lint-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
@@ -185,7 +189,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -195,7 +199,7 @@ jobs:
 
       - name: Restore cargo tools cache
         id: cache-doc-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -216,7 +220,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-doc-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -236,13 +240,15 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: linux-dev
 
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
@@ -261,13 +267,15 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: windows-dev
 
       - name: Setup vcpkg with OpenCV
         uses: ./.github/actions/setup-vcpkg
@@ -284,17 +292,19 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: linux-release
 
       - name: Restore cargo tools cache
         id: cache-appimage-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -322,7 +332,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-appimage-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -345,17 +355,19 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: windows-release
 
       - name: Restore cargo tools cache
         id: cache-windows-archive-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
@@ -382,7 +394,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-windows-archive-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
@@ -406,7 +418,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -416,10 +428,12 @@ jobs:
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: windows-release
 
       - name: Restore cargo tools cache
         id: cache-windows-installer-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
@@ -446,7 +460,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-windows-installer-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe

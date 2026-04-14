@@ -19,22 +19,24 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: lts/*
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: linux-release
 
       - name: Restore cargo tools cache
         id: cache-linux-symbols-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -62,7 +64,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-linux-symbols-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.cargo/bin/cargo-make
@@ -98,22 +100,24 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: lts/*
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: windows-release
 
       - name: Restore cargo tools cache
         id: cache-windows-symbols-tools
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe
@@ -140,7 +144,7 @@ jobs:
 
       - name: Save cargo tools cache
         if: ${{ success() && steps.cache-windows-symbols-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~\.cargo\bin\cargo-make.exe

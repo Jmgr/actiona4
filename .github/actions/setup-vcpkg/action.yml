@@ -12,7 +12,7 @@ runs:
   steps:
     - name: Restore vcpkg artifacts cache
       id: cache-vcpkg
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ${{ runner.temp }}\vcpkg
@@ -59,7 +59,7 @@ runs:
 
     - name: Save vcpkg artifacts cache
       if: ${{ success() && steps.cache-vcpkg.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           ${{ runner.temp }}\vcpkg
