@@ -11,6 +11,7 @@ license.workspace = true
 installer-tools = { path = "../installer-tools" }
 
 [dependencies]
+chrono.workspace = true
 clap.workspace = true
 color-eyre.workspace = true
 reqwest.workspace = true
