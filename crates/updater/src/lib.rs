@@ -24,7 +24,6 @@ use tracing::{info, warn};
 use versions::SemVer;
 
 const UPDATER_URL: &str = "https://updates.actiona.app/v1";
-const MAX_ERROR_RESPONSE_LEN: usize = 128;
 
 #[cfg(not(windows))]
 #[derive(Clone, Copy, Debug, Display, Serialize)]
@@ -273,23 +272,11 @@ impl Updater {
         let body = response.text().await?;
 
         if !status.is_success() {
-            let response_body = summarize_response_body(&body).unwrap_or(body);
-
-            return Err(eyre!(
-                "update server returned HTTP {status}\nresponse body:\n{response_body}"
-            ));
+            return Err(eyre!("update server returned HTTP {status}"));
         }
 
-        let response = serde_json::from_str::<UpdateResponse>(&body).map_err(|error| {
-            summarize_response_body(&body).map_or_else(
-                || eyre!("error decoding update response (HTTP {status}): {error}"),
-                |body| {
-                    eyre!(
-                        "error decoding update response (HTTP {status}): {error}\nresponse body:\n{body}"
-                    )
-                },
-            )
-        })?;
+        let response = serde_json::from_str::<UpdateResponse>(&body)
+            .map_err(|error| eyre!("error decoding update response (HTTP {status}): {error}"))?;
 
         Ok(response)
     }
@@ -314,24 +301,6 @@ where
         _ = cancellation_token.cancelled() => Err(eyre!("cancelled")),
         value = future => Ok(value),
     }
-}
-
-fn summarize_response_body(body: &str) -> Option<String> {
-    let body = body.trim();
-    if body.is_empty() {
-        return None;
-    }
-
-    let mut summary = String::new();
-    for (index, character) in body.chars().enumerate() {
-        if index >= MAX_ERROR_RESPONSE_LEN {
-            summary.push_str("\n... (response truncated)");
-            break;
-        }
-        summary.push(character);
-    }
-
-    Some(summary)
 }
 
 #[cfg(test)]
