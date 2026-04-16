@@ -129,13 +129,16 @@ pub async fn run_play(
 
     let progress_handle = runtime.task_tracker().spawn(async move {
         while let Some(p) = progress_rx.recv().await {
-            if total > 0 {
-                let pct = p.events_done * 100 / total;
-                eprint!(
-                    "\rPlaying: {}/{} events ({}%)   ",
-                    p.events_done, total, pct
-                );
-            }
+            let pct = if total == 0 {
+                0
+            } else {
+                u64::try_from((u128::from(p.events_done) * 100) / u128::from(total))
+                    .unwrap_or(100)
+            };
+            eprint!(
+                "\rPlaying: {}/{} events ({}%)   ",
+                p.events_done, total, pct
+            );
         }
         println!();
     });

@@ -456,7 +456,8 @@ impl TextReplacements {
     }
 
     fn stop_listener_if_running(&self) {
-        if let Some(cancellation_token) = self.listener_cancellation_token.lock().take() {
+        let cancellation_token = self.listener_cancellation_token.lock().take();
+        if let Some(cancellation_token) = cancellation_token {
             cancellation_token.cancel();
         }
     }

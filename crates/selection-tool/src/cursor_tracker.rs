@@ -81,10 +81,7 @@ pub fn spawn_cursor_tracker(
             return;
         }
 
-        loop {
-            let Ok(event) = connection.wait_for_event() else {
-                break;
-            };
+        while let Ok(event) = connection.wait_for_event() {
             match event {
                 Event::MotionNotify(motion_event) => {
                     let x_position = motion_event.root_x as f64 - f64::from(desktop_origin.x);

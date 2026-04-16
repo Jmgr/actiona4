@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, io::Write};
+use std::{cmp::Reverse, collections::HashMap, fs, io::Write};
 
 use color_eyre::Result;
 use convert_case::{Case, Casing};
@@ -417,7 +417,7 @@ fn output_methods(
     let mut methods = methods.to_vec();
 
     // Make sure constructors are displayed first
-    methods.sort_by(|a, b| b.is_constructor.cmp(&a.is_constructor));
+    methods.sort_by_key(|method| Reverse(method.is_constructor));
 
     for method in &methods {
         for overload in &method.overloads {
