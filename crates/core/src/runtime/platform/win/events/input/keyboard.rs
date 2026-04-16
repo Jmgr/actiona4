@@ -707,8 +707,9 @@ fn get_keyboard_layout() -> HKL {
 
 #[cfg(test)]
 mod tests {
-    use super::{KeyId, key_id_from_mapped_scan_code};
     use windows::Win32::UI::Input::KeyboardAndMouse::VK_RETURN;
+
+    use super::{KeyId, key_id_from_mapped_scan_code};
 
     #[test]
     fn mapped_scan_code_preserves_main_enter_shape() {

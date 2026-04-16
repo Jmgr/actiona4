@@ -37,6 +37,10 @@ pub struct OnButtonOptions {
 pub struct ClickTriggers {
     triggers: Arc<Mutex<TriggerList>>,
     runtime: Arc<Runtime>,
+    macro_player: Arc<MacroPlayer>,
+    task_tracker: TaskTracker,
+    cancellation_token: CancellationToken,
+    listener_cancellation_token: Arc<Mutex<Option<CancellationToken>>>,
 }
 
 impl fmt::Debug for ClickTriggers {
@@ -52,38 +56,14 @@ impl ClickTriggers {
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
-        let triggers: Arc<Mutex<TriggerList>> = Arc::new(Mutex::new(Vec::new()));
-
-        let local_runtime = runtime.clone();
-        let local_macro_player = macro_player;
-        let local_triggers = triggers.clone();
-
-        task_tracker.spawn(async move {
-            let guard = local_runtime.mouse_buttons();
-            let mut receiver = guard.subscribe();
-            let mut pressed_buttons: HashSet<Button> = HashSet::new();
-            // Track which handle IDs have already fired this press cycle.
-            let mut fired: HashSet<(Button, HandleId)> = HashSet::new();
-
-            loop {
-                let Ok(event) = cancel_on(&cancellation_token, receiver.recv()).await? else {
-                    break;
-                };
-
-                Self::on_button(
-                    event,
-                    &mut pressed_buttons,
-                    &mut fired,
-                    &local_triggers,
-                    &local_macro_player,
-                )
-                .await?;
-            }
-
-            Result::<()>::Ok(())
-        });
-
-        Self { triggers, runtime }
+        Self {
+            triggers: Arc::new(Mutex::new(Vec::new())),
+            runtime,
+            macro_player,
+            task_tracker,
+            cancellation_token,
+            listener_cancellation_token: Arc::new(Mutex::new(None)),
+        }
     }
 
     async fn on_button(
@@ -128,6 +108,52 @@ impl ClickTriggers {
         Ok(())
     }
 
+    fn ensure_listener_started(&self) {
+        let mut listener_cancellation_token = self.listener_cancellation_token.lock();
+        if listener_cancellation_token.is_some() {
+            return;
+        }
+
+        let worker_cancellation_token = self.cancellation_token.child_token();
+        *listener_cancellation_token = Some(worker_cancellation_token.clone());
+        drop(listener_cancellation_token);
+
+        let local_runtime = self.runtime.clone();
+        let local_triggers = self.triggers.clone();
+        let local_macro_player = self.macro_player.clone();
+        self.task_tracker.spawn(async move {
+            let guard = local_runtime.mouse_buttons();
+            let mut receiver = guard.subscribe();
+            let mut pressed_buttons: HashSet<Button> = HashSet::new();
+            // Track which handle IDs have already fired this press cycle.
+            let mut fired: HashSet<(Button, HandleId)> = HashSet::new();
+
+            loop {
+                let event = match cancel_on(&worker_cancellation_token, receiver.recv()).await {
+                    Ok(Ok(event)) => event,
+                    Ok(Err(_)) | Err(_) => break,
+                };
+
+                Self::on_button(
+                    event,
+                    &mut pressed_buttons,
+                    &mut fired,
+                    &local_triggers,
+                    &local_macro_player,
+                )
+                .await?;
+            }
+
+            Result::<()>::Ok(())
+        });
+    }
+
+    fn stop_listener_if_running(&self) {
+        if let Some(cancellation_token) = self.listener_cancellation_token.lock().take() {
+            cancellation_token.cancel();
+        }
+    }
+
     pub fn add(
         &self,
         id: HandleId,
@@ -135,39 +161,53 @@ impl ClickTriggers {
         action: TriggerAction,
         options: OnButtonOptions,
     ) {
-        let mut triggers = self.triggers.lock();
-        let was_empty = triggers.is_empty();
+        let was_empty = {
+            let mut triggers = self.triggers.lock();
+            let was_empty = triggers.is_empty();
 
-        triggers.push(ClickHandler {
-            id,
-            button,
-            action,
-            options,
-        });
+            triggers.push(ClickHandler {
+                id,
+                button,
+                action,
+                options,
+            });
+
+            was_empty
+        };
 
         if was_empty {
+            self.ensure_listener_started();
             self.runtime.increase_background_tasks_counter();
         }
     }
 
     pub fn remove(&self, id: HandleId) {
-        let mut triggers = self.triggers.lock();
-        let was_empty = triggers.is_empty();
+        let became_empty = {
+            let mut triggers = self.triggers.lock();
+            let was_empty = triggers.is_empty();
 
-        triggers.retain(|handler| handler.id != id);
+            triggers.retain(|handler| handler.id != id);
 
-        if !was_empty && triggers.is_empty() {
+            !was_empty && triggers.is_empty()
+        };
+
+        if became_empty {
+            self.stop_listener_if_running();
             self.runtime.decrease_background_tasks_counter();
         }
     }
 
     pub fn clear(&self) {
-        let mut triggers = self.triggers.lock();
-        if triggers.is_empty() {
-            return;
+        {
+            let mut triggers = self.triggers.lock();
+            if triggers.is_empty() {
+                return;
+            }
+
+            triggers.clear();
         }
 
-        triggers.clear();
+        self.stop_listener_if_running();
         self.runtime.decrease_background_tasks_counter();
     }
 }

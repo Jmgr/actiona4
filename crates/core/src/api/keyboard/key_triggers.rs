@@ -41,6 +41,10 @@ pub struct KeyTriggers {
     /// Map from sorted normalized key list to a list of handlers.
     triggers: Arc<Mutex<TriggerMap>>,
     runtime: Arc<Runtime>,
+    macro_player: Arc<MacroPlayer>,
+    task_tracker: TaskTracker,
+    cancellation_token: CancellationToken,
+    listener_cancellation_token: Arc<Mutex<Option<CancellationToken>>>,
 }
 
 impl fmt::Debug for KeyTriggers {
@@ -56,36 +60,14 @@ impl KeyTriggers {
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
-        let triggers: Arc<Mutex<TriggerMap>> = Arc::new(Mutex::new(HashMap::new()));
-
-        let local_runtime = runtime.clone();
-        let local_triggers = triggers.clone();
-
-        task_tracker.spawn(async move {
-            let guard = local_runtime.keyboard_keys();
-            let mut receiver = guard.subscribe();
-            let mut pressed_keys: HashSet<Key> = HashSet::new();
-            // Track which (trigger, handle_id) pairs have already fired this press cycle.
-            let mut fired: HashSet<(Vec<Key>, HandleId)> = HashSet::new();
-
-            loop {
-                let Ok(event) = cancel_on(&cancellation_token, receiver.recv()).await? else {
-                    break;
-                };
-                Self::on_key(
-                    event,
-                    &mut pressed_keys,
-                    &mut fired,
-                    &local_triggers,
-                    &macro_player,
-                )
-                .await?;
-            }
-
-            Result::<()>::Ok(())
-        });
-
-        Self { triggers, runtime }
+        Self {
+            triggers: Arc::new(Mutex::new(HashMap::new())),
+            runtime,
+            macro_player,
+            task_tracker,
+            cancellation_token,
+            listener_cancellation_token: Arc::new(Mutex::new(None)),
+        }
     }
 
     async fn on_key(
@@ -144,45 +126,108 @@ impl KeyTriggers {
         Ok(())
     }
 
-    pub fn add(&self, id: HandleId, keys: Vec<Key>, action: TriggerAction, options: OnKeysOptions) {
-        let mut triggers = self.triggers.lock();
-        let was_empty = triggers.is_empty();
+    fn ensure_listener_started(&self) {
+        let mut listener_cancellation_token = self.listener_cancellation_token.lock();
+        if listener_cancellation_token.is_some() {
+            return;
+        }
 
-        let mut normalized: Vec<Key> = keys.iter().map(|key| key.normalize()).collect();
-        normalized.sort_by_cached_key(|key| format!("{key:?}"));
-        normalized.dedup();
+        let worker_cancellation_token = self.cancellation_token.child_token();
+        *listener_cancellation_token = Some(worker_cancellation_token.clone());
+        drop(listener_cancellation_token);
 
-        triggers.entry(normalized).or_default().push(KeyHandler {
-            id,
-            action,
-            options,
+        let local_runtime = self.runtime.clone();
+        let local_triggers = self.triggers.clone();
+        let local_macro_player = self.macro_player.clone();
+        self.task_tracker.spawn(async move {
+            let guard = local_runtime.keyboard_keys();
+            let mut receiver = guard.subscribe();
+            let mut pressed_keys: HashSet<Key> = HashSet::new();
+            // Track which (trigger, handle_id) pairs have already fired this press cycle.
+            let mut fired: HashSet<(Vec<Key>, HandleId)> = HashSet::new();
+
+            loop {
+                let event = match cancel_on(&worker_cancellation_token, receiver.recv()).await {
+                    Ok(Ok(event)) => event,
+                    Ok(Err(_)) | Err(_) => break,
+                };
+
+                Self::on_key(
+                    event,
+                    &mut pressed_keys,
+                    &mut fired,
+                    &local_triggers,
+                    &local_macro_player,
+                )
+                .await?;
+            }
+
+            Result::<()>::Ok(())
         });
+    }
+
+    fn stop_listener_if_running(&self) {
+        if let Some(cancellation_token) = self.listener_cancellation_token.lock().take() {
+            cancellation_token.cancel();
+        }
+    }
+
+    pub fn add(&self, id: HandleId, keys: Vec<Key>, action: TriggerAction, options: OnKeysOptions) {
+        let was_empty = {
+            let mut triggers = self.triggers.lock();
+            let was_empty = triggers.is_empty();
+
+            let mut normalized: Vec<Key> = keys.iter().map(|key| key.normalize()).collect();
+            normalized.sort_by_cached_key(|key| format!("{key:?}"));
+            normalized.dedup();
+
+            triggers.entry(normalized).or_default().push(KeyHandler {
+                id,
+                action,
+                options,
+            });
+
+            was_empty
+        };
 
         if was_empty {
+            self.ensure_listener_started();
             self.runtime.increase_background_tasks_counter();
         }
     }
 
     pub fn remove(&self, id: HandleId) {
-        let mut triggers = self.triggers.lock();
-        let was_empty = triggers.is_empty();
+        let became_empty = {
+            let mut triggers = self.triggers.lock();
+            let was_empty = triggers.is_empty();
 
-        triggers.retain(|_, handlers| {
-            handlers.retain(|handler| handler.id != id);
-            !handlers.is_empty()
-        });
+            triggers.retain(|_, handlers| {
+                handlers.retain(|handler| handler.id != id);
+                !handlers.is_empty()
+            });
 
-        if !was_empty && triggers.is_empty() {
+            !was_empty && triggers.is_empty()
+        };
+
+        if became_empty {
+            self.stop_listener_if_running();
             self.runtime.decrease_background_tasks_counter();
         }
     }
 
     pub fn clear(&self) {
-        let mut triggers = self.triggers.lock();
-        if triggers.is_empty() {
-            return;
+        let had_triggers = {
+            let mut triggers = self.triggers.lock();
+            if triggers.is_empty() {
+                return;
+            }
+            triggers.clear();
+            true
+        };
+
+        if had_triggers {
+            self.stop_listener_if_running();
         }
-        triggers.clear();
         self.runtime.decrease_background_tasks_counter();
     }
 }

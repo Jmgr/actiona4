@@ -92,6 +92,10 @@ pub struct TextReplacements {
     registry: Arc<Mutex<Registry>>,
     max_graphemes: Arc<AtomicUsize>,
     runtime: Arc<Runtime>,
+    macro_player: Arc<MacroPlayer>,
+    task_tracker: TaskTracker,
+    cancellation_token: CancellationToken,
+    listener_cancellation_token: Arc<Mutex<Option<CancellationToken>>>,
 }
 
 impl TextReplacements {
@@ -101,55 +105,14 @@ impl TextReplacements {
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
     ) -> Self {
-        let registry: Arc<Mutex<Registry>> = Arc::new(Mutex::new(IndexMap::default()));
-        let max_graphemes = Arc::new(AtomicUsize::new(0));
-
-        let local_runtime = runtime.clone();
-        let local_registry = registry.clone();
-        let local_max_graphemes = max_graphemes.clone();
-
-        task_tracker.spawn(async move {
-            let text_guard = local_runtime.keyboard_text();
-            let mut text_receiver = text_guard.subscribe();
-            let keys_guard = local_runtime.keyboard_keys();
-            let mut keys_receiver = keys_guard.subscribe();
-
-            let mut buffer = StringRingBuffer::default();
-            let mut pending_replacement = None;
-
-            loop {
-                select! {
-                    _ = cancellation_token.cancelled() => { break; }
-                    text = text_receiver.recv() => {
-                        let Ok(text) = text else { break; };
-                        Self::on_text(
-                            text,
-                            &mut buffer,
-                            local_max_graphemes.clone(),
-                            local_registry.clone(),
-                            &mut pending_replacement,
-                        ).await?;
-                    },
-                    key = keys_receiver.recv() => {
-                        let Ok(key) = key else { break; };
-                        Self::on_key(
-                            key,
-                            &mut buffer,
-                            local_runtime.clone(),
-                            macro_player.clone(),
-                            &mut pending_replacement,
-                        ).await?;
-                    },
-                }
-            }
-
-            Result::<()>::Ok(())
-        });
-
         Self {
-            registry,
-            max_graphemes,
+            registry: Arc::new(Mutex::new(IndexMap::default())),
+            max_graphemes: Arc::new(AtomicUsize::new(0)),
             runtime,
+            macro_player,
+            task_tracker,
+            cancellation_token,
+            listener_cancellation_token: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -439,6 +402,65 @@ impl TextReplacements {
         Ok(())
     }
 
+    fn ensure_listener_started(&self) {
+        let mut listener_cancellation_token = self.listener_cancellation_token.lock();
+        if listener_cancellation_token.is_some() {
+            return;
+        }
+
+        let worker_cancellation_token = self.cancellation_token.child_token();
+        *listener_cancellation_token = Some(worker_cancellation_token.clone());
+        drop(listener_cancellation_token);
+
+        let local_runtime = self.runtime.clone();
+        let local_registry = self.registry.clone();
+        let local_max_graphemes = self.max_graphemes.clone();
+        let local_macro_player = self.macro_player.clone();
+        self.task_tracker.spawn(async move {
+            let text_guard = local_runtime.keyboard_text();
+            let mut text_receiver = text_guard.subscribe();
+            let keys_guard = local_runtime.keyboard_keys();
+            let mut keys_receiver = keys_guard.subscribe();
+
+            let mut buffer = StringRingBuffer::default();
+            let mut pending_replacement = None;
+
+            loop {
+                select! {
+                    _ = worker_cancellation_token.cancelled() => { break; }
+                    text = text_receiver.recv() => {
+                        let Ok(text) = text else { break; };
+                        Self::on_text(
+                            text,
+                            &mut buffer,
+                            local_max_graphemes.clone(),
+                            local_registry.clone(),
+                            &mut pending_replacement,
+                        ).await?;
+                    },
+                    key = keys_receiver.recv() => {
+                        let Ok(key) = key else { break; };
+                        Self::on_key(
+                            key,
+                            &mut buffer,
+                            local_runtime.clone(),
+                            local_macro_player.clone(),
+                            &mut pending_replacement,
+                        ).await?;
+                    },
+                }
+            }
+
+            Result::<()>::Ok(())
+        });
+    }
+
+    fn stop_listener_if_running(&self) {
+        if let Some(cancellation_token) = self.listener_cancellation_token.lock().take() {
+            cancellation_token.cancel();
+        }
+    }
+
     pub fn add(
         &self,
         id: HandleId,
@@ -446,63 +468,77 @@ impl TextReplacements {
         replacement: Replacement,
         options: OnTextOptions,
     ) {
-        let mut reg = self.registry.lock();
-        let was_empty = reg.is_empty();
+        let was_empty = {
+            let mut reg = self.registry.lock();
+            let was_empty = reg.is_empty();
 
-        let is_new_trigger = !reg.contains_key(trigger);
-        reg.entry(trigger.to_string())
-            .or_default()
-            .push(TextHandler {
-                id,
-                replacement,
-                options,
-            });
+            let is_new_trigger = !reg.contains_key(trigger);
+            reg.entry(trigger.to_string())
+                .or_default()
+                .push(TextHandler {
+                    id,
+                    replacement,
+                    options,
+                });
 
-        // Keep the IndexMap sorted longest-first only when a new trigger key was added.
-        if is_new_trigger {
-            reg.sort_by(|a, _, b, _| b.graphemes(true).count().cmp(&a.graphemes(true).count()));
-        }
+            // Keep the IndexMap sorted longest-first only when a new trigger key was added.
+            if is_new_trigger {
+                reg.sort_by(|a, _, b, _| b.graphemes(true).count().cmp(&a.graphemes(true).count()));
+            }
 
-        let max = reg
-            .keys()
-            .map(|key| key.graphemes(true).count())
-            .max()
-            .unwrap_or(0);
-        self.max_graphemes.store(max, Ordering::Relaxed);
+            let max = reg
+                .keys()
+                .map(|key| key.graphemes(true).count())
+                .max()
+                .unwrap_or(0);
+            self.max_graphemes.store(max, Ordering::Relaxed);
+
+            was_empty
+        };
 
         if was_empty {
+            self.ensure_listener_started();
             self.runtime.increase_background_tasks_counter();
         }
     }
 
     pub fn remove(&self, id: HandleId) {
-        let mut reg = self.registry.lock();
-        let was_empty = reg.is_empty();
+        let became_empty = {
+            let mut reg = self.registry.lock();
+            let was_empty = reg.is_empty();
 
-        reg.retain(|_, handlers| {
-            handlers.retain(|h| h.id != id);
-            !handlers.is_empty()
-        });
+            reg.retain(|_, handlers| {
+                handlers.retain(|h| h.id != id);
+                !handlers.is_empty()
+            });
 
-        let max = reg
-            .keys()
-            .map(|key| key.graphemes(true).count())
-            .max()
-            .unwrap_or(0);
-        self.max_graphemes.store(max, Ordering::Relaxed);
+            let max = reg
+                .keys()
+                .map(|key| key.graphemes(true).count())
+                .max()
+                .unwrap_or(0);
+            self.max_graphemes.store(max, Ordering::Relaxed);
 
-        if !was_empty && reg.is_empty() {
+            !was_empty && reg.is_empty()
+        };
+
+        if became_empty {
+            self.stop_listener_if_running();
             self.runtime.decrease_background_tasks_counter();
         }
     }
 
     pub fn clear(&self) {
-        let mut reg = self.registry.lock();
-        if reg.is_empty() {
-            return;
+        {
+            let mut reg = self.registry.lock();
+            if reg.is_empty() {
+                return;
+            }
+            reg.clear();
+            self.max_graphemes.store(0, Ordering::Relaxed);
         }
-        reg.clear();
-        self.max_graphemes.store(0, Ordering::Relaxed);
+
+        self.stop_listener_if_running();
         self.runtime.decrease_background_tasks_counter();
     }
 }
