@@ -132,8 +132,7 @@ pub async fn run_play(
             let pct = if total == 0 {
                 0
             } else {
-                u64::try_from((u128::from(p.events_done) * 100) / u128::from(total))
-                    .unwrap_or(100)
+                u64::try_from((u128::from(p.events_done) * 100) / u128::from(total)).unwrap_or(100)
             };
             eprint!(
                 "\rPlaying: {}/{} events ({}%)   ",
