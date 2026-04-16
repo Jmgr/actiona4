@@ -271,6 +271,7 @@ lto = true
 codegen-units = 1
 debug = true               # needed for dump_syms to produce useful symbols
 split-debuginfo = "packed" # keeps debug info in a separate .dwp on Linux
+panic = "abort"
 
 [profile.dev]
 lto = false
