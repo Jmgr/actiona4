@@ -14,36 +14,37 @@ use enigo::Key;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::warn;
+use tracing::debug;
 use windows::Win32::{
     Foundation::{LPARAM, LRESULT, WPARAM},
     UI::{
         Input::KeyboardAndMouse::{
-            GetKeyNameTextW, GetKeyState, GetKeyboardLayout, HKL, ToUnicodeEx, VIRTUAL_KEY,
-            VK__none_, VK_0, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9, VK_A,
-            VK_ABNT_C1, VK_ABNT_C2, VK_ACCEPT, VK_ADD, VK_APPS, VK_ATTN, VK_B, VK_BACK,
-            VK_BROWSER_BACK, VK_BROWSER_FAVORITES, VK_BROWSER_FORWARD, VK_BROWSER_HOME,
-            VK_BROWSER_REFRESH, VK_BROWSER_SEARCH, VK_BROWSER_STOP, VK_C, VK_CANCEL, VK_CAPITAL,
-            VK_CLEAR, VK_CONTROL, VK_CONVERT, VK_CRSEL, VK_D, VK_DECIMAL, VK_DELETE, VK_DIVIDE,
-            VK_DOWN, VK_E, VK_END, VK_EREOF, VK_ESCAPE, VK_EXECUTE, VK_EXSEL, VK_F, VK_F1, VK_F2,
-            VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9, VK_F10, VK_F11, VK_F12, VK_F13,
-            VK_F14, VK_F15, VK_F16, VK_F17, VK_F18, VK_F19, VK_F20, VK_F21, VK_F22, VK_F23, VK_F24,
-            VK_FINAL, VK_G, VK_H, VK_HELP, VK_HOME, VK_I, VK_ICO_00, VK_ICO_CLEAR, VK_ICO_HELP,
-            VK_IME_OFF, VK_IME_ON, VK_INSERT, VK_J, VK_K, VK_L, VK_LAUNCH_APP1, VK_LAUNCH_APP2,
-            VK_LAUNCH_MAIL, VK_LAUNCH_MEDIA_SELECT, VK_LBUTTON, VK_LCONTROL, VK_LEFT, VK_LMENU,
-            VK_LSHIFT, VK_LWIN, VK_M, VK_MBUTTON, VK_MEDIA_NEXT_TRACK, VK_MEDIA_PLAY_PAUSE,
-            VK_MEDIA_PREV_TRACK, VK_MEDIA_STOP, VK_MENU, VK_MODECHANGE, VK_MULTIPLY, VK_N,
-            VK_NAVIGATION_ACCEPT, VK_NAVIGATION_CANCEL, VK_NAVIGATION_DOWN, VK_NAVIGATION_LEFT,
-            VK_NAVIGATION_MENU, VK_NAVIGATION_RIGHT, VK_NAVIGATION_UP, VK_NAVIGATION_VIEW, VK_NEXT,
-            VK_NONAME, VK_NONCONVERT, VK_NUMLOCK, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3,
-            VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9, VK_O, VK_OEM_1,
-            VK_OEM_2, VK_OEM_3, VK_OEM_4, VK_OEM_5, VK_OEM_6, VK_OEM_7, VK_OEM_8, VK_OEM_102,
-            VK_OEM_COMMA, VK_OEM_MINUS, VK_OEM_PERIOD, VK_OEM_PLUS, VK_P, VK_PA1, VK_PACKET,
-            VK_PAUSE, VK_PLAY, VK_PRINT, VK_PRIOR, VK_PROCESSKEY, VK_Q, VK_R, VK_RBUTTON,
-            VK_RCONTROL, VK_RETURN, VK_RIGHT, VK_RMENU, VK_RSHIFT, VK_RWIN, VK_S, VK_SCROLL,
-            VK_SELECT, VK_SEPARATOR, VK_SHIFT, VK_SLEEP, VK_SNAPSHOT, VK_SPACE, VK_SUBTRACT, VK_T,
-            VK_TAB, VK_U, VK_UP, VK_V, VK_VOLUME_DOWN, VK_VOLUME_MUTE, VK_VOLUME_UP, VK_W, VK_X,
-            VK_XBUTTON1, VK_XBUTTON2, VK_Y, VK_Z, VK_ZOOM,
+            GetAsyncKeyState, GetKeyNameTextW, GetKeyState, GetKeyboardLayout, HKL,
+            MAPVK_VK_TO_VSC_EX, MapVirtualKeyW, ToUnicodeEx, VIRTUAL_KEY, VK__none_, VK_0, VK_1,
+            VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9, VK_A, VK_ABNT_C1, VK_ABNT_C2,
+            VK_ACCEPT, VK_ADD, VK_APPS, VK_ATTN, VK_B, VK_BACK, VK_BROWSER_BACK,
+            VK_BROWSER_FAVORITES, VK_BROWSER_FORWARD, VK_BROWSER_HOME, VK_BROWSER_REFRESH,
+            VK_BROWSER_SEARCH, VK_BROWSER_STOP, VK_C, VK_CANCEL, VK_CAPITAL, VK_CLEAR, VK_CONTROL,
+            VK_CONVERT, VK_CRSEL, VK_D, VK_DECIMAL, VK_DELETE, VK_DIVIDE, VK_DOWN, VK_E, VK_END,
+            VK_EREOF, VK_ESCAPE, VK_EXECUTE, VK_EXSEL, VK_F, VK_F1, VK_F2, VK_F3, VK_F4, VK_F5,
+            VK_F6, VK_F7, VK_F8, VK_F9, VK_F10, VK_F11, VK_F12, VK_F13, VK_F14, VK_F15, VK_F16,
+            VK_F17, VK_F18, VK_F19, VK_F20, VK_F21, VK_F22, VK_F23, VK_F24, VK_FINAL, VK_G, VK_H,
+            VK_HELP, VK_HOME, VK_I, VK_ICO_00, VK_ICO_CLEAR, VK_ICO_HELP, VK_IME_OFF, VK_IME_ON,
+            VK_INSERT, VK_J, VK_K, VK_L, VK_LAUNCH_APP1, VK_LAUNCH_APP2, VK_LAUNCH_MAIL,
+            VK_LAUNCH_MEDIA_SELECT, VK_LBUTTON, VK_LCONTROL, VK_LEFT, VK_LMENU, VK_LSHIFT, VK_LWIN,
+            VK_M, VK_MBUTTON, VK_MEDIA_NEXT_TRACK, VK_MEDIA_PLAY_PAUSE, VK_MEDIA_PREV_TRACK,
+            VK_MEDIA_STOP, VK_MENU, VK_MODECHANGE, VK_MULTIPLY, VK_N, VK_NAVIGATION_ACCEPT,
+            VK_NAVIGATION_CANCEL, VK_NAVIGATION_DOWN, VK_NAVIGATION_LEFT, VK_NAVIGATION_MENU,
+            VK_NAVIGATION_RIGHT, VK_NAVIGATION_UP, VK_NAVIGATION_VIEW, VK_NEXT, VK_NONAME,
+            VK_NONCONVERT, VK_NUMLOCK, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4,
+            VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9, VK_O, VK_OEM_1, VK_OEM_2,
+            VK_OEM_3, VK_OEM_4, VK_OEM_5, VK_OEM_6, VK_OEM_7, VK_OEM_8, VK_OEM_102, VK_OEM_COMMA,
+            VK_OEM_MINUS, VK_OEM_PERIOD, VK_OEM_PLUS, VK_P, VK_PA1, VK_PACKET, VK_PAUSE, VK_PLAY,
+            VK_PRINT, VK_PRIOR, VK_PROCESSKEY, VK_Q, VK_R, VK_RBUTTON, VK_RCONTROL, VK_RETURN,
+            VK_RIGHT, VK_RMENU, VK_RSHIFT, VK_RWIN, VK_S, VK_SCROLL, VK_SELECT, VK_SEPARATOR,
+            VK_SHIFT, VK_SLEEP, VK_SNAPSHOT, VK_SPACE, VK_SUBTRACT, VK_T, VK_TAB, VK_U, VK_UP,
+            VK_V, VK_VOLUME_DOWN, VK_VOLUME_MUTE, VK_VOLUME_UP, VK_W, VK_X, VK_XBUTTON1,
+            VK_XBUTTON2, VK_Y, VK_Z, VK_ZOOM,
         },
         WindowsAndMessaging::{
             CallNextHookEx, GetForegroundWindow, GetWindowThreadProcessId, HC_ACTION, HOOKPROC,
@@ -142,6 +143,14 @@ impl KeyboardInputDispatcher {
         self.text.subscribe()
     }
 
+    fn sync_pressed_keys_with_current_state(&self) {
+        *self.pressed_keys.lock() = current_pressed_keys();
+    }
+
+    fn clear_pressed_keys(&self) {
+        self.pressed_keys.lock().clear();
+    }
+
     fn check_is_repeat(&self, key_id: &KeyId, is_pressed: bool, is_injected: bool) -> bool {
         // VK_PACKET events are synthesized Unicode characters (from SendInput with
         // KEYEVENTF_UNICODE). They don't represent physical keys and their
@@ -160,7 +169,7 @@ impl KeyboardInputDispatcher {
                 return true;
             }
         } else if !pressed_keys.remove(key_id) {
-            warn!("releasing a non-pressed key: {key_id}");
+            debug!("ignoring release for untracked key: {key_id}");
         }
 
         false
@@ -219,12 +228,14 @@ impl KeyboardInputDispatcher {
 
     async fn on_start(&self) {
         if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
+            self.sync_pressed_keys_with_current_state();
             self.message_pump.send_message(MSG_START);
         }
     }
 
     async fn on_stop(&self) {
         if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
+            self.clear_pressed_keys();
             self.message_pump.send_message(MSG_STOP);
         }
     }
@@ -296,6 +307,50 @@ unsafe extern "system" fn low_level_keyboard_proc(
     dispatcher.event_received(&keyboard_struct, w_param.0 as u32);
 
     unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
+}
+
+fn current_pressed_keys() -> HashSet<KeyId> {
+    (0u16..=255)
+        .filter(|&vk_code| !skip_repeat_tracking_virtual_key(vk_code))
+        .filter_map(current_pressed_key_id)
+        .collect()
+}
+
+fn current_pressed_key_id(vk_code: u16) -> Option<KeyId> {
+    if !is_virtual_key_pressed(VIRTUAL_KEY(vk_code)) {
+        return None;
+    }
+
+    let mapped_scan_code = unsafe { MapVirtualKeyW(u32::from(vk_code), MAPVK_VK_TO_VSC_EX) };
+    key_id_from_mapped_scan_code(u32::from(vk_code), mapped_scan_code)
+}
+
+fn key_id_from_mapped_scan_code(vk_code: u32, mapped_scan_code: u32) -> Option<KeyId> {
+    let scan_code = mapped_scan_code & 0xff;
+    (scan_code != 0).then_some(KeyId::new(scan_code, vk_code, mapped_scan_code > 0xff))
+}
+
+#[allow(unsafe_code)]
+fn is_virtual_key_pressed(key: VIRTUAL_KEY) -> bool {
+    #[allow(clippy::as_conversions)]
+    unsafe {
+        GetAsyncKeyState(i32::from(key.0)) as u16 & 0x8000u16 != 0
+    }
+}
+
+const fn skip_repeat_tracking_virtual_key(virtual_key: u16) -> bool {
+    matches!(
+        VIRTUAL_KEY(virtual_key),
+        VK_SHIFT
+            | VK_CONTROL
+            | VK_MENU
+            | VK_LBUTTON
+            | VK_RBUTTON
+            | VK_MBUTTON
+            | VK_XBUTTON1
+            | VK_XBUTTON2
+            | VK_PACKET
+    )
 }
 
 fn key_name_from_llhook(scan_code: u32, is_extended: bool) -> Option<String> {
@@ -648,4 +703,31 @@ fn single_unicode_key(text: String) -> Option<Key> {
 
 fn get_keyboard_layout() -> HKL {
     unsafe { GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), None)) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{KeyId, key_id_from_mapped_scan_code};
+    use windows::Win32::UI::Input::KeyboardAndMouse::VK_RETURN;
+
+    #[test]
+    fn mapped_scan_code_preserves_main_enter_shape() {
+        assert_eq!(
+            key_id_from_mapped_scan_code(VK_RETURN.0 as u32, 0x001c),
+            Some(KeyId::new(0x1c, VK_RETURN.0 as u32, false))
+        );
+    }
+
+    #[test]
+    fn mapped_scan_code_marks_extended_keys() {
+        assert_eq!(
+            key_id_from_mapped_scan_code(VK_RETURN.0 as u32, 0xe01c),
+            Some(KeyId::new(0x1c, VK_RETURN.0 as u32, true))
+        );
+    }
+
+    #[test]
+    fn mapped_scan_code_ignores_unmappable_keys() {
+        assert_eq!(key_id_from_mapped_scan_code(VK_RETURN.0 as u32, 0), None);
+    }
 }
