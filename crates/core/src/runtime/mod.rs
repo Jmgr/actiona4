@@ -974,7 +974,7 @@ impl Runtime {
 
                 MenuEvent::set_event_handler(None::<fn(MenuEvent)>);
 
-                result_receiver.blocking_recv()?
+                result_receiver.await?
             }
             None => Self::run_impl(f, cancellation_token, task_tracker, runtime_options).await,
         };
