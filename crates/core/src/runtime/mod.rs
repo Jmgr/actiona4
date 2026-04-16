@@ -945,7 +945,7 @@ impl Runtime {
                 let task_is_shutting_down = is_shutting_down.clone();
                 let task_proxy = proxy.clone();
 
-                task_tracker.spawn(async move {
+                tokio::spawn(async move {
                     let unhandled_exceptions = Self::run_impl(
                         f,
                         local_cancellation_token,
