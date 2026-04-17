@@ -3,7 +3,11 @@
 // startAndWait: echo hello
 const result = await process.startAndWait("echo", { args: ["hello"] });
 assertEq(result.exitCode, 0, "echo should exit 0");
-assert(result.stdout.trim() === "hello", `stdout should be 'hello', got '${result.stdout.trim()}'`);
+if (result.stdout === undefined) {
+  throw new Error("stdout should be captured for startAndWait");
+}
+const stdout = result.stdout.trim();
+assert(stdout === "hello", `stdout should be 'hello', got '${stdout}'`);
 
 // startAndWait: failing command via sh
 const failing = await process.startAndWait("sh", { args: ["-c", "exit 42"] });
