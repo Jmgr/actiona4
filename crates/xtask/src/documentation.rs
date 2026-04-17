@@ -11,8 +11,12 @@ use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
 use crate::util::run_command;
 
 fn validate_typescript_declarations(path: &Path) -> Result<()> {
-    let code = std::fs::read_to_string(path)
-        .wrap_err_with(|| format!("Failed to read generated TypeScript declarations at {}.", path.display()))?;
+    let code = std::fs::read_to_string(path).wrap_err_with(|| {
+        format!(
+            "Failed to read generated TypeScript declarations at {}.",
+            path.display()
+        )
+    })?;
 
     let cm: Lrc<SourceMap> = Default::default();
     let fm = cm.new_source_file(FileName::Real(path.to_path_buf()).into(), code);

@@ -34,6 +34,14 @@ cargo derivefmt
 git diff --exit-code -- '*.rs'
 '''
 
+[tasks.derivefmt-check.windows]
+script_runner = "@shell"
+script = '''
+cargo derivefmt
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+git diff --exit-code -- *.rs
+'''
+
 [tasks.sort-check]
 command = "cargo"
 args = ["sort", "-g", "-w", "--check", "--check-format"]
@@ -77,12 +85,30 @@ if ! command -v cargo-derivefmt >/dev/null 2>&1; then
 fi
 '''
 
+[tasks.install-derivefmt.windows]
+script_runner = "@shell"
+script = '''
+where cargo-derivefmt >NUL 2>NUL
+if %ERRORLEVEL% NEQ 0 (
+    cargo install --locked --git https://github.com/dcchut/cargo-derivefmt --bin cargo-derivefmt
+)
+'''
+
 [tasks.install-sort]
 script_runner = "@shell"
 script = '''
 if ! command -v cargo-sort >/dev/null 2>&1; then
     cargo install --locked cargo-sort
 fi
+'''
+
+[tasks.install-sort.windows]
+script_runner = "@shell"
+script = '''
+where cargo-sort >NUL 2>NUL
+if %ERRORLEVEL% NEQ 0 (
+    cargo install --locked cargo-sort
+)
 '''
 
 [tasks.install-cargo-edit]
