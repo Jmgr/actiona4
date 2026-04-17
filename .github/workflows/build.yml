@@ -77,7 +77,7 @@ jobs:
             dump_syms
 
       - name: Upload Linux cargo tools artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cargo-tools-linux
           path: ${{ runner.temp }}/cargo-tools-linux.tar
@@ -135,7 +135,7 @@ jobs:
           Copy-Item "$HOME\.cargo\bin\dump_syms.exe" $artifactDir -Force
 
       - name: Upload Windows cargo tools artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cargo-tools-windows
           path: ${{ runner.temp }}\cargo-tools-windows
