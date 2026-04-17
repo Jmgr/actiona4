@@ -90,7 +90,7 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: linux-dev
+          shared-key: linux-lint
 
       - name: Restore cargo tools cache
         id: cache-linux-lint-tools
@@ -143,7 +143,7 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: windows-dev
+          shared-key: windows-lint
 
       - name: Restore cargo tools cache
         id: cache-windows-lint-tools
@@ -248,7 +248,7 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: linux-dev
+          shared-key: linux-test
 
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
@@ -275,7 +275,7 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: windows-dev
+          shared-key: windows-test
 
       - name: Setup vcpkg with OpenCV
         uses: ./.github/actions/setup-vcpkg
