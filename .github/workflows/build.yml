@@ -281,7 +281,7 @@ jobs:
         uses: ./.github/actions/setup-vcpkg
 
       - name: Run tests
-        run: cargo test --locked --workspace --features run/windows-bin
+        run: cargo test --locked --workspace --features run/windows-bin -- --test-threads=1
 
   appimage:
     name: Linux AppImage
