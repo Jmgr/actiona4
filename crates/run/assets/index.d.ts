@@ -8849,7 +8849,7 @@ declare interface StandardPaths {
 /**
  * @category StandardPaths
  */
-declare const standard_paths: StandardPaths;
+declare const standardPaths: StandardPaths;
 /**
  * CPU metrics and topology.
  * 

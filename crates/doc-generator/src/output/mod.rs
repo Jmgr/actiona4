@@ -396,7 +396,7 @@ impl File {
                     writeln!(
                         output_file,
                         "declare const {}: {};",
-                        struct_.name.to_case(Case::Snake),
+                        struct_.name.to_case(Case::Camel),
                         struct_.name
                     )?;
                 }
