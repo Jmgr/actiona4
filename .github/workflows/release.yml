@@ -13,9 +13,140 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  tooling-linux:
+    name: Linux Tooling
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Restore Linux cargo tools cache
+        id: cache-linux-tools
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/cargo-derivefmt
+            ~/.cargo/bin/cargo-sort
+            ~/.cargo/bin/dump_syms
+          key: cargo-tools-linux-v5-${{ hashFiles('rust-toolchain.toml') }}
+
+      - name: Install cargo-make
+        run: |
+          if ! command -v cargo-make >/dev/null 2>&1; then
+            cargo install --locked cargo-make
+          fi
+
+      - name: Install cargo-derivefmt
+        run: |
+          if ! command -v cargo-derivefmt >/dev/null 2>&1; then
+            cargo install --locked --git https://github.com/dcchut/cargo-derivefmt --bin cargo-derivefmt
+          fi
+
+      - name: Install cargo-sort
+        run: |
+          if ! command -v cargo-sort >/dev/null 2>&1; then
+            cargo install --locked cargo-sort
+          fi
+
+      - name: Install dump_syms
+        run: |
+          if ! command -v dump_syms >/dev/null 2>&1; then
+            cargo install --locked dump_syms
+          fi
+
+      - name: Save Linux cargo tools cache
+        if: ${{ success() && steps.cache-linux-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            ~/.cargo/bin/cargo-make
+            ~/.cargo/bin/cargo-derivefmt
+            ~/.cargo/bin/cargo-sort
+            ~/.cargo/bin/dump_syms
+          key: ${{ steps.cache-linux-tools.outputs.cache-primary-key }}
+
+      - name: Archive Linux cargo tools
+        run: |
+          tar -C ~/.cargo/bin -cf "${RUNNER_TEMP}/cargo-tools-linux.tar" \
+            cargo-make \
+            cargo-derivefmt \
+            cargo-sort \
+            dump_syms
+
+      - name: Upload Linux cargo tools artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cargo-tools-linux
+          path: ${{ runner.temp }}/cargo-tools-linux.tar
+          retention-days: 1
+
+  tooling-windows:
+    name: Windows Tooling
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Restore Windows cargo tools cache
+        id: cache-windows-tools
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
+          key: cargo-tools-windows-v5-${{ hashFiles('rust-toolchain.toml') }}
+
+      - name: Install cargo-make
+        shell: pwsh
+        run: |
+          if (-not (Get-Command cargo-make -ErrorAction SilentlyContinue)) {
+            cargo install --locked cargo-make
+          }
+
+      - name: Install dump_syms
+        shell: pwsh
+        run: |
+          if (-not (Get-Command dump_syms -ErrorAction SilentlyContinue)) {
+            cargo install --locked dump_syms
+          }
+
+      - name: Save Windows cargo tools cache
+        if: ${{ success() && steps.cache-windows-tools.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            ~\.cargo\bin\cargo-make.exe
+            ~\.cargo\bin\dump_syms.exe
+          key: ${{ steps.cache-windows-tools.outputs.cache-primary-key }}
+
+      - name: Prepare Windows cargo tools artifact
+        shell: pwsh
+        run: |
+          $artifactDir = Join-Path $env:RUNNER_TEMP "cargo-tools-windows"
+          New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
+          Copy-Item "$HOME\.cargo\bin\cargo-make.exe" $artifactDir -Force
+          Copy-Item "$HOME\.cargo\bin\dump_syms.exe" $artifactDir -Force
+
+      - name: Upload Windows cargo tools artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cargo-tools-windows
+          path: ${{ runner.temp }}\cargo-tools-windows
+          retention-days: 1
+
   linux-symbols:
     name: Linux Symbols
     runs-on: ubuntu-24.04
+    needs: tooling-linux
 
     steps:
       - name: Check out repository
@@ -32,46 +163,22 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
+          cache-bin: false
           shared-key: linux-release
 
-      - name: Restore cargo tools cache
-        id: cache-linux-symbols-tools
-        uses: actions/cache/restore@v5
+      - name: Download Linux cargo tools artifact
+        uses: actions/download-artifact@v5
         with:
-          path: |
-            ~/.cargo/bin/cargo-make
-            ~/.cargo/bin/dump_syms
-            ~/.cargo/.crates2.json
-            ~/.cargo/.crates.toml
-          key: release-cargo-tools-linux-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/release.yml') }}
-          restore-keys: |
-            release-cargo-tools-linux-v2-
+          name: cargo-tools-linux
+          path: ${{ runner.temp }}
+
+      - name: Install Linux cargo tools artifact
+        run: |
+          mkdir -p ~/.cargo/bin
+          tar -xf "${RUNNER_TEMP}/cargo-tools-linux.tar" -C ~/.cargo/bin
 
       - name: Install Linux release dependencies
         uses: ./.github/actions/install-linux-deps
-
-      - name: Install cargo-make
-        run: |
-          if ! command -v cargo-make >/dev/null 2>&1; then
-            cargo install --locked cargo-make
-          fi
-
-      - name: Install dump_syms
-        run: |
-          if ! command -v dump_syms >/dev/null 2>&1; then
-            cargo install --locked dump_syms
-          fi
-
-      - name: Save cargo tools cache
-        if: ${{ success() && steps.cache-linux-symbols-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v5
-        with:
-          path: |
-            ~/.cargo/bin/cargo-make
-            ~/.cargo/bin/dump_syms
-            ~/.cargo/.crates2.json
-            ~/.cargo/.crates.toml
-          key: ${{ steps.cache-linux-symbols-tools.outputs.cache-primary-key }}
 
       - name: Install sentry-cli
         run: npm install --global @sentry/cli
@@ -97,6 +204,7 @@ jobs:
   windows-symbols:
     name: Windows Symbols
     runs-on: windows-latest
+    needs: tooling-windows
 
     steps:
       - name: Check out repository
@@ -113,45 +221,20 @@ jobs:
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
+          cache-bin: false
           shared-key: windows-release
 
-      - name: Restore cargo tools cache
-        id: cache-windows-symbols-tools
-        uses: actions/cache/restore@v5
+      - name: Download Windows cargo tools artifact
+        uses: actions/download-artifact@v5
         with:
-          path: |
-            ~\.cargo\bin\cargo-make.exe
-            ~\.cargo\bin\dump_syms.exe
-            ~\.cargo\.crates2.json
-            ~\.cargo\.crates.toml
-          key: release-cargo-tools-windows-v2-${{ hashFiles('rust-toolchain.toml', 'Makefile.toml', '.github/workflows/release.yml', '.github/actions/setup-vcpkg/action.yml') }}
-          restore-keys: |
-            release-cargo-tools-windows-v2-
+          name: cargo-tools-windows
+          path: ${{ runner.temp }}\cargo-tools-windows
 
-      - name: Install cargo-make
+      - name: Install Windows cargo tools artifact
         shell: pwsh
         run: |
-          if (-not (Get-Command cargo-make -ErrorAction SilentlyContinue)) {
-            cargo install --locked cargo-make
-          }
-
-      - name: Install dump_syms
-        shell: pwsh
-        run: |
-          if (-not (Get-Command dump_syms -ErrorAction SilentlyContinue)) {
-            cargo install --locked dump_syms
-          }
-
-      - name: Save cargo tools cache
-        if: ${{ success() && steps.cache-windows-symbols-tools.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v5
-        with:
-          path: |
-            ~\.cargo\bin\cargo-make.exe
-            ~\.cargo\bin\dump_syms.exe
-            ~\.cargo\.crates2.json
-            ~\.cargo\.crates.toml
-          key: ${{ steps.cache-windows-symbols-tools.outputs.cache-primary-key }}
+          New-Item -ItemType Directory -Force -Path "$HOME\.cargo\bin" | Out-Null
+          Copy-Item "$env:RUNNER_TEMP\cargo-tools-windows\*" "$HOME\.cargo\bin\" -Force
 
       - name: Setup vcpkg with OpenCV
         uses: ./.github/actions/setup-vcpkg
