@@ -317,7 +317,7 @@ jobs:
       - name: Run tests
         env:
           RUSTFLAGS: -C link-arg=-fuse-ld=mold
-        run: xvfb-run -a -s "-screen 0 1920x1080x24" cargo test --locked --workspace
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" cargo test --locked --workspace --exclude e2e
 
   windows-test:
     name: Windows Test
@@ -341,7 +341,7 @@ jobs:
         uses: ./.github/actions/setup-vcpkg
 
       - name: Run tests
-        run: cargo test --locked --workspace --features run/windows-bin -- --test-threads=1
+        run: cargo test --locked --workspace --exclude e2e --features run/windows-bin -- --test-threads=1
 
   linux-e2e:
     name: Linux E2E
@@ -377,12 +377,12 @@ jobs:
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
         with:
-          extra-packages: xvfb
+          extra-packages: xvfb openbox
 
       - name: Run e2e tests
         env:
           RUSTFLAGS: -C link-arg=-fuse-ld=mold
-        run: xvfb-run -a -s "-screen 0 1920x1080x24" cargo make e2e
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" bash -c "openbox &>/dev/null & sleep 1 && cargo make e2e"
 
   windows-e2e:
     name: Windows E2E

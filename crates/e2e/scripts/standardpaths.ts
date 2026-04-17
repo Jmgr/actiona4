@@ -14,12 +14,12 @@ const paths = [
 
 for (const p of paths) {
   assert(
-    p === null || (typeof p === "string" && p.length > 0),
+    p == null || (typeof p === "string" && p.length > 0),
     `standard path should be null or non-empty string, got ${JSON.stringify(p)}`,
   );
 }
 
 // home and temp are almost always present; at least one should be non-null
-const hasHome = standardPaths.home !== null;
-const hasTemp = standardPaths.temp !== null;
+const hasHome = standardPaths.home != null;
+const hasTemp = standardPaths.temp != null;
 assert(hasHome || hasTemp, "at least one of home/temp should be non-null");

@@ -120,8 +120,13 @@ impl Displays {
         displays_info
             .iter()
             .find(|display| display.is_primary)
-            .or_else(|| displays_info.first())
             .cloned()
+            .or_else(|| {
+                displays_info.first().cloned().map(|mut d| {
+                    d.is_primary = true;
+                    d
+                })
+            })
             .ok_or_else(|| eyre!("no displays detected"))
     }
 
