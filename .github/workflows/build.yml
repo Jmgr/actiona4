@@ -162,7 +162,7 @@ jobs:
           cache-bin: false
 
       - name: Download Linux cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-linux
           path: ${{ runner.temp }}
@@ -196,7 +196,7 @@ jobs:
           shared-key: linux-lint
 
       - name: Download Linux cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-linux
           path: ${{ runner.temp }}
@@ -235,7 +235,7 @@ jobs:
           shared-key: windows-lint
 
       - name: Download Windows cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-windows
           path: ${{ runner.temp }}\cargo-tools-windows
@@ -273,7 +273,7 @@ jobs:
           cache-bin: false
 
       - name: Download Linux cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-linux
           path: ${{ runner.temp }}
@@ -365,7 +365,7 @@ jobs:
           shared-key: linux-release
 
       - name: Download Linux cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-linux
           path: ${{ runner.temp }}
@@ -405,7 +405,7 @@ jobs:
           shared-key: windows-release
 
       - name: Download Windows cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-windows
           path: ${{ runner.temp }}\cargo-tools-windows
@@ -447,7 +447,7 @@ jobs:
           shared-key: windows-release
 
       - name: Download Windows cargo tools artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: cargo-tools-windows
           path: ${{ runner.temp }}\cargo-tools-windows
