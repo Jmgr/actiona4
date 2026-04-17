@@ -1,0 +1,18 @@
+[package]
+name = "e2e"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description = "End-to-end tests for the actiona scripting API"
+documentation.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+name = "e2e"
+
+[dependencies]
+
+[dev-dependencies]
+assert_cmd.workspace = true
+tempfile.workspace = true

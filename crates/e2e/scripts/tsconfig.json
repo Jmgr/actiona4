@@ -1,0 +1,7 @@
+{
+  "extends": "../../run/assets/tsconfig.json",
+  "include": [
+    "../../run/assets/index.d.ts",
+    "./**/*.ts"
+  ]
+}

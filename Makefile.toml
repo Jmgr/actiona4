@@ -45,6 +45,20 @@ dependencies = ["deps", "fmt-check", "derivefmt-check", "sort-check"]
 command = "cargo"
 args = ["clippy", "--all", "--all-targets", "--all-features"]
 
+[tasks.build-actiona-run]
+description = "Build the actiona-run binary (required before running e2e tests)."
+command = "cargo"
+args = ["build", "-p", "run"]
+
+[tasks.build-actiona-run.windows]
+args = ["build", "-p", "run", "--features", "run/windows-bin"]
+
+[tasks.e2e]
+description = "Build actiona-run then run end-to-end TypeScript API tests."
+dependencies = ["build-actiona-run"]
+command = "cargo"
+args = ["test", "-p", "e2e"]
+
 [tasks.lint]
 dependencies = ["clippy"]
 

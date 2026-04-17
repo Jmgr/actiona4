@@ -1,0 +1,16 @@
+// @guard: e2e::require_not_wayland!();
+
+const img = await screen.captureDesktop();
+assert(img.width > 0, "captureDesktop width > 0");
+assert(img.height > 0, "captureDesktop height > 0");
+
+// captureRect with a small region
+const small = await screen.captureRect({ x: 0, y: 0, width: 10, height: 10 });
+assertEq(small.width, 10, "captureRect width should be 10");
+assertEq(small.height, 10, "captureRect height should be 10");
+
+// capturePixel returns a Color
+const pixel = await screen.capturePixel({ x: 0, y: 0 });
+assertInRange(pixel.r, 0, 255, "capturePixel.r");
+assertInRange(pixel.g, 0, 255, "capturePixel.g");
+assertInRange(pixel.b, 0, 255, "capturePixel.b");

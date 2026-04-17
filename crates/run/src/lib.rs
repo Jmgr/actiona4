@@ -69,6 +69,19 @@ fn is_windows10_1607_or_newer() -> Option<bool> {
     Some(info.dwBuildNumber >= WINDOWS_1607_BUILD)
 }
 
+/// Returned when a script fails. The diagnostic has already been printed;
+/// callers must not print this error again.
+#[derive(Debug)]
+pub struct ScriptFailed;
+
+impl std::fmt::Display for ScriptFailed {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("script failed")
+    }
+}
+
+impl std::error::Error for ScriptFailed {}
+
 pub fn run_cli() -> Result<()> {
     let _guard = setup_crash_reporting(built_info::PKG_NAME)?;
 
@@ -317,9 +330,11 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                         if let Err(err) = script_engine
                             .eval_async_with_filename::<()>(&script, Some(&filename))
                             .await
-                            && !scripting::try_emit_script_diagnostic(&err, &script)
                         {
-                            eprintln!("Error: {err}");
+                            if !scripting::try_emit_script_diagnostic(&err, &script) {
+                                eprintln!("Error: {err}");
+                            }
+                            return Err(ScriptFailed.into());
                         }
                     }
                     Commands::Eval { code, .. } => {
@@ -338,10 +353,12 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                         match value.await {
                             Ok(Some(value)) => println!("{value}"),
                             Ok(None) => {}
-                            Err(err) if !scripting::try_emit_script_diagnostic(&err, &code) => {
-                                eprintln!("Error: {err}");
+                            Err(err) => {
+                                if !scripting::try_emit_script_diagnostic(&err, &code) {
+                                    eprintln!("Error: {err}");
+                                }
+                                return Err(ScriptFailed.into());
                             }
-                            Err(_) => {}
                         }
                     }
                     Commands::Repl { .. } => {

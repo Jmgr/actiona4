@@ -343,6 +343,85 @@ jobs:
       - name: Run tests
         run: cargo test --locked --workspace --features run/windows-bin -- --test-threads=1
 
+  linux-e2e:
+    name: Linux E2E
+    runs-on: ubuntu-24.04
+    needs:
+      - doc
+      - tooling-linux
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-bin: false
+          shared-key: linux-e2e
+
+      - name: Download Linux cargo tools artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: cargo-tools-linux
+          path: ${{ runner.temp }}
+
+      - name: Install Linux cargo tools artifact
+        run: |
+          mkdir -p ~/.cargo/bin
+          tar -xf "${RUNNER_TEMP}/cargo-tools-linux.tar" -C ~/.cargo/bin
+
+      - name: Install Linux build dependencies
+        uses: ./.github/actions/install-linux-deps
+        with:
+          extra-packages: xvfb
+
+      - name: Run e2e tests
+        env:
+          RUSTFLAGS: -C link-arg=-fuse-ld=mold
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" cargo make e2e
+
+  windows-e2e:
+    name: Windows E2E
+    runs-on: windows-latest
+    needs:
+      - doc
+      - tooling-windows
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-bin: false
+          shared-key: windows-e2e
+
+      - name: Download Windows cargo tools artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: cargo-tools-windows
+          path: ${{ runner.temp }}\cargo-tools-windows
+
+      - name: Install Windows cargo tools artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "$HOME\.cargo\bin" | Out-Null
+          Copy-Item "$env:RUNNER_TEMP\cargo-tools-windows\*" "$HOME\.cargo\bin\" -Force
+
+      - name: Setup vcpkg with OpenCV
+        uses: ./.github/actions/setup-vcpkg
+
+      - name: Run e2e tests
+        run: cargo make e2e
+
   appimage:
     name: Linux AppImage
     runs-on: ubuntu-24.04
