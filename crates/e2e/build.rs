@@ -33,10 +33,23 @@ fn main() {
             .unwrap_or("")
             .trim();
 
-        out.push_str(&format!(
-            "#[test]\nfn {stem}() {{\n    {guard}\n    common::run(\"{name}\").success();\n}}\n\n"
-        ));
+        out.push_str(&render_test(stem, &name, guard));
     }
 
     fs::write(Path::new(&out_dir).join("generated_tests.rs"), out).unwrap();
+}
+
+fn render_test(stem: &str, name: &str, guard: &str) -> String {
+    let body = match guard {
+        "e2e::require_not_windows!();" => format!(
+            "    #[cfg(windows)]\n    {{\n        println!(\"skipping: not supported on Windows\");\n    }}\n    #[cfg(not(windows))]\n    {{\n        common::run(\"{name}\").success();\n    }}\n"
+        ),
+        "e2e::require_windows!();" => format!(
+            "    #[cfg(not(windows))]\n    {{\n        println!(\"skipping: requires Windows\");\n    }}\n    #[cfg(windows)]\n    {{\n        common::run(\"{name}\").success();\n    }}\n"
+        ),
+        "" => format!("    common::run(\"{name}\").success();\n"),
+        _ => format!("    {guard}\n    common::run(\"{name}\").success();\n"),
+    };
+
+    format!("#[test]\nfn {stem}() {{\n{body}}}\n\n")
 }
