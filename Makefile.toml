@@ -56,19 +56,20 @@ args = ["component", "add", "rustfmt", "--toolchain", "nightly"]
 # From https://github.com/dcchut/cargo-derivefmt
 # This package is currently implemented using rust-analyzer internals, so cannot be published on crates.io.
 [tasks.install-derivefmt]
-command = "cargo"
-args = [
-    "install",
-    "--locked",
-    "--git",
-    "https://github.com/dcchut/cargo-derivefmt",
-    "--bin",
-    "cargo-derivefmt",
-]
+script_runner = "@shell"
+script = '''
+if ! command -v cargo-derivefmt >/dev/null 2>&1; then
+    cargo install --locked --git https://github.com/dcchut/cargo-derivefmt --bin cargo-derivefmt
+fi
+'''
 
 [tasks.install-sort]
-command = "cargo"
-args = ["install", "cargo-sort"]
+script_runner = "@shell"
+script = '''
+if ! command -v cargo-sort >/dev/null 2>&1; then
+    cargo install --locked cargo-sort
+fi
+'''
 
 [tasks.install-cargo-edit]
 command = "cargo"
