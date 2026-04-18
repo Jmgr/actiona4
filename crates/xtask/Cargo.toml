@@ -7,13 +7,11 @@ description.workspace = true
 documentation.workspace = true
 license.workspace = true
 
-[target.'cfg(windows)'.dependencies]
-installer-tools = { path = "../installer-tools" }
-
 [dependencies]
 chrono.workspace = true
 clap.workspace = true
 color-eyre.workspace = true
+installer-tools = { path = "../installer-tools" }
 reqwest.workspace = true
 serde_json.workspace = true
 tempfile.workspace = true

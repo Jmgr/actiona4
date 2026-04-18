@@ -6,6 +6,9 @@ use std::{
 };
 
 use color_eyre::{Result, eyre::eyre};
+use installer_tools::package::{PackagedFilePlatform, packaged_files};
+
+use crate::package_docs::stage_packaged_files;
 
 const LINUXDEPLOY_URL_BASE: &str =
     "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous";
@@ -16,13 +19,29 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
     let release_dir = workspace_root.join("target").join("release");
     let appimage_dir = workspace_root.join("target");
     let app_dir = appimage_dir.join("AppDir");
+    let docs_dir = app_dir
+        .join("usr")
+        .join("share")
+        .join("doc")
+        .join("actiona-run");
 
     let version = read_version(workspace_root).await?;
     let arch = appimage_arch()?;
     let output_path = appimage_dir.join(format!("actiona-run-{version}-{arch}.AppImage"));
+    let packaged_files: Vec<_> = packaged_files(workspace_root)?
+        .into_iter()
+        .filter(|packaged_file| packaged_file.include_in_appimage)
+        .collect();
 
     std::fs::create_dir_all(&appimage_dir)?;
     reset_app_dir(&app_dir)?;
+    stage_packaged_files(
+        workspace_root,
+        &docs_dir,
+        &packaged_files,
+        PackagedFilePlatform::Linux,
+    )
+    .await?;
     remove_output_if_exists(&output_path)?;
 
     let tools_dir = workspace_root.join("target").join("tools");

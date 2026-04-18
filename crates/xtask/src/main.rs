@@ -8,6 +8,7 @@ mod constants;
 mod documentation;
 #[cfg(windows)]
 mod installer;
+mod package_docs;
 #[cfg(windows)]
 mod signing;
 mod symbols;

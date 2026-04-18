@@ -22,10 +22,11 @@ pub fn sign_binaries(workspace_root: &Path) -> Result<()> {
 }
 
 pub fn release_file_paths(workspace_root: &Path) -> Vec<PathBuf> {
-    packaged_files()
+    packaged_files(workspace_root)
+        .expect("failed to enumerate packaged files for signing")
         .iter()
         .filter(|packaged_file| packaged_file.should_sign)
-        .map(|packaged_file| workspace_root.join(packaged_file.source_path))
+        .map(|packaged_file| workspace_root.join(&packaged_file.source_path))
         .collect()
 }
 

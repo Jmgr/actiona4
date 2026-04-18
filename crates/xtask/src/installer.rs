@@ -1,10 +1,12 @@
 use std::{fmt::Write, path::Path, process::Command};
 
 use color_eyre::{Result, eyre::eyre};
-use installer_tools::package::{PackagedFile, packaged_files};
+use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
+use tokio::fs::{remove_dir_all, try_exists};
 
 use crate::{
     constants::{INNO_SIGN_TOOL_NAME, INSTALLER_FILE_DESCRIPTION, RUN_FILE_DESCRIPTION},
+    package_docs::{StagedPackagedFile, stage_packaged_files},
     signing::signing_arguments,
     util::run_command,
     workspace::{NotificationPackageInfo, WorkspacePackageInfo},
@@ -54,14 +56,44 @@ pub async fn build_installer(
 
 async fn write_installer_files_include(workspace_root: &Path) -> Result<()> {
     let generated_include_path = workspace_root.join("target").join("files.iss");
+    let staged_docs_directory = workspace_root
+        .join("target")
+        .join("package-docs")
+        .join("windows");
+    let packaged_files = packaged_files(workspace_root)?;
     let mut file_contents = String::new();
 
-    for packaged_file in packaged_files()
+    for packaged_file in packaged_files
         .iter()
         .filter(|packaged_file| packaged_file.include_in_installer)
+        .filter(|packaged_file| !packaged_file.use_dos_line_feeds)
     {
-        writeln!(file_contents, "{}", installer_source_line(packaged_file)?)
-            .map_err(|error| eyre!(error))?;
+        writeln!(
+            file_contents,
+            "{}",
+            installer_source_line(packaged_file, PackagedFilePlatform::Windows)?
+        )
+        .map_err(|error| eyre!(error))?;
+    }
+
+    if try_exists(&staged_docs_directory).await? {
+        remove_dir_all(&staged_docs_directory).await?;
+    }
+
+    for staged_document in stage_packaged_files(
+        workspace_root,
+        &staged_docs_directory,
+        &packaged_files,
+        PackagedFilePlatform::Windows,
+    )
+    .await?
+    {
+        writeln!(
+            file_contents,
+            "{}",
+            installer_document_source_line(&staged_document)?
+        )
+        .map_err(|error| eyre!(error))?;
     }
 
     let parent_directory_path = generated_include_path
@@ -73,25 +105,41 @@ async fn write_installer_files_include(workspace_root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn installer_source_line(packaged_file: &PackagedFile) -> Result<String> {
+fn installer_source_line(
+    packaged_file: &PackagedFile,
+    platform: PackagedFilePlatform,
+) -> Result<String> {
     let mut source_line = format!(
         "Source: \"..\\{}\"; DestDir: \"{}\"",
-        inno_path(packaged_file.source_path),
+        inno_path(&packaged_file.source_path),
         packaged_file.destination_dir
     );
 
-    if packaged_file.destination_name != packaged_file.source_path.rsplit('/').next().unwrap_or("")
+    if packaged_file.destination_name_for(platform)
+        != packaged_file.source_path.rsplit('/').next().unwrap_or("")
     {
         write!(
             source_line,
             "; DestName: \"{}\"",
-            packaged_file.destination_name
+            packaged_file.destination_name_for(platform)
         )
         .map_err(|error| eyre!(error))?;
     }
 
     source_line.push_str("; Flags: ignoreversion");
     Ok(source_line)
+}
+
+fn installer_document_source_line(staged_file: &StagedPackagedFile) -> Result<String> {
+    let source_path = staged_file
+        .source_path
+        .to_str()
+        .ok_or_else(|| eyre!("Invalid UTF-8 path: {}", staged_file.source_path.display()))?;
+    Ok(format!(
+        "Source: \"..\\{}\"; DestDir: \"{{app}}\"; DestName: \"{}\"; Flags: ignoreversion",
+        inno_path(source_path),
+        staged_file.destination_name
+    ))
 }
 
 fn inno_path(path: &str) -> String {

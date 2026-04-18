@@ -1,24 +1,21 @@
-use std::{
-    fs::File,
-    io::Write,
-    path::{Path, PathBuf},
-    time::SystemTime,
-};
+use std::{fs::File, io::Write, path::Path, time::SystemTime};
 
 use chrono::{DateTime as ChronoDateTime, Datelike, Timelike, Utc};
 use color_eyre::{Result, eyre::eyre};
-use installer_tools::package::packaged_files;
+use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
 use zip::{CompressionMethod, DateTime, ZipWriter, write::SimpleFileOptions};
 
-use crate::{util::remove_file_if_exists, workspace::WorkspacePackageInfo};
+use crate::{
+    package_docs::read_packaged_file_contents, util::remove_file_if_exists,
+    workspace::WorkspacePackageInfo,
+};
 
 struct ArchiveFile {
-    source_path: PathBuf,
-    destination_name: &'static str,
+    packaged_file: PackagedFile,
 }
 
 struct ArchiveEntry {
-    destination_name: &'static str,
+    destination_name: String,
     contents: Vec<u8>,
     last_modified_time: DateTime,
 }
@@ -38,32 +35,35 @@ pub async fn build_archive(
     Ok(())
 }
 
-fn archive_files(workspace_root: &Path) -> Vec<ArchiveFile> {
-    packaged_files()
+fn archive_files(workspace_root: &Path) -> Result<Vec<ArchiveFile>> {
+    Ok(packaged_files(workspace_root)?
         .iter()
         .filter(|packaged_file| packaged_file.include_in_archive)
         .map(|packaged_file| ArchiveFile {
-            source_path: workspace_root.join(packaged_file.source_path),
-            destination_name: packaged_file.destination_name,
+            packaged_file: packaged_file.clone(),
         })
-        .collect()
+        .collect())
 }
 
 async fn read_archive_entries(workspace_root: &Path) -> Result<Vec<ArchiveEntry>> {
     let mut archive_entries = Vec::new();
 
-    for archive_file in archive_files(workspace_root) {
-        if !archive_file.source_path.is_file() {
-            return Err(eyre!(
-                "File not found: {}",
-                archive_file.source_path.display()
-            ));
+    for archive_file in archive_files(workspace_root)? {
+        let source_path = workspace_root.join(&archive_file.packaged_file.source_path);
+
+        if !source_path.is_file() {
+            return Err(eyre!("File not found: {}", source_path.display()));
         }
 
-        let metadata = tokio::fs::metadata(&archive_file.source_path).await?;
+        let metadata = tokio::fs::metadata(&source_path).await?;
+        let contents =
+            read_packaged_file_contents(workspace_root, &archive_file.packaged_file).await?;
         archive_entries.push(ArchiveEntry {
-            destination_name: archive_file.destination_name,
-            contents: tokio::fs::read(&archive_file.source_path).await?,
+            destination_name: archive_file
+                .packaged_file
+                .destination_name_for(PackagedFilePlatform::Windows)
+                .to_owned(),
+            contents,
             last_modified_time: zip_datetime_from_system_time(metadata.modified()?),
         });
     }
@@ -80,7 +80,7 @@ fn write_zip_archive(archive_path: &Path, archive_entries: Vec<ArchiveEntry>) ->
 
     for archive_entry in archive_entries {
         let file_options = base_file_options.last_modified_time(archive_entry.last_modified_time);
-        zip_writer.start_file(archive_entry.destination_name, file_options)?;
+        zip_writer.start_file(&archive_entry.destination_name, file_options)?;
         zip_writer.write_all(&archive_entry.contents)?;
     }
 

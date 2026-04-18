@@ -43,6 +43,7 @@ pub const fn is_linux() -> bool {
     true
 }
 
+#[must_use]
 #[cfg(not(linux))]
 pub const fn is_linux() -> bool {
     false
@@ -54,6 +55,7 @@ pub const fn is_unix() -> bool {
     true
 }
 
+#[must_use]
 #[cfg(not(unix))]
 pub const fn is_unix() -> bool {
     false
