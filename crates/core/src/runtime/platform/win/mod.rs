@@ -20,9 +20,10 @@ use windows::{
             Accessibility::{HWINEVENTHOOK, SetWinEventHook},
             WindowsAndMessaging::{
                 CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
-                EVENT_OBJECT_DESTROY, GetMessageW, MSG, OBJID_WINDOW, PostQuitMessage,
-                PostThreadMessageW, RegisterClassW, TranslateMessage, WINDOW_EX_STYLE,
-                WINEVENT_OUTOFCONTEXT, WM_DESTROY, WM_DISPLAYCHANGE, WM_QUIT, WNDCLASSW, WS_POPUP,
+                EVENT_OBJECT_DESTROY, GetMessageW, MSG, OBJID_WINDOW, PM_NOREMOVE, PeekMessageW,
+                PostQuitMessage, PostThreadMessageW, RegisterClassW, TranslateMessage,
+                WINDOW_EX_STYLE, WINEVENT_OUTOFCONTEXT, WM_DESTROY, WM_DISPLAYCHANGE, WM_QUIT,
+                WNDCLASSW, WS_POPUP,
             },
         },
     },
@@ -301,9 +302,16 @@ impl SafeMessagePump {
                 };
 
                 let thread_id = unsafe { GetCurrentThreadId() };
+                // Force creation of the thread's message queue before we report the thread ID.
+                // Without this, a fast shutdown can race with the first GetMessageW call:
+                // PostThreadMessageW(WM_QUIT) fails because the queue does not exist yet, and
+                // the subsequent join blocks forever waiting for a thread that will never wake.
+                let mut msg = MSG::default();
+                unsafe {
+                    _ = PeekMessageW(&mut msg, None, 0, 0, PM_NOREMOVE);
+                }
                 _ = thread_id_sender.send(thread_id);
 
-                let mut msg = MSG::default();
                 loop {
                     let message = unsafe { GetMessageW(&mut msg, None, 0, 0).0 };
                     if message == 0 {
