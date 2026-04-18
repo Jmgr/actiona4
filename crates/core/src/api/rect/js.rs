@@ -341,39 +341,3 @@ impl From<super::Rect> for JsRect {
         Self { inner: value }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::JsRect;
-    use crate::{
-        api::{point::point, rect::rect, size::size},
-        runtime::Runtime,
-        scripting::Engine as ScriptEngine,
-    };
-
-    async fn setup(script_engine: ScriptEngine) {
-        script_engine
-            .eval::<()>(
-                r#"
-                let r1 = new Rect({x: 1, y: 2, width: 3, height: 4});
-                let r2 = new Rect(2, 3, 4, 5);
-                let r3 = new Rect(r2);
-            "#,
-            )
-            .await
-            .unwrap();
-    }
-
-    #[test]
-    fn test_constructor_accepts_rect_like() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            setup(script_engine.clone()).await;
-
-            let result = script_engine.eval::<JsRect>("r1").await.unwrap();
-            assert_eq!(result, rect(point(1, 2), size(3, 4)).into());
-
-            let result = script_engine.eval::<bool>("r2.equals(r3)").await.unwrap();
-            assert!(result);
-        });
-    }
-}

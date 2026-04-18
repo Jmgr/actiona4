@@ -577,111 +577,7 @@ mod tests {
     use image::Rgba;
 
     use super::JsColor;
-    use crate::{api::color::Color, runtime::Runtime};
-
-    #[test]
-    fn test_color_constants() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let color = script_engine.eval::<JsColor>("Color.Red").await.unwrap();
-            assert_eq!(color, JsColor::new(255, 0, 0, 255));
-
-            let color = script_engine
-                .eval::<JsColor>("Color.Transparent")
-                .await
-                .unwrap();
-            assert_eq!(color, JsColor::new(0, 0, 0, 0));
-        });
-    }
-
-    #[test]
-    fn test_color_alias_constants() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let result = script_engine
-                .eval::<bool>("Color.Aqua.equals(Color.Cyan)")
-                .await
-                .unwrap();
-            assert!(result);
-
-            let result = script_engine
-                .eval::<bool>("Color.Fuchsia.equals(Color.Magenta)")
-                .await
-                .unwrap();
-            assert!(result);
-        });
-    }
-
-    #[test]
-    fn test_color_constructor_overloads() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let color = script_engine
-                .eval::<JsColor>("new Color(1, 2, 3)")
-                .await
-                .unwrap();
-            assert_eq!(color, JsColor::new(1, 2, 3, 255));
-
-            let color = script_engine
-                .eval::<JsColor>("new Color(4, 5, 6, 7)")
-                .await
-                .unwrap();
-            assert_eq!(color, JsColor::new(4, 5, 6, 7));
-
-            let color = script_engine
-                .eval::<JsColor>("new Color({r: 8, g: 9, b: 10})")
-                .await
-                .unwrap();
-            assert_eq!(color, JsColor::new(8, 9, 10, 255));
-
-            let color = script_engine
-                .eval::<JsColor>("new Color(Color.Red)")
-                .await
-                .unwrap();
-            assert_eq!(color, JsColor::new(255, 0, 0, 255));
-        });
-    }
-
-    #[test]
-    fn test_color_js_attributes_and_methods() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval::<()>(
-                    r#"
-                    let c = Color.Red.clone();
-                    c.g = 10;
-                    c.b = 11;
-                    c.a = 12;
-                "#,
-                )
-                .await
-                .unwrap();
-
-            let result = script_engine.eval::<u8>("c.r").await.unwrap();
-            assert_eq!(result, 255);
-
-            let result = script_engine.eval::<u8>("c.g").await.unwrap();
-            assert_eq!(result, 10);
-
-            let result = script_engine.eval::<u8>("c.b").await.unwrap();
-            assert_eq!(result, 11);
-
-            let result = script_engine.eval::<u8>("c.a").await.unwrap();
-            assert_eq!(result, 12);
-
-            let result = script_engine
-                .eval::<bool>("c.equals(Color.Red)")
-                .await
-                .unwrap();
-            assert!(!result);
-
-            let result = script_engine.eval::<String>("c.toString()").await.unwrap();
-            assert_eq!(result, "Color(r: 255, g: 10, b: 11, a: 12)");
-
-            let result = script_engine
-                .eval::<bool>("c.clone().equals(c)")
-                .await
-                .unwrap();
-            assert!(result);
-        });
-    }
+    use crate::api::color::Color;
 
     #[test]
     fn test_color_rust_methods() {
@@ -713,24 +609,5 @@ mod tests {
         let js_color = JsColor::from(rgba);
         assert_eq!(Rgba::<u8>::from(js_color), rgba);
         assert_eq!(Color::from(js_color), Color::new(10, 20, 30, 40));
-    }
-
-    #[test]
-    fn test_color_clone_is_not_strictly_equal_in_js() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval::<()>("let c = Color.Red.clone()")
-                .await
-                .unwrap();
-
-            let result = script_engine
-                .eval::<bool>("c.equals(Color.Red)")
-                .await
-                .unwrap();
-            assert!(result);
-
-            let result = script_engine.eval::<bool>("c == Color.Red").await.unwrap();
-            assert!(!result);
-        });
     }
 }

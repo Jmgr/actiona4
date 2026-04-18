@@ -130,22 +130,3 @@ impl JsStandardPaths {
         display_with_type("StandardPaths", &self.inner)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use tracing_test::traced_test;
-
-    use crate::runtime::Runtime;
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_standard_paths() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval_async::<()>("console.println(standardPaths);")
-                .await
-                .unwrap();
-        });
-    }
-}

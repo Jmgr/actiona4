@@ -541,24 +541,6 @@ impl JsConsole {
 mod tests {
     use rquickjs::{Context, Runtime as JsRuntime, prelude::Rest};
 
-    use crate::runtime::Runtime;
-
-    #[test]
-    fn test_log() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval::<()>(
-                    r#"
-                let a = {
-                    "foo": 10
-                };
-                console.log("hello", a)"#,
-                )
-                .await
-                .unwrap();
-        });
-    }
-
     #[test]
     fn test_exception_values_use_js_to_string() {
         let runtime = JsRuntime::new().unwrap();

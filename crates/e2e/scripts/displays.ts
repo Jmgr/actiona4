@@ -1,4 +1,7 @@
-if (system.platform === "wayland") { println("skipping: not supported on Wayland"); exit(); }
+if (system.platform === "wayland") {
+  println("skipping: not supported on Wayland");
+  exit();
+}
 
 // all() returns at least one display
 const all = displays.all();
@@ -27,4 +30,10 @@ const found = displays.fromPoint(mid.x, mid.y);
 assert(
   found !== undefined,
   "fromPoint should find a display for primary midpoint",
+);
+
+const randomPoint = await displays.randomPoint();
+assert(
+  displays.fromPoint(randomPoint!.x, randomPoint!.y) !== undefined,
+  "randomPoint should land inside a connected display",
 );

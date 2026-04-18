@@ -673,34 +673,4 @@ mod tests {
             println!("selected rect: {rect}");
         });
     }
-
-    #[test]
-    #[traced_test]
-    fn test_search_in_to_string() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let cases: &[(&str, &str)] = &[
-                ("SearchIn.desktop().toString()", "SearchIn(desktop)"),
-                (
-                    "SearchIn.display(displays.primary()).toString()",
-                    "SearchIn(display_id: <id>)",
-                ),
-                (
-                    "SearchIn.rect(0, 0, 1920, 1080).toString()",
-                    "SearchIn(rect: (x: 0, y: 0, width: 1920, height: 1080))",
-                ),
-            ];
-            for (expr, expected) in cases {
-                let s: String = script_engine.eval_async(expr).await.unwrap();
-                // For the display case the ID is dynamic, just check the prefix
-                if expected.contains("<id>") {
-                    assert!(
-                        s.starts_with("SearchIn(display_id:"),
-                        "failed for: {expr}, got: {s}"
-                    );
-                } else {
-                    assert_eq!(s, *expected, "failed for: {expr}");
-                }
-            }
-        });
-    }
 }

@@ -579,60 +579,6 @@ mod tests {
 
     use crate::runtime::Runtime;
 
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_all() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let count: i32 = script_engine
-                .eval_async("windows.all().length")
-                .await
-                .unwrap();
-            assert!(count > 0, "Expected at least one window");
-        });
-    }
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_active_window() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let title: String = script_engine
-                .eval_async("windows.activeWindow().title()")
-                .await
-                .unwrap();
-            println!("Active window title: {title}");
-        });
-    }
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_window_properties() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval_async::<()>(
-                    r#"
-                    const win = windows.activeWindow();
-                    const title = win.title();
-                    const visible = win.isVisible();
-                    const active = win.isActive();
-                    const pos = win.position();
-                    const s = win.size();
-                    const r = win.rect();
-                    const pid = win.processId();
-                    const cls = win.className();
-                    console.log(`title: ${title}, visible: ${visible}, active: ${active}`);
-                    console.log(`position: ${pos.x},${pos.y}, size: ${s.width}x${s.height}`);
-                    console.log(`rect: ${r.x},${r.y} ${r.width}x${r.height}`);
-                    console.log(`pid: ${pid}, class: ${cls}`);
-                    "#,
-                )
-                .await
-                .unwrap();
-        });
-    }
-
     // Helper JS snippet: spawns xeyes and polls until its window appears.
     // xeyes does not set _NET_WM_PID, so we find it by className.
     // libwmctl returns the second WM_CLASS field ("XEyes"), not the instance name.
@@ -690,73 +636,6 @@ mod tests {
                     await closedPromise;
                     "#
                 ))
-                .await
-                .unwrap();
-        });
-    }
-
-    #[test]
-    #[traced_test]
-    #[ignore]
-    fn test_find() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            script_engine
-                .eval_async::<()>(
-                    r#"
-                    const byAnyTitle = windows.find({ title: /.*/ });
-                    for (const win of byAnyTitle) {
-                        const title = win.title();
-                        if (!/.*/.test(title)) {
-                            throw new Error("title filter mismatch");
-                        }
-                    }
-
-                    const byAnyClass = windows.find({ className: /.*/ });
-                    for (const win of byAnyClass) {
-                        const className = win.className();
-                        if (!/.*/.test(className)) {
-                            throw new Error("className filter mismatch");
-                        }
-                    }
-
-                    const active = windows.activeWindow();
-                    const pid = active.processId();
-                    const byPid = windows.find({ processId: pid });
-                    if (byPid.length === 0) {
-                        throw new Error("processId filter mismatch");
-                    }
-
-                    const byVisible = windows.find({ visible: true });
-                    for (const win of byVisible) {
-                        if (!win.isVisible()) {
-                            throw new Error("visible filter mismatch");
-                        }
-                    }
-
-                    const activeRect = active.rect();
-                    const center = {
-                        x: Math.floor(activeRect.x + activeRect.width / 2),
-                        y: Math.floor(activeRect.y + activeRect.height / 2),
-                    };
-
-                    const byPoint = windows.findAt(center);
-                    if (byPoint.length === 0) {
-                        throw new Error("findAt filter mismatch");
-                    }
-
-                    for (const win of byPoint) {
-                        const rect = win.rect();
-                        if (
-                            center.x < rect.x
-                            || center.x >= rect.x + rect.width
-                            || center.y < rect.y
-                            || center.y >= rect.y + rect.height
-                        ) {
-                            throw new Error("findAt containment mismatch");
-                        }
-                    }
-                    "#,
-                )
                 .await
                 .unwrap();
         });

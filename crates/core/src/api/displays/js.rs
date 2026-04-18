@@ -383,23 +383,3 @@ impl JsDisplayInfo {
         display_with_type("Display", &self.inner)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use tracing_test::traced_test;
-
-    use crate::{api::point::js::JsPoint, runtime::Runtime};
-
-    #[test]
-    #[traced_test]
-    fn test_random_point() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let point: JsPoint = script_engine
-                .eval_async("await displays.randomPoint()")
-                .await
-                .unwrap();
-
-            println!("point: {}", point.inner());
-        })
-    }
-}

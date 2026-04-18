@@ -54,3 +54,6 @@ assert(r.equals(cloned), "cloned equals original");
 const r5 = new Rect({ x: 1, y: 2, width: 3, height: 4 });
 assertEq(r5.x, 1, "r5.x");
 assertEq(r5.width, 3, "r5.width");
+
+const r6 = new Rect(r2);
+assert(r6.equals(r2), "constructing from another Rect should preserve value equality");

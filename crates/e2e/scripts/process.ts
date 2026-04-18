@@ -1,23 +1,121 @@
-if (system.isWindows) { println("skipping: not supported on Windows"); exit(); }
-
-// startAndWait: echo hello
-const result = await process.startAndWait("echo", { args: ["hello"] });
-assertEq(result.exitCode, 0, "echo should exit 0");
-if (result.stdout === undefined) {
-  throw new Error("stdout should be captured for startAndWait");
+function shellArgs(expr: string): string[] {
+  return system.isWindows ? ["/c", expr] : ["-c", expr];
 }
-const stdout = result.stdout.trim();
-assert(stdout === "hello", `stdout should be 'hello', got '${stdout}'`);
 
-// startAndWait: failing command via sh
-const failing = await process.startAndWait("sh", { args: ["-c", "exit 42"] });
-assertEq(failing.exitCode, 42, "exit code should be 42");
-
-// start + iterate stdout
-const handle = process.start("echo", { args: ["line1"] });
-const lines: string[] = [];
-for await (const line of handle.stdout) {
-  lines.push(line);
+function shellProgram(): string {
+  return system.isWindows ? "cmd" : "sh";
 }
-await handle.closed;
-assert(lines.some((l) => l.includes("line1")), "should have captured 'line1' from stdout");
+
+function longSleepHandle() {
+  return system.isWindows
+    ? process.start("ping", { args: ["-n", "100", "127.0.0.1"] })
+    : process.start("sleep", { args: ["100"] });
+}
+
+function shortDetachedPid(): number {
+  return system.isWindows
+    ? process.startDetached("ping", { args: ["-n", "1", "127.0.0.1"] })
+    : process.startDetached("sleep", { args: ["0.1"] });
+}
+
+// start() + stdout iteration
+{
+  const handle = process.start(shellProgram(), { args: shellArgs("echo hello world") });
+  let output = "";
+  for await (const line of handle.stdout) {
+    output += line;
+  }
+  const closed = await handle.closed;
+  assertEq(closed.exitCode, 0, "echo handle should exit 0");
+  assert(output.trim() === "hello world", `stdout should be 'hello world', got ${JSON.stringify(output.trim())}`);
+}
+
+// stdin -> stdout roundtrip
+{
+  const handle = system.isWindows
+    ? process.start("findstr", { args: [".*"] })
+    : process.start("cat");
+  await handle.write("test input\n");
+  await handle.closeStdin();
+  let output = "";
+  for await (const line of handle.stdout) {
+    output += line;
+  }
+  const closed = await handle.closed;
+  assertEq(closed.exitCode, 0, "stdin roundtrip command should exit 0");
+  assertEq(output.trim(), "test input", "stdin should be echoed to stdout");
+}
+
+// exit code
+{
+  const handle = process.start(shellProgram(), { args: shellArgs("exit 42") });
+  const closed = await handle.closed;
+  assertEq(closed.exitCode, 42, "closed.exitCode should forward the process exit code");
+}
+
+// stderr
+{
+  const expr = system.isWindows ? "echo error 1>&2" : "echo error >&2";
+  const handle = process.start(shellProgram(), { args: shellArgs(expr) });
+  let output = "";
+  for await (const line of handle.stderr) {
+    output += line;
+  }
+  const closed = await handle.closed;
+  assertEq(closed.exitCode, 0, "stderr command should exit 0");
+  assertEq(output.trim(), "error", "stderr should be captured");
+}
+
+// kill()
+{
+  const handle = longSleepHandle();
+  handle.kill();
+  await handle.closed;
+}
+
+// startDetached()
+{
+  const pid = shortDetachedPid();
+  assert(pid > 0, "startDetached should return a positive pid");
+}
+
+// pid
+{
+  const handle = process.start(shellProgram(), { args: shellArgs("echo test") });
+  assert(handle.pid > 0, "process handle pid should be positive");
+  await handle.closed;
+}
+
+// startAndWait stdout
+{
+  const result = await process.startAndWait(shellProgram(), { args: shellArgs("echo hello world") });
+  assertEq(result.exitCode, 0, "startAndWait echo should exit 0");
+  if (result.stdout === undefined) {
+    throw new Error("stdout should be captured for startAndWait");
+  }
+  assertEq(result.stdout.trim(), "hello world", "startAndWait stdout");
+}
+
+// startAndWait exit code
+{
+  const failing = await process.startAndWait(shellProgram(), { args: shellArgs("exit 7") });
+  assertEq(failing.exitCode, 7, "startAndWait exit code should be 7");
+}
+
+// startAndWait stderr
+{
+  const expr = system.isWindows ? "echo err 1>&2" : "echo err >&2";
+  const result = await process.startAndWait(shellProgram(), { args: shellArgs(expr) });
+  assertEq(result.exitCode, 0, "startAndWait stderr command should exit 0");
+  if (result.stderr === undefined) {
+    throw new Error("stderr should be captured for startAndWait");
+  }
+  assertEq(result.stderr.trim(), "err", "startAndWait stderr");
+}
+
+// terminate()
+{
+  const handle = longSleepHandle();
+  handle.terminate();
+  await handle.closed;
+}

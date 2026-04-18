@@ -174,34 +174,7 @@ impl JsApp {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::app::js::JsWaitAtEnd, built_info, runtime::Runtime};
-
-    #[test]
-    fn test_wait_at_end() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let result = script_engine
-                .eval::<JsWaitAtEnd>(
-                    r#"
-            app.waitAtEnd = true;
-            app.waitAtEnd
-                "#,
-                )
-                .await
-                .unwrap();
-            assert_eq!(result, JsWaitAtEnd::Yes);
-
-            let result = script_engine
-                .eval::<JsWaitAtEnd>(
-                    r#"
-            app.waitAtEnd = WaitAtEnd.Automatic;
-            app.waitAtEnd
-                "#,
-                )
-                .await
-                .unwrap();
-            assert_eq!(result, JsWaitAtEnd::Automatic);
-        });
-    }
+    use crate::{built_info, runtime::Runtime};
 
     #[test]
     fn test_version() {
