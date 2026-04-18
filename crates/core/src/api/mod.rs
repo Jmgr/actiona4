@@ -57,10 +57,7 @@ pub fn check_min_arg_count(min: usize, ctx: &Ctx, args: &[Value<'_>]) -> Result<
 
 #[cfg(test)]
 pub(crate) mod test_helpers {
-    use std::{
-        env::temp_dir,
-        path::{Path, PathBuf},
-    };
+    use std::path::Path;
 
     use macros::{js_class, js_methods};
     use rand::RngExt;
@@ -76,10 +73,6 @@ pub(crate) mod test_helpers {
             .take(10)
             .map(char::from)
             .collect()
-    }
-
-    pub fn random_temp_filename() -> PathBuf {
-        temp_dir().join(format!("text_{}.txt", random_name()))
     }
 
     pub fn js_string(value: impl AsRef<str>) -> String {

@@ -19,6 +19,8 @@ pub enum Commands {
     AppImageNoSign,
     /// Generate rustdoc JSON and TypeScript declaration files.
     Doc,
+    /// Lint and type-check end-to-end TypeScript scripts and shared declarations.
+    LintTs,
     /// Generate Breakpad symbol files (.sym) and strip release binaries.
     Symbols,
     /// Symbolicate a crash dump archive or loose minidump using the release symbol files.

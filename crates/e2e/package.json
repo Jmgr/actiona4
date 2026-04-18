@@ -1,0 +1,10 @@
+{
+  "name": "actiona4-e2e-ts",
+  "private": true,
+  "scripts": {
+    "lint": "tsc -p scripts/tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3"
+  }
+}

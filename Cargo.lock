@@ -2119,6 +2119,7 @@ name = "e2e"
 version = "0.1.10"
 dependencies = [
  "assert_cmd",
+ "httptest",
  "tempfile",
 ]
 
@@ -10406,9 +10407,6 @@ dependencies = [
  "installer-tools",
  "reqwest",
  "serde_json",
- "swc_common",
- "swc_ecma_ast",
- "swc_ecma_parser",
  "tempfile",
  "tokio",
  "toml 1.1.2+spec-1.1.0",

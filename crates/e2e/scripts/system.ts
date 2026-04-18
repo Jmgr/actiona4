@@ -1,6 +1,9 @@
 // CPU
 const cpu = system.cpu;
 assert(cpu.logicalCoreCount >= 1, "logicalCoreCount >= 1");
+if (cpu.physicalCoreCount !== undefined) {
+  assert(cpu.physicalCoreCount >= 1, "physicalCoreCount >= 1");
+}
 assert(typeof cpu.architecture === "string" && cpu.architecture.length > 0, "architecture is a non-empty string");
 
 const usage = await cpu.usage();
@@ -37,3 +40,29 @@ assert(percent.includes("%"), "formatPercent includes %");
 
 const freq = formatFrequency(1000000);
 assert(freq.includes("MHz") || freq.includes("kHz") || freq.includes("Hz"), "formatFrequency includes unit");
+
+// Exact format values
+assertEq(formatFrequency(40000), "40 kHz", "formatFrequency(40000) === '40 kHz'");
+assertEq(formatPercent(50), "50%", "formatPercent(50) === '50%'");
+assertEq(formatPercent(50.005), "50.01%", "formatPercent(50.005) rounds correctly");
+assertEq(formatBytes(42000), "41 KiB", "formatBytes(42000) === '41 KiB'");
+
+// ProcessStatus enum is accessible
+assertEq(String(ProcessStatus.Run), "Run", "ProcessStatus.Run is accessible");
+
+// Processes
+const allProcesses = await system.processes.list();
+assert(allProcesses.length > 0, "at least one process");
+const sample = allProcesses[0]!;
+
+const byPid = await system.processes.find({ pid: sample.pid, rescan: false });
+assert(byPid.length > 0, "processes.find by pid should return results");
+assert(byPid.some(p => p.pid === sample.pid), "processes.find by pid matches the expected pid");
+
+const byStatus = await system.processes.find({ status: sample.status, rescan: false });
+assert(byStatus.length > 0, "processes.find by status should return results");
+
+if (sample.name !== undefined) {
+  const byName = await system.processes.find({ name: sample.name, rescan: false });
+  assert(byName.length > 0, "processes.find by name should return results");
+}

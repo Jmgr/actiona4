@@ -53,6 +53,27 @@ dependencies = ["deps", "fmt-check", "derivefmt-check", "sort-check"]
 command = "cargo"
 args = ["clippy", "--all", "--all-targets", "--all-features"]
 
+[tasks.install-e2e-ts-deps]
+script_runner = "@shell"
+script = '''
+if [ ! -x crates/e2e/node_modules/.bin/tsc ]; then
+    npm ci --prefix crates/e2e
+fi
+'''
+
+[tasks.install-e2e-ts-deps.windows]
+script_runner = "@shell"
+script = '''
+if not exist crates\\e2e\\node_modules\\.bin\\tsc.cmd (
+    npm ci --prefix crates/e2e
+)
+'''
+
+[tasks.lint-ts]
+dependencies = ["install-e2e-ts-deps"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "lint-ts"]
+
 [tasks.build-actiona-run]
 description = "Build the actiona-run binary (required before running e2e tests)."
 command = "cargo"
@@ -68,7 +89,7 @@ command = "cargo"
 args = ["test", "-p", "e2e"]
 
 [tasks.lint]
-dependencies = ["clippy"]
+dependencies = ["clippy", "lint-ts"]
 
 [tasks.install-rustfmt]
 cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
@@ -120,6 +141,7 @@ dependencies = ["install-rustfmt", "install-derivefmt", "install-sort"]
 
 [tasks.doc]
 condition = { platforms = ["linux"] }
+dependencies = ["install-e2e-ts-deps"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "doc"]
 

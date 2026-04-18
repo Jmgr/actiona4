@@ -57,4 +57,4 @@ await assertRejectsContains(
   "datetime.waitForSchedule should reject invalid dayOfMonth values",
 );
 
-assertEq(DayOfWeek.Monday, "Monday", "DayOfWeek enum should be exposed to scripts");
+assertEq(String(DayOfWeek.Monday), "Monday", "DayOfWeek enum should be exposed to scripts");

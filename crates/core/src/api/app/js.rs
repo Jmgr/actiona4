@@ -171,16 +171,3 @@ impl JsApp {
         "App".to_string()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{built_info, runtime::Runtime};
-
-    #[test]
-    fn test_version() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let result = script_engine.eval::<String>("app.version").await.unwrap();
-            assert_eq!(result, built_info::PKG_VERSION);
-        });
-    }
-}

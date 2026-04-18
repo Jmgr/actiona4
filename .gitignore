@@ -1,3 +1,4 @@
 /target
 .env
 .vscode
+crates/e2e/node_modules/

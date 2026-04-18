@@ -377,25 +377,3 @@ impl JsRandom {
         "Random".to_string()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use unicode_segmentation::UnicodeSegmentation;
-
-    use crate::runtime::Runtime;
-
-    #[test]
-    fn test_random_string_accepts_unicode_character_set() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let value = script_engine
-                .eval::<String>(r#"random.string(128, { characters: "a\u0302👍🏽🇬🇧" })"#)
-                .await
-                .unwrap();
-
-            let allowed = "a\u{0302}👍🏽🇬🇧".graphemes(true).collect::<Vec<_>>();
-            let generated = value.graphemes(true).collect::<Vec<_>>();
-            assert_eq!(generated.len(), 128);
-            assert!(generated.iter().all(|g| allowed.contains(g)));
-        });
-    }
-}

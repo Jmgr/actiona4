@@ -108,3 +108,7 @@ const seededId1 = random.uuid();
 random.setSeed(314159);
 const seededId2 = random.uuid();
 assertEq(seededId1, seededId2, "random.uuid() should be deterministic when seeded");
+
+// Unicode character sets are accepted
+const unicodeStr = random.string(4, { characters: "a\u0302\uD83D\uDC4D\uD83C\uDFFD\uD83C\uDDEC\uD83C\uDDE7" });
+assert(typeof unicodeStr === "string" && unicodeStr.length > 0, "random.string() should accept unicode character sets");

@@ -119,3 +119,22 @@ function shortDetachedPid(): number {
   handle.terminate();
   await handle.closed;
 }
+
+// shell()
+{
+  const exitCode = await process.shell("exit 42");
+  assertEq(exitCode, 42, "process.shell should forward exit codes");
+}
+
+{
+  const exitCode = await process.shell("echo hello from shell");
+  assertEq(exitCode, 0, "process.shell should succeed for a simple command");
+}
+
+// Windows GUI terminate regression
+if (system.isWindows) {
+  const handle = process.start("charmap");
+  await sleep("2s");
+  handle.terminate();
+  await handle.closed;
+}

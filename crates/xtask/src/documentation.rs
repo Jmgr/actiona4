@@ -1,46 +1,41 @@
 use std::{path::Path, process::Command};
 
-use color_eyre::{
-    Result,
-    eyre::{WrapErr, eyre},
-};
-use swc_common::{FileName, SourceMap, sync::Lrc};
-use swc_ecma_ast::EsVersion;
-use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
+use color_eyre::{Result, eyre::eyre};
+use tempfile::tempdir;
 
 use crate::util::run_command;
 
-fn validate_typescript_declarations(path: &Path) -> Result<()> {
-    let code = std::fs::read_to_string(path).wrap_err_with(|| {
-        format!(
-            "Failed to read generated TypeScript declarations at {}.",
-            path.display()
-        )
-    })?;
+fn validate_typescript_declarations(workspace_root: &Path, path: &Path) -> Result<()> {
+    let e2e_dir = workspace_root.join("crates/e2e");
+    let base_tsconfig_path = workspace_root.join("crates/run/assets/tsconfig.json");
+    let tsc_path = if cfg!(windows) {
+        e2e_dir.join("node_modules/.bin/tsc.cmd")
+    } else {
+        e2e_dir.join("node_modules/.bin/tsc")
+    };
 
-    let cm: Lrc<SourceMap> = Default::default();
-    let fm = cm.new_source_file(FileName::Real(path.to_path_buf()).into(), code);
-    let lexer = Lexer::new(
-        Syntax::Typescript(TsSyntax {
-            dts: true,
-            ..Default::default()
-        }),
-        EsVersion::Es2020,
-        StringInput::from(&*fm),
-        None,
-    );
-    let mut parser = Parser::new_from(lexer);
-
-    let parse_result = parser.parse_program();
-    let parser_errors = parser.take_errors();
-
-    if parse_result.is_err() || !parser_errors.is_empty() {
+    if !tsc_path.exists() {
         return Err(eyre!(
-            "Generated TypeScript declarations are not valid syntax: result={parse_result:?}, errors={parser_errors:?}"
+            "TypeScript compiler not found at {}. Run `npm ci --prefix crates/e2e` first.",
+            tsc_path.display()
         ));
     }
 
-    Ok(())
+    let temp_dir = tempdir()?;
+    let tsconfig_path = temp_dir.path().join("tsconfig.json");
+    let tsconfig = serde_json::json!({
+        "extends": base_tsconfig_path,
+        "files": [path]
+    });
+    std::fs::write(&tsconfig_path, serde_json::to_vec_pretty(&tsconfig)?)?;
+
+    run_command(
+        Command::new(&tsc_path)
+            .arg("-p")
+            .arg(&tsconfig_path)
+            .current_dir(workspace_root),
+        "Generated TypeScript declarations failed TypeScript validation.",
+    )
 }
 
 pub async fn generate_docs(workspace_root: &Path) -> Result<()> {
@@ -76,7 +71,7 @@ pub async fn generate_docs(workspace_root: &Path) -> Result<()> {
         "Failed to generate TypeScript declarations.",
     )?;
 
-    validate_typescript_declarations(&output_path)?;
+    validate_typescript_declarations(workspace_root, &output_path)?;
 
     tokio::fs::create_dir_all(&run_assets_directory).await?;
     tokio::fs::copy(&output_path, run_assets_directory.join("index.d.ts")).await?;

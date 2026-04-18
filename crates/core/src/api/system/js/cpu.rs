@@ -111,29 +111,3 @@ impl JsCpu {
         display_with_type("Cpu", &self.inner)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::runtime::Runtime;
-
-    #[test]
-    fn test_core_count() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            assert!(
-                script_engine
-                    .eval::<u64>("system.cpu.physicalCoreCount")
-                    .await
-                    .unwrap()
-                    > 0
-            );
-
-            assert!(
-                script_engine
-                    .eval::<u64>("system.cpu.logicalCoreCount")
-                    .await
-                    .unwrap()
-                    > 0
-            );
-        });
-    }
-}

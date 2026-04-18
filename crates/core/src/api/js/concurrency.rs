@@ -14,8 +14,10 @@ use crate::api::js::task::task;
 /// ```ts
 /// // Race two promises, resolving with whichever finishes first, cancelling the other.
 /// // Note that this is different from `Promises.race`, which doesn't cancel any promise.
-/// const result = await Concurrency.race([sleep("100ms"), sleep("1s")]);
+/// const result = await concurrency.race([sleep("100ms"), sleep("1s")]);
 /// ```
+///
+/// @singleton
 #[derive(Debug, JsLifetime, Trace)]
 #[js_class]
 pub struct JsConcurrency {}
@@ -34,7 +36,7 @@ impl JsConcurrency {
     ///
     /// ```ts
     /// // Resolve with the first successful result.
-    /// const result = await Concurrency.race([
+    /// const result = await concurrency.race([
     ///   sleep("200ms").then(() => "fast"),
     ///   sleep("1s").then(() => "slow"),
     /// ]);
@@ -43,7 +45,7 @@ impl JsConcurrency {
     ///
     /// ```ts
     /// // Use race to implement a timeout.
-    /// const result = await Concurrency.race([
+    /// const result = await concurrency.race([
     ///   fetchData(),
     ///   sleep("5s").then(() => { throw new Error("Timeout"); })
     /// ]);
@@ -53,7 +55,7 @@ impl JsConcurrency {
     /// // Rejections also win the race.
     /// // Here the error is thrown quickly and the slower task is cancelled.
     /// try {
-    ///   await Concurrency.race([
+    ///   await concurrency.race([
     ///     sleep("50ms").then(() => { throw new Error("Failed quickly"); }),
     ///     sleep("2s"),
     ///   ]);
@@ -64,7 +66,7 @@ impl JsConcurrency {
     ///
     /// ```ts
     /// // You can cancel the race task itself.
-    /// const t = Concurrency.race([
+    /// const t = concurrency.race([
     ///   sleep("5s"),
     ///   sleep("8s"),
     /// ]);
@@ -74,8 +76,8 @@ impl JsConcurrency {
     ///
     /// ```ts
     /// // Empty or non-promise-only inputs resolve to undefined.
-    /// const a = await Concurrency.race([]);
-    /// const b = await Concurrency.race([1, "text", null]);
+    /// const a = await concurrency.race([]);
+    /// const b = await concurrency.race([1, "text", null]);
     /// // a === undefined, b === undefined
     /// ```
     /// @generic
@@ -135,133 +137,6 @@ impl JsConcurrency {
     /// @skip
     #[instrument(skip_all)]
     pub fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
-        super::classes::registration_target(ctx).prop("Concurrency", Self::new())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::time::Instant;
-
-    use crate::runtime::Runtime;
-
-    #[test]
-    fn test_race() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let start = Instant::now();
-
-            script_engine
-                .eval_async::<()>("await Concurrency.race([sleep(\"100ms\"), sleep(\"1s\")])")
-                .await
-                .unwrap();
-
-            let duration = Instant::now() - start;
-            assert!(duration.as_millis() >= 100 && duration.as_millis() < 1000);
-        });
-    }
-
-    #[test]
-    fn test_race_of_race() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let start = Instant::now();
-
-            script_engine
-                .eval_async::<()>(
-                    "await Concurrency.race([Concurrency.race([sleep(\"100ms\")]), sleep(\"1s\")])",
-                )
-                .await
-                .unwrap();
-
-            let duration = Instant::now() - start;
-            assert!(duration.as_millis() >= 100 && duration.as_millis() < 1000);
-        });
-    }
-
-    #[test]
-    fn test_race_returns_undefined_when_empty() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let is_undefined = script_engine
-                .eval_async::<bool>("(await Concurrency.race([])) === undefined")
-                .await
-                .unwrap();
-
-            assert!(is_undefined);
-        });
-    }
-
-    #[test]
-    fn test_race_ignores_non_promises() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let value = script_engine
-                .eval_async::<String>(
-                    r#"await Concurrency.race([1, "text", sleep("30ms").then(() => "done"), null])"#,
-                )
-                .await
-                .unwrap();
-
-            assert_eq!(value, "done");
-        });
-    }
-
-    #[test]
-    fn test_race_propagates_first_rejection_and_cancels_losers() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let result = script_engine
-                .eval_async::<String>(
-                    r#"
-                    const loser = sleep("1s");
-                    let loserError = "";
-                    loser.catch((e) => {
-                        loserError = e.toString();
-                    });
-
-                    let raceError = "";
-                    try {
-                        await Concurrency.race([
-                            sleep("20ms").then(() => {
-                                throw new Error("boom");
-                            }),
-                            loser,
-                        ]);
-                    } catch (e) {
-                        raceError = e.toString();
-                    }
-
-                    await sleep("50ms");
-                    `${raceError}|${loserError}`
-                    "#,
-                )
-                .await
-                .unwrap();
-
-            assert_eq!(result, "Error: boom|Error: Cancelled");
-        });
-    }
-
-    #[test]
-    fn test_race_cancels_losing_tasks() {
-        Runtime::test_with_script_engine(|script_engine| async move {
-            let loser_error = script_engine
-                .eval_async::<String>(
-                    r#"
-                    const winner = sleep("30ms");
-                    const loser = sleep("1s");
-
-                    await Concurrency.race([winner, loser]);
-                    await winner;
-
-                    try {
-                        await loser;
-                        "";
-                    } catch (e) {
-                        e.toString();
-                    }
-                    "#,
-                )
-                .await
-                .unwrap();
-
-            assert_eq!(loser_error, "Error: Cancelled");
-        });
+        super::classes::registration_target(ctx).prop("concurrency", Self::new())
     }
 }

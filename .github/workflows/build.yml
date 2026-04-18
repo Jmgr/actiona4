@@ -193,6 +193,13 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: crates/e2e/package-lock.json
+
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
@@ -213,6 +220,9 @@ jobs:
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
 
+      - name: Install e2e TypeScript dependencies
+        run: npm ci --prefix crates/e2e
+
       - name: Run lint
         env:
           RUSTFLAGS: -C link-arg=-fuse-ld=mold
@@ -231,6 +241,13 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: crates/e2e/package-lock.json
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
@@ -253,6 +270,10 @@ jobs:
       - name: Setup vcpkg with OpenCV
         uses: ./.github/actions/setup-vcpkg
 
+      - name: Install e2e TypeScript dependencies
+        shell: pwsh
+        run: npm ci --prefix crates/e2e
+
       - name: Run lint
         run: cargo make lint
 
@@ -270,6 +291,13 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: crates/e2e/package-lock.json
 
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
@@ -289,6 +317,9 @@ jobs:
 
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
+
+      - name: Install e2e TypeScript dependencies
+        run: npm ci --prefix crates/e2e
 
       - name: Build docs
         env:

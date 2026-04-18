@@ -122,3 +122,24 @@ await File.remove(renamedFile);
 // remove
 await File.remove(testFile);
 assert(!(await File.exists(testFile)), "file should not exist after remove");
+
+// writeBytes / readBytes (static)
+const bytesPath = tmp + `/actiona4_e2e_file_bytes_${random.uuid()}.bin`;
+const testBytes = new Uint8Array([116, 101, 115, 116]); // "test"
+await File.writeBytes(bytesPath, testBytes);
+const readBytes = await File.readBytes(bytesPath);
+assertEq(JSON.stringify(Array.from(readBytes)), JSON.stringify(Array.from(testBytes)), "File.writeBytes/readBytes static roundtrip");
+await File.remove(bytesPath);
+
+// writeBytes / readBytes (instance methods)
+const bytesPath2 = tmp + `/actiona4_e2e_file_bytes2_${random.uuid()}.bin`;
+const handle7 = await File.open(bytesPath2, { read: true, write: true, createNew: true });
+await handle7.writeBytes(new Uint8Array([116, 101, 115, 116]));
+await handle7.rewind();
+const allBytes = await handle7.readBytes();
+assertEq(JSON.stringify(Array.from(allBytes)), JSON.stringify([116, 101, 115, 116]), "instance writeBytes/readBytes roundtrip");
+await handle7.rewind();
+const twoBytes = await handle7.readBytes(2);
+assertEq(JSON.stringify(Array.from(twoBytes)), JSON.stringify([116, 101]), "readBytes(2) returns only 2 bytes");
+handle7.close();
+await File.remove(bytesPath2);

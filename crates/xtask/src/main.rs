@@ -11,6 +11,7 @@ mod installer;
 #[cfg(windows)]
 mod signing;
 mod symbols;
+mod typescript;
 mod util;
 mod workspace;
 
@@ -28,6 +29,7 @@ use crate::{
     cli::{Cli, Commands},
     documentation::generate_docs,
     symbols::{generate_symbols, symbolicate},
+    typescript::lint_e2e_typescript,
     workspace::workspace_root,
 };
 
@@ -44,6 +46,7 @@ async fn main() -> Result<()> {
         #[cfg(unix)]
         Commands::AppImageNoSign => appimage::build_appimage(&workspace_root, false).await?,
         Commands::Doc => generate_docs(&workspace_root).await?,
+        Commands::LintTs => lint_e2e_typescript(&workspace_root)?,
         Commands::Symbols => generate_symbols(&workspace_root)?,
         Commands::Symbolicate { dump } => symbolicate(&workspace_root, &dump)?,
         #[cfg(windows)]
