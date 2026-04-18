@@ -6771,6 +6771,7 @@ dependencies = [
  "indicatif",
  "installer-tools",
  "libc",
+ "rfd",
  "rquickjs",
  "rustyline",
  "sadness-generator",

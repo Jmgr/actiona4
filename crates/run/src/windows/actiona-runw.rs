@@ -27,10 +27,7 @@ use windows::{
 #[cfg(windows)]
 fn main_impl() -> ExitCode {
     if args_os().nth(1).is_none() {
-        show_message_box(
-            "Actiona Run is a command-line tool.\n\nUse it from a terminal, for example:\n  actiona-run script.ts\n  actiona-run repl\n\nFor full help, run:\n  actiona-run --help",
-            MB_OK | MB_ICONINFORMATION,
-        );
+        show_message_box(run::NO_ARGS_MESSAGE, MB_OK | MB_ICONINFORMATION);
         return ExitCode::FAILURE;
     }
 

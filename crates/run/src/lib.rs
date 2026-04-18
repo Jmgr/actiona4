@@ -34,6 +34,7 @@ use color_eyre::{
 };
 use dialoguer::{Confirm, theme::ColorfulTheme};
 use installer_tools::path::{PathScope, add_directory_to_path, remove_directory_from_path};
+use rfd::{MessageButtons, MessageLevel};
 use tracing_subscriber::{
     EnvFilter, fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt,
 };
@@ -82,6 +83,8 @@ impl std::fmt::Display for ScriptFailed {
 
 impl std::error::Error for ScriptFailed {}
 
+pub const NO_ARGS_MESSAGE: &str = "Actiona Run is a command-line tool.\n\nUse it from a terminal, for example:\n  actiona-run script.ts\n  actiona-run repl\n\nFor full help, run:\n  actiona-run --help";
+
 pub fn run_cli() -> Result<()> {
     let _guard = setup_crash_reporting(built_info::PKG_NAME)?;
 
@@ -92,6 +95,20 @@ pub fn run_cli() -> Result<()> {
     // first instance and exit before arg parsing attempts to interpret the URI.
     #[cfg(windows)]
     if Runtime::relay_deep_link_if_needed() {
+        return Ok(());
+    }
+
+    // When launched without arguments outside a terminal (e.g. double-clicking
+    // the AppImage on Linux), show a dialog explaining this is a CLI tool.
+    // On Windows this is handled by actiona-runw.exe before actiona-run.exe runs.
+    #[cfg(not(windows))]
+    if std::env::args_os().len() == 1 && !stdin().is_terminal() {
+        rfd::MessageDialog::new()
+            .set_title("Actiona Run")
+            .set_description(NO_ARGS_MESSAGE)
+            .set_level(MessageLevel::Info)
+            .set_buttons(MessageButtons::Ok)
+            .show();
         return Ok(());
     }
 

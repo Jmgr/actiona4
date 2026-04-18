@@ -51,6 +51,7 @@ enigo.workspace = true
 flate2.workspace = true
 humantime.workspace = true
 indicatif.workspace = true
+rfd.workspace = true
 rquickjs.workspace = true
 rustyline.workspace = true
 sadness-generator.workspace = true
