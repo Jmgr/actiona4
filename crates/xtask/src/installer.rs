@@ -91,7 +91,7 @@ async fn write_installer_files_include(workspace_root: &Path) -> Result<()> {
         writeln!(
             file_contents,
             "{}",
-            installer_document_source_line(&staged_document)?
+            installer_document_source_line(workspace_root, &staged_document)?
         )
         .map_err(|error| eyre!(error))?;
     }
@@ -130,9 +130,19 @@ fn installer_source_line(
     Ok(source_line)
 }
 
-fn installer_document_source_line(staged_file: &StagedPackagedFile) -> Result<String> {
+fn installer_document_source_line(
+    workspace_root: &Path,
+    staged_file: &StagedPackagedFile,
+) -> Result<String> {
     let source_path = staged_file
         .source_path
+        .strip_prefix(workspace_root)
+        .map_err(|_| {
+            eyre!(
+                "Staged installer document is outside the workspace: {}",
+                staged_file.source_path.display()
+            )
+        })?
         .to_str()
         .ok_or_else(|| eyre!("Invalid UTF-8 path: {}", staged_file.source_path.display()))?;
     Ok(format!(
@@ -163,5 +173,45 @@ fn quote_inno_argument(argument: &str) -> String {
         format!("$q{argument}$q")
     } else {
         argument.to_owned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::{Path, PathBuf};
+
+    use super::{StagedPackagedFile, installer_document_source_line};
+
+    #[test]
+    fn installer_document_source_line_uses_workspace_relative_path() {
+        let workspace_root = Path::new(r"C:\rust\actiona4");
+        let staged_file = StagedPackagedFile {
+            source_path: PathBuf::from(
+                r"C:\rust\actiona4\target\package-docs\windows\README.md",
+            ),
+            destination_name: "README.md".to_owned(),
+        };
+
+        let source_line = installer_document_source_line(workspace_root, &staged_file).unwrap();
+
+        assert_eq!(
+            source_line,
+            r#"Source: "..\target\package-docs\windows\README.md"; DestDir: "{app}"; DestName: "README.md"; Flags: ignoreversion"#
+        );
+    }
+
+    #[test]
+    fn installer_document_source_line_rejects_paths_outside_workspace() {
+        let workspace_root = Path::new(r"C:\rust\actiona4");
+        let staged_file = StagedPackagedFile {
+            source_path: PathBuf::from(r"C:\elsewhere\README.md"),
+            destination_name: "README.md".to_owned(),
+        };
+
+        let error = installer_document_source_line(workspace_root, &staged_file).unwrap_err();
+
+        assert!(error
+            .to_string()
+            .contains("Staged installer document is outside the workspace"));
     }
 }
