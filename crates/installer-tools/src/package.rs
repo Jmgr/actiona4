@@ -115,7 +115,7 @@ const PACKAGED_FILES: [PackagedFileDefinition; 6] = [
         .with_dos_line_feeds()
         .enumerate_root_markdown_files(),
     PackagedFileDefinition::new("LICENSE")
-        .with_windows_destination_name("LICENSE.md")
+        .with_windows_destination_name("LICENSE.txt")
         .include_in_appimage()
         .with_dos_line_feeds(),
 ];
