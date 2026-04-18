@@ -56,6 +56,38 @@ Os information
 
 ***
 
+### platform
+
+> `readonly` **platform**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+Current platform: `"x11"`, `"xwayland"`, `"wayland"`, or `"windows"`
+
+***
+
+### isLinux
+
+> `readonly` **isLinux**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Returns true if the current OS is Linux
+
+***
+
+### isUnix
+
+> `readonly` **isUnix**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Returns true if the current OS is a Unix
+
+***
+
+### isWindows
+
+> `readonly` **isWindows**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Returns true if the current OS is Windows
+
+***
+
 ### processes
 
 > `readonly` **processes**: [`Processes`](Processes.md)

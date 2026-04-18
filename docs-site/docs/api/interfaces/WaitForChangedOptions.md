@@ -11,7 +11,7 @@ await clipboard.waitForChanged();
 await clipboard.waitForChanged({ mode: ClipboardMode.Selection, interval: 0.05 });
 
 // Wait up to 1 second for a clipboard change
-await Concurrency.race([
+await concurrency.race([
   clipboard.waitForChanged(),
   sleep("1s"),
 ]);

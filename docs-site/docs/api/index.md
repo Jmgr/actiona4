@@ -43,6 +43,7 @@
 - [AbortSignal](interfaces/AbortSignal.md)
 - [AbortController](classes/AbortController.md)
 - [Concurrency](interfaces/Concurrency.md)
+- [concurrency](variables/concurrency.md)
 - [EventHandle](interfaces/EventHandle.md)
 
 ## Datetime
@@ -217,7 +218,7 @@
 ## StandardPaths
 
 - [StandardPaths](interfaces/StandardPaths.md)
-- [standard\_paths](variables/standard_paths.md)
+- [standardPaths](variables/standardPaths.md)
 
 ## System
 
