@@ -1,8 +1,14 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+use strum::{Display, EnumIs};
+
+#[derive(Clone, Copy, Debug, Display, EnumIs, Eq, PartialEq)]
 pub enum Platform {
+    #[strum(to_string = "x11")]
     X11,
+    #[strum(to_string = "xwayland")]
     XWayland,
+    #[strum(to_string = "wayland")]
     Wayland,
+    #[strum(to_string = "windows")]
     Windows,
 }
 
@@ -29,19 +35,38 @@ impl Platform {
             }
         }
     }
+}
 
-    #[must_use]
-    pub const fn is_wayland(self) -> bool {
-        matches!(self, Self::Wayland | Self::XWayland)
-    }
+#[must_use]
+#[cfg(linux)]
+pub const fn is_linux() -> bool {
+    true
+}
 
-    #[must_use]
-    pub const fn is_linux(self) -> bool {
-        !matches!(self, Self::Windows)
-    }
+#[cfg(not(linux))]
+pub const fn is_linux() -> bool {
+    false
+}
 
-    #[must_use]
-    pub const fn is_windows(self) -> bool {
-        matches!(self, Self::Windows)
-    }
+#[must_use]
+#[cfg(unix)]
+pub const fn is_unix() -> bool {
+    true
+}
+
+#[cfg(not(unix))]
+pub const fn is_unix() -> bool {
+    false
+}
+
+#[must_use]
+#[cfg(windows)]
+pub const fn is_windows() -> bool {
+    true
+}
+
+#[must_use]
+#[cfg(not(windows))]
+pub const fn is_windows() -> bool {
+    false
 }

@@ -4655,13 +4655,13 @@ declare class Directory {
  */
 declare interface Displays {
     /**
-     * Returns a random point within the bounds of all connected displays.
+     * Returns a random point within the bounds of all connected displays, or `undefined` if no display is found.
      */
-    randomPoint(): Promise<Readonly<Point>>;
+    randomPoint(): Promise<Readonly<Point | undefined>>;
     /**
-     * Returns the primary display, or throws if no primary display is found.
+     * Returns the primary display, or `undefined` if no display is found.
      */
-    primary(): Readonly<DisplayInfo>;
+    primary(): Readonly<DisplayInfo | undefined>;
     /**
      * Returns the display that contains the given point, or `undefined` if none.
      */
@@ -4683,33 +4683,33 @@ declare interface Displays {
      */
     fromId(id: number): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the smallest display by area, or throws if no displays are connected.
+     * Returns the smallest display by area, or `undefined` if no displays are connected.
      */
-    smallest(): Readonly<DisplayInfo>;
+    smallest(): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the largest display by area, or throws if no displays are connected.
+     * Returns the largest display by area, or `undefined` if no displays are connected.
      */
-    largest(): Readonly<DisplayInfo>;
+    largest(): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the display furthest to the left (minimum left edge), or throws if none.
+     * Returns the display furthest to the left (minimum left edge), or `undefined` if none.
      */
-    leftmost(): Readonly<DisplayInfo>;
+    leftmost(): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the display furthest to the right (maximum right edge), or throws if none.
+     * Returns the display furthest to the right (maximum right edge), or `undefined` if none.
      */
-    rightmost(): Readonly<DisplayInfo>;
+    rightmost(): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the display furthest to the top (minimum top edge), or throws if none.
+     * Returns the display furthest to the top (minimum top edge), or `undefined` if none.
      */
-    topmost(): Readonly<DisplayInfo>;
+    topmost(): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the display furthest to the bottom (maximum bottom edge), or throws if none.
+     * Returns the display furthest to the bottom (maximum bottom edge), or `undefined` if none.
      */
-    bottommost(): Readonly<DisplayInfo>;
+    bottommost(): Readonly<DisplayInfo | undefined>;
     /**
-     * Returns the display whose center is closest to the center of the desktop, or throws if none.
+     * Returns the display whose center is closest to the center of the desktop, or `undefined` if none.
      */
-    center(): Readonly<DisplayInfo>;
+    center(): Readonly<DisplayInfo | undefined>;
     /**
      * Returns all displays.
      */
@@ -8281,14 +8281,16 @@ declare interface Random {
      */
     resetSeed(): void;
     /**
-     * Returns a random position on any display.
+     * Returns a random position on any display, or `undefined` if there is no display.
      * 
      * ```ts
      * const pos = await random.position();
-     * println(pos);
+     * if (pos) {
+     *   println(pos);
+     * }
      * ```
      */
-    position(): Promise<Readonly<Point>>;
+    position(): Promise<Readonly<Point | undefined>>;
     /**
      * Returns a random color with full opacity.
      * 
@@ -9170,6 +9172,22 @@ declare interface System {
      * Os information
      */
     readonly os: Os;
+    /**
+     * Current platform: `"x11"`, `"xwayland"`, `"wayland"`, or `"windows"`
+     */
+    readonly platform: string;
+    /**
+     * Returns true if the current OS is Linux
+     */
+    readonly isLinux: boolean;
+    /**
+     * Returns true if the current OS is a Unix
+     */
+    readonly isUnix: boolean;
+    /**
+     * Returns true if the current OS is Windows
+     */
+    readonly isWindows: boolean;
     /**
      * Processes information
      */
@@ -10447,25 +10465,29 @@ declare interface Windows {
      */
     all(): readonly WindowHandle[];
     /**
-     * Returns the currently active (focused) window.
+     * Returns the currently active (focused) window, or `undefined` if no window is active.
      * 
      * ```ts
      * const win = windows.active();
-     * println(win.title());
+     * if (win) {
+     *   println(win.title());
+     * }
      * ```
      * @platform does not work on Wayland
      */
-    active(): Readonly<WindowHandle>;
+    active(): Readonly<WindowHandle | undefined>;
     /**
-     * Returns the currently active (focused) window. Alias for `active()`.
+     * Returns the currently active (focused) window, or `undefined` if no window is active. Alias for `active()`.
      * 
      * ```ts
      * const win = windows.foreground();
-     * println(win.title());
+     * if (win) {
+     *   println(win.title());
+     * }
      * ```
      * @platform does not work on Wayland
      */
-    foreground(): Readonly<WindowHandle>;
+    foreground(): Readonly<WindowHandle | undefined>;
     /**
      * Finds windows matching the provided criteria.
      * 

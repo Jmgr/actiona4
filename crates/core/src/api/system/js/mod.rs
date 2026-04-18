@@ -23,6 +23,8 @@ use crate::{
             },
         },
     },
+    platform_info,
+    runtime::WithUserData,
     types::display::display_with_type,
 };
 
@@ -121,6 +123,34 @@ impl JsSystem {
     #[must_use]
     pub fn os(&self) -> JsOs {
         JsOs::new(self.inner.os())
+    }
+
+    /// Current platform: `"x11"`, `"xwayland"`, `"wayland"`, or `"windows"`
+    #[get]
+    #[must_use]
+    pub fn platform(&self, ctx: Ctx<'_>) -> String {
+        ctx.user_data().platform().to_string()
+    }
+
+    /// Returns true if the current OS is Linux
+    #[get]
+    #[must_use]
+    pub const fn is_linux() -> bool {
+        platform_info::is_linux()
+    }
+
+    /// Returns true if the current OS is a Unix
+    #[get]
+    #[must_use]
+    pub const fn is_unix() -> bool {
+        platform_info::is_unix()
+    }
+
+    /// Returns true if the current OS is Windows
+    #[get]
+    #[must_use]
+    pub const fn is_windows() -> bool {
+        platform_info::is_windows()
     }
 
     /// Processes information

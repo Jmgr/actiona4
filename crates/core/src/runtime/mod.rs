@@ -95,7 +95,7 @@ use crate::{
     },
     cancel_on,
     error::CommonError,
-    platform_info::Platform,
+    platform_info::{Platform, is_linux},
     runtime::{events::Guard, shared_rng::SharedRng},
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
@@ -207,7 +207,7 @@ impl JsUserData {
     }
 
     pub(crate) fn require_not_linux<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
-        if self.platform.is_linux() {
+        if is_linux() {
             return Err(
                 CommonError::UnsupportedPlatform("not supported on Linux".into()).into_js(ctx),
             );
@@ -1283,7 +1283,7 @@ impl Runtime {
     }
 
     pub fn require_not_wayland(&self) -> color_eyre::Result<()> {
-        if self.platform.is_wayland() {
+        if self.platform.is_wayland() || self.platform.is_x_wayland() {
             return Err(CommonError::UnsupportedPlatform("not supported on Wayland".into()).into());
         }
         Ok(())
@@ -1304,7 +1304,7 @@ impl Runtime {
     }
 
     pub fn require_not_linux(&self) -> color_eyre::Result<()> {
-        if self.platform.is_linux() {
+        if is_linux() {
             return Err(CommonError::UnsupportedPlatform("not supported on Linux".into()).into());
         }
         Ok(())

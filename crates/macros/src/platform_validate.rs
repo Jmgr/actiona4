@@ -255,11 +255,11 @@ impl SupportedPlatform {
     fn guard_condition(self) -> proc_macro2::TokenStream {
         match self {
             // Windows-only → error on Linux
-            Self::Windows => quote! { platform.is_linux() },
+            Self::Windows => quote! { crate::platform_info::is_linux() },
             // Linux-only → error on Windows
-            Self::Linux => quote! { platform.is_windows() },
+            Self::Linux => quote! { crate::platform_info::is_windows() },
             // Wayland-only → error when not Wayland (includes XWayland)
-            Self::Wayland => quote! { !platform.is_wayland() },
+            Self::Wayland => quote! { !(platform.is_wayland() || platform.is_x_wayland()) },
             // X11-only → error when not exactly X11
             Self::X11 => {
                 quote! { !matches!(platform, crate::platform_info::Platform::X11) }
@@ -273,9 +273,9 @@ impl SupportedPlatform {
     /// current platform *is* P.
     fn not_guard_condition(self) -> proc_macro2::TokenStream {
         match self {
-            Self::Windows => quote! { platform.is_windows() },
-            Self::Linux => quote! { platform.is_linux() },
-            Self::Wayland => quote! { platform.is_wayland() },
+            Self::Windows => quote! { crate::platform_info::is_windows() },
+            Self::Linux => quote! { crate::platform_info::is_linux() },
+            Self::Wayland => quote! { platform.is_wayland() || platform.is_x_wayland() },
             Self::X11 => {
                 quote! { matches!(platform, crate::platform_info::Platform::X11) }
             }

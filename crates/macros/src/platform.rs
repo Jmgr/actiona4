@@ -226,25 +226,25 @@ impl PlatformAttributeArguments {
     fn platform_check(self) -> proc_macro2::TokenStream {
         match (self.mode, self.platform) {
             (PlatformMode::Only, GuardedPlatform::Linux) => {
-                quote! { __actiona_platform.is_linux() }
+                quote! { crate::platform_info::is_linux() }
             }
             (PlatformMode::Only, GuardedPlatform::Windows) => {
-                quote! { __actiona_platform.is_windows() }
+                quote! { crate::platform_info::is_windows() }
             }
             (PlatformMode::Only, GuardedPlatform::Wayland) => {
-                quote! { __actiona_platform.is_wayland() }
+                quote! { __actiona_platform.is_wayland() || __actiona_platform.is_x_wayland() }
             }
             (PlatformMode::Only, GuardedPlatform::X11) => {
                 quote! { matches!(__actiona_platform, crate::platform_info::Platform::X11) }
             }
             (PlatformMode::Not, GuardedPlatform::Linux) => {
-                quote! { !__actiona_platform.is_linux() }
+                quote! { !crate::platform_info::is_linux() }
             }
             (PlatformMode::Not, GuardedPlatform::Windows) => {
-                quote! { !__actiona_platform.is_windows() }
+                quote! { !crate::platform_info::is_windows() }
             }
             (PlatformMode::Not, GuardedPlatform::Wayland) => {
-                quote! { !__actiona_platform.is_wayland() }
+                quote! { !(__actiona_platform.is_wayland() || __actiona_platform.is_x_wayland()) }
             }
             (PlatformMode::Not, GuardedPlatform::X11) => {
                 quote! { !matches!(__actiona_platform, crate::platform_info::Platform::X11) }
