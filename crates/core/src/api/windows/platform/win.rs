@@ -6,7 +6,6 @@ use std::{
     sync::Arc,
 };
 
-use color_eyre::eyre::eyre;
 use derive_more::Deref;
 use parking_lot::Mutex;
 use tokio_util::sync::CancellationToken;
