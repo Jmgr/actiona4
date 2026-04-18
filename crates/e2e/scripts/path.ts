@@ -18,7 +18,7 @@ assertEq(Path.extension("/some/dir/file.txt"), "txt", "Path.extension");
 assertEq(Path.extname("/some/dir/file.txt"), "txt", "Path.extname is alias for extension");
 
 // isAbsolute / isRelative
-const absolutePath = system.os.distributionId === "windows" ? "C:/absolute/path" : "/absolute/path";
+const absolutePath = system.isWindows ? "C:/absolute/path" : "/absolute/path";
 assert(Path.isAbsolute(absolutePath), `Path.isAbsolute(${JSON.stringify(absolutePath)})`);
 assert(!Path.isRelative(absolutePath), `not Path.isRelative(${JSON.stringify(absolutePath)})`);
 assert(Path.isRelative("relative/path"), "Path.isRelative('relative/path')");

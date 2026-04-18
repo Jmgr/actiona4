@@ -1,4 +1,4 @@
-// @guard: e2e::require_not_wayland!();
+if (system.platform === "wayland") { println("skipping: not supported on Wayland"); exit(); }
 
 // all() returns at least one display
 const all = displays.all();

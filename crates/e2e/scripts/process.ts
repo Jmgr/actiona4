@@ -1,4 +1,4 @@
-// @guard: e2e::require_not_windows!();
+if (system.isWindows) { println("skipping: not supported on Windows"); exit(); }
 
 // startAndWait: echo hello
 const result = await process.startAndWait("echo", { args: ["hello"] });

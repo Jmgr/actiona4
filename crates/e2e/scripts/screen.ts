@@ -1,4 +1,4 @@
-// @guard: e2e::require_not_wayland!();
+if (system.platform === "wayland") { println("skipping: not supported on Wayland"); exit(); }
 
 const img = await screen.captureDesktop();
 assert(img.width > 0, "captureDesktop width > 0");
