@@ -6,7 +6,7 @@
 
 Actiona is a desktop task automation tool. It automates tasks you would normally perform manually, such as transferring data between applications, running automated tests, or handling repetitive workflows. Actiona supports Windows 10 or later, and Ubuntu 22.04 or later (X11 [preferred](#wayland)). Other Linux distributions should also work.
 
-Currently, Actiona 4 provides a command-line tool (CLI) that runs scripts written in JavaScript or TypeScript. An action editor, similar to the one in Actiona 3, is planned.
+Currently, Actiona 4 provides a command-line tool (CLI) called `Actiona Run` that runs scripts written in JavaScript or TypeScript. An action editor called `Actiona Editor`, similar to the one in Actiona 3, is planned.
 
 Actiona 4 is still considered **unstable**. Expect bugs, incomplete features, and API changes between releases.
 

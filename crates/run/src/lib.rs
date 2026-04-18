@@ -34,6 +34,7 @@ use color_eyre::{
 };
 use dialoguer::{Confirm, theme::ColorfulTheme};
 use installer_tools::path::{PathScope, add_directory_to_path, remove_directory_from_path};
+#[cfg(not(windows))]
 use rfd::{MessageButtons, MessageLevel};
 use tracing_subscriber::{
     EnvFilter, fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt,
