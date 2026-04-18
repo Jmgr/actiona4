@@ -1023,12 +1023,9 @@ impl JsNotificationHandle {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
-
     use crate::runtime::Runtime;
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_show() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -1044,7 +1041,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     #[cfg(unix)]
     fn test_update() {
@@ -1063,7 +1059,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_closed() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -1080,7 +1075,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_close() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -1098,7 +1092,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_action() {
         Runtime::test_with_script_engine(|script_engine| async move {

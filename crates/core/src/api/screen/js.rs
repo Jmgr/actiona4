@@ -427,8 +427,6 @@ impl JsScreen {
 mod tests {
     use std::env::temp_dir;
 
-    use tracing_test::traced_test;
-
     use crate::{
         api::test_helpers::{js_path, random_name},
         runtime::Runtime,
@@ -436,7 +434,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_desktop() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
@@ -454,7 +451,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_display_primary() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
@@ -472,7 +468,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_display_largest() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
@@ -490,7 +485,6 @@ mod tests {
 
     #[test]
     //#[ignore]
-    #[traced_test]
     fn test_capture_display_from_id_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
@@ -513,7 +507,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_display_from_name_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
@@ -538,7 +531,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_display_from_point_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
@@ -563,7 +555,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_rect_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path =
@@ -589,7 +580,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_capture_window_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path =
@@ -611,7 +601,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_ask_screenshot_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path =
@@ -633,7 +622,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_ask_screenshot_native_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
@@ -657,7 +645,6 @@ mod tests {
 
     #[test]
     #[ignore]
-    #[traced_test]
     fn test_ask_rect() {
         Runtime::test_with_script_engine(async |script_engine| {
             let rect: String = script_engine

@@ -539,8 +539,6 @@ impl JsMacros {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
-
     use super::JsPlayProgress;
     use crate::runtime::Runtime;
 
@@ -553,7 +551,6 @@ mod tests {
     /// Manual test: record a macro, save, reload, and play back.
     /// Press Escape to stop recording.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_record_and_play() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -576,7 +573,6 @@ mod tests {
 
     /// Manual test: record, save to /tmp, reload, play back.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_save_and_load() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -602,7 +598,6 @@ mod tests {
 
     /// Manual test: verify playback speed scaling.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_playback_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -624,7 +619,6 @@ mod tests {
 
     /// Manual test: keyboard-only recording.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_keyboard_only() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -649,7 +643,6 @@ mod tests {
 
     /// Manual test: starting a new playback cancels the previous one.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_concurrent_play_cancels_previous() {
         Runtime::test_with_script_engine(async |script_engine| {

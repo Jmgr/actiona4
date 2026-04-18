@@ -575,8 +575,6 @@ impl JsWindowHandle {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
-
     use crate::runtime::Runtime;
 
     // Helper JS snippet: spawns xeyes and polls until its window appears.
@@ -602,7 +600,6 @@ mod tests {
     /// Spawns xeyes, waits for it to appear in the window list, then closes it
     /// and checks that `win.closed` resolves. Requires `xeyes` to be installed.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_window_closed() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -622,7 +619,6 @@ mod tests {
     /// Subscribes to `closed` before calling `close()` — verifies no event is
     /// missed in the gap between subscription setup and the DestroyNotify event.
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_closed_subscribe_before_close() {
         Runtime::test_with_script_engine(async |script_engine| {

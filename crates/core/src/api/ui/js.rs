@@ -517,13 +517,10 @@ impl JsMessageBoxButtons {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
-
     use super::JsMessageBoxResult;
     use crate::runtime::Runtime;
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_message_box() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -543,7 +540,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_pick_file() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -563,7 +559,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_pick_files() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -580,7 +575,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_pick_folder() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -597,7 +591,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_pick_folders() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -614,7 +607,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_save_file() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -634,7 +626,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_text_input() {
         Runtime::test_with_script_engine(|script_engine| async move {
@@ -654,7 +645,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_color_picker() {
         Runtime::test_with_script_engine(|script_engine| async move {

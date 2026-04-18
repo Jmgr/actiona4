@@ -780,8 +780,6 @@ impl JsMouse {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
-
     use super::JsButton;
     use crate::{
         api::point::{js::JsPoint, point},
@@ -789,7 +787,6 @@ mod tests {
     };
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_position() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -828,7 +825,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     fn test_button() {
         Runtime::test_with_script_engine(async |script_engine| {
             let button: JsButton = script_engine.eval("Button.Left").await.unwrap();
@@ -840,7 +836,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_press_release() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -863,7 +858,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -888,7 +882,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_wait_for_button_js() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -905,7 +898,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_wait_for_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -922,7 +914,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_wait_for_movement() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -939,7 +930,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_button() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -964,7 +954,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_button_return_macro() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -988,7 +977,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -1012,7 +1000,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_measure_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -1025,7 +1012,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_random_move_timeout() {
         Runtime::test_with_script_engine(async |script_engine| {

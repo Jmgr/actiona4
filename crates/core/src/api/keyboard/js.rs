@@ -2957,8 +2957,6 @@ impl TryFrom<enigo::Key> for JsStandardKey {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
-
     use crate::{
         api::keyboard::js::{JsKey, JsStandardKey},
         platform_info::Platform,
@@ -2966,7 +2964,6 @@ mod tests {
     };
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_keyboard_is_pressed() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -2985,7 +2982,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_wait_for_key() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -3002,7 +2998,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_text() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -3032,7 +3027,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_key() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -3054,7 +3048,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_key_return_macro() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -3078,7 +3071,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_on_keys_and_clear_event_handles() {
         Runtime::test_with_script_engine(async |script_engine| {
@@ -3109,7 +3101,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     fn test_standard_key() {
         Runtime::test_with_script_engine(async |script_engine| {
             let key = script_engine
@@ -3131,7 +3122,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     fn test_key() {
         Runtime::test_with_script_engine(async |script_engine| {
             let key = script_engine.eval::<JsKey>("Key.Space").await.unwrap();

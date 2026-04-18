@@ -890,7 +890,6 @@ mod tests {
     use std::sync::Arc;
 
     use tokio_util::sync::CancellationToken;
-    use tracing_test::traced_test;
 
     use super::{Mouse, Tween};
     use crate::{
@@ -902,7 +901,6 @@ mod tests {
     };
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_position() {
         Runtime::test(|runtime| async {
@@ -932,7 +930,6 @@ mod tests {
     }
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_wait_for_button() {
         Runtime::test(async |runtime| {

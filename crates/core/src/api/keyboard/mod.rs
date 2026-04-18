@@ -192,12 +192,10 @@ mod tests {
 
     use enigo::Key;
     use tokio::time::sleep;
-    use tracing_test::traced_test;
 
     use crate::{api::keyboard::Keyboard, runtime::Runtime};
 
     #[test]
-    #[traced_test]
     #[ignore]
     fn test_keyboard() {
         Runtime::test(async |runtime| {
