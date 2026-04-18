@@ -51,7 +51,7 @@ assertEq(resized.height, 20, "resized height");
 const str = img.toString();
 assert(str.includes("10"), "toString includes dimensions");
 
-assertEq(String(Font.defaultFont()), "Font(path: <built-in>)", "Font.defaultFont().toString()");
+assertEq(String(Font.default()), "Font(path: <built-in>)", "Font.default().toString()");
 
 const tempDirValue = standardPaths.temp;
 assert(typeof tempDirValue === "string", "temp path should be available for image e2e tests");

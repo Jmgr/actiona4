@@ -31,9 +31,9 @@ const font = await Font.load("/path/to/font.ttf");
 
 ***
 
-### defaultFont()
+### default()
 
-> `static` **defaultFont**(): `Font`
+> `static` **default**(): `Font`
 
 Returns the built-in default font (DejaVu Sans).
 

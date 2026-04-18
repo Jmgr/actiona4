@@ -793,7 +793,7 @@ impl Runtime {
         macros: JsMacros,
     ) -> rquickjs::Result<()> {
         // Tools
-        JsConcurrency::register(&ctx)?;
+        register_singleton_class::<JsConcurrency>(&ctx, JsConcurrency::new())?;
         global::register(&ctx)?;
 
         // Host classes

@@ -5,9 +5,8 @@ use macros::{js_class, js_methods};
 use rquickjs::{
     Array, Ctx, Function, JsLifetime, Promise, Result, Value, class::Trace, function::Args,
 };
-use tracing::instrument;
 
-use crate::api::js::task::task;
+use crate::api::js::{classes::SingletonClass, task::task};
 
 /// Utilities for concurrent operations.
 ///
@@ -21,6 +20,8 @@ use crate::api::js::task::task;
 #[derive(Debug, JsLifetime, Trace)]
 #[js_class]
 pub struct JsConcurrency {}
+
+impl<'js> SingletonClass<'js> for JsConcurrency {}
 
 #[js_methods]
 impl JsConcurrency {
@@ -130,13 +131,5 @@ impl JsConcurrency {
 
             result
         })
-    }
-}
-
-impl JsConcurrency {
-    /// @skip
-    #[instrument(skip_all)]
-    pub fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
-        super::classes::registration_target(ctx).prop("concurrency", Self::new())
     }
 }

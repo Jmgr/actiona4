@@ -5755,7 +5755,7 @@ declare class Font {
     /**
      * Returns the built-in default font (DejaVu Sans).
      */
-    static defaultFont(): Font;
+    static default(): Font;
     /**
      * Returns a string representation of this font.
      */

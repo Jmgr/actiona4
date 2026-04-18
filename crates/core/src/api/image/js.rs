@@ -748,9 +748,9 @@ impl JsFont {
     }
 
     /// Returns the built-in default font (DejaVu Sans).
-    #[qjs(static)]
+    #[qjs(static, rename = "default")]
     #[must_use]
-    pub fn default_font() -> Self {
+    pub fn default_js() -> Self {
         <Self as Default>::default()
     }
 
