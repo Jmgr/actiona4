@@ -4,13 +4,12 @@
 const all = windows.all();
 assert(Array.isArray(all), "windows.all() returns an array");
 
-// active() should return some window handle without throwing
+// active() returns undefined or a WindowHandle
 const active = windows.active();
-assert(active !== undefined, "windows.active() returns a handle");
-
-// WindowHandle has a title() method
-const title = active.title();
-assert(typeof title === "string", "active window title is a string");
+if (active !== undefined) {
+  const title = active.title();
+  assert(typeof title === "string", "active window title is a string");
+}
 
 // verify that find() with an unlikely title returns an empty array
 const byTitle = windows.find({ title: "__actiona4_e2e_no_such_window__" });

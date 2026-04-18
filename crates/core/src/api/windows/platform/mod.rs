@@ -49,7 +49,7 @@ pub trait WindowsHandler {
     fn set_size(&self, id: WindowId, size: Size) -> Result<()>;
     fn size(&self, id: WindowId) -> Result<Size>;
     fn is_active(&self, id: WindowId) -> Result<bool>;
-    fn active_window(&self) -> Result<WindowId>;
+    fn active_window(&self) -> Result<Option<WindowId>>;
     async fn wait_for_closed(
         &self,
         id: WindowId,

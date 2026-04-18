@@ -5,7 +5,7 @@ use std::{
 };
 
 use derive_more::{Deref, From};
-use libwmctl::{Position, Shape, active, windows};
+use libwmctl::{Position, Shape, window, windows};
 use parking_lot::Mutex;
 use tokio_util::sync::CancellationToken;
 use x11rb::{
@@ -230,15 +230,20 @@ impl WindowsHandler for X11WindowHandler {
     }
 
     fn is_active(&self, id: WindowId) -> Result<bool> {
-        let window = WindowHandle(active());
+        let Some(active_id) = self.read_active_window_id()? else {
+            return Ok(false);
+        };
         let handle = self.inner.lock().get_handle(id)?.clone();
         handle.state()?;
-        Ok(window == handle)
+        Ok(handle.0.id == active_id)
     }
 
-    fn active_window(&self) -> Result<WindowId> {
-        let window = WindowHandle(active());
-        Ok(self.inner.lock().get_or_insert(window))
+    fn active_window(&self) -> Result<Option<WindowId>> {
+        let Some(active_id) = self.read_active_window_id()? else {
+            return Ok(None);
+        };
+        let handle = WindowHandle(window(active_id));
+        Ok(Some(self.inner.lock().get_or_insert(handle)))
     }
 
     async fn wait_for_closed(
@@ -318,6 +323,21 @@ impl X11WindowHandler {
             inner: Mutex::new(Registry::default()),
             runtime,
         }
+    }
+
+    fn read_active_window_id(&self) -> Result<Option<u32>> {
+        let platform = self.runtime.platform();
+        let x11_connection = platform.x11_connection();
+        let connection = x11_connection.sync_connection();
+        let root = connection.setup().roots[0].root;
+        let atom = platform.atoms()._NET_ACTIVE_WINDOW;
+        let reply = connection
+            .get_property(false, root, atom, AtomEnum::WINDOW, 0, 1)?
+            .reply()?;
+        Ok(reply
+            .value32()
+            .and_then(|mut iter| iter.next())
+            .filter(|&id| id != 0))
     }
 
     fn frame_extents(

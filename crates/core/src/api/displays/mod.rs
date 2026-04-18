@@ -72,7 +72,7 @@ impl Displays {
         })
     }
 
-    pub async fn random_point(&self, rng: SharedRng) -> Result<Point> {
+    pub async fn random_point(&self, rng: SharedRng) -> Result<Option<Point>> {
         let displays_info = self.get_info().await?;
         // Total area across all displays (skip zero-area just in case)
         let mut total_area = Su32::ZERO;
@@ -81,7 +81,7 @@ impl Displays {
             total_area += rect.size.width * rect.size.height;
         }
         if total_area == 0 {
-            return Err(eyre!("no displays detected"));
+            return Ok(None);
         }
 
         // Pick a display with probability proportional to its area
@@ -101,7 +101,10 @@ impl Displays {
             }
         }
 
-        let rect = chosen.ok_or_else(|| eyre!("no displays detected"))?;
+        let Some(rect) = chosen else {
+            return Ok(None);
+        };
+
         drop(displays_info); // release the lock before sampling inside the rect
 
         // Sample uniformly inside the chosen rect.
@@ -112,22 +115,15 @@ impl Displays {
         let x = rng.random_range(i64::from(rect.top_left.x)..x_end);
         let y = rng.random_range(i64::from(rect.top_left.y)..y_end);
 
-        try_point(x, y)
+        Ok(Some(try_point(x, y)?))
     }
 
-    pub async fn primary(&self) -> Result<DisplayInfo> {
+    pub async fn primary(&self) -> Result<Option<DisplayInfo>> {
         let displays_info = self.get_info().await?;
-        displays_info
+        Ok(displays_info
             .iter()
             .find(|display| display.is_primary)
-            .cloned()
-            .or_else(|| {
-                displays_info.first().cloned().map(|mut d| {
-                    d.is_primary = true;
-                    d
-                })
-            })
-            .ok_or_else(|| eyre!("no displays detected"))
+            .cloned())
     }
 
     pub async fn wait_get_info(&self) -> Result<Arc<DisplayInfoVec>> {

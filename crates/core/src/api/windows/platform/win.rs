@@ -273,14 +273,14 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(foreground == *handle)
     }
 
-    fn active_window(&self) -> Result<WindowId> {
+    fn active_window(&self) -> Result<Option<WindowId>> {
         let foreground = unsafe { GetForegroundWindow() };
         if foreground.0.is_null() {
-            return Err(eyre!("not found"));
+            return Ok(None);
         }
 
         let window = WindowHandle(foreground);
-        Ok(self.inner.lock().get_or_insert(window))
+        Ok(Some(self.inner.lock().get_or_insert(window)))
     }
 
     async fn wait_for_closed(

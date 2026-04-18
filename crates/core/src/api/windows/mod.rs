@@ -58,7 +58,7 @@ impl Windows {
         self.handler.all()
     }
 
-    pub fn active_window(&self) -> Result<WindowId> {
+    pub fn active_window(&self) -> Result<Option<WindowId>> {
         self.runtime.require_not_wayland()?;
         self.handler.active_window()
     }

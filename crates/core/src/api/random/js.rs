@@ -12,7 +12,7 @@ use uuid::Builder as UuidBuilder;
 
 use crate::{
     IntoJsResult,
-    api::{color::js::JsColor, displays, js::classes::SingletonClass, point::js::JsPoint},
+    api::{color::js::JsColor, js::classes::SingletonClass, point::js::JsPoint},
     runtime::WithUserData,
 };
 
@@ -188,23 +188,26 @@ impl JsRandom {
         ctx.user_data().rng().reset_seed();
     }
 
-    /// Returns a random position on any display.
+    /// Returns a random position on any display, or `undefined` if there is no display.
     ///
     /// ```ts
     /// const pos = await random.position();
-    /// println(pos);
+    /// if (pos) {
+    ///   println(pos);
+    /// }
     /// ```
     /// @readonly
-    pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<JsPoint> {
+    pub async fn position(&mut self, ctx: Ctx<'_>) -> Result<Option<JsPoint>> {
         let user_data = ctx.user_data();
 
-        let point: displays::Result<JsPoint> = user_data
+        let point = user_data
             .displays()
             .random_point(user_data.rng())
             .await
-            .map(|point| point.into());
+            .into_js_result(&ctx)?
+            .map(Into::into);
 
-        point.into_js_result(&ctx)
+        Ok(point)
     }
 
     /// Returns a random color with full opacity.

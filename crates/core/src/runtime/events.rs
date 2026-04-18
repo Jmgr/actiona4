@@ -333,7 +333,16 @@ pub struct DisplayInfoVec(pub Vec<DisplayInfo>);
 
 impl From<Vec<display_info::DisplayInfo>> for DisplayInfoVec {
     fn from(value: Vec<display_info::DisplayInfo>) -> Self {
-        Self(value.iter().cloned().map(|info| info.into()).collect_vec())
+        let mut result: Vec<DisplayInfo> = value.into_iter().map(Into::into).collect_vec();
+
+        // If none are the primary display, set the first one as primary
+        if result.iter().all(|display| !display.is_primary)
+            && let Some(first) = result.first_mut()
+        {
+            first.is_primary = true;
+        }
+
+        Self(result)
     }
 }
 

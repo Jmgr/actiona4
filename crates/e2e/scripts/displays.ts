@@ -10,11 +10,11 @@ assert(primary.rect.width > 0, "primary display width > 0");
 assert(primary.rect.height > 0, "primary display height > 0");
 assert(primary.isPrimary, "primary display should have isPrimary = true");
 
-// smallest / largest without throwing
+// smallest / largest return undefined or a display
 const smallest = displays.smallest();
 const largest = displays.largest();
-assert(smallest.rect.width > 0, "smallest display width > 0");
-assert(largest.rect.width > 0, "largest display width > 0");
+if (smallest !== undefined) assert(smallest.rect.width > 0, "smallest display width > 0");
+if (largest !== undefined) assert(largest.rect.width > 0, "largest display width > 0");
 
 // fromPoint with a coordinate inside the primary display
 const mid = {

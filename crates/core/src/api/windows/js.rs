@@ -162,33 +162,37 @@ impl JsWindows {
             .collect())
     }
 
-    /// Returns the currently active (focused) window.
+    /// Returns the currently active (focused) window, or `undefined` if no window is active.
     ///
     /// ```ts
     /// const win = windows.active();
-    /// println(win.title());
+    /// if (win) {
+    ///   println(win.title());
+    /// }
     /// ```
     /// @readonly
     #[platform(not = "wayland")]
-    pub fn active(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
+    pub fn active(&self, ctx: Ctx<'_>) -> Result<Option<JsWindowHandle>> {
         let id = self.inner.active_window().into_js_result(&ctx)?;
 
-        Ok(JsWindowHandle {
+        Ok(id.map(|id| JsWindowHandle {
             inner: self.inner.clone(),
             screen: self.screen.clone(),
             id,
-        })
+        }))
     }
 
-    /// Returns the currently active (focused) window. Alias for `active()`.
+    /// Returns the currently active (focused) window, or `undefined` if no window is active. Alias for `active()`.
     ///
     /// ```ts
     /// const win = windows.foreground();
-    /// println(win.title());
+    /// if (win) {
+    ///   println(win.title());
+    /// }
     /// ```
     /// @readonly
     #[platform(not = "wayland")]
-    pub fn foreground(&self, ctx: Ctx<'_>) -> Result<JsWindowHandle> {
+    pub fn foreground(&self, ctx: Ctx<'_>) -> Result<Option<JsWindowHandle>> {
         self.active(ctx)
     }
 
