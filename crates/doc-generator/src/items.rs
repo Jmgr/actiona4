@@ -241,8 +241,8 @@ mod tests {
             Some("Core".to_string())
         );
         assert_eq!(
-            Items::category_from_filename(Path::new("src/api/ui/js.rs")),
-            Some("Ui".to_string())
+            Items::category_from_filename(Path::new("src/api/dialogs/js.rs")),
+            Some("Dialogs".to_string())
         );
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/standardpaths/js.rs")),

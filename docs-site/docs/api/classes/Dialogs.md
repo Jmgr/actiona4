@@ -1,15 +1,15 @@
-# Class: Ui
+# Class: Dialogs
 
-User interface utilities.
+Dialog utilities.
 
 Provides methods for displaying message boxes and file dialogs.
 
 ```ts
-const result = await ui.messageBox("Hello, world!");
+const result = await dialogs.messageBox("Hello, world!");
 ```
 
 ```ts
-const result = await ui.messageBox("Delete this file?", {
+const result = await dialogs.messageBox("Delete this file?", {
   title: "Confirm",
   buttons: MessageBoxButtons.yesNo(),
   icon: MessageBoxIcon.Warning,
@@ -28,7 +28,7 @@ if (result === MessageBoxResult.Yes) {
 Displays a message box and returns the user's response.
 
 ```ts
-const result = await ui.messageBox("Operation complete");
+const result = await dialogs.messageBox("Operation complete");
 ```
 
 #### Parameters
@@ -118,7 +118,7 @@ Icon displayed in the message box.
 Opens a file picker dialog and returns the selected file path, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if cancelled.
 
 ```ts
-const path = await ui.pickFile({ title: "Open File" });
+const path = await dialogs.pickFile({ title: "Open File" });
 if (path !== null) {
   print(path);
 }
@@ -183,7 +183,7 @@ Opens a file picker dialog allowing multiple selections and returns the selected
 Returns an empty array if cancelled.
 
 ```ts
-const paths = await ui.pickFiles({ title: "Open Files" });
+const paths = await dialogs.pickFiles({ title: "Open Files" });
 for (const path of paths) {
   console.log(path);
 }
@@ -246,7 +246,7 @@ File type filters shown in the dialog.
 Opens a folder picker dialog and returns the selected folder path, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if cancelled.
 
 ```ts
-const path = await ui.pickFolder({ title: "Select Folder" });
+const path = await dialogs.pickFolder({ title: "Select Folder" });
 ```
 
 #### Parameters
@@ -308,7 +308,7 @@ Opens a folder picker dialog allowing multiple selections and returns the select
 Returns an empty array if cancelled.
 
 ```ts
-const paths = await ui.pickFolders({ title: "Select Folders" });
+const paths = await dialogs.pickFolders({ title: "Select Folders" });
 ```
 
 #### Parameters
@@ -368,7 +368,7 @@ File type filters shown in the dialog.
 Opens a save file dialog and returns the chosen file path, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if cancelled.
 
 ```ts
-const path = await ui.saveFile({
+const path = await dialogs.saveFile({
   title: "Save As",
   filters: [{ name: "Text Files", extensions: ["txt"] }],
 });
@@ -431,7 +431,7 @@ File type filters shown in the dialog.
 Opens a text input dialog and returns the entered text, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if cancelled.
 
 ```ts
-const name = await ui.textInput("Enter your name:", {
+const name = await dialogs.textInput("Enter your name:", {
   title: "Name",
   mode: TextInputMode.SingleLine,
 });
@@ -524,7 +524,7 @@ Input mode controlling the dialog style.
 Opens a color picker dialog and returns the selected color, or [`null`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/null) if cancelled.
 
 ```ts
-const color = await ui.colorPicker({
+const color = await dialogs.colorPicker({
   title: "Choose a color",
   value: new Color(255, 0, 0),
 });
@@ -575,7 +575,7 @@ Initial color shown in the picker.
 
 > **toString**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Returns a string representation of the `ui` singleton.
+Returns a string representation of the `dialogs` singleton.
 
 #### Returns
 

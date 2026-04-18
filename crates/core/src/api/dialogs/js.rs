@@ -10,11 +10,11 @@ use crate::{
     IntoJsResult,
     api::{
         color::js::{JsColor, JsColorLike},
-        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
-        ui::{
-            MessageBoxButtons, Ui,
+        dialogs::{
+            Dialogs, MessageBoxButtons,
             native_dialog::{ColorPickerOptions, TextInputOptions},
         },
+        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
     },
     runtime::WithUserData,
 };
@@ -26,13 +26,13 @@ pub type JsTextInputMode = super::native_dialog::TextInputMode;
 /// Message box options.
 ///
 /// ```ts
-/// await ui.messageBox("Delete this file?", {
+/// await dialogs.messageBox("Delete this file?", {
 ///   title: "Confirm",
 ///   buttons: MessageBoxButtons.yesNo(),
 ///   icon: MessageBoxIcon.Warning,
 /// });
 /// ```
-/// @category UI
+/// @category Dialogs
 #[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsMessageBoxOptions {
@@ -63,7 +63,7 @@ impl JsMessageBoxOptions {
 /// ```ts
 /// const filter = { name: "Images", extensions: ["png", "jpg"] };
 /// ```
-/// @category UI
+/// @category Dialogs
 #[derive(Clone, Debug, Default, FromJsObject)]
 pub struct JsFileFilter {
     /// Display name of the filter.
@@ -85,12 +85,12 @@ impl JsFileFilter {
 /// File dialog options.
 ///
 /// ```ts
-/// const path = await ui.pickFile({
+/// const path = await dialogs.pickFile({
 ///   title: "Open Image",
 ///   filters: [{ name: "Images", extensions: ["png", "jpg"] }],
 /// });
 /// ```
-/// @category UI
+/// @category Dialogs
 #[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsFileDialogOptions {
@@ -122,12 +122,12 @@ impl JsFileDialogOptions {
 /// Text input dialog options.
 ///
 /// ```ts
-/// const name = await ui.textInput("Enter your name:", {
+/// const name = await dialogs.textInput("Enter your name:", {
 ///   title: "Name",
 ///   mode: TextInputMode.SingleLine,
 /// });
 /// ```
-/// @category UI
+/// @category Dialogs
 #[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsTextInputOptions {
@@ -145,12 +145,12 @@ pub struct JsTextInputOptions {
 /// Color picker dialog options.
 ///
 /// ```ts
-/// const color = await ui.colorPicker({
+/// const color = await dialogs.colorPicker({
 ///   title: "Choose a color",
 ///   value: new Color(255, 0, 0),
 /// });
 /// ```
-/// @category UI
+/// @category Dialogs
 #[options]
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsColorPickerOptions {
@@ -161,16 +161,16 @@ pub struct JsColorPickerOptions {
     pub value: Option<JsColorLike>,
 }
 
-/// User interface utilities.
+/// Dialog utilities.
 ///
 /// Provides methods for displaying message boxes and file dialogs.
 ///
 /// ```ts
-/// const result = await ui.messageBox("Hello, world!");
+/// const result = await dialogs.messageBox("Hello, world!");
 /// ```
 ///
 /// ```ts
-/// const result = await ui.messageBox("Delete this file?", {
+/// const result = await dialogs.messageBox("Delete this file?", {
 ///   title: "Confirm",
 ///   buttons: MessageBoxButtons.yesNo(),
 ///   icon: MessageBoxIcon.Warning,
@@ -180,13 +180,13 @@ pub struct JsColorPickerOptions {
 /// }
 /// ```
 ///
-/// @category UI
+/// @category Dialogs
 /// @singleton
 #[derive(Debug, Default, JsLifetime)]
 #[js_class]
-pub struct JsUi {}
+pub struct JsDialogs {}
 
-impl SingletonClass<'_> for JsUi {
+impl SingletonClass<'_> for JsDialogs {
     fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
         register_host_class::<JsMessageBoxButtons>(ctx)?;
         register_enum::<JsMessageBoxIcon>(ctx)?;
@@ -196,12 +196,12 @@ impl SingletonClass<'_> for JsUi {
     }
 }
 
-impl<'js> Trace<'js> for JsUi {
+impl<'js> Trace<'js> for JsDialogs {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 #[js_methods]
-impl JsUi {
+impl JsDialogs {
     /// @constructor
     /// @private
     #[qjs(constructor)]
@@ -212,7 +212,7 @@ impl JsUi {
     /// Displays a message box and returns the user's response.
     ///
     /// ```ts
-    /// const result = await ui.messageBox("Operation complete");
+    /// const result = await dialogs.messageBox("Operation complete");
     /// ```
     pub async fn message_box(
         &self,
@@ -221,7 +221,7 @@ impl JsUi {
         options: Opt<JsMessageBoxOptions>,
     ) -> Result<JsMessageBoxResult> {
         let options = options.0.unwrap_or_default();
-        Ui::message_box(text, Some(options.into_inner()))
+        Dialogs::message_box(text, Some(options.into_inner()))
             .await
             .into_js_result(&ctx)
     }
@@ -229,7 +229,7 @@ impl JsUi {
     /// Opens a file picker dialog and returns the selected file path, or `null` if cancelled.
     ///
     /// ```ts
-    /// const path = await ui.pickFile({ title: "Open File" });
+    /// const path = await dialogs.pickFile({ title: "Open File" });
     /// if (path !== null) {
     ///   print(path);
     /// }
@@ -239,7 +239,7 @@ impl JsUi {
         ctx: Ctx<'_>,
         options: Opt<JsFileDialogOptions>,
     ) -> Result<Option<String>> {
-        Ui::pick_file(options.0.unwrap_or_default().into_inner())
+        Dialogs::pick_file(options.0.unwrap_or_default().into_inner())
             .await
             .map(|path| path.map(|path| path.to_string_lossy().into_owned()))
             .into_js_result(&ctx)
@@ -250,7 +250,7 @@ impl JsUi {
     /// Returns an empty array if cancelled.
     ///
     /// ```ts
-    /// const paths = await ui.pickFiles({ title: "Open Files" });
+    /// const paths = await dialogs.pickFiles({ title: "Open Files" });
     /// for (const path of paths) {
     ///   console.log(path);
     /// }
@@ -260,7 +260,7 @@ impl JsUi {
         ctx: Ctx<'_>,
         options: Opt<JsFileDialogOptions>,
     ) -> Result<Vec<String>> {
-        Ui::pick_files(options.0.unwrap_or_default().into_inner())
+        Dialogs::pick_files(options.0.unwrap_or_default().into_inner())
             .await
             .map(|paths| {
                 paths
@@ -274,14 +274,14 @@ impl JsUi {
     /// Opens a folder picker dialog and returns the selected folder path, or `null` if cancelled.
     ///
     /// ```ts
-    /// const path = await ui.pickFolder({ title: "Select Folder" });
+    /// const path = await dialogs.pickFolder({ title: "Select Folder" });
     /// ```
     pub async fn pick_folder(
         &self,
         ctx: Ctx<'_>,
         options: Opt<JsFileDialogOptions>,
     ) -> Result<Option<String>> {
-        Ui::pick_folder(options.0.unwrap_or_default().into_inner())
+        Dialogs::pick_folder(options.0.unwrap_or_default().into_inner())
             .await
             .map(|path| path.map(|path| path.to_string_lossy().into_owned()))
             .into_js_result(&ctx)
@@ -292,14 +292,14 @@ impl JsUi {
     /// Returns an empty array if cancelled.
     ///
     /// ```ts
-    /// const paths = await ui.pickFolders({ title: "Select Folders" });
+    /// const paths = await dialogs.pickFolders({ title: "Select Folders" });
     /// ```
     pub async fn pick_folders(
         &self,
         ctx: Ctx<'_>,
         options: Opt<JsFileDialogOptions>,
     ) -> Result<Vec<String>> {
-        Ui::pick_folders(options.0.unwrap_or_default().into_inner())
+        Dialogs::pick_folders(options.0.unwrap_or_default().into_inner())
             .await
             .map(|paths| {
                 paths
@@ -313,7 +313,7 @@ impl JsUi {
     /// Opens a save file dialog and returns the chosen file path, or `null` if cancelled.
     ///
     /// ```ts
-    /// const path = await ui.saveFile({
+    /// const path = await dialogs.saveFile({
     ///   title: "Save As",
     ///   filters: [{ name: "Text Files", extensions: ["txt"] }],
     /// });
@@ -323,7 +323,7 @@ impl JsUi {
         ctx: Ctx<'_>,
         options: Opt<JsFileDialogOptions>,
     ) -> Result<Option<String>> {
-        Ui::save_file(options.0.unwrap_or_default().into_inner())
+        Dialogs::save_file(options.0.unwrap_or_default().into_inner())
             .await
             .map(|path| path.map(|path| path.to_string_lossy().into_owned()))
             .into_js_result(&ctx)
@@ -332,7 +332,7 @@ impl JsUi {
     /// Opens a text input dialog and returns the entered text, or `null` if cancelled.
     ///
     /// ```ts
-    /// const name = await ui.textInput("Enter your name:", {
+    /// const name = await dialogs.textInput("Enter your name:", {
     ///   title: "Name",
     ///   mode: TextInputMode.SingleLine,
     /// });
@@ -345,7 +345,7 @@ impl JsUi {
     ) -> Result<Option<String>> {
         let options = options.0.unwrap_or_default();
         let task_tracker = ctx.user_data().task_tracker();
-        Ui::text_input(
+        Dialogs::text_input(
             TextInputOptions {
                 title: options.title.unwrap_or_default(),
                 message,
@@ -361,7 +361,7 @@ impl JsUi {
     /// Opens a color picker dialog and returns the selected color, or `null` if cancelled.
     ///
     /// ```ts
-    /// const color = await ui.colorPicker({
+    /// const color = await dialogs.colorPicker({
     ///   title: "Choose a color",
     ///   value: new Color(255, 0, 0),
     /// });
@@ -376,7 +376,7 @@ impl JsUi {
     ) -> Result<Option<JsColor>> {
         let options = options.0.unwrap_or_default();
         let task_tracker = ctx.user_data().task_tracker();
-        Ui::color_picker(
+        Dialogs::color_picker(
             ColorPickerOptions {
                 title: options.title.unwrap_or_default(),
                 value: options
@@ -390,11 +390,11 @@ impl JsUi {
         .into_js_result(&ctx)
     }
 
-    /// Returns a string representation of the `ui` singleton.
+    /// Returns a string representation of the `dialogs` singleton.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Ui".to_string()
+        "Dialogs".to_string()
     }
 }
 
@@ -407,7 +407,7 @@ impl JsUi {
 /// const buttons2 = MessageBoxButtons.yesNoCancel();
 /// const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
 /// ```
-/// @category UI
+/// @category Dialogs
 #[derive(Clone, Debug, Default, JsLifetime)]
 #[js_class]
 pub struct JsMessageBoxButtons {
@@ -527,8 +527,8 @@ mod tests {
             let _ = script_engine
                 .eval_async::<JsMessageBoxResult>(
                     r#"
-                    await ui.messageBox("Actiona message box JS test", {
-                        title: "ui.messageBox test",
+                    await dialogs.messageBox("Actiona message box JS test", {
+                        title: "dialogs.messageBox test",
                         buttons: MessageBoxButtons.okCancelCustom("Save", "Discard"),
                         icon: MessageBoxIcon.Info,
                     });
@@ -546,8 +546,8 @@ mod tests {
             let path = script_engine
                 .eval_async::<Option<String>>(
                     r#"
-                    await ui.pickFile({
-                        title: "ui.pickFile test",
+                    await dialogs.pickFile({
+                        title: "dialogs.pickFile test",
                         filters: [{ name: "Text Files", extensions: ["txt"] }],
                     });
                     "#,
@@ -565,7 +565,7 @@ mod tests {
             let paths = script_engine
                 .eval_async::<Vec<String>>(
                     r#"
-                    await ui.pickFiles({ title: "ui.pickFiles test" });
+                    await dialogs.pickFiles({ title: "dialogs.pickFiles test" });
                     "#,
                 )
                 .await
@@ -581,7 +581,7 @@ mod tests {
             let path = script_engine
                 .eval_async::<Option<String>>(
                     r#"
-                    await ui.pickFolder({ title: "ui.pickFolder test" });
+                    await dialogs.pickFolder({ title: "dialogs.pickFolder test" });
                     "#,
                 )
                 .await
@@ -597,7 +597,7 @@ mod tests {
             let paths = script_engine
                 .eval_async::<Vec<String>>(
                     r#"
-                    await ui.pickFolders({ title: "ui.pickFolders test" });
+                    await dialogs.pickFolders({ title: "dialogs.pickFolders test" });
                     "#,
                 )
                 .await
@@ -613,8 +613,8 @@ mod tests {
             let path = script_engine
                 .eval_async::<Option<String>>(
                     r#"
-                    await ui.saveFile({
-                        title: "ui.saveFile test",
+                    await dialogs.saveFile({
+                        title: "dialogs.saveFile test",
                         filters: [{ name: "Text Files", extensions: ["txt"] }],
                     });
                     "#,
@@ -632,8 +632,8 @@ mod tests {
             let result = script_engine
                 .eval_async::<Option<String>>(
                     r#"
-                    await ui.textInput("Enter your name:", {
-                        title: "ui.textInput test",
+                    await dialogs.textInput("Enter your name:", {
+                        title: "dialogs.textInput test",
                         mode: TextInputMode.SingleLine,
                     });
                     "#,
@@ -651,8 +651,8 @@ mod tests {
             script_engine
                 .eval_async::<()>(
                     r#"
-                    const color = await ui.colorPicker({
-                        title: "ui.colorPicker test",
+                    const color = await dialogs.colorPicker({
+                        title: "dialogs.colorPicker test",
                         value: new Color(255, 128, 0),
                     });
                     println(`color_picker result: ${color}`);

@@ -62,6 +62,7 @@ use crate::{
         console::js::JsConsole,
         datetime::js::JsDatetime,
         directory::js::JsDirectory,
+        dialogs::js::JsDialogs,
         displays::{Displays, js::JsDisplays},
         file::js::JsFile,
         filesystem::js::JsFilesystem,
@@ -89,7 +90,6 @@ use crate::{
         size::js::JsSize,
         standardpaths::js::JsStandardPaths,
         system::js::JsSystem,
-        ui::js::JsUi,
         web::js::JsWeb,
         windows::{Windows, js::JsWindows},
     },
@@ -817,7 +817,7 @@ impl Runtime {
         register_singleton_class::<JsApp>(&ctx, app)?;
         register_singleton_class::<JsMouse>(&ctx, mouse)?;
         register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
-        register_singleton_class::<JsUi>(&ctx, JsUi::default())?;
+        register_singleton_class::<JsDialogs>(&ctx, JsDialogs::default())?;
         register_singleton_class::<JsConsole>(&ctx, console)?;
         register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
         register_singleton_class::<JsScreen>(&ctx, screen)?;

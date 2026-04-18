@@ -4,7 +4,7 @@
 Message box options.
 
 ```ts
-await ui.messageBox("Delete this file?", {
+await dialogs.messageBox("Delete this file?", {
   title: "Confirm",
   buttons: MessageBoxButtons.yesNo(),
   icon: MessageBoxIcon.Warning,

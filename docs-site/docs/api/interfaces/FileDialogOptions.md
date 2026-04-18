@@ -4,7 +4,7 @@
 File dialog options.
 
 ```ts
-const path = await ui.pickFile({
+const path = await dialogs.pickFile({
   title: "Open Image",
   filters: [{ name: "Images", extensions: ["png", "jpg"] }],
 });

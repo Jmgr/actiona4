@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 use tokio_util::task::TaskTracker;
 
-use super::Ui;
+use super::Dialogs;
 use crate::api::color::Color;
 
 #[derive(
@@ -21,7 +21,7 @@ use crate::api::color::Color;
     PartialEq,
     Serialize,
 )]
-/// @category UI
+/// @category Dialogs
 /// @expand
 pub enum TextInputMode {
     #[default]
@@ -73,7 +73,7 @@ impl From<rustydialogs::ColorValue> for Color {
     }
 }
 
-impl Ui {
+impl Dialogs {
     pub async fn text_input(
         options: TextInputOptions,
         task_tracker: TaskTracker,

@@ -54,6 +54,20 @@
 - [Datetime](interfaces/Datetime.md)
 - [datetime](variables/datetime.md)
 
+## Dialogs
+
+- [MessageBoxIcon](enumerations/MessageBoxIcon.md)
+- [MessageBoxResult](enumerations/MessageBoxResult.md)
+- [TextInputMode](enumerations/TextInputMode.md)
+- [MessageBoxOptions](interfaces/MessageBoxOptions.md)
+- [FileFilter](interfaces/FileFilter.md)
+- [FileDialogOptions](interfaces/FileDialogOptions.md)
+- [TextInputOptions](interfaces/TextInputOptions.md)
+- [ColorPickerOptions](interfaces/ColorPickerOptions.md)
+- [Dialogs](classes/Dialogs.md)
+- [dialogs](variables/dialogs.md)
+- [MessageBoxButtons](classes/MessageBoxButtons.md)
+
 ## Directory
 
 - [DirectoryEntry](interfaces/DirectoryEntry.md)
@@ -254,20 +268,6 @@
 - [Disk](interfaces/Disk.md)
 - [IoStats](interfaces/IoStats.md)
 - [DiskUsage](interfaces/DiskUsage.md)
-
-## UI
-
-- [MessageBoxIcon](enumerations/MessageBoxIcon.md)
-- [MessageBoxResult](enumerations/MessageBoxResult.md)
-- [TextInputMode](enumerations/TextInputMode.md)
-- [MessageBoxOptions](interfaces/MessageBoxOptions.md)
-- [FileFilter](interfaces/FileFilter.md)
-- [FileDialogOptions](interfaces/FileDialogOptions.md)
-- [TextInputOptions](interfaces/TextInputOptions.md)
-- [ColorPickerOptions](interfaces/ColorPickerOptions.md)
-- [Ui](classes/Ui.md)
-- [ui](variables/ui.md)
-- [MessageBoxButtons](classes/MessageBoxButtons.md)
 
 ## Web
 

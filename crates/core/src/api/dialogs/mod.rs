@@ -10,7 +10,7 @@ use rfd::{
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
 
-use crate::api::ui::js::JsMessageBoxButtons;
+use crate::api::dialogs::js::JsMessageBoxButtons;
 
 pub mod file_dialog;
 pub mod js;
@@ -29,7 +29,7 @@ pub mod native_dialog;
     PartialEq,
     Serialize,
 )]
-/// @category UI
+/// @category Dialogs
 /// @expand
 pub enum MessageBoxIcon {
     #[default]
@@ -56,7 +56,7 @@ pub enum MessageBoxButtons {
 #[derive(
     Clone, Debug, Deserialize, Display, EnumIter, Eq, FromSerde, IntoSerde, PartialEq, Serialize,
 )]
-/// @category UI
+/// @category Dialogs
 /// @expand
 pub enum MessageBoxResult {
     /// `MessageBoxResult.Yes`
@@ -86,9 +86,9 @@ pub struct MessageBoxOptions {
 }
 
 #[derive(Constructor, Debug)]
-pub struct Ui {}
+pub struct Dialogs {}
 
-impl Ui {
+impl Dialogs {
     pub async fn message_box(
         text: impl Into<String>,
         options: Option<MessageBoxOptions>,

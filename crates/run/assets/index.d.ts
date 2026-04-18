@@ -2755,6 +2755,71 @@ declare enum ClipboardMode {
     Selection,
 }
 /**
+ * @category Dialogs
+ * @expand
+ */
+declare enum MessageBoxIcon {
+    /**
+     * `MessageBoxIcon.Info`
+     */
+    Info,
+
+    /**
+     * `MessageBoxIcon.Warning`
+     */
+    Warning,
+
+    /**
+     * `MessageBoxIcon.Error`
+     */
+    Error,
+}
+/**
+ * @category Dialogs
+ * @expand
+ */
+declare enum MessageBoxResult {
+    /**
+     * `MessageBoxResult.Yes`
+     */
+    Yes,
+
+    /**
+     * `MessageBoxResult.No`
+     */
+    No,
+
+    /**
+     * `MessageBoxResult.Ok`
+     */
+    Ok,
+
+    /**
+     * `MessageBoxResult.Cancel`
+     */
+    Cancel,
+}
+/**
+ * @category Dialogs
+ * @expand
+ */
+declare enum TextInputMode {
+    /**
+     * `TextInputMode.SingleLine`
+     */
+    SingleLine,
+
+    /**
+     * `TextInputMode.MultiLine`
+     */
+    MultiLine,
+
+    /**
+     * `TextInputMode.Password`
+     */
+    Password,
+}
+/**
  * Mouse button.
  * 
  * ```ts
@@ -3014,71 +3079,6 @@ declare enum Tween {
      * `Tween.SineOut`
      */
     SineOut,
-}
-/**
- * @category UI
- * @expand
- */
-declare enum MessageBoxIcon {
-    /**
-     * `MessageBoxIcon.Info`
-     */
-    Info,
-
-    /**
-     * `MessageBoxIcon.Warning`
-     */
-    Warning,
-
-    /**
-     * `MessageBoxIcon.Error`
-     */
-    Error,
-}
-/**
- * @category UI
- * @expand
- */
-declare enum MessageBoxResult {
-    /**
-     * `MessageBoxResult.Yes`
-     */
-    Yes,
-
-    /**
-     * `MessageBoxResult.No`
-     */
-    No,
-
-    /**
-     * `MessageBoxResult.Ok`
-     */
-    Ok,
-
-    /**
-     * `MessageBoxResult.Cancel`
-     */
-    Cancel,
-}
-/**
- * @category UI
- * @expand
- */
-declare enum TextInputMode {
-    /**
-     * `TextInputMode.SingleLine`
-     */
-    SingleLine,
-
-    /**
-     * `TextInputMode.MultiLine`
-     */
-    MultiLine,
-
-    /**
-     * `TextInputMode.Password`
-     */
-    Password,
 }
 /**
  * HTTP request method.
@@ -4483,6 +4483,301 @@ declare interface Datetime {
  * @category Datetime
  */
 declare const datetime: Datetime;
+/**
+ * Message box options.
+ * 
+ * ```ts
+ * await dialogs.messageBox("Delete this file?", {
+ *   title: "Confirm",
+ *   buttons: MessageBoxButtons.yesNo(),
+ *   icon: MessageBoxIcon.Warning,
+ * });
+ * ```
+ * @category Dialogs
+ * @expand
+ */
+declare interface MessageBoxOptions {
+    /**
+     * Title displayed in the message box title bar.
+     * @defaultValue `undefined`
+     */
+    title?: string;
+    /**
+     * Buttons displayed in the message box.
+     * @defaultValue `MessageBoxButtons.ok()`
+     */
+    buttons?: MessageBoxButtons;
+    /**
+     * Icon displayed in the message box.
+     * @defaultValue `MessageBoxIcon.Info`
+     */
+    icon?: MessageBoxIcon;
+}
+/**
+ * A file type filter for file dialogs.
+ * 
+ * ```ts
+ * const filter = { name: "Images", extensions: ["png", "jpg"] };
+ * ```
+ * @category Dialogs
+ */
+declare interface FileFilter {
+    /**
+     * Display name of the filter.
+     */
+    name: string;
+    /**
+     * File extensions matched by this filter (without leading dot).
+     */
+    extensions: string[];
+}
+/**
+ * File dialog options.
+ * 
+ * ```ts
+ * const path = await dialogs.pickFile({
+ *   title: "Open Image",
+ *   filters: [{ name: "Images", extensions: ["png", "jpg"] }],
+ * });
+ * ```
+ * @category Dialogs
+ * @expand
+ */
+declare interface FileDialogOptions {
+    /**
+     * Title displayed in the dialog title bar.
+     * @defaultValue `undefined`
+     */
+    title?: string;
+    /**
+     * Initial directory shown in the dialog.
+     * @defaultValue `undefined`
+     */
+    directory?: string;
+    /**
+     * File type filters shown in the dialog.
+     * @defaultValue `undefined`
+     */
+    filters?: FileFilter[];
+}
+/**
+ * Text input dialog options.
+ * 
+ * ```ts
+ * const name = await dialogs.textInput("Enter your name:", {
+ *   title: "Name",
+ *   mode: TextInputMode.SingleLine,
+ * });
+ * ```
+ * @category Dialogs
+ * @expand
+ */
+declare interface TextInputOptions {
+    /**
+     * Title displayed in the dialog title bar.
+     * @defaultValue `undefined`
+     */
+    title?: string;
+    /**
+     * Initial value shown in the text field.
+     * @defaultValue `undefined`
+     */
+    value?: string;
+    /**
+     * Input mode controlling the dialog style.
+     * @defaultValue `TextInputMode.SingleLine`
+     */
+    mode?: TextInputMode;
+}
+/**
+ * Color picker dialog options.
+ * 
+ * ```ts
+ * const color = await dialogs.colorPicker({
+ *   title: "Choose a color",
+ *   value: new Color(255, 0, 0),
+ * });
+ * ```
+ * @category Dialogs
+ * @expand
+ */
+declare interface ColorPickerOptions {
+    /**
+     * Title displayed in the dialog title bar.
+     * @defaultValue `undefined`
+     */
+    title?: string;
+    /**
+     * Initial color shown in the picker.
+     * @defaultValue `undefined`
+     */
+    value?: ColorLike;
+}
+/**
+ * Dialog utilities.
+ * 
+ * Provides methods for displaying message boxes and file dialogs.
+ * 
+ * ```ts
+ * const result = await dialogs.messageBox("Hello, world!");
+ * ```
+ * 
+ * ```ts
+ * const result = await dialogs.messageBox("Delete this file?", {
+ *   title: "Confirm",
+ *   buttons: MessageBoxButtons.yesNo(),
+ *   icon: MessageBoxIcon.Warning,
+ * });
+ * if (result === MessageBoxResult.Yes) {
+ *   println("Confirmed");
+ * }
+ * ```
+ * @category Dialogs
+ */
+declare class Dialogs {
+    private constructor();
+    /**
+     * Displays a message box and returns the user's response.
+     * 
+     * ```ts
+     * const result = await dialogs.messageBox("Operation complete");
+     * ```
+     */
+    messageBox(text: string, options?: MessageBoxOptions): Promise<MessageBoxResult>;
+    /**
+     * Opens a file picker dialog and returns the selected file path, or `null` if cancelled.
+     * 
+     * ```ts
+     * const path = await dialogs.pickFile({ title: "Open File" });
+     * if (path !== null) {
+     *   print(path);
+     * }
+     * ```
+     */
+    pickFile(options?: FileDialogOptions): Promise<string | undefined>;
+    /**
+     * Opens a file picker dialog allowing multiple selections and returns the selected file paths.
+     * 
+     * Returns an empty array if cancelled.
+     * 
+     * ```ts
+     * const paths = await dialogs.pickFiles({ title: "Open Files" });
+     * for (const path of paths) {
+     *   console.log(path);
+     * }
+     * ```
+     */
+    pickFiles(options?: FileDialogOptions): Promise<string[]>;
+    /**
+     * Opens a folder picker dialog and returns the selected folder path, or `null` if cancelled.
+     * 
+     * ```ts
+     * const path = await dialogs.pickFolder({ title: "Select Folder" });
+     * ```
+     */
+    pickFolder(options?: FileDialogOptions): Promise<string | undefined>;
+    /**
+     * Opens a folder picker dialog allowing multiple selections and returns the selected folder paths.
+     * 
+     * Returns an empty array if cancelled.
+     * 
+     * ```ts
+     * const paths = await dialogs.pickFolders({ title: "Select Folders" });
+     * ```
+     */
+    pickFolders(options?: FileDialogOptions): Promise<string[]>;
+    /**
+     * Opens a save file dialog and returns the chosen file path, or `null` if cancelled.
+     * 
+     * ```ts
+     * const path = await dialogs.saveFile({
+     *   title: "Save As",
+     *   filters: [{ name: "Text Files", extensions: ["txt"] }],
+     * });
+     * ```
+     */
+    saveFile(options?: FileDialogOptions): Promise<string | undefined>;
+    /**
+     * Opens a text input dialog and returns the entered text, or `null` if cancelled.
+     * 
+     * ```ts
+     * const name = await dialogs.textInput("Enter your name:", {
+     *   title: "Name",
+     *   mode: TextInputMode.SingleLine,
+     * });
+     * ```
+     */
+    textInput(message: string, options?: TextInputOptions): Promise<string | undefined>;
+    /**
+     * Opens a color picker dialog and returns the selected color, or `null` if cancelled.
+     * 
+     * ```ts
+     * const color = await dialogs.colorPicker({
+     *   title: "Choose a color",
+     *   value: new Color(255, 0, 0),
+     * });
+     * if (color !== null) {
+     *   print(`${color}`);
+     * }
+     * ```
+     */
+    colorPicker(options?: ColorPickerOptions): Promise<Color | undefined>;
+    /**
+     * Returns a string representation of the `dialogs` singleton.
+     */
+    toString(): string;
+}
+/**
+ * @category Dialogs
+ */
+declare const dialogs: Dialogs;
+/**
+ * Button configurations for message boxes.
+ * 
+ * Use the static factory methods to create button sets.
+ * 
+ * ```ts
+ * const buttons = MessageBoxButtons.ok();
+ * const buttons2 = MessageBoxButtons.yesNoCancel();
+ * const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
+ * ```
+ * @category Dialogs
+ */
+declare class MessageBoxButtons {
+    private constructor();
+    /**
+     * Creates an OK button.
+     */
+    static ok(): MessageBoxButtons;
+    /**
+     * Creates an OK button with a custom label.
+     */
+    static okCustom(okLabel: string): MessageBoxButtons;
+    /**
+     * Creates OK and Cancel buttons.
+     */
+    static okCancel(): MessageBoxButtons;
+    /**
+     * Creates OK and Cancel buttons with custom labels.
+     */
+    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
+    /**
+     * Creates Yes and No buttons.
+     */
+    static yesNo(): MessageBoxButtons;
+    /**
+     * Creates Yes, No, and Cancel buttons.
+     */
+    static yesNoCancel(): MessageBoxButtons;
+    /**
+     * Creates Yes, No, and Cancel buttons with custom labels.
+     */
+    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
+    /**
+     * Returns a string representation of this set of message box buttons.
+     */
+    toString(): string;
+}
 /**
  * An entry returned by `Directory.listEntries()`, representing a file, directory,
  * or symlink within a directory.
@@ -9864,301 +10159,6 @@ declare interface DiskUsage {
     readonly read: Readonly<IoStats>;
     /**
      * Returns a string representation of this disk usage.
-     */
-    toString(): string;
-}
-/**
- * Message box options.
- * 
- * ```ts
- * await ui.messageBox("Delete this file?", {
- *   title: "Confirm",
- *   buttons: MessageBoxButtons.yesNo(),
- *   icon: MessageBoxIcon.Warning,
- * });
- * ```
- * @category UI
- * @expand
- */
-declare interface MessageBoxOptions {
-    /**
-     * Title displayed in the message box title bar.
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Buttons displayed in the message box.
-     * @defaultValue `MessageBoxButtons.ok()`
-     */
-    buttons?: MessageBoxButtons;
-    /**
-     * Icon displayed in the message box.
-     * @defaultValue `MessageBoxIcon.Info`
-     */
-    icon?: MessageBoxIcon;
-}
-/**
- * A file type filter for file dialogs.
- * 
- * ```ts
- * const filter = { name: "Images", extensions: ["png", "jpg"] };
- * ```
- * @category UI
- */
-declare interface FileFilter {
-    /**
-     * Display name of the filter.
-     */
-    name: string;
-    /**
-     * File extensions matched by this filter (without leading dot).
-     */
-    extensions: string[];
-}
-/**
- * File dialog options.
- * 
- * ```ts
- * const path = await ui.pickFile({
- *   title: "Open Image",
- *   filters: [{ name: "Images", extensions: ["png", "jpg"] }],
- * });
- * ```
- * @category UI
- * @expand
- */
-declare interface FileDialogOptions {
-    /**
-     * Title displayed in the dialog title bar.
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Initial directory shown in the dialog.
-     * @defaultValue `undefined`
-     */
-    directory?: string;
-    /**
-     * File type filters shown in the dialog.
-     * @defaultValue `undefined`
-     */
-    filters?: FileFilter[];
-}
-/**
- * Text input dialog options.
- * 
- * ```ts
- * const name = await ui.textInput("Enter your name:", {
- *   title: "Name",
- *   mode: TextInputMode.SingleLine,
- * });
- * ```
- * @category UI
- * @expand
- */
-declare interface TextInputOptions {
-    /**
-     * Title displayed in the dialog title bar.
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Initial value shown in the text field.
-     * @defaultValue `undefined`
-     */
-    value?: string;
-    /**
-     * Input mode controlling the dialog style.
-     * @defaultValue `TextInputMode.SingleLine`
-     */
-    mode?: TextInputMode;
-}
-/**
- * Color picker dialog options.
- * 
- * ```ts
- * const color = await ui.colorPicker({
- *   title: "Choose a color",
- *   value: new Color(255, 0, 0),
- * });
- * ```
- * @category UI
- * @expand
- */
-declare interface ColorPickerOptions {
-    /**
-     * Title displayed in the dialog title bar.
-     * @defaultValue `undefined`
-     */
-    title?: string;
-    /**
-     * Initial color shown in the picker.
-     * @defaultValue `undefined`
-     */
-    value?: ColorLike;
-}
-/**
- * User interface utilities.
- * 
- * Provides methods for displaying message boxes and file dialogs.
- * 
- * ```ts
- * const result = await ui.messageBox("Hello, world!");
- * ```
- * 
- * ```ts
- * const result = await ui.messageBox("Delete this file?", {
- *   title: "Confirm",
- *   buttons: MessageBoxButtons.yesNo(),
- *   icon: MessageBoxIcon.Warning,
- * });
- * if (result === MessageBoxResult.Yes) {
- *   println("Confirmed");
- * }
- * ```
- * @category UI
- */
-declare class Ui {
-    private constructor();
-    /**
-     * Displays a message box and returns the user's response.
-     * 
-     * ```ts
-     * const result = await ui.messageBox("Operation complete");
-     * ```
-     */
-    messageBox(text: string, options?: MessageBoxOptions): Promise<MessageBoxResult>;
-    /**
-     * Opens a file picker dialog and returns the selected file path, or `null` if cancelled.
-     * 
-     * ```ts
-     * const path = await ui.pickFile({ title: "Open File" });
-     * if (path !== null) {
-     *   print(path);
-     * }
-     * ```
-     */
-    pickFile(options?: FileDialogOptions): Promise<string | undefined>;
-    /**
-     * Opens a file picker dialog allowing multiple selections and returns the selected file paths.
-     * 
-     * Returns an empty array if cancelled.
-     * 
-     * ```ts
-     * const paths = await ui.pickFiles({ title: "Open Files" });
-     * for (const path of paths) {
-     *   console.log(path);
-     * }
-     * ```
-     */
-    pickFiles(options?: FileDialogOptions): Promise<string[]>;
-    /**
-     * Opens a folder picker dialog and returns the selected folder path, or `null` if cancelled.
-     * 
-     * ```ts
-     * const path = await ui.pickFolder({ title: "Select Folder" });
-     * ```
-     */
-    pickFolder(options?: FileDialogOptions): Promise<string | undefined>;
-    /**
-     * Opens a folder picker dialog allowing multiple selections and returns the selected folder paths.
-     * 
-     * Returns an empty array if cancelled.
-     * 
-     * ```ts
-     * const paths = await ui.pickFolders({ title: "Select Folders" });
-     * ```
-     */
-    pickFolders(options?: FileDialogOptions): Promise<string[]>;
-    /**
-     * Opens a save file dialog and returns the chosen file path, or `null` if cancelled.
-     * 
-     * ```ts
-     * const path = await ui.saveFile({
-     *   title: "Save As",
-     *   filters: [{ name: "Text Files", extensions: ["txt"] }],
-     * });
-     * ```
-     */
-    saveFile(options?: FileDialogOptions): Promise<string | undefined>;
-    /**
-     * Opens a text input dialog and returns the entered text, or `null` if cancelled.
-     * 
-     * ```ts
-     * const name = await ui.textInput("Enter your name:", {
-     *   title: "Name",
-     *   mode: TextInputMode.SingleLine,
-     * });
-     * ```
-     */
-    textInput(message: string, options?: TextInputOptions): Promise<string | undefined>;
-    /**
-     * Opens a color picker dialog and returns the selected color, or `null` if cancelled.
-     * 
-     * ```ts
-     * const color = await ui.colorPicker({
-     *   title: "Choose a color",
-     *   value: new Color(255, 0, 0),
-     * });
-     * if (color !== null) {
-     *   print(`${color}`);
-     * }
-     * ```
-     */
-    colorPicker(options?: ColorPickerOptions): Promise<Color | undefined>;
-    /**
-     * Returns a string representation of the `ui` singleton.
-     */
-    toString(): string;
-}
-/**
- * @category UI
- */
-declare const ui: Ui;
-/**
- * Button configurations for message boxes.
- * 
- * Use the static factory methods to create button sets.
- * 
- * ```ts
- * const buttons = MessageBoxButtons.ok();
- * const buttons2 = MessageBoxButtons.yesNoCancel();
- * const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
- * ```
- * @category UI
- */
-declare class MessageBoxButtons {
-    private constructor();
-    /**
-     * Creates an OK button.
-     */
-    static ok(): MessageBoxButtons;
-    /**
-     * Creates an OK button with a custom label.
-     */
-    static okCustom(okLabel: string): MessageBoxButtons;
-    /**
-     * Creates OK and Cancel buttons.
-     */
-    static okCancel(): MessageBoxButtons;
-    /**
-     * Creates OK and Cancel buttons with custom labels.
-     */
-    static okCancelCustom(okLabel: string, cancelLabel: string): MessageBoxButtons;
-    /**
-     * Creates Yes and No buttons.
-     */
-    static yesNo(): MessageBoxButtons;
-    /**
-     * Creates Yes, No, and Cancel buttons.
-     */
-    static yesNoCancel(): MessageBoxButtons;
-    /**
-     * Creates Yes, No, and Cancel buttons with custom labels.
-     */
-    static yesNoCancelCustom(yesLabel: string, noLabel: string, cancelLabel: string): MessageBoxButtons;
-    /**
-     * Returns a string representation of this set of message box buttons.
      */
     toString(): string;
 }

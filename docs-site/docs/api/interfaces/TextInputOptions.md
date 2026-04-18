@@ -4,7 +4,7 @@
 Text input dialog options.
 
 ```ts
-const name = await ui.textInput("Enter your name:", {
+const name = await dialogs.textInput("Enter your name:", {
   title: "Name",
   mode: TextInputMode.SingleLine,
 });

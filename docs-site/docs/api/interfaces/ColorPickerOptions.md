@@ -4,7 +4,7 @@
 Color picker dialog options.
 
 ```ts
-const color = await ui.colorPicker({
+const color = await dialogs.colorPicker({
   title: "Choose a color",
   value: new Color(255, 0, 0),
 });

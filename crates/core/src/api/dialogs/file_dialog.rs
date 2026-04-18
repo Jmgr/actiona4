@@ -4,7 +4,7 @@ use color_eyre::Result;
 use itertools::Itertools;
 use rfd::AsyncFileDialog;
 
-use super::Ui;
+use super::Dialogs;
 
 #[derive(Clone, Debug, Default)]
 pub struct FileFilter {
@@ -35,7 +35,7 @@ fn build_dialog(options: &FileDialogOptions) -> AsyncFileDialog {
     dialog
 }
 
-impl Ui {
+impl Dialogs {
     pub async fn pick_file(options: FileDialogOptions) -> Result<Option<PathBuf>> {
         let handle = build_dialog(&options).pick_file().await;
         Ok(handle.map(|h| h.path().to_path_buf()))

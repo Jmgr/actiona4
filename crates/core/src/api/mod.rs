@@ -7,6 +7,7 @@ pub mod color;
 pub mod console;
 pub mod datetime;
 pub mod directory;
+pub mod dialogs;
 pub mod displays;
 pub mod file;
 pub mod filesystem;
@@ -27,7 +28,6 @@ pub mod size;
 pub mod standardpaths;
 pub mod system;
 pub(crate) mod triggers;
-pub mod ui;
 pub mod web;
 pub mod windows;
 
