@@ -24,6 +24,7 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
         .join("share")
         .join("doc")
         .join("actiona-run");
+    let metainfo_dir = app_dir.join("usr").join("share").join("metainfo");
 
     let version = read_version(workspace_root).await?;
     let arch = appimage_arch()?;
@@ -42,6 +43,7 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
         PackagedFilePlatform::Linux,
     )
     .await?;
+    stage_appstream_metainfo(workspace_root, &metainfo_dir)?;
     remove_output_if_exists(&output_path)?;
 
     let tools_dir = workspace_root.join("target").join("tools");
@@ -61,6 +63,19 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
     )?;
 
     println!("AppImage written to: {}", output_path.display());
+
+    Ok(())
+}
+
+fn stage_appstream_metainfo(workspace_root: &Path, metainfo_dir: &Path) -> Result<()> {
+    let source_path = workspace_root
+        .join("assets")
+        .join("app.actiona.run.appdata.xml");
+    let source_file = require_file(&source_path)?;
+    let destination_path = metainfo_dir.join("app.actiona.run.appdata.xml");
+
+    std::fs::create_dir_all(metainfo_dir)?;
+    std::fs::copy(source_file, &destination_path)?;
 
     Ok(())
 }
@@ -176,7 +191,9 @@ fn run_linuxdeploy(
 ) -> Result<()> {
     let run_binary = require_binary(release_dir, "actiona-run")?;
     let selection_binary = require_binary(release_dir, "selection-tool")?;
-    let desktop_file_path = workspace_root.join("assets").join("actiona-run.desktop");
+    let desktop_file_path = workspace_root
+        .join("assets")
+        .join("app.actiona.run.desktop");
     let desktop_file = require_file(&desktop_file_path)?;
     let icon_source_path = workspace_root
         .join("crates")

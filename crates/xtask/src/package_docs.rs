@@ -73,7 +73,7 @@ mod tests {
     use super::{normalize_to_crlf, stage_packaged_files};
 
     #[test]
-    fn packaged_files_enumerates_root_markdown_and_renames_license_on_windows() {
+    fn packaged_files_marks_root_docs_for_appimage_and_renames_license_on_windows() {
         let workspace = tempdir().unwrap();
         fs::write(workspace.path().join("README.md"), "readme\n").unwrap();
         fs::write(workspace.path().join("CHANGELOG.md"), "changelog\n").unwrap();
@@ -82,20 +82,36 @@ mod tests {
         fs::write(workspace.path().join("docs").join("IGNORED.md"), "nested\n").unwrap();
 
         let packaged_files = packaged_files(workspace.path()).unwrap();
-        let mut document_names: Vec<_> = packaged_files
+        let mut linux_document_names: Vec<_> = packaged_files
             .iter()
-            .filter(|packaged_file| packaged_file.use_dos_line_feeds)
+            .filter(|packaged_file| packaged_file.include_in_appimage)
+            .map(|packaged_file| {
+                packaged_file
+                    .destination_name_for(PackagedFilePlatform::Linux)
+                    .to_owned()
+            })
+            .collect();
+        linux_document_names.sort();
+
+        let mut windows_document_names: Vec<_> = packaged_files
+            .iter()
+            .filter(|packaged_file| packaged_file.include_in_appimage)
             .map(|packaged_file| {
                 packaged_file
                     .destination_name_for(PackagedFilePlatform::Windows)
                     .to_owned()
             })
             .collect();
-        document_names.sort();
+        windows_document_names.sort();
 
         assert_eq!(
-            document_names,
-            vec!["CHANGELOG.md", "LICENSE.md", "README.md"]
+            linux_document_names,
+            vec!["CHANGELOG.md", "LICENSE", "README.md"]
+        );
+
+        assert_eq!(
+            windows_document_names,
+            vec!["CHANGELOG.md", "LICENSE.txt", "README.md"]
         );
     }
 
