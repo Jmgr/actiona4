@@ -154,7 +154,7 @@ args = ["upgrade", "--incompatible"]
 [tasks.appimage]
 condition = { platforms = ["linux"] }
 description = "Build a signed AppImage for the actiona-run executable."
-dependencies = ["release-symbols"]
+dependencies = ["release-symbols", "upload-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "app-image"]
 
@@ -234,7 +234,7 @@ args = ["build", "-p", "inno-plugin", "--release", "--target", "i686-pc-windows-
 [tasks.installer]
 condition = { platforms = ["windows"] }
 description = "Build the signed Actiona Run installer with Inno Setup (Windows only)."
-dependencies = ["release-symbols", "sign"]
+dependencies = ["release-symbols", "sign", "upload-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "installer"]
 
@@ -248,7 +248,7 @@ args = ["run", "-p", "xtask", "--", "installer-no-sign"]
 [tasks.archive]
 condition = { platforms = ["windows"] }
 description = "Build a signed Actiona Run zip archive (Windows only)."
-dependencies = ["release-symbols", "sign"]
+dependencies = ["release-symbols", "sign", "upload-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "archive"]
 
