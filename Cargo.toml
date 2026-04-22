@@ -270,7 +270,7 @@ rquickjs-core = { git = "https://github.com/DelSkayn/rquickjs", rev = "69aed5c" 
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
 
 [profile.release]
-opt-level = "z"
+opt-level = 3
 lto = true
 codegen-units = 1
 debug = true      # needed for dump_syms to produce useful symbols
