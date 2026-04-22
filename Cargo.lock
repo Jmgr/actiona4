@@ -7180,6 +7180,8 @@ source = "git+https://github.com/Jmgr/sentry-rust-minidump?rev=c8ac244#c8ac244bc
 dependencies = [
  "minidumper-child",
  "sentry",
+ "serde",
+ "serde_json",
  "thiserror 2.0.18",
 ]
 

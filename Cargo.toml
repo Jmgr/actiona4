@@ -139,7 +139,7 @@ rustydialogs = { version = "0.4.2", features = ["gtk4"] }
 rustyline = { version = "18.0.0", features = ["derive"] }
 sadness-generator = "0.7.0"
 sentry = "0.47.0"
-sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "c8ac244" }
+sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "c8ac244", features = ["ipc"] }
 serde = "1.0.228"
 serde-name = "0.2.1"
 serde_json = "1.0.149"
