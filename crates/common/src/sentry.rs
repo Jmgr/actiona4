@@ -2,6 +2,8 @@ use std::{panic, sync::Arc};
 
 use color_eyre::{Result, eyre::Context};
 use rfd::{MessageDialog, MessageDialogResult};
+#[cfg(windows)]
+use sentry::integrations::panic::PanicIntegration;
 use sentry::{
     integrations::{
         backtrace::{AttachStacktraceIntegration, ProcessStacktraceIntegration},
@@ -13,9 +15,6 @@ use sentry::{
 use sentry_rust_minidump::Handle;
 
 use crate::built_info;
-
-#[cfg(windows)]
-use sentry::integrations::panic::PanicIntegration;
 
 const SENTRY_DSN: &str =
     "https://4d7d4abdc99f240244aaff1701358119@crash.actiona.app/5428144307680296";
@@ -57,10 +56,10 @@ pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
         })),
         ..Default::default()
     }
-        .add_integration(AttachStacktraceIntegration::new())
-        .add_integration(DebugImagesIntegration::new())
-        .add_integration(ContextIntegration::new())
-        .add_integration(ProcessStacktraceIntegration::new());
+    .add_integration(AttachStacktraceIntegration::new())
+    .add_integration(DebugImagesIntegration::new())
+    .add_integration(ContextIntegration::new())
+    .add_integration(ProcessStacktraceIntegration::new());
 
     #[cfg(windows)]
     let options = options.add_integration(PanicIntegration::new());
