@@ -1,7 +1,6 @@
 [env]
 RUST_TEST_THREADS = "1"
-VCPKGRS_TRIPLET = "x64-windows-static"
-OPENCV_CMAKE_ARGS = "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release"
+OPENCV4_STATIC = "1"
 
 [alias]
 format = ["make", "format"]

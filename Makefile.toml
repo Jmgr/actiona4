@@ -6,6 +6,8 @@ CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS = "${REMAP_PATH_FLAG} -C target-cp
 CARGO_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS = "${REMAP_PATH_FLAG} -C target-cpu=x86-64-v2"
 CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS = "${REMAP_PATH_FLAG} -C link-arg=-fuse-ld=mold -C target-cpu=x86-64-v2"
 CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER = "clang"
+VCPKGRS_TRIPLET = { value = "x64-windows-static", condition = { platforms = ["windows"] } }
+OPENCV_CMAKE_ARGS = { value = "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release", condition = { platforms = ["windows"] } }
 
 [config]
 skip_core_tasks = true
