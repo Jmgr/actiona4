@@ -30,16 +30,16 @@ pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
         auto_session_tracking: true,
         default_integrations: false,
         before_send: Some(Arc::new(move |mut event| {
-            if event.message.is_none() {
-                if let Some(Value::String(message)) = event.extra.get("panic.message") {
-                    event.message = Some(format!("panic: {message}"));
-                }
+            if event.message.is_none()
+                && let Some(Value::String(message)) = event.extra.get("panic.message")
+            {
+                event.message = Some(format!("panic: {message}"));
             }
 
-            if event.culprit.is_none() {
-                if let Some(Value::String(location)) = event.extra.get("panic.location") {
-                    event.culprit = Some(location.clone());
-                }
+            if event.culprit.is_none()
+                && let Some(Value::String(location)) = event.extra.get("panic.location")
+            {
+                event.culprit = Some(location.clone());
             }
 
             let dialog = MessageDialog::new()
