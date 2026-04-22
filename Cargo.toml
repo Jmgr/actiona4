@@ -271,8 +271,7 @@ enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
 opt-level = "z"
 lto = true
 codegen-units = 1
-debug = true               # needed for dump_syms to produce useful symbols
-split-debuginfo = "packed" # keeps debug info in a separate .dwp on Linux
+debug = true      # needed for dump_syms to produce useful symbols
 panic = "abort"
 
 [profile.dev]
