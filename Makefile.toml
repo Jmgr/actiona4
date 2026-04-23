@@ -1,3 +1,5 @@
+extend = [{ path = ".local.Makefile.toml", optional = true }]
+
 [env]
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = "true"
 REMAP_PATH_FLAG = "--remap-path-prefix=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}=/src/actiona4"
@@ -95,6 +97,11 @@ description = "Build actiona-run then run end-to-end TypeScript API tests."
 dependencies = ["build-actiona-run"]
 command = "cargo"
 args = ["test", "-p", "e2e"]
+
+[tasks.bench]
+description = "Run benchmarks."
+command = "cargo"
+args = ["bench", "${@}"]
 
 [tasks.lint]
 dependencies = ["clippy", "lint-ts"]

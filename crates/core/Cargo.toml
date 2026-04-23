@@ -128,8 +128,13 @@ built.workspace = true
 cfg_aliases.workspace = true
 toml.workspace = true
 
+[[bench]]
+name = "find_image"
+harness = false
+
 [dev-dependencies]
 base64.workspace = true
+criterion.workspace = true
 console-subscriber.workspace = true
 httptest.workspace = true
 libtest-mimic-collect.workspace = true

@@ -251,6 +251,7 @@ zbus = { version = "5.14.0", default-features = false, features = ["tokio"] }
 askama = "0.15.6"
 assert_cmd = "2.2.1"
 base64 = "0.22.1"
+criterion = { version = "0.8.2", default-features = false, features = ["rayon"] }
 bon = "3.9.1"
 console-subscriber = "0.5.0"
 httptest = "0.16.4"
@@ -275,6 +276,9 @@ lto = true
 codegen-units = 1
 debug = true      # needed for dump_syms to produce useful symbols
 panic = "abort"
+
+[profile.bench]
+inherits = "release"
 
 [profile.dev]
 lto = false
