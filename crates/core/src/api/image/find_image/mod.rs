@@ -395,13 +395,21 @@ impl Source {
         let _ = progress.send(FindImageProgress::new(FindImageStage::Filtering, 70));
 
         if options.use_colors {
+            // Always use the original (full-resolution) mask here: the result map has
+            // been upscaled back to source resolution, so the ROIs and template channels
+            // are full-size and the mask must match.
+            let original_mask = if options.use_transparency {
+                template.mask.as_ref()
+            } else {
+                None
+            };
             filter_results_by_color(
                 &mut result,
                 &self.image.a,
                 &self.image.b,
                 &template.image.a,
                 &template.image.b,
-                template_mask.as_deref(),
+                original_mask,
                 template_size,
                 options.match_threshold,
             )?;
