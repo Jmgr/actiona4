@@ -469,6 +469,7 @@ impl From<JsDrawTextOptions> for DrawTextOptions {
 #[derive(Clone, Debug, FromJsObject)]
 pub struct JsFindImageOptions {
     /// Use color matching.
+    #[default(true)]
     pub use_colors: bool,
 
     /// Use template transparency.
