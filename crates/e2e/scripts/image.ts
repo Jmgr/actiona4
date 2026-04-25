@@ -196,3 +196,10 @@ for (const operation of generatedOperations) {
     "grayscale matching should include the known distractor position",
   );
 }
+
+{
+  const source = await Image.load(sourcePath);
+  const template = await Image.load(templatePath);
+  const result = await source.find(template, { useColors: true, enableGpu: true });
+  assert(result !== undefined, "Image.find with enableGpu should return a match for the known fixture");
+}

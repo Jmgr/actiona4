@@ -271,6 +271,10 @@ pub struct FindImageTemplateOptions {
     #[default(true)]
     pub use_colors: bool,
 
+    /// Use OpenCL/OpenCV's GPU-capable path for template matching.
+    #[default(false)]
+    pub enable_gpu: bool,
+
     /// Use template transparency.
     #[default(true)]
     pub use_transparency: bool,
@@ -378,6 +382,7 @@ impl Source {
             source_lightness.as_ref(),
             template_lightness.as_ref(),
             template_mask.as_deref(),
+            options.enable_gpu,
             cancellation_token.clone(),
             progress.clone(),
         )?;
@@ -477,6 +482,7 @@ mod tests {
                     &template,
                     FindImageTemplateOptions {
                         use_colors: true,
+                        enable_gpu: false,
                         use_transparency: true,
                         match_threshold: 0.8,
                         non_maximum_suppression_radius: Some(10),

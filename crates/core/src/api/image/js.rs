@@ -472,6 +472,10 @@ pub struct JsFindImageOptions {
     #[default(true)]
     pub use_colors: bool,
 
+    /// Use OpenCL/OpenCV's GPU-capable path for template matching.
+    #[default(false)]
+    pub enable_gpu: bool,
+
     /// Use template transparency.
     #[default(true)]
     pub use_transparency: bool,
@@ -496,6 +500,7 @@ impl JsFindImageOptions {
     pub(crate) fn into_inner(self) -> super::find_image::FindImageTemplateOptions {
         super::find_image::FindImageTemplateOptions {
             use_colors: self.use_colors,
+            enable_gpu: self.enable_gpu,
             use_transparency: self.use_transparency,
             match_threshold: self.match_threshold,
             non_maximum_suppression_radius: self.non_maximum_suppression_radius,

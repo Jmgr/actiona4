@@ -6,9 +6,9 @@ use std::sync::{
 use color_eyre::{Result, eyre::ensure};
 use itertools::Itertools;
 use opencv::{
-    core::{CV_32FC1, Mat, Rect, no_array},
+    core::{AccessFlag, CV_32FC1, Mat, Rect, UMat, UMatUsageFlags, no_array},
     imgproc::{TM_CCOEFF_NORMED, match_template as cv_match_template},
-    prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual},
+    prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual, UMatTraitConst},
 };
 use rayon::prelude::*;
 use tokio::sync::mpsc;
@@ -53,6 +53,34 @@ fn match_tile(
     Ok(tile_result)
 }
 
+/// Run template matching once over the full image using OpenCV's UMat path.
+fn match_gpu(
+    source_lightness: &LabLightnessMat,
+    template_lightness: &LabLightnessMat,
+    template_mask: Option<&MaskMat>,
+) -> Result<Mat> {
+    let source = source_lightness
+        .0
+        .get_umat(AccessFlag::ACCESS_READ, UMatUsageFlags::USAGE_DEFAULT)?;
+    let template = template_lightness
+        .0
+        .get_umat(AccessFlag::ACCESS_READ, UMatUsageFlags::USAGE_DEFAULT)?;
+    let mut result = UMat::new_def();
+
+    if let Some(mask) = template_mask {
+        let mask = mask
+            .0
+            .get_umat(AccessFlag::ACCESS_READ, UMatUsageFlags::USAGE_DEFAULT)?;
+        cv_match_template(&source, &template, &mut result, TM_CCOEFF_NORMED, &mask)?;
+    } else {
+        cv_match_template(&source, &template, &mut result, TM_CCOEFF_NORMED, &no_array())?;
+    }
+
+    let mut downloaded = Mat::default();
+    result.copy_to(&mut downloaded)?;
+    Ok(downloaded)
+}
+
 /// Run template matching in parallel by splitting the source into row tiles.
 ///
 /// Each tile includes enough extra rows to compute matches that overlap the
@@ -64,6 +92,7 @@ pub fn match_template(
     source_lightness: &LabLightnessMat,
     template_lightness: &LabLightnessMat,
     template_mask: Option<&MaskMat>,
+    enable_gpu: bool,
     cancellation_token: CancellationToken,
     progress: mpsc::UnboundedSender<FindImageProgress>,
 ) -> Result<Mat> {
@@ -76,6 +105,10 @@ pub fn match_template(
             && source_lightness.0.cols() >= template_lightness.0.cols(),
         "template must fit inside source image"
     );
+
+    if enable_gpu {
+        return match_gpu(source_lightness, template_lightness, template_mask);
+    }
 
     let source_size = source_lightness.0.size()?;
     let template_size = template_lightness.0.size()?;
