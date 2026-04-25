@@ -468,58 +468,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "askama"
-version = "0.15.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b8246bcbf8eb97abef10c2d92166449680d41d55c0fc6978a91dec2e3619608"
-dependencies = [
- "askama_macros",
- "itoa",
- "percent-encoding",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "askama_derive"
-version = "0.15.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f9670bc84a28bb3da91821ef74226949ab63f1265aff7c751634f1dd0e6f97c"
-dependencies = [
- "askama_parser",
- "basic-toml",
- "memchr",
- "proc-macro2",
- "quote",
- "rustc-hash 2.1.2",
- "serde",
- "serde_derive",
- "syn 2.0.117",
-]
-
-[[package]]
-name = "askama_macros"
-version = "0.15.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0756b45480437dded0565dfc568af62ccce146fb6cfe902e808ba86e445f44f"
-dependencies = [
- "askama_derive",
-]
-
-[[package]]
-name = "askama_parser"
-version = "0.15.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d0af3691ba3af77949c0b5a3925444b85cb58a0184cc7fec16c68ba2e7be868"
-dependencies = [
- "rustc-hash 2.1.2",
- "serde",
- "serde_derive",
- "unicode-ident",
- "winnow 1.0.2",
-]
-
-[[package]]
 name = "assert_cmd"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -839,15 +787,6 @@ name = "base64ct"
 version = "1.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
-
-[[package]]
-name = "basic-toml"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba62675e8242a4c4e806d12f11d136e626e6c8361d6b829310732241652a178a"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "better_scoped_tls"
@@ -1389,7 +1328,6 @@ dependencies = [
  "sentry",
  "sentry-rust-minidump",
  "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -1509,7 +1447,6 @@ dependencies = [
  "arboard",
  "arc-swap",
  "ashpd",
- "askama",
  "base64 0.22.1",
  "bimap",
  "built",
@@ -1575,7 +1512,6 @@ dependencies = [
  "rustix 1.1.4",
  "rustydialogs",
  "serde",
- "serde-name",
  "serde_json",
  "serde_plain",
  "serial_test",
@@ -1588,7 +1524,6 @@ dependencies = [
  "swc_ecma_transforms_base",
  "swc_ecma_transforms_typescript",
  "swc_sourcemap",
- "sys-locale",
  "sysinfo",
  "system_shutdown",
  "thiserror 2.0.18",
@@ -1604,7 +1539,6 @@ dependencies = [
  "unicode-segmentation",
  "url",
  "uuid",
- "versions",
  "wildmatch",
  "windows 0.62.2",
  "windows-result 0.4.1",
@@ -1769,19 +1703,6 @@ name = "crash-handler"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2066907075af649bcb8bcb1b9b986329b243677e6918b2d920aa64b0aac5ace3"
-dependencies = [
- "cfg-if",
- "crash-context",
- "libc",
- "mach2 0.4.3",
- "parking_lot",
-]
-
-[[package]]
-name = "crash-handler"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0df5c9639f4942eb7702b964b3f9adf03a55724a57558cc177407388a8b936e2"
 dependencies = [
  "cfg-if",
  "crash-context",
@@ -4627,7 +4548,7 @@ version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7c4f23f835dbe67e44ddf884d3802ff549ca5948bf60e9fd70e9a13c96324d1"
 dependencies = [
- "crash-handler 0.6.3",
+ "crash-handler",
  "minidumper",
  "thiserror 1.0.69",
  "uuid",
@@ -6825,9 +6746,7 @@ dependencies = [
  "color-eyre",
  "common",
  "config",
- "console",
  "core",
- "crash-handler 0.7.0",
  "dialoguer",
  "directories",
  "embed-resource",
@@ -6841,7 +6760,6 @@ dependencies = [
  "rquickjs",
  "rustyline",
  "sadness-generator",
- "serde_json",
  "shell-words",
  "strum",
  "tempfile",
@@ -6852,7 +6770,6 @@ dependencies = [
  "tracing-subscriber",
  "two-face",
  "updater",
- "url",
  "versions",
  "windows 0.62.2",
  "winrt-toast-reborn",
@@ -7295,16 +7212,6 @@ checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
  "serde_derive",
-]
-
-[[package]]
-name = "serde-name"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b5b14ebbcc4e4f2b3642fa99c388649da58d1dc3308c7d109f39f565d1710f0"
-dependencies = [
- "serde",
- "thiserror 1.0.69",
 ]
 
 [[package]]

@@ -8,6 +8,9 @@ documentation.workspace = true
 license.workspace = true
 default-run = "actiona-run"
 
+[package.metadata.cargo-machete]
+ignored = ["common"]
+
 [target.'cfg(target_os = "linux")'.dependencies]
 libc.workspace = true
 
@@ -43,8 +46,6 @@ updater = { path = "../updater" }
 clap = { workspace = true, features = ["env"] }
 clap_complete.workspace = true
 color-eyre.workspace = true
-console.workspace = true
-crash-handler.workspace = true
 dialoguer.workspace = true
 directories.workspace = true
 enigo.workspace = true
@@ -55,7 +56,6 @@ rfd.workspace = true
 rquickjs.workspace = true
 rustyline.workspace = true
 sadness-generator.workspace = true
-serde_json.workspace = true
 shell-words.workspace = true
 strum.workspace = true
 time.workspace = true
@@ -64,7 +64,6 @@ tokio-util.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 two-face.workspace = true
-url.workspace = true
 versions.workspace = true
 
 [build-dependencies]

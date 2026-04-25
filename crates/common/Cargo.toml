@@ -17,7 +17,6 @@ rfd.workspace = true
 sentry.workspace = true
 sentry-rust-minidump.workspace = true
 serde = { workspace = true, features = ["derive"] }
-serde_json.workspace = true
 
 [build-dependencies]
 built.workspace = true

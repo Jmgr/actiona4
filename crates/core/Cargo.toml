@@ -35,7 +35,7 @@ zbus.workspace = true
 notification-aumid = "app.actiona.actiona-run"
 
 [package.metadata.cargo-machete]
-ignored = ["built", "cfg_aliases", "rquickjs-serde"]
+ignored = ["built", "cfg_aliases"]
 
 [lib]
 name = "actiona_core"
@@ -48,7 +48,6 @@ macros = { path = "../macros" }
 ab_glyph.workspace = true
 arboard.workspace = true
 arc-swap.workspace = true
-askama.workspace = true
 base64.workspace = true
 bimap.workspace = true
 bytes.workspace = true
@@ -95,7 +94,6 @@ rquickjs.workspace = true
 rquickjs-serde.workspace = true
 rustydialogs.workspace = true
 serde.workspace = true
-serde-name.workspace = true
 serde_json.workspace = true
 serde_plain.workspace = true
 slotmap.workspace = true
@@ -107,20 +105,17 @@ swc_ecma_parser.workspace = true
 swc_ecma_transforms_base.workspace = true
 swc_ecma_transforms_typescript.workspace = true
 swc_sourcemap.workspace = true
-sys-locale.workspace = true
 sysinfo.workspace = true
 system_shutdown.workspace = true
 thiserror.workspace = true
 time.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
-toml.workspace = true
 tracing.workspace = true
 tween.workspace = true
 unicode-segmentation.workspace = true
 url.workspace = true
 uuid.workspace = true
-versions.workspace = true
 wildmatch.workspace = true
 
 [build-dependencies]

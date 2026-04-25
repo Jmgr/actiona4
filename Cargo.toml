@@ -40,7 +40,6 @@ clap_complete = "4.6.2"
 color-eyre = "0.6.5"
 console = "0.16.3"
 convert_case = "0.11.0"
-crash-handler = "0.7.0"
 darling = "0.23.0"
 derive-where = "1.6.1"
 derive_more = { version = "2.1.1", default-features = false, features = [
@@ -65,7 +64,6 @@ env_logger = "0.11.10"
 eyre = "0.6.12"
 flate2 = "1.1.9"
 futures = "0.3.32"
-futures-util = "0.3.32"
 http-body = "1.0.1"
 http-body-util = "0.1.3"
 human-units = { version = "0.5.3", features = ["si-units"] }
@@ -94,7 +92,6 @@ libc = { version = "0.2.186", default-features = false }
 log = "0.4.29"
 mime = "0.3.17"
 mime_guess = "2.0.5"
-minidump-writer = "0.11.0"
 noiselib = "0.2.4"
 num-traits = "0.2.19"
 once_cell = "1.21.4"
@@ -143,7 +140,6 @@ sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", r
     "ipc",
 ] }
 serde = "1.0.228"
-serde-name = "0.2.1"
 serde_json = "1.0.149"
 serde_plain = "1.0.2"
 shell-words = "1.1.1"
@@ -248,11 +244,9 @@ xkeysym = "0.2.1"
 zbus = { version = "5.14.0", default-features = false, features = ["tokio"] }
 
 # Dev dependencies
-askama = "0.15.6"
 assert_cmd = "2.2.1"
 base64 = "0.22.1"
 criterion = { version = "0.8.2", default-features = false, features = ["rayon"] }
-bon = "3.9.1"
 console-subscriber = "0.5.0"
 httptest = "0.16.4"
 libtest-mimic-collect = "0.3.3"
