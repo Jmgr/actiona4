@@ -20,7 +20,7 @@ use crate::Capture;
 
 /// Windows screen capture handle. Every capture spawns a blocking task that
 /// performs the GDI calls.
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Screen {
     task_tracker: TaskTracker,
     cancellation_token: CancellationToken,

@@ -7,8 +7,7 @@ use tokio::sync::Mutex;
 use types::rect::Rect;
 use x11rb_async::{connection::Connection, protocol::xproto::ImageFormat};
 
-use crate::Capture;
-use crate::platform::x11::Screen;
+use crate::{Capture, platform::x11::Screen};
 
 const BYTES_PER_PIXEL: usize = 4;
 

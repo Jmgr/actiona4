@@ -1,7 +1,7 @@
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 
 /// A raw screen capture in BGRA pixel order, top-down.
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct Capture {
     pub width: u32,
     pub height: u32,

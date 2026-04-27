@@ -2,8 +2,7 @@ use std::sync::Arc;
 
 use color_eyre::{Result, eyre::eyre};
 use tokio::select;
-use tokio_util::sync::CancellationToken;
-use tokio_util::task::TaskTracker;
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
 use types::rect::Rect;
 use x11rb_async::{
@@ -28,7 +27,7 @@ struct X11Inner {
 /// X11 screen capture handle. Owns a dedicated `x11rb-async` connection.
 ///
 /// Cheap to clone — the connection is shared via an `Arc`.
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct Screen {
     inner: Arc<X11Inner>,
 }

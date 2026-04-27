@@ -1,4 +1,7 @@
-use types::{rect::Rect, su32::Su32, su32::su32};
+use types::{
+    rect::Rect,
+    su32::{Su32, su32},
+};
 
 /// Fill all pixels of `image` that lie outside every display rectangle with
 /// black.
