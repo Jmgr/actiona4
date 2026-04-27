@@ -23,14 +23,14 @@ use tween::FixedTweener;
 use crate::{
     api::{
         js::duration::JsDuration,
-        point::{js::JsPointLike, try_point},
+        point::{js::JsPointLike, random_point_in_circle, try_point},
     },
     error::CommonError,
     runtime::{
         events::{MouseButtonEvent, MouseMoveEvent, MouseScrollEvent},
         shared_rng::SharedRng,
     },
-    types::{display::DisplayFields, input::Direction},
+    types::{display::DisplayFields, input::Direction, tween::TweenPoint},
 };
 
 mod click_triggers;
@@ -553,7 +553,7 @@ impl Mouse {
         self.runtime.require_not_wayland()?;
         if options.target_randomness > 0. {
             target_position =
-                Point::random_in_circle(target_position, options.target_randomness, rng.clone())?;
+                random_point_in_circle(target_position, options.target_randomness, rng.clone())?;
         }
 
         let start_position = self.position()?;
@@ -582,8 +582,8 @@ impl Mouse {
         }
 
         let mut tween = FixedTweener::new(
-            start_position,
-            target_position,
+            TweenPoint::from(start_position),
+            TweenPoint::from(target_position),
             duration,
             options.tween.into_tween(),
             options.interval.0.as_secs_f64(),
@@ -616,7 +616,8 @@ impl Mouse {
                 perpendicular_y * noise * damping_factor,
             );
 
-            let position = tween.move_next() + try_point(noise_offset_x, noise_offset_y)?;
+            let tween_position: Point = tween.move_next().into();
+            let position = tween_position + try_point(noise_offset_x, noise_offset_y)?;
 
             self.set_position(position, Coordinate::Abs)?;
 

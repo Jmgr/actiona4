@@ -8,20 +8,16 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
+pub use ::types::{color, convert, display, ops, point, rect, si32, size, su32, try_traits};
 use humansize::BINARY;
 use itertools::Itertools;
 use sysinfo::Uid;
 
 use crate::{api::system::processes::ThreadKind, types::pid::Pid};
 
-pub mod convert;
-pub mod display;
 pub mod input;
-pub mod ops;
 pub mod pid;
-pub mod si32;
-pub mod su32;
-pub mod try_traits;
+pub mod tween;
 
 #[repr(transparent)]
 #[derive(Debug, Default, Eq, Hash, PartialEq)]

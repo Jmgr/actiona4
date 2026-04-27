@@ -44,6 +44,7 @@ name = "actiona_core"
 common = { path = "../common" }
 installer-tools = { path = "../installer-tools" }
 macros = { path = "../macros" }
+types = { path = "../types", features = ["opencv", "imageproc"] }
 
 ab_glyph.workspace = true
 arboard.workspace = true
@@ -123,17 +124,17 @@ built.workspace = true
 cfg_aliases.workspace = true
 toml.workspace = true
 
-[[bench]]
-name = "find_image"
-harness = false
-
 [dev-dependencies]
 base64.workspace = true
-criterion.workspace = true
 console-subscriber.workspace = true
+criterion.workspace = true
 httptest.workspace = true
 libtest-mimic-collect.workspace = true
 rstest.workspace = true
 serial_test.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
+
+[[bench]]
+name = "find_image"
+harness = false

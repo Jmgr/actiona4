@@ -1,9 +1,8 @@
 use std::num::Saturating;
 
 use color_eyre::{Report, Result, eyre::eyre};
-use rquickjs::{FromJs, IntoJs};
 
-use crate::{IntoJsResult, types::si32::Si32};
+use crate::si32::Si32;
 
 impl From<i32> for Si32 {
     fn from(value: i32) -> Self {
@@ -104,6 +103,7 @@ impl From<Si32> for f32 {
     }
 }
 
+/*
 impl<'js> IntoJs<'js> for Si32 {
     fn into_js(self, ctx: &rquickjs::Ctx<'js>) -> rquickjs::Result<rquickjs::Value<'js>> {
         let value: f64 = self.into();
@@ -119,21 +119,24 @@ impl<'js> FromJs<'js> for Si32 {
         IntoJsResult::into_js_result(Self::try_from(value), ctx)
     }
 }
+*/
 
 #[cfg(test)]
 #[allow(clippy::as_conversions)]
 mod tests {
-    use rquickjs::{Context, Ctx, FromJs, IntoJs, Null, Runtime, Undefined, Value};
+    //use rquickjs::{Context, Ctx, FromJs, IntoJs, Null, Runtime, Undefined, Value};
     use rstest::rstest;
 
-    use crate::types::si32::{Si32, si32};
+    use crate::si32::{Si32, si32};
 
+    /*
     // Helper: run code inside a JS context
     fn with_ctx<F: FnOnce(Ctx) -> rquickjs::Result<()>>(f: F) {
         let rt = Runtime::new().expect("rt");
         let ctx = Context::full(&rt).expect("ctx");
         ctx.with(f).expect("js ok");
     }
+    */
 
     // ------------------------ From<i32> -> Si32  -----------------------------
 
@@ -288,6 +291,7 @@ mod tests {
         assert_eq!(want, got);
     }
 
+    /*
     // --- IntoJs (Si32 -> JS number) -----------------------------------------
 
     #[rstest]
@@ -405,4 +409,5 @@ mod tests {
             Ok(())
         });
     }
+    */
 }

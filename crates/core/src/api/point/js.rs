@@ -16,6 +16,10 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
+use types::{
+    display::display_with_type,
+    point::{Point, try_point},
+};
 
 use crate::{
     IntoJsResult,
@@ -23,16 +27,15 @@ use crate::{
         ResultExt,
         image::js::JsMatch,
         js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
-        point::try_point,
+        point::random_point_in_circle,
     },
     runtime::WithUserData,
-    types::display::display_with_type,
 };
 
 #[derive(Clone, Copy, Debug)]
-pub struct JsPointLike(pub super::Point);
+pub struct JsPointLike(pub Point);
 
-fn point_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Point> {
+fn point_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Point> {
     if let Some(object) = value.as_object() {
         if has_registered_class_prototype::<JsPoint>(ctx, object)? {
             return value.clone().get::<JsPoint>().map(Into::into);
@@ -63,8 +66,8 @@ impl<'js> FromJsField<'js> for JsPointLike {
     }
 }
 
-impl From<super::Point> for JsPointLike {
-    fn from(value: super::Point) -> Self {
+impl From<Point> for JsPointLike {
+    fn from(value: Point) -> Self {
         Self(value)
     }
 }
@@ -125,12 +128,12 @@ impl<'js> FromParam<'js> for JsPointLike {
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[js_class]
 pub struct JsPoint {
-    inner: super::Point,
+    inner: Point,
 }
 
 impl<'js> ValueClass<'js> for JsPoint {
     fn extra_registration(object: &Object<'js>) -> rquickjs::Result<()> {
-        object.prop("Zero", Self::from(super::Point::default()))?;
+        object.prop("Zero", Self::from(Point::default()))?;
         Ok(())
     }
 }
@@ -202,8 +205,8 @@ impl JsPoint {
     pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Result<Self> {
         let user_data = ctx.user_data();
 
-        let point = super::Point::random_in_circle(center.0, radius, user_data.rng())
-            .into_js_result(&ctx)?;
+        let point =
+            random_point_in_circle(center.0, radius, user_data.rng()).into_js_result(&ctx)?;
         Ok(point.into())
     }
 
@@ -322,7 +325,7 @@ impl JsPoint {
     /// @skip
     #[qjs(skip)]
     #[must_use]
-    pub const fn inner(&self) -> super::Point {
+    pub const fn inner(&self) -> Point {
         self.inner
     }
 }
@@ -331,14 +334,14 @@ impl<'js> Trace<'js> for JsPoint {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl From<JsPoint> for super::Point {
+impl From<JsPoint> for Point {
     fn from(value: JsPoint) -> Self {
         value.inner
     }
 }
 
-impl From<super::Point> for JsPoint {
-    fn from(value: super::Point) -> Self {
+impl From<Point> for JsPoint {
+    fn from(value: Point) -> Self {
         Self { inner: value }
     }
 }

@@ -6,7 +6,7 @@ use std::{
 
 use color_eyre::{Report, Result, eyre::eyre};
 
-use crate::types::{
+use crate::{
     su32::Su32,
     try_traits::{TryDiv, TryDivAssign},
 };
@@ -130,7 +130,7 @@ impl TryDivAssign<u32> for Su32 {
 mod tests {
     use rstest::rstest;
 
-    use crate::types::{
+    use crate::{
         su32::{Su32, su32},
         try_traits::{TryDiv, TryDivAssign},
     };

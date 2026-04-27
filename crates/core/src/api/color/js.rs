@@ -17,16 +17,14 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
+use types::{color::Color, display::display_with_type};
 
-use crate::{
-    api::js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
-    types::display::display_with_type,
-};
+use crate::api::js::{FromJsField, classes::ValueClass, has_registered_class_prototype};
 
 #[derive(Clone, Copy, Debug)]
-pub struct JsColorLike(pub super::Color);
+pub struct JsColorLike(pub Color);
 
-fn color_from_value<'js>(value: &Value<'js>) -> Result<super::Color> {
+fn color_from_value<'js>(value: &Value<'js>) -> Result<Color> {
     if let Some(object) = value.as_object() {
         if has_registered_class_prototype::<JsColor>(value.ctx(), object)? {
             return value.clone().get::<JsColor>().map(Into::into);
@@ -36,7 +34,7 @@ fn color_from_value<'js>(value: &Value<'js>) -> Result<super::Color> {
         let g: u8 = object.get("g")?;
         let b: u8 = object.get("b")?;
         let a: u8 = object.get("a").unwrap_or(255);
-        return Ok(super::Color::new(r, g, b, a));
+        return Ok(Color::new(r, g, b, a));
     }
 
     Err(rquickjs::Error::new_from_js_message(
@@ -83,7 +81,7 @@ impl<'js> FromParam<'js> for JsColorLike {
                 255
             };
 
-            return Ok(Self(super::Color::new(r, g, b, a)));
+            return Ok(Self(Color::new(r, g, b, a)));
         }
 
         color_from_value(&value).map(Self)
@@ -272,7 +270,7 @@ impl<'js> FromParam<'js> for JsColorLike {
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[js_class]
 pub struct JsColor {
-    inner: super::Color,
+    inner: Color,
 }
 
 impl<'js> ValueClass<'js> for JsColor {
@@ -432,7 +430,7 @@ impl JsColor {
     #[must_use]
     pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self {
-            inner: super::Color::new(r, g, b, a),
+            inner: Color::new(r, g, b, a),
         }
     }
 }
@@ -542,13 +540,13 @@ impl JsColor {
     }
 }
 
-impl From<super::Color> for JsColor {
-    fn from(value: super::Color) -> Self {
+impl From<Color> for JsColor {
+    fn from(value: Color) -> Self {
         Self { inner: value }
     }
 }
 
-impl From<JsColor> for super::Color {
+impl From<JsColor> for Color {
     fn from(value: JsColor) -> Self {
         value.inner
     }
@@ -575,9 +573,9 @@ impl<'js> Trace<'js> for JsColor {
 #[cfg(test)]
 mod tests {
     use image::Rgba;
+    use types::color::Color;
 
     use super::JsColor;
-    use crate::api::color::Color;
 
     #[test]
     fn test_color_rust_methods() {

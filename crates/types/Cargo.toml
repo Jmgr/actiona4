@@ -1,0 +1,25 @@
+[package]
+name = "types"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[features]
+default = []
+opencv = ["dep:opencv"]
+imageproc = ["dep:imageproc"]
+
+[dependencies]
+color-eyre.workspace = true
+derive_more.workspace = true
+image.workspace = true
+imageproc = { workspace = true, optional = true }
+opencv = { workspace = true, optional = true }
+rand.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true

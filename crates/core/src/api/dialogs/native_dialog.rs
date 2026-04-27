@@ -57,20 +57,16 @@ pub struct ColorPickerOptions {
     pub value: Color,
 }
 
-impl From<Color> for rustydialogs::ColorValue {
-    fn from(color: Color) -> Self {
-        Self {
-            red: color[0],
-            green: color[1],
-            blue: color[2],
-        }
+fn color_to_dialog_color(color: Color) -> rustydialogs::ColorValue {
+    rustydialogs::ColorValue {
+        red: color[0],
+        green: color[1],
+        blue: color[2],
     }
 }
 
-impl From<rustydialogs::ColorValue> for Color {
-    fn from(color: rustydialogs::ColorValue) -> Self {
-        Self::new(color.red, color.green, color.blue, 255)
-    }
+const fn color_from_dialog_color(color: rustydialogs::ColorValue) -> Color {
+    Color::new(color.red, color.green, color.blue, 255)
 }
 
 impl Dialogs {
@@ -101,12 +97,12 @@ impl Dialogs {
             .spawn_blocking(move || {
                 rustydialogs::ColorPicker {
                     title: &options.title,
-                    value: options.value.into(),
+                    value: color_to_dialog_color(options.value),
                     owner: None,
                 }
                 .show()
             })
             .await?;
-        Ok(result.map(Color::from))
+        Ok(result.map(color_from_dialog_color))
     }
 }

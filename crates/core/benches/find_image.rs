@@ -1,11 +1,9 @@
-use std::sync::Arc;
+use std::{hint::black_box, sync::Arc, time::Duration};
 
 use actiona_core::api::image::{
     Image,
     find_image::{FindImageTemplateOptions, Source, Template},
 };
-use std::{hint::black_box, time::Duration};
-
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
@@ -147,12 +145,7 @@ fn find_image_benches(c: &mut Criterion) {
                         gpu_opts.enable_gpu = true;
                         black_box(
                             source
-                                .find_template(
-                                    &template,
-                                    gpu_opts,
-                                    CancellationToken::new(),
-                                    tx,
-                                )
+                                .find_template(&template, gpu_opts, CancellationToken::new(), tx)
                                 .unwrap(),
                         )
                     });

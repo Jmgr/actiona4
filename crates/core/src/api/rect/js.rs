@@ -15,22 +15,22 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
+use types::{display::display_with_type, point::try_point, rect::Rect, size::try_size};
 
 use crate::{
     IntoJsResult,
     api::{
         ResultExt,
         js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
-        point::{js::JsPoint, try_point},
-        size::{js::JsSize, try_size},
+        point::js::JsPoint,
+        size::js::JsSize,
     },
-    types::display::display_with_type,
 };
 
 #[derive(Clone, Copy, Debug)]
-pub struct JsRectLike(pub super::Rect);
+pub struct JsRectLike(pub Rect);
 
-fn rect_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Rect> {
+fn rect_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Rect> {
     if let Some(object) = value.as_object() {
         if has_registered_class_prototype::<JsRect>(ctx, object)? {
             return value.clone().get::<JsRect>().map(Into::into);
@@ -43,7 +43,7 @@ fn rect_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Rec
 
         let origin = try_point(x, y).into_js_result(ctx)?;
         let size = try_size(width, height).into_js_result(ctx)?;
-        return Ok(super::Rect::new(origin, size));
+        return Ok(Rect::new(origin, size));
     }
 
     Err(rquickjs::Error::new_from_js_message(
@@ -94,7 +94,7 @@ impl<'js> FromParam<'js> for JsRectLike {
 
             let origin = try_point(x, y).into_js_result(params.ctx())?;
             let size = try_size(width, height).into_js_result(params.ctx())?;
-            return Ok(Self(super::Rect::new(origin, size)));
+            return Ok(Self(Rect::new(origin, size)));
         }
 
         rect_from_value(params.ctx(), &value).map(Self)
@@ -126,7 +126,7 @@ impl<'js> FromParam<'js> for JsRectLike {
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[js_class]
 pub struct JsRect {
-    inner: super::Rect,
+    inner: Rect,
 }
 
 impl ValueClass<'_> for JsRect {}
@@ -321,7 +321,7 @@ impl JsRect {
     /// @skip
     #[qjs(skip)]
     #[must_use]
-    pub const fn inner(&self) -> super::Rect {
+    pub const fn inner(&self) -> Rect {
         self.inner
     }
 }
@@ -330,14 +330,14 @@ impl<'js> Trace<'js> for JsRect {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl From<JsRect> for super::Rect {
+impl From<JsRect> for Rect {
     fn from(value: JsRect) -> Self {
         value.inner
     }
 }
 
-impl From<super::Rect> for JsRect {
-    fn from(value: super::Rect) -> Self {
+impl From<Rect> for JsRect {
+    fn from(value: Rect) -> Self {
         Self { inner: value }
     }
 }

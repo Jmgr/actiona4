@@ -1,4 +1,11 @@
-use crate::types::{si32::Si32, su32::Su32};
+use std::ops::{Add, AddAssign, Sub, SubAssign};
+
+use crate::{
+    point::{Point, point},
+    si32::Si32,
+    size::Size,
+    su32::Su32,
+};
 
 impl From<Su32> for Si32 {
     fn from(value: Su32) -> Self {
@@ -12,12 +19,40 @@ impl From<Si32> for Su32 {
     }
 }
 
+impl Add<Size> for Point {
+    type Output = Self;
+
+    fn add(self, rhs: Size) -> Self::Output {
+        point(self.x + rhs.width, self.y + rhs.height)
+    }
+}
+
+impl AddAssign<Size> for Point {
+    fn add_assign(&mut self, rhs: Size) {
+        *self = point(self.x + rhs.width, self.y + rhs.height);
+    }
+}
+
+impl Sub<Size> for Point {
+    type Output = Self;
+
+    fn sub(self, rhs: Size) -> Self::Output {
+        point(self.x - rhs.width, self.y - rhs.height)
+    }
+}
+
+impl SubAssign<Size> for Point {
+    fn sub_assign(&mut self, rhs: Size) {
+        *self = point(self.x - rhs.width, self.y - rhs.height);
+    }
+}
+
 #[cfg(test)]
 #[allow(clippy::as_conversions)]
 mod tests {
     use rstest::rstest;
 
-    use crate::types::{
+    use crate::{
         si32::{Si32, si32},
         su32::{Su32, su32},
     };

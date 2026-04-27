@@ -4,9 +4,8 @@ use color_eyre::{
     Report, Result,
     eyre::{OptionExt, eyre},
 };
-use rquickjs::{FromJs, IntoJs};
 
-use crate::{IntoJsResult, types::su32::Su32};
+use crate::su32::Su32;
 
 impl From<u32> for Su32 {
     fn from(value: u32) -> Self {
@@ -162,7 +161,7 @@ impl TryFrom<Su32> for NonZeroUsize {
         Self::new(value.into()).ok_or_eyre("non-zero number expected")
     }
 }
-
+/*
 impl<'js> IntoJs<'js> for Su32 {
     fn into_js(self, ctx: &rquickjs::Ctx<'js>) -> rquickjs::Result<rquickjs::Value<'js>> {
         let value: f64 = self.into();
@@ -178,23 +177,26 @@ impl<'js> FromJs<'js> for Su32 {
         IntoJsResult::into_js_result(Self::try_from(value), ctx)
     }
 }
+*/
 
 #[cfg(test)]
 #[allow(clippy::as_conversions)]
 mod tests {
     use std::num::{NonZeroU32, NonZeroUsize};
 
-    use rquickjs::{Context, Ctx, FromJs, IntoJs, Null, Runtime, Undefined, Value};
+    //use rquickjs::{Context, Ctx, FromJs, IntoJs, Null, Runtime, Undefined, Value};
     use rstest::rstest;
 
-    use crate::types::su32::{Su32, su32};
+    use crate::su32::{Su32, su32};
 
+    /*
     // Helper: run code inside a JS context
     fn with_ctx<F: FnOnce(Ctx) -> rquickjs::Result<()>>(f: F) {
         let rt = Runtime::new().expect("rt");
         let ctx = Context::full(&rt).expect("ctx");
         ctx.with(f).expect("js ok");
     }
+    */
 
     // ------------------------ From<u32> -> Su32 ------------------------------
 
@@ -392,6 +394,7 @@ mod tests {
         assert!(got.is_err());
     }
 
+    /*
     // --- IntoJs (Su32 -> JS number) -----------------------------------------
 
     #[rstest]
@@ -500,4 +503,5 @@ mod tests {
             Ok(())
         });
     }
+    */
 }

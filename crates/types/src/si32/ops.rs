@@ -6,7 +6,7 @@ use std::{
 
 use color_eyre::{Report, Result, eyre::eyre};
 
-use crate::types::{
+use crate::{
     si32::Si32,
     try_traits::{TryDiv, TryDivAssign},
 };
@@ -141,7 +141,7 @@ impl TryDivAssign<i32> for Si32 {
 mod tests {
     use rstest::rstest;
 
-    use crate::types::{
+    use crate::{
         si32::{Si32, si32},
         try_traits::{TryDiv, TryDivAssign},
     };

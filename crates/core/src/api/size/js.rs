@@ -15,21 +15,23 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
+use types::{
+    display::display_with_type,
+    size::{Size, try_size},
+};
 
 use crate::{
     IntoJsResult,
     api::{
         ResultExt,
         js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
-        size::try_size,
     },
-    types::display::display_with_type,
 };
 
 #[derive(Clone, Copy, Debug)]
-pub struct JsSizeLike(pub super::Size);
+pub struct JsSizeLike(pub Size);
 
-fn size_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<super::Size> {
+fn size_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Size> {
     if let Some(object) = value.as_object() {
         if has_registered_class_prototype::<JsSize>(ctx, object)? {
             return value.clone().get::<JsSize>().map(Into::into);
@@ -106,7 +108,7 @@ impl<'js> FromParam<'js> for JsSizeLike {
 #[derive(Clone, Copy, Debug, Eq, JsLifetime, PartialEq)]
 #[js_class]
 pub struct JsSize {
-    inner: super::Size,
+    inner: Size,
 }
 
 impl ValueClass<'_> for JsSize {}
@@ -238,7 +240,7 @@ impl JsSize {
     /// @skip
     #[must_use]
     #[qjs(skip)]
-    pub const fn inner(&self) -> super::Size {
+    pub const fn inner(&self) -> Size {
         self.inner
     }
 }
@@ -247,14 +249,14 @@ impl<'js> Trace<'js> for JsSize {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl From<JsSize> for super::Size {
+impl From<JsSize> for Size {
     fn from(value: JsSize) -> Self {
         value.inner
     }
 }
 
-impl From<super::Size> for JsSize {
-    fn from(value: super::Size) -> Self {
+impl From<Size> for JsSize {
+    fn from(value: Size) -> Self {
         Self { inner: value }
     }
 }

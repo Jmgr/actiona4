@@ -73,7 +73,13 @@ fn match_gpu(
             .get_umat(AccessFlag::ACCESS_READ, UMatUsageFlags::USAGE_DEFAULT)?;
         cv_match_template(&source, &template, &mut result, TM_CCOEFF_NORMED, &mask)?;
     } else {
-        cv_match_template(&source, &template, &mut result, TM_CCOEFF_NORMED, &no_array())?;
+        cv_match_template(
+            &source,
+            &template,
+            &mut result,
+            TM_CCOEFF_NORMED,
+            &no_array(),
+        )?;
     }
 
     let mut downloaded = Mat::default();

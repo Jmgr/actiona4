@@ -8,11 +8,11 @@ documentation.workspace = true
 license.workspace = true
 default-run = "actiona-run"
 
-[package.metadata.cargo-machete]
-ignored = ["common"]
-
 [target.'cfg(target_os = "linux")'.dependencies]
 libc.workspace = true
+
+[package.metadata.cargo-machete]
+ignored = ["common"]
 
 [[bin]]
 name = "actiona-run"

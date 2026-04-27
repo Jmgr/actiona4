@@ -13,8 +13,8 @@ use color_eyre::{Report, Result};
 use derive_more::{Add, AddAssign, Display, Mul, MulAssign, Neg, Sub, SubAssign};
 use serde::{Deserialize, Serialize};
 
-use crate::types::su32::Su32;
-pub use crate::types::try_traits::{TryDiv, TryDivAssign};
+use crate::su32::Su32;
+pub use crate::try_traits::{TryDiv, TryDivAssign};
 
 pub mod convert;
 pub mod ops;
@@ -83,7 +83,7 @@ impl Si32 {
 mod tests {
     use rstest::rstest;
 
-    use crate::types::{
+    use crate::{
         si32::{Si32, si32, try_si32},
         su32::{Su32, su32},
     };

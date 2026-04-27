@@ -13,7 +13,7 @@ use color_eyre::{Report, Result};
 use derive_more::{Add, AddAssign, Display, Mul, MulAssign, Sub, SubAssign};
 use serde::{Deserialize, Serialize};
 
-pub use crate::types::try_traits::{TryDiv, TryDivAssign};
+pub use crate::try_traits::{TryDiv, TryDivAssign};
 
 pub mod convert;
 pub mod ops;
@@ -70,7 +70,7 @@ impl Su32 {
 mod tests {
     use rstest::rstest;
 
-    use crate::types::su32::{Su32, su32, try_su32};
+    use crate::su32::{Su32, su32, try_su32};
 
     // ---------- Constructors / constants / accessors -------------------------
 

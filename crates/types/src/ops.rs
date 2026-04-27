@@ -1,6 +1,6 @@
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
-use crate::types::{si32::Si32, su32::Su32};
+use crate::{si32::Si32, su32::Su32};
 
 impl Add<Su32> for Si32 {
     type Output = Self;
@@ -42,7 +42,7 @@ impl SubAssign<Su32> for Si32 {
 mod tests {
     use rstest::rstest;
 
-    use crate::types::{
+    use crate::{
         si32::{Si32, si32},
         su32::{Su32, su32},
     };
