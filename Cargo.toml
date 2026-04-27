@@ -11,6 +11,7 @@ members = [
     "crates/installer-tools",
     "crates/macros",
     "crates/run",
+    "crates/screenshot",
     "crates/selection-tool",
     "crates/types",
     "crates/updater",

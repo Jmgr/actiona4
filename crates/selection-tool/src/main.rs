@@ -24,7 +24,11 @@ fn main() -> Result<()> {
     let _guard = setup_crash_reporting(built_info::PKG_NAME)?;
 
     let cli = Cli::parse();
-    let screenshot = Some(capture_screenshot());
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
+    let screenshot = Some(runtime.block_on(capture_screenshot())?);
+    drop(runtime);
 
     let event_loop = EventLoop::<AppEvent>::with_user_event().build()?;
     let proxy = event_loop.create_proxy();

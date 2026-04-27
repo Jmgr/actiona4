@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use color_eyre::Result;
+use screenshot::{Capture, ShmSegment};
 use tracing::{error, warn};
 
-use self::capture::{ShmCapture, get_image};
 use super::{DisplayCapture, ScreenImplBase, blacken_non_display_areas};
 use crate::{
     api::{
@@ -14,43 +14,43 @@ use crate::{
         rect::{Rect, rect},
         size::size,
     },
-    platform::x11::X11Connection,
     runtime::{Runtime, async_resource::AsyncResource, events::DisplayInfo},
 };
 
-mod capture;
 pub mod portal;
 
 #[derive(Debug)]
 pub struct X11Display {
     rect: Rect,
-    x11_connection: Arc<X11Connection>,
-    shm: Option<ShmCapture>,
+    capture_screen: screenshot::Screen,
+    shm: Option<ShmSegment>,
 }
 
 impl DisplayCapture for X11Display {
-    async fn new(runtime: Arc<Runtime>, display_info: &DisplayInfo) -> Result<Self> {
+    async fn new(
+        runtime: Arc<Runtime>,
+        capture_screen: screenshot::Screen,
+        display_info: &DisplayInfo,
+    ) -> Result<Self> {
         let rect = display_info.rect;
-        let x11_connection = runtime.platform().x11_connection();
 
-        let root_depth = x11_connection.screen().root_depth;
-        if root_depth != 24 {
+        if capture_screen.root_depth() != 24 {
             return Err(color_eyre::eyre::eyre!(
                 "unsupported X11 depth: {}",
-                root_depth
+                capture_screen.root_depth()
             ));
         }
 
         let shm = if runtime.platform().has_shm() {
-            let size = ShmCapture::buffer_size_for_rect(rect);
-            Some(ShmCapture::new(&x11_connection, size).await?)
+            let capacity = ShmSegment::capacity_for_rect(rect);
+            Some(ShmSegment::new(&capture_screen, capacity).await?)
         } else {
             None
         };
 
         Ok(Self {
             rect,
-            x11_connection,
+            capture_screen,
             shm,
         })
     }
@@ -59,11 +59,11 @@ impl DisplayCapture for X11Display {
         self.rect
     }
 
-    async fn capture_raw(&self) -> Result<Vec<u8>> {
+    async fn capture_raw(&self) -> Result<Capture> {
         if let Some(shm) = &self.shm {
-            shm.capture(&self.x11_connection, self.rect).await
+            shm.capture_rect(&self.capture_screen, self.rect).await
         } else {
-            get_image(self.x11_connection.clone(), self.rect).await
+            self.capture_screen.capture_rect(self.rect).await
         }
     }
 }
@@ -73,14 +73,20 @@ impl DisplayCapture for X11Display {
 pub struct ScreenImpl {
     base: Arc<ScreenImplBase<X11Display>>,
     /// Pre-allocated SHM segment for full-desktop capture.
-    /// Stores the rect it was sized for alongside the capture object.
-    desktop_shm: AsyncResource<(Rect, ShmCapture)>,
+    desktop_shm: AsyncResource<(Rect, ShmSegment)>,
     runtime: Arc<Runtime>,
 }
 
 impl ScreenImpl {
     pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Arc<Self>> {
-        let base = ScreenImplBase::<X11Display>::new(runtime.clone(), displays.clone()).await?;
+        let capture_screen =
+            screenshot::Screen::new(runtime.task_tracker(), runtime.cancellation_token()).await?;
+        let base = ScreenImplBase::<X11Display>::from_capture_screen(
+            runtime.clone(),
+            displays.clone(),
+            capture_screen,
+        )
+        .await?;
 
         let desktop_shm = AsyncResource::new(runtime.cancellation_token());
 
@@ -113,10 +119,9 @@ impl ScreenImpl {
         if !self.runtime.platform().has_shm() {
             return Ok(());
         }
-        let x11_connection = self.runtime.platform().x11_connection();
         let rect = self.base.desktop_rect().await?;
-        let size = ShmCapture::buffer_size_for_rect(rect);
-        let shm = ShmCapture::new(&x11_connection, size).await?;
+        let capacity = ShmSegment::capacity_for_rect(rect);
+        let shm = ShmSegment::new(self.base.capture_screen(), capacity).await?;
         self.desktop_shm.set((rect, shm));
         Ok(())
     }
@@ -130,15 +135,13 @@ impl ScreenImpl {
     }
 
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
-        let x11_connection = self.runtime.platform().x11_connection();
-        let data = get_image(x11_connection, rect).await?;
-        Image::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
+        let capture = self.base.capture_screen().capture_rect(rect).await?;
+        Image::from_capture(capture)
     }
 
     pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
-        let x11_connection = self.runtime.platform().x11_connection();
-        let data = get_image(x11_connection, rect).await?;
-        Source::from_bgra(&data, rect.size.width.into(), rect.size.height.into())
+        let capture = self.base.capture_screen().capture_rect(rect).await?;
+        Source::from_bgra(&capture.bgra, capture.width, capture.height)
     }
 
     pub async fn capture_pixel(&self, position: Point) -> Result<Color> {
@@ -162,15 +165,10 @@ impl ScreenImpl {
         let mut image = if let Some(shm_data) = self.desktop_shm.try_get() {
             let (shm_rect, shm) = &*shm_data;
             // The pre-allocated SHM is usable as long as the buffer is large enough.
-            if ShmCapture::buffer_size_for_rect(rect) <= ShmCapture::buffer_size_for_rect(*shm_rect)
-            {
-                let x11_connection = self.runtime.platform().x11_connection();
-                let data = shm.capture(&x11_connection, rect).await?;
-                Image::from_bgra(&data, rect.size.width.into(), rect.size.height.into())?
+            if ShmSegment::capacity_for_rect(rect) <= ShmSegment::capacity_for_rect(*shm_rect) {
+                let capture = shm.capture_rect(self.base.capture_screen(), rect).await?;
+                Image::from_capture(capture)?
             } else {
-                // The desktop rect grew after the last SHM allocation.  This
-                // should only happen during the brief window between a display
-                // change event and the background task completing a re-allocation.
                 warn!(
                     "Desktop SHM too small for current rect {:?} (allocated for {:?}), \
                      falling back to XGetImage",
@@ -179,11 +177,10 @@ impl ScreenImpl {
                 self.capture_rect(rect).await?
             }
         } else {
-            // SHM not yet allocated — fall back to XGetImage.
             self.capture_rect(rect).await?
         };
 
-        blacken_non_display_areas(&mut image, rect, &display_rects);
+        blacken_non_display_areas(image.as_mut(), rect, &display_rects);
         Ok((image, rect))
     }
 
@@ -196,38 +193,5 @@ impl ScreenImpl {
         let (image, rect) = self.capture_desktop_impl().await?;
         let source = Arc::<Source>::try_from(&image)?;
         Ok((source, rect))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        api::{
-            displays::Displays,
-            screen::platform::{ScreenImplBase, x11::X11Display},
-        },
-        runtime::Runtime,
-    };
-
-    #[test]
-    #[ignore]
-    fn test_screenshot() {
-        Runtime::test(async |runtime| {
-            let displays =
-                Displays::new(runtime.cancellation_token(), runtime.task_tracker()).unwrap();
-
-            let impl_ = ScreenImplBase::<X11Display>::new(runtime, displays.clone())
-                .await
-                .unwrap();
-
-            let displays_info = displays.wait_get_info().await.unwrap();
-            let display_id = displays_info.first().unwrap().id;
-
-            // Test capture to image
-            let _image = impl_.capture_display(display_id).await.unwrap();
-
-            // Test capture to source
-            let (_source, _rect) = impl_.capture_display_to_source(display_id).await.unwrap();
-        });
     }
 }

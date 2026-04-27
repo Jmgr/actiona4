@@ -20,8 +20,6 @@ winrt-toast-reborn.workspace = true
 ashpd.workspace = true
 ksni.workspace = true
 libwmctl.workspace = true
-memfd.workspace = true
-memmap2.workspace = true
 notify-rust.workspace = true
 procfs.workspace = true
 rustix.workspace = true
@@ -44,6 +42,7 @@ name = "actiona_core"
 common = { path = "../common" }
 installer-tools = { path = "../installer-tools" }
 macros = { path = "../macros" }
+screenshot = { path = "../screenshot" }
 types = { path = "../types", features = ["opencv", "imageproc"] }
 
 ab_glyph.workspace = true
