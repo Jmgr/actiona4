@@ -17,6 +17,7 @@ rfd.workspace = true
 sentry.workspace = true
 sentry-rust-minidump.workspace = true
 serde = { workspace = true, features = ["derive"] }
+types = { path = "../types" }
 
 [build-dependencies]
 built.workspace = true

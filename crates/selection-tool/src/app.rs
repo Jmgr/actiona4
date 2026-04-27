@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use actiona_common::selection::{Color, PositionSelection, RectSelection};
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture, wgpu};
+use types::{point::point, size::size};
 #[cfg(not(windows))]
 use winit::platform::x11::WindowAttributesExtX11;
 use winit::{
@@ -207,8 +208,7 @@ impl App {
             .map(|[r, g, b]| Color { r, g, b });
 
         let result = PositionSelection {
-            x: global_x,
-            y: global_y,
+            point: point(global_x, global_y),
             color,
         };
         println!(
@@ -229,10 +229,8 @@ impl App {
         let width = (drag_start.x - self.current_cursor.x).abs() as i32;
         let height = (drag_start.y - self.current_cursor.y).abs() as i32;
         let result = RectSelection {
-            x: global_x,
-            y: global_y,
-            width,
-            height,
+            top_left: point(global_x, global_y),
+            size: size(width, height),
         };
         println!(
             "{}",

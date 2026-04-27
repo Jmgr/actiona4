@@ -18,6 +18,7 @@ ignored = ["common"]
 
 [dependencies]
 common = { path = "../common" }
+types = { path = "../types" }
 
 bytemuck.workspace = true
 clap.workspace = true

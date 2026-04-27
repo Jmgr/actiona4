@@ -1328,6 +1328,7 @@ dependencies = [
  "sentry",
  "sentry-rust-minidump",
  "serde",
+ "types",
 ]
 
 [[package]]
@@ -7054,6 +7055,7 @@ dependencies = [
  "embed-resource",
  "pixels",
  "serde_json",
+ "types",
  "windows 0.62.2",
  "winit",
  "x11rb",

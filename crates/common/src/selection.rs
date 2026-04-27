@@ -1,4 +1,5 @@
 use serde::Serialize;
+use types::{point::Point, size::Size};
 
 #[derive(Serialize)]
 pub struct Color {
@@ -9,16 +10,16 @@ pub struct Color {
 
 #[derive(Serialize)]
 pub struct PositionSelection {
-    pub x: i32,
-    pub y: i32,
+    #[serde(flatten)]
+    pub point: Point,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub color: Option<Color>,
 }
 
 #[derive(Serialize)]
 pub struct RectSelection {
-    pub x: i32,
-    pub y: i32,
-    pub width: i32,
-    pub height: i32,
+    #[serde(flatten)]
+    pub top_left: Point,
+    #[serde(flatten)]
+    pub size: Size,
 }
