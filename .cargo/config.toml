@@ -1,3 +1,5 @@
+include = [{ path = "local.toml", optional = true }]
+
 [env]
 RUST_TEST_THREADS = "1"
 OPENCV4_STATIC = "1"
@@ -6,5 +8,3 @@ OPENCV4_STATIC = "1"
 format = ["make", "format"]
 lint = ["make", "lint"]
 deps = ["make", "deps"]
-
-include = [{ path = "local.toml", optional = true }]
