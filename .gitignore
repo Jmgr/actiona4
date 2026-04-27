@@ -3,3 +3,4 @@
 .local.Makefile.toml
 .vscode
 crates/e2e/node_modules/
+.cargo/local.toml

@@ -1,5 +1,3 @@
-extend = [{ path = ".local.Makefile.toml", optional = true }]
-
 [env]
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = "true"
 REMAP_PATH_FLAG = "--remap-path-prefix=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}=/src/actiona4"
