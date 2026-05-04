@@ -1,10 +1,10 @@
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
+use types::size::Size;
 
 /// A raw screen capture in BGRA pixel order, top-down.
 #[derive(Clone, Debug)]
 pub struct Capture {
-    pub width: u32,
-    pub height: u32,
+    pub size: Size,
     pub bgra: Vec<u8>,
 }
 

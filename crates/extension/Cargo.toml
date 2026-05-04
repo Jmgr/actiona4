@@ -1,0 +1,21 @@
+[package]
+name = "extension"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[dependencies]
+color-eyre.workspace = true
+derive-where.workspace = true
+futures-util.workspace = true
+ipc-rpc.workspace = true
+macros = { path = "../macros" }
+parking_lot.workspace = true
+serde.workspace = true
+tokio.workspace = true
+tokio-util = { workspace = true, features = ["codec"] }
+tracing.workspace = true
+types = { path = "../types" }

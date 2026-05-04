@@ -42,8 +42,8 @@ pub fn create_magnifier_pipeline(
 
     // Upload screenshot as a GPU texture.
     let texture_size = wgpu::Extent3d {
-        width: screenshot.width,
-        height: screenshot.height,
+        width: screenshot.size.width.into_inner(),
+        height: screenshot.size.height.into_inner(),
         depth_or_array_layers: 1,
     };
     let texture = device.create_texture(&wgpu::TextureDescriptor {
@@ -66,8 +66,8 @@ pub fn create_magnifier_pipeline(
         &screenshot.rgba,
         wgpu::TexelCopyBufferLayout {
             offset: 0,
-            bytes_per_row: Some(screenshot.width * 4),
-            rows_per_image: Some(screenshot.height),
+            bytes_per_row: Some((screenshot.size.width * 4_u32).into_inner()),
+            rows_per_image: Some(screenshot.size.height.into_inner()),
         },
         texture_size,
     );

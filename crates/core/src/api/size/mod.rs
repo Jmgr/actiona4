@@ -1,3 +1,3 @@
-pub use types::size::{Size, size, try_size};
+pub use types::size::{Size, size};
 
 pub mod js;

@@ -7,7 +7,9 @@ use std::{
 use derive_more::{Deref, From};
 use libwmctl::{Position, Shape, window, windows};
 use parking_lot::Mutex;
+use satint::{Si32, Su32};
 use tokio_util::sync::CancellationToken;
+use types::{point::point, size::size};
 use x11rb::{
     connection::Connection,
     protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt as _, EventMask},
@@ -19,17 +21,13 @@ use x11rb_async::protocol::xproto::{
 
 use crate::{
     api::{
-        point::{Point, try_point},
+        point::Point,
         rect::{Rect, rect},
-        size::{Size, try_size},
+        size::Size,
         windows::platform::{Registry, Result, WindowId, WindowsHandler},
     },
     cancel_on,
     runtime::Runtime,
-    types::{
-        si32::si32,
-        su32::{Su32, su32},
-    },
 };
 
 pub mod events;
@@ -117,7 +115,7 @@ impl WindowsHandler for X11WindowHandler {
 
     fn process_id(&self, id: WindowId) -> Result<u32> {
         let handle = self.inner.lock().get_handle(id)?.clone();
-        Ok(Su32::from(handle.pid()?).into())
+        Ok(Si32::from(handle.pid()?).to_unsigned().into())
     }
 
     fn rect(&self, id: WindowId) -> Result<Rect> {
@@ -131,16 +129,19 @@ impl WindowsHandler for X11WindowHandler {
             .translate_coordinates(handle.id, geometry.root, 0, 0)?
             .reply()?;
         let extents = self.frame_extents(connection, &handle)?.unwrap_or_default();
+        let geometry_size = size(geometry.width, geometry.height);
+        let coordinates = point(coordinates.dst_x, coordinates.dst_y);
+        let size = Size::new(
+            geometry_size.width - extents.left - extents.right,
+            geometry_size.height - extents.top - extents.bottom,
+        );
 
         Ok(rect(
-            try_point(
-                si32(coordinates.dst_x) + extents.left,
-                si32(coordinates.dst_y) + extents.top,
-            )?,
-            try_size(
-                su32(geometry.width) - extents.left - extents.right,
-                su32(geometry.height) - extents.top - extents.bottom,
-            )?,
+            Point::new(
+                coordinates.x + extents.left.to_signed(),
+                coordinates.y + extents.top.to_signed(),
+            ),
+            size,
         ))
     }
 

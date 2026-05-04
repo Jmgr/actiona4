@@ -2,7 +2,7 @@ fn main() {
     #[cfg(windows)]
     {
         println!("cargo:rerun-if-changed=selection.rc");
-        println!("cargo:rerun-if-changed=..\\core\\icons\\icon.ico");
+        println!("cargo:rerun-if-changed=..\\..\\core\\icons\\icon.ico");
     }
 
     built::write_built_file().expect("Failed to acquire build-time information");

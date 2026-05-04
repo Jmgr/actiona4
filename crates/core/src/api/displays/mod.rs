@@ -4,21 +4,19 @@ use color_eyre::eyre::eyre;
 
 pub type Result<T> = color_eyre::Result<T>;
 use itertools::Itertools;
+use satint::Su32;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 
 use super::point::Point;
 use crate::{
-    api::{point::try_point, rect::Rect},
+    api::{point::point, rect::Rect},
     runtime::{
         async_resource::AsyncResource,
         events::{DisplayInfo, DisplayInfoVec},
         shared_rng::SharedRng,
     },
-    types::{
-        display::{DisplayFields, display_list},
-        su32::Su32,
-    },
+    types::display::{DisplayFields, display_list},
 };
 
 pub mod js;
@@ -85,7 +83,7 @@ impl Displays {
         }
 
         // Pick a display with probability proportional to its area
-        let pick = Su32::from(rng.random_range(0..total_area.into_inner())); // [0, total_area)
+        let pick = rng.random_range(Su32::ZERO..total_area); // [0, total_area)
         let mut acc = Su32::ZERO;
         let mut chosen = None;
         for display_info in displays_info.iter() {
@@ -108,14 +106,10 @@ impl Displays {
         drop(displays_info); // release the lock before sampling inside the rect
 
         // Sample uniformly inside the chosen rect.
-        // Use i64 for the range math to avoid overflows on x + width, etc.
-        let x_end = i64::from(rect.top_left.x) + i64::from(rect.size.width);
-        let y_end = i64::from(rect.top_left.y) + i64::from(rect.size.height);
+        let x = rng.random_range(rect.top_left.x..rect.top_left.x + rect.size.width.to_signed());
+        let y = rng.random_range(rect.top_left.y..rect.top_left.y + rect.size.height.to_signed());
 
-        let x = rng.random_range(i64::from(rect.top_left.x)..x_end);
-        let y = rng.random_range(i64::from(rect.top_left.y)..y_end);
-
-        Ok(Some(try_point(x, y)?))
+        Ok(Some(point(x, y)))
     }
 
     pub async fn primary(&self) -> Result<Option<DisplayInfo>> {
@@ -193,7 +187,7 @@ impl Displays {
         let displays_infos = self.get_info().await?;
         Ok(displays_infos
             .iter()
-            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width)
+            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width.to_signed())
             .cloned())
     }
 
@@ -209,7 +203,7 @@ impl Displays {
         let displays_infos = self.get_info().await?;
         Ok(displays_infos
             .iter()
-            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height)
+            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height.to_signed())
             .cloned())
     }
 

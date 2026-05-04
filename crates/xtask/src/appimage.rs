@@ -190,7 +190,7 @@ fn run_linuxdeploy(
     sign: bool,
 ) -> Result<()> {
     let run_binary = require_binary(release_dir, "actiona-run")?;
-    let selection_binary = require_binary(release_dir, "selection-tool")?;
+    let selection_binary = require_binary(release_dir, "extension-selection")?;
     let desktop_file_path = workspace_root
         .join("assets")
         .join("app.actiona.run.desktop");

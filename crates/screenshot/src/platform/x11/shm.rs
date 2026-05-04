@@ -3,6 +3,7 @@ use std::os::fd::OwnedFd;
 use color_eyre::Result;
 use memfd::{FileSeal, MemfdOptions};
 use memmap2::MmapMut;
+use satint::SaturatingInto;
 use tokio::sync::Mutex;
 use types::rect::Rect;
 use x11rb_async::{connection::Connection, protocol::xproto::ImageFormat};
@@ -78,10 +79,10 @@ impl ShmSegment {
             .connection()
             .shm_get_image(
                 screen.root(),
-                rect.top_left.x.into(),
-                rect.top_left.y.into(),
-                rect.size.width.into(),
-                rect.size.height.into(),
+                rect.top_left.x.saturating_into(),
+                rect.top_left.y.saturating_into(),
+                rect.size.width.saturating_into(),
+                rect.size.height.saturating_into(),
                 u32::MAX,
                 ImageFormat::Z_PIXMAP.into(),
                 self.segment_id,
@@ -95,8 +96,7 @@ impl ShmSegment {
         // capture cannot overwrite it before the caller is done with it.
         let bgra = self.map[..needed].to_vec();
         Ok(Capture {
-            width: rect.size.width.into(),
-            height: rect.size.height.into(),
+            size: rect.size,
             bgra,
         })
     }

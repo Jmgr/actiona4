@@ -1,8 +1,14 @@
 use std::sync::Arc;
+#[cfg(not(windows))]
+use std::sync::atomic::{AtomicBool, Ordering};
 
-use actiona_common::selection::{Color, PositionSelection, RectSelection};
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture, wgpu};
-use types::{point::point, size::size};
+use tokio::sync::oneshot;
+use types::{
+    point::{Point, point},
+    rect::{Rect, rect},
+    size::size,
+};
 #[cfg(not(windows))]
 use winit::platform::x11::WindowAttributesExtX11;
 use winit::{
@@ -15,27 +21,47 @@ use winit::{
 };
 
 use crate::{
-    cli::Mode,
     events::AppEvent,
     magnifier::{
         MAGNIFIER_BOX_SIZE, MAGNIFIER_OFFSET, MagnifierPipeline, MagnifierRenderInput,
         compute_magnifier_origin, create_magnifier_pipeline, update_magnifier_params,
     },
-    screenshot::{Screenshot, screenshot_color_at},
+    screenshot::Screenshot,
     text::{draw_text, line_height},
 };
 
 const CROSSHAIR_GAP: u32 = 5;
 const CROSSHAIR_COLOR: [u8; 4] = [255, 255, 255, 220];
 const SELECTION_BORDER_COLOR: [u8; 4] = [255, 255, 255, 255];
-const RECT_OVERLAY_ALPHA: u8 = 140;
+/// How much to darken pixels outside the in-progress rect selection (0 = no
+/// change, 255 = fully black). Applied as a per-channel multiplier; the alpha
+/// channel of the resulting overlay is left at fully opaque.
+const RECT_OVERLAY_DARKEN: u8 = 140;
 const DEFAULT_ZOOM: f32 = 10.0;
 
+#[derive(Clone, Copy)]
+enum SelectionMode {
+    Rect,
+    Position,
+}
+
+enum SelectionResponse {
+    Rect(oneshot::Sender<Option<Rect>>),
+    Position(oneshot::Sender<Option<Point>>),
+}
+
+struct ActiveSelection {
+    mode: SelectionMode,
+    response: SelectionResponse,
+}
+
 pub struct App {
-    mode: Mode,
+    active_selection: Option<ActiveSelection>,
     screenshot: Option<Screenshot>,
     #[cfg(not(windows))]
     proxy: EventLoopProxy<AppEvent>,
+    #[cfg(not(windows))]
+    cursor_tracker_stop: Option<Arc<AtomicBool>>,
     window: Option<Arc<Window>>,
     pixels: Option<Pixels<'static>>,
     /// Pre-computed darkened-screenshot overlay, only used in rect mode.
@@ -44,22 +70,19 @@ pub struct App {
     desktop_origin: PhysicalPosition<i32>,
     drag_start: Option<PhysicalPosition<f64>>,
     current_cursor: PhysicalPosition<f64>,
-    is_dragging: bool,
 }
 
 impl App {
-    pub fn new(
-        mode: Mode,
-        screenshot: Option<Screenshot>,
-        proxy: EventLoopProxy<AppEvent>,
-    ) -> Self {
+    pub fn new(proxy: EventLoopProxy<AppEvent>) -> Self {
         #[cfg(windows)]
         let _ = proxy;
         Self {
-            mode,
-            screenshot,
+            active_selection: None,
+            screenshot: None,
             #[cfg(not(windows))]
             proxy,
+            #[cfg(not(windows))]
+            cursor_tracker_stop: None,
             window: None,
             pixels: None,
             overlay: Vec::new(),
@@ -67,7 +90,6 @@ impl App {
             desktop_origin: PhysicalPosition::new(0, 0),
             drag_start: None,
             current_cursor: PhysicalPosition::new(0.0, 0.0),
-            is_dragging: false,
         }
     }
 
@@ -84,6 +106,8 @@ impl App {
     }
 
     fn render_frame(&mut self, window_width: u32, window_height: u32) {
+        let active_mode = self.active_mode();
+        let drag_start = self.drag_start;
         let Some(pixels) = self.pixels.as_mut() else {
             return;
         };
@@ -93,17 +117,8 @@ impl App {
             .as_ref()
             .map_or(&[] as &[u8], |s| s.rgba.as_slice());
 
-        match (&self.mode, self.is_dragging) {
-            (Mode::Rect, false) | (Mode::Pos { .. }, _) => {
-                draw_crosshair(
-                    frame,
-                    screenshot_rgba,
-                    window_width,
-                    window_height,
-                    self.current_cursor,
-                );
-            }
-            (Mode::Rect, true) => {
+        match (active_mode, drag_start) {
+            (Some(SelectionMode::Rect), Some(_)) => {
                 draw_rect_selection(
                     frame,
                     &self.overlay,
@@ -114,19 +129,25 @@ impl App {
                     window_height,
                 );
             }
+            (Some(SelectionMode::Rect), None) | (Some(SelectionMode::Position), _) => {
+                draw_crosshair(
+                    frame,
+                    screenshot_rgba,
+                    window_width,
+                    window_height,
+                    self.current_cursor,
+                );
+            }
+            (None, _) => {}
         }
 
         let global_x = self.current_cursor.x as i32 + self.desktop_origin.x;
         let global_y = self.current_cursor.y as i32 + self.desktop_origin.y;
-        let rect_size = if self.is_dragging {
-            self.drag_start.map(|start| {
-                let w = (start.x - self.current_cursor.x).abs() as i32;
-                let h = (start.y - self.current_cursor.y).abs() as i32;
-                (w, h)
-            })
-        } else {
-            None
-        };
+        let rect_size = self.drag_start.map(|start| {
+            let w = (start.x - self.current_cursor.x).abs() as i32;
+            let h = (start.y - self.current_cursor.y).abs() as i32;
+            (w, h)
+        });
         draw_cursor_coords(
             frame,
             window_width,
@@ -146,16 +167,16 @@ impl App {
         let cursor_position = self.current_cursor;
         let desktop_origin = self.desktop_origin;
         let magnifier = self.magnifier.as_ref();
-        let screenshot_size = self
-            .screenshot
-            .as_ref()
-            .map_or((window_width, window_height), |screenshot| {
-                (screenshot.width, screenshot.height)
-            });
-        let zoom = match self.mode {
-            Mode::Pos { zoom } => zoom,
-            Mode::Rect => DEFAULT_ZOOM,
-        };
+        let screenshot_size =
+            self.screenshot
+                .as_ref()
+                .map_or((window_width, window_height), |screenshot| {
+                    (
+                        screenshot.size.width.into_inner(),
+                        screenshot.size.height.into_inner(),
+                    )
+                });
+        let zoom = DEFAULT_ZOOM;
 
         let _ = pixels.render_with(|encoder, render_target, context| {
             context.scaling_renderer.render(encoder, render_target);
@@ -198,44 +219,126 @@ impl App {
         });
     }
 
-    fn print_position_selection(&self, position: PhysicalPosition<f64>) {
+    fn position_selection(&self, position: PhysicalPosition<f64>) -> Point {
         let global_x = position.x as i32 + self.desktop_origin.x;
         let global_y = position.y as i32 + self.desktop_origin.y;
-        let color = self
-            .screenshot
-            .as_ref()
-            .and_then(|screenshot| screenshot_color_at(screenshot, global_x, global_y))
-            .map(|[r, g, b]| Color { r, g, b });
-
-        let result = PositionSelection {
-            point: point(global_x, global_y),
-            color,
-        };
-        println!(
-            "{}",
-            serde_json::to_string(&result).expect("serialization failed")
-        );
+        point(global_x, global_y)
     }
 
-    fn print_rect_selection(&self) {
-        let Some(drag_start) = self.drag_start else {
-            return;
-        };
+    fn rect_selection(&self) -> Option<Rect> {
+        let drag_start = self.drag_start?;
 
         let global_x =
             (drag_start.x.min(self.current_cursor.x) + f64::from(self.desktop_origin.x)) as i32;
         let global_y =
             (drag_start.y.min(self.current_cursor.y) + f64::from(self.desktop_origin.y)) as i32;
-        let width = (drag_start.x - self.current_cursor.x).abs() as i32;
-        let height = (drag_start.y - self.current_cursor.y).abs() as i32;
-        let result = RectSelection {
-            top_left: point(global_x, global_y),
-            size: size(width, height),
-        };
-        println!(
-            "{}",
-            serde_json::to_string(&result).expect("serialization failed")
-        );
+        let width = (drag_start.x - self.current_cursor.x).abs() as u32;
+        let height = (drag_start.y - self.current_cursor.y).abs() as u32;
+        Some(rect(point(global_x, global_y), size(width, height)))
+    }
+
+    fn active_mode(&self) -> Option<SelectionMode> {
+        self.active_selection
+            .as_ref()
+            .map(|selection| selection.mode)
+    }
+
+    fn start_rect_selection(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        screenshot: Screenshot,
+        response: oneshot::Sender<Option<Rect>>,
+    ) {
+        if self.active_selection.is_some() {
+            let _ = response.send(None);
+            return;
+        }
+
+        self.active_selection = Some(ActiveSelection {
+            mode: SelectionMode::Rect,
+            response: SelectionResponse::Rect(response),
+        });
+        self.screenshot = Some(screenshot);
+        self.create_selection_window(event_loop);
+    }
+
+    fn start_position_selection(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        screenshot: Screenshot,
+        response: oneshot::Sender<Option<Point>>,
+    ) {
+        if self.active_selection.is_some() {
+            let _ = response.send(None);
+            return;
+        }
+
+        self.active_selection = Some(ActiveSelection {
+            mode: SelectionMode::Position,
+            response: SelectionResponse::Position(response),
+        });
+        self.screenshot = Some(screenshot);
+        self.create_selection_window(event_loop);
+    }
+
+    fn finish_position_selection(&mut self, selection: Option<Point>) {
+        if let Some(active_selection) = self.active_selection.take() {
+            match active_selection.response {
+                SelectionResponse::Position(response) => {
+                    let _ = response.send(selection);
+                }
+                SelectionResponse::Rect(response) => {
+                    let _ = response.send(None);
+                }
+            }
+        }
+        self.clear_selection_window();
+    }
+
+    fn finish_rect_selection(&mut self, selection: Option<Rect>) {
+        if let Some(active_selection) = self.active_selection.take() {
+            match active_selection.response {
+                SelectionResponse::Rect(response) => {
+                    let _ = response.send(selection);
+                }
+                SelectionResponse::Position(response) => {
+                    let _ = response.send(None);
+                }
+            }
+        }
+        self.clear_selection_window();
+    }
+
+    fn cancel_selection(&mut self) {
+        if let Some(active_selection) = self.active_selection.take() {
+            match active_selection.response {
+                SelectionResponse::Rect(response) => {
+                    let _ = response.send(None);
+                }
+                SelectionResponse::Position(response) => {
+                    let _ = response.send(None);
+                }
+            }
+        }
+        self.clear_selection_window();
+    }
+
+    fn clear_selection_window(&mut self) {
+        #[cfg(not(windows))]
+        if let Some(stop) = self.cursor_tracker_stop.take() {
+            stop.store(true, Ordering::Relaxed);
+        }
+
+        if let Some(window) = &self.window {
+            window.set_visible(false);
+        }
+        self.window = None;
+        self.pixels = None;
+        self.overlay.clear();
+        self.magnifier = None;
+        self.screenshot = None;
+        self.drag_start = None;
+        self.current_cursor = PhysicalPosition::new(0.0, 0.0);
     }
 
     fn request_redraw(&self) {
@@ -243,32 +346,11 @@ impl App {
             window.request_redraw();
         }
     }
-}
 
-impl ApplicationHandler<AppEvent> for App {
-    fn user_event(&mut self, event_loop: &ActiveEventLoop, event: AppEvent) {
-        #[cfg(not(windows))]
-        {
-            match event {
-                AppEvent::CursorMoved(position) => {
-                    self.current_cursor = position;
-                    self.request_redraw();
-                }
-                AppEvent::Click(position) if matches!(self.mode, Mode::Pos { .. }) => {
-                    self.print_position_selection(position);
-                    event_loop.exit();
-                }
-                AppEvent::Click(_) => {}
-            }
+    fn create_selection_window(&mut self, event_loop: &ActiveEventLoop) {
+        if self.active_selection.is_none() {
+            return;
         }
-        #[cfg(windows)]
-        {
-            let _ = event_loop;
-            let _ = event;
-        }
-    }
-
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         if self.window.is_some() {
             return;
         }
@@ -296,7 +378,7 @@ impl ApplicationHandler<AppEvent> for App {
             .build()
             .unwrap();
 
-        if matches!(self.mode, Mode::Rect) {
+        if matches!(self.active_mode(), Some(SelectionMode::Rect)) {
             let screenshot_rgba = self
                 .screenshot
                 .as_ref()
@@ -318,14 +400,17 @@ impl ApplicationHandler<AppEvent> for App {
         window.set_cursor_visible(false);
 
         #[cfg(not(windows))]
-        if matches!(self.mode, Mode::Pos { .. })
+        if matches!(self.active_mode(), Some(SelectionMode::Position))
             && let Some(window_xid) = crate::cursor_tracker::get_window_xid(&window)
         {
+            let stop = Arc::new(AtomicBool::new(false));
             crate::cursor_tracker::spawn_cursor_tracker(
                 self.proxy.clone(),
                 window_xid,
                 self.desktop_origin,
+                Arc::clone(&stop),
             );
+            self.cursor_tracker_stop = Some(stop);
         }
 
         self.window = Some(window);
@@ -336,21 +421,58 @@ impl ApplicationHandler<AppEvent> for App {
             w.request_redraw();
         }
     }
+}
+
+impl ApplicationHandler<AppEvent> for App {
+    fn user_event(&mut self, event_loop: &ActiveEventLoop, event: AppEvent) {
+        match event {
+            AppEvent::SelectRect {
+                screenshot,
+                response,
+            } => self.start_rect_selection(event_loop, screenshot, response),
+            AppEvent::SelectPosition {
+                screenshot,
+                response,
+            } => self.start_position_selection(event_loop, screenshot, response),
+            AppEvent::Shutdown => {
+                self.cancel_selection();
+                event_loop.exit();
+            }
+            #[cfg(not(windows))]
+            AppEvent::CursorMoved(position) => {
+                self.current_cursor = position;
+                self.request_redraw();
+            }
+            #[cfg(not(windows))]
+            AppEvent::Click(position)
+                if matches!(self.active_mode(), Some(SelectionMode::Position)) =>
+            {
+                let selection = self.position_selection(position);
+                self.finish_position_selection(Some(selection));
+            }
+            #[cfg(not(windows))]
+            AppEvent::Click(_) => {}
+        }
+    }
+
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        self.create_selection_window(event_loop);
+    }
 
     fn window_event(
         &mut self,
-        event_loop: &ActiveEventLoop,
+        _event_loop: &ActiveEventLoop,
         _window_id: WindowId,
         event: WindowEvent,
     ) {
         match event {
-            WindowEvent::CloseRequested => event_loop.exit(),
+            WindowEvent::CloseRequested => self.cancel_selection(),
             WindowEvent::Moved(position) => {
                 self.desktop_origin = position;
             }
             WindowEvent::KeyboardInput { event, .. } if event.state == ElementState::Pressed => {
                 if let PhysicalKey::Code(KeyCode::Escape) = event.physical_key {
-                    event_loop.exit();
+                    self.cancel_selection();
                 }
             }
             WindowEvent::CursorMoved { position, .. } => {
@@ -361,18 +483,19 @@ impl ApplicationHandler<AppEvent> for App {
                 state,
                 button: MouseButton::Left,
                 ..
-            } => match (&self.mode, state) {
-                (Mode::Pos { .. }, ElementState::Released) => {
-                    self.print_position_selection(self.current_cursor);
-                    event_loop.exit();
+            } => match (self.active_mode(), state) {
+                (Some(SelectionMode::Position), ElementState::Released) => {
+                    let selection = self.position_selection(self.current_cursor);
+                    self.finish_position_selection(Some(selection));
                 }
-                (Mode::Rect, ElementState::Pressed) => {
+                (Some(SelectionMode::Rect), ElementState::Pressed) => {
                     self.drag_start = Some(self.current_cursor);
-                    self.is_dragging = true;
                 }
-                (Mode::Rect, ElementState::Released) if self.is_dragging => {
-                    self.print_rect_selection();
-                    event_loop.exit();
+                (Some(SelectionMode::Rect), ElementState::Released)
+                    if self.drag_start.is_some() =>
+                {
+                    let selection = self.rect_selection();
+                    self.finish_rect_selection(selection);
                 }
                 _ => {}
             },
@@ -402,11 +525,13 @@ fn draw_crosshair(
 
     let cursor_x = cursor_position.x as u32;
     let cursor_y = cursor_position.y as u32;
+    let stride = window_width as usize * 4;
 
     if cursor_y < window_height {
+        let row_start = cursor_y as usize * stride;
         for x_position in 0..window_width {
             if x_position.abs_diff(cursor_x) > CROSSHAIR_GAP {
-                let pixel_index = ((cursor_y * window_width + x_position) * 4) as usize;
+                let pixel_index = row_start + x_position as usize * 4;
                 if let Some(pixel) = frame.get_mut(pixel_index..pixel_index + 4) {
                     pixel.copy_from_slice(&CROSSHAIR_COLOR);
                 }
@@ -414,9 +539,10 @@ fn draw_crosshair(
         }
     }
 
+    let column_offset = cursor_x as usize * 4;
     for y_position in 0..window_height {
         if y_position.abs_diff(cursor_y) > CROSSHAIR_GAP {
-            let pixel_index = ((y_position * window_width + cursor_x) * 4) as usize;
+            let pixel_index = y_position as usize * stride + column_offset;
             if let Some(pixel) = frame.get_mut(pixel_index..pixel_index + 4) {
                 pixel.copy_from_slice(&CROSSHAIR_COLOR);
             }
@@ -445,9 +571,11 @@ fn draw_rect_selection(
     let right = (drag_start.x.max(cursor_position.x) as u32).min(window_width.saturating_sub(1));
     let bottom = (drag_start.y.max(cursor_position.y) as u32).min(window_height.saturating_sub(1));
 
+    let stride = window_width as usize * 4;
+    let row_length = (right - left + 1) as usize * 4;
+    let left_offset = left as usize * 4;
     for y_position in top..=bottom {
-        let row_start = ((y_position * window_width + left) * 4) as usize;
-        let row_length = ((right - left + 1) * 4) as usize;
+        let row_start = y_position as usize * stride + left_offset;
         if let Some(selection_row) = frame.get_mut(row_start..row_start + row_length) {
             if let Some(src) = screenshot_rgba.get(row_start..row_start + row_length) {
                 selection_row.copy_from_slice(src);
@@ -493,7 +621,7 @@ fn paint_pixel(
     y_position: u32,
     color: [u8; 4],
 ) {
-    let pixel_index = ((y_position * window_width + x_position) * 4) as usize;
+    let pixel_index = (y_position as usize * window_width as usize + x_position as usize) * 4;
     if let Some(pixel) = frame.get_mut(pixel_index..pixel_index + 4) {
         pixel.copy_from_slice(&color);
     }
@@ -567,15 +695,15 @@ fn draw_cursor_coords(
 }
 
 fn build_rect_overlay(screenshot_rgba: &[u8], window_width: u32, window_height: u32) -> Vec<u8> {
-    let size = (window_width * window_height * 4) as usize;
+    let size = window_width as usize * window_height as usize * 4;
     let mut overlay = vec![0u8; size];
-    let factor = (255 - RECT_OVERLAY_ALPHA) as u32;
+    let factor = u32::from(255 - RECT_OVERLAY_DARKEN);
     for (i, pixel) in overlay.chunks_exact_mut(4).enumerate() {
         let src = i * 4;
         if src + 3 < screenshot_rgba.len() {
-            pixel[0] = (screenshot_rgba[src] as u32 * factor / 255) as u8;
-            pixel[1] = (screenshot_rgba[src + 1] as u32 * factor / 255) as u8;
-            pixel[2] = (screenshot_rgba[src + 2] as u32 * factor / 255) as u8;
+            pixel[0] = (u32::from(screenshot_rgba[src]) * factor / 255) as u8;
+            pixel[1] = (u32::from(screenshot_rgba[src + 1]) * factor / 255) as u8;
+            pixel[2] = (u32::from(screenshot_rgba[src + 2]) * factor / 255) as u8;
         }
         pixel[3] = 255;
     }

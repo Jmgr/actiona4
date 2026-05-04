@@ -1,4 +1,11 @@
-use std::{thread, time::Duration};
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    thread,
+    time::Duration,
+};
 
 use winit::{
     dpi::PhysicalPosition,
@@ -30,6 +37,7 @@ pub fn spawn_cursor_tracker(
     proxy: EventLoopProxy<AppEvent>,
     window_xid: u32,
     desktop_origin: PhysicalPosition<i32>,
+    stop: Arc<AtomicBool>,
 ) {
     thread::spawn(move || {
         let Ok((connection, screen_number)) = x11rb::connect(None) else {
@@ -61,6 +69,9 @@ pub fn spawn_cursor_tracker(
 
         if grab_succeeded.is_none() {
             loop {
+                if stop.load(Ordering::Relaxed) {
+                    break;
+                }
                 if let Ok(Ok(reply)) = connection
                     .query_pointer(root_window)
                     .map(|cookie| cookie.reply())
@@ -81,7 +92,19 @@ pub fn spawn_cursor_tracker(
             return;
         }
 
-        while let Ok(event) = connection.wait_for_event() {
+        while !stop.load(Ordering::Relaxed) {
+            let event = match connection.poll_for_event() {
+                Ok(Some(event)) => event,
+                Ok(None) => {
+                    thread::sleep(Duration::from_millis(8));
+                    continue;
+                }
+                Err(_) => break,
+            };
+
+            if stop.load(Ordering::Relaxed) {
+                break;
+            }
             match event {
                 Event::MotionNotify(motion_event) => {
                     let x_position = motion_event.root_x as f64 - f64::from(desktop_origin.x);
@@ -106,5 +129,8 @@ pub fn spawn_cursor_tracker(
                 _ => {}
             }
         }
+
+        let _ = connection.ungrab_pointer(x11rb::CURRENT_TIME);
+        let _ = connection.flush();
     });
 }

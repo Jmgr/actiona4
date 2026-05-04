@@ -1,20 +1,19 @@
 use std::f64::consts::TAU;
 
-use color_eyre::Result;
-pub use types::point::{Point, point, try_point};
+pub use types::point::{Point, point};
 
 use crate::runtime::shared_rng::SharedRng;
 
 pub mod js;
 
-pub fn random_point_in_circle(center: Point, radius: f64, rng: SharedRng) -> Result<Point> {
+pub fn random_point_in_circle(center: Point, radius: f64, rng: SharedRng) -> Point {
     let (center_x, center_y) = center.as_f64();
     let theta = rng.random_range(0.0..TAU);
     let r = radius * rng.random::<f64>().sqrt();
     let x = r.mul_add(theta.cos(), center_x);
     let y = r.mul_add(theta.sin(), center_y);
 
-    try_point(x, y)
+    point(x, y)
 }
 
 #[cfg(test)]
@@ -34,7 +33,7 @@ mod tests {
         let rng = SharedRng::default();
 
         for _ in 0..1000 {
-            let p = random_point_in_circle(center, radius, rng.clone()).unwrap();
+            let p = random_point_in_circle(center, radius, rng.clone());
             let d = center.distance_to(p);
             assert!(d <= radius + 1.0, "d={} > radius", d); // rounding slack
         }

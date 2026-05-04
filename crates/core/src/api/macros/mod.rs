@@ -10,6 +10,7 @@ use std::{
 use color_eyre::{Result, eyre::eyre};
 use enigo::{Coordinate, Key};
 use flate2::{Compression, read::GzDecoder, write::GzEncoder};
+use satint::{Si32, Su32};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use time::OffsetDateTime;
@@ -30,8 +31,6 @@ use crate::{
     types::{
         display::{DisplayFields, display_with_type},
         input::Direction,
-        si32::Si32,
-        su32::Su32,
     },
 };
 

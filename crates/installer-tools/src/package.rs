@@ -109,7 +109,7 @@ const PACKAGED_FILES: [PackagedFileDefinition; 6] = [
         .signed(),
     PackagedFileDefinition::new("target/release/actiona-runw.exe").signed(),
     PackagedFileDefinition::new("target/release/actiona-run.exe").signed(),
-    PackagedFileDefinition::new("target/release/selection-tool.exe").signed(),
+    PackagedFileDefinition::new("target/release/extension-selection.exe").signed(),
     PackagedFileDefinition::new("*.md")
         .include_in_appimage()
         .with_dos_line_feeds()

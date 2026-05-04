@@ -642,22 +642,4 @@ mod tests {
             println!("saved native screenshot to {}", output_path.display());
         });
     }
-
-    #[test]
-    #[ignore]
-    fn test_ask_rect() {
-        Runtime::test_with_script_engine(async |script_engine| {
-            let rect: String = script_engine
-                .eval_async(
-                    r#"
-                    const rect = await screen.askRect();
-                    if (!rect) throw new Error("user cancelled");
-                    rect.toString();
-                    "#,
-                )
-                .await
-                .unwrap();
-            println!("selected rect: {rect}");
-        });
-    }
 }

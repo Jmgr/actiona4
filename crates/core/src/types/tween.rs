@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub};
 
 use tween::TweenValue;
-use types::point::{Point, try_point};
+use types::point::{Point, point};
 
 #[derive(Clone, Copy, Debug)]
 pub struct TweenPoint(Point);
@@ -40,7 +40,7 @@ impl TweenValue for TweenPoint {
         let (x, y) = self.0.as_f64();
         let scale: f64 = scale.into();
 
-        try_point(x * scale, y * scale).unwrap_or_default().into()
+        point(x * scale, y * scale).into()
     }
 }
 

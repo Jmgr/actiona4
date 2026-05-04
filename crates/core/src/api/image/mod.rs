@@ -23,6 +23,7 @@ use imageproc::{
     geometric_transformations::{self, rotate, rotate_about_center},
     rect::Rect as ImgRect,
 };
+use satint::{Si32, TryDiv, su32};
 use tokio::fs;
 
 pub mod find_image;
@@ -36,7 +37,7 @@ use crate::{
         rect::{Rect, rect},
         size::{self, Size},
     },
-    types::{display::DisplayFields, si32::Si32, su32::su32},
+    types::display::DisplayFields,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -471,7 +472,7 @@ impl Image {
         if let Some(center) = options.center {
             self.set_inner(rotate(
                 &self.inner,
-                (center.x.into(), center.y.into()),
+                (center.x.into_inner() as f32, center.y.into_inner() as f32),
                 angle.to_radians(),
                 options.interpolation.into(),
                 options.default_color.into(),
@@ -681,13 +682,10 @@ impl Image {
 
     pub fn draw_line_mut(&mut self, start: Point, end: Point, color: Color) {
         let rgba: image::Rgba<u8> = color.into();
+        let (sx, sy) = start.as_f32();
+        let (ex, ey) = end.as_f32();
         self.draw_via_scratch(|s| {
-            draw_line_segment_mut(
-                s,
-                (start.x.into(), start.y.into()),
-                (end.x.into(), end.y.into()),
-                rgba,
-            );
+            draw_line_segment_mut(s, (sx, sy), (ex, ey), rgba);
         });
     }
 
@@ -955,10 +953,12 @@ impl Image {
 
         image.draw_via_scratch(|s| {
             for (line, &width) in lines.iter().zip(&line_widths) {
-                let width_i32: i32 = Si32::from(su32(width)).into();
+                let width_i32 = su32(width).to_signed();
                 let horizontal_offset = match options.horizontal_align {
-                    TextHorizontalAlign::Left => 0,
-                    TextHorizontalAlign::Center => -(width_i32 / 2),
+                    TextHorizontalAlign::Left => Si32::ZERO,
+                    TextHorizontalAlign::Center => -width_i32
+                        .try_div(2_i32)
+                        .expect("dividing text width by 2 should never fail"),
                     TextHorizontalAlign::Right => -width_i32,
                 };
                 let line_x = position.x + horizontal_offset;

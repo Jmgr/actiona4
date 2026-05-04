@@ -17,7 +17,7 @@ use rquickjs::{
 };
 use types::{
     display::display_with_type,
-    size::{Size, try_size},
+    size::{Size, size},
 };
 
 use crate::{
@@ -39,7 +39,7 @@ fn size_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Size> {
 
         let width: f64 = object.get("width")?;
         let height: f64 = object.get("height")?;
-        return try_size(width, height).into_js_result(ctx);
+        return Ok(size(width, height));
     }
 
     Err(rquickjs::Error::new_from_js_message(
@@ -78,8 +78,7 @@ impl<'js> FromParam<'js> for JsSizeLike {
                 .as_number()
                 .or_throw_message(params.ctx(), "Expected height as a number")?;
 
-            let size = try_size(width, height).into_js_result(params.ctx())?;
-            return Ok(Self(size));
+            return Ok(Self(size(width, height)));
         }
 
         size_from_value(params.ctx(), &value).map(Self)

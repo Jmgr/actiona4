@@ -5,14 +5,12 @@ use opencv::core::{
     Mat, MatTraitConst, MatTraitConstManual, MatTraitManual, NORM_L2, Point, Rect, Size,
     ToInputArray, count_non_zero, norm2, norm2_def,
 };
+use satint::{SaturatingFrom, Si32};
 use tracing::instrument;
 
-use crate::{
-    api::{
-        image::find_image::{LabAMat, LabBMat, MaskMat, Match},
-        rect,
-    },
-    types::si32::Si32,
+use crate::api::{
+    image::find_image::{LabAMat, LabBMat, MaskMat, Match},
+    rect,
 };
 
 /// Convert a match-score matrix into match locations.
@@ -48,7 +46,7 @@ pub fn compute_results(
         // Fast path: scan the raw (row-major) float buffer without per-pixel FFI calls.
         let values = match_template_result.data_typed::<f32>()?;
         for (idx, &match_score) in values.iter().enumerate() {
-            let idx: i32 = Si32::from(idx).into();
+            let idx: i32 = Si32::saturating_from(idx).into();
             let row = idx / cols;
             let col = idx - row * cols;
             push_match(row, col, match_score);
@@ -58,7 +56,7 @@ pub fn compute_results(
         for row in 0..rows {
             let row_values = match_template_result.at_row::<f32>(row)?;
             for (col, &match_score) in row_values.iter().enumerate() {
-                let col: i32 = Si32::from(col).into();
+                let col: i32 = Si32::saturating_from(col).into();
                 push_match(row, col, match_score);
             }
         }
@@ -139,7 +137,7 @@ pub fn filter_results_by_color(
             if *value < match_threshold {
                 continue;
             }
-            let col: i32 = Si32::from(col_idx).into();
+            let col: i32 = Si32::saturating_from(col_idx).into();
             let roi = Rect::new(col, row, template_size.width, template_size.height);
             let source_a_roi = source_a.0.roi(roi)?;
             let source_b_roi = source_b.0.roi(roi)?;

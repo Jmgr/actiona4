@@ -1,14 +1,13 @@
 use std::fmt::Display;
 
 use derive_more::Constructor;
+use satint::{TryDiv, su32};
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, point};
 use crate::{
     display::DisplayFields,
-    si32::TryDiv,
     size::{Size, size},
-    su32::Su32,
 };
 
 #[derive(Clone, Constructor, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -42,17 +41,17 @@ impl Rect {
     #[must_use]
     pub fn contains(&self, point: Point) -> bool {
         point.x >= self.top_left.x
-            && point.x < self.top_left.x + self.size.width
+            && point.x < self.top_left.x + self.size.width.to_signed()
             && point.y >= self.top_left.y
-            && point.y < self.top_left.y + self.size.height
+            && point.y < self.top_left.y + self.size.height.to_signed()
     }
 
     #[must_use]
     pub fn intersects(&self, other: Self) -> bool {
-        !(self.top_left.x + self.size.width <= other.top_left.x
-            || other.top_left.x + other.size.width <= self.top_left.x
-            || self.top_left.y + self.size.height <= other.top_left.y
-            || other.top_left.y + other.size.height <= self.top_left.y)
+        !(self.top_left.x + self.size.width.to_signed() <= other.top_left.x
+            || other.top_left.x + other.size.width.to_signed() <= self.top_left.x
+            || self.top_left.y + self.size.height.to_signed() <= other.top_left.y
+            || other.top_left.y + other.size.height.to_signed() <= self.top_left.y)
     }
 
     #[must_use]
@@ -63,12 +62,14 @@ impl Rect {
 
         let x1 = self.top_left.x.max(other.top_left.x);
         let y1 = self.top_left.y.max(other.top_left.y);
-        let x2 = (self.top_left.x + self.size.width).min(other.top_left.x + other.size.width);
-        let y2 = (self.top_left.y + self.size.height).min(other.top_left.y + other.size.height);
+        let x2 = (self.top_left.x + self.size.width.to_signed())
+            .min(other.top_left.x + other.size.width.to_signed());
+        let y2 = (self.top_left.y + self.size.height.to_signed())
+            .min(other.top_left.y + other.size.height.to_signed());
 
         Some(Self {
             top_left: point(x1, y1),
-            size: size(x2 - x1, y2 - y1),
+            size: size((x2 - x1).to_unsigned(), (y2 - y1).to_unsigned()),
         })
     }
 
@@ -76,19 +77,21 @@ impl Rect {
     pub fn union(&self, other: Self) -> Self {
         let x1 = self.top_left.x.min(other.top_left.x);
         let y1 = self.top_left.y.min(other.top_left.y);
-        let x2 = (self.top_left.x + self.size.width).max(other.top_left.x + other.size.width);
-        let y2 = (self.top_left.y + self.size.height).max(other.top_left.y + other.size.height);
+        let x2 = (self.top_left.x + self.size.width.to_signed())
+            .max(other.top_left.x + other.size.width.to_signed());
+        let y2 = (self.top_left.y + self.size.height.to_signed())
+            .max(other.top_left.y + other.size.height.to_signed());
 
         Self {
             top_left: point(x1, y1),
-            size: size(x2 - x1, y2 - y1),
+            size: size((x2 - x1).to_unsigned(), (y2 - y1).to_unsigned()),
         }
     }
 
     #[must_use]
     pub fn clamped(&self) -> (u32, u32, u32, u32) {
-        let clamped_x: Su32 = self.top_left.x.into_inner().max(0).into();
-        let clamped_y: Su32 = self.top_left.y.into_inner().max(0).into();
+        let clamped_x = self.top_left.x.to_unsigned();
+        let clamped_y = self.top_left.y.to_unsigned();
 
         let adjusted_width = if self.top_left.x < 0 {
             self.size.width - self.top_left.x.unsigned_abs()
@@ -126,7 +129,7 @@ impl Rect {
 
     #[must_use]
     pub fn bottom_right(&self) -> Point {
-        self.top_left + (self.size - size(1, 1))
+        self.top_left + (self.size - size(su32(1), su32(1)))
     }
 
     #[must_use]
@@ -240,7 +243,7 @@ mod tests {
     #[test]
     fn size_and_surface() {
         let a = r(0, 0, 6, 7);
-        assert_eq!(a.size(), size(6, 7));
+        assert_eq!(a.size(), size(su32(6), su32(7)));
         assert_eq!(a.surface(), 42);
     }
 }

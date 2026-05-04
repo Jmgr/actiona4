@@ -1,10 +1,15 @@
 use std::sync::Arc;
 
 use color_eyre::{Result, eyre::eyre};
+use satint::{SaturatingInto, Su32};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
-use types::rect::Rect;
+use types::{
+    point::Point,
+    rect::Rect,
+    size::{Size, size},
+};
 use x11rb_async::{
     connection::Connection, protocol::xproto::ImageFormat, rust_connection::RustConnection,
 };
@@ -93,41 +98,24 @@ impl Screen {
 
     /// Capture the entire root window. Always uses XGetImage (no SHM).
     pub async fn capture_full_screen(&self) -> Result<Capture> {
-        let width = u32::from(self.inner.full_screen_width);
-        let height = u32::from(self.inner.full_screen_height);
-        let bgra = get_image_raw(self, 0, 0, width, height).await?;
-        Ok(Capture {
-            width,
-            height,
-            bgra,
-        })
+        let width: Su32 = self.inner.full_screen_width.saturating_into();
+        let height: Su32 = self.inner.full_screen_height.saturating_into();
+        let size = size(width, height);
+        let bgra = get_image_raw(self, Point::ZERO, size).await?;
+        Ok(Capture { size, bgra })
     }
 
     /// Capture a rectangle of the root window. Always uses XGetImage (no SHM).
     pub async fn capture_rect(&self, rect: Rect) -> Result<Capture> {
-        let bgra = get_image_raw(
-            self,
-            rect.top_left.x.into(),
-            rect.top_left.y.into(),
-            rect.size.width.into(),
-            rect.size.height.into(),
-        )
-        .await?;
+        let bgra = get_image_raw(self, rect.top_left, rect.size).await?;
         Ok(Capture {
-            width: rect.size.width.into(),
-            height: rect.size.height.into(),
+            size: rect.size,
             bgra,
         })
     }
 }
 
-async fn get_image_raw(
-    screen: &Screen,
-    x: i32,
-    y: i32,
-    width: u32,
-    height: u32,
-) -> Result<Vec<u8>> {
+async fn get_image_raw(screen: &Screen, position: Point, size: Size) -> Result<Vec<u8>> {
     use x11rb_async::protocol::xproto::ConnectionExt;
 
     let reply = screen
@@ -135,10 +123,10 @@ async fn get_image_raw(
         .get_image(
             ImageFormat::Z_PIXMAP,
             screen.root(),
-            i16::try_from(x)?,
-            i16::try_from(y)?,
-            u16::try_from(width)?,
-            u16::try_from(height)?,
+            position.x.into_inner().try_into()?,
+            position.y.into_inner().try_into()?,
+            size.width.into_inner().try_into()?,
+            size.height.into_inner().try_into()?,
             u32::MAX,
         )
         .await?

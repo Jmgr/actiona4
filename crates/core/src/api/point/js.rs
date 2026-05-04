@@ -18,7 +18,7 @@ use rquickjs::{
 };
 use types::{
     display::display_with_type,
-    point::{Point, try_point},
+    point::{Point, point},
 };
 
 use crate::{
@@ -50,7 +50,7 @@ fn point_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Point> {
 
         let x: f64 = object.get("x")?;
         let y: f64 = object.get("y")?;
-        return try_point(x, y).into_js_result(ctx);
+        return Ok(point(x, y));
     }
 
     Err(rquickjs::Error::new_from_js_message(
@@ -96,8 +96,7 @@ impl<'js> FromParam<'js> for JsPointLike {
                 .as_number()
                 .or_throw_message(params.ctx(), "Expected second argument to be a number")?;
 
-            let point = try_point(x, y).into_js_result(params.ctx())?;
-            return Ok(Self(point));
+            return Ok(Self(point(x, y)));
         }
 
         point_from_value(params.ctx(), &value).map(Self)
@@ -205,8 +204,7 @@ impl JsPoint {
     pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Result<Self> {
         let user_data = ctx.user_data();
 
-        let point =
-            random_point_in_circle(center.0, radius, user_data.rng()).into_js_result(&ctx)?;
+        let point = random_point_in_circle(center.0, radius, user_data.rng());
         Ok(point.into())
     }
 

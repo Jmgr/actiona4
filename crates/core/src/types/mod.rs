@@ -8,7 +8,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-pub use ::types::{color, convert, display, ops, point, rect, si32, size, su32, try_traits};
+pub use ::types::{color, convert, display, point, rect, size};
 use humansize::BINARY;
 use itertools::Itertools;
 use sysinfo::Uid;

@@ -15,16 +15,13 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
-use types::{display::display_with_type, point::try_point, rect::Rect, size::try_size};
+use types::{display::display_with_type, point::point, rect::Rect, size::size};
 
-use crate::{
-    IntoJsResult,
-    api::{
-        ResultExt,
-        js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
-        point::js::JsPoint,
-        size::js::JsSize,
-    },
+use crate::api::{
+    ResultExt,
+    js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
+    point::js::JsPoint,
+    size::js::JsSize,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -41,8 +38,8 @@ fn rect_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Rect> {
         let width: f64 = object.get("width")?;
         let height: f64 = object.get("height")?;
 
-        let origin = try_point(x, y).into_js_result(ctx)?;
-        let size = try_size(width, height).into_js_result(ctx)?;
+        let origin = point(x, y);
+        let size = size(width, height);
         return Ok(Rect::new(origin, size));
     }
 
@@ -92,8 +89,8 @@ impl<'js> FromParam<'js> for JsRectLike {
                 .as_number()
                 .or_throw_message(params.ctx(), "Expected height as a number")?;
 
-            let origin = try_point(x, y).into_js_result(params.ctx())?;
-            let size = try_size(width, height).into_js_result(params.ctx())?;
+            let origin = point(x, y);
+            let size = size(width, height);
             return Ok(Self(Rect::new(origin, size)));
         }
 

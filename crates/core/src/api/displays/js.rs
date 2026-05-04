@@ -179,7 +179,7 @@ impl JsDisplays {
         let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
         Ok(displays_info
             .iter()
-            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width)
+            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width.to_signed())
             .cloned()
             .map(Into::into))
     }
@@ -201,7 +201,7 @@ impl JsDisplays {
         let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
         Ok(displays_info
             .iter()
-            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height)
+            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height.to_signed())
             .cloned()
             .map(Into::into))
     }

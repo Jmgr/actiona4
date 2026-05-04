@@ -141,7 +141,7 @@ impl ScreenImpl {
 
     pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
         let capture = self.base.capture_screen().capture_rect(rect).await?;
-        Source::from_bgra(&capture.bgra, capture.width, capture.height)
+        Source::from_bgra(&capture.bgra, capture.size)
     }
 
     pub async fn capture_pixel(&self, position: Point) -> Result<Color> {

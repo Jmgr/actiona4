@@ -11,16 +11,18 @@ use opencv::{
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual, UMatTraitConst},
 };
 use rayon::prelude::*;
+use satint::{SaturatingFrom, SaturatingInto, TryRem, su32};
+use satint::{Su32, TryDiv};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
+use types::size::Size;
 
 use crate::{
     api::image::find_image::{
         FindImageProgress, FindImageStage, LabLightnessMat, MaskMat, common::ideal_thread_count,
     },
     error::CommonError,
-    types::su32::Su32,
 };
 
 /// Run a single tile's template match against a vertical slice of the source.
@@ -116,25 +118,30 @@ pub fn match_template(
         return match_gpu(source_lightness, template_lightness, template_mask);
     }
 
-    let source_size = source_lightness.0.size()?;
-    let template_size = template_lightness.0.size()?;
-    let result_rows = source_size.height - template_size.height + 1;
-    let result_cols = source_size.width - template_size.width + 1;
-    let tile_count = ideal_thread_count().clamp(1, Su32::from(result_rows.max(1)).into());
+    let source_size: Size = source_lightness.0.size()?.into();
+    let template_size: Size = template_lightness.0.size()?.into();
+    let result_rows = source_size.height - template_size.height + Su32::ONE;
+    let result_cols = source_size.width - template_size.width + Su32::ONE;
+    let tile_count = ideal_thread_count().clamp(Su32::ONE, result_rows.max(Su32::ONE));
 
     // Build tile ranges and compute the source ROI each tile needs.
-    let tile_ranges = build_tiles(result_rows, tile_count)
+    let tile_ranges = build_tiles(result_rows, tile_count)?
         .into_iter()
         .map(|(start_row, end_row)| {
             let tile_result_rows = end_row - start_row;
-            let roi_height =
-                (tile_result_rows + template_size.height - 1).min(source_size.height - start_row);
-            let roi = Rect::new(0, start_row, source_size.width, roi_height);
+            let roi_height = (tile_result_rows + template_size.height - Su32::ONE)
+                .min(source_size.height - start_row);
+            let roi = Rect::new(
+                0,
+                start_row.to_signed().saturating_into(),
+                source_size.width.to_signed().saturating_into(),
+                roi_height.to_signed().saturating_into(),
+            );
             (start_row, roi)
         })
         .collect_vec();
 
-    let total_tiles = tile_ranges.len();
+    let total_tiles: Su32 = tile_ranges.len().saturating_into();
     let completed_tiles = Arc::new(AtomicUsize::new(0));
 
     // Run template matching on each tile in parallel.
@@ -142,18 +149,22 @@ pub fn match_template(
         .into_par_iter()
         .map(|(start_row, roi)| {
             if cancellation_token.is_cancelled() {
-                return Err(crate::error::CommonError::Cancelled.into());
+                return Err(CommonError::Cancelled.into());
             }
 
             let tile_result = match_tile(source_lightness, template_lightness, template_mask, roi)?;
 
             // Update progress: matching phase is 20-70%, so 50% of total range
-            let completed = completed_tiles.fetch_add(1, Ordering::Relaxed) + 1;
-            let percent = 20 + ((completed * 50) / total_tiles);
+            let completed: Su32 =
+                (completed_tiles.fetch_add(1, Ordering::Relaxed) + 1).saturating_into();
+            let percent = su32(20)
+                + ((completed * su32(50))
+                    .try_div(total_tiles)
+                    .expect("total_tiles cannot be 0"));
 
             let _ = progress.send(FindImageProgress::new(
                 FindImageStage::Matching,
-                Su32::from(percent.min(70)).into(),
+                percent.min(su32(70)).saturating_into(),
             ));
 
             Ok::<_, color_eyre::eyre::Error>((start_row, tile_result))
@@ -163,12 +174,20 @@ pub fn match_template(
     tile_results.sort_by_key(|(start_row, ..)| *start_row);
 
     // Stitch the per-tile results into a single matrix.
-    let mut result = unsafe { Mat::new_rows_cols(result_rows, result_cols, CV_32FC1)? };
+    let mut result = unsafe {
+        Mat::new_rows_cols(
+            result_rows.saturating_into(),
+            result_cols.saturating_into(),
+            CV_32FC1,
+        )?
+    };
 
     for (start_row, tile_result) in &tile_results {
         for offset in 0..tile_result.rows() {
-            let dest_row = result.at_row_mut::<f32>(start_row + offset)?;
             let src_row = tile_result.at_row::<f32>(offset)?;
+            let offset = Su32::saturating_from(offset);
+            let dest_row_index: i32 = (*start_row + offset).to_signed().into();
+            let dest_row = result.at_row_mut::<f32>(dest_row_index)?;
             dest_row.copy_from_slice(src_row);
         }
     }
@@ -180,20 +199,17 @@ pub fn match_template(
 ///
 /// This keeps tiles roughly balanced while ensuring coverage of all rows.
 #[instrument(skip_all)]
-fn build_tiles(total_rows: i32, desired_tiles: usize) -> Vec<(i32, i32)> {
-    let total_rows = total_rows.max(1);
-    let total_rows_usize: usize = Su32::from(total_rows).into();
-    let tile_count = desired_tiles.clamp(1, total_rows_usize);
-    let tile_count_i32: i32 = Su32::from(tile_count).into();
-    let base = total_rows / tile_count_i32;
-    let remainder = total_rows % tile_count_i32;
-    let remainder_usize: usize = Su32::from(remainder).into();
-    let mut tiles = Vec::with_capacity(tile_count);
-    let mut start = 0;
+fn build_tiles(total_rows: Su32, desired_tiles: Su32) -> Result<Vec<(Su32, Su32)>> {
+    let total_rows = total_rows.max(Su32::ONE);
+    let tile_count = desired_tiles.clamp(Su32::ONE, total_rows);
+    let base: Su32 = total_rows.try_div(tile_count)?;
+    let remainder: Su32 = total_rows.try_rem(tile_count)?;
+    let mut tiles = Vec::with_capacity(tile_count.saturating_into());
+    let mut start = Su32::ZERO;
 
-    for idx in 0..tile_count {
+    for idx in 0..tile_count.saturating_into() {
         let mut height = base;
-        if idx < remainder_usize {
+        if idx < remainder {
             height += 1;
         }
         let end = (start + height).min(total_rows);
@@ -205,8 +221,8 @@ fn build_tiles(total_rows: i32, desired_tiles: usize) -> Vec<(i32, i32)> {
     }
 
     if tiles.is_empty() {
-        tiles.push((0, total_rows));
+        tiles.push((Su32::ZERO, total_rows));
     }
 
-    tiles
+    Ok(tiles)
 }

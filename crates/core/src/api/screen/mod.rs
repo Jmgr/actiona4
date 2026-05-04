@@ -26,7 +26,7 @@ use super::{
     windows::{WindowId, Windows},
 };
 use crate::{
-    api::{color::Color, point::Point},
+    api::{color::Color, point::Point, screen::platform::overlay::ask_rect},
     runtime::Runtime,
 };
 
@@ -194,9 +194,7 @@ impl Screen {
     async fn ask_overlay_rect(&self) -> Result<Option<Rect>> {
         self.runtime.require_not_wayland()?;
 
-        use crate::api::screen::platform::overlay::ask_screenshot as ask_overlay;
-
-        ask_overlay(self.runtime.cancellation_token()).await
+        ask_rect(&self.runtime, self.runtime.cancellation_token()).await
     }
 
     async fn capture_search_in_to_source(

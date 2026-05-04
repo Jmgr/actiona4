@@ -356,7 +356,7 @@ impl Runtime {
                             .reply()
                             .await?;
                         local_mouse_move_topic.publish(MouseMoveEvent::new(
-                            point(reply.root_x, reply.root_y),
+                            point(i32::from(reply.root_x), i32::from(reply.root_y)),
                             is_injected,
                         ));
                     }

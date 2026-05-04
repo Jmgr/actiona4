@@ -3,14 +3,12 @@ use std::{
     ops::{Mul, MulAssign},
 };
 
-use color_eyre::{Report, Result};
+use color_eyre::Result;
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
+use satint::{DivError, SaturatingInto, Si32, TryDiv, TryDivAssign};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    display::DisplayFields,
-    si32::{Si32, TryDiv, TryDivAssign},
-};
+use crate::display::DisplayFields;
 
 #[derive(
     Add,
@@ -35,17 +33,8 @@ pub struct Point {
 }
 
 #[must_use]
-pub fn point<X: Into<Si32>, Y: Into<Si32>>(x: X, y: Y) -> Point {
-    Point::new(x.into(), y.into())
-}
-
-pub fn try_point<X, Y>(x: X, y: Y) -> Result<Point>
-where
-    X: TryInto<Si32>,
-    Y: TryInto<Si32>,
-    color_eyre::Report: From<X::Error> + From<Y::Error>,
-{
-    Ok(Point::new(x.try_into()?, y.try_into()?))
+pub fn point<X: SaturatingInto<Si32>, Y: SaturatingInto<Si32>>(x: X, y: Y) -> Point {
+    Point::new(x.saturating_into(), y.saturating_into())
 }
 
 impl Mul<i32> for Point {
@@ -65,17 +54,14 @@ impl MulAssign<i32> for Point {
 
 impl TryDiv<i32> for Point {
     type Output = Self;
-    type Error = Report;
 
-    fn try_div(self, rhs: i32) -> std::result::Result<Self::Output, Self::Error> {
+    fn try_div(self, rhs: i32) -> std::result::Result<Self::Output, DivError> {
         Ok(Self::new(self.x.try_div(rhs)?, self.y.try_div(rhs)?))
     }
 }
 
 impl TryDivAssign<i32> for Point {
-    type Error = Report;
-
-    fn try_div_assign(&mut self, rhs: i32) -> std::result::Result<(), Self::Error> {
+    fn try_div_assign(&mut self, rhs: i32) -> std::result::Result<(), DivError> {
         self.x.try_div_assign(rhs)?;
         self.y.try_div_assign(rhs)?;
         Ok(())
@@ -150,8 +136,8 @@ impl Point {
         let (x, y) = self.as_f64();
 
         Ok(Self {
-            x: (x * factor).try_into()?,
-            y: (y * factor).try_into()?,
+            x: (x * factor).saturating_into(),
+            y: (y * factor).saturating_into(),
         })
     }
 
@@ -166,15 +152,19 @@ impl Point {
     pub fn as_f64(&self) -> (f64, f64) {
         (self.x.into(), self.y.into())
     }
+
+    pub fn as_f32(&self) -> (f32, f32) {
+        (self.x.into_inner() as f32, self.y.into_inner() as f32)
+    }
 }
 
 #[cfg(test)]
 #[allow(clippy::as_conversions)]
 mod tests {
     use rstest::rstest;
+    use satint::si32;
 
     use super::*;
-    use crate::si32::{Si32, TryDiv, TryDivAssign, si32};
 
     // ---------- constructors -------------------------------------------------
 
@@ -183,21 +173,6 @@ mod tests {
     #[case::pos(point(3, 5), (3, 5))]
     #[case::neg(point(-7, -2), (-7, -2))]
     fn ctor_point_and_accessors(#[case] p: Point, #[case] want: (i32, i32)) {
-        assert_eq!(want.0, p.x.into_inner());
-        assert_eq!(want.1, p.y.into_inner());
-    }
-
-    #[rstest]
-    #[case::ok_small(3.0f64, 5.0f64, (3, 5))]
-    #[case::ok_clamp_hi((i32::MAX as f64) + 10.0, 1.0f64, (i32::MAX, 1))]
-    #[case::ok_clamp_lo(-1e10f64, -2.5f64, (i32::MIN, -2))]
-    fn ctor_try_point_ok<TX, TY>(#[case] x: TX, #[case] y: TY, #[case] want: (i32, i32))
-    where
-        TX: TryInto<Si32>,
-        TY: TryInto<Si32>,
-        color_eyre::Report: From<TX::Error> + From<TY::Error>,
-    {
-        let p = try_point(x, y).unwrap();
         assert_eq!(want.0, p.x.into_inner());
         assert_eq!(want.1, p.y.into_inner());
     }

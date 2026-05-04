@@ -152,7 +152,7 @@ impl<D: DisplayCapture> ScreenImplBase<D> {
         let display = self.get_display(display_id).await?;
         let rect = display.rect();
         let capture = display.capture_raw().await?;
-        let source = Source::from_bgra(&capture.bgra, capture.width, capture.height)?;
+        let source = Source::from_bgra(&capture.bgra, capture.size)?;
         Ok((source, rect))
     }
 }

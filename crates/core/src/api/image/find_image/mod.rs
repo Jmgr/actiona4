@@ -10,10 +10,12 @@ use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
     imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
 };
+use satint::{SaturatingInto, Su32, su32};
 use strum::EnumIs;
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
+use types::size::Size;
 
 use crate::{
     api::{
@@ -30,7 +32,7 @@ use crate::{
         rect::Rect,
     },
     error::CommonError,
-    types::{display::DisplayFields, su32::Su32},
+    types::display::DisplayFields,
 };
 
 mod common;
@@ -79,13 +81,11 @@ impl TryFrom<&BgrMat> for LabImage {
 }
 
 impl BgrMat {
-    pub fn from_bgra(data: &[u8], width: u32, height: u32) -> Result<Self> {
-        const BYTES_PER_PIXEL: usize = 4;
+    pub fn from_bgra(data: &[u8], size: Size) -> Result<Self> {
+        const BYTES_PER_PIXEL: Su32 = su32(4);
 
-        let needed = usize::from(Su32::from(width))
-            .checked_mul(Su32::from(height).into())
-            .and_then(|pixel_count| pixel_count.checked_mul(BYTES_PER_PIXEL))
-            .ok_or_else(|| eyre!("image dimensions overflow: {width}x{height}"))?;
+        let needed = size.width * size.height * BYTES_PER_PIXEL;
+        let needed = needed.saturating_into();
 
         if data.len() < needed {
             return Err(eyre!(
@@ -96,8 +96,8 @@ impl BgrMat {
 
         // Create a Mat view over the BGRA data
         let bgra_mat = Mat::new_rows_cols_with_bytes::<opencv::core::Vec4b>(
-            height.try_into()?,
-            width.try_into()?,
+            size.height.to_signed().into(),
+            size.width.to_signed().into(),
             &data[..needed],
         )?;
 
@@ -143,8 +143,8 @@ impl TryFrom<&Image> for Arc<Source> {
 }
 
 impl Source {
-    pub fn from_bgra(data: &[u8], width: u32, height: u32) -> Result<Arc<Self>> {
-        let bgr = BgrMat::from_bgra(data, width, height)?;
+    pub fn from_bgra(data: &[u8], size: Size) -> Result<Arc<Self>> {
+        let bgr = BgrMat::from_bgra(data, size)?;
         let lab = LabImage::try_from(&bgr)?;
 
         Ok(Arc::new(Self { image: lab }))

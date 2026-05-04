@@ -19,11 +19,12 @@ use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::{info, instrument};
 use tween::FixedTweener;
+use types::point::point;
 
 use crate::{
     api::{
         js::duration::JsDuration,
-        point::{js::JsPointLike, random_point_in_circle, try_point},
+        point::{js::JsPointLike, random_point_in_circle},
     },
     error::CommonError,
     runtime::{
@@ -553,7 +554,7 @@ impl Mouse {
         self.runtime.require_not_wayland()?;
         if options.target_randomness > 0. {
             target_position =
-                random_point_in_circle(target_position, options.target_randomness, rng.clone())?;
+                random_point_in_circle(target_position, options.target_randomness, rng.clone());
         }
 
         let start_position = self.position()?;
@@ -617,7 +618,7 @@ impl Mouse {
             );
 
             let tween_position: Point = tween.move_next().into();
-            let position = tween_position + try_point(noise_offset_x, noise_offset_y)?;
+            let position = tween_position + point(noise_offset_x, noise_offset_y);
 
             self.set_position(position, Coordinate::Abs)?;
 

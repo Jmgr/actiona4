@@ -13,6 +13,7 @@ mod methods;
 mod options;
 mod platform;
 mod platform_validate;
+mod rpc_protocol;
 mod serde;
 
 /// Derives `rquickjs::FromJs` for option-like structs with named fields.
@@ -184,4 +185,36 @@ pub fn into_serde(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(FromSerde)]
 pub fn from_serde(input: TokenStream) -> TokenStream {
     serde::derive_from_serde(input)
+}
+
+/// Generates an extension IPC protocol from an async trait declaration.
+///
+/// The trait is schema input only; it is replaced with:
+/// - a protocol marker struct
+/// - request/response enums for each used direction
+/// - a `Protocol` impl
+/// - side implementation traits named `<Protocol>Host` and `<Protocol>Extension`
+/// - typed host-call methods on `Host<Protocol>`
+/// - typed extension-call methods on `Extension<Protocol>`
+///
+/// Methods marked with `#[host_call]` are host-to-extension calls. Methods
+/// marked with `#[extension_call]` are extension-to-host calls. Request and
+/// response variants are derived from the method name.
+///
+/// # Example
+/// ```rust,ignore
+/// use macros::rpc_protocol;
+///
+/// #[rpc_protocol]
+/// pub trait SelectionProtocol {
+///     #[host_call]
+///     async fn select_rect() -> Option<Rect>;
+///
+///     #[extension_call]
+///     async fn current_window_title() -> Option<String>;
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn rpc_protocol(arguments: TokenStream, item: TokenStream) -> TokenStream {
+    rpc_protocol::expand(arguments, item)
 }

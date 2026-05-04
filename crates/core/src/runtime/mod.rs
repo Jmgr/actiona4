@@ -96,12 +96,13 @@ use crate::{
     cancel_on,
     error::CommonError,
     platform_info::{Platform, is_linux},
-    runtime::{events::Guard, shared_rng::SharedRng},
+    runtime::{events::Guard, extensions::Extensions, shared_rng::SharedRng},
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
 
 pub mod async_resource;
 pub mod events;
+pub mod extensions;
 pub mod platform;
 pub mod shared_rng;
 
@@ -305,6 +306,7 @@ pub struct Runtime {
     platform: Platform,
     mouse: Mutex<Option<Mouse>>,
     keyboard: Mutex<Option<Keyboard>>,
+    extensions: Extensions,
 }
 
 #[instrument(skip_all)]
@@ -678,6 +680,7 @@ impl Runtime {
             platform,
             mouse: Mutex::new(None),
             keyboard: Mutex::new(None),
+            extensions: Extensions::new(task_tracker.clone(), cancellation_token.clone()).await?,
         });
 
         #[allow(clippy::option_if_let_else)]
@@ -1142,6 +1145,11 @@ impl Runtime {
     #[must_use]
     pub fn task_tracker(&self) -> TaskTracker {
         self.task_tracker.clone()
+    }
+
+    #[must_use]
+    pub fn extensions(&self) -> &Extensions {
+        &self.extensions
     }
 
     #[must_use]

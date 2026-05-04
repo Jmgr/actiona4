@@ -87,6 +87,11 @@ description = "Build the actiona-run binary (required before running e2e tests).
 command = "cargo"
 args = ["build", "-p", "run"]
 
+[tasks.build-extensions]
+description = "Build runtime extension binaries."
+command = "cargo"
+args = ["build", "-p", "selection", "--bin", "extension-selection"]
+
 [tasks.build-actiona-run.windows]
 args = ["build", "-p", "run", "--features", "run/windows-bin"]
 
@@ -95,6 +100,12 @@ description = "Build actiona-run then run end-to-end TypeScript API tests."
 dependencies = ["build-actiona-run"]
 command = "cargo"
 args = ["test", "-p", "e2e"]
+
+[tasks.e2e-manual]
+description = "Build runtime binaries then run ignored/manual end-to-end tests."
+dependencies = ["build-actiona-run", "build-extensions"]
+command = "cargo"
+args = ["test", "-p", "e2e", "--test", "manual", "--", "--ignored", "--nocapture"]
 
 [tasks.test]
 description = "Run tests."
@@ -199,7 +210,7 @@ args = [
 ]
 
 [tasks.release]
-description = "Build release binaries, including selection-tool and actiona-runw on Windows."
+description = "Build release binaries, including extension-selection and actiona-runw on Windows."
 dependencies = ["release-runw"]
 command = "cargo"
 args = [
@@ -207,7 +218,7 @@ args = [
     "-p",
     "run",
     "-p",
-    "selection-tool",
+    "extension-selection",
     "--release",
 ]
 
