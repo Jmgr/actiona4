@@ -1501,6 +1501,7 @@ dependencies = [
  "mime_guess",
  "noiselib",
  "notify-rust",
+ "notzero",
  "num-traits",
  "once_cell",
  "open",
@@ -4907,6 +4908,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "notzero"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "794f3d02ede881b4ee9a691f466f1152b0cf8cf9b223feb30fe3e2ef8171294b"
+dependencies = [
+ "typewit",
+]
+
+[[package]]
 name = "ntapi"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7056,9 +7066,9 @@ dependencies = [
 
 [[package]]
 name = "satint"
-version = "0.3.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5f657783bb5362ad72997507c41276b85ee151346700636e6f0aba8c200eec8"
+checksum = "c46ad15855053a33752ed9511e1c729649dade75cccbc66cf2e8f404a12b0cc3"
 dependencies = [
  "rand 0.10.1",
  "serde",
@@ -8881,12 +8891,19 @@ dependencies = [
  "derive_more",
  "image",
  "imageproc",
+ "notzero",
  "opencv",
  "rand 0.10.1",
  "rstest",
  "satint",
  "serde",
 ]
+
+[[package]]
+name = "typewit"
+version = "1.15.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "214ca0b2191785cbc06209b9ca1861e048e39b5ba33574b3cedd58363d5bb5f6"
 
 [[package]]
 name = "uds"

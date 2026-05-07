@@ -23,7 +23,8 @@ use imageproc::{
     geometric_transformations::{self, rotate, rotate_about_center},
     rect::Rect as ImgRect,
 };
-use satint::{Si32, TryDiv, su32};
+use notzero::nz;
+use satint::{SaturatingInto, Si32, si32};
 use tokio::fs;
 
 pub mod find_image;
@@ -953,13 +954,10 @@ impl Image {
 
         image.draw_via_scratch(|s| {
             for (line, &width) in lines.iter().zip(&line_widths) {
-                let width_i32 = su32(width).to_signed();
                 let horizontal_offset = match options.horizontal_align {
                     TextHorizontalAlign::Left => Si32::ZERO,
-                    TextHorizontalAlign::Center => -width_i32
-                        .try_div(2_i32)
-                        .expect("dividing text width by 2 should never fail"),
-                    TextHorizontalAlign::Right => -width_i32,
+                    TextHorizontalAlign::Center => -si32(width.saturating_into()) / nz!(2),
+                    TextHorizontalAlign::Right => -si32(width.saturating_into()),
                 };
                 let line_x = position.x + horizontal_offset;
 

@@ -1,6 +1,9 @@
-use std::sync::{
-    Arc,
-    atomic::{AtomicUsize, Ordering},
+use std::{
+    num::NonZeroU32,
+    sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    },
 };
 
 use color_eyre::{Result, eyre::ensure};
@@ -11,7 +14,7 @@ use opencv::{
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual, UMatTraitConst},
 };
 use rayon::prelude::*;
-use satint::{SaturatingFrom, SaturatingInto, TryRem, su32};
+use satint::{SaturatingFrom, SaturatingInto, su32};
 use satint::{Su32, TryDiv};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
@@ -133,9 +136,9 @@ pub fn match_template(
                 .min(source_size.height - start_row);
             let roi = Rect::new(
                 0,
-                start_row.to_signed().saturating_into(),
-                source_size.width.to_signed().saturating_into(),
-                roi_height.to_signed().saturating_into(),
+                start_row.saturating_into(),
+                source_size.width.saturating_into(),
+                roi_height.saturating_into(),
             );
             (start_row, roi)
         })
@@ -186,7 +189,7 @@ pub fn match_template(
         for offset in 0..tile_result.rows() {
             let src_row = tile_result.at_row::<f32>(offset)?;
             let offset = Su32::saturating_from(offset);
-            let dest_row_index: i32 = (*start_row + offset).to_signed().into();
+            let dest_row_index: i32 = (*start_row + offset).saturating_into();
             let dest_row = result.at_row_mut::<f32>(dest_row_index)?;
             dest_row.copy_from_slice(src_row);
         }
@@ -200,29 +203,59 @@ pub fn match_template(
 /// This keeps tiles roughly balanced while ensuring coverage of all rows.
 #[instrument(skip_all)]
 fn build_tiles(total_rows: Su32, desired_tiles: Su32) -> Result<Vec<(Su32, Su32)>> {
-    let total_rows = total_rows.max(Su32::ONE);
-    let tile_count = desired_tiles.clamp(Su32::ONE, total_rows);
-    let base: Su32 = total_rows.try_div(tile_count)?;
-    let remainder: Su32 = total_rows.try_rem(tile_count)?;
-    let mut tiles = Vec::with_capacity(tile_count.saturating_into());
+    ensure!(total_rows > Su32::ZERO, "total_rows must be greater than 0");
+
+    let tile_count = NonZeroU32::new(desired_tiles.clamp(Su32::ONE, total_rows).into())
+        .expect("clamp from 1 cannot be zero");
+    let base: Su32 = total_rows / tile_count;
+    let extra_rows: usize = (total_rows % tile_count).saturating_into();
+    let mut tiles = Vec::with_capacity(tile_count.get().saturating_into());
     let mut start = Su32::ZERO;
 
-    for idx in 0..tile_count.saturating_into() {
-        let mut height = base;
-        if idx < remainder {
-            height += 1;
-        }
-        let end = (start + height).min(total_rows);
-        if start >= end {
-            break;
-        }
+    for index in 0..tile_count.get().saturating_into() {
+        let height = if index < extra_rows {
+            base + Su32::ONE
+        } else {
+            base
+        };
+        let end = start + height;
         tiles.push((start, end));
         start = end;
     }
 
-    if tiles.is_empty() {
-        tiles.push((Su32::ZERO, total_rows));
+    Ok(tiles)
+}
+
+#[cfg(test)]
+mod tests {
+    use satint::su32;
+
+    use super::build_tiles;
+
+    #[test]
+    fn build_tiles_splits_rows_evenly() {
+        let tiles = build_tiles(su32(10), su32(3)).unwrap();
+
+        assert_eq!(
+            tiles,
+            vec![(su32(0), su32(4)), (su32(4), su32(7)), (su32(7), su32(10))]
+        );
     }
 
-    Ok(tiles)
+    #[test]
+    fn build_tiles_clamps_tile_count_to_row_count() {
+        let tiles = build_tiles(su32(3), su32(8)).unwrap();
+
+        assert_eq!(
+            tiles,
+            vec![(su32(0), su32(1)), (su32(1), su32(2)), (su32(2), su32(3))]
+        );
+    }
+
+    #[test]
+    fn build_tiles_rejects_zero_rows() {
+        let error = build_tiles(su32(0), su32(3)).unwrap_err();
+
+        assert!(error.to_string().contains("total_rows"));
+    }
 }

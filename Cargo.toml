@@ -135,12 +135,13 @@ rquickjs = { version = "0.11.0", default-features = false, features = [
     "parallel",
     "indexmap",
 ] }
+notzero = "1.1.0"
 rquickjs-serde = { version = "0.5.0" }
 rustdoc-types = "0.57.3"
 rustydialogs = { version = "0.4.2", features = ["gtk4"] }
 rustyline = { version = "18.0.0", features = ["derive"] }
 sadness-generator = "0.7.0"
-satint = { version = "0.3.0", features = ["serde", "rand"] }
+satint = { version = "0.3.2", features = ["serde", "rand"] }
 sentry = "0.47.0"
 sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "c8ac244", features = [
     "ipc",

@@ -8982,6 +8982,19 @@ declare interface Screen {
      */
     askRect(): Promise<Rect | undefined>;
     /**
+     * Asks the user to interactively select a screen position using the
+     * bundled overlay selector, or returns `null` if the user cancels.
+     * 
+     * ```ts
+     * const position = await screen.askPosition();
+     * if (position) {
+     *   println(`Selected: ${position}`);
+     * }
+     * ```
+     * @platform does not work on Wayland
+     */
+    askPosition(): Promise<Point | undefined>;
+    /**
      * Returns a string representation of the `screen` singleton.
      */
     toString(): string;

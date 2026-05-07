@@ -18,7 +18,7 @@ use crate::{
         displays::js::JsDisplayInfo,
         image::{find_image::SearchIn, js::JsImage},
         js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
-        point::js::JsPointLike,
+        point::js::{JsPoint, JsPointLike},
         rect::{
             Rect,
             js::{JsRect, JsRectLike},
@@ -413,6 +413,25 @@ impl JsScreen {
             .await
             .into_js_result(&ctx)?
             .map(JsRect::from))
+    }
+
+    /// Asks the user to interactively select a screen position using the
+    /// bundled overlay selector, or returns `null` if the user cancels.
+    ///
+    /// ```ts
+    /// const position = await screen.askPosition();
+    /// if (position) {
+    ///   println(`Selected: ${position}`);
+    /// }
+    /// ```
+    #[platform(not = "wayland")]
+    pub async fn ask_position(&self, ctx: Ctx<'_>) -> Result<Option<JsPoint>> {
+        Ok(self
+            .inner
+            .ask_overlay_position()
+            .await
+            .into_js_result(&ctx)?
+            .map(JsPoint::from))
     }
 
     /// Returns a string representation of the `screen` singleton.

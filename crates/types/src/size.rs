@@ -1,6 +1,7 @@
 use std::{
     fmt::Display,
-    ops::{Mul, MulAssign},
+    num::NonZero,
+    ops::{Div, DivAssign, Mul, MulAssign},
 };
 
 use color_eyre::Result;
@@ -50,6 +51,23 @@ impl MulAssign<u32> for Size {
     fn mul_assign(&mut self, rhs: u32) {
         self.width *= rhs;
         self.height *= rhs;
+    }
+}
+
+impl Div<NonZero<u32>> for Size {
+    type Output = Self;
+
+    fn div(self, rhs: NonZero<u32>) -> Self::Output {
+        let width = self.width / rhs;
+        let height = self.height / rhs;
+        size(width, height)
+    }
+}
+
+impl DivAssign<NonZero<u32>> for Size {
+    fn div_assign(&mut self, rhs: NonZero<u32>) {
+        self.width /= rhs;
+        self.height /= rhs;
     }
 }
 

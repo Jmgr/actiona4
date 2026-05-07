@@ -44,10 +44,11 @@ extension = { path = "../extension" }
 installer-tools = { path = "../installer-tools" }
 macros = { path = "../macros" }
 screenshot = { path = "../screenshot" }
-types = { path = "../types", features = ["opencv", "imageproc"] }
+types = { path = "../types", features = ["opencv", "imageproc"] } # TODO: remove "opencv" once we have moved the opencv code into the extension
 
 ab_glyph.workspace = true
 arboard.workspace = true
+notzero.workspace = true
 arc-swap.workspace = true
 base64.workspace = true
 bimap.workspace = true

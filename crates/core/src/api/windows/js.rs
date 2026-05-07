@@ -385,7 +385,7 @@ impl JsWindowHandle {
     /// ```
     #[platform(not = "wayland")]
     pub fn process_id(&self, ctx: Ctx<'_>) -> Result<u32> {
-        self.inner.process_id(self.id).into_js_result(&ctx)
+        Ok(self.inner.process_id(self.id).into_js_result(&ctx)?.into())
     }
 
     /// Returns the window's bounding rectangle.

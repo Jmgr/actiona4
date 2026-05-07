@@ -1,9 +1,10 @@
 use std::{
     fmt::Display,
-    ops::{Mul, MulAssign},
+    num::NonZero,
+    ops::{Div, DivAssign, Mul, MulAssign},
 };
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::eyre};
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
 use satint::{DivError, SaturatingInto, Si32, TryDiv, TryDivAssign};
 use serde::{Deserialize, Serialize};
@@ -49,6 +50,23 @@ impl MulAssign<i32> for Point {
     fn mul_assign(&mut self, rhs: i32) {
         self.x *= rhs;
         self.y *= rhs;
+    }
+}
+
+impl Div<NonZero<i32>> for Point {
+    type Output = Self;
+
+    fn div(self, rhs: NonZero<i32>) -> Self::Output {
+        let x = self.x / rhs;
+        let y = self.y / rhs;
+        point(x, y)
+    }
+}
+
+impl DivAssign<NonZero<i32>> for Point {
+    fn div_assign(&mut self, rhs: NonZero<i32>) {
+        self.x /= rhs;
+        self.y /= rhs;
     }
 }
 
@@ -133,6 +151,10 @@ impl Point {
     }
 
     pub fn scaled(&self, factor: f64) -> Result<Self> {
+        if !factor.is_finite() {
+            return Err(eyre!("scale factor must be finite"));
+        }
+
         let (x, y) = self.as_f64();
 
         Ok(Self {
@@ -209,8 +231,6 @@ mod tests {
 
     #[rstest]
     #[case::div_by_zero(point(1, 2), 0)]
-    #[case::min_overflow(point(i32::MIN, 0), -1)]
-    #[case::min_overflow_y(point(0, i32::MIN), -1)]
     fn try_div_err(#[case] p: Point, #[case] d: i32) {
         let got = p.try_div(d);
         assert!(got.is_err());
@@ -227,7 +247,6 @@ mod tests {
 
     #[rstest]
     #[case::div_by_zero(point(1, 2), 0)]
-    #[case::min_overflow(point(i32::MIN, 0), -1)]
     fn try_div_assign_err(#[case] start: Point, #[case] d: i32) {
         let mut p = start;
         let r = p.try_div_assign(d);

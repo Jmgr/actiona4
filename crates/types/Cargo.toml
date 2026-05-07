@@ -21,6 +21,7 @@ opencv = { workspace = true, optional = true }
 rand.workspace = true
 satint.workspace = true
 serde.workspace = true
+notzero.workspace = true
 
 [dev-dependencies]
 rstest.workspace = true

@@ -26,7 +26,11 @@ use super::{
     windows::{WindowId, Windows},
 };
 use crate::{
-    api::{color::Color, point::Point, screen::platform::overlay::ask_rect},
+    api::{
+        color::Color,
+        point::Point,
+        screen::platform::overlay::{ask_position, ask_rect},
+    },
     runtime::Runtime,
 };
 
@@ -195,6 +199,12 @@ impl Screen {
         self.runtime.require_not_wayland()?;
 
         ask_rect(&self.runtime, self.runtime.cancellation_token()).await
+    }
+
+    async fn ask_overlay_position(&self) -> Result<Option<Point>> {
+        self.runtime.require_not_wayland()?;
+
+        ask_position(&self.runtime, self.runtime.cancellation_token()).await
     }
 
     async fn capture_search_in_to_source(

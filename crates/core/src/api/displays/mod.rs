@@ -106,8 +106,8 @@ impl Displays {
         drop(displays_info); // release the lock before sampling inside the rect
 
         // Sample uniformly inside the chosen rect.
-        let x = rng.random_range(rect.top_left.x..rect.top_left.x + rect.size.width.to_signed());
-        let y = rng.random_range(rect.top_left.y..rect.top_left.y + rect.size.height.to_signed());
+        let x = rng.random_range(rect.top_left.x..rect.top_left.x + rect.size.width);
+        let y = rng.random_range(rect.top_left.y..rect.top_left.y + rect.size.height);
 
         Ok(Some(point(x, y)))
     }
@@ -187,7 +187,7 @@ impl Displays {
         let displays_infos = self.get_info().await?;
         Ok(displays_infos
             .iter()
-            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width.to_signed())
+            .max_by_key(|d| d.rect.top_left.x + d.rect.size.width)
             .cloned())
     }
 
@@ -203,7 +203,7 @@ impl Displays {
         let displays_infos = self.get_info().await?;
         Ok(displays_infos
             .iter()
-            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height.to_signed())
+            .max_by_key(|d| d.rect.top_left.y + d.rect.size.height)
             .cloned())
     }
 

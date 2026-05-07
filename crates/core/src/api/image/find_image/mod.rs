@@ -96,8 +96,8 @@ impl BgrMat {
 
         // Create a Mat view over the BGRA data
         let bgra_mat = Mat::new_rows_cols_with_bytes::<opencv::core::Vec4b>(
-            size.height.to_signed().into(),
-            size.width.to_signed().into(),
+            size.height.saturating_into(),
+            size.width.saturating_into(),
             &data[..needed],
         )?;
 

@@ -1,5 +1,6 @@
 use std::{fmt::Display, sync::Arc};
 
+use satint::Su32;
 use tokio_util::sync::CancellationToken;
 
 use self::platform::WindowsHandler;
@@ -83,7 +84,7 @@ impl Windows {
         self.handler.close(id)
     }
 
-    pub fn process_id(&self, id: WindowId) -> Result<u32> {
+    pub fn process_id(&self, id: WindowId) -> Result<Su32> {
         self.runtime.require_not_wayland()?;
         self.handler.process_id(id)
     }
