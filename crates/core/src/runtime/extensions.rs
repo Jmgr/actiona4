@@ -40,11 +40,12 @@ impl Extensions {
         })
     }
 
+    #[must_use]
     pub fn selection(&self) -> Option<&Host<SelectionProtocol>> {
         self.selection.as_deref()
     }
 
-    fn disable_extension_discovery_for_tests() -> bool {
+    const fn disable_extension_discovery_for_tests() -> bool {
         cfg!(test)
     }
 

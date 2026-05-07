@@ -14,8 +14,7 @@ use opencv::{
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual, UMatTraitConst},
 };
 use rayon::prelude::*;
-use satint::{SaturatingFrom, SaturatingInto, su32};
-use satint::{Su32, TryDiv};
+use satint::{SaturatingFrom, SaturatingInto, Su32, TryDiv, su32};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;

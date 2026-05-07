@@ -153,9 +153,9 @@ impl NotificationHandle {
         tokio::task::spawn_blocking(move || {
             let mut handle = inner.lock();
             **handle = notification;
-            handle.update();
+            handle.update()
         })
-        .await?;
+        .await??;
 
         Ok(())
     }

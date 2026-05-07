@@ -469,6 +469,7 @@ impl Image {
         })
     }
 
+    #[allow(clippy::as_conversions)]
     pub fn rotate_mut(&mut self, angle: f32, options: RotationOptions) {
         if let Some(center) = options.center {
             self.set_inner(rotate(

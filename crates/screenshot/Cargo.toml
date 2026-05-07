@@ -20,7 +20,7 @@ types = { path = "../types" }
 
 color-eyre.workspace = true
 rayon.workspace = true
+satint.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
-satint.workspace = true
