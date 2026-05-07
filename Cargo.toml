@@ -82,7 +82,7 @@ image = { version = "0.25.10", default-features = false, features = [
     "tiff",
     "webp",
 ] }
-imageproc = { version = "0.26.1", default-features = false, features = [
+imageproc = { version = "0.26.2", default-features = false, features = [
     "rayon",
     "text",
 ] }
