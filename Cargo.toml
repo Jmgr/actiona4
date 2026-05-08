@@ -143,7 +143,7 @@ rustyline = { version = "18.0.0", features = ["derive"] }
 sadness-generator = "0.7.0"
 satint = { version = "0.3.2", features = ["serde", "rand"] }
 sentry = "0.48.1"
-sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "2b608aa", features = [
+sentry-rust-minidump = { version = "0.15.0", features = [
     "ipc",
 ] }
 serde = { version = "1.0.228", features = ["derive"] }

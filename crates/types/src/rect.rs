@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
 use notzero::nz;
 use satint::{SaturatingInto, su32};
@@ -127,9 +128,12 @@ impl Rect {
         self.size
     }
 
-    #[must_use]
-    pub fn surface(&self) -> u32 {
-        (self.size.width * self.size.height).into()
+    pub fn surface(&self) -> Result<u32> {
+        let width: u32 = self.size.width.into();
+        let height: u32 = self.size.height.into();
+        width
+            .checked_mul(height)
+            .ok_or_else(|| eyre!("Rect::surface overflowed u32: {self}"))
     }
 }
 
@@ -234,6 +238,6 @@ mod tests {
     fn size_and_surface() {
         let a = r(0, 0, 6, 7);
         assert_eq!(a.size(), size(su32(6), su32(7)));
-        assert_eq!(a.surface(), 42);
+        assert_eq!(a.surface().unwrap(), 42);
     }
 }

@@ -144,22 +144,26 @@ impl JsDisplays {
     /// @readonly
     pub fn smallest(&self, ctx: Ctx<'_>) -> Result<Option<JsDisplayInfo>> {
         let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
-        Ok(displays_info
+        let mut keyed = displays_info
             .iter()
-            .min_by(|a, b| a.rect.surface().cmp(&b.rect.surface()))
-            .cloned()
-            .map(Into::into))
+            .map(|d| Ok((d.rect.surface()?, d)))
+            .collect::<color_eyre::Result<Vec<_>>>()
+            .into_js_result(&ctx)?;
+        keyed.sort_by_key(|(s, _)| *s);
+        Ok(keyed.into_iter().next().map(|(_, d)| d.clone().into()))
     }
 
     /// Returns the largest display by area, or `undefined` if no displays are connected.
     /// @readonly
     pub fn largest(&self, ctx: Ctx<'_>) -> Result<Option<JsDisplayInfo>> {
         let displays_info = self.inner.get_info_sync().into_js_result(&ctx)?;
-        Ok(displays_info
+        let mut keyed = displays_info
             .iter()
-            .max_by(|a, b| a.rect.surface().cmp(&b.rect.surface()))
-            .cloned()
-            .map(Into::into))
+            .map(|d| Ok((d.rect.surface()?, d)))
+            .collect::<color_eyre::Result<Vec<_>>>()
+            .into_js_result(&ctx)?;
+        keyed.sort_by_key(|(s, _)| *s);
+        Ok(keyed.into_iter().next_back().map(|(_, d)| d.clone().into()))
     }
 
     /// Returns the display furthest to the left (minimum left edge), or `undefined` if none.
@@ -216,14 +220,16 @@ impl JsDisplays {
         };
         let desktop: Rect = iter.fold(first.rect, |acc, d| acc.union(d.rect));
         let desktop_c2 = desktop.top_left * 2 + desktop.size;
-        Ok(displays_info
+        let mut keyed = displays_info
             .iter()
-            .min_by_key(|d| {
+            .map(|d| {
                 let diff = (d.rect.top_left * 2 + d.rect.size) - desktop_c2;
-                diff.length_squared()
+                Ok((diff.length_squared()?, d))
             })
-            .cloned()
-            .map(Into::into))
+            .collect::<color_eyre::Result<Vec<_>>>()
+            .into_js_result(&ctx)?;
+        keyed.sort_by_key(|(k, _)| *k);
+        Ok(keyed.into_iter().next().map(|(_, d)| d.clone().into()))
     }
 
     /// Returns all displays.

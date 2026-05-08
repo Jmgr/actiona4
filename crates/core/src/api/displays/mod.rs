@@ -151,28 +151,22 @@ impl Displays {
 
     pub async fn smallest(&self) -> Result<Option<DisplayInfo>> {
         let displays_infos = self.get_info().await?;
-        Ok(displays_infos
+        let mut keyed = displays_infos
             .iter()
-            .min_by(|left_display_info, right_display_info| {
-                left_display_info
-                    .rect
-                    .surface()
-                    .cmp(&right_display_info.rect.surface())
-            })
-            .cloned())
+            .map(|d| Ok((d.rect.surface()?, d)))
+            .collect::<Result<Vec<_>>>()?;
+        keyed.sort_by_key(|(s, _)| *s);
+        Ok(keyed.into_iter().next().map(|(_, d)| d.clone()))
     }
 
     pub async fn largest(&self) -> Result<Option<DisplayInfo>> {
         let displays_infos = self.get_info().await?;
-        Ok(displays_infos
+        let mut keyed = displays_infos
             .iter()
-            .max_by(|left_display_info, right_display_info| {
-                left_display_info
-                    .rect
-                    .surface()
-                    .cmp(&right_display_info.rect.surface())
-            })
-            .cloned())
+            .map(|d| Ok((d.rect.surface()?, d)))
+            .collect::<Result<Vec<_>>>()?;
+        keyed.sort_by_key(|(s, _)| *s);
+        Ok(keyed.into_iter().next_back().map(|(_, d)| d.clone()))
     }
 
     pub async fn leftmost(&self) -> Result<Option<DisplayInfo>> {
@@ -216,13 +210,15 @@ impl Displays {
         let desktop: Rect = iter.fold(first.rect, |acc, d| acc.union(d.rect));
         // Use 2*center to avoid division: 2*c = top_left*2 + size (preserves ordering)
         let desktop_c2 = desktop.top_left * 2 + desktop.size;
-        Ok(displays_infos
+        let mut keyed = displays_infos
             .iter()
-            .min_by_key(|d| {
+            .map(|d| {
                 let diff = (d.rect.top_left * 2 + d.rect.size) - desktop_c2;
-                diff.length_squared()
+                Ok::<_, color_eyre::Report>((diff.length_squared()?, d))
             })
-            .cloned())
+            .collect::<Result<Vec<_>>>()?;
+        keyed.sort_by_key(|(k, _)| *k);
+        Ok(keyed.into_iter().next().map(|(_, d)| d.clone()))
     }
 
     pub async fn all(&self) -> Result<Vec<DisplayInfo>> {

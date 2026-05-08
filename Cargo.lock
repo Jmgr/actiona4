@@ -6911,7 +6911,8 @@ dependencies = [
 [[package]]
 name = "sentry-rust-minidump"
 version = "0.15.0"
-source = "git+https://github.com/Jmgr/sentry-rust-minidump?rev=2b608aa#2b608aa937ba8f5cde4a8ac8dde19bd7b80fd2d4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "de99278305191a207c919dc9dd18f6a9d02d6048d07491a4ce26f7811b2ecbbb"
 dependencies = [
  "minidumper-child",
  "sentry",

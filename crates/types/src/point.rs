@@ -6,7 +6,7 @@ use std::{
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::{Add, AddAssign, Constructor, Neg, Sub, SubAssign};
-use satint::{DivError, SaturatingInto, Si32, TryDiv, TryDivAssign};
+use satint::{DivError, SaturatingInto, Si32, TryDiv, TryDivAssign, si32};
 use serde::{Deserialize, Serialize};
 
 use crate::display::DisplayFields;
@@ -98,14 +98,22 @@ impl Display for Point {
 impl Point {
     pub const ZERO: Self = Self::new(Si32::ZERO, Si32::ZERO);
 
-    #[must_use]
-    pub fn dot_product(self, other: Self) -> Si32 {
-        self.x * other.x + self.y * other.y
+    pub fn dot_product(self, other: Self) -> Result<Si32> {
+        let (ax, ay) = self.as_i64();
+        let (bx, by) = other.as_i64();
+        let result = ax * bx + ay * by;
+        i32::try_from(result)
+            .map(si32)
+            .map_err(|_| eyre!("Point::dot_product overflowed i32: {self} · {other}"))
     }
 
-    #[must_use]
-    pub fn cross_product(self, other: Self) -> Si32 {
-        self.x * other.y - self.y * other.x
+    pub fn cross_product(self, other: Self) -> Result<Si32> {
+        let (ax, ay) = self.as_i64();
+        let (bx, by) = other.as_i64();
+        let result = ax * by - ay * bx;
+        i32::try_from(result)
+            .map(si32)
+            .map_err(|_| eyre!("Point::cross_product overflowed i32: {self} × {other}"))
     }
 
     #[must_use]
@@ -127,9 +135,19 @@ impl Point {
         x.hypot(y)
     }
 
-    #[must_use]
-    pub fn length_squared(&self) -> Si32 {
-        self.x * self.x + self.y * self.y
+    pub fn length_squared(&self) -> Result<Si32> {
+        let (x, y) = self.as_i64();
+        let result = x * x + y * y;
+        i32::try_from(result)
+            .map(si32)
+            .map_err(|_| eyre!("Point::length_squared overflowed i32: {self}"))
+    }
+
+    fn as_i64(&self) -> (i64, i64) {
+        (
+            i64::from(self.x.into_inner()),
+            i64::from(self.y.into_inner()),
+        )
     }
 
     #[must_use]
@@ -259,14 +277,26 @@ mod tests {
     #[case::dot_orthogonal(point(1, 0), point(0, 1), 0)]
     #[case::dot_basic(point(2, 3), point(-1, 4), 10)] // 2*(-1)+3*4=10
     fn dot_product(#[case] a: Point, #[case] b: Point, #[case] want: i32) {
-        assert_eq!(si32(want), a.dot_product(b));
+        assert_eq!(si32(want), a.dot_product(b).unwrap());
+    }
+
+    #[rstest]
+    #[case::dot_overflow(point(i32::MAX, i32::MAX), point(i32::MAX, i32::MAX))]
+    fn dot_product_overflows(#[case] a: Point, #[case] b: Point) {
+        assert!(a.dot_product(b).is_err());
     }
 
     #[rstest]
     #[case::cross_parallel(point(1, 0), point(2, 0), 0)]
     #[case::cross_basic(point(2, 3), point(-1, 4), 11)] // 2*4 - 3*(-1)=11
     fn cross_product(#[case] a: Point, #[case] b: Point, #[case] want: i32) {
-        assert_eq!(si32(want), a.cross_product(b));
+        assert_eq!(si32(want), a.cross_product(b).unwrap());
+    }
+
+    #[rstest]
+    #[case::cross_overflow(point(i32::MAX, i32::MIN), point(i32::MIN, i32::MAX))]
+    fn cross_product_overflows(#[case] a: Point, #[case] b: Point) {
+        assert!(a.cross_product(b).is_err());
     }
 
     #[rstest]
@@ -292,7 +322,13 @@ mod tests {
     #[case::sq_zero(point(0, 0), 0)]
     #[case::sq_3_4(point(3, 4), 25)] // 9+16
     fn length_squared_(#[case] p: Point, #[case] want: i32) {
-        assert_eq!(si32(want), p.length_squared());
+        assert_eq!(si32(want), p.length_squared().unwrap());
+    }
+
+    #[rstest]
+    #[case::len_sq_overflow(point(i32::MAX, i32::MAX))]
+    fn length_squared_overflows(#[case] p: Point) {
+        assert!(p.length_squared().is_err());
     }
 
     #[rstest]
