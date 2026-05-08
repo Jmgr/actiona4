@@ -1,6 +1,7 @@
 use std::{collections::HashSet, hash::Hash, sync::Arc};
 
 use bimap::BiMap;
+use satint::Su32;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
@@ -39,7 +40,7 @@ pub trait WindowsHandler {
     fn title(&self, id: WindowId) -> Result<String>;
     fn classname(&self, id: WindowId) -> Result<String>;
     fn close(&self, id: WindowId) -> Result<()>;
-    fn process_id(&self, id: WindowId) -> Result<u32>;
+    fn process_id(&self, id: WindowId) -> Result<Su32>;
     fn rect(&self, id: WindowId) -> Result<Rect>;
     fn set_active(&self, id: WindowId) -> Result<()>;
     fn minimize(&self, id: WindowId) -> Result<()>;

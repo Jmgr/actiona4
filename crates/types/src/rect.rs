@@ -1,7 +1,9 @@
 use std::fmt::Display;
 
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
-use satint::{TryDiv, su32};
+use notzero::nz;
+use satint::{SaturatingInto, su32};
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, point};
@@ -41,17 +43,17 @@ impl Rect {
     #[must_use]
     pub fn contains(&self, point: Point) -> bool {
         point.x >= self.top_left.x
-            && point.x < self.top_left.x + self.size.width.to_signed()
+            && point.x < self.top_left.x + self.size.width
             && point.y >= self.top_left.y
-            && point.y < self.top_left.y + self.size.height.to_signed()
+            && point.y < self.top_left.y + self.size.height
     }
 
     #[must_use]
     pub fn intersects(&self, other: Self) -> bool {
-        !(self.top_left.x + self.size.width.to_signed() <= other.top_left.x
-            || other.top_left.x + other.size.width.to_signed() <= self.top_left.x
-            || self.top_left.y + self.size.height.to_signed() <= other.top_left.y
-            || other.top_left.y + other.size.height.to_signed() <= self.top_left.y)
+        !(self.top_left.x + self.size.width <= other.top_left.x
+            || other.top_left.x + other.size.width <= self.top_left.x
+            || self.top_left.y + self.size.height <= other.top_left.y
+            || other.top_left.y + other.size.height <= self.top_left.y)
     }
 
     #[must_use]
@@ -62,14 +64,12 @@ impl Rect {
 
         let x1 = self.top_left.x.max(other.top_left.x);
         let y1 = self.top_left.y.max(other.top_left.y);
-        let x2 = (self.top_left.x + self.size.width.to_signed())
-            .min(other.top_left.x + other.size.width.to_signed());
-        let y2 = (self.top_left.y + self.size.height.to_signed())
-            .min(other.top_left.y + other.size.height.to_signed());
+        let x2 = (self.top_left.x + self.size.width).min(other.top_left.x + other.size.width);
+        let y2 = (self.top_left.y + self.size.height).min(other.top_left.y + other.size.height);
 
         Some(Self {
             top_left: point(x1, y1),
-            size: size((x2 - x1).to_unsigned(), (y2 - y1).to_unsigned()),
+            size: size(x2 - x1, y2 - y1),
         })
     }
 
@@ -77,22 +77,17 @@ impl Rect {
     pub fn union(&self, other: Self) -> Self {
         let x1 = self.top_left.x.min(other.top_left.x);
         let y1 = self.top_left.y.min(other.top_left.y);
-        let x2 = (self.top_left.x + self.size.width.to_signed())
-            .max(other.top_left.x + other.size.width.to_signed());
-        let y2 = (self.top_left.y + self.size.height.to_signed())
-            .max(other.top_left.y + other.size.height.to_signed());
+        let x2 = (self.top_left.x + self.size.width).max(other.top_left.x + other.size.width);
+        let y2 = (self.top_left.y + self.size.height).max(other.top_left.y + other.size.height);
 
         Self {
             top_left: point(x1, y1),
-            size: size((x2 - x1).to_unsigned(), (y2 - y1).to_unsigned()),
+            size: size(x2 - x1, y2 - y1),
         }
     }
 
     #[must_use]
     pub fn clamped(&self) -> (u32, u32, u32, u32) {
-        let clamped_x = self.top_left.x.to_unsigned();
-        let clamped_y = self.top_left.y.to_unsigned();
-
         let adjusted_width = if self.top_left.x < 0 {
             self.size.width - self.top_left.x.unsigned_abs()
         } else {
@@ -106,8 +101,8 @@ impl Rect {
         };
 
         (
-            clamped_x.into(),
-            clamped_y.into(),
+            self.top_left.x.saturating_into(),
+            self.top_left.y.saturating_into(),
             adjusted_width.into(),
             adjusted_height.into(),
         )
@@ -115,11 +110,7 @@ impl Rect {
 
     #[must_use]
     pub fn center(&self) -> Point {
-        self.top_left
-            + self
-                .size
-                .try_div(2)
-                .expect("dividing a Size by 2 should never fail")
+        self.top_left + self.size / nz!(2)
     }
 
     #[must_use]
@@ -137,9 +128,12 @@ impl Rect {
         self.size
     }
 
-    #[must_use]
-    pub fn surface(&self) -> u32 {
-        (self.size.width * self.size.height).into()
+    pub fn surface(&self) -> Result<u32> {
+        let width: u32 = self.size.width.into();
+        let height: u32 = self.size.height.into();
+        width
+            .checked_mul(height)
+            .ok_or_else(|| eyre!("Rect::surface overflowed u32: {self}"))
     }
 }
 
@@ -244,6 +238,6 @@ mod tests {
     fn size_and_surface() {
         let a = r(0, 0, 6, 7);
         assert_eq!(a.size(), size(su32(6), su32(7)));
-        assert_eq!(a.surface(), 42);
+        assert_eq!(a.surface().unwrap(), 42);
     }
 }

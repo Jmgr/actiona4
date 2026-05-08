@@ -7,7 +7,7 @@ use std::{
 use derive_more::{Deref, From};
 use libwmctl::{Position, Shape, window, windows};
 use parking_lot::Mutex;
-use satint::{Si32, Su32};
+use satint::{SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
 use types::{point::point, size::size};
 use x11rb::{
@@ -113,9 +113,9 @@ impl WindowsHandler for X11WindowHandler {
         Ok(())
     }
 
-    fn process_id(&self, id: WindowId) -> Result<u32> {
+    fn process_id(&self, id: WindowId) -> Result<Su32> {
         let handle = self.inner.lock().get_handle(id)?.clone();
-        Ok(Si32::from(handle.pid()?).to_unsigned().into())
+        Ok(handle.pid()?.saturating_into())
     }
 
     fn rect(&self, id: WindowId) -> Result<Rect> {
@@ -137,10 +137,7 @@ impl WindowsHandler for X11WindowHandler {
         );
 
         Ok(rect(
-            Point::new(
-                coordinates.x + extents.left.to_signed(),
-                coordinates.y + extents.top.to_signed(),
-            ),
+            Point::new(coordinates.x + extents.left, coordinates.y + extents.top),
             size,
         ))
     }

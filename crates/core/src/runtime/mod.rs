@@ -1148,7 +1148,7 @@ impl Runtime {
     }
 
     #[must_use]
-    pub fn extensions(&self) -> &Extensions {
+    pub const fn extensions(&self) -> &Extensions {
         &self.extensions
     }
 

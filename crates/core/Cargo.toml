@@ -44,7 +44,7 @@ extension = { path = "../extension" }
 installer-tools = { path = "../installer-tools" }
 macros = { path = "../macros" }
 screenshot = { path = "../screenshot" }
-types = { path = "../types", features = ["opencv", "imageproc"] }
+types = { path = "../types", features = ["opencv", "imageproc"] } # TODO: remove "opencv" once we have moved the opencv code into the extension
 
 ab_glyph.workspace = true
 arboard.workspace = true
@@ -79,6 +79,7 @@ itertools.workspace = true
 mime.workspace = true
 mime_guess.workspace = true
 noiselib.workspace = true
+notzero.workspace = true
 num-traits.workspace = true
 once_cell.workspace = true
 open.workspace = true
@@ -94,12 +95,12 @@ rodio.workspace = true
 rquickjs.workspace = true
 rquickjs-serde.workspace = true
 rustydialogs.workspace = true
+satint.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_plain.workspace = true
 slotmap.workspace = true
 strum.workspace = true
-satint.workspace = true
 swc_common.workspace = true
 swc_ecma_ast.workspace = true
 swc_ecma_codegen.workspace = true

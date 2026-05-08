@@ -6,6 +6,7 @@ use crate::runtime::shared_rng::SharedRng;
 
 pub mod js;
 
+#[must_use]
 pub fn random_point_in_circle(center: Point, radius: f64, rng: SharedRng) -> Point {
     let (center_x, center_y) = center.as_f64();
     let theta = rng.random_range(0.0..TAU);

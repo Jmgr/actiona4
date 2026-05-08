@@ -4,6 +4,7 @@ use std::path::Path;
 
 use color_eyre::Result;
 use pe_parser::pe::parse_portable_executable;
+use satint::{SaturatingInto, Su32};
 use tokio::fs;
 use windows::{
     Win32::{
@@ -17,7 +18,7 @@ use windows::{
     core::{BOOL, Error},
 };
 
-use crate::{platform::win::safe_handle::SafeHandle, types::su32::Su32};
+use crate::platform::win::safe_handle::SafeHandle;
 
 #[derive(Debug)]
 pub enum ProcessType {
@@ -93,14 +94,14 @@ pub fn window_title(hwnd: HWND) -> String {
         return String::new();
     }
 
-    let mut buffer = vec![0; usize::from(Su32::from(len + 1))];
+    let mut buffer = vec![0; (len + 1).saturating_into()];
 
     let len = unsafe { GetWindowTextW(hwnd, &mut buffer) };
     if len == 0 {
         return String::new();
     }
 
-    String::from_utf16_lossy(&buffer[..usize::from(Su32::from(len))])
+    String::from_utf16_lossy(&buffer[..len.saturating_into()])
 }
 
 pub fn window_classname(hwnd: HWND) -> Result<String> {
@@ -109,9 +110,8 @@ pub fn window_classname(hwnd: HWND) -> Result<String> {
     if len == 0 {
         return Err(Error::from_thread().into());
     }
-    Ok(String::from_utf16_lossy(
-        &buffer[..usize::from(Su32::from(len))],
-    ))
+
+    Ok(String::from_utf16_lossy(&buffer[..len.saturating_into()]))
 }
 
 pub fn is_window_visible(hwnd: &HWND) -> bool {

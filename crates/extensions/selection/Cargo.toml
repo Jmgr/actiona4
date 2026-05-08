@@ -23,10 +23,10 @@ types = { path = "../../types" }
 bytemuck.workspace = true
 color-eyre.workspace = true
 pixels.workspace = true
+satint.workspace = true
 tokio = { workspace = true, features = ["rt", "macros"] }
 tokio-util.workspace = true
 winit.workspace = true
-satint.workspace = true
 
 [build-dependencies]
 build-support = { path = "../../build-support" }

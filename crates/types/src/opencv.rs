@@ -4,18 +4,12 @@ use satint::SaturatingInto;
 use crate::{
     point::{Point, point},
     rect::Rect,
-    size::Size,
+    size::{Size, size},
 };
 
 impl From<CvRect> for Rect {
     fn from(value: CvRect) -> Self {
-        Self::new(
-            point(value.x, value.y),
-            Size::new(
-                value.width.saturating_into(),
-                value.height.saturating_into(),
-            ),
-        )
+        Self::new(point(value.x, value.y), size(value.width, value.height))
     }
 }
 
@@ -24,24 +18,21 @@ impl From<Rect> for CvRect {
         Self::new(
             value.top_left.x.into(),
             value.top_left.y.into(),
-            value.size.width.to_signed().into(),
-            value.size.height.to_signed().into(),
+            value.size.width.saturating_into(),
+            value.size.height.saturating_into(),
         )
     }
 }
 
 impl From<CvSize> for Size {
     fn from(value: CvSize) -> Self {
-        Self::new(
-            value.width.saturating_into(),
-            value.height.saturating_into(),
-        )
+        size(value.width, value.height)
     }
 }
 
 impl From<CvPoint> for Point {
     fn from(value: CvPoint) -> Self {
-        Self::new(value.x.into(), value.y.into())
+        point(value.x, value.y)
     }
 }
 

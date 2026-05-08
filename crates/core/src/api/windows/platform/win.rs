@@ -8,6 +8,7 @@ use std::{
 
 use derive_more::Deref;
 use parking_lot::Mutex;
+use satint::{SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
 use windows::Win32::{
     Foundation::{HWND, LPARAM, RECT, WPARAM},
@@ -27,7 +28,7 @@ use crate::{
     api::{
         point::{Point, point},
         rect::Rect,
-        size::Size,
+        size::{Size, size},
         windows::platform::{Registry, Result, WindowId, WindowsHandler},
     },
     cancel_on,
@@ -36,7 +37,6 @@ use crate::{
         Runtime,
         platform::win::events::{WindowEvent, WindowHandle as WinWindowHandle},
     },
-    types::su32::Su32,
 };
 
 #[derive(Clone, Deref, Eq, PartialEq)]
@@ -121,16 +121,16 @@ impl WindowsHandler for WindowsWindowHandler {
             return Ok(String::new());
         }
 
-        let mut buffer = vec![0; usize::from(Su32::from(len + 1))];
+        let buffer_len = len + 1;
+        let mut buffer = vec![0; buffer_len.saturating_into()];
 
         let len = unsafe { GetWindowTextW(*handle, &mut buffer) };
         if len == 0 {
             return Ok(String::new());
         }
 
-        Ok(String::from_utf16_lossy(
-            &buffer[..usize::from(Su32::from(len))],
-        ))
+        let text_len: usize = len.saturating_into();
+        Ok(String::from_utf16_lossy(&buffer[..text_len]))
     }
 
     fn classname(&self, id: WindowId) -> Result<String> {
@@ -142,9 +142,8 @@ impl WindowsHandler for WindowsWindowHandler {
             return Ok(String::new());
         }
 
-        Ok(String::from_utf16_lossy(
-            &buffer[..usize::from(Su32::from(len))],
-        ))
+        let text_len: usize = len.saturating_into();
+        Ok(String::from_utf16_lossy(&buffer[..text_len]))
     }
 
     fn close(&self, id: WindowId) -> Result<()> {
@@ -155,13 +154,13 @@ impl WindowsHandler for WindowsWindowHandler {
         Ok(())
     }
 
-    fn process_id(&self, id: WindowId) -> Result<u32> {
+    fn process_id(&self, id: WindowId) -> Result<Su32> {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let mut process_id = 0;
 
         unsafe { GetWindowThreadProcessId(*handle, Some(&mut process_id)) };
 
-        Ok(process_id)
+        Ok(process_id.into())
     }
 
     fn rect(&self, id: WindowId) -> Result<Rect> {
@@ -177,7 +176,7 @@ impl WindowsHandler for WindowsWindowHandler {
 
         Ok(Rect::new(
             point(win_rect.left, win_rect.top),
-            Size::new(width.into(), height.into()),
+            size(width, height),
         ))
     }
 
@@ -248,8 +247,8 @@ impl WindowsHandler for WindowsWindowHandler {
                 None,
                 0,
                 0,
-                i32::from(size.width),
-                i32::from(size.height),
+                size.width.saturating_into(),
+                size.height.saturating_into(),
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE,
             )?
         };

@@ -76,11 +76,7 @@ fn main() -> Result<()> {
     let proxy = event_loop.create_proxy();
 
     let extension = Extension::<SelectionProtocol>::with_handler_impl(
-        std::env::args()
-            .nth(1)
-            .ok_or_eyre("expected a key")?
-            .try_into()
-            .map_err(|_| eyre!("expected a valid RPC connection key"))?,
+        std::env::args().nth(1).ok_or_eyre("expected a key")?.into(),
         task_tracker.clone(),
         cancellation_token.clone(),
         Duration::from_secs(60),

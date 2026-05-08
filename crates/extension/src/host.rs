@@ -117,10 +117,12 @@ impl<P: Protocol> Host<P> {
             };
 
             if let Some(stdout) = child.stdout.take() {
-                self.task_tracker.spawn(forward_lines(stdout, false));
+                self.task_tracker
+                    .spawn(forward_lines(stdout, false, self.token.clone()));
             }
             if let Some(stderr) = child.stderr.take() {
-                self.task_tracker.spawn(forward_lines(stderr, true));
+                self.task_tracker
+                    .spawn(forward_lines(stderr, true, self.token.clone()));
             }
 
             match child.id() {
@@ -244,10 +246,15 @@ async fn restart_delay_cancelled(token: &CancellationToken) -> bool {
 }
 
 /// Read lines from a child's pipe and re-emit them on the host's stdout/stderr
-/// with a "plugin: " prefix. Terminates when the pipe closes (i.e. when the
-/// child exits or is killed). Decode errors (e.g. an over-long line) are
+/// with a "plugin: " prefix. Terminates when the pipe closes or when the
+/// cancellation token fires. Decode errors (e.g. an over-long line) are
 /// logged but do not stop forwarding — `LinesCodec` resyncs on the next newline.
-async fn forward_lines<R>(reader: R, is_stderr: bool)
+///
+/// Cancellation is required because grandchildren of the extension (e.g. the
+/// sentry minidump `--crash-reporter-server` helper) inherit the pipe and may
+/// keep it open after the extension itself is killed, which would otherwise
+/// stall `task_tracker.wait()` at shutdown.
+async fn forward_lines<R>(reader: R, is_stderr: bool, token: CancellationToken)
 where
     R: AsyncRead + Unpin + Send + 'static,
 {
@@ -257,7 +264,12 @@ where
         reader,
         LinesCodec::new_with_max_length(MAX_PLUGIN_OUTPUT_LINE),
     );
-    while let Some(line) = lines.next().await {
+    loop {
+        let line = tokio::select! {
+            () = token.cancelled() => return,
+            line = lines.next() => line,
+        };
+        let Some(line) = line else { return };
         match line {
             Ok(line) => {
                 if is_stderr {
