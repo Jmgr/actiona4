@@ -1,15 +1,17 @@
 const raceStart = Date.now();
-await concurrency.race([sleep("100ms"), sleep("1s")]);
+const raceResult = await concurrency.race([sleep("100ms").then(() => "fast"), sleep("1s").then(() => "slow")]);
 const raceDuration = Date.now() - raceStart;
-assert(raceDuration >= 100 && raceDuration < 1000, "concurrency.race should resolve with the first task");
+assertEq(raceResult, "fast", "concurrency.race should resolve with the first task");
+assert(raceDuration < 1000, "concurrency.race should not wait for slower tasks");
 
 const nestedRaceStart = Date.now();
-await concurrency.race([concurrency.race([sleep("100ms")]), sleep("1s")]);
+const nestedRaceResult = await concurrency.race([
+  concurrency.race([sleep("100ms").then(() => "nested-fast")]),
+  sleep("1s").then(() => "nested-slow"),
+]);
 const nestedRaceDuration = Date.now() - nestedRaceStart;
-assert(
-  nestedRaceDuration >= 100 && nestedRaceDuration < 1000,
-  "nested concurrency.race should still resolve with the first task",
-);
+assertEq(nestedRaceResult, "nested-fast", "nested concurrency.race should still resolve with the first task");
+assert(nestedRaceDuration < 1000, "nested concurrency.race should not wait for slower tasks");
 
 assert((await concurrency.race([])) === undefined, "concurrency.race([]) should resolve to undefined");
 

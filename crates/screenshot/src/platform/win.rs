@@ -1,9 +1,10 @@
 use std::ffi::c_void;
 
 use color_eyre::{Result, eyre::eyre};
+use satint::{SaturatingInto, Si32};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use types::rect::Rect;
+use types::{rect::Rect, size::size};
 use windows::Win32::{
     Graphics::Gdi::{
         BI_RGB, BITMAPINFO, BITMAPINFOHEADER, BitBlt, CreateCompatibleBitmap, CreateCompatibleDC,
@@ -44,12 +45,15 @@ impl Screen {
 
     /// Capture an arbitrary rectangle of the virtual screen.
     pub async fn capture_rect(&self, rect: Rect) -> Result<Capture> {
-        let x: i32 = rect.top_left.x.into();
-        let y: i32 = rect.top_left.y.into();
-        let width: i32 = rect.size.width.into();
-        let height: i32 = rect.size.height.into();
-        self.capture_blocking(move || capture_rect_blocking(x, y, width, height))
-            .await
+        self.capture_blocking(move || {
+            capture_rect_blocking(
+                rect.top_left.x,
+                rect.top_left.y,
+                rect.size.width.saturating_into(),
+                rect.size.height.saturating_into(),
+            )
+        })
+        .await
     }
 
     async fn capture_blocking<F>(&self, capture: F) -> Result<Capture>
@@ -69,21 +73,21 @@ impl Screen {
 fn capture_virtual_screen() -> Result<Capture> {
     let (x, y, width, height) = unsafe {
         (
-            GetSystemMetrics(SM_XVIRTUALSCREEN),
-            GetSystemMetrics(SM_YVIRTUALSCREEN),
-            GetSystemMetrics(SM_CXVIRTUALSCREEN),
-            GetSystemMetrics(SM_CYVIRTUALSCREEN),
+            GetSystemMetrics(SM_XVIRTUALSCREEN).into(),
+            GetSystemMetrics(SM_YVIRTUALSCREEN).into(),
+            GetSystemMetrics(SM_CXVIRTUALSCREEN).into(),
+            GetSystemMetrics(SM_CYVIRTUALSCREEN).into(),
         )
     };
     capture_rect_blocking(x, y, width, height)
 }
 
 #[allow(unsafe_code)]
-fn capture_rect_blocking(x: i32, y: i32, width: i32, height: i32) -> Result<Capture> {
+fn capture_rect_blocking(x: Si32, y: Si32, width: Si32, height: Si32) -> Result<Capture> {
     let hdc_screen = unsafe { GetDC(None) };
     let hdc_mem = unsafe { CreateCompatibleDC(Some(hdc_screen)) };
 
-    let hbm = unsafe { CreateCompatibleBitmap(hdc_screen, width, height) };
+    let hbm = unsafe { CreateCompatibleBitmap(hdc_screen, width.into(), height.into()) };
     unsafe { SelectObject(hdc_mem, hbm.into()) };
 
     let result = (|| -> Result<Capture> {
@@ -92,11 +96,11 @@ fn capture_rect_blocking(x: i32, y: i32, width: i32, height: i32) -> Result<Capt
                 hdc_mem,
                 0,
                 0,
-                width,
-                height,
+                width.into(),
+                height.into(),
                 Some(hdc_screen),
-                x,
-                y,
+                x.into(),
+                y.into(),
                 SRCCOPY,
             )?;
         }
@@ -104,8 +108,8 @@ fn capture_rect_blocking(x: i32, y: i32, width: i32, height: i32) -> Result<Capt
         let mut bitmap_info = BITMAPINFO {
             bmiHeader: BITMAPINFOHEADER {
                 biSize: u32::try_from(size_of::<BITMAPINFOHEADER>())?,
-                biWidth: width,
-                biHeight: -height, // top-down bitmap
+                biWidth: width.into(),
+                biHeight: (-height).into(), // top-down bitmap
                 biPlanes: 1,
                 biBitCount: 32,
                 biCompression: BI_RGB.0,
@@ -123,8 +127,8 @@ fn capture_rect_blocking(x: i32, y: i32, width: i32, height: i32) -> Result<Capt
             }],
         };
 
-        let width_u: usize = usize::try_from(width)?;
-        let height_u: usize = usize::try_from(height)?;
+        let width_u: usize = width.saturating_into();
+        let height_u: usize = height.saturating_into();
         let buffer_size = width_u
             .checked_mul(height_u)
             .and_then(|pixels| pixels.checked_mul(4))
@@ -139,7 +143,7 @@ fn capture_rect_blocking(x: i32, y: i32, width: i32, height: i32) -> Result<Capt
                 hdc_mem,
                 hbm,
                 0,
-                u32::try_from(height)?,
+                height.saturating_into(),
                 Some(data_ptr),
                 &mut bitmap_info,
                 DIB_RGB_COLORS,
@@ -147,8 +151,7 @@ fn capture_rect_blocking(x: i32, y: i32, width: i32, height: i32) -> Result<Capt
         }
 
         Ok(Capture {
-            width: u32::try_from(width)?,
-            height: u32::try_from(height)?,
+            size: size(width, height),
             bgra: data,
         })
     })();
