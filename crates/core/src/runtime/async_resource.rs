@@ -25,6 +25,14 @@ impl<T> AsyncResource<T> {
         }
     }
 
+    /// Creates a new resource with a value.
+    #[must_use]
+    pub fn with_value(value: T, cancellation_token: CancellationToken) -> Self {
+        let resource = Self::new(cancellation_token);
+        resource.set(value);
+        resource
+    }
+
     /// Updates the resource.
     pub fn set(&self, value: T) {
         self.value.store(Some(Arc::new(value)));

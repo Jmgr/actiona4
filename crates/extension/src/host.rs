@@ -10,7 +10,7 @@ use color_eyre::{Result, eyre::eyre};
 use derive_where::derive_where;
 use futures_util::StreamExt;
 use parking_lot::Mutex;
-use tokio::{io::AsyncRead, process::Command, time::sleep};
+use tokio::{io::AsyncRead, process::Command, sync::oneshot, time::sleep};
 use tokio_util::{
     codec::{FramedRead, LinesCodec},
     sync::CancellationToken,
@@ -79,7 +79,12 @@ impl<P: Protocol> Host<P> {
         })
     }
 
-    pub async fn run(&self) -> Result<()> {
+    pub async fn run(&self, ready: oneshot::Sender<()>) -> Result<()> {
+        self.run_inner(ready).await
+    }
+
+    async fn run_inner(&self, ready: oneshot::Sender<()>) -> Result<()> {
+        let mut ready = Some(ready);
         loop {
             if self.token.is_cancelled() {
                 return Ok(());
@@ -174,6 +179,9 @@ impl<P: Protocol> Host<P> {
                 }
                 Some(Ok(())) => {
                     info!("client connected");
+                    if let Some(ready) = ready.take() {
+                        let _ = ready.send(());
+                    }
                 }
             }
 

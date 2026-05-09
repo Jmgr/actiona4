@@ -198,13 +198,13 @@ impl Screen {
     async fn ask_overlay_rect(&self) -> Result<Option<Rect>> {
         self.runtime.require_not_wayland()?;
 
-        ask_rect(&self.runtime, self.runtime.cancellation_token()).await
+        ask_rect(&self.runtime).await
     }
 
     async fn ask_overlay_position(&self) -> Result<Option<Point>> {
         self.runtime.require_not_wayland()?;
 
-        ask_position(&self.runtime, self.runtime.cancellation_token()).await
+        ask_position(&self.runtime).await
     }
 
     async fn capture_search_in_to_source(

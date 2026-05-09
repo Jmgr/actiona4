@@ -2,15 +2,19 @@ use std::{env::consts::EXE_SUFFIX, fs::exists, path::Path, sync::Arc, time::Dura
 
 use color_eyre::{Result, eyre::OptionExt};
 use extension::{Host, protocol::Protocol, protocols::selection::SelectionProtocol};
-use tokio::join;
+use tokio::{join, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, warn};
 
+use crate::runtime::async_resource::AsyncResource;
+
 const EXTENSION_PREFIX: &str = "extension-";
+
+pub type ExtensionHandle<T> = AsyncResource<Option<Arc<Host<T>>>>;
 
 #[derive(Clone, Debug)]
 pub struct Extensions {
-    selection: Option<Arc<Host<SelectionProtocol>>>,
+    selection: ExtensionHandle<SelectionProtocol>,
 }
 
 impl Extensions {
@@ -21,28 +25,30 @@ impl Extensions {
         if Self::disable_extension_discovery_for_tests() {
             let _ = task_tracker;
             let _ = cancellation_token;
-            return Ok(Self { selection: None });
+            return Ok(Self {
+                selection: AsyncResource::with_value(None, cancellation_token.clone()),
+            });
         }
 
         let current_exe = std::env::current_exe()?; // TODO: will that work from within an appimage?
         let directory = current_exe
             .parent()
             .ok_or_eyre("expected current executable to have a parent directory")?;
-        let selection = join!(Self::lookup_extension::<SelectionProtocol>(
+        let selection = AsyncResource::new(cancellation_token.clone());
+        let lookup = join!(Self::lookup_extension::<SelectionProtocol>(
             "selection",
             directory,
             task_tracker,
-            cancellation_token,
+            cancellation_token.clone(),
+            selection.clone(),
         ));
+        lookup.0?;
 
-        Ok(Self {
-            selection: selection.0?,
-        })
+        Ok(Self { selection })
     }
 
-    #[must_use]
-    pub fn selection(&self) -> Option<&Host<SelectionProtocol>> {
-        self.selection.as_deref()
+    pub async fn selection(&self) -> Result<Option<Arc<Host<SelectionProtocol>>>> {
+        Ok(self.selection.wait_get().await?.as_ref().clone())
     }
 
     const fn disable_extension_discovery_for_tests() -> bool {
@@ -54,7 +60,8 @@ impl Extensions {
         directory: &Path,
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
-    ) -> Result<Option<Arc<Host<P>>>> {
+        handle: ExtensionHandle<P>,
+    ) -> Result<()> {
         let candidates = extension_executable_candidates(name, directory);
         let executable_filepath = candidates.iter().find(|path| exists(path).unwrap_or(false));
         let Some(executable_filepath) = executable_filepath else {
@@ -67,7 +74,8 @@ impl Extensions {
                     .collect::<Vec<_>>()
                     .join(", ")
             );
-            return Ok(None);
+            handle.set(None);
+            return Ok(());
         };
 
         let host = Arc::new(
@@ -79,15 +87,25 @@ impl Extensions {
             )
             .await?,
         );
-        let local_host = host.clone();
 
+        let (ready_sender, ready_receiver) = oneshot::channel();
+
+        let local_host = host.clone();
         task_tracker.spawn(async move {
-            if let Err(error) = local_host.run().await {
+            if let Err(error) = local_host.run(ready_sender).await {
                 error!("selection extension host stopped: {error}");
             }
         });
+        task_tracker.spawn(async move {
+            if let Err(error) = ready_receiver.await {
+                error!("selection extension readiness wait failed: {error}");
+                return;
+            }
 
-        Ok(Some(host))
+            handle.set(Some(host));
+        });
+
+        Ok(())
     }
 }
 
