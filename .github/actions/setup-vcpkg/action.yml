@@ -53,6 +53,7 @@ runs:
         "VCPKG_BINARY_SOURCES=$env:VCPKG_BINARY_SOURCES" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "VCPKG_DOWNLOADS=$env:VCPKG_DOWNLOADS" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "VCPKGRS_TRIPLET=x64-windows-static" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS=-C target-cpu=x86-64-v2 -C target-feature=+crt-static" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "OPENCV_VCPKG_NAME=opencv4" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         (Join-Path $vcpkgRoot installed/x64-windows-static/bin) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
