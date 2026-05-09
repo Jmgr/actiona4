@@ -18,9 +18,9 @@ runs:
           ${{ runner.temp }}\vcpkg
           ${{ github.workspace }}\vcpkg-downloads
           ${{ github.workspace }}\vcpkg-bincache
-        key: vcpkg-windows-opencv4-${{ inputs.vcpkg-commit }}-v1
+        key: vcpkg-windows-opencv4-static-${{ inputs.vcpkg-commit }}-v1
         restore-keys: |
-          vcpkg-windows-opencv4-${{ inputs.vcpkg-commit }}-
+          vcpkg-windows-opencv4-static-${{ inputs.vcpkg-commit }}-
 
     - name: Install OpenCV with vcpkg
       shell: pwsh
@@ -48,14 +48,13 @@ runs:
           & (Join-Path $vcpkgRoot bootstrap-vcpkg.bat)
         }
 
-        & (Join-Path $vcpkgRoot vcpkg.exe) install opencv4:x64-windows
+        & (Join-Path $vcpkgRoot vcpkg.exe) install opencv4:x64-windows-static
         "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "VCPKG_BINARY_SOURCES=$env:VCPKG_BINARY_SOURCES" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "VCPKG_DOWNLOADS=$env:VCPKG_DOWNLOADS" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        "VCPKGRS_DYNAMIC=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        "VCPKGRS_TRIPLET=x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "VCPKGRS_TRIPLET=x64-windows-static" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         "OPENCV_VCPKG_NAME=opencv4" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        (Join-Path $vcpkgRoot installed/x64-windows/bin) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        (Join-Path $vcpkgRoot installed/x64-windows-static/bin) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Save vcpkg artifacts cache
       if: ${{ success() && steps.cache-vcpkg.outputs.cache-hit != 'true' }}
