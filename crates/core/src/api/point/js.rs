@@ -35,7 +35,7 @@ use crate::{
 #[derive(Clone, Copy, Debug)]
 pub struct JsPointLike(pub Point);
 
-fn point_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Point> {
+pub(crate) fn point_from_value<'js>(ctx: &Ctx<'js>, value: &Value<'js>) -> Result<Point> {
     if let Some(object) = value.as_object() {
         if has_registered_class_prototype::<JsPoint>(ctx, object)? {
             return value.clone().get::<JsPoint>().map(Into::into);

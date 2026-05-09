@@ -7058,15 +7058,35 @@ declare interface Mouse {
      */
     setRelativePosition(x: number, y: number): void;
     /**
-     * Clicks a mouse button.
+     * Click at the current cursor position with optional configuration.
      * @platform does not work on Wayland
      */
     click(options?: ClickOptions): Task<void>;
     /**
-     * Double-clicks a mouse button.
+     * Click at the given position.
+     * @platform does not work on Wayland
+     */
+    click(position: PointLike, options?: ClickOptions): Task<void>;
+    /**
+     * Click at the given position.
+     * @platform does not work on Wayland
+     */
+    click(x: number, y: number, options?: ClickOptions): Task<void>;
+    /**
+     * Double-click at the current cursor position with optional configuration.
      * @platform does not work on Wayland
      */
     doubleClick(options?: DoubleClickOptions): Task<void>;
+    /**
+     * Double-click at the given position.
+     * @platform does not work on Wayland
+     */
+    doubleClick(position: PointLike, options?: DoubleClickOptions): Task<void>;
+    /**
+     * Double-click at the given position.
+     * @platform does not work on Wayland
+     */
+    doubleClick(x: number, y: number, options?: DoubleClickOptions): Task<void>;
     /**
      * Presses a mouse button at `start`, moves smoothly to `end`, then releases.
      * 
@@ -7140,15 +7160,35 @@ declare interface Mouse {
      */
     dragAndDrop(x1: number, y1: number, x2: number, y2: number, options?: DragOptions): Task<void>;
     /**
-     * Presses and holds a mouse button.
+     * Press at the current cursor position with optional configuration.
      * @platform does not work on Wayland
      */
     press(options?: PressOptions): void;
     /**
-     * Releases a mouse button.
+     * Press at the given position.
+     * @platform does not work on Wayland
+     */
+    press(position: PointLike, options?: PressOptions): void;
+    /**
+     * Press at the given position.
+     * @platform does not work on Wayland
+     */
+    press(x: number, y: number, options?: PressOptions): void;
+    /**
+     * Release a mouse button without moving the cursor.
      * @platform does not work on Wayland
      */
     release(button?: Button): void;
+    /**
+     * Move the cursor to the given position, then release.
+     * @platform does not work on Wayland
+     */
+    release(position: PointLike, button?: Button): void;
+    /**
+     * Move the cursor to the given position, then release.
+     * @platform does not work on Wayland
+     */
+    release(x: number, y: number, button?: Button): void;
     /**
      * Waits until a mouse button is pressed.
      * 

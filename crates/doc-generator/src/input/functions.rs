@@ -190,6 +190,8 @@ pub fn extract_functions(
                         })?
                         .to_string(),
                 )
+            } else if let Some(method_returns) = instructions.returns() {
+                method_returns
             } else {
                 info.inner
                     .sig
@@ -199,8 +201,10 @@ pub fn extract_functions(
                     .wrap_err_with(|| function_name.to_string())?
             };
 
-            for (instructions, comments) in overload_instructions.iter() {
-                let parameters = instructions
+            let method_platforms = instructions.platforms();
+
+            for (overload, comments) in overload_instructions.iter() {
+                let parameters = overload
                     .iter()
                     .filter_map(|instruction| {
                         if let Instruction::Parameter(variable) = instruction {
@@ -211,7 +215,13 @@ pub fn extract_functions(
                     })
                     .collect_vec();
 
-                let return_ = instructions.returns();
+                let return_ = overload.returns();
+                let overload_platforms = overload.platforms();
+                let platforms = if overload_platforms.is_empty() {
+                    method_platforms.clone()
+                } else {
+                    overload_platforms
+                };
 
                 overloads.push(MethodOverload {
                     parameters,
@@ -219,8 +229,8 @@ pub fn extract_functions(
                     is_readonly_type,
                     comments: comments.clone(),
                     rest_params: rest_params.clone(),
-                    platforms: instructions.platforms(),
-                    constructor_only: instructions.has_constructor_only(),
+                    platforms,
+                    constructor_only: overload.has_constructor_only(),
                 });
             }
 

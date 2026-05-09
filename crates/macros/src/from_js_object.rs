@@ -2,6 +2,8 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, Fields, GenericArgument, PathArguments, Type, parse_macro_input};
 
+use crate::{consts::INSTR_SKIP, default_args::doc_contains};
+
 /// Derive `rquickjs::FromJs` for named-field option structs.
 pub(crate) fn derive(input: TokenStream) -> TokenStream {
     // Parse the user's struct
@@ -38,6 +40,18 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
             &field_name.as_ref().unwrap().to_string(),
             convert_case::Case::Camel,
         );
+
+        // `@skip` fields are flattened: their inner type is parsed from the same
+        // JS value as the parent, so callers see the parent and child fields as
+        // a single flat object (matching the `@extends` shape in the generated TS).
+        if doc_contains(&field.attrs, INSTR_SKIP) {
+            return quote! {
+                result.#field_name = <#field_ty as crate::api::js::FromJsField<'js>>::from_js_field(
+                    ctx,
+                    value.clone(),
+                )?;
+            };
+        }
 
         if let Some(inner_ty) = option_inner_type(field_ty) {
             return quote! {

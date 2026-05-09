@@ -5,19 +5,23 @@ use rquickjs::{
     Ctx, Exception, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
+    function::{FromParam, ParamRequirement, ParamsAccessor},
     prelude::*,
 };
 use tracing::instrument;
+use types::point::point;
 
 use super::Coordinate;
 use crate::{
     IntoJsResult,
     api::{
+        image::js::JsMatch,
         js::{
             abort_controller::JsAbortSignal,
             classes::{HostClass, SingletonClass, register_enum, register_host_class},
             duration::JsDuration,
             event_handle::{HandleId, JsEventHandle},
+            has_registered_class_prototype,
             task::{task, task_with_token},
         },
         macros::{js::JsMacro, player::MacroPlayer},
@@ -26,7 +30,7 @@ use crate::{
             click_triggers::{ClickTriggers, OnButtonOptions},
             scroll_triggers::ScrollTriggers,
         },
-        point::js::{JsPoint, JsPointLike},
+        point::js::{JsPoint, JsPointLike, point_from_value},
         triggers::TriggerAction,
     },
     runtime::{Runtime, WithUserData},
@@ -294,6 +298,93 @@ impl JsClickOptions {
     }
 }
 
+/// Parsed arguments for mouse actions that accept an optional leading position
+/// (as `(x, y)` numbers or a `PointLike`) followed by an optional trailing
+/// value of type `T` (typically an options object or a `Button` enum).
+///
+/// @skip
+pub struct JsPositionalArgs<T> {
+    position: Option<JsPointLike>,
+    trailing: Option<T>,
+}
+
+impl<T> Default for JsPositionalArgs<T> {
+    fn default() -> Self {
+        Self {
+            position: None,
+            trailing: None,
+        }
+    }
+}
+
+impl<'js, T: FromJs<'js>> FromParam<'js> for JsPositionalArgs<T> {
+    fn param_requirement() -> ParamRequirement {
+        // 0..=3 args: optional (x, y) | PointLike (1-2) plus an optional trailing arg.
+        ParamRequirement::optional()
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::optional())
+            .combine(ParamRequirement::exhaustive())
+    }
+
+    fn from_param<'a>(params: &mut ParamsAccessor<'a, 'js>) -> Result<Self> {
+        if params.is_empty() {
+            return Ok(Self::default());
+        }
+
+        let ctx = params.ctx().clone();
+        let first = params.arg();
+
+        if let Some(x) = first.as_number() {
+            if params.is_empty() {
+                // A single number cannot be (x, y); pass it through as the trailing arg
+                // so callers like `release(Button.Left)` keep working.
+                return Ok(Self {
+                    position: None,
+                    trailing: Some(T::from_js(&ctx, first)?),
+                });
+            }
+            let second = params.arg();
+            let y = second.as_number().ok_or_else(|| {
+                Exception::throw_message(&ctx, "Expected second argument to be a number")
+            })?;
+            let trailing = if params.is_empty() {
+                None
+            } else {
+                Some(T::from_js(&ctx, params.arg())?)
+            };
+            return Ok(Self {
+                position: Some(JsPointLike(point(x, y))),
+                trailing,
+            });
+        }
+
+        if let Some(object) = first.as_object() {
+            let is_point = has_registered_class_prototype::<JsPoint>(&ctx, object)?;
+            let is_match = has_registered_class_prototype::<JsMatch>(&ctx, object)?;
+            let has_xy =
+                !is_point && !is_match && object.contains_key("x")? && object.contains_key("y")?;
+
+            if is_point || is_match || has_xy {
+                let pt = point_from_value(&ctx, &first)?;
+                let trailing = if params.is_empty() {
+                    None
+                } else {
+                    Some(T::from_js(&ctx, params.arg())?)
+                };
+                return Ok(Self {
+                    position: Some(JsPointLike(pt)),
+                    trailing,
+                });
+            }
+        }
+
+        Ok(Self {
+            position: None,
+            trailing: Some(T::from_js(&ctx, first)?),
+        })
+    }
+}
+
 /// Options for double-clicking a mouse button.
 ///
 /// ```ts
@@ -428,11 +519,42 @@ impl JsMouse {
     }
 
     /// Clicks a mouse button.
+    ///
+    /// ```ts
+    /// // Click at the current cursor position
+    /// await mouse.click();
+    ///
+    /// // Click at specific coordinates
+    /// await mouse.click(100, 200);
+    ///
+    /// // Click at a PointLike position
+    /// await mouse.click({ x: 100, y: 200 });
+    ///
+    /// // Right-click at a position with options
+    /// await mouse.click(100, 200, { button: Button.Right });
+    /// ```
+    ///
     /// @returns Task<void>
+    ///
+    /// @overload
+    /// Click at the current cursor position with optional configuration.
+    /// @param options?: ClickOptions
+    ///
+    /// @overload
+    /// Click at the given position.
+    /// @param position: PointLike
+    /// @param options?: ClickOptions
     #[platform(not = "wayland")]
-    pub fn click<'js>(&self, ctx: Ctx<'js>, options: Opt<JsClickOptions>) -> Result<Promise<'js>> {
+    pub fn click<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        args: JsPositionalArgs<JsClickOptions>,
+    ) -> Result<Promise<'js>> {
         let local_mouse = self.inner.clone();
-        let options = options.0.unwrap_or_default();
+        let mut options = args.trailing.unwrap_or_default();
+        if let Some(position) = args.position {
+            options.press.position = Some(position);
+        }
         let signal = options.signal.clone();
 
         task_with_token(ctx, signal, async move |ctx, token| {
@@ -444,15 +566,36 @@ impl JsMouse {
     }
 
     /// Double-clicks a mouse button.
+    ///
+    /// ```ts
+    /// // Double-click at the current cursor position
+    /// await mouse.doubleClick();
+    ///
+    /// // Double-click at specific coordinates
+    /// await mouse.doubleClick(100, 200);
+    /// ```
+    ///
     /// @returns Task<void>
+    ///
+    /// @overload
+    /// Double-click at the current cursor position with optional configuration.
+    /// @param options?: DoubleClickOptions
+    ///
+    /// @overload
+    /// Double-click at the given position.
+    /// @param position: PointLike
+    /// @param options?: DoubleClickOptions
     #[platform(not = "wayland")]
     pub fn double_click<'js>(
         &self,
         ctx: Ctx<'js>,
-        options: Opt<JsDoubleClickOptions>,
+        args: JsPositionalArgs<JsDoubleClickOptions>,
     ) -> Result<Promise<'js>> {
         let local_mouse = self.inner.clone();
-        let options = options.0.unwrap_or_default();
+        let mut options = args.trailing.unwrap_or_default();
+        if let Some(position) = args.position {
+            options.click.press.position = Some(position);
+        }
         let signal = options.click.signal.clone();
 
         task_with_token(ctx, signal, async move |ctx, token| {
@@ -510,19 +653,58 @@ impl JsMouse {
     }
 
     /// Presses and holds a mouse button.
+    ///
+    /// ```ts
+    /// // Press the left button at the current cursor position
+    /// mouse.press();
+    ///
+    /// // Press the right button at a specific position
+    /// mouse.press(100, 200, { button: Button.Right });
+    /// ```
+    ///
+    /// @overload
+    /// Press at the current cursor position with optional configuration.
+    /// @param options?: PressOptions
+    ///
+    /// @overload
+    /// Press at the given position.
+    /// @param position: PointLike
+    /// @param options?: PressOptions
     #[platform(not = "wayland")]
-    pub fn press(&self, ctx: Ctx<'_>, options: Opt<JsPressOptions>) -> Result<()> {
-        self.inner
-            .press(options.unwrap_or_default())
-            .into_js_result(&ctx)
+    pub fn press(&self, ctx: Ctx<'_>, args: JsPositionalArgs<JsPressOptions>) -> Result<()> {
+        let mut options = args.trailing.unwrap_or_default();
+        if let Some(position) = args.position {
+            options.position = Some(position);
+        }
+        self.inner.press(options).into_js_result(&ctx)
     }
 
-    /// Releases a mouse button.
+    /// Releases a mouse button. Without a button, releases the most recently pressed one.
+    ///
+    /// ```ts
+    /// // Release the most recently pressed button
+    /// mouse.release();
+    ///
+    /// // Release the right button after moving to a position
+    /// mouse.release(100, 200, Button.Right);
+    /// ```
+    ///
+    /// @overload
+    /// Release a mouse button without moving the cursor.
+    /// @param button?: Button
+    ///
+    /// @overload
+    /// Move the cursor to the given position, then release.
+    /// @param position: PointLike
+    /// @param button?: Button
     #[platform(not = "wayland")]
-    pub fn release(&self, ctx: Ctx<'_>, button: Opt<JsButton>) -> Result<()> {
-        self.inner
-            .release(button.map(|button| button))
-            .into_js_result(&ctx)
+    pub fn release(&self, ctx: Ctx<'_>, args: JsPositionalArgs<JsButton>) -> Result<()> {
+        if let Some(position) = args.position {
+            self.inner
+                .set_position(position.0, Coordinate::Abs)
+                .into_js_result(&ctx)?;
+        }
+        self.inner.release(args.trailing).into_js_result(&ctx)
     }
 
     /// Waits until a mouse button is pressed.

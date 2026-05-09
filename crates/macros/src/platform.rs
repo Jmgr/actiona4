@@ -91,7 +91,7 @@ fn expand_function(arguments: PlatformAttributeArguments, mut function: ItemFn) 
         let rustdoc_instruction_attribute: Attribute = parse_quote! {
             #[doc = #rustdoc_instruction]
         };
-        function.attrs.push(rustdoc_instruction_attribute);
+        function.attrs.insert(0, rustdoc_instruction_attribute);
     }
 
     quote!(#function).into()
