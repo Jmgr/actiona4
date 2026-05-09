@@ -4,7 +4,7 @@ use std::path::Path;
 
 use color_eyre::Result;
 use pe_parser::pe::parse_portable_executable;
-use satint::{SaturatingInto, Su32};
+use satint::SaturatingInto;
 use tokio::fs;
 use windows::{
     Win32::{
