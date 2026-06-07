@@ -17,7 +17,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
-use types::{color::Color, display::display_with_type};
+use types::{Color, display::display_with_type};
 
 use crate::api::js::{FromJsField, classes::ValueClass, has_registered_class_prototype};
 
@@ -573,7 +573,7 @@ impl<'js> Trace<'js> for JsColor {
 #[cfg(test)]
 mod tests {
     use image::Rgba;
-    use types::color::Color;
+    use types::Color;
 
     use super::JsColor;
 

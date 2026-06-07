@@ -1,3 +1,3 @@
-pub use types::color::Color;
+pub use types::Color;
 
 pub mod js;
