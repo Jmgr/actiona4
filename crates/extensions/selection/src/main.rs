@@ -13,7 +13,7 @@ use extension::{
 };
 use tokio::sync::oneshot;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use types::{point::Point, rect::Rect};
+use types::{Point, Rect};
 use winit::event_loop::{EventLoop, EventLoopProxy};
 
 use crate::{app::App, events::AppEvent, screenshot::capture_screenshot};

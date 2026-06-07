@@ -1,5 +1,5 @@
 use tokio::sync::oneshot;
-use types::{point::Point, rect::Rect};
+use types::{Point, Rect};
 #[cfg(not(windows))]
 use winit::dpi::PhysicalPosition;
 

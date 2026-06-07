@@ -5,7 +5,7 @@ use memfd::{FileSeal, MemfdOptions};
 use memmap2::MmapMut;
 use satint::SaturatingInto;
 use tokio::sync::Mutex;
-use types::rect::Rect;
+use types::Rect;
 use x11rb_async::{connection::Connection, protocol::xproto::ImageFormat};
 
 use crate::{Capture, platform::x11::Screen};

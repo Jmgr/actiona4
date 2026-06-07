@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub};
 
 use tween::TweenValue;
-use types::point::{Point, point};
+use types::{Point, point};
 
 #[derive(Clone, Copy, Debug)]
 pub struct TweenPoint(Point);
@@ -48,7 +48,7 @@ impl TweenValue for TweenPoint {
 #[allow(clippy::as_conversions)]
 mod tests {
     use rstest::rstest;
-    use types::point::point;
+    use types::point;
 
     use super::*;
 

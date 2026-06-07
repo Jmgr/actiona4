@@ -15,10 +15,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
-use types::{
-    display::display_with_type,
-    size::{Size, size},
-};
+use types::{Size, display::display_with_type, size};
 
 use crate::{
     IntoJsResult,

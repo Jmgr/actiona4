@@ -9,7 +9,7 @@ use rquickjs::{
     prelude::*,
 };
 use tracing::instrument;
-use types::point::point;
+use types::point;
 
 use super::Coordinate;
 use crate::{

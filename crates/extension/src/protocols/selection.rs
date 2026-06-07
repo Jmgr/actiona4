@@ -1,5 +1,5 @@
 use macros::rpc_protocol;
-use types::{point::Point, rect::Rect};
+use types::{Point, Rect};
 
 #[rpc_protocol]
 #[derive(Debug)]

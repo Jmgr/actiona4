@@ -5,9 +5,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture, wgpu};
 use tokio::sync::oneshot;
 use types::{
-    point::{Point, point},
-    rect::{Rect, rect},
-    size::size,
+    size, {Point, point}, {Rect, rect},
 };
 #[cfg(not(windows))]
 use winit::platform::x11::WindowAttributesExtX11;

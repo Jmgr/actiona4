@@ -15,7 +15,7 @@ use strum::EnumIs;
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
-use types::size::Size;
+use types::Size;
 
 use crate::{
     api::{

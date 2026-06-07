@@ -19,7 +19,7 @@ use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::{info, instrument};
 use tween::FixedTweener;
-use types::point::point;
+use types::point;
 
 use crate::{
     api::{

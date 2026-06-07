@@ -2,7 +2,7 @@ use color_eyre::{Result, eyre::eyre};
 use image::RgbaImage;
 use satint::{SaturatingInto, Su32, su32};
 use screenshot::{Capture, bgra_to_rgba_in_place};
-use types::size::Size;
+use types::Size;
 
 use crate::api::image::Image;
 

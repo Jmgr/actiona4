@@ -4,7 +4,7 @@ use color_eyre::{Result, eyre::eyre};
 use satint::{SaturatingInto, Si32};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use types::{rect::Rect, size::size};
+use types::{Rect, size};
 use windows::Win32::{
     Graphics::Gdi::{
         BI_RGB, BITMAPINFO, BITMAPINFOHEADER, BitBlt, CreateCompatibleBitmap, CreateCompatibleDC,

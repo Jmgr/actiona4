@@ -9,7 +9,7 @@ use libwmctl::{Position, Shape, window, windows};
 use parking_lot::Mutex;
 use satint::{SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
-use types::{point::point, size::size};
+use types::{point, size};
 use x11rb::{
     connection::Connection,
     protocol::xproto::{AtomEnum, ClientMessageEvent, ConnectionExt as _, EventMask},

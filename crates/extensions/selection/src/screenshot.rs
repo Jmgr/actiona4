@@ -1,6 +1,6 @@
 use color_eyre::Result;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use types::size::Size;
+use types::Size;
 
 pub struct Screenshot {
     pub size: Size,

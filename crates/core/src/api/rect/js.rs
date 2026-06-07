@@ -15,7 +15,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
-use types::{display::display_with_type, point::point, rect::Rect, size::size};
+use types::{Rect, display::display_with_type, point, size};
 
 use crate::api::{
     ResultExt,

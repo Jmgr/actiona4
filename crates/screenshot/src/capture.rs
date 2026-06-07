@@ -1,5 +1,5 @@
 use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
-use types::size::Size;
+use types::Size;
 
 /// A raw screen capture in BGRA pixel order, top-down.
 #[derive(Clone, Debug)]

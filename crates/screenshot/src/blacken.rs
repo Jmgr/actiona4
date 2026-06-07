@@ -1,5 +1,5 @@
 use satint::{SaturatingFrom, Su32};
-use types::rect::Rect;
+use types::Rect;
 
 /// Fill all pixels of `image` that lie outside every display rectangle with
 /// black.

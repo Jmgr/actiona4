@@ -1,5 +1,5 @@
 use serde::Serialize;
-use types::{point::Point, size::Size};
+use types::{Point, Size};
 
 #[derive(Serialize)]
 pub struct Color {

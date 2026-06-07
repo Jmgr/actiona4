@@ -16,10 +16,7 @@ use rquickjs::{
     class::{Trace, Tracer},
     function::{FromParam, ParamRequirement, ParamsAccessor},
 };
-use types::{
-    display::display_with_type,
-    point::{Point, point},
-};
+use types::{Point, display::display_with_type, point};
 
 use crate::{
     IntoJsResult,

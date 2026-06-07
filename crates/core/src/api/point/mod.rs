@@ -1,6 +1,6 @@
 use std::f64::consts::TAU;
 
-pub use types::point::{Point, point};
+pub use types::{Point, point};
 
 use crate::runtime::shared_rng::SharedRng;
 
@@ -20,7 +20,7 @@ pub fn random_point_in_circle(center: Point, radius: f64, rng: SharedRng) -> Poi
 #[cfg(test)]
 #[allow(clippy::as_conversions)]
 mod tests {
-    use types::point::point;
+    use types::point;
 
     use super::*;
 

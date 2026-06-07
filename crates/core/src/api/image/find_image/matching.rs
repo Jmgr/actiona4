@@ -18,7 +18,7 @@ use satint::{SaturatingFrom, SaturatingInto, Su32, TryDiv, su32};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
-use types::size::Size;
+use types::Size;
 
 use crate::{
     api::image::find_image::{
