@@ -4,7 +4,7 @@ use std::{
 };
 
 use color_eyre::{Result, eyre::OptionExt, owo_colors::OwoColorize};
-use config::{Config, VersionInfo, state::State};
+use config::{CommonConfig, CommonState, VersionInfo};
 use indicatif::HumanDuration;
 use time::{Duration as TimeDuration, OffsetDateTime};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -35,7 +35,7 @@ fn app_name() -> String {
 #[instrument(skip_all)]
 pub async fn check_updates(
     args: &Args,
-    config: &Config,
+    config: &CommonConfig,
     cancellation_token: CancellationToken,
     task_tracker: TaskTracker,
 ) -> Result<()> {
@@ -88,7 +88,7 @@ pub async fn check_updates(
 }
 
 #[instrument(skip_all)]
-pub async fn check_updates_now(config: &Config) -> Result<()> {
+pub async fn check_updates_now(config: &CommonConfig) -> Result<()> {
     let app_version =
         SemVer::new(built_info::PKG_VERSION).ok_or_eyre("failed to parse crate version")?;
 
@@ -167,7 +167,7 @@ fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
 }
 
 fn update_available_for_notification<'a>(
-    state: &'a State,
+    state: &'a CommonState,
     app_version: &SemVer,
 ) -> Option<&'a VersionInfo> {
     let version_info = state.new_version_available.as_ref()?;
@@ -184,7 +184,7 @@ fn update_available_for_notification<'a>(
 }
 
 fn should_notify_update_check_failure(
-    state: &State,
+    state: &CommonState,
     app_version: &SemVer,
     now: OffsetDateTime,
 ) -> bool {
@@ -209,7 +209,7 @@ fn should_notify_update_check_failure(
 
 #[cfg(test)]
 mod tests {
-    use config::{Channel, VersionInfo, state::State};
+    use config::{Channel, CommonState, VersionInfo};
     use time::{Duration as TimeDuration, OffsetDateTime};
     use versions::SemVer;
 
@@ -232,9 +232,9 @@ mod tests {
 
     #[test]
     fn update_notification_is_shown_once_per_version() {
-        let state = State {
+        let state = CommonState {
             new_version_available: Some(version_info("1.2.3")),
-            ..State::default()
+            ..CommonState::default()
         };
         let current_version = SemVer::new("1.2.2").unwrap();
 
@@ -243,7 +243,7 @@ mod tests {
 
         assert_eq!(notified_version, Some(SemVer::new("1.2.3").unwrap()));
 
-        let state = State {
+        let state = CommonState {
             last_notified_version: Some(SemVer::new("1.2.3").unwrap()),
             ..state
         };
@@ -255,9 +255,9 @@ mod tests {
     fn failure_notification_requires_threshold_and_cooldown() {
         let current_version = SemVer::new("1.2.2").unwrap();
         let now = OffsetDateTime::UNIX_EPOCH + TimeDuration::days(30);
-        let below_threshold_state = State {
+        let below_threshold_state = CommonState {
             consecutive_update_check_failures: UPDATE_CHECK_FAILURE_NOTIFICATION_THRESHOLD - 1,
-            ..State::default()
+            ..CommonState::default()
         };
 
         assert!(!should_notify_update_check_failure(
@@ -266,9 +266,9 @@ mod tests {
             now
         ));
 
-        let threshold_state = State {
+        let threshold_state = CommonState {
             consecutive_update_check_failures: UPDATE_CHECK_FAILURE_NOTIFICATION_THRESHOLD,
-            ..State::default()
+            ..CommonState::default()
         };
 
         assert!(should_notify_update_check_failure(
@@ -277,7 +277,7 @@ mod tests {
             now
         ));
 
-        let recent_notice_state = State {
+        let recent_notice_state = CommonState {
             last_update_check_failure_notice: Some(
                 now - TimeDuration::days(UPDATE_CHECK_FAILURE_NOTIFICATION_COOLDOWN_DAYS - 1),
             ),
@@ -293,10 +293,10 @@ mod tests {
 
     #[test]
     fn failure_notification_is_suppressed_when_an_update_is_known() {
-        let state = State {
+        let state = CommonState {
             new_version_available: Some(version_info("1.2.3")),
             consecutive_update_check_failures: UPDATE_CHECK_FAILURE_NOTIFICATION_THRESHOLD,
-            ..State::default()
+            ..CommonState::default()
         };
         let current_version = SemVer::new("1.2.2").unwrap();
         let now = OffsetDateTime::UNIX_EPOCH + TimeDuration::days(30);

@@ -1,19 +1,19 @@
 use std::future::Future;
 
-use config::Config;
+use config::CommonConfig;
 use eyre::Result;
 use tokio::runtime::Builder;
 
 pub fn get_update_check_enabled() -> Result<bool> {
     with_runtime(async move {
-        let config = Config::new().await?;
+        let config = CommonConfig::new().await?;
         Ok(config.settings(|settings| settings.update_check))
     })
 }
 
 pub fn set_update_check_enabled(update_check_enabled: bool) -> Result<()> {
     with_runtime(async move {
-        let config = Config::new().await?;
+        let config = CommonConfig::new().await?;
         config
             .settings_mut(|settings| settings.update_check = update_check_enabled)
             .await?;
@@ -23,14 +23,14 @@ pub fn set_update_check_enabled(update_check_enabled: bool) -> Result<()> {
 
 pub fn get_telemetry_enabled() -> Result<bool> {
     with_runtime(async move {
-        let config = Config::new().await?;
+        let config = CommonConfig::new().await?;
         Ok(config.settings(|settings| settings.telemetry.is_some()))
     })
 }
 
 pub fn set_telemetry_enabled(telemetry_enabled: bool) -> Result<()> {
     with_runtime(async move {
-        let config = Config::new().await?;
+        let config = CommonConfig::new().await?;
         config
             .settings_mut(|settings| settings.set_telemetry(telemetry_enabled))
             .await?;

@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use config::Config;
+use config::CommonConfig;
 use eyre::{Result, eyre};
 use updater::Updater;
 use versions::SemVer;
@@ -15,7 +15,7 @@ pub struct UpdateCheckResult {
 
 pub fn check_for_update() -> Result<Option<UpdateCheckResult>> {
     with_runtime(async move {
-        let config = Config::new().await?;
+        let config = CommonConfig::new().await?;
         let app_version = SemVer::new(APPLICATION_VERSION)
             .ok_or_else(|| eyre!("invalid app version: {APPLICATION_VERSION}"))?;
         let version_info =

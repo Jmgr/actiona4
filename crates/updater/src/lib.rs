@@ -7,7 +7,7 @@
 use std::{future::Future, sync::Arc};
 
 use color_eyre::{Result, eyre::eyre};
-use config::{Channel, Config, VersionInfo, state::State};
+use config::{Channel, CommonConfig, CommonState, VersionInfo};
 use indexmap::IndexMap;
 use reqwest::Client;
 use serde::Deserialize;
@@ -63,14 +63,14 @@ struct UpdateResponse {
 }
 
 pub struct Updater {
-    config: Config,
+    config: CommonConfig,
     app: String,
     app_version: SemVer,
 }
 
 impl Updater {
     pub async fn check_once(
-        config: &Config,
+        config: &CommonConfig,
         app: &str,
         app_version: SemVer,
         app_distribution: &str,
@@ -92,7 +92,7 @@ impl Updater {
 
     #[must_use]
     pub fn new(
-        config: Config,
+        config: CommonConfig,
         enabled: bool,
         app: &str,
         app_version: SemVer,
@@ -282,13 +282,13 @@ impl Updater {
     }
 }
 
-fn apply_successful_check(state: &mut State, new_version_available: Option<VersionInfo>) {
+fn apply_successful_check(state: &mut CommonState, new_version_available: Option<VersionInfo>) {
     state.new_version_available = new_version_available;
     state.consecutive_update_check_failures = 0;
     state.last_update_check_failure_notice = None;
 }
 
-const fn apply_failed_check(state: &mut State) {
+const fn apply_failed_check(state: &mut CommonState) {
     state.consecutive_update_check_failures =
         state.consecutive_update_check_failures.saturating_add(1);
 }
@@ -305,7 +305,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use config::{Channel, VersionInfo, state::State};
+    use config::{Channel, CommonState, VersionInfo};
     use time::OffsetDateTime;
     use versions::SemVer;
 
@@ -324,10 +324,10 @@ mod tests {
 
     #[test]
     fn successful_check_stores_available_version_and_resets_failure_tracking() {
-        let mut state = State {
+        let mut state = CommonState {
             consecutive_update_check_failures: 12,
             last_update_check_failure_notice: Some(OffsetDateTime::UNIX_EPOCH),
-            ..State::default()
+            ..CommonState::default()
         };
 
         apply_successful_check(&mut state, Some(version_info("1.2.3")));
@@ -345,11 +345,11 @@ mod tests {
 
     #[test]
     fn successful_check_without_update_clears_stale_state() {
-        let mut state = State {
+        let mut state = CommonState {
             new_version_available: Some(version_info("1.2.3")),
             consecutive_update_check_failures: 4,
             last_update_check_failure_notice: Some(OffsetDateTime::UNIX_EPOCH),
-            ..State::default()
+            ..CommonState::default()
         };
 
         apply_successful_check(&mut state, None);
@@ -361,10 +361,10 @@ mod tests {
 
     #[test]
     fn failed_check_increments_failure_counter_without_touching_notice_timestamp() {
-        let mut state = State {
+        let mut state = CommonState {
             consecutive_update_check_failures: 9,
             last_update_check_failure_notice: Some(OffsetDateTime::UNIX_EPOCH),
-            ..State::default()
+            ..CommonState::default()
         };
 
         apply_failed_check(&mut state);

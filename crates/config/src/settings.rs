@@ -1,4 +1,4 @@
-use directories::ProjectDirs;
+use color_eyre::Result;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -8,12 +8,12 @@ pub const DEFAULT_UPDATE_CHECK: bool = true;
 pub const DEFAULT_TELEMETRY: bool = false;
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Settings {
+pub struct CommonSettings {
     pub update_check: bool,
     pub telemetry: Option<Uuid>,
 }
 
-impl Default for Settings {
+impl Default for CommonSettings {
     fn default() -> Self {
         let mut settings = Self {
             update_check: DEFAULT_UPDATE_CHECK,
@@ -26,12 +26,9 @@ impl Default for Settings {
     }
 }
 
-impl Settings {
-    #[must_use]
-    pub fn new_store(project_dirs: &ProjectDirs) -> Store<Self> {
-        let directory = project_dirs.preference_dir().to_path_buf();
-
-        Store::new(directory, "settings.toml")
+impl CommonSettings {
+    pub fn new_store() -> Result<Store<Self>> {
+        crate::settings_store("settings.toml")
     }
 
     pub fn set_telemetry(&mut self, enabled: bool) {

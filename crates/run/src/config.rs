@@ -1,7 +1,7 @@
 use color_eyre::{Result, eyre::bail};
-use config::Config;
+use config::CommonConfig;
 
-pub async fn run(config: &Config, key: &str, value: Option<bool>) -> Result<()> {
+pub async fn run(config: &CommonConfig, key: &str, value: Option<bool>) -> Result<()> {
     match (key, value) {
         ("update_check", Some(v)) => {
             config.settings_mut(|s| s.update_check = v).await?;

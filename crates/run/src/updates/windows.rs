@@ -3,7 +3,7 @@ use actiona_core::api::notification::{
     NotificationOptions,
 };
 use color_eyre::Result;
-use config::{Config, state::State};
+use config::{CommonConfig, CommonState};
 use time::OffsetDateTime;
 use tokio_util::task::TaskTracker;
 use tracing::warn;
@@ -14,8 +14,8 @@ use super::{
 };
 
 pub(super) async fn maybe_notify_update_available(
-    config: &Config,
-    state: &State,
+    config: &CommonConfig,
+    state: &CommonState,
     app_version: &SemVer,
     task_tracker: TaskTracker,
 ) {
@@ -52,8 +52,8 @@ pub(super) async fn maybe_notify_update_available(
 }
 
 pub(super) async fn maybe_notify_update_check_failure(
-    config: &Config,
-    state: &State,
+    config: &CommonConfig,
+    state: &CommonState,
     app_version: &SemVer,
     task_tracker: TaskTracker,
 ) {

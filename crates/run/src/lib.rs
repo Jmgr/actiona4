@@ -17,8 +17,7 @@ use std::{
 };
 
 use ::config::{
-    Config,
-    settings::{DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK},
+    CommonConfig, {DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK},
 };
 use actiona_common::sentry::setup_crash_reporting;
 use actiona_core::{
@@ -155,7 +154,7 @@ fn ensure_x11_session_available(
     Ok(())
 }
 
-async fn setup(config: &Config, current_path: &Path) -> Result<()> {
+async fn setup(config: &CommonConfig, current_path: &Path) -> Result<()> {
     println!("*** First time setup ***");
 
     let path_added = if Confirm::with_theme(&ColorfulTheme::default())
@@ -244,7 +243,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
         .build()?;
 
     tokio_runtime.block_on(async move {
-        let config = Config::new().await?;
+        let config = CommonConfig::new().await?;
 
         // Perform first-time setup if needed
         if stdin().is_terminal()

@@ -1,4 +1,4 @@
-use directories::ProjectDirs;
+use color_eyre::Result;
 use serde::{Deserialize, Serialize};
 use strum::Display;
 use time::OffsetDateTime;
@@ -27,7 +27,7 @@ pub struct VersionInfo {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct State {
+pub struct CommonState {
     #[serde(default, with = "time::serde::iso8601::option")]
     pub next_update_check: Option<OffsetDateTime>,
     #[serde(default)]
@@ -42,23 +42,8 @@ pub struct State {
     pub first_time_init: bool,
 }
 
-impl State {
-    #[must_use]
-    pub fn new_store(project_dirs: &ProjectDirs) -> Store<Self> {
-        let directory = {
-            #[cfg(linux)]
-            {
-                project_dirs
-                    .state_dir()
-                    .unwrap_or_else(|| project_dirs.config_local_dir())
-                    .to_path_buf()
-            }
-            #[cfg(not(linux))]
-            {
-                project_dirs.config_local_dir().to_path_buf()
-            }
-        };
-
-        Store::new(directory, "state.toml")
+impl CommonState {
+    pub fn new_store() -> Result<Store<Self>> {
+        crate::state_store("state.toml")
     }
 }
