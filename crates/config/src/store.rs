@@ -3,6 +3,7 @@ use std::{io::ErrorKind, path::PathBuf, sync::Arc};
 use color_eyre::Result;
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
+use tokio::fs;
 
 #[derive(Debug)]
 struct StoreInner<T> {
@@ -45,7 +46,7 @@ where
     }
 
     pub async fn load(&self) -> Result<()> {
-        let contents = match tokio::fs::read_to_string(&self.path()).await {
+        let contents = match fs::read_to_string(&self.path()).await {
             Ok(contents) => contents,
             Err(error) if error.kind() == ErrorKind::NotFound => {
                 return Ok(());
@@ -60,7 +61,7 @@ where
     }
 
     pub async fn save(&self) -> Result<()> {
-        tokio::fs::create_dir_all(&self.inner.directory).await?;
+        fs::create_dir_all(&self.inner.directory).await?;
 
         let serialized_value = toml::to_string(&*self.inner.value.read())?;
         let temporary_filepath = self
@@ -68,8 +69,8 @@ where
             .directory
             .join(format!("{}.tmp", self.inner.filename));
 
-        tokio::fs::write(&temporary_filepath, &serialized_value).await?;
-        tokio::fs::rename(temporary_filepath, self.path()).await?;
+        fs::write(&temporary_filepath, &serialized_value).await?;
+        fs::rename(temporary_filepath, self.path()).await?;
 
         Ok(())
     }
