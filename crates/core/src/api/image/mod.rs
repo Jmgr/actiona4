@@ -20,7 +20,7 @@ use imageproc::{
         draw_hollow_circle_mut, draw_hollow_ellipse_mut, draw_hollow_rect_mut,
         draw_line_segment_mut, draw_text_mut, text_size,
     },
-    geometric_transformations::{self, rotate, rotate_about_center},
+    geometric_transformations::{self, Border, rotate, rotate_about_center},
     rect::Rect as ImgRect,
 };
 use notzero::nz;
@@ -477,7 +477,7 @@ impl Image {
                 (center.x.into_inner() as f32, center.y.into_inner() as f32),
                 angle.to_radians(),
                 options.interpolation.into(),
-                options.default_color.into(),
+                Border::Constant(options.default_color.into()),
             ));
         } else {
             match angle.rem_euclid(360.0) {
@@ -490,7 +490,7 @@ impl Image {
                         &self.inner,
                         angle.to_radians(),
                         options.interpolation.into(),
-                        options.default_color.into(),
+                        Border::Constant(options.default_color.into()),
                     ));
                 }
             }
@@ -515,7 +515,7 @@ impl Image {
                         &self.inner,
                         angle.to_radians(),
                         options.interpolation.into(),
-                        options.default_color.into(),
+                        Border::Constant(options.default_color.into()),
                     ),
                 };
 

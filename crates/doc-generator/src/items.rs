@@ -277,6 +277,8 @@ mod tests {
             links: HashMap::new(),
             attrs: Vec::new(),
             deprecation: None,
+            stability: None,
+            const_stability: None,
             inner: ItemEnum::Module(Module {
                 is_crate: false,
                 items: module_items,
@@ -296,6 +298,8 @@ mod tests {
             links: HashMap::new(),
             attrs: Vec::new(),
             deprecation: None,
+            stability: None,
+            const_stability: None,
             inner: ItemEnum::Function(Function {
                 sig: FunctionSignature {
                     inputs: Vec::new(),
@@ -310,6 +314,7 @@ mod tests {
                     abi: Abi::Rust,
                 },
                 has_body: true,
+                default_unstable: None,
             }),
         }
     }
@@ -325,6 +330,8 @@ mod tests {
             links: HashMap::new(),
             attrs: Vec::new(),
             deprecation: None,
+            stability: None,
+            const_stability: None,
             inner: ItemEnum::Impl(Impl {
                 is_unsafe: false,
                 generics: empty_generics(),
