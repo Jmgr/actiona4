@@ -130,13 +130,13 @@ rodio = { version = "0.22.2", default-features = false, features = [
     "wav",
     "tracing",
 ] }
-rquickjs = { version = "0.11.0", default-features = false, features = [
+rquickjs = { version = "0.12.0", default-features = false, features = [
     "macro",
     "futures",
     "parallel",
     "indexmap",
 ] }
-rquickjs-serde = { version = "0.5.0" }
+rquickjs-serde = { version = "0.6.1" }
 rustdoc-types = "0.57.4"
 rustydialogs = { version = "0.4.2", features = ["gtk4"] }
 rustyline = { version = "18.0.1", features = ["derive"] }
@@ -268,7 +268,6 @@ cfg_aliases = "0.2.1"
 embed-resource = "3.0.9"
 
 [patch.crates-io]
-rquickjs-core = { git = "https://github.com/DelSkayn/rquickjs", rev = "69aed5c" }
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
 ipc-rpc = { git = "https://github.com/Xaeroxe/ipc-rpc.git", rev = "45bdf2b" }
 
