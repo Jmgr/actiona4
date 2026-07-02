@@ -21,7 +21,7 @@ pub enum TriggerAction {
 impl TriggerAction {
     /// Fire the action, calling the callback with no arguments.
     ///
-    /// Uses `call_sync_returning` so the `async_with!` closure does not yield,
+    /// Uses `call_sync_returning` so the `async_with` closure does not yield,
     /// preserving the rquickjs scheduler's queue waker.
     pub async fn fire(self, macro_player: &Arc<MacroPlayer>, label: &'static str) {
         match self {
@@ -39,7 +39,7 @@ impl TriggerAction {
     }
 }
 
-/// Execute a callback action inside an `async_with!` block.
+/// Execute a callback action inside an `async_with` block.
 ///
 /// Calls `call_sync_returning` so the closure does not yield. If the callback
 /// returns a `Promise`, it is spawned via `ctx.spawn` so the caller's event

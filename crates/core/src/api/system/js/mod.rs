@@ -133,21 +133,21 @@ impl JsSystem {
     }
 
     /// Returns true if the current OS is Linux
-    #[get]
+    #[prop]
     #[must_use]
     pub const fn is_linux() -> bool {
         platform_info::is_linux()
     }
 
     /// Returns true if the current OS is a Unix
-    #[get]
+    #[prop]
     #[must_use]
     pub const fn is_unix() -> bool {
         platform_info::is_unix()
     }
 
     /// Returns true if the current OS is Windows
-    #[get]
+    #[prop]
     #[must_use]
     pub const fn is_windows() -> bool {
         platform_info::is_windows()

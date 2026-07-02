@@ -145,7 +145,8 @@ pub fn js_class(arguments: TokenStream, item: TokenStream) -> TokenStream {
     class::expand(arguments, item)
 }
 
-/// Wraps `#[rquickjs::methods]` and processes helper attributes like `#[get]`/`#[set]`.
+/// Wraps `#[rquickjs::methods]` and processes helper attributes like
+/// `#[get]`, `#[set]`, and `#[prop]`.
 ///
 /// Defaults to `rename_all` when not specified.
 #[proc_macro_attribute]

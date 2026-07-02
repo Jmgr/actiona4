@@ -32,12 +32,15 @@ pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     }
 }
 
-/// Convert `#[get]` / `#[set]` into `#[qjs(get/set)]` plus `@get` rustdoc.
+/// Convert `#[get]` / `#[set]` / `#[prop]` into rquickjs accessor/property
+/// attributes plus the rustdoc markers consumed by the doc generator.
 fn apply_accessor_attributes(method: &mut ImplItemFn) -> syn::Result<()> {
     let mut saw_get = false;
     let mut saw_set = false;
+    let mut saw_prop = false;
     let mut get_rename: Option<LitStr> = None;
     let mut set_rename: Option<LitStr> = None;
+    let mut prop_rename: Option<LitStr> = None;
 
     let mut new_attrs = Vec::with_capacity(method.attrs.len());
     for attribute in method.attrs.drain(..) {
@@ -63,19 +66,35 @@ fn apply_accessor_attributes(method: &mut ImplItemFn) -> syn::Result<()> {
             set_rename = parse_accessor_attribute(&attribute, "set")?;
             continue;
         }
+        if attribute.path().is_ident("prop") {
+            if saw_prop {
+                return Err(syn::Error::new_spanned(
+                    attribute,
+                    "duplicate `#[prop]` attribute",
+                ));
+            }
+            saw_prop = true;
+            prop_rename = parse_accessor_attribute(&attribute, "prop")?;
+            continue;
+        }
 
         new_attrs.push(attribute);
     }
     method.attrs = new_attrs;
 
-    if !saw_get && !saw_set {
+    if !saw_get && !saw_set && !saw_prop {
         return Ok(());
     }
 
-    if saw_get && saw_set {
+    if [saw_get, saw_set, saw_prop]
+        .into_iter()
+        .filter(|saw| *saw)
+        .count()
+        > 1
+    {
         return Err(syn::Error::new_spanned(
             method.sig.ident.clone(),
-            "`#[get]` and `#[set]` cannot be applied to the same method",
+            "`#[get]`, `#[set]`, and `#[prop]` cannot be combined on the same method",
         ));
     }
 
@@ -94,6 +113,26 @@ fn apply_accessor_attributes(method: &mut ImplItemFn) -> syn::Result<()> {
         let qjs_attribute: Attribute = match get_rename {
             Some(literal) => parse_quote!(#[qjs(get, rename = #literal)]),
             None => parse_quote!(#[qjs(get)]),
+        };
+
+        method.attrs.push(qjs_attribute);
+    }
+
+    if saw_prop {
+        if has_qjs_flag(&method.attrs, "prop") {
+            return Err(syn::Error::new_spanned(
+                method.sig.ident.clone(),
+                "`#[prop]` conflicts with existing `#[qjs(prop)]` attribute",
+            ));
+        }
+
+        if !doc_contains(&method.attrs, INSTR_GET) {
+            append_doc_line(&mut method.attrs, INSTR_GET.to_string());
+        }
+
+        let qjs_attribute: Attribute = match prop_rename {
+            Some(literal) => parse_quote!(#[qjs(prop, rename = #literal)]),
+            None => parse_quote!(#[qjs(prop)]),
         };
 
         method.attrs.push(qjs_attribute);
@@ -118,7 +157,7 @@ fn apply_accessor_attributes(method: &mut ImplItemFn) -> syn::Result<()> {
     Ok(())
 }
 
-/// Parse `#[get("name")]` or `#[set("name")]` into a rename literal.
+/// Parse `#[get("name")]`, `#[set("name")]`, or `#[prop("name")]` into a rename literal.
 fn parse_accessor_attribute(attribute: &Attribute, name: &str) -> syn::Result<Option<LitStr>> {
     match &attribute.meta {
         Meta::Path(_) => Ok(None),

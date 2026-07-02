@@ -203,7 +203,7 @@ impl TextReplacements {
                 Replacement::JsCallback((context, function_key)) => {
                     let trigger_for_callback = trigger.clone();
 
-                    // Phase 1: queue the call inside a non-yielding async_with! so the
+                    // Phase 1: queue the call inside a non-yielding async_with so the
                     // rquickjs scheduler's waker is not overwritten by this task's waker.
                     let prepare_result = context
                         .async_with(async |ctx| {
@@ -222,7 +222,7 @@ impl TextReplacements {
                         continue;
                     };
 
-                    // Phase 2: wait for completion outside any async_with! so the
+                    // Phase 2: wait for completion outside any async_with so the
                     // scheduler's waker is undisturbed and waitForKeys can still resolve.
                     if finished_receiver.await.is_err() {
                         warn!(

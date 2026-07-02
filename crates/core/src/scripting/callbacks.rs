@@ -226,7 +226,7 @@ impl Callbacks {
 
     /// Call a registered function synchronously and return its raw result.
     ///
-    /// Like `call_sync`, this executes directly without yielding inside `async_with!`, so the
+    /// Like `call_sync`, this executes directly without yielding inside `async_with`, so the
     /// rquickjs scheduler's queue waker is not overwritten.
     ///
     /// Unlike `call_sync`, the return value is given back to the caller. If the function returns
@@ -266,7 +266,7 @@ impl Callbacks {
     /// Call a registered function synchronously within the current JS context.
     ///
     /// Unlike `call`, this executes directly without going through the callback worker, so it
-    /// does not yield inside an `async_with!` block. This preserves the rquickjs scheduler's
+    /// does not yield inside an `async_with` block. This preserves the rquickjs scheduler's
     /// queue waker registration, which `call` would otherwise overwrite.
     ///
     /// If the callback returns a Promise it is spawned into the scheduler for background
@@ -340,9 +340,9 @@ impl Callbacks {
     /// Prepare a callback call without awaiting its completion.
     ///
     /// This is the first phase of the split-call pattern that avoids yielding inside
-    /// `async_with!`. Call this synchronously within a non-yielding `async_with!` closure,
-    /// then `.await` the returned receiver **outside** any `async_with!`, and finally call
-    /// `retrieve_result` inside another non-yielding `async_with!`.
+    /// `async_with`. Call this synchronously within a non-yielding `async_with` closure,
+    /// then `.await` the returned receiver **outside** any `async_with`, and finally call
+    /// `retrieve_result` inside another non-yielding `async_with`.
     ///
     /// Returns `None` if the callback worker is not running.
     pub(crate) fn prepare_call<'js>(
@@ -379,7 +379,7 @@ impl Callbacks {
     /// Retrieve the result of a completed callback call.
     ///
     /// This is the third phase of the split-call pattern. Call this inside a non-yielding
-    /// `async_with!` closure after the receiver from `prepare_call` has resolved.
+    /// `async_with` closure after the receiver from `prepare_call` has resolved.
     pub(crate) fn retrieve_result<'js>(
         &self,
         ctx: &Ctx<'js>,
