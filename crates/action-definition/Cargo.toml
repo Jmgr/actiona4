@@ -1,0 +1,27 @@
+[package]
+name = "action-definition"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[dependencies]
+macros = { path = "../macros" }
+types = { path = "../types" }
+const-default.workspace = true
+fluent.workspace = true
+icons.workspace = true
+
+serde .workspace = true
+serde_json.workspace = true
+slotmap.workspace = true
+static-dispatch.workspace = true
+strum.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+fluent-syntax.workspace = true
+serde_json.workspace = true
+unic-langid.workspace = true

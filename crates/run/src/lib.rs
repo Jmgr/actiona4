@@ -16,9 +16,7 @@ use std::{
     sync::Arc,
 };
 
-use ::config::{
-    CommonConfig, {DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK},
-};
+use ::config::{CommonConfig, DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK};
 use actiona_common::sentry::setup_crash_reporting;
 use actiona_core::{
     format_js_value_for_console,

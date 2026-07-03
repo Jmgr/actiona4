@@ -13,11 +13,8 @@ mod state;
 mod store;
 
 pub use crate::{
-    settings::CommonSettings,
-    settings::DEFAULT_TELEMETRY,
-    settings::DEFAULT_UPDATE_CHECK,
-    state::CommonState,
-    state::{Channel, VersionInfo},
+    settings::{CommonSettings, DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK},
+    state::{Channel, CommonState, VersionInfo},
     store::Store,
 };
 
@@ -124,7 +121,10 @@ impl CommonConfig {
         self.state.with(operation)
     }
 
-    pub async fn state_mut<R>(&self, operation: impl FnOnce(&mut CommonState) -> R + Send) -> Result<R>
+    pub async fn state_mut<R>(
+        &self,
+        operation: impl FnOnce(&mut CommonState) -> R + Send,
+    ) -> Result<R>
     where
         R: Send,
     {

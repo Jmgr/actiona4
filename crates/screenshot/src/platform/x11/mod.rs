@@ -5,9 +5,7 @@ use satint::{SaturatingInto, Su32};
 use tokio::select;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
-use types::{
-    Point, Rect, {Size, size},
-};
+use types::{Point, Rect, Size, size};
 use x11rb_async::{
     connection::Connection, protocol::xproto::ImageFormat, rust_connection::RustConnection,
 };
