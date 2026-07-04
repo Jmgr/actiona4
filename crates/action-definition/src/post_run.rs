@@ -1,9 +1,14 @@
-use action_definition::tree::BranchKind;
+use std::default;
+
+use serde::{Deserialize, Serialize};
+
+use crate::tree::BranchKind;
 
 /// What to do once the action has finished running.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub enum PostRun {
     /// Run the next sibling.
+    #[default]
     NextSibling,
 
     /// Run the first child, if any, otherwise run the parent's next sibling.

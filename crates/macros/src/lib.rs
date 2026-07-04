@@ -251,6 +251,11 @@ pub fn derive_action(input: TokenStream) -> TokenStream {
     action_definition::action::derive(input)
 }
 
+#[proc_macro_attribute]
+pub fn action(arguments: TokenStream, item: TokenStream) -> TokenStream {
+    action_definition::action::expand(arguments, item)
+}
+
 /// Generates the `ACTION_DEFINITIONS` slice from the `ActionInstance` enum,
 /// keeping the enum the single source of truth. Each variant must be a newtype
 /// over its action struct (`Click(Click)`); the derive lists that struct's

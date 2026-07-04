@@ -1,24 +1,26 @@
+//! JavaScript/TypeScript scripting engine.
+//!
+//! Error handling spans three layers, each with its own error type:
+//! - the public API returns the module's [`Result`]/[`ScriptError`];
+//! - the TypeScript transpiler returns [`typescript::TranspileError`] (surfaced as
+//!   [`ScriptError::Compile`]);
+//! - the callbacks worker works at the rquickjs FFI boundary and uses `rquickjs::Result`.
+//!
+//! Caught JavaScript errors from every entry point (`eval*` and [`Engine::with`]) flow
+//! through [`Engine::process_caught_result`] so they share one structured, source-mapped path.
+
 use std::{
     collections::{HashMap, hash_map::Entry},
-    fmt,
     hash::{DefaultHasher, Hash, Hasher},
     mem::take,
     sync::Arc,
 };
 
-use color_eyre::{Report, Result, eyre::eyre};
 use derive_where::derive_where;
-use once_cell::sync::Lazy;
 use parking_lot::Mutex;
-use regex::Regex;
 use rquickjs::{
-    AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, Ctx, Exception, FromJs, Object,
-    Promise, Value, context::EvalOptions, markers::ParallelSend,
-};
-use swc_common::{
-    BytePos, FileName, FilePathMapping, SourceMap, Span,
-    errors::{ColorConfig, Handler},
-    sync::Lrc,
+    AsyncContext, AsyncRuntime, CatchResultExt, CaughtError, CaughtResult, Coerced, Ctx, Exception,
+    FromJs, Object, Promise, Value, context::EvalOptions, markers::ParallelSend,
 };
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
@@ -26,63 +28,21 @@ use tracing::instrument;
 use crate::{error::CommonError, runtime::WithUserData, scripting::typescript::TsToJs};
 
 pub mod callbacks;
+mod diagnostics;
+mod error;
 pub mod typescript;
 
-pub type UnhandledException = (String, Vec<CallStackFrame>);
-
-const MAX_STACK_NOTES: usize = 8;
-
-/// Attempts to emit a rich SWC-style diagnostic for a script error.
-///
-/// Returns `true` if the error was handled and emitted, `false` if the caller
-/// should fall back to its own error display.
-#[must_use]
-pub fn try_emit_script_diagnostic(err: &Report, source_code: &str) -> bool {
-    if err
-        .downcast_ref::<typescript::EmittedDiagnosticError>()
-        .is_some()
-    {
-        return true;
-    }
-
-    let Some(runtime_error) = err.downcast_ref::<RuntimeScriptError>() else {
-        return false;
-    };
-
-    if runtime_error.message == format!("Error: {}", CommonError::Cancelled) {
-        return true;
-    }
-
-    let (cm, handler) = new_tty_handler();
-
-    let primary_span = runtime_primary_span(runtime_error, source_code, &cm);
-    let mut diagnostic = primary_span.map_or_else(
-        || handler.struct_err(&runtime_error.message),
-        |span| handler.struct_span_err(span, &runtime_error.message),
-    );
-
-    let first_note_index = if primary_span.is_some() { 1 } else { 0 };
-    for frame in runtime_error
-        .stack
-        .iter()
-        .skip(first_note_index)
-        .take(MAX_STACK_NOTES)
-    {
-        diagnostic.note(&frame.to_string());
-    }
-    if runtime_error.stack.len() > (first_note_index + MAX_STACK_NOTES) {
-        diagnostic.note("...");
-    }
-
-    diagnostic.emit();
-    true
-}
-
-pub(in crate::scripting) fn new_tty_handler() -> (Lrc<SourceMap>, Handler) {
-    let cm = Lrc::new(SourceMap::new(FilePathMapping::empty()));
-    let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
-    (cm, handler)
-}
+pub(in crate::scripting) use diagnostics::new_tty_handler;
+#[cfg(test)]
+use diagnostics::{
+    find_closest_call_identifier_range, find_closest_identifier_range,
+    parse_reference_error_identifier, parse_type_error_identifier, runtime_primary_span,
+};
+pub use diagnostics::{
+    is_js_identifier_continue, is_js_identifier_start, try_emit_script_diagnostic,
+};
+use error::parse_callstack;
+pub use error::{CallStackFrame, Result, RuntimeScriptError, ScriptError, UnhandledException};
 
 #[derive(Clone)]
 #[derive_where(Debug)]
@@ -100,316 +60,13 @@ pub struct Engine {
     unhandled_exceptions: Arc<Mutex<Vec<UnhandledException>>>,
 }
 
-static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"^\s*at(?: (?P<func>.+?) \()?(?P<file>.+?):(?P<line>\d+):(?P<col>\d+)\)?$")
-        .expect("Failed to compile regex")
-});
-
-#[derive(Debug)]
-pub struct CallStackFrame {
-    function: String,
-    file: String,
-    line: u32,
-    col: u32,
-}
-
-impl fmt::Display for CallStackFrame {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.function.is_empty() {
-            write!(f, "    at {}:{}:{}", self.file, self.line, self.col)
-        } else {
-            write!(
-                f,
-                "    at {} ({}:{}:{})",
-                self.function, self.file, self.line, self.col
-            )
-        }
-    }
-}
-
-#[derive(Debug)]
-struct RuntimeScriptError {
-    message: String,
-    stack: Vec<CallStackFrame>,
-}
-
-impl RuntimeScriptError {
-    const fn new(message: String, stack: Vec<CallStackFrame>) -> Self {
-        Self { message, stack }
-    }
-}
-
-impl fmt::Display for RuntimeScriptError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.message)?;
-        for frame in &self.stack {
-            write!(f, "\n{frame}")?;
-        }
-        Ok(())
-    }
-}
-
-impl std::error::Error for RuntimeScriptError {}
-
-fn runtime_primary_span(
-    runtime_error: &RuntimeScriptError,
-    source_code: &str,
-    cm: &Lrc<SourceMap>,
-) -> Option<Span> {
-    let frame = runtime_error.stack.first()?;
-    let line_index = usize::try_from(frame.line.checked_sub(1)?).ok()?;
-    let column_index = usize::try_from(frame.col.checked_sub(1)?).ok()?;
-
-    let source_file = cm.new_source_file(
-        Lrc::new(FileName::Custom(frame.file.clone())),
-        source_code.to_string(),
-    );
-
-    let line_start = *source_file.analyze().lines.get(line_index)?;
-    let line = source_file.get_line(line_index)?;
-
-    if let Some((start_byte, end_byte)) =
-        reference_error_identifier_range(&runtime_error.message, &line, frame.col)
-    {
-        let lo = line_start + BytePos(u32::try_from(start_byte).ok()?);
-        let hi = line_start + BytePos(u32::try_from(end_byte).ok()?);
-        return Some(Span::new(lo, hi));
-    }
-
-    if let Some((start_byte, end_byte)) =
-        not_a_function_identifier_range(&runtime_error.message, &line, frame.col)
-    {
-        let lo = line_start + BytePos(u32::try_from(start_byte).ok()?);
-        let hi = line_start + BytePos(u32::try_from(end_byte).ok()?);
-        return Some(Span::new(lo, hi));
-    }
-
-    let column_byte = line
-        .char_indices()
-        .nth(column_index)
-        .map_or_else(|| line.len(), |(index, _)| index);
-    let column_byte = u32::try_from(column_byte).ok()?;
-    let lo = line_start + BytePos(column_byte);
-
-    Some(Span::new(lo, lo))
-}
-
-fn reference_error_identifier_range(
-    message: &str,
-    line: &str,
-    reported_col: u32,
-) -> Option<(usize, usize)> {
-    let identifier = parse_reference_error_identifier(message)?;
-    let reported_col = usize::try_from(reported_col.checked_sub(1)?).ok()?;
-    find_closest_identifier_range(line, identifier, reported_col)
-}
-
-fn parse_reference_error_identifier(message: &str) -> Option<&str> {
-    let identifier = message
-        .strip_prefix("ReferenceError: ")?
-        .strip_suffix(" is not defined")?
-        .trim();
-    let identifier = strip_matching_quotes(identifier);
-    is_valid_js_identifier(identifier).then_some(identifier)
-}
-
-fn not_a_function_identifier_range(
-    message: &str,
-    line: &str,
-    reported_col: u32,
-) -> Option<(usize, usize)> {
-    let reported_col = usize::try_from(reported_col.checked_sub(1)?).ok()?;
-
-    if let Some(identifier) = parse_type_error_identifier(message) {
-        return find_closest_identifier_range(line, identifier, reported_col);
-    }
-
-    is_plain_not_a_function_type_error(message)
-        .then(|| find_closest_call_identifier_range(line, reported_col))
-        .flatten()
-}
-
-fn parse_type_error_identifier(message: &str) -> Option<&str> {
-    let identifier = message
-        .strip_prefix("TypeError: ")?
-        .strip_suffix(" is not a function")?
-        .trim();
-    let identifier = strip_matching_quotes(identifier);
-    is_valid_js_identifier(identifier).then_some(identifier)
-}
-
-fn is_plain_not_a_function_type_error(message: &str) -> bool {
-    message.trim() == "TypeError: not a function"
-}
-
-fn strip_matching_quotes(value: &str) -> &str {
-    match value.as_bytes() {
-        [b'\'' | b'"', .., last] if *last == value.as_bytes()[0] => &value[1..value.len() - 1],
-        _ => value,
-    }
-}
-
-fn find_closest_identifier_range(
-    line: &str,
-    identifier: &str,
-    reported_col: usize,
-) -> Option<(usize, usize)> {
-    let ident_char_len = identifier.chars().count();
-    let mut best_match: Option<(usize, usize, usize)> = None;
-    for (start_byte, _) in line.match_indices(identifier) {
-        let end_byte = start_byte + identifier.len();
-        if !is_identifier_boundary(line, start_byte, end_byte) {
-            continue;
-        }
-
-        let start_col = line[..start_byte].chars().count();
-        let end_col_exclusive = start_col + ident_char_len;
-        let distance = column_distance_to_identifier(reported_col, start_col, end_col_exclusive);
-        let candidate = (distance, start_byte, end_byte);
-
-        if best_match.is_none_or(|current| candidate < current) {
-            best_match = Some(candidate);
-        }
-    }
-
-    best_match.map(|(_, start_byte, end_byte)| (start_byte, end_byte))
-}
-
-fn find_closest_call_identifier_range(line: &str, reported_col: usize) -> Option<(usize, usize)> {
-    let mut best_non_constructor: Option<(usize, usize, usize)> = None;
-    let mut best_match: Option<(usize, usize, usize)> = None;
-    for (start_byte, ch) in line.char_indices() {
-        if !is_js_identifier_start(ch) {
-            continue;
-        }
-
-        if line[..start_byte]
-            .chars()
-            .next_back()
-            .is_some_and(is_js_identifier_continue)
-        {
-            continue;
-        }
-
-        let mut ident_end_byte = start_byte + ch.len_utf8();
-        for next in line[ident_end_byte..].chars() {
-            if is_js_identifier_continue(next) {
-                ident_end_byte += next.len_utf8();
-            } else {
-                break;
-            }
-        }
-
-        let after_ident_byte = ident_end_byte
-            + line[ident_end_byte..]
-                .chars()
-                .take_while(|c| c.is_whitespace())
-                .map(char::len_utf8)
-                .sum::<usize>();
-
-        let Some(next) = line[after_ident_byte..].chars().next() else {
-            continue;
-        };
-        if next != '(' {
-            continue;
-        }
-
-        let start_col = line[..start_byte].chars().count();
-        let end_col_exclusive = start_col + line[start_byte..ident_end_byte].chars().count();
-        let distance = column_distance_to_identifier(reported_col, start_col, end_col_exclusive);
-        let candidate = (distance, start_byte, ident_end_byte);
-        let is_constructor = is_constructor_call(line, start_byte);
-
-        if best_match.is_none_or(|current| candidate < current) {
-            best_match = Some(candidate);
-        }
-        if !is_constructor && best_non_constructor.is_none_or(|current| candidate < current) {
-            best_non_constructor = Some(candidate);
-        }
-    }
-
-    best_non_constructor
-        .or(best_match)
-        .map(|(_, start_byte, end_byte)| (start_byte, end_byte))
-}
-
-fn is_constructor_call(line: &str, start_byte: usize) -> bool {
-    let prefix = line[..start_byte].trim_end_matches(char::is_whitespace);
-    let Some(before_new) = prefix.strip_suffix("new") else {
-        return false;
-    };
-    before_new
-        .chars()
-        .next_back()
-        .is_none_or(|ch| !is_js_identifier_continue(ch))
-}
-
-const fn column_distance_to_identifier(
-    reported_col: usize,
-    start_col: usize,
-    end_col_exclusive: usize,
-) -> usize {
-    if reported_col < start_col {
-        start_col - reported_col
-    } else if reported_col >= end_col_exclusive {
-        reported_col - (end_col_exclusive.saturating_sub(1))
-    } else {
-        0
-    }
-}
-
-fn is_identifier_boundary(line: &str, start_byte: usize, end_byte: usize) -> bool {
-    let prev = line[..start_byte].chars().next_back();
-    let next = line[end_byte..].chars().next();
-    prev.is_none_or(|ch| !is_js_identifier_continue(ch))
-        && next.is_none_or(|ch| !is_js_identifier_continue(ch))
-}
-
-fn is_valid_js_identifier(identifier: &str) -> bool {
-    let mut chars = identifier.chars();
-    let Some(first) = chars.next() else {
-        return false;
-    };
-
-    is_js_identifier_start(first) && chars.all(is_js_identifier_continue)
-}
-
-#[must_use]
-pub fn is_js_identifier_start(ch: char) -> bool {
-    ch == '$' || ch == '_' || ch.is_alphabetic()
-}
-
-#[must_use]
-pub fn is_js_identifier_continue(ch: char) -> bool {
-    ch == '$' || ch == '_' || ch.is_alphanumeric()
-}
-
-fn parse_callstack_line(line: &str) -> Result<CallStackFrame> {
-    CALLSTACK_REGEX
-        .captures(line)
-        .and_then(|caps| {
-            // Use and_then to chain Option results, returning None if any part fails
-            let function = caps.name("func").map_or("", |cap| cap.as_str());
-            let file = caps.name("file").map_or("", |cap| cap.as_str());
-            // Parse line and col, converting parse errors into None
-            let line = caps.name("line")?.as_str().parse::<u32>().ok()?;
-            let col = caps.name("col")?.as_str().parse::<u32>().ok()?;
-
-            Some(CallStackFrame {
-                function: function.to_string(),
-                file: file.to_string(),
-                line,
-                col,
-            })
-        })
-        .ok_or_else(|| eyre!("failed parsing callstack line: {line}"))
-}
-
 impl Engine {
     #[instrument(skip_all)]
     pub async fn new() -> Result<Self> {
-        let runtime = AsyncRuntime::new()?;
-        let context = AsyncContext::full(&runtime).await?;
+        let runtime = AsyncRuntime::new().map_err(ScriptError::quickjs)?;
+        let context = AsyncContext::full(&runtime)
+            .await
+            .map_err(ScriptError::quickjs)?;
 
         let sourcemaps = Arc::new(Mutex::new(Default::default()));
         let unhandled_exceptions = Arc::new(Mutex::new(Vec::default()));
@@ -424,17 +81,9 @@ impl Engine {
                     }
 
                     if let Ok(object) = reason.try_into_exception() {
+                        let processed = Self::process_exception(object, sourcemaps_clone.clone());
                         let mut unhandled_exceptions_clone = unhandled_exceptions_clone.lock();
-                        if let Ok((message, stack)) =
-                            Self::process_exception(object, sourcemaps_clone.clone())
-                        {
-                            unhandled_exceptions_clone.push((message, stack));
-                        } else {
-                            unhandled_exceptions_clone.push((
-                                "Error: failed to process unhandled promise rejection".to_string(),
-                                Vec::new(),
-                            ));
-                        }
+                        unhandled_exceptions_clone.push((processed.message, processed.stack));
                     }
                 },
             )))
@@ -453,12 +102,13 @@ impl Engine {
         F: for<'js> FnOnce(Ctx<'js>) -> rquickjs::Result<R> + ParallelSend,
         R: Send,
     {
-        let result = self
-            .context
-            .with(|ctx| f(ctx.clone()).catch(&ctx).map_err(|err| err.to_string()))
+        let sourcemaps = self.sourcemaps.clone();
+        self.context
+            .with(move |ctx| {
+                let result = f(ctx.clone()).catch(&ctx);
+                Self::process_caught_result(result, sourcemaps)
+            })
             .await
-            .map_err(|err| eyre!("{err}"))?;
-        Ok(result)
     }
 
     #[allow(clippy::significant_drop_tightening)]
@@ -604,61 +254,68 @@ impl Engine {
     fn process_exception(
         exception: Exception,
         sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
-    ) -> Result<UnhandledException> {
+    ) -> ProcessedException {
         let name: String = exception
             .as_object()
             .get("name")
             .unwrap_or_else(|_| "Error".to_string());
-        let message = exception.message().unwrap_or_default();
-        let message = format!("{name}: {message}");
+        let raw_message = exception.message().unwrap_or_default();
+        let cancelled = raw_message == CommonError::Cancelled.to_string();
+        let message = format!("{name}: {raw_message}");
         let stack = exception.stack().unwrap_or_default();
-        let lines = stack.lines().map(|line| parse_callstack_line(line.trim()));
-        let stack = match lines.collect::<Result<Vec<_>>>() {
-            Ok(res) => res,
-            Err(_) => return Ok((message, Default::default())),
-        };
 
-        let stack = stack.into_iter().map(|mut frame| {
-            let Ok(source_hash) = frame.file.parse::<u64>() else {
-                // File field is not a hash (e.g. already a real filename) — keep as-is
-                return Ok(frame);
-            };
-            let sourcemaps = sourcemaps.lock();
-            let Some(ts_to_js) = sourcemaps.get(&source_hash) else {
-                return Ok(frame);
-            };
+        let stack = parse_callstack(&stack)
+            .into_iter()
+            .map(|mut frame| {
+                let Ok(source_hash) = frame.file().parse::<u64>() else {
+                    // File field is not a hash (e.g. already a real filename) — keep as-is
+                    return frame;
+                };
+                let sourcemaps = sourcemaps.lock();
+                let Some(ts_to_js) = sourcemaps.get(&source_hash) else {
+                    return frame;
+                };
 
-            // Replace the hash with the real filename
-            frame.file = ts_to_js.filename().to_string();
+                // Replace the hash with the real filename
+                frame.set_file(ts_to_js.filename());
 
-            // Translate line/col via sourcemap if available
-            if let Some((_, ts_line, ts_col)) =
-                ts_to_js.lookup_source_location(frame.line, frame.col)
-            {
-                frame.line = ts_line;
-                frame.col = ts_col;
-            }
+                // Translate line/col via sourcemap if available
+                if let Some((_, ts_line, ts_col)) =
+                    ts_to_js.lookup_source_location(frame.line(), frame.column())
+                {
+                    frame.set_line(ts_line);
+                    frame.set_column(ts_col);
+                }
 
-            Ok(frame)
-        });
-        let stack = stack.collect::<Result<Vec<_>>>()?;
+                frame
+            })
+            .collect();
 
-        Ok((message, stack))
+        ProcessedException {
+            message,
+            stack,
+            cancelled,
+        }
     }
 
     fn process_caught_result<T>(
-        result: rquickjs::CaughtResult<T>,
+        result: CaughtResult<T>,
         sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
     ) -> Result<T> {
         match result {
             Ok(value) => Ok(value),
             Err(err) => match err {
-                CaughtError::Error(err) => Err(eyre!("script error: {err}")),
+                CaughtError::Error(err) => Err(ScriptError::quickjs(err)),
                 CaughtError::Exception(exception) => {
-                    let (message, stack) = Self::process_exception(exception, sourcemaps)?;
-                    Err(eyre!(RuntimeScriptError::new(message, stack)))
+                    let processed = Self::process_exception(exception, sourcemaps);
+                    Err(RuntimeScriptError::new(
+                        processed.message,
+                        processed.stack,
+                        processed.cancelled,
+                    )
+                    .into())
                 }
-                CaughtError::Value(value) => Err(eyre!("script value: {value:?}")),
+                CaughtError::Value(value) => Err(ScriptError::Value(value_to_string(&value))),
             },
         }
     }
@@ -686,6 +343,22 @@ impl Engine {
     pub fn context(&self) -> AsyncContext {
         self.context.clone()
     }
+}
+
+/// A processed JavaScript exception: a formatted message, a source-mapped call stack,
+/// and whether it represents a cancellation.
+struct ProcessedException {
+    message: String,
+    stack: Vec<CallStackFrame>,
+    cancelled: bool,
+}
+
+/// Converts a thrown JavaScript value into a human-readable string using JS `String(value)`
+/// coercion, falling back to the value's type name if coercion fails.
+fn value_to_string(value: &Value<'_>) -> String {
+    Coerced::<String>::from_js(value.ctx(), value.clone())
+        .map(|coerced| coerced.0)
+        .unwrap_or_else(|_| value.type_name().to_string())
 }
 
 #[cfg(test)]
@@ -1042,7 +715,7 @@ outer();
 
         let frame = stack.first().unwrap();
 
-        assert_eq!(frame.line, 2, "idle boom should be on line 2");
+        assert_eq!(frame.line(), 2, "idle boom should be on line 2");
 
         assert!(
             message.contains("idle boom"),
@@ -1231,6 +904,38 @@ await doWork();
         );
     }
 
+    #[tokio::test]
+    async fn runtime_script_error_exposes_primary_location() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .eval_async_with_filename::<()>(
+                r#"
+function fail() {
+    throw new Error("structured location");
+}
+await fail();
+"#,
+                Some("location.ts"),
+            )
+            .await
+            .unwrap_err();
+
+        let runtime_error = err
+            .runtime_error()
+            .expect("error should preserve RuntimeScriptError");
+        let frame = runtime_error
+            .primary_frame()
+            .expect("runtime error should expose a primary frame");
+
+        assert!(runtime_error.message().contains("structured location"));
+        assert_eq!(frame.function(), "fail");
+        assert_eq!(frame.file(), "location.ts");
+        assert_eq!(frame.line(), 3);
+        assert!(frame.column() > 0);
+        assert_eq!(runtime_error.stack().first().unwrap().line(), frame.line());
+    }
+
     #[test]
     fn reference_error_identifier_parsing() {
         assert_eq!(
@@ -1310,12 +1015,8 @@ await doWork();
     fn runtime_primary_span_highlights_reference_identifier() {
         let runtime_error = RuntimeScriptError::new(
             "ReferenceError: mouse2 is not defined".to_string(),
-            vec![CallStackFrame {
-                function: String::new(),
-                file: "test2.ts".to_string(),
-                line: 1,
-                col: 21,
-            }],
+            vec![CallStackFrame::new("", "test2.ts", 1, 21)],
+            false,
         );
         let source = "await windows.findAt(await mouse2.position());";
 
@@ -1333,12 +1034,8 @@ await doWork();
     fn runtime_primary_span_highlights_not_a_function_callsite() {
         let runtime_error = RuntimeScriptError::new(
             "TypeError: not a function".to_string(),
-            vec![CallStackFrame {
-                function: String::new(),
-                file: "script".to_string(),
-                line: 1,
-                col: 41,
-            }],
+            vec![CallStackFrame::new("", "script", 1, 41)],
+            false,
         );
         let source = r#"await screen.captureRect(0, 0, 100, 100).save("out.png")"#;
 
@@ -1356,12 +1053,8 @@ await doWork();
     fn runtime_primary_span_highlights_not_a_function_method_not_constructor_argument() {
         let runtime_error = RuntimeScriptError::new(
             "TypeError: not a function".to_string(),
-            vec![CallStackFrame {
-                function: String::new(),
-                file: "script".to_string(),
-                line: 1,
-                col: 34,
-            }],
+            vec![CallStackFrame::new("", "script", 1, 34)],
+            false,
         );
         let source = "image.drawCircle(50, 50, 50, new Color(0, 0, 0, 128))";
 
@@ -1373,5 +1066,86 @@ await doWork();
             .expect("span should be mappable to source snippet");
 
         assert_eq!(snippet, "drawCircle");
+    }
+
+    #[test]
+    fn parse_callstack_keeps_parseable_frames() {
+        let stack = "    at good1 (script:2:3)\n\
+             this line is not a stack frame\n\
+                 at good2 (script:5:6)";
+
+        let frames = parse_callstack(stack);
+        assert_eq!(
+            frames.len(),
+            2,
+            "malformed line should be skipped, not fatal"
+        );
+        assert_eq!(frames[0].function(), "good1");
+        assert_eq!(frames[0].line(), 2);
+        assert_eq!(frames[1].function(), "good2");
+        assert_eq!(frames[1].line(), 5);
+    }
+
+    #[test]
+    fn cancelled_runtime_error_is_suppressed() {
+        let runtime_error =
+            RuntimeScriptError::new("Error: Cancelled".to_string(), Vec::new(), true);
+        assert!(runtime_error.is_cancelled());
+
+        let err: ScriptError = runtime_error.into();
+        assert!(err.is_cancelled());
+        // A cancelled error is treated as "handled" so callers stay silent.
+        assert!(try_emit_script_diagnostic(&err, ""));
+    }
+
+    #[tokio::test]
+    async fn with_closure_exception_is_structured() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .with(|ctx| ctx.eval::<(), _>("throw new Error('with boom');"))
+            .await
+            .unwrap_err();
+
+        let runtime_error = err
+            .runtime_error()
+            .expect("with() should surface a structured RuntimeScriptError, like eval()");
+        assert!(
+            runtime_error.message().contains("with boom"),
+            "got: {}",
+            runtime_error.message()
+        );
+    }
+
+    #[tokio::test]
+    async fn thrown_value_is_coerced_not_debug_formatted() {
+        let engine = Engine::new().await.unwrap();
+
+        let string_err = engine.eval::<()>("throw 'oops';").await.unwrap_err();
+        assert!(matches!(string_err, ScriptError::Value(_)));
+        assert!(
+            string_err.to_string().contains("oops"),
+            "thrown string should be coerced, got: {string_err}"
+        );
+
+        let number_err = engine.eval::<()>("throw 42;").await.unwrap_err();
+        assert!(
+            number_err.to_string().contains("42"),
+            "thrown number should be coerced, got: {number_err}"
+        );
+    }
+
+    #[tokio::test]
+    async fn prepare_script_surfaces_compile_error() {
+        let engine = Engine::new().await.unwrap();
+
+        let err = engine
+            .prepare_script("function {{{ invalid", Some("bad.ts"), true)
+            .unwrap_err();
+
+        assert!(
+            matches!(err, ScriptError::Compile(_)),
+            "TS compile failure should be a ScriptError::Compile, got: {err:?}"
+        );
     }
 }

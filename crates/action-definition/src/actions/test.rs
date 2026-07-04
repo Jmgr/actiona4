@@ -1,16 +1,24 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::{Action, Branching},
+    actions::{Branching, action},
+    parameters::duration::DurationValue,
+    post_run::PostRun,
     scriptable::Scriptable,
     tree::BranchKind,
 };
 
-#[derive(Action, Clone, Debug, Default, Deserialize, Serialize)]
 #[action(icon = TestTubeDiagonal)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Test {
     #[parameter]
     pub percent: Scriptable<i64>,
+
+    #[parameter]
+    pub duration: Scriptable<DurationValue>,
+
+    #[serde(skip)]
+    pub post_run: PostRun,
 }
 
 impl Branching for Test {

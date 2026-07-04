@@ -1,4 +1,3 @@
-use color_eyre::{Result, eyre::eyre};
 use swc_common::{
     FileName, GLOBALS, Globals, Mark, source_map::DefaultSourceMapGenConfig, sync::Lrc,
 };
@@ -9,15 +8,27 @@ use swc_ecma_transforms_base::{fixer::fixer, hygiene::hygiene, resolver};
 use swc_ecma_transforms_typescript::strip;
 use thiserror::Error;
 
+/// Errors produced while transpiling TypeScript to JavaScript.
 #[derive(Debug, Error)]
-#[error("{message}")]
-pub(super) struct EmittedDiagnosticError {
-    message: String,
+pub enum TranspileError {
+    /// A parse error whose rich SWC diagnostic was already emitted to the terminal.
+    #[error("{message}")]
+    Emitted { message: String },
+
+    /// A parse error surfaced in silent mode; nothing was emitted to the terminal.
+    #[error("{0}")]
+    Parse(String),
+
+    /// A code generation or output-encoding failure.
+    #[error("code generation failed: {0}")]
+    Codegen(String),
 }
 
-impl EmittedDiagnosticError {
-    const fn new(message: String) -> Self {
-        Self { message }
+impl TranspileError {
+    /// Whether a rich diagnostic for this error was already printed to the terminal,
+    /// meaning the caller should not print its own fallback message.
+    pub(crate) const fn diagnostics_already_emitted(&self) -> bool {
+        matches!(self, Self::Emitted { .. })
     }
 }
 
@@ -28,15 +39,19 @@ pub(crate) struct TsToJs {
 }
 
 impl TsToJs {
-    pub fn new(code: &str, filename: &str) -> Result<Self> {
+    pub fn new(code: &str, filename: &str) -> Result<Self, TranspileError> {
         Self::new_with_diagnostics(code, filename, true)
     }
 
-    pub fn new_silent(code: &str, filename: &str) -> Result<Self> {
+    pub fn new_silent(code: &str, filename: &str) -> Result<Self, TranspileError> {
         Self::new_with_diagnostics(code, filename, false)
     }
 
-    fn new_with_diagnostics(code: &str, filename: &str, emit_diagnostics: bool) -> Result<Self> {
+    fn new_with_diagnostics(
+        code: &str,
+        filename: &str,
+        emit_diagnostics: bool,
+    ) -> Result<Self, TranspileError> {
         let (cm, handler) = super::new_tty_handler();
 
         let fm = cm.new_source_file(
@@ -61,19 +76,19 @@ impl TsToJs {
             parser.parse_program().map_err(|e| {
                 let message = e.kind().msg().into_owned();
                 e.into_diagnostic(&handler).emit();
-                eyre!(EmittedDiagnosticError::new(message))
+                TranspileError::Emitted { message }
             })?
         } else {
             let _ = parser.take_errors();
             parser
                 .parse_program()
-                .map_err(|e| eyre!("{}", e.kind().msg()))?
+                .map_err(|e| TranspileError::Parse(e.kind().msg().into_owned()))?
         };
 
         let globals = Globals::default();
         let (code, srcmap) = GLOBALS.set(
             &globals,
-            || -> Result<(std::string::String, swc_sourcemap::SourceMap)> {
+            || -> Result<(std::string::String, swc_sourcemap::SourceMap), TranspileError> {
                 let unresolved_mark = Mark::new();
                 let top_level_mark = Mark::new();
 
@@ -103,11 +118,14 @@ impl TsToJs {
                         wr: JsWriter::new(cm.clone(), "\n", &mut code, Some(&mut srcmap)),
                     };
 
-                    emitter.emit_program(&program)?;
+                    emitter
+                        .emit_program(&program)
+                        .map_err(|e| TranspileError::Codegen(e.to_string()))?;
                 }
 
                 let srcmap = cm.build_source_map(&srcmap, None, DefaultSourceMapGenConfig);
-                let code = String::from_utf8(code)?;
+                let code =
+                    String::from_utf8(code).map_err(|e| TranspileError::Codegen(e.to_string()))?;
 
                 Ok((code, srcmap))
             },
@@ -183,5 +201,43 @@ impl TsToJs {
                     _ => None, // No mapping found for this specific token
                 }
             })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn diagnostics_already_emitted_only_for_emitted() {
+        assert!(
+            TranspileError::Emitted {
+                message: "boom".to_string()
+            }
+            .diagnostics_already_emitted()
+        );
+        assert!(!TranspileError::Parse("boom".to_string()).diagnostics_already_emitted());
+        assert!(!TranspileError::Codegen("boom".to_string()).diagnostics_already_emitted());
+    }
+
+    #[test]
+    fn silent_parse_error_is_parse_variant() {
+        // `TsToJs` isn't `Debug`, so match instead of `unwrap_err`.
+        let err = match TsToJs::new_silent("function {{{ invalid", "bad.ts") {
+            Ok(_) => panic!("expected a parse error"),
+            Err(err) => err,
+        };
+        assert!(
+            matches!(err, TranspileError::Parse(_)),
+            "expected a Parse variant, got: {err:?}"
+        );
+        assert!(!err.diagnostics_already_emitted());
+    }
+
+    #[test]
+    fn valid_typescript_transpiles() {
+        let ts_to_js = TsToJs::new_silent("const x: number = 1; x;", "ok.ts").unwrap();
+        assert!(ts_to_js.code().contains("const x"));
+        assert_eq!(ts_to_js.filename(), "ok.ts");
     }
 }

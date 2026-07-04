@@ -8,11 +8,12 @@ documentation.workspace = true
 license.workspace = true
 
 [dependencies]
-macros = { path = "../macros" }
-types = { path = "../types" }
 const-default.workspace = true
 fluent.workspace = true
+humantime.workspace = true
 icons.workspace = true
+macros = { path = "../macros" }
+types = { path = "../types" }
 
 serde .workspace = true
 serde_json.workspace = true
@@ -23,5 +24,6 @@ thiserror.workspace = true
 
 [dev-dependencies]
 fluent-syntax.workspace = true
+rstest.workspace = true
 serde_json.workspace = true
 unic-langid.workspace = true

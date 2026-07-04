@@ -682,12 +682,6 @@ impl Mouse {
             self.set_position(position.0, coordinate)?;
         }
 
-        let mut action = {
-            let mut enigo = self.enigo.lock();
-
-            move |direction| enigo.button(options.press.button.into(), direction)
-        };
-
         for i in 0..options.amount {
             if !options.duration.0.is_zero() {
                 let contains = {
@@ -696,7 +690,9 @@ impl Mouse {
                 };
 
                 if !contains {
-                    action(enigo::Direction::Press)?;
+                    self.enigo
+                        .lock()
+                        .button(options.press.button.into(), enigo::Direction::Press)?;
                 } else {
                     info!(
                         "button {} is already pressed, ignoring",
@@ -706,14 +702,21 @@ impl Mouse {
                 select! {
                     () = cancellation_token.cancelled() => {
                         // Release the button before cancelling
-                        let _ = action(enigo::Direction::Release);
+                        let _ = self
+                            .enigo
+                            .lock()
+                            .button(options.press.button.into(), enigo::Direction::Release);
                         return Err(CommonError::Cancelled.into());
                     },
                     () = sleep(options.duration.0) => {},
                 }
-                action(enigo::Direction::Release)?;
+                self.enigo
+                    .lock()
+                    .button(options.press.button.into(), enigo::Direction::Release)?;
             } else {
-                action(enigo::Direction::Click)?;
+                self.enigo
+                    .lock()
+                    .button(options.press.button.into(), enigo::Direction::Click)?;
             }
 
             info!("removing {} from the pressed buttons", options.press.button);

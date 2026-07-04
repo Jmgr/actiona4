@@ -35,6 +35,7 @@ pub struct Metadata {
     pub(super) label: Option<String>,
     pub(super) comment: Option<String>,
     /// Depth of the node in the tree: the root is `0`, its children `1`, and so on.
+    #[serde(skip)]
     pub(super) depth: usize,
     /// Whether the node's children are hidden (collapsed) in the UI.
     pub(super) collapsed: bool,

@@ -25,8 +25,10 @@ dependencies = [
  "const-default",
  "fluent",
  "fluent-syntax",
+ "humantime",
  "icons",
  "macros",
+ "rstest",
  "serde",
  "serde_json",
  "slotmap",
@@ -42,11 +44,15 @@ name = "action-execution"
 version = "0.2.0"
 dependencies = [
  "action-definition",
+ "core",
  "eyre",
+ "rquickjs",
  "serde",
  "static-dispatch",
  "thiserror 2.0.18",
+ "tokio",
  "tokio-util",
+ "unicode-segmentation",
 ]
 
 [[package]]

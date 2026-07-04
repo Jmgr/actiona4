@@ -1,11 +1,12 @@
 // The generated impl refers to `ActionInstance` and each variant's field type
 // by the bare names used in `action_definition`'s enum definition, so they must be in
 // scope here under those exact names.
-use action_definition::actions::{
-    ActionInstance, click::Click, code::Code, message_box::MessageBox, test::Test,
+use action_definition::{
+    actions::{ActionInstance, click::Click, code::Code, message_box::MessageBox, test::Test},
+    post_run::PostRun,
 };
 
-use crate::{ExecutionContext, PostRun, RunError};
+use crate::{ExecutionContext, error::RunError};
 
 #[static_dispatch::setup]
 #[allow(async_fn_in_trait)]

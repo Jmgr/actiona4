@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use super::{
     ActionTree, ClipboardNode, ClipboardTree, DropMode, Error, Metadata, Node, NodeId, NodePayload,
 };
-use crate::actions::{ActionDefinition, Branching, WithDefinition};
+use crate::actions::{ActionDefinition, ActionInstance, Branching, WithDefinition};
 
 impl ActionTree {
     pub fn can_drop(&self, selection_ids: &[NodeId], target_id: NodeId, mode: DropMode) -> bool {
@@ -42,6 +42,16 @@ impl ActionTree {
         definition: &ActionDefinition,
         parent_id: NodeId,
     ) -> Result<NodeId, Error> {
+        self.append_action_instance((definition.create_instance)(), parent_id)
+    }
+
+    /// Appends an existing action instance as the last child of `parent_id` and
+    /// returns its id.
+    pub fn append_action_instance(
+        &mut self,
+        action_instance: ActionInstance,
+        parent_id: NodeId,
+    ) -> Result<NodeId, Error> {
         {
             let parent = self.get_node(parent_id)?;
 
@@ -53,7 +63,6 @@ impl ActionTree {
         let parent_depth = self.get_node(parent_id)?.depth();
         let action_depth = parent_depth + 1;
 
-        let action_instance = (definition.create_instance)();
         let branches = action_instance.branches();
         let action = Node {
             parent_id: Some(parent_id),

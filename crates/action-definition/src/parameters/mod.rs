@@ -1,12 +1,19 @@
+use std::{fmt, marker::PhantomData, ops::Deref};
+
+use serde::{Deserialize, Serialize};
+
 use crate::{
     TranslationKey,
     parameters::{
-        boolean::BooleanParameter, enumeration::EnumParameter, integer::IntegerParameter,
-        position::PositionParameter, source_code::SourceParameter, text::TextParameter,
+        boolean::BooleanParameter, duration::DurationParameter, enumeration::EnumParameter,
+        integer::IntegerParameter, position::PositionParameter, source_code::SourceParameter,
+        text::TextParameter,
     },
+    scriptable::Scriptable,
 };
 
 pub mod boolean;
+pub mod duration;
 pub mod enumeration;
 pub mod integer;
 pub mod position;
@@ -21,6 +28,7 @@ pub enum ParameterKind {
     Text(TextParameter),
     Source(SourceParameter),
     Enum(EnumParameter),
+    Duration(DurationParameter),
 }
 
 #[derive(Debug)]
@@ -35,4 +43,95 @@ pub trait ParameterStorage {
     type Settings;
     const DEFAULT_SETTINGS: Self::Settings;
     const KIND: ParameterKind;
+}
+
+impl<T: ParameterStorage> ParameterStorage for Scriptable<T> {
+    type Settings = T::Settings;
+    const DEFAULT_SETTINGS: Self::Settings = T::DEFAULT_SETTINGS;
+    const KIND: ParameterKind = T::KIND;
+}
+
+impl<T: ParameterStorage> ParameterStorage for Option<T> {
+    type Settings = T::Settings;
+    const DEFAULT_SETTINGS: Self::Settings = T::DEFAULT_SETTINGS;
+    const KIND: ParameterKind = T::KIND;
+}
+
+pub trait ParamName {
+    const NAME: &'static str;
+}
+
+pub trait ParamSpec: ParamName {
+    const KIND: ParameterKind;
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(transparent)]
+pub struct Param<T, N> {
+    value: T,
+    #[serde(skip)]
+    name: PhantomData<N>,
+}
+
+impl<T, N> Param<T, N> {
+    pub const fn new(value: T) -> Self {
+        Self {
+            value,
+            name: PhantomData,
+        }
+    }
+
+    pub const fn value(&self) -> &T {
+        &self.value
+    }
+
+    pub fn into_value(self) -> T {
+        self.value
+    }
+}
+
+impl<T, N: ParamName> Param<T, N> {
+    pub const fn name(&self) -> &'static str {
+        N::NAME
+    }
+}
+
+impl<T: Copy, N> Copy for Param<T, N> {}
+
+impl<T: Clone, N> Clone for Param<T, N> {
+    fn clone(&self) -> Self {
+        Self::new(self.value.clone())
+    }
+}
+
+impl<T: fmt::Debug, N> fmt::Debug for Param<T, N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.value.fmt(f)
+    }
+}
+
+impl<T: Default, N> Default for Param<T, N> {
+    fn default() -> Self {
+        Self::new(T::default())
+    }
+}
+
+impl<T, N> Deref for Param<T, N> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+impl<T, N> From<T> for Param<T, N> {
+    fn from(value: T) -> Self {
+        Self::new(value)
+    }
+}
+
+impl<T: ParameterStorage, N> ParameterStorage for Param<T, N> {
+    type Settings = T::Settings;
+    const DEFAULT_SETTINGS: Self::Settings = T::DEFAULT_SETTINGS;
+    const KIND: ParameterKind = T::KIND;
 }

@@ -2,7 +2,7 @@ use macros::ActionEnum;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::{Action, Branching},
+    actions::{Branching, action},
     scriptable::Scriptable,
     tree::BranchKind,
 };
@@ -18,8 +18,8 @@ pub enum MessageBoxButtons {
     YesNoCancel,
 }
 
-#[derive(Action, Clone, Debug, Default, Deserialize, Serialize)]
 #[action(icon = MessageSquareMore)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct MessageBox {
     #[parameter]
     pub title: Scriptable<String>,
@@ -31,7 +31,7 @@ pub struct MessageBox {
 
 impl Branching for MessageBox {
     fn branches(&self) -> Vec<BranchKind> {
-        match self.buttons {
+        match *self.buttons {
             MessageBoxButtons::Ok => vec![],
             MessageBoxButtons::OkCancel => vec![BranchKind::Cancel],
             MessageBoxButtons::Yes => vec![BranchKind::Yes],

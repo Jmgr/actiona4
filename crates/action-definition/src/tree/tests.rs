@@ -111,6 +111,70 @@ fn node_by_label_returns_none_for_unknown_label() {
 }
 
 #[test]
+fn action_tree_serializes_only_persistent_state() {
+    let mut tree = ActionTree::default();
+    let action = tree
+        .append_new_action(&Test::DEFINITION, tree.root)
+        .unwrap();
+    let true_branch = tree.map[action].children[0];
+    let nested = tree
+        .append_new_action(&Click::DEFINITION, true_branch)
+        .unwrap();
+
+    tree.set_node_label(action, "condition").unwrap();
+    tree.set_node_comment(nested, "Nested click").unwrap();
+    tree.set_node_collapsed(action, true).unwrap();
+
+    let json = serde_json::to_value(&tree).expect("serialize tree");
+    let object = json.as_object().expect("tree serializes as object");
+
+    assert_eq!(object.len(), 2);
+    assert!(object.contains_key("map"));
+    assert!(object.contains_key("root"));
+    assert!(!object.contains_key("label_map"));
+    assert!(!object.contains_key("rows"));
+    assert!(!object.contains_key("row_of"));
+
+    assert_json_key_absent(&json, "depth");
+}
+
+#[test]
+fn action_tree_deserialization_rebuilds_indexes_and_depths() {
+    let mut tree = ActionTree::default();
+    let action = tree
+        .append_new_action(&Test::DEFINITION, tree.root)
+        .unwrap();
+    let true_branch = tree.map[action].children[0];
+    let false_branch = tree.map[action].children[1];
+    let nested = tree
+        .append_new_action(&Click::DEFINITION, true_branch)
+        .unwrap();
+
+    tree.set_node_label(action, "condition").unwrap();
+    tree.set_node_label(nested, "click_target").unwrap();
+    tree.set_node_collapsed(action, true).unwrap();
+
+    let mut json = serde_json::to_value(&tree).expect("serialize tree");
+    inject_legacy_depth_fields(&mut json, 99);
+
+    let deserialized: ActionTree = serde_json::from_value(json).expect("deserialize tree");
+
+    assert_eq!(deserialized.rows, tree.rows);
+    for (row, &node_id) in tree.rows.iter().enumerate() {
+        assert_eq!(deserialized.node_row(node_id).unwrap(), row);
+    }
+    assert_eq!(deserialized.node_by_label("condition"), Some(action));
+    assert_eq!(deserialized.node_by_label("click_target"), Some(nested));
+
+    assert_eq!(deserialized.map[deserialized.root].depth(), 0);
+    assert_eq!(deserialized.map[action].depth(), 1);
+    assert_eq!(deserialized.map[true_branch].depth(), 2);
+    assert_eq!(deserialized.map[false_branch].depth(), 2);
+    assert_eq!(deserialized.map[nested].depth(), 3);
+    assert!(deserialized.map[action].is_collapsed());
+}
+
+#[test]
 fn set_and_clear_node_comment_updates_node_metadata() {
     let mut tree = ActionTree::default();
     let action = tree
@@ -758,4 +822,43 @@ fn set_action_parameter_errors_on_invalid_value() {
         tree.set_action_parameter(action, "title", serde_json::json!("oops")),
         Err(Error::ParameterSerialization(_)),
     ));
+}
+
+fn assert_json_key_absent(value: &serde_json::Value, key: &str) {
+    match value {
+        serde_json::Value::Object(object) => {
+            assert!(!object.contains_key(key), "unexpected serialized key {key}");
+            for value in object.values() {
+                assert_json_key_absent(value, key);
+            }
+        }
+        serde_json::Value::Array(values) => {
+            for value in values {
+                assert_json_key_absent(value, key);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn inject_legacy_depth_fields(value: &mut serde_json::Value, depth: usize) {
+    match value {
+        serde_json::Value::Object(object) => {
+            if let Some(metadata) = object
+                .get_mut("metadata")
+                .and_then(serde_json::Value::as_object_mut)
+            {
+                metadata.insert("depth".to_string(), serde_json::json!(depth));
+            }
+            for value in object.values_mut() {
+                inject_legacy_depth_fields(value, depth);
+            }
+        }
+        serde_json::Value::Array(values) => {
+            for value in values {
+                inject_legacy_depth_fields(value, depth);
+            }
+        }
+        _ => {}
+    }
 }

@@ -60,9 +60,7 @@ pub async fn run_record(
         keyboard_keys,
     };
 
-    let mouse = runtime
-        .mouse()
-        .ok_or_else(|| eyre!("mouse not initialized"))?;
+    let mouse = runtime.mouse()?;
     let token = runtime.cancellation_token();
 
     let data = record_impl(runtime.clone(), mouse, config, runtime.displays(), token).await?;
@@ -107,12 +105,8 @@ pub async fn run_play(
     );
     println!("Replaying at {speed}x speed...");
 
-    let keyboard = runtime
-        .keyboard()
-        .ok_or_else(|| eyre!("keyboard not initialized"))?;
-    let mouse = runtime
-        .mouse()
-        .ok_or_else(|| eyre!("mouse not initialized"))?;
+    let keyboard = runtime.keyboard()?;
+    let mouse = runtime.mouse()?;
     let token = runtime.cancellation_token();
 
     let config = PlayConfig {

@@ -9,9 +9,15 @@ license.workspace = true
 
 [dependencies]
 action-definition = { path = "../action-definition" }
+core = { path = "../core" }
 eyre.workspace = true
+rquickjs.workspace = true
 
 serde.workspace = true
 static-dispatch.workspace = true
 thiserror.workspace = true
 tokio-util.workspace = true
+unicode-segmentation.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

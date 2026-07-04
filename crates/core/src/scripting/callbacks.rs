@@ -27,6 +27,24 @@ struct Call {
 new_key_type! { pub struct FunctionKey; }
 new_key_type! { pub(crate) struct CallKey; }
 
+/// Registry and worker for JavaScript callbacks invoked from Rust (e.g. input-event handlers
+/// such as `on_key`/`on_scroll`).
+///
+/// Failures during a callback invocation — a missing/unrestorable function, an argument-marshalling
+/// error, or an exception thrown inside the handler — are logged at `warn` level and the result
+/// falls back to `undefined`. This fire-and-forget behavior is intentional: a throwing input
+/// handler must not abort the surrounding event loop or the awaiting Rust caller.
+///
+/// Both synchronous throws and rejections of a returned promise are swallowed this way: when a
+/// handler returns a promise the trigger path awaits it (see `api::triggers::fire_callback`), so a
+/// rejection is considered handled by QuickJS and does *not* reach the engine's
+/// host-promise-rejection tracker — that tracker only catches genuinely orphaned rejections that
+/// nothing awaits.
+///
+// TODO: surface handler errors to the user. Today they are only `warn`-logged; the tracked
+// `unhandled_exceptions` sink is drained at teardown via `Engine::idle` and then discarded by the
+// run binary (`crates/run/src/lib.rs`). Surfacing would mean routing sync throws and awaited
+// rejections here into that sink *and* having the run binary print the returned exceptions.
 #[derive_where(Debug)]
 pub struct Callbacks {
     /// Callback functions
@@ -416,33 +434,15 @@ impl Callbacks {
         function_key: FunctionKey,
         args: Vec<Value<'js>>,
     ) -> Result<Value<'js>> {
-        let (finished_sender, finished_receiver) = oneshot::channel();
-        let call_id = {
-            let mut calls = self.calls.lock();
-            calls.insert(Call {
-                function_key,
-                parameters: Some(Persistent::save(ctx, args)),
-                result: None,
-                finished: Some(finished_sender),
-            })
-        };
-        info!("calling function {:?}, call id {:?}", function_key, call_id);
-
-        let start = Instant::now();
-
-        if self.call_sender.send(call_id).is_err() {
-            warn!(
-                ?function_key,
-                ?call_id,
-                "failed to queue callback call because callback worker is not running"
-            );
-            let mut calls = self.calls.lock();
-            _ = calls.remove(call_id);
+        let Some((call_id, finished_receiver)) = self.prepare_call(ctx, function_key, args) else {
             return Err(Exception::throw_message(
                 ctx,
                 "Callback worker is not running",
             ));
-        }
+        };
+        info!("calling function {:?}, call id {:?}", function_key, call_id);
+
+        let start = Instant::now();
 
         finished_receiver.await.map_err(|error| {
             warn!(
@@ -460,27 +460,6 @@ impl Callbacks {
             format_duration(Instant::now() - start)
         );
 
-        let result = {
-            let mut calls = self.calls.lock();
-            let call = calls.remove(call_id).ok_or_else(|| {
-                warn!(
-                    ?function_key,
-                    ?call_id,
-                    "callback call state not found after worker completion"
-                );
-                Exception::throw_message(ctx, "Callback call state not found")
-            })?;
-            let result = call.result.ok_or_else(|| {
-                warn!(
-                    ?function_key,
-                    ?call_id,
-                    "callback call completed without a result"
-                );
-                Exception::throw_message(ctx, "Callback call completed without a result")
-            })?;
-            result.restore(ctx)?
-        };
-
-        Ok(result)
+        self.retrieve_result(ctx, call_id)
     }
 }

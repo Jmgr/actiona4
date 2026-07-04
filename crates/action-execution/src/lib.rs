@@ -3,14 +3,12 @@
 mod actions;
 mod context;
 mod error;
-mod post_run;
-mod resolve;
+mod resolve_param;
 mod runnable;
 mod tree;
 
 pub use context::ExecutionContext;
-pub use error::RunError;
-pub use post_run::PostRun;
-pub use resolve::{Resolve, ResolveError};
+pub use error::{RunError, RunErrorKind};
+pub use resolve_param::{ResolveParam, ResolveParamError};
 pub use runnable::Runnable;
 pub use tree::RunTree;

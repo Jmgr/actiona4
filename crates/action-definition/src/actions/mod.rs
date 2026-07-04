@@ -14,7 +14,7 @@ pub mod code;
 pub mod message_box;
 pub mod test;
 
-pub use macros::Action;
+pub use macros::{Action, action};
 
 #[static_dispatch::setup]
 pub trait WithDefinition {
@@ -28,7 +28,7 @@ pub trait Branching {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, ActionDefinitions)]
+#[derive(ActionDefinitions, Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 #[static_dispatch::setup]
 pub enum ActionInstance {

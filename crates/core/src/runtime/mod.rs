@@ -11,7 +11,7 @@ use std::{
     },
 };
 
-use color_eyre::Result;
+use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
 use derive_where::derive_where;
 use enigo::{Enigo, Settings};
@@ -55,6 +55,7 @@ use crate::runtime::win::events::input::{
 use crate::{
     IntoJSError,
     api::{
+        action_result::js::{JsActionBranch, JsActionResult},
         app::js::JsApp,
         audio::{PlayingSoundsTracker, js::JsAudio},
         clipboard::{Clipboard, js::JsClipboard},
@@ -806,6 +807,8 @@ impl Runtime {
         register_host_class::<JsFilesystem>(&ctx)?;
         register_host_class::<JsAbortSignal>(&ctx)?;
         register_host_class::<JsMatch>(&ctx)?;
+        register_host_class::<JsActionBranch>(&ctx)?;
+        register_host_class::<JsActionResult>(&ctx)?;
 
         // Value classes
         register_value_class::<JsPoint>(&ctx)?;
@@ -1122,14 +1125,24 @@ impl Runtime {
         self.platform().keyboard_text()
     }
 
-    #[must_use]
-    pub fn mouse(&self) -> Option<Mouse> {
-        self.mouse.lock().clone()
+    pub fn mouse(&self) -> Result<Mouse> {
+        let mouse = self
+            .mouse
+            .lock()
+            .clone()
+            .ok_or_else(|| eyre!("mouse not initialized"))?;
+
+        Ok(mouse)
     }
 
-    #[must_use]
-    pub fn keyboard(&self) -> Option<Keyboard> {
-        self.keyboard.lock().clone()
+    pub fn keyboard(&self) -> Result<Keyboard> {
+        let keyboard = self
+            .keyboard
+            .lock()
+            .clone()
+            .ok_or_else(|| eyre!("keyboard not initialized"))?;
+
+        Ok(keyboard)
     }
 
     fn clear_runtime_back_references(&self) {

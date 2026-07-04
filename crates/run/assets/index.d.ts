@@ -3132,6 +3132,91 @@ declare enum Method {
     Trace,
 }
 /**
+ * Branch target used by `ActionResult.branch`.
+ * 
+ * ```ts
+ * ActionResult.branch(ActionBranch.yes());
+ * ActionResult.branch(ActionBranch.custom("retry"));
+ * ```
+ * @category Actions
+ */
+declare class ActionBranch {
+    private constructor();
+    /**
+     * Selects the `yes` branch.
+     */
+    static yes(): ActionBranch;
+    /**
+     * Selects the `no` branch.
+     */
+    static no(): ActionBranch;
+    /**
+     * Selects the `cancel` branch.
+     */
+    static cancel(): ActionBranch;
+    /**
+     * Selects the `true` branch.
+     */
+    static true(): ActionBranch;
+    /**
+     * Selects the `false` branch.
+     */
+    static false(): ActionBranch;
+    /**
+     * Selects a custom named branch.
+     */
+    static custom(name: string): ActionBranch;
+    /**
+     * Returns a string representation of this action branch.
+     */
+    toString(): string;
+}
+/**
+ * Execution control result for Code actions.
+ * 
+ * Evaluate to one of these values from a Code action script to control which
+ * action runs next. Evaluating to nothing continues with the next sibling
+ * action.
+ * 
+ * ```ts
+ * const result = shouldStop
+ *   ? ActionResult.stop()
+ *   : needsRetry
+ *     ? ActionResult.gotoLabel("retry")
+ *     : ActionResult.branch(ActionBranch.true());
+ * 
+ * result;
+ * ```
+ * @category Actions
+ */
+declare class ActionResult {
+    private constructor();
+    /**
+     * Continues execution with the next sibling action.
+     */
+    static nextSibling(): ActionResult;
+    /**
+     * Continues execution with the first child action.
+     */
+    static nextChild(): ActionResult;
+    /**
+     * Continues execution with the matching branch.
+     */
+    static branch(branch: ActionBranch): ActionResult;
+    /**
+     * Jumps to the action with the given label.
+     */
+    static gotoLabel(label: string): ActionResult;
+    /**
+     * Stops action execution.
+     */
+    static stop(): ActionResult;
+    /**
+     * Returns a string representation of this action result.
+     */
+    toString(): string;
+}
+/**
  * The global application singleton, providing access to environment information
  * and execution settings.
  * 

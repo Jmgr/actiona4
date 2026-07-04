@@ -5,11 +5,11 @@ use std::{
 
 use actiona_core::{
     format_js_value_for_console,
-    scripting::{self, Engine, is_js_identifier_continue, is_js_identifier_start},
+    scripting::{self, Engine, ScriptError, is_js_identifier_continue, is_js_identifier_start},
 };
 use clap::{CommandFactory, Parser};
 use color_eyre::{
-    Report, Result,
+    Result,
     owo_colors::{self, OwoColorize},
 };
 use directories::BaseDirs;
@@ -424,7 +424,7 @@ fn likely_print_without_newline(line: &str) -> bool {
 async fn missing_await_promise_receiver_hint(
     script_engine: &Engine,
     line: &str,
-    err: &Report,
+    err: &ScriptError,
 ) -> Option<String> {
     if !is_plain_not_a_function_error(err) {
         return None;
@@ -449,7 +449,7 @@ async fn missing_await_promise_receiver_hint(
     is_promise.then_some(receiver_name)
 }
 
-fn is_plain_not_a_function_error(err: &Report) -> bool {
+fn is_plain_not_a_function_error(err: &ScriptError) -> bool {
     err.to_string()
         .lines()
         .next()
