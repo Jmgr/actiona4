@@ -21,7 +21,10 @@ use crate::{
     IntoJsResult,
     api::{
         ResultExt,
-        js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
+        js::{
+            DeepEqualClass, DeepEqualError, FromJsField, classes::ValueClass,
+            has_registered_class_prototype,
+        },
     },
 };
 
@@ -105,6 +108,12 @@ impl<'js> FromParam<'js> for JsSizeLike {
 #[js_class]
 pub struct JsSize {
     inner: Size,
+}
+
+impl DeepEqualClass for JsSize {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        Ok(self == other)
+    }
 }
 
 impl ValueClass<'_> for JsSize {}

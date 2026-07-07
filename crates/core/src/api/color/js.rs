@@ -19,7 +19,10 @@ use rquickjs::{
 };
 use types::{Color, display::display_with_type};
 
-use crate::api::js::{FromJsField, classes::ValueClass, has_registered_class_prototype};
+use crate::api::js::{
+    DeepEqualClass, DeepEqualError, FromJsField, classes::ValueClass,
+    has_registered_class_prototype,
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct JsColorLike(pub Color);
@@ -271,6 +274,12 @@ impl<'js> FromParam<'js> for JsColorLike {
 #[js_class]
 pub struct JsColor {
     inner: Color,
+}
+
+impl DeepEqualClass for JsColor {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        Ok(self == other)
+    }
 }
 
 impl<'js> ValueClass<'js> for JsColor {

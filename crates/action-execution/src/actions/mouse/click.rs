@@ -1,5 +1,5 @@
 use action_definition::{
-    actions::click::{Click, MouseButton},
+    actions::mouse::click::{Click, MouseButton},
     parameters::ParameterKind,
     post_run::PostRun,
 };
@@ -8,10 +8,10 @@ use actiona_core::api::mouse::{Button, ClickOptions, PressOptions};
 use crate::{
     ExecutionContext, Runnable,
     error::RunError,
-    resolve_param::{ResolveParam, ScriptableParamValue, ValidateParamValue},
+    resolve_param::{ResolveParam, ScriptableParamValue, ValidateParamValue, ValidationError},
 };
 
-fn to_core_button(button: MouseButton) -> Button {
+pub(crate) fn to_core_button(button: MouseButton) -> Button {
     match button {
         MouseButton::Left => Button::Left,
         MouseButton::Middle => Button::Middle,
@@ -40,13 +40,13 @@ impl ScriptableParamValue for MouseButton {
 }
 
 impl ValidateParamValue for MouseButton {
-    fn validate_param(&self, _kind: &ParameterKind) -> Result<(), String> {
+    fn validate_param(&self, _kind: &ParameterKind) -> Result<(), ValidationError> {
         Ok(())
     }
 }
 
 impl Runnable for Click {
-    async fn run(&self, context: &ExecutionContext) -> Result<PostRun, RunError> {
+    async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         let position = self.position.resolve(context).await?;
         let button = self.button.resolve(context).await?;
         let relative_position = self.relative_position.resolve(context).await?;

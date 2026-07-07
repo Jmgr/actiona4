@@ -219,33 +219,68 @@ impl Engine {
     }
 
     #[instrument(skip_all)]
-    pub async fn eval_async_fn<T>(
+    pub async fn eval_async_fn_result<T, E>(
         &self,
         script: &str,
-        f: impl FnOnce(Value) -> Result<T> + Send,
-    ) -> Result<T>
+        f: impl FnOnce(Value) -> std::result::Result<T, E> + Send,
+        map_script_error: impl Fn(ScriptError) -> E + Send + Sync,
+    ) -> std::result::Result<T, E>
     where
-        for<'any_js> T: FromJs<'any_js> + Send + 'static,
+        T: Send + 'static,
+        E: Send + 'static,
     {
-        let (hash, js_code) = self.prepare_script(script, None, false)?;
+        self.eval_async_values_fn_result(
+            &[script],
+            |mut values| f(values.remove(0)),
+            |_, error| map_script_error(error),
+        )
+        .await
+    }
+
+    #[instrument(skip_all)]
+    pub async fn eval_async_values_fn_result<T, E>(
+        &self,
+        scripts: &[&str],
+        f: impl FnOnce(Vec<Value>) -> std::result::Result<T, E> + Send,
+        map_script_error: impl Fn(usize, ScriptError) -> E + Send + Sync,
+    ) -> std::result::Result<T, E>
+    where
+        T: Send + 'static,
+        E: Send + 'static,
+    {
+        let js_codes = scripts
+            .iter()
+            .enumerate()
+            .map(|(index, script)| {
+                self.prepare_script(script, None, false)
+                    .map_err(|error| map_script_error(index, error))
+            })
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         let sourcemaps = self.sourcemaps.clone();
 
         self.context
             .async_with(async |ctx| {
-                let mut options = EvalOptions::default();
-                options.promise = true;
-                options.filename = Some(format!("{hash}"));
+                let mut values = Vec::with_capacity(js_codes.len());
 
-                let result = async {
-                    let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
-                    let future: Object = func.into_future().await.catch(&ctx)?;
-                    future.get::<_, Value>("value").catch(&ctx)
+                for (index, (hash, js_code)) in js_codes.into_iter().enumerate() {
+                    let mut options = EvalOptions::default();
+                    options.promise = true;
+                    options.filename = Some(format!("{hash}"));
+
+                    let result = async {
+                        let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
+                        let future: Object = func.into_future().await.catch(&ctx)?;
+                        future.get::<_, Value>("value").catch(&ctx)
+                    }
+                    .await;
+
+                    values.push(
+                        Self::process_caught_result(result, sourcemaps.clone())
+                            .map_err(|error| map_script_error(index, error))?,
+                    );
                 }
-                .await;
 
-                let result = Self::process_caught_result(result, sourcemaps)?;
-
-                f(result)
+                f(values)
             })
             .await
     }

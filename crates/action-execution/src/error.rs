@@ -1,4 +1,5 @@
 use action_definition::tree::{self, BranchKind, NodeId};
+use actiona_core::{api::js::DeepEqualError, scripting::ScriptError};
 
 use crate::resolve_param::ResolveParamError;
 
@@ -19,6 +20,12 @@ impl From<ResolveParamError> for RunError {
 
 impl From<eyre::Report> for RunError {
     fn from(value: eyre::Report) -> Self {
+        Self::new(value)
+    }
+}
+
+impl From<ScriptError> for RunError {
+    fn from(value: ScriptError) -> Self {
         Self::new(value)
     }
 }
@@ -49,8 +56,26 @@ pub enum RunErrorKind {
     Tree(#[from] tree::Error),
     #[error("no node found with label {0}")]
     LabelNotFound(String),
+    #[error("invalid wait unit")]
+    InvalidWaitUnit { value: String },
+    #[error("invalid wait duration")]
+    InvalidWaitDuration,
+    #[error("failed to resolve switch branch `{branch}` value: {source}")]
+    SwitchBranchValueResolveFailed {
+        branch: String,
+        #[source]
+        source: ScriptError,
+    },
+    #[error("failed to compare switch value with branch `{branch}`: {source}")]
+    SwitchBranchCompareFailed {
+        branch: String,
+        #[source]
+        source: DeepEqualError,
+    },
     #[error("expected children of {0:?} to be branches")]
     ExpectedChildBranches(NodeId),
     #[error("no {0} branch found in {1:?}'s children")]
     BranchNotFound(BranchKind, NodeId),
+    #[error(transparent)]
+    Script(#[from] ScriptError),
 }

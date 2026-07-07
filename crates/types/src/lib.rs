@@ -1,6 +1,7 @@
 mod color;
 pub mod convert;
 pub mod display;
+pub mod platform;
 mod point;
 mod rect;
 mod size;

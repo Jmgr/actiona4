@@ -1,6 +1,30 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Error, Fields, parse_macro_input};
+use syn::{
+    Data, DeriveInput, Error, Fields, GenericArgument, PathArguments, Type, parse_macro_input,
+};
+
+/// Each variant holds `WithCommon<Action>`; the `DEFINITION` const lives on the
+/// inner `Action`, so unwrap the single generic argument of `WithCommon<_>`.
+/// Any other type is returned unchanged.
+fn inner_action_type(ty: &Type) -> &Type {
+    let Type::Path(type_path) = ty else {
+        return ty;
+    };
+    let Some(segment) = type_path.path.segments.last() else {
+        return ty;
+    };
+    if segment.ident != "WithCommon" {
+        return ty;
+    }
+    let PathArguments::AngleBracketed(args) = &segment.arguments else {
+        return ty;
+    };
+    match args.args.first() {
+        Some(GenericArgument::Type(inner)) => inner,
+        _ => ty,
+    }
+}
 
 pub(crate) fn derive(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
@@ -30,7 +54,7 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
                     "ActionDefinitions requires each variant to hold exactly one action type",
                 ));
             };
-            let ty = &field.ty;
+            let ty = inner_action_type(&field.ty);
             Ok(quote! { <#ty>::DEFINITION })
         })
         .collect::<Result<Vec<_>, Error>>();

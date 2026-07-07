@@ -19,7 +19,10 @@ use types::{Rect, display::display_with_type, point, size};
 
 use crate::api::{
     ResultExt,
-    js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
+    js::{
+        DeepEqualClass, DeepEqualError, FromJsField, classes::ValueClass,
+        has_registered_class_prototype,
+    },
     point::js::JsPoint,
     size::js::JsSize,
 };
@@ -124,6 +127,12 @@ impl<'js> FromParam<'js> for JsRectLike {
 #[js_class]
 pub struct JsRect {
     inner: Rect,
+}
+
+impl DeepEqualClass for JsRect {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        Ok(self == other)
+    }
 }
 
 impl ValueClass<'_> for JsRect {}

@@ -1,6 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
-use macros::{FromJsObject, js_class, js_methods, options, platform};
+use macros::{FromJsObject, FromSerde, js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Promise, Result, Value,
     atom::PredefinedAtom,
@@ -8,6 +8,8 @@ use rquickjs::{
     function::{FromParam, ParamRequirement, ParamsAccessor},
     prelude::*,
 };
+use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 use tracing::instrument;
 use types::point;
 
@@ -48,6 +50,30 @@ pub type JsButton = super::Button;
 pub type JsAxis = super::Axis;
 pub type JsTween = super::Tween;
 
+/// Mouse button direction.
+///
+/// ```ts
+/// await mouse.waitForButton({ direction: ButtonDirection.Press });
+/// ```
+///
+/// @expand
+#[derive(Clone, Copy, Debug, Deserialize, EnumIter, FromSerde, Serialize)]
+pub enum JsButtonDirection {
+    /// `ButtonDirection.Press`
+    Press,
+    /// `ButtonDirection.Release`
+    Release,
+}
+
+impl From<JsButtonDirection> for Direction {
+    fn from(value: JsButtonDirection) -> Self {
+        match value {
+            JsButtonDirection::Press => Self::Press,
+            JsButtonDirection::Release => Self::Release,
+        }
+    }
+}
+
 /// Controls mouse input: movement, clicking, scrolling, and position queries.
 ///
 /// ```ts
@@ -82,6 +108,7 @@ impl<'js> SingletonClass<'js> for JsMouse {
         register_enum::<JsButton>(ctx)?;
         register_enum::<JsAxis>(ctx)?;
         register_enum::<JsTween>(ctx)?;
+        register_enum::<JsButtonDirection>(ctx)?;
         register_host_class::<JsScrollEvent>(ctx)?;
 
         Ok(())
@@ -185,6 +212,9 @@ pub struct JsMeasureSpeedOptions {
 pub struct JsWaitForButtonOptions {
     /// Mouse button to wait for. If not specified, waits for any button.
     pub button: Option<JsButton>,
+
+    /// Button direction to wait for. If not specified, waits for either press or release.
+    pub direction: Option<JsButtonDirection>,
 
     /// Abort signal to cancel the wait.
     pub signal: Option<JsAbortSignal>,
@@ -707,7 +737,7 @@ impl JsMouse {
         self.inner.release(args.trailing).into_js_result(&ctx)
     }
 
-    /// Waits until a mouse button is pressed.
+    /// Waits until a mouse button is pressed or released.
     ///
     /// ```ts
     /// // Wait for any button press
@@ -719,6 +749,7 @@ impl JsMouse {
     /// const controller = new AbortController();
     /// const button = await mouse.waitForButton({
     ///   button: Button.Left,
+    ///   direction: ButtonDirection.Press,
     ///   signal: controller.signal
     /// });
     /// ```
@@ -734,7 +765,7 @@ impl JsMouse {
         let signal = options.signal.clone();
         let conditions = ButtonConditions {
             button: options.button,
-            direction: Some(Direction::Press),
+            direction: options.direction.map(Into::into),
         };
         let local_mouse = self.inner.clone();
 

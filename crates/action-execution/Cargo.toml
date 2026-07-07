@@ -10,14 +10,18 @@ license.workspace = true
 [dependencies]
 action-definition = { path = "../action-definition" }
 core = { path = "../core" }
-eyre.workspace = true
-rquickjs.workspace = true
 
+eyre.workspace = true
+itertools.workspace = true
+rquickjs.workspace = true
+satint.workspace = true
 serde.workspace = true
+serde_plain.workspace = true
 static-dispatch.workspace = true
 thiserror.workspace = true
+tokio.workspace = true
 tokio-util.workspace = true
 unicode-segmentation.workspace = true
 
 [dev-dependencies]
-tokio.workspace = true
+parking_lot.workspace = true

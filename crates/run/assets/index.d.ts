@@ -2223,6 +2223,26 @@ declare enum KeyError {
     Unsupported,
 }
 /**
+ * Mouse button direction.
+ * 
+ * ```ts
+ * await mouse.waitForButton({ direction: ButtonDirection.Press });
+ * ```
+ * @category Mouse
+ * @expand
+ */
+declare enum ButtonDirection {
+    /**
+     * `ButtonDirection.Press`
+     */
+    Press,
+
+    /**
+     * `ButtonDirection.Release`
+     */
+    Release,
+}
+/**
  * @category Notification
  * @expand
  */
@@ -7275,7 +7295,7 @@ declare interface Mouse {
      */
     release(x: number, y: number, button?: Button): void;
     /**
-     * Waits until a mouse button is pressed.
+     * Waits until a mouse button is pressed or released.
      * 
      * ```ts
      * // Wait for any button press
@@ -7287,6 +7307,7 @@ declare interface Mouse {
      * const controller = new AbortController();
      * const button = await mouse.waitForButton({
      *   button: Button.Left,
+     *   direction: ButtonDirection.Press,
      *   signal: controller.signal
      * });
      * ```
@@ -7447,6 +7468,11 @@ declare interface WaitForButtonOptions {
      * @defaultValue `undefined`
      */
     button?: Button;
+    /**
+     * Button direction to wait for. If not specified, waits for either press or release.
+     * @defaultValue `undefined`
+     */
+    direction?: ButtonDirection;
     /**
      * Abort signal to cancel the wait.
      * @defaultValue `undefined`

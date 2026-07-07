@@ -1,11 +1,29 @@
 use std::collections::HashSet;
 
 use super::{
-    ActionTree, ClipboardNode, ClipboardTree, DropMode, Error, Metadata, Node, NodeId, NodePayload,
+    ActionTree, BranchKind, ClipboardNode, ClipboardTree, DropMode, Error, Metadata, Node, NodeId,
+    NodePayload,
 };
-use crate::actions::{ActionDefinition, ActionInstance, Branching, WithDefinition};
+use crate::{
+    actions::{ActionDefinition, ActionInstance, Branching, WithCommonParameters, WithDefinition},
+    parameters::duration::DurationValue,
+};
 
 impl ActionTree {
+    fn get_action(&self, node_id: NodeId) -> Result<&ActionInstance, Error> {
+        self.get_node(node_id)?
+            .payload
+            .try_as_action_ref()
+            .ok_or(Error::NotAnAction(node_id))
+    }
+
+    fn get_action_mut(&mut self, node_id: NodeId) -> Result<&mut ActionInstance, Error> {
+        self.get_node_mut(node_id)?
+            .payload
+            .try_as_action_mut()
+            .ok_or(Error::NotAnAction(node_id))
+    }
+
     pub fn can_drop(&self, selection_ids: &[NodeId], target_id: NodeId, mode: DropMode) -> bool {
         if selection_ids.is_empty() {
             return false;
@@ -149,24 +167,67 @@ impl ActionTree {
     /// Reads an action parameter's stored value as JSON.
     ///
     /// `param_id` is the parameter's id (the action struct's field name). The
-    /// returned value is the field's serialized form — for scriptable
-    /// parameters a `{ "mode": …, "value"/"source": … }` object. Errors if the
-    /// node is not an action or has no such parameter.
+    /// returned value is the field's serialized form. Errors if the node is
+    /// not an action or has no such parameter.
     pub fn action_parameter(
         &self,
         node_id: NodeId,
         param_id: &str,
     ) -> Result<serde_json::Value, Error> {
-        let node = self.get_node(node_id)?;
-        let action = node
-            .payload
-            .try_as_action_ref()
-            .ok_or(Error::NotAnAction(node_id))?;
+        let action = self.get_action(node_id)?;
         let mut json = serde_json::to_value(action)
             .map_err(|e| Error::ParameterSerialization(e.to_string()))?;
         json.get_mut(param_id)
             .map(serde_json::Value::take)
             .ok_or_else(|| Error::UnknownParameter(param_id.to_owned()))
+    }
+
+    /// Returns an action's timeout setting.
+    pub fn timeout(&self, node_id: NodeId) -> Result<Option<DurationValue>, Error> {
+        let action = self.get_action(node_id)?;
+        Ok(*action.timeout())
+    }
+
+    /// Sets an action's timeout setting and reconciles its timeout branch.
+    pub fn set_timeout(
+        &mut self,
+        node_id: NodeId,
+        timeout: Option<DurationValue>,
+    ) -> Result<(), Error> {
+        self.get_action_mut(node_id)?.set_timeout(timeout);
+        self.reconcile_action_branches(node_id)
+    }
+
+    /// Returns an action's pause-before setting.
+    pub fn pause_before(&self, node_id: NodeId) -> Result<Option<DurationValue>, Error> {
+        let action = self.get_action(node_id)?;
+        Ok(*action.pause_before())
+    }
+
+    /// Sets an action's pause-before setting.
+    pub fn set_pause_before(
+        &mut self,
+        node_id: NodeId,
+        pause_before: Option<DurationValue>,
+    ) -> Result<(), Error> {
+        self.get_action_mut(node_id)?.set_pause_before(pause_before);
+        Ok(())
+    }
+
+    /// Returns an action's pause-after setting.
+    pub fn pause_after(&self, node_id: NodeId) -> Result<Option<DurationValue>, Error> {
+        let action = self.get_action(node_id)?;
+        Ok(*action.pause_after())
+    }
+
+    /// Sets an action's pause-after setting.
+    pub fn set_pause_after(
+        &mut self,
+        node_id: NodeId,
+        pause_after: Option<DurationValue>,
+    ) -> Result<(), Error> {
+        self.get_action_mut(node_id)?.set_pause_after(pause_after);
+        Ok(())
     }
 
     /// Writes an action parameter's value from JSON, replacing the action
@@ -182,11 +243,7 @@ impl ActionTree {
         param_id: &str,
         value: serde_json::Value,
     ) -> Result<(), Error> {
-        let action = self
-            .get_node_mut(node_id)?
-            .payload
-            .try_as_action_mut()
-            .ok_or(Error::NotAnAction(node_id))?;
+        let action = self.get_action_mut(node_id)?;
         let mut json = serde_json::to_value(&*action)
             .map_err(|e| Error::ParameterSerialization(e.to_string()))?;
         let slot = json
@@ -195,6 +252,7 @@ impl ActionTree {
         *slot = value;
         *action = serde_json::from_value(json)
             .map_err(|e| Error::ParameterSerialization(e.to_string()))?;
+        self.reconcile_action_branches(node_id)?;
         Ok(())
     }
 
@@ -485,6 +543,59 @@ impl ActionTree {
         self.map[node_id].children = children;
 
         node_id
+    }
+
+    fn reconcile_action_branches(&mut self, node_id: NodeId) -> Result<(), Error> {
+        let desired = { self.get_action(node_id)?.branches() };
+        let depth = self.map[node_id].depth() + 1;
+        let mut existing = std::mem::take(&mut self.map[node_id].children);
+        let mut children = Vec::with_capacity(desired.len());
+
+        for kind in desired {
+            let existing_index = existing.iter().position(|&child_id| {
+                self.branch_kind(child_id)
+                    .is_some_and(|branch| branch == &kind)
+            });
+
+            let branch_id = match existing_index {
+                Some(index) => existing.remove(index),
+                None => self.map.insert(Node::new_branch(kind, node_id, depth)),
+            };
+
+            self.map[branch_id].parent_id = Some(node_id);
+            self.update_subtree_depth(branch_id, depth);
+            children.push(branch_id);
+        }
+
+        for stale_branch in existing {
+            self.remove_subtree(stale_branch);
+        }
+
+        self.map[node_id].children = children;
+        self.update_rows();
+
+        Ok(())
+    }
+
+    fn branch_kind(&self, node_id: NodeId) -> Option<&BranchKind> {
+        let node = self.map.get(node_id)?;
+        let NodePayload::Static(super::Static::Branch(kind)) = node.payload() else {
+            return None;
+        };
+        Some(kind)
+    }
+
+    fn remove_subtree(&mut self, node_id: NodeId) {
+        let mut stack = vec![node_id];
+        while let Some(node_id) = stack.pop() {
+            self.row_of.remove(node_id);
+            if let Some(removed) = self.map.remove(node_id) {
+                stack.extend(removed.children.iter().rev().copied());
+                if let Some(label) = removed.metadata.label {
+                    self.label_map.remove(&label);
+                }
+            }
+        }
     }
 
     fn unique_pasted_label(&self, label: &str) -> String {

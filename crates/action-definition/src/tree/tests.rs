@@ -1,5 +1,11 @@
 use super::*;
-use crate::actions::{click::Click, message_box::MessageBox, test::Test};
+use crate::actions::{
+    misc::test::Test,
+    mouse::{click::Click, scroll::Scroll},
+    window::message_box::{MessageBox, MessageBoxButtons},
+};
+use crate::parameters::duration::DurationValue;
+use std::time::Duration;
 
 #[test]
 fn default_tree_contains_only_root() {
@@ -728,9 +734,13 @@ fn action_parameter_reads_default_scriptable_value() {
         .append_new_action(&MessageBox::DEFINITION, tree.root)
         .unwrap();
 
+    let text = tree.action_parameter(action, "text").unwrap();
+    assert_eq!(text["mode"], "static");
+    assert_eq!(text["value"], "");
+
     let title = tree.action_parameter(action, "title").unwrap();
     assert_eq!(title["mode"], "static");
-    assert_eq!(title["value"], "");
+    assert_eq!(title["value"], serde_json::Value::Null);
 }
 
 #[test]
@@ -794,6 +804,93 @@ fn set_action_parameter_round_trips_numeric_static_values() {
 }
 
 #[test]
+fn setting_timeout_adds_timeout_branch_for_timeout_action() {
+    let mut tree = ActionTree::default();
+    let click = tree
+        .append_new_action(&Click::DEFINITION, tree.root)
+        .unwrap();
+
+    assert!(tree.map[click].children.is_empty());
+
+    let timeout = DurationValue::from(Duration::from_millis(250));
+    tree.set_timeout(click, Some(timeout)).unwrap();
+    assert_eq!(tree.timeout(click).unwrap(), Some(timeout));
+
+    let branches = &tree.map[click].children;
+    assert_eq!(branches.len(), 1);
+    assert!(matches!(
+        tree.map[branches[0]].payload,
+        NodePayload::Static(Static::Branch(BranchKind::Timeout))
+    ));
+}
+
+#[test]
+fn clearing_timeout_removes_timeout_branch_subtree() {
+    let mut tree = ActionTree::default();
+    let click = tree
+        .append_new_action(&Click::DEFINITION, tree.root)
+        .unwrap();
+
+    tree.set_timeout(click, Some(DurationValue::from(Duration::from_millis(250))))
+        .unwrap();
+    let timeout_branch = tree.map[click].children[0];
+    let timeout_child = tree
+        .append_new_action(&Test::DEFINITION, timeout_branch)
+        .unwrap();
+
+    tree.set_timeout(click, None).unwrap();
+
+    assert!(tree.map[click].children.is_empty());
+    assert!(tree.get_node(timeout_branch).is_err());
+    assert!(tree.get_node(timeout_child).is_err());
+}
+
+#[test]
+fn setting_timeout_does_not_add_timeout_branch_for_unsupported_action() {
+    let mut tree = ActionTree::default();
+    let scroll = tree
+        .append_new_action(&Scroll::DEFINITION, tree.root)
+        .unwrap();
+
+    tree.set_timeout(
+        scroll,
+        Some(DurationValue::from(Duration::from_millis(250))),
+    )
+    .unwrap();
+
+    assert!(tree.map[scroll].children.is_empty());
+}
+
+#[test]
+fn parameter_changes_reconcile_existing_dynamic_branches() {
+    let mut tree = ActionTree::default();
+    let message_box = tree
+        .append_new_action(&MessageBox::DEFINITION, tree.root)
+        .unwrap();
+
+    tree.set_action_parameter(
+        message_box,
+        "buttons",
+        serde_json::to_value(MessageBoxButtons::YesNoCancel).unwrap(),
+    )
+    .unwrap();
+
+    let branches = tree.map[message_box]
+        .children
+        .iter()
+        .map(|&branch| match &tree.map[branch].payload {
+            NodePayload::Static(Static::Branch(kind)) => kind.clone(),
+            payload => panic!("expected branch payload, got {payload:?}"),
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        branches,
+        vec![BranchKind::Yes, BranchKind::No, BranchKind::Cancel]
+    );
+}
+
+#[test]
 fn action_parameter_errors_on_non_action_and_unknown_parameter() {
     let mut tree = ActionTree::default();
     let action = tree
@@ -808,6 +905,22 @@ fn action_parameter_errors_on_non_action_and_unknown_parameter() {
         tree.action_parameter(action, "nope"),
         Err(Error::UnknownParameter(_)),
     ));
+}
+
+#[test]
+fn pause_settings_are_independent_from_action_parameters() {
+    let mut tree = ActionTree::default();
+    let action = tree
+        .append_new_action(&MessageBox::DEFINITION, tree.root)
+        .unwrap();
+    let pause_before = DurationValue::from(Duration::from_millis(100));
+    let pause_after = DurationValue::from(Duration::from_millis(200));
+
+    tree.set_pause_before(action, Some(pause_before)).unwrap();
+    tree.set_pause_after(action, Some(pause_after)).unwrap();
+
+    assert_eq!(tree.pause_before(action).unwrap(), Some(pause_before));
+    assert_eq!(tree.pause_after(action).unwrap(), Some(pause_after));
 }
 
 #[test]

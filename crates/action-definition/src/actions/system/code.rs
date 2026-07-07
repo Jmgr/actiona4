@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::{Branching, action},
+    actions::{ActionBranches, ParameterAvailability, action},
     parameters::{Param, source_code::SourceCode},
     tree::BranchKind,
 };
 
-#[action(icon = CodeXml)]
+#[action(icon = CodeXml, effect = ExternalSystem, category = System)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Code {
     #[parameter]
@@ -32,11 +32,13 @@ impl Code {
     }
 }
 
-impl Branching for Code {
-    fn branches(&self) -> Vec<BranchKind> {
+impl ActionBranches for Code {
+    fn action_branches(&self) -> Vec<BranchKind> {
         self.branches
             .iter()
             .map(|branch| BranchKind::Named(branch.clone()))
             .collect()
     }
 }
+
+impl ParameterAvailability for Code {}

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use types::Point;
 
 use crate::{
-    actions::{Branching, action},
+    actions::{ActionBranches, ParameterAvailability, action},
     parameters::duration::DurationValue,
     scriptable::Scriptable,
 };
@@ -19,19 +19,19 @@ pub enum MouseButton {
     Forward,
 }
 
-#[action(icon = MousePointerClick)]
+#[action(icon = MousePointerClick, effect = ChangeState, category = Mouse, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Click {
-    #[parameter]
+    #[parameter(translation = "action-click-position")]
     pub position: Scriptable<Option<Point>>,
 
-    #[parameter]
+    #[parameter(translation = "action-click-button")]
     pub button: Scriptable<MouseButton>,
 
-    #[parameter]
+    #[parameter(translation = "action-click-relative-position")]
     pub relative_position: Scriptable<bool>,
 
-    #[parameter(min = Some(0), max = Some(i32::MAX as i64))]
+    #[parameter(translation = "action-click-amount", min = Some(0), max = Some(i32::MAX as i64))]
     pub amount: Scriptable<Option<i64>>,
 
     #[parameter]
@@ -41,4 +41,6 @@ pub struct Click {
     pub duration: Scriptable<Option<DurationValue>>,
 }
 
-impl Branching for Click {}
+impl ActionBranches for Click {}
+
+impl ParameterAvailability for Click {}

@@ -1,0 +1,12 @@
+mod button_condition;
+mod click;
+mod double_click;
+mod get_cursor_position;
+mod move_cursor;
+mod press;
+mod release;
+mod scroll;
+mod set_cursor_position;
+mod wait_for_button;
+mod wait_for_movement;
+mod wait_for_scroll;

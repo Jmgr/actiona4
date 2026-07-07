@@ -1,10 +1,13 @@
 use std::time::Duration;
 
-use action_definition::actions::{
-    ActionInstance, click::Click, code::Code, message_box::MessageBox, test::Test,
+use action_definition::{
+    actions::{
+        ActionInstance, misc::test::Test, mouse::click::Click, system::code::Code,
+        window::message_box::MessageBox,
+    },
+    parameters::duration::DurationValue,
+    scriptable::Scriptable,
 };
-use action_definition::parameters::duration::DurationValue;
-use action_definition::scriptable::Scriptable;
 use serde_json::json;
 
 /// Serialize → deserialize → serialize and assert the wire format is stable.
@@ -18,7 +21,7 @@ fn assert_roundtrips(instance: ActionInstance) {
 
 #[test]
 fn click_roundtrips() {
-    assert_roundtrips(ActionInstance::Click(Click::default()));
+    assert_roundtrips(ActionInstance::Click(Click::default().into()));
 }
 
 #[test]
@@ -29,44 +32,49 @@ fn action_parameters_expose_runtime_names() {
 
 #[test]
 fn message_box_roundtrips() {
-    assert_roundtrips(ActionInstance::MessageBox(MessageBox::default()));
+    assert_roundtrips(ActionInstance::MessageBox(MessageBox::default().into()));
 }
 
 #[test]
 fn code_roundtrips() {
-    assert_roundtrips(ActionInstance::Code(Code::default()));
+    assert_roundtrips(ActionInstance::Code(Code::default().into()));
 }
 
 #[test]
 fn test_roundtrips() {
-    assert_roundtrips(ActionInstance::Test(Test::default()));
+    assert_roundtrips(ActionInstance::Test(Test::default().into()));
 }
 
 #[test]
 fn message_box_wire_format() {
     let json =
-        serde_json::to_value(ActionInstance::MessageBox(MessageBox::default())).expect("serialize");
+        serde_json::to_value(ActionInstance::MessageBox(MessageBox::default().into())).expect("serialize");
 
     assert_eq!(
         json,
         json!({
             "kind": "message_box",
-            "title": { "mode": "static", "value": "" },
+            "title": { "mode": "static", "value": null },
             "text": { "mode": "static", "value": "" },
             "buttons": "ok",
+            "icon": { "mode": "static", "value": null },
+            "ok_label": { "mode": "static", "value": null },
+            "yes_label": { "mode": "static", "value": null },
+            "no_label": { "mode": "static", "value": null },
+            "cancel_label": { "mode": "static", "value": null },
         })
     );
 }
 
 #[test]
 fn test_wire_format() {
-    let json = serde_json::to_value(ActionInstance::Test(Test::default())).expect("serialize");
+    let json = serde_json::to_value(ActionInstance::Test(Test::default().into())).expect("serialize");
 
     assert_eq!(
         json,
         json!({
             "kind": "test",
-            "percent": { "mode": "static", "value": 0 },
+            "percent": { "mode": "static", "value": 50 },
             "duration": { "mode": "static", "value": "0s" },
         })
     );
@@ -74,7 +82,7 @@ fn test_wire_format() {
 
 #[test]
 fn code_wire_format() {
-    let json = serde_json::to_value(ActionInstance::Code(Code::default())).expect("serialize");
+    let json = serde_json::to_value(ActionInstance::Code(Code::default().into())).expect("serialize");
 
     assert_eq!(
         json,

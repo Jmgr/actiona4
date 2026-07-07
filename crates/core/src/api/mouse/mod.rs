@@ -40,7 +40,7 @@ pub(crate) mod platform;
 mod scroll_triggers;
 
 pub use enigo::Coordinate;
-pub use js::{JsAxis, JsTween};
+pub use js::{JsAxis, JsButtonDirection, JsTween};
 #[cfg(windows)]
 use platform::win::MouseImpl;
 #[cfg(unix)]
@@ -317,8 +317,8 @@ impl Tween {
 
 #[derive(Clone, Debug, Default)]
 pub struct ButtonConditions {
-    button: Option<Button>,
-    direction: Option<Direction>,
+    pub button: Option<Button>,
+    pub direction: Option<Direction>,
 }
 
 #[derive(Clone, Debug, Default)]

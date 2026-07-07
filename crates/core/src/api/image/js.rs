@@ -26,6 +26,7 @@ use crate::{
             find_image::{FindImageProgress, Source, Template},
         },
         js::{
+            DeepEqualClass, DeepEqualError,
             abort_controller::JsAbortSignal,
             classes::{
                 HostClass, ValueClass, register_enum, register_host_class, register_value_class,
@@ -532,6 +533,31 @@ pub struct JsMatch {
 
 impl HostClass<'_> for JsMatch {}
 
+impl DeepEqualClass for JsMatch {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        validate_deep_equal_score(self.inner.score)?;
+        validate_deep_equal_score(other.inner.score)?;
+
+        Ok(self == other)
+    }
+}
+
+const fn validate_deep_equal_score(score: f64) -> std::result::Result<(), DeepEqualError> {
+    if score.is_finite() {
+        return Ok(());
+    }
+
+    Err(DeepEqualError::NonFiniteNumber {
+        value: if score.is_nan() {
+            "NaN"
+        } else if score.is_sign_positive() {
+            "Infinity"
+        } else {
+            "-Infinity"
+        },
+    })
+}
+
 #[js_methods]
 impl JsMatch {
     /// @skip
@@ -807,6 +833,12 @@ impl JsFont {
 #[js_class]
 pub struct JsImage {
     inner: super::Image,
+}
+
+impl DeepEqualClass for JsImage {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        Ok(self == other)
+    }
 }
 
 impl JsImage {

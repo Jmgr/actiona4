@@ -3,5 +3,7 @@
 
 pub(crate) mod action;
 pub(crate) mod action_enum;
+pub(crate) mod common_parameters;
 pub(crate) mod definitions;
 pub(crate) mod parameter;
+pub(crate) mod platforms;

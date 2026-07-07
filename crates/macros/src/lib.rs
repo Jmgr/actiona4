@@ -1,7 +1,3 @@
-//! Proc macros used by Actiona's Rust <-> JS bridge.
-//!
-//! Each macro below includes a usage example.
-
 use proc_macro::TokenStream;
 
 mod action_definition;
@@ -222,38 +218,67 @@ pub fn rpc_protocol(arguments: TokenStream, item: TokenStream) -> TokenStream {
     rpc_protocol::expand(arguments, item)
 }
 
-/// Derives `ActionDefinition` and `WithDefinition` for an action struct.
+/// Generates `ActionDefinition` and `WithDefinition` for an action struct.
 ///
-/// `#[action(icon = ...)]` sets the icon; `id` defaults to the struct name in
-/// snake_case (override with `#[action(id = "...")]`). Fields tagged
+/// `#[action(icon = ..., effect = ..., category = ...)]` sets the icon, action
+/// effect, and category; `id` defaults to the struct name in snake_case
+/// (override with `#[action(id = "...")]`). Fields tagged
 /// `#[parameter]` become the action's `Parameter` list, in declaration order,
 /// typed through that field's `ParameterStorage` impl. Per-field settings can
 /// be overridden with `#[parameter(key = value, ...)]`, where each `key`
-/// assigns into the field type's `ParameterStorage::Settings`.
+/// assigns into the field type's `ParameterStorage::Settings`. The reserved
+/// `translation = "..."` option overrides only the Fluent message base used for
+/// that parameter's name and description.
 ///
 /// Name and description translation keys are derived from the id
 /// (`action-<id-kebab>`) and, per parameter, from the field name
-/// (`action-<id-kebab>-<field-kebab>`).
+/// (`action-<id-kebab>-<field-kebab>`), unless `translation` is set.
+///
+/// Platform compatibility is purely informational metadata for consumers
+/// (e.g. the UI); it isn't enforced here. `only`/`not` accept a single
+/// `PlatformKind` variant or a bracketed list of them, at both the action and
+/// `#[parameter]` level: `#[action(..., only = Linux)]` or
+/// `#[parameter(not = [Wayland, X11])]`.
 ///
 /// # Example
 /// ```rust,ignore
-/// use macros::Action;
+/// use macros::action;
 ///
-/// #[derive(Debug, Clone, Serialize, Deserialize, Default, Action)]
-/// #[action(icon = MousePointerClick)]
+/// #[action(icon = MousePointerClick, effect = ChangeState, category = Mouse)]
+/// #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 /// pub struct Click {
 ///     #[parameter]
 ///     pub position: Scriptable<Point>,
 /// }
 /// ```
-#[proc_macro_derive(Action, attributes(action, parameter))]
-pub fn derive_action(input: TokenStream) -> TokenStream {
-    action_definition::action::derive(input)
-}
-
 #[proc_macro_attribute]
 pub fn action(arguments: TokenStream, item: TokenStream) -> TokenStream {
     action_definition::action::expand(arguments, item)
+}
+
+/// Like `#[action]`'s `#[parameter]` field processing, but for a plain struct
+/// that isn't itself an action (no icon/effect/category/`DEFINITION`). Used
+/// for `CommonParameters`, the fields every action carries via `WithCommon`.
+///
+/// Each field gets the same marker + `Param<T, Marker>` treatment as an
+/// action's own fields, plus a `<FIELD>_PARAMETER` const holding the
+/// generated `Parameter` definition, so `#[action(..., timeout = true)]` can
+/// splice `CommonParameters::TIMEOUT_PARAMETER` into its own parameter list.
+///
+/// # Example
+/// ```rust,ignore
+/// use macros::common_parameters;
+///
+/// #[common_parameters]
+/// #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+/// pub struct CommonParameters {
+///     #[parameter(translation = "action-timeout")]
+///     pub timeout: Option<Scriptable<DurationValue>>,
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn common_parameters(_arguments: TokenStream, item: TokenStream) -> TokenStream {
+    action_definition::common_parameters::expand(item)
 }
 
 /// Generates the `ACTION_DEFINITIONS` slice from the `ActionInstance` enum,
@@ -299,7 +324,7 @@ pub fn derive_action_definitions(input: TokenStream) -> TokenStream {
 ///     OkCancel,
 /// }
 /// ```
-#[proc_macro_derive(ActionEnum)]
+#[proc_macro_derive(ActionEnum, attributes(action_enum))]
 pub fn derive_action_enum(input: TokenStream) -> TokenStream {
     action_definition::action_enum::derive(input)
 }

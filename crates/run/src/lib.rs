@@ -354,16 +354,20 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                     }
                     Commands::Eval { code, .. } => {
                         let code = code.join("\n");
-                        let value = script_engine.eval_async_fn::<Option<String>>(&code, |value| {
-                            Ok(if value.is_undefined() {
-                                None
-                            } else if value.is_promise() {
-                                let rendered = format_js_value_for_console(value.clone());
-                                Some(format!("{rendered} (hint: wrap with `await (...)`)"))
-                            } else {
-                                Some(format_js_value_for_console(value))
-                            })
-                        });
+                        let value = script_engine.eval_async_fn_result(
+                            &code,
+                            |value| {
+                                Ok(if value.is_undefined() {
+                                    None
+                                } else if value.is_promise() {
+                                    let rendered = format_js_value_for_console(value.clone());
+                                    Some(format!("{rendered} (hint: wrap with `await (...)`)"))
+                                } else {
+                                    Some(format_js_value_for_console(value))
+                                })
+                            },
+                            std::convert::identity,
+                        );
 
                         match value.await {
                             Ok(Some(value)) => println!("{value}"),

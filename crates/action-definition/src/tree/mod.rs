@@ -146,10 +146,10 @@ impl ActionTree {
                 (node.metadata.label.clone(), node.children.clone())
             };
 
-            if let Some(label) = label {
-                if self.label_map.insert(label.clone(), node_id).is_some() {
-                    return Err(format!("duplicate node label {label:?}"));
-                }
+            if let Some(label) = label
+                && self.label_map.insert(label.clone(), node_id).is_some()
+            {
+                return Err(format!("duplicate node label {label:?}"));
             }
 
             stack.extend(

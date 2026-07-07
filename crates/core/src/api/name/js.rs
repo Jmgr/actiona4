@@ -21,7 +21,10 @@ use wildmatch::WildMatch;
 use crate::{
     api::{
         ResultExt,
-        js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
+        js::{
+            DeepEqualClass, DeepEqualError, FromJsField, classes::ValueClass,
+            has_registered_class_prototype,
+        },
     },
     types::display::{DisplayFields, display_with_type},
 };
@@ -54,6 +57,12 @@ impl<'js> Trace<'js> for JsWildcard {
 impl PartialEq for JsWildcard {
     fn eq(&self, other: &Self) -> bool {
         self.pattern == other.pattern
+    }
+}
+
+impl DeepEqualClass for JsWildcard {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        Ok(self == other)
     }
 }
 

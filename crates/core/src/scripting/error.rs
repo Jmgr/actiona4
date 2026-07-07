@@ -67,7 +67,7 @@ impl ScriptError {
     #[must_use]
     pub fn line(&self) -> Option<u32> {
         match self {
-            Self::Runtime(error) => error.primary_frame().and_then(|frame| Some(frame.line())),
+            Self::Runtime(error) => error.primary_frame().map(|frame| frame.line()),
             Self::Compile(_) | Self::QuickJs(_) | Self::Value(_) | Self::Report(_) => None,
         }
     }
@@ -75,7 +75,7 @@ impl ScriptError {
     #[must_use]
     pub fn column(&self) -> Option<u32> {
         match self {
-            Self::Runtime(error) => error.primary_frame().and_then(|frame| Some(frame.column())),
+            Self::Runtime(error) => error.primary_frame().map(|frame| frame.column()),
             Self::Compile(_) | Self::QuickJs(_) | Self::Value(_) | Self::Report(_) => None,
         }
     }

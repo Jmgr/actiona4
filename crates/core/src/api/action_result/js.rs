@@ -99,7 +99,7 @@ impl JsActionBranch {
     /// Selects a custom named branch.
     #[qjs(static)]
     #[must_use]
-    pub fn custom(name: String) -> Self {
+    pub const fn custom(name: String) -> Self {
         Self {
             inner: ActionBranch::Custom(name),
         }
@@ -191,7 +191,7 @@ impl JsActionResult {
     /// Jumps to the action with the given label.
     #[qjs(static)]
     #[must_use]
-    pub fn goto_label(label: String) -> Self {
+    pub const fn goto_label(label: String) -> Self {
         Self {
             inner: ActionResult::GotoLabel(label),
         }

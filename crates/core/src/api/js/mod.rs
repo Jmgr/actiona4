@@ -2,11 +2,13 @@ pub mod abort_controller;
 pub mod classes;
 pub mod concurrency;
 pub mod date;
+mod deep_equal;
 pub mod duration;
 pub mod event_handle;
 pub mod global;
 pub mod task;
 
+pub use deep_equal::{DeepEqualClass, DeepEqualError, deep_equal};
 use rquickjs::{Class, Ctx, FromJs, Object, Result, Value, class::JsClass};
 
 pub trait FromJsField<'js>: Sized {

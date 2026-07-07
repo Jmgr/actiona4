@@ -6,11 +6,17 @@ use crate::actions::ActionInstance;
 
 #[derive(Clone, Debug, Deserialize, Display, EnumIs, EnumTryAs, PartialEq, Serialize)]
 pub enum BranchKind {
+    Body,
+    Ok,
     Yes,
     No,
     Cancel,
     True,
     False,
+    Timeout,
+    Pressed,
+    Released,
+    Default,
     Named(String),
 }
 
@@ -20,6 +26,7 @@ pub enum Static {
     Branch(BranchKind),
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Deserialize, EnumIs, EnumTryAs, Serialize)]
 pub enum NodePayload {
     Static(Static),

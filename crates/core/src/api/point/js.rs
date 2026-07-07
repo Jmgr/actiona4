@@ -23,7 +23,10 @@ use crate::{
     api::{
         ResultExt,
         image::js::JsMatch,
-        js::{FromJsField, classes::ValueClass, has_registered_class_prototype},
+        js::{
+            DeepEqualClass, DeepEqualError, FromJsField, classes::ValueClass,
+            has_registered_class_prototype,
+        },
         point::random_point_in_circle,
     },
     runtime::WithUserData,
@@ -125,6 +128,12 @@ impl<'js> FromParam<'js> for JsPointLike {
 #[js_class]
 pub struct JsPoint {
     inner: Point,
+}
+
+impl DeepEqualClass for JsPoint {
+    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+        Ok(self == other)
+    }
 }
 
 impl<'js> ValueClass<'js> for JsPoint {

@@ -1,4 +1,4 @@
-use action_definition::{actions::code::Code, post_run::PostRun, tree::BranchKind};
+use action_definition::{actions::system::code::Code, post_run::PostRun, tree::BranchKind};
 use actiona_core::api::action_result::{ActionBranch, ActionResult};
 
 use crate::{ExecutionContext, ResolveParam, Runnable, error::RunError};
@@ -25,7 +25,7 @@ fn action_result_to_post_run(result: ActionResult) -> PostRun {
 }
 
 impl Runnable for Code {
-    async fn run(&self, context: &ExecutionContext) -> Result<PostRun, RunError> {
+    async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         let action_result: Option<ActionResult> = self.source.resolve(context).await?;
 
         Ok(action_result

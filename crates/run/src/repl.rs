@@ -328,16 +328,20 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                     .set_scoped_cancellation_token(Some(expr_token.clone()))
                     .await;
 
-                let eval_future = script_engine.eval_async_fn::<Option<String>>(&line, |value| {
-                    Ok(if value.is_undefined() {
-                        None
-                    } else if value.is_promise() {
-                        let rendered = format_js_value_for_console(value.clone());
-                        Some(format!("{} (hint: call `await {line}`)", rendered))
-                    } else {
-                        Some(format_js_value_for_console(value))
-                    })
-                });
+                let eval_future = script_engine.eval_async_fn_result(
+                    &line,
+                    |value| {
+                        Ok(if value.is_undefined() {
+                            None
+                        } else if value.is_promise() {
+                            let rendered = format_js_value_for_console(value.clone());
+                            Some(format!("{} (hint: call `await {line}`)", rendered))
+                        } else {
+                            Some(format_js_value_for_console(value))
+                        })
+                    },
+                    std::convert::identity,
+                );
 
                 let value = select! {
                     result = eval_future => Some(result),

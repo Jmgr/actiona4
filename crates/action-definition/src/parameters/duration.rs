@@ -7,7 +7,7 @@ use serde::{
     de::{self, MapAccess, Visitor},
 };
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct DurationValue(Duration);
 
 impl DurationValue {

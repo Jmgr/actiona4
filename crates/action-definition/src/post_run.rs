@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::tree::BranchKind;
 
 /// What to do once the action has finished running.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum PostRun {
     /// Run the next sibling.
     #[default]
@@ -13,7 +13,7 @@ pub enum PostRun {
 
     /// Run the first child, if any, otherwise run the parent's next sibling.
     /// This is typically used by root and branch actions.
-    NextChild, // TODO: do we need this
+    NextChild,
 
     /// Run the branch.
     Branch(BranchKind),
@@ -23,6 +23,9 @@ pub enum PostRun {
 
     /// Stop the execution.
     Stop,
+
+    /// Exit the application.
+    Exit,
     // TODO: call function
     // TODO: loop
 }

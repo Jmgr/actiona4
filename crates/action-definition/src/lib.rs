@@ -12,19 +12,6 @@ pub mod rpc;
 pub mod scriptable;
 pub mod tree;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum AddTenRequest {
-    Value { value: i32 },
-}
-
-impl AddTenRequest {
-    pub fn value(&self) -> i32 {
-        match self {
-            Self::Value { value } => *value,
-        }
-    }
-}
-
 /// A reference to a Fluent message, optionally one of its attributes.
 ///
 /// Fluent groups related strings under a single message with `.attributes`,

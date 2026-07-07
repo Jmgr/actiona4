@@ -2,7 +2,9 @@ use convert_case::{Case, Casing};
 use darling::{FromDeriveInput, FromMeta, FromVariant};
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Error, parse_macro_input};
+use syn::{Data, DeriveInput, Error, Expr, parse_macro_input};
+
+use crate::action_definition::platforms::platform_constraints;
 
 #[derive(FromDeriveInput)]
 #[darling(attributes(serde), allow_unknown_fields)]
@@ -16,6 +18,15 @@ struct SerdeVariantOpts {
     ident: syn::Ident,
     #[darling(default)]
     rename: Option<SerdeRename>,
+}
+
+#[derive(FromVariant)]
+#[darling(attributes(action_enum), supports(unit))]
+struct ActionEnumVariantOpts {
+    #[darling(default)]
+    only: Option<Expr>,
+    #[darling(default)]
+    not: Option<Expr>,
 }
 
 enum SerdeRename {
@@ -87,14 +98,18 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
         .iter()
         .map(|variant| {
             let opts = SerdeVariantOpts::from_variant(variant)?;
-            let variant = opts
+            let platform_opts = ActionEnumVariantOpts::from_variant(variant)?;
+            let variant_name = opts
                 .rename
                 .and_then(SerdeRename::serialize_name)
                 .unwrap_or_else(|| opts.ident.to_string().to_case(Case::Kebab));
+            let platforms =
+                platform_constraints(platform_opts.only.as_ref(), platform_opts.not.as_ref())?;
             Ok(quote! {
                 crate::parameters::enumeration::EnumParameterVariant {
-                    id: #variant,
-                    name: crate::TranslationKey::with_attribute(#name_key, #variant),
+                    id: #variant_name,
+                    name: crate::TranslationKey::with_attribute(#name_key, #variant_name),
+                    platforms: ::types::platform::Platforms(&[#(#platforms),*]),
                 }
             })
         })

@@ -1,24 +1,32 @@
 use std::{fmt, marker::PhantomData, ops::Deref};
 
 use serde::{Deserialize, Serialize};
+use types::platform::Platforms;
 
 use crate::{
     TranslationKey,
     parameters::{
-        boolean::BooleanParameter, duration::DurationParameter, enumeration::EnumParameter,
-        integer::IntegerParameter, position::PositionParameter, source_code::SourceParameter,
-        text::TextParameter,
+        boolean::BooleanParameter, decimal::DecimalParameter, duration::DurationParameter,
+        enumeration::EnumParameter, integer::IntegerParameter, label::LabelParameter,
+        position::PositionParameter, source_code::SourceCodeParameter, text::TextParameter,
+        unsigned_integer::UnsignedIntegerParameter, value::ValueParameter,
+        variable::VariableParameter,
     },
     scriptable::Scriptable,
 };
 
 pub mod boolean;
+pub mod decimal;
 pub mod duration;
 pub mod enumeration;
 pub mod integer;
+pub mod label;
 pub mod position;
 pub mod source_code;
 pub mod text;
+pub mod unsigned_integer;
+pub mod value;
+pub mod variable;
 
 #[derive(Debug)]
 pub enum ParameterKind {
@@ -26,9 +34,14 @@ pub enum ParameterKind {
     Integer(IntegerParameter),
     Position(PositionParameter),
     Text(TextParameter),
-    Source(SourceParameter),
+    SourceCode(SourceCodeParameter),
     Enum(EnumParameter),
     Duration(DurationParameter),
+    Decimal(DecimalParameter),
+    Label(LabelParameter),
+    UnsignedInteger(UnsignedIntegerParameter),
+    Variable(VariableParameter),
+    Value(ValueParameter),
 }
 
 #[derive(Debug)]
@@ -37,6 +50,7 @@ pub struct Parameter {
     pub name: TranslationKey,
     pub description: TranslationKey,
     pub kind: ParameterKind,
+    pub platforms: Platforms,
 }
 
 pub trait ParameterStorage {

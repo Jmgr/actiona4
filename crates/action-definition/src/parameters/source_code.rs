@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[serde(transparent)]
-pub struct SourceCode(String); // TODO: try to parse the output as PostRun
+pub struct SourceCode(String);
 
 impl SourceCode {
     pub fn new(source: impl Into<String>) -> Self {
@@ -30,4 +30,4 @@ impl From<&str> for SourceCode {
 
 #[derive(ConstDefault, Debug, Parameter)]
 #[parameter(storage = SourceCode)]
-pub struct SourceParameter;
+pub struct SourceCodeParameter;

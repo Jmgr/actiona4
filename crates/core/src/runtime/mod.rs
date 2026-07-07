@@ -308,6 +308,7 @@ pub struct Runtime {
     mouse: Mutex<Option<Mouse>>,
     keyboard: Mutex<Option<Keyboard>>,
     extensions: Extensions,
+    rng: SharedRng,
 }
 
 #[instrument(skip_all)]
@@ -666,6 +667,13 @@ impl Runtime {
                 Clipboard::new()?
             }
         };
+
+        #[allow(clippy::option_if_let_else)]
+        let rng = match options.seed {
+            Some(seed) => SharedRng::from_seed(seed),
+            None => SharedRng::default(),
+        };
+
         let platform = Platform::detect();
         let runtime = Arc::new(Self {
             runtime,
@@ -682,13 +690,8 @@ impl Runtime {
             mouse: Mutex::new(None),
             keyboard: Mutex::new(None),
             extensions: Extensions::new(task_tracker.clone(), cancellation_token.clone()).await?,
+            rng: rng.clone(),
         });
-
-        #[allow(clippy::option_if_let_else)]
-        let rng = match options.seed {
-            Some(seed) => SharedRng::from_seed(seed),
-            None => SharedRng::default(),
-        };
 
         let mouse_inner = Mouse::new(runtime.clone()).await?;
         let keyboard_inner = Keyboard::new(runtime.clone())?;
@@ -1143,6 +1146,10 @@ impl Runtime {
             .ok_or_else(|| eyre!("keyboard not initialized"))?;
 
         Ok(keyboard)
+    }
+
+    pub fn rng(&self) -> SharedRng {
+        self.rng.clone()
     }
 
     fn clear_runtime_back_references(&self) {
