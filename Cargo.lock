@@ -46,6 +46,7 @@ dependencies = [
  "action-definition",
  "core",
  "eyre",
+ "futures-util",
  "itertools 0.15.0",
  "parking_lot",
  "rquickjs",

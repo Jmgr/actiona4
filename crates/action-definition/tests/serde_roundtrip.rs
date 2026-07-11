@@ -2,7 +2,11 @@ use std::time::Duration;
 
 use action_definition::{
     actions::{
-        ActionInstance, misc::test::Test, mouse::click::Click, system::code::Code,
+        ActionInstance,
+        flow::{And, Or},
+        misc::test::Test,
+        mouse::click::Click,
+        system::code::Code,
         window::message_box::MessageBox,
     },
     parameters::duration::DurationValue,
@@ -46,9 +50,19 @@ fn test_roundtrips() {
 }
 
 #[test]
+fn and_roundtrips() {
+    assert_roundtrips(ActionInstance::And(And::default().into()));
+}
+
+#[test]
+fn or_roundtrips() {
+    assert_roundtrips(ActionInstance::Or(Or::default().into()));
+}
+
+#[test]
 fn message_box_wire_format() {
-    let json =
-        serde_json::to_value(ActionInstance::MessageBox(MessageBox::default().into())).expect("serialize");
+    let json = serde_json::to_value(ActionInstance::MessageBox(MessageBox::default().into()))
+        .expect("serialize");
 
     assert_eq!(
         json,
@@ -68,7 +82,8 @@ fn message_box_wire_format() {
 
 #[test]
 fn test_wire_format() {
-    let json = serde_json::to_value(ActionInstance::Test(Test::default().into())).expect("serialize");
+    let json =
+        serde_json::to_value(ActionInstance::Test(Test::default().into())).expect("serialize");
 
     assert_eq!(
         json,
@@ -82,7 +97,8 @@ fn test_wire_format() {
 
 #[test]
 fn code_wire_format() {
-    let json = serde_json::to_value(ActionInstance::Code(Code::default().into())).expect("serialize");
+    let json =
+        serde_json::to_value(ActionInstance::Code(Code::default().into())).expect("serialize");
 
     assert_eq!(
         json,

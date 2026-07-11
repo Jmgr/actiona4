@@ -220,6 +220,8 @@ pub enum ActionInstance {
     Wait(WithCommon<Wait>),
     If(WithCommon<If>),
     Switch(WithCommon<Switch>),
+    And(WithCommon<And>),
+    Or(WithCommon<Or>),
 
     // Mouse
     ButtonCondition(WithCommon<ButtonCondition>),
@@ -280,5 +282,6 @@ pub struct ActionDefinition {
     pub effect: ActionEffect,
     pub category: ActionCategory,
     pub supports_timeout: bool,
+    pub is_waitable: bool,
     pub platforms: Platforms,
 }

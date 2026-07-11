@@ -1,8 +1,10 @@
+mod and;
 mod exit;
 mod goto;
 mod if_;
 mod loop_;
 mod marker;
+mod or;
 mod stop;
 mod switch;
 mod wait;

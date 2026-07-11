@@ -20,7 +20,13 @@ pub enum WaitUnit {
     Days,
 }
 
-#[action(icon = TestTubeDiagonal, effect = ControlFlow, category = Flow, timeout = true)]
+#[action(
+    icon = TestTubeDiagonal,
+    effect = ControlFlow,
+    category = Flow,
+    timeout = true,
+    waitable = true
+)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Wait {
     #[parameter(min = Some(0.0))]

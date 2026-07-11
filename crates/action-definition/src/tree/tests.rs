@@ -1,11 +1,14 @@
-use super::*;
-use crate::actions::{
-    misc::test::Test,
-    mouse::{click::Click, scroll::Scroll},
-    window::message_box::{MessageBox, MessageBoxButtons},
-};
-use crate::parameters::duration::DurationValue;
 use std::time::Duration;
+
+use super::*;
+use crate::{
+    actions::{
+        misc::test::Test,
+        mouse::{click::Click, scroll::Scroll},
+        window::message_box::{MessageBox, MessageBoxButtons},
+    },
+    parameters::duration::DurationValue,
+};
 
 #[test]
 fn default_tree_contains_only_root() {

@@ -348,6 +348,14 @@ action-loop-max-counter =
     .name = Maximum count
     .description = The maximum number of times to run the loop body.
 
+action-and =
+    .name = Wait for all
+    .description = Wait until every input completes.
+
+action-or =
+    .name = Wait for any
+    .description = Wait until one input completes.
+
 action-if =
     .name = If
     .description = Branch execution depending on whether a value is true.

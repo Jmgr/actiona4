@@ -7,7 +7,10 @@ use action_definition::{
 };
 use tokio::{select, time::sleep};
 
-use crate::{ExecutionContext, ResolveParam, ResolveParamError, RunError, RunErrorKind, Runnable};
+use crate::{
+    ExecutionContext, PreparedWait, ResolveParam, ResolveParamError, RunError, RunErrorKind,
+    Runnable, Waitable, run_prepared_wait,
+};
 
 fn parse_wait_unit(value: &str) -> Option<WaitUnit> {
     serde_plain::from_str(value.trim()).ok()
@@ -52,16 +55,25 @@ fn to_duration(duration: f64, unit: WaitUnit) -> Result<Duration, RunErrorKind> 
     Duration::try_from_secs_f64(seconds).map_err(|_| RunErrorKind::InvalidWaitDuration)
 }
 
-impl Runnable for Wait {
-    async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
+impl Waitable for Wait {
+    async fn prepare(&self, context: &ExecutionContext) -> Result<PreparedWait, RunError> {
         let duration = self.duration.resolve(context).await?;
         let unit = resolve_unit(self.unit.value(), self.unit.name(), context).await?;
         let duration = to_duration(duration, unit).map_err(RunError::new)?;
 
-        select! {
-            _ = context.cancellation_token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
-            _ = sleep(duration) => Ok(PostRun::default()),
-        }
+        Ok(PreparedWait::new(move |token| async move {
+            select! {
+                _ = token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
+                _ = sleep(duration) => Ok(()),
+            }
+        }))
+    }
+}
+
+impl Runnable for Wait {
+    async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
+        run_prepared_wait(self, context).await?;
+        Ok(PostRun::default())
     }
 }
 

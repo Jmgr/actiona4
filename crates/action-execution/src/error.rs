@@ -52,6 +52,10 @@ pub enum RunErrorKind {
     Run(#[from] eyre::Report),
     #[error("canceled")]
     Canceled,
+    #[error("{action} has no inputs")]
+    EmptyWaitInputs { action: &'static str },
+    #[error("{action} cannot be used as an And/Or input")]
+    NonWaitableInput { action: &'static str },
     #[error(transparent)]
     Tree(#[from] tree::Error),
     #[error("no node found with label {0}")]

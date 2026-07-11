@@ -12,6 +12,7 @@ action-definition = { path = "../action-definition" }
 core = { path = "../core" }
 
 eyre.workspace = true
+futures-util.workspace = true
 itertools.workspace = true
 rquickjs.workspace = true
 satint.workspace = true

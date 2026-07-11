@@ -9,7 +9,13 @@ use crate::{
     scriptable::Scriptable,
 };
 
-#[action(icon = MousePointer2, effect = ReadState, category = Clipboard, timeout = true)]
+#[action(
+    icon = MousePointer2,
+    effect = ReadState,
+    category = Clipboard,
+    timeout = true,
+    waitable = true
+)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct WaitForClipboardChanged {
     #[parameter]

@@ -9,9 +9,10 @@ use actiona_core::{
 };
 
 use crate::{
-    ExecutionContext, ResolveParam, RunError, Runnable,
+    ExecutionContext, PreparedWait, ResolveParam, RunError, Runnable, Waitable,
     actions::mouse::click::to_core_button,
     resolve_param::{ScriptableParamValue, ValidateParamValue, ValidationError},
+    run_prepared_wait,
 };
 
 fn to_core_direction(direction: ButtonDirection) -> CoreButtonDirection {
@@ -42,8 +43,8 @@ impl ValidateParamValue for ButtonDirection {
     }
 }
 
-impl Runnable for WaitForButton {
-    async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
+impl Waitable for WaitForButton {
+    async fn prepare(&self, context: &ExecutionContext) -> Result<PreparedWait, RunError> {
         let button = self.button.resolve(context).await?.map(to_core_button);
         let direction = self
             .direction
@@ -53,13 +54,18 @@ impl Runnable for WaitForButton {
 
         let mouse = context.runtime.mouse()?;
 
-        mouse
-            .wait_for_button(
-                ButtonConditions { button, direction },
-                context.cancellation_token.clone(),
-            )
-            .await?;
+        Ok(PreparedWait::new(move |token| async move {
+            mouse
+                .wait_for_button(ButtonConditions { button, direction }, token)
+                .await?;
+            Ok(())
+        }))
+    }
+}
 
+impl Runnable for WaitForButton {
+    async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
+        run_prepared_wait(self, context).await?;
         Ok(PostRun::default())
     }
 }

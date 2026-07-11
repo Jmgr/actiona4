@@ -271,7 +271,9 @@ mod tests {
     use action_definition::{
         actions::{
             ActionInstance, CommonParameters, Test, WithCommon,
-            flow::{Exit, Goto, Loop, Marker, Stop, Switch, SwitchCase, Wait, wait::WaitUnit},
+            flow::{
+                And, Exit, Goto, Loop, Marker, Or, Stop, Switch, SwitchCase, Wait, wait::WaitUnit,
+            },
             system::code::Code,
         },
         parameters::{duration::DurationValue, source_code::SourceCode, value::Value},
@@ -342,6 +344,16 @@ mod tests {
                 ..Default::default()
             },
         })
+    }
+
+    fn wait_input(duration: f64) -> ActionInstance {
+        ActionInstance::Wait(
+            Wait {
+                duration: Scriptable::new_static(duration).into(),
+                unit: Scriptable::new_static(WaitUnit::Milliseconds).into(),
+            }
+            .into(),
+        )
     }
 
     async fn run_tree_and_collect_visits(tree: ActionTree) -> Result<Vec<String>, RunError> {
@@ -680,6 +692,76 @@ mod tests {
         let visits = run_tree_and_collect_visits(tree).await.unwrap();
 
         assert_eq!(visits, ["timeout"]);
+    }
+
+    #[tokio::test]
+    async fn and_waits_for_every_input_before_continuing() {
+        let mut tree = ActionTree::default();
+        tree.append_action_instance(
+            ActionInstance::And(
+                And {
+                    inputs: vec![wait_input(1.0), wait_input(5.0)],
+                }
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["after"]);
+    }
+
+    #[tokio::test]
+    async fn or_runs_only_the_winning_input_handler() {
+        let mut tree = ActionTree::default();
+        let or = tree
+            .append_action_instance(
+                ActionInstance::Or(
+                    Or {
+                        inputs: vec![wait_input(5.0), wait_input(1.0)],
+                    }
+                    .into(),
+                ),
+                tree.root(),
+            )
+            .unwrap();
+        let handler = tree.get_node(or).unwrap().children()[1];
+        tree.append_action_instance(test_action("winner", PostRun::NextSibling), handler)
+            .unwrap();
+        tree.append_action_instance(test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["winner", "after"]);
+    }
+
+    #[tokio::test]
+    async fn and_rejects_non_waitable_inputs() {
+        let mut tree = ActionTree::default();
+        let and = tree
+            .append_action_instance(
+                ActionInstance::And(
+                    And {
+                        inputs: vec![ActionInstance::Stop(Stop::default().into())],
+                    }
+                    .into(),
+                ),
+                tree.root(),
+            )
+            .unwrap();
+
+        let error = run_tree_and_collect_visits(tree).await.unwrap_err();
+
+        assert_eq!(error.node_id, Some(and));
+        assert!(matches!(
+            error.kind,
+            RunErrorKind::NonWaitableInput { action: "stop" }
+        ));
     }
 
     #[tokio::test]
