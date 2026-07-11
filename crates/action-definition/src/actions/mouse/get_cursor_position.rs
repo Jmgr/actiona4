@@ -6,6 +6,7 @@ use crate::{
     parameters::variable::Variable,
 };
 
+/// Stores the current cursor position in a script variable.
 #[action(icon = MousePointer2, effect = ReadState, category = Mouse)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct GetCursorPosition {

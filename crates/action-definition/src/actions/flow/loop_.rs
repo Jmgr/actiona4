@@ -6,7 +6,13 @@ use crate::{
     tree::BranchKind,
 };
 
-#[action(icon = CornerDownRight, effect = ControlFlow, category = Flow)]
+/// Repeats its body a fixed number of times.
+#[action(
+    icon = CornerDownRight,
+    effect = ControlFlow,
+    category = Flow,
+    looping = true
+)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Loop {
     #[parameter]

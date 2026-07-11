@@ -8,6 +8,7 @@ use crate::{
     scriptable::Scriptable,
 };
 
+/// Moves to an optional position and presses a mouse button.
 #[action(icon = MousePointerClick, effect = ChangeState, category = Mouse)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Press {

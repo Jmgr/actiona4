@@ -28,6 +28,12 @@ fn only_supported_wait_actions_are_waitable() {
 }
 
 #[test]
+fn loop_actions_are_marked() {
+    assert!(definition("loop").is_looping);
+    assert!(!definition("wait").is_looping);
+}
+
+#[test]
 fn or_has_one_positional_branch_per_input() {
     let action = Or {
         inputs: vec![

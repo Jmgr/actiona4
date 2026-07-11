@@ -6,6 +6,7 @@ use crate::{
     scriptable::Scriptable,
 };
 
+/// Waits for mouse wheel input.
 #[action(
     icon = MousePointer2,
     effect = ReadState,

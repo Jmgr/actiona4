@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Replaces the clipboard contents with text.
 #[action(icon = ShieldX, effect = ChangeState, category = Clipboard)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct SetClipboardText {

@@ -14,6 +14,7 @@ pub enum Axis {
     Vertical,
 }
 
+/// Scrolls the mouse wheel along an axis.
 #[action(icon = MousePointerClick, effect = ChangeState, category = Mouse)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Scroll {

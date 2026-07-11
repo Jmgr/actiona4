@@ -7,6 +7,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Chooses a branch based on a value's truthiness.
 #[action(icon = CornerDownRight, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct If {

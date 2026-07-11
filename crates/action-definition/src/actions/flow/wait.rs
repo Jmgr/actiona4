@@ -20,6 +20,7 @@ pub enum WaitUnit {
     Days,
 }
 
+/// Waits for a fixed duration.
 #[action(
     icon = TestTubeDiagonal,
     effect = ControlFlow,

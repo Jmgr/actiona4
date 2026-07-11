@@ -23,6 +23,7 @@ impl SwitchCase {
     }
 }
 
+/// Chooses a branch whose case value matches the input value.
 #[action(icon = CodeXml, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Switch {

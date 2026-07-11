@@ -15,6 +15,7 @@ struct ActionParams {
     category: Ident,
     timeout: bool,
     waitable: bool,
+    looping: bool,
     only: Option<Expr>,
     not: Option<Expr>,
 }
@@ -45,6 +46,7 @@ pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let category = params.category;
     let supports_timeout = params.timeout;
     let is_waitable = params.waitable;
+    let is_looping = params.looping;
     let visibility = &item.vis;
 
     let action_platforms = match platform_constraints(params.only.as_ref(), params.not.as_ref()) {
@@ -91,6 +93,7 @@ pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
                 category: crate::actions::ActionCategory::#category,
                 supports_timeout: #supports_timeout,
                 is_waitable: #is_waitable,
+                is_looping: #is_looping,
                 platforms: ::types::platform::Platforms(&[#(#action_platforms),*]),
             };
         }
@@ -179,6 +182,7 @@ fn parse_action_arguments(arguments: TokenStream) -> Result<ActionParams, Error>
     let mut category = None;
     let mut timeout = false;
     let mut waitable = false;
+    let mut looping = false;
     let mut only = None;
     let mut not = None;
 
@@ -249,6 +253,14 @@ fn parse_action_arguments(arguments: TokenStream) -> Result<ActionParams, Error>
                 return Err(Error::new_spanned(expr, "`waitable` must be a boolean"));
             };
             waitable = value.value;
+        } else if argument.path.is_ident("looping") {
+            let Expr::Lit(expr) = argument.value else {
+                return Err(Error::new_spanned(argument, "`looping` must be a boolean"));
+            };
+            let Lit::Bool(value) = expr.lit else {
+                return Err(Error::new_spanned(expr, "`looping` must be a boolean"));
+            };
+            looping = value.value;
         } else if argument.path.is_ident("only") {
             only = Some(argument.value);
         } else if argument.path.is_ident("not") {
@@ -286,6 +298,7 @@ fn parse_action_arguments(arguments: TokenStream) -> Result<ActionParams, Error>
         category,
         timeout,
         waitable,
+        looping,
         only,
         not,
     })

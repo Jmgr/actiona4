@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Stops execution and exits the application.
 #[action(icon = ShieldX, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Exit {}

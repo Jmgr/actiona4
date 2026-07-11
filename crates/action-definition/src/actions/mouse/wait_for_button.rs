@@ -14,6 +14,7 @@ pub enum ButtonDirection {
     Release,
 }
 
+/// Waits for a mouse button press or release.
 #[action(
     icon = MousePointer2,
     effect = ReadState,

@@ -6,6 +6,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Chooses a branch based on whether a mouse button is pressed.
 #[action(icon = CornerDownRight, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ButtonCondition {

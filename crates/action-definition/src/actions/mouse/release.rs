@@ -5,6 +5,7 @@ use crate::{
     scriptable::Scriptable,
 };
 
+/// Releases a mouse button.
 #[action(icon = MousePointerClick, effect = ChangeState, category = Mouse)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Release {

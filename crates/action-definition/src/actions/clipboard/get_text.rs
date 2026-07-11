@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Stores clipboard text in a script variable.
 #[action(icon = ShieldX, effect = ReadState, category = Clipboard)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct GetClipboardText {

@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Marks a location that other flow actions can target.
 #[action(icon = MapPin, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Marker {}

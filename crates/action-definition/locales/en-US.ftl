@@ -348,6 +348,14 @@ action-loop-max-counter =
     .name = Maximum count
     .description = The maximum number of times to run the loop body.
 
+action-break =
+    .name = Break
+    .description = Leave the nearest enclosing loop.
+
+action-continue =
+    .name = Continue
+    .description = Skip to the next iteration of the nearest enclosing loop.
+
 action-and =
     .name = Wait for all
     .description = Wait until every input completes.

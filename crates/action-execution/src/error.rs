@@ -56,6 +56,8 @@ pub enum RunErrorKind {
     EmptyWaitInputs { action: &'static str },
     #[error("{action} cannot be used as an And/Or input")]
     NonWaitableInput { action: &'static str },
+    #[error("{action} must be inside a loop")]
+    LoopControlOutsideLoop { action: &'static str },
     #[error(transparent)]
     Tree(#[from] tree::Error),
     #[error("no node found with label {0}")]

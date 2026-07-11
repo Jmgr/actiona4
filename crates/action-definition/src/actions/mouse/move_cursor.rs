@@ -45,6 +45,7 @@ pub enum Tween {
     SineOut,
 }
 
+/// Moves the cursor to a position with optional animation settings.
 #[action(icon = MousePointer2, effect = ChangeState, category = Mouse, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct MoveCursor {

@@ -6,6 +6,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Runs source code and follows the returned action result.
 #[action(icon = CodeXml, effect = ExternalSystem, category = System)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Code {

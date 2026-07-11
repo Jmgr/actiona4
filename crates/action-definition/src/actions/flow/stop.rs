@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Stops the current action tree execution.
 #[action(icon = ShieldX, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Stop {}

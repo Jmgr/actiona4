@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::actions::{ActionBranches, ActionInstance, ParameterAvailability, action};
 
+/// Waits until every input action has completed.
 #[action(icon = CornerDownRight, effect = ControlFlow, category = Flow, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct And {

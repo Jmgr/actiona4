@@ -30,17 +30,29 @@ pub mod variable;
 
 #[derive(Debug)]
 pub enum ParameterKind {
+    /// A true-or-false value.
     Boolean(BooleanParameter),
+    /// A signed whole number.
     Integer(IntegerParameter),
+    /// A point on the screen.
     Position(PositionParameter),
+    /// A plain text value.
     Text(TextParameter),
+    /// Source code evaluated by the script engine.
     SourceCode(SourceCodeParameter),
+    /// One value chosen from a fixed set.
     Enum(EnumParameter),
+    /// A span of time.
     Duration(DurationParameter),
+    /// A signed decimal number.
     Decimal(DecimalParameter),
+    /// A label that identifies an action-tree location.
     Label(LabelParameter),
+    /// A non-negative whole number.
     UnsignedInteger(UnsignedIntegerParameter),
+    /// A script variable name.
     Variable(VariableParameter),
+    /// A dynamically typed script value.
     Value(ValueParameter),
 }
 

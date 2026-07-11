@@ -26,6 +26,7 @@ pub enum MessageBoxIcon {
     Error,
 }
 
+/// Shows a message box and branches according to the selected button.
 #[action(icon = MessageSquareMore, effect = ExternalSystem, category = Window, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct MessageBox {

@@ -3,7 +3,7 @@ use std::time::Duration;
 use action_definition::{
     actions::{
         ActionInstance,
-        flow::{And, Or},
+        flow::{And, Break, Continue, Or},
         misc::test::Test,
         mouse::click::Click,
         system::code::Code,
@@ -57,6 +57,16 @@ fn and_roundtrips() {
 #[test]
 fn or_roundtrips() {
     assert_roundtrips(ActionInstance::Or(Or::default().into()));
+}
+
+#[test]
+fn break_roundtrips() {
+    assert_roundtrips(ActionInstance::Break(Break::default().into()));
+}
+
+#[test]
+fn continue_roundtrips() {
+    assert_roundtrips(ActionInstance::Continue(Continue::default().into()));
 }
 
 #[test]

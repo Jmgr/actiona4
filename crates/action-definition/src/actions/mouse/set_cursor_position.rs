@@ -7,6 +7,7 @@ use crate::{
     scriptable::Scriptable,
 };
 
+/// Sets the cursor position immediately.
 #[action(icon = MousePointer2, effect = ChangeState, category = Mouse)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct SetCursorPosition {

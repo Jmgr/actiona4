@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::actions::{ActionBranches, ParameterAvailability};
 
+/// Waits for mouse cursor movement.
 #[action(
     icon = MousePointer2,
     effect = ReadState,

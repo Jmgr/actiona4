@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Provides configurable behavior for action-definition and runner tests.
 #[action(icon = TestTubeDiagonal, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Test {

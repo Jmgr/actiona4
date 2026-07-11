@@ -9,6 +9,7 @@ use crate::{
     scriptable::Scriptable,
 };
 
+/// Waits until the clipboard contents change.
 #[action(
     icon = MousePointer2,
     effect = ReadState,

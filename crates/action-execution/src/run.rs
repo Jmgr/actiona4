@@ -104,6 +104,23 @@ impl Runner<'_> {
                     self.context.cancellation_token.cancel(); // TODO: check
                     break;
                 }
+                PostRun::Break => {
+                    let loop_id = self.nearest_enclosing_loop(node_id).ok_or_else(|| {
+                        RunError::new(RunErrorKind::LoopControlOutsideLoop { action: "Break" })
+                            .at_node(node_id)
+                    })?;
+                    match self.next_sibling_or_branch_completion(loop_id) {
+                        Some(next) => next,
+                        None => break,
+                    }
+                }
+                PostRun::Continue => {
+                    let loop_id = self.nearest_enclosing_loop(node_id).ok_or_else(|| {
+                        RunError::new(RunErrorKind::LoopControlOutsideLoop { action: "Continue" })
+                            .at_node(node_id)
+                    })?;
+                    RunStep::branch_completed(loop_id, BranchKind::Body)
+                }
             };
 
             if self.context.cancellation_token.is_cancelled() {
@@ -229,6 +246,16 @@ impl Runner<'_> {
 
         self.next_sibling_or_branch_completion(owner)
     }
+
+    fn nearest_enclosing_loop(&self, node_id: NodeId) -> Option<NodeId> {
+        self.tree.ancestors(node_id).find(|&ancestor_id| {
+            self.tree.get_node(ancestor_id).is_ok_and(|node| {
+                node.payload()
+                    .try_as_action_ref()
+                    .is_some_and(|action| action.definition().is_looping)
+            })
+        })
+    }
 }
 
 async fn wait_for_pause(
@@ -272,7 +299,8 @@ mod tests {
         actions::{
             ActionInstance, CommonParameters, Test, WithCommon,
             flow::{
-                And, Exit, Goto, Loop, Marker, Or, Stop, Switch, SwitchCase, Wait, wait::WaitUnit,
+                And, Break, Continue, Exit, Goto, Loop, Marker, Or, Stop, Switch, SwitchCase, Wait,
+                wait::WaitUnit,
             },
             system::code::Code,
         },
@@ -602,6 +630,91 @@ mod tests {
         let visits = run_tree_and_collect_visits(tree).await.unwrap();
 
         assert_eq!(visits, ["after"]);
+    }
+
+    #[tokio::test]
+    async fn break_leaves_the_nearest_loop() {
+        let mut tree = ActionTree::default();
+        let loop_id = tree
+            .append_action_instance(loop_action(2), tree.root())
+            .unwrap();
+        let body = tree.get_node(loop_id).unwrap().children()[0];
+        tree.append_action_instance(test_action("before", PostRun::NextSibling), body)
+            .unwrap();
+        tree.append_action_instance(ActionInstance::Break(Break::default().into()), body)
+            .unwrap();
+        tree.append_action_instance(test_action("skipped", PostRun::NextSibling), body)
+            .unwrap();
+        tree.append_action_instance(test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["before", "after"]);
+    }
+
+    #[tokio::test]
+    async fn continue_starts_the_next_iteration() {
+        let mut tree = ActionTree::default();
+        let loop_id = tree
+            .append_action_instance(loop_action(2), tree.root())
+            .unwrap();
+        let body = tree.get_node(loop_id).unwrap().children()[0];
+        tree.append_action_instance(test_action("before", PostRun::NextSibling), body)
+            .unwrap();
+        tree.append_action_instance(ActionInstance::Continue(Continue::default().into()), body)
+            .unwrap();
+        tree.append_action_instance(test_action("skipped", PostRun::NextSibling), body)
+            .unwrap();
+        tree.append_action_instance(test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["before", "before", "after"]);
+    }
+
+    #[tokio::test]
+    async fn break_targets_the_innermost_loop() {
+        let mut tree = ActionTree::default();
+        let outer_loop = tree
+            .append_action_instance(loop_action(1), tree.root())
+            .unwrap();
+        let outer_body = tree.get_node(outer_loop).unwrap().children()[0];
+        let inner_loop = tree
+            .append_action_instance(loop_action(2), outer_body)
+            .unwrap();
+        let inner_body = tree.get_node(inner_loop).unwrap().children()[0];
+        tree.append_action_instance(test_action("inner", PostRun::NextSibling), inner_body)
+            .unwrap();
+        tree.append_action_instance(ActionInstance::Break(Break::default().into()), inner_body)
+            .unwrap();
+        tree.append_action_instance(test_action("skipped", PostRun::NextSibling), inner_body)
+            .unwrap();
+        tree.append_action_instance(test_action("outer-tail", PostRun::NextSibling), outer_body)
+            .unwrap();
+        tree.append_action_instance(test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["inner", "outer-tail", "after"]);
+    }
+
+    #[tokio::test]
+    async fn break_outside_a_loop_errors() {
+        let mut tree = ActionTree::default();
+        let break_node = tree
+            .append_action_instance(ActionInstance::Break(Break::default().into()), tree.root())
+            .unwrap();
+
+        let error = run_tree_and_collect_visits(tree).await.unwrap_err();
+
+        assert_eq!(error.node_id, Some(break_node));
+        assert!(matches!(
+            error.kind,
+            RunErrorKind::LoopControlOutsideLoop { action: "Break" }
+        ));
     }
 
     #[tokio::test]

@@ -19,6 +19,7 @@ pub enum MouseButton {
     Forward,
 }
 
+/// Clicks a mouse button at an optional position.
 #[action(icon = MousePointerClick, effect = ChangeState, category = Mouse, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Click {

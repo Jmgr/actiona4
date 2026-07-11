@@ -26,6 +26,11 @@ pub enum PostRun {
 
     /// Exit the application.
     Exit,
+
+    /// Leave the nearest enclosing loop.
+    Break,
+
+    /// Skip to the next iteration of the nearest enclosing loop.
+    Continue,
     // TODO: call function
-    // TODO: loop
 }

@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Continues execution at a labeled action.
 #[action(icon = CornerDownRight, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Goto {

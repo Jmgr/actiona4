@@ -8,6 +8,7 @@ use crate::{
     tree::BranchKind,
 };
 
+/// Clears the system clipboard or Linux selection clipboard.
 #[action(icon = ShieldX, effect = ChangeState, category = Clipboard)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ClearClipboard {

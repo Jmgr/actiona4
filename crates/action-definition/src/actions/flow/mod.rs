@@ -1,4 +1,6 @@
 pub mod and;
+pub mod break_;
+pub mod continue_;
 pub mod exit;
 pub mod goto;
 pub mod if_;
@@ -10,6 +12,8 @@ pub mod switch;
 pub mod wait;
 
 pub use and::And;
+pub use break_::Break;
+pub use continue_::Continue;
 pub use exit::Exit;
 pub use goto::Goto;
 pub use if_::If;
