@@ -340,13 +340,41 @@ enum-wait-unit =
     .hours = Hours
     .days = Days
 
+action-for =
+    .name = For
+    .description = Run its body once for every index below a count.
+
+action-for-count =
+    .name = Count
+    .description = The number of times to run the body.
+
+action-for-index-variable =
+    .name = Index variable
+    .description = The variable that receives the current zero-based index.
+
+action-for-each =
+    .name = For each
+    .description = Run its body once for every item in an array.
+
+action-for-each-array =
+    .name = Array
+    .description = The array whose items to iterate.
+
+action-for-each-item-variable =
+    .name = Item variable
+    .description = The variable that receives the current array item.
+
 action-loop =
     .name = Loop
-    .description = Run its body a fixed number of times.
+    .description = Repeat the body until it is stopped, exited, or broken out of.
 
-action-loop-max-counter =
-    .name = Maximum count
-    .description = The maximum number of times to run the loop body.
+action-while =
+    .name = While
+    .description = Repeat the body while a condition is true.
+
+action-while-condition =
+    .name = Condition
+    .description = The condition to evaluate before every iteration.
 
 action-break =
     .name = Break

@@ -11,7 +11,7 @@ mod scope;
 mod test_support;
 mod waitable;
 
-pub use context::{ExecutionContext, RunReason};
+pub use context::ExecutionContext;
 pub use error::{RunError, RunErrorKind};
 pub use resolve_param::{ResolveParam, ResolveParamError};
 pub use run::RunTree;

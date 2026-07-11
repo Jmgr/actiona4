@@ -3,7 +3,7 @@ use std::time::Duration;
 use action_definition::{
     actions::{
         ActionInstance,
-        flow::{And, Break, Continue, Or},
+        flow::{And, Break, Continue, For, ForEach, Loop, Or, While},
         misc::test::Test,
         mouse::click::Click,
         system::code::Code,
@@ -67,6 +67,36 @@ fn break_roundtrips() {
 #[test]
 fn continue_roundtrips() {
     assert_roundtrips(ActionInstance::Continue(Continue::default().into()));
+}
+
+#[test]
+fn for_defaults_its_index_variable_to_i() {
+    assert_eq!(For::default().index_variable.value().inner(), "i");
+}
+
+#[test]
+fn for_roundtrips() {
+    assert_roundtrips(ActionInstance::For(For::default().into()));
+}
+
+#[test]
+fn for_each_defaults_its_item_variable_to_item() {
+    assert_eq!(ForEach::default().item_variable.value().inner(), "item");
+}
+
+#[test]
+fn for_each_roundtrips() {
+    assert_roundtrips(ActionInstance::ForEach(ForEach::default().into()));
+}
+
+#[test]
+fn loop_roundtrips() {
+    assert_roundtrips(ActionInstance::Loop(Loop::default().into()));
+}
+
+#[test]
+fn while_roundtrips() {
+    assert_roundtrips(ActionInstance::While(While::default().into()));
 }
 
 #[test]

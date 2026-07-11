@@ -1,6 +1,6 @@
 use action_definition::{
     parameters::{
-        Param, ParamSpec, ParameterKind, duration::DurationValue, label::Label,
+        Param, ParamSpec, ParameterKind, array::Array, duration::DurationValue, label::Label,
         source_code::SourceCode, value::Value, variable::Variable,
     },
     scriptable::Scriptable,
@@ -284,12 +284,28 @@ impl ValidateParamValue for Variable {
     }
 }
 
+impl ValidateParamValue for Array {
+    fn validate_param(&self, _kind: &ParameterKind) -> Result<(), ValidationError> {
+        Ok(())
+    }
+}
+
 impl ResolveParamValue<Variable> for Variable {
     async fn resolve_value(
         &self,
         _parameter: &'static str,
         _context: &ExecutionContext,
     ) -> Result<Variable, ResolveParamError> {
+        Ok(self.clone())
+    }
+}
+
+impl ResolveParamValue<Array> for Array {
+    async fn resolve_value(
+        &self,
+        _parameter: &'static str,
+        _context: &ExecutionContext,
+    ) -> Result<Array, ResolveParamError> {
         Ok(self.clone())
     }
 }

@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
-use action_definition::tree::{BranchKind, NodeId};
+use action_definition::tree::{ActionTree, NodeId};
 use actiona_core::{
     runtime::Runtime,
     scripting::{Engine as ScriptEngine, ScriptError},
 };
-use rquickjs::{IntoJs, Object};
+use rquickjs::{Array, Error, IntoJs, Object, Value};
 use tokio_util::sync::CancellationToken;
 
 use crate::ExecutionState;
@@ -15,7 +15,6 @@ pub struct ExecutionContext {
     pub cancellation_token: CancellationToken,
     pub runtime: Arc<Runtime>,
     pub script_engine: ScriptEngine,
-    pub reason: RunReason,
     current_node: Option<NodeId>,
     state: ExecutionState,
 }
@@ -40,13 +39,55 @@ impl ExecutionContext {
             })
             .await
     }
-}
 
-#[derive(Clone, Debug, Default, PartialEq)]
-pub enum RunReason {
-    #[default]
-    Normal,
-    BranchCompleted(BranchKind),
+    pub(crate) async fn store_array(&self, source: &str) -> Result<u32, ScriptError> {
+        let slot = self.array_slot();
+        self.script_engine
+            .eval_async_with(source, move |ctx, value| {
+                let array = value.as_array().ok_or_else(|| {
+                    Error::new_from_js_message(
+                        "value",
+                        "array",
+                        "array parameter must resolve to an array",
+                    )
+                })?;
+                let count = u32::try_from(array.len()).map_err(|_| {
+                    Error::new_from_js_message("array", "u32", "array has too many items")
+                })?;
+
+                ctx.globals().set(slot, array.clone())?;
+                Ok(count)
+            })
+            .await
+    }
+
+    pub(crate) async fn set_variable_from_stored_array(
+        &self,
+        name: &str,
+        index: u32,
+    ) -> Result<(), ScriptError> {
+        let slot = self.array_slot();
+        self.script_engine
+            .with(|ctx| {
+                let globals = ctx.globals();
+                let array = globals.get::<_, Array>(&slot)?;
+                let value = array.get::<Value>(index as usize)?;
+                let vars = if globals.contains_key("vars")? {
+                    globals.get::<_, Object>("vars")?
+                } else {
+                    let vars = Object::new(ctx.clone())?;
+                    globals.set("vars", vars.clone())?;
+                    vars
+                };
+
+                vars.set(name, value)
+            })
+            .await
+    }
+
+    fn array_slot(&self) -> String {
+        format!("__actiona_for_each_{:?}", self.node_id())
+    }
 }
 
 impl ExecutionContext {
@@ -59,7 +100,6 @@ impl ExecutionContext {
             cancellation_token,
             runtime,
             script_engine,
-            reason: RunReason::Normal,
             current_node: None,
             state: ExecutionState::default(),
         }
@@ -68,12 +108,10 @@ impl ExecutionContext {
     pub(crate) fn prepare_action(
         &mut self,
         node_id: NodeId,
-        reason: RunReason,
-        tree: &action_definition::tree::ActionTree,
+        tree: &ActionTree,
     ) -> Result<(), crate::RunError> {
         self.state.reconcile_to(tree, node_id)?;
         self.current_node = Some(node_id);
-        self.reason = reason;
         Ok(())
     }
 
@@ -88,6 +126,13 @@ impl ExecutionContext {
     {
         let node_id = self.node_id();
         self.state.runtime_state_mut_or_insert_with(node_id, create)
+    }
+
+    pub fn runtime_state<T>(&self) -> Option<&T>
+    where
+        T: 'static,
+    {
+        self.state.runtime_state(self.node_id())
     }
 }
 

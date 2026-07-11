@@ -217,13 +217,16 @@ pub enum ActionInstance {
     Exit(WithCommon<Exit>),
     Goto(WithCommon<Goto>),
     If(WithCommon<If>),
-    Loop(WithCommon<Loop>),
+    For(WithCommon<For>),
+    ForEach(WithCommon<ForEach>),
     Marker(WithCommon<Marker>),
+    Loop(WithCommon<Loop>),
     Or(WithCommon<Or>),
     Stop(WithCommon<Stop>),
     Switch(WithCommon<Switch>),
     Test(WithCommon<Test>),
     Wait(WithCommon<Wait>),
+    While(WithCommon<While>),
 
     // Mouse
     ButtonCondition(WithCommon<ButtonCondition>),

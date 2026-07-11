@@ -188,6 +188,39 @@ impl Engine {
         self.eval_async_with_filename(script, None).await
     }
 
+    /// Evaluates a script and processes its resulting JavaScript value inside
+    /// the engine context.
+    #[instrument(skip_all)]
+    pub async fn eval_async_with<T>(
+        &self,
+        script: &str,
+        f: impl for<'js> FnOnce(Ctx<'js>, Value<'js>) -> rquickjs::Result<T> + ParallelSend,
+    ) -> Result<T>
+    where
+        T: Send + 'static,
+    {
+        let (hash, js_code) = self.prepare_script(script, None, false)?;
+        let sourcemaps = self.sourcemaps.clone();
+
+        self.context
+            .async_with(async |ctx| {
+                let mut options = EvalOptions::default();
+                options.promise = true;
+                options.filename = Some(format!("{hash}"));
+
+                let result = async {
+                    let func: Promise = ctx.eval_with_options(js_code, options).catch(&ctx)?;
+                    let future: Object = func.into_future().await.catch(&ctx)?;
+                    future.get::<_, Value>("value").catch(&ctx)
+                }
+                .await;
+                let value = Self::process_caught_result(result, sourcemaps.clone())?;
+
+                Self::process_caught_result(f(ctx.clone(), value).catch(&ctx), sourcemaps)
+            })
+            .await
+    }
+
     #[instrument(skip_all)]
     pub async fn eval_async_with_filename<T>(
         &self,

@@ -9,6 +9,17 @@ use crate::{ExecutionContext, error::RunError};
 #[allow(async_fn_in_trait)]
 pub trait Runnable {
     async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError>;
+
+    async fn on_body_enter(&self, _context: &mut ExecutionContext) -> Result<(), RunError> {
+        Ok(())
+    }
+
+    async fn on_body_completed(
+        &self,
+        _context: &mut ExecutionContext,
+    ) -> Result<PostRun, RunError> {
+        Ok(PostRun::default())
+    }
 }
 
 // Each `ActionInstance` variant holds `WithCommon<Action>`, so the dispatched
@@ -17,6 +28,14 @@ pub trait Runnable {
 impl<T: Runnable> Runnable for WithCommon<T> {
     async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         self.action.run(context).await
+    }
+
+    async fn on_body_enter(&self, context: &mut ExecutionContext) -> Result<(), RunError> {
+        self.action.on_body_enter(context).await
+    }
+
+    async fn on_body_completed(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
+        self.action.on_body_completed(context).await
     }
 }
 

@@ -6,15 +6,16 @@ use types::platform::Platforms;
 use crate::{
     TranslationKey,
     parameters::{
-        boolean::BooleanParameter, decimal::DecimalParameter, duration::DurationParameter,
-        enumeration::EnumParameter, integer::IntegerParameter, label::LabelParameter,
-        position::PositionParameter, source_code::SourceCodeParameter, text::TextParameter,
-        unsigned_integer::UnsignedIntegerParameter, value::ValueParameter,
+        array::ArrayParameter, boolean::BooleanParameter, decimal::DecimalParameter,
+        duration::DurationParameter, enumeration::EnumParameter, integer::IntegerParameter,
+        label::LabelParameter, position::PositionParameter, source_code::SourceCodeParameter,
+        text::TextParameter, unsigned_integer::UnsignedIntegerParameter, value::ValueParameter,
         variable::VariableParameter,
     },
     scriptable::Scriptable,
 };
 
+pub mod array;
 pub mod boolean;
 pub mod decimal;
 pub mod duration;
@@ -30,6 +31,8 @@ pub mod variable;
 
 #[derive(Debug)]
 pub enum ParameterKind {
+    /// A JavaScript expression that must evaluate to an array.
+    Array(ArrayParameter),
     /// A true-or-false value.
     Boolean(BooleanParameter),
     /// A signed whole number.

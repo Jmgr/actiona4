@@ -1,5 +1,6 @@
 use action_definition::{
     actions::{ACTION_DEFINITIONS, ActionBranches, ActionInstance, flow::Or},
+    parameters::ParameterKind,
     tree::BranchKind,
 };
 
@@ -29,8 +30,22 @@ fn only_supported_wait_actions_are_waitable() {
 
 #[test]
 fn loop_actions_are_marked() {
+    assert!(definition("for").is_looping);
+    assert!(definition("for_each").is_looping);
     assert!(definition("loop").is_looping);
+    assert!(definition("while").is_looping);
     assert!(!definition("wait").is_looping);
+}
+
+#[test]
+fn for_each_requires_an_array_parameter() {
+    let array = definition("for_each")
+        .parameters
+        .iter()
+        .find(|parameter| parameter.id == "array")
+        .expect("for_each should have an array parameter");
+
+    assert!(matches!(array.kind, ParameterKind::Array(_)));
 }
 
 #[test]

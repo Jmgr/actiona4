@@ -30,6 +30,6 @@ impl Runnable for Code {
 
         Ok(action_result
             .map(action_result_to_post_run)
-            .unwrap_or(PostRun::NextSibling))
+            .unwrap_or(PostRun::default()))
     }
 }
