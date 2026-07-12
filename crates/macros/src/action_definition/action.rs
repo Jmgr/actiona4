@@ -33,6 +33,8 @@ pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
             .into();
     };
 
+    item.attrs.push(parse_quote!(#[serde(default)]));
+
     let name = &item.ident;
     let name_str = name.to_string();
     let variant = quote::format_ident!("{name_str}");

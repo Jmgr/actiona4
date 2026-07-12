@@ -16,6 +16,7 @@ pub mod clipboard;
 pub mod flow;
 pub mod misc;
 pub mod mouse;
+pub mod random;
 pub mod system;
 pub mod window;
 
@@ -24,6 +25,7 @@ pub use flow::*;
 pub use macros::action;
 pub use misc::*;
 pub use mouse::*;
+pub use random::*;
 pub use system::*;
 pub use window::*;
 
@@ -226,7 +228,16 @@ pub enum ActionInstance {
     Switch(WithCommon<Switch>),
     Test(WithCommon<Test>),
     Wait(WithCommon<Wait>),
+    WaitUntil(WithCommon<WaitUntil>),
+    WaitWhile(WithCommon<WaitWhile>),
     While(WithCommon<While>),
+
+    // Random
+    RandomBranch(WithCommon<RandomBranch>),
+    RandomItem(WithCommon<RandomItem>),
+    RandomInteger(WithCommon<RandomInteger>),
+    RandomNumber(WithCommon<RandomNumber>),
+    RandomString(WithCommon<RandomString>),
 
     // Mouse
     ButtonCondition(WithCommon<ButtonCondition>),
@@ -272,6 +283,7 @@ pub enum ActionCategory {
     FileSystem,
     Data,
     Flow,
+    Random,
     System,
     Clipboard,
 }

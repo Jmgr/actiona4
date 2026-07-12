@@ -397,13 +397,14 @@ mod tests {
             ActionInstance, CommonParameters, Test, WithCommon,
             flow::{
                 And, Break, Continue, Exit, For, ForEach, Goto, Loop, Marker, Or, Stop, Switch,
-                SwitchCase, Wait, While, wait::WaitUnit,
+                Wait, WaitUntil, WaitWhile, While, wait::WaitUnit,
             },
+            random::{RandomBranch, RandomInteger, RandomItem, RandomNumber, RandomString},
             system::code::Code,
         },
         parameters::{
-            array::Array, duration::DurationValue, source_code::SourceCode, value::Value,
-            variable::Variable,
+            array::Array, duration::DurationValue, labelled_branches::LabelledBranch,
+            source_code::SourceCode, value::Value, variable::Variable,
         },
         post_run::PostRun,
         scriptable::Scriptable,
@@ -500,6 +501,26 @@ mod tests {
                 ..Default::default()
             },
         })
+    }
+
+    fn wait_until_action(condition: Scriptable<bool>, poll_interval: Duration) -> ActionInstance {
+        ActionInstance::WaitUntil(
+            WaitUntil {
+                condition: condition.into(),
+                poll_interval: Scriptable::new_static(poll_interval).into(),
+            }
+            .into(),
+        )
+    }
+
+    fn wait_while_action(condition: Scriptable<bool>, poll_interval: Duration) -> ActionInstance {
+        ActionInstance::WaitWhile(
+            WaitWhile {
+                condition: condition.into(),
+                poll_interval: Scriptable::new_static(poll_interval).into(),
+            }
+            .into(),
+        )
     }
 
     fn wait_input(duration: f64) -> ActionInstance {
@@ -805,6 +826,214 @@ mod tests {
         };
         assert_eq!(resolve_error.parameter(), "array");
         assert!(resolve_error.error().contains("must resolve to an array"));
+    }
+
+    #[tokio::test]
+    async fn wait_until_polls_until_its_condition_is_true() {
+        let mut tree = ActionTree::default();
+        tree.append_action_instance(
+            wait_until_action(
+                Scriptable::new_script("++globalThis.polls >= 3"),
+                Duration::from_millis(1),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(code_test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits_with_setup(tree, "globalThis.polls = 0;")
+            .await
+            .unwrap();
+
+        assert_eq!(visits, ["after"]);
+    }
+
+    #[tokio::test]
+    async fn wait_while_polls_until_its_condition_is_false() {
+        let mut tree = ActionTree::default();
+        tree.append_action_instance(
+            wait_while_action(
+                Scriptable::new_script("++globalThis.polls < 3"),
+                Duration::from_millis(1),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(code_test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits_with_setup(tree, "globalThis.polls = 0;")
+            .await
+            .unwrap();
+
+        assert_eq!(visits, ["after"]);
+    }
+
+    #[tokio::test]
+    async fn random_runs_the_selected_branch() {
+        let mut tree = ActionTree::default();
+        let random = tree
+            .append_action_instance(
+                ActionInstance::RandomBranch(
+                    RandomBranch {
+                        branches: vec!["selected".to_owned()].into(),
+                    }
+                    .into(),
+                ),
+                tree.root(),
+            )
+            .unwrap();
+        let branch = tree.get_node(random).unwrap().children()[0];
+        tree.append_action_instance(code_test_action("selected", PostRun::default()), branch)
+            .unwrap();
+        tree.append_action_instance(code_test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["selected", "after"]);
+    }
+
+    #[tokio::test]
+    async fn random_with_no_branches_continues() {
+        let mut tree = ActionTree::default();
+        tree.append_action_instance(
+            ActionInstance::RandomBranch(RandomBranch::default().into()),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(code_test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["after"]);
+    }
+
+    #[tokio::test]
+    async fn random_data_actions_store_values_in_result_variables() {
+        let mut tree = ActionTree::default();
+        tree.append_action_instance(
+            ActionInstance::RandomNumber(
+                RandomNumber {
+                    minimum: Scriptable::new_static(5.0).into(),
+                    maximum: Scriptable::new_static(6.0).into(),
+                    result: Variable::new("number").into(),
+                }
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::Code(
+                Code::new(SourceCode::from(
+                    "globalThis.visits.push(String(vars.number >= 5 && vars.number < 6));\nActionResult.nextSibling();",
+                ))
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::RandomInteger(
+                RandomInteger {
+                    minimum: Scriptable::new_static(7).into(),
+                    maximum: Scriptable::new_static(7).into(),
+                    result: Variable::new("integer").into(),
+                }
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::Code(
+                Code::new(SourceCode::from(
+                    "globalThis.visits.push(String(vars.integer));\nActionResult.nextSibling();",
+                ))
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::RandomString(
+                RandomString {
+                    length: Scriptable::new_static(4_u32).into(),
+                    characters: Scriptable::new_static("ab").into(),
+                    result: Variable::new("string").into(),
+                }
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::Code(
+                Code::new(SourceCode::from(
+                    "globalThis.visits.push(`${vars.string.length}:${/^[ab]+$/.test(vars.string)}`);\nActionResult.nextSibling();",
+                ))
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::RandomItem(
+                RandomItem {
+                    array: Array::new("['only']").into(),
+                    result: Variable::new("choice").into(),
+                }
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(
+            ActionInstance::Code(
+                Code::new(SourceCode::from(
+                    "globalThis.visits.push(vars.choice);\nActionResult.nextSibling();",
+                ))
+                .into(),
+            ),
+            tree.root(),
+        )
+        .unwrap();
+        tree.append_action_instance(code_test_action("after", PostRun::Stop), tree.root())
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["true", "7", "4:true", "only", "after"]);
+    }
+
+    #[tokio::test]
+    async fn wait_until_uses_the_common_timeout_branch() {
+        let mut tree = ActionTree::default();
+        let wait_until = tree
+            .append_action_instance(
+                ActionInstance::WaitUntil(WithCommon {
+                    common: CommonParameters {
+                        timeout: Some(DurationValue::new(Duration::from_millis(1))).into(),
+                        ..Default::default()
+                    },
+                    action: WaitUntil {
+                        condition: Scriptable::new_static(false).into(),
+                        poll_interval: Scriptable::new_static(Duration::from_secs(60)).into(),
+                    },
+                }),
+                tree.root(),
+            )
+            .unwrap();
+        let timeout_branch = tree.get_node(wait_until).unwrap().children()[0];
+        tree.append_action_instance(code_test_action("timeout", PostRun::Stop), timeout_branch)
+            .unwrap();
+
+        let visits = run_tree_and_collect_visits(tree).await.unwrap();
+
+        assert_eq!(visits, ["timeout"]);
     }
 
     #[tokio::test]
@@ -1169,7 +1398,7 @@ mod tests {
         tree.append_action_instance(
             ActionInstance::And(
                 And {
-                    inputs: vec![wait_input(1.0), wait_input(5.0)],
+                    inputs: vec![wait_input(1.0), wait_input(5.0)].into(),
                 }
                 .into(),
             ),
@@ -1191,7 +1420,7 @@ mod tests {
             .append_action_instance(
                 ActionInstance::Or(
                     Or {
-                        inputs: vec![wait_input(5.0), wait_input(1.0)],
+                        inputs: vec![wait_input(5.0), wait_input(1.0)].into(),
                     }
                     .into(),
                 ),
@@ -1216,7 +1445,7 @@ mod tests {
             .append_action_instance(
                 ActionInstance::And(
                     And {
-                        inputs: vec![ActionInstance::Stop(Stop::default().into())],
+                        inputs: vec![ActionInstance::Stop(Stop::default().into())].into(),
                     }
                     .into(),
                 ),
@@ -1310,9 +1539,10 @@ mod tests {
                     Switch {
                         value: Value::from("vars.selected").into(),
                         cases: vec![
-                            SwitchCase::new("number", "1"),
-                            SwitchCase::new("string", "'1'"),
-                        ],
+                            LabelledBranch::new("number", "1"),
+                            LabelledBranch::new("string", "'1'"),
+                        ]
+                        .into(),
                     }
                     .into(),
                 ),
@@ -1344,9 +1574,10 @@ mod tests {
                     Switch {
                         value: Value::from("vars.selected").into(),
                         cases: vec![
-                            SwitchCase::new("same", "vars.selected"),
-                            SwitchCase::new("other", "({})"),
-                        ],
+                            LabelledBranch::new("same", "vars.selected"),
+                            LabelledBranch::new("other", "({})"),
+                        ]
+                        .into(),
                     }
                     .into(),
                 ),
@@ -1379,7 +1610,7 @@ mod tests {
                 ActionInstance::Switch(
                     Switch {
                         value: Value::from("vars.selected").into(),
-                        cases: vec![SwitchCase::new("array", "[1, 2]")],
+                        cases: vec![LabelledBranch::new("array", "[1, 2]")].into(),
                     }
                     .into(),
                 ),
@@ -1409,9 +1640,10 @@ mod tests {
                     Switch {
                         value: Value::from("vars.selected").into(),
                         cases: vec![
-                            SwitchCase::new("same", "vars.selected"),
-                            SwitchCase::new("other", "[1, 2]"),
-                        ],
+                            LabelledBranch::new("same", "vars.selected"),
+                            LabelledBranch::new("other", "[1, 2]"),
+                        ]
+                        .into(),
                     }
                     .into(),
                 ),
@@ -1442,10 +1674,11 @@ mod tests {
                 ActionInstance::Switch(
                     Switch {
                         value: Value::from("vars.selected").into(),
-                        cases: vec![SwitchCase::new(
+                        cases: vec![LabelledBranch::new(
                             "object",
                             "({ nested: [1, { done: true }], name: 'case' })",
-                        )],
+                        )]
+                        .into(),
                     }
                     .into(),
                 ),
@@ -1476,7 +1709,7 @@ mod tests {
                 ActionInstance::Switch(
                     Switch {
                         value: Value::from("new Point(1, 2)").into(),
-                        cases: vec![SwitchCase::new("point", "new Point(1, 2)")],
+                        cases: vec![LabelledBranch::new("point", "new Point(1, 2)")].into(),
                     }
                     .into(),
                 ),
@@ -1502,7 +1735,8 @@ mod tests {
                 ActionInstance::Switch(
                     Switch {
                         value: Value::from("Number.POSITIVE_INFINITY").into(),
-                        cases: vec![SwitchCase::new("infinity", "Number.POSITIVE_INFINITY")],
+                        cases: vec![LabelledBranch::new("infinity", "Number.POSITIVE_INFINITY")]
+                            .into(),
                     }
                     .into(),
                 ),

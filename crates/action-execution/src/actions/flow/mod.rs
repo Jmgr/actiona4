@@ -12,4 +12,7 @@ mod or;
 mod stop;
 mod switch;
 mod wait;
+mod wait_condition;
+mod wait_until;
+mod wait_while;
 mod while_;

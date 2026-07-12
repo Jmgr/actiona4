@@ -2,7 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::{Param, source_code::SourceCode},
+    parameters::{
+        Param,
+        branches::{self, Branches},
+        source_code::SourceCode,
+    },
     tree::BranchKind,
 };
 
@@ -14,21 +18,21 @@ pub struct Code {
     pub source: SourceCode,
 
     /// User defined branches
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    branches: Vec<String>,
+    #[parameter]
+    branches: Branches,
 }
 
 impl Code {
     pub fn new(source: impl Into<SourceCode>) -> Self {
         Self {
             source: Param::new(source.into()),
-            branches: Vec::new(),
+            branches: Branches::default().into(),
         }
     }
 
     #[must_use]
     pub fn with_branches(mut self, branches: Vec<String>) -> Self {
-        self.branches = branches;
+        self.branches = branches.into();
         self
     }
 }

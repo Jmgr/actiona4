@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::{ActionBranches, ActionInstance, ParameterAvailability, action},
+    actions::{ActionBranches, ParameterAvailability, action},
+    parameters::action_list::ActionList,
     tree::BranchKind,
 };
 
@@ -10,7 +11,8 @@ use crate::{
 #[action(icon = CornerDownRight, effect = ControlFlow, category = Flow, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Or {
-    pub inputs: Vec<ActionInstance>,
+    #[parameter]
+    pub inputs: ActionList,
 }
 
 impl ActionBranches for Or {

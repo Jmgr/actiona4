@@ -38,6 +38,7 @@ new_key_type! {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(default)]
 pub struct Metadata {
     pub(super) label: Option<String>,
     pub(super) comment: Option<String>,

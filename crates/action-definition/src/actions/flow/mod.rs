@@ -12,6 +12,8 @@ pub mod or;
 pub mod stop;
 pub mod switch;
 pub mod wait;
+pub mod wait_until;
+pub mod wait_while;
 pub mod while_;
 
 pub use and::And;
@@ -26,6 +28,8 @@ pub use loop_::Loop;
 pub use marker::Marker;
 pub use or::Or;
 pub use stop::Stop;
-pub use switch::{Switch, SwitchCase};
+pub use switch::Switch;
 pub use wait::Wait;
+pub use wait_until::WaitUntil;
+pub use wait_while::WaitWhile;
 pub use while_::While;

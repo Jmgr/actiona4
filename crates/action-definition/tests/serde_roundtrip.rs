@@ -3,9 +3,10 @@ use std::time::Duration;
 use action_definition::{
     actions::{
         ActionInstance,
-        flow::{And, Break, Continue, For, ForEach, Loop, Or, While},
+        flow::{And, Break, Continue, For, ForEach, Loop, Or, Switch, WaitUntil, WaitWhile, While},
         misc::test::Test,
         mouse::click::Click,
+        random::{RandomBranch, RandomInteger, RandomItem, RandomNumber, RandomString},
         system::code::Code,
         window::message_box::MessageBox,
     },
@@ -32,6 +33,17 @@ fn click_roundtrips() {
 fn action_parameters_expose_runtime_names() {
     assert_eq!(Click::default().position.name(), "position");
     assert_eq!(MessageBox::default().buttons.name(), "buttons");
+}
+
+#[test]
+fn sparse_actions_use_action_specific_defaults() {
+    let action: ActionInstance =
+        serde_json::from_value(json!({ "kind": "for" })).expect("deserialize sparse action");
+    let ActionInstance::For(action) = action else {
+        panic!("expected for action");
+    };
+
+    assert_eq!(action.index_variable.inner(), "i");
 }
 
 #[test]
@@ -90,6 +102,38 @@ fn for_each_roundtrips() {
 }
 
 #[test]
+fn wait_until_roundtrips() {
+    assert_roundtrips(ActionInstance::WaitUntil(WaitUntil::default().into()));
+}
+
+#[test]
+fn wait_while_roundtrips() {
+    assert_roundtrips(ActionInstance::WaitWhile(WaitWhile::default().into()));
+}
+
+#[test]
+fn random_roundtrips() {
+    assert_roundtrips(ActionInstance::RandomBranch(
+        RandomBranch {
+            branches: vec!["first".to_owned(), "second".to_owned()].into(),
+        }
+        .into(),
+    ));
+}
+
+#[test]
+fn random_data_actions_roundtrip() {
+    for action in [
+        ActionInstance::RandomItem(RandomItem::default().into()),
+        ActionInstance::RandomInteger(RandomInteger::default().into()),
+        ActionInstance::RandomNumber(RandomNumber::default().into()),
+        ActionInstance::RandomString(RandomString::default().into()),
+    ] {
+        assert_roundtrips(action);
+    }
+}
+
+#[test]
 fn loop_roundtrips() {
     assert_roundtrips(ActionInstance::Loop(Loop::default().into()));
 }
@@ -145,8 +189,26 @@ fn code_wire_format() {
         json!({
             "kind": "code",
             "source": "",
+            "branches": [],
         })
     );
+}
+
+#[test]
+fn empty_dynamic_branch_parameters_are_serialized() {
+    for (instance, parameter) in [
+        (
+            ActionInstance::RandomBranch(RandomBranch::default().into()),
+            "branches",
+        ),
+        (ActionInstance::Switch(Switch::default().into()), "cases"),
+    ] {
+        let json = serde_json::to_value(instance).expect("serialize");
+        let object = json
+            .as_object()
+            .expect("action should serialize as an object");
+        assert_eq!(object.get(parameter), Some(&json!([])));
+    }
 }
 
 #[test]

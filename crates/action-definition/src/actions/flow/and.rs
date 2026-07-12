@@ -1,12 +1,16 @@
 use serde::{Deserialize, Serialize};
 
-use crate::actions::{ActionBranches, ActionInstance, ParameterAvailability, action};
+use crate::{
+    actions::{ActionBranches, ParameterAvailability, action},
+    parameters::action_list::ActionList,
+};
 
 /// Waits until every input action has completed.
 #[action(icon = CornerDownRight, effect = ControlFlow, category = Flow, timeout = true)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct And {
-    pub inputs: Vec<ActionInstance>,
+    #[parameter]
+    pub inputs: ActionList,
 }
 
 impl ActionBranches for And {}

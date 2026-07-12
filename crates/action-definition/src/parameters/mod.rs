@@ -6,22 +6,27 @@ use types::platform::Platforms;
 use crate::{
     TranslationKey,
     parameters::{
-        array::ArrayParameter, boolean::BooleanParameter, decimal::DecimalParameter,
-        duration::DurationParameter, enumeration::EnumParameter, integer::IntegerParameter,
-        label::LabelParameter, position::PositionParameter, source_code::SourceCodeParameter,
-        text::TextParameter, unsigned_integer::UnsignedIntegerParameter, value::ValueParameter,
+        action_list::ActionListParameter, array::ArrayParameter, boolean::BooleanParameter,
+        branches::BranchesParameter, decimal::DecimalParameter, duration::DurationParameter,
+        enumeration::EnumParameter, integer::IntegerParameter, label::LabelParameter,
+        labelled_branches::LabelledBranchesParameter, position::PositionParameter,
+        source_code::SourceCodeParameter, text::TextParameter,
+        unsigned_integer::UnsignedIntegerParameter, value::ValueParameter,
         variable::VariableParameter,
     },
     scriptable::Scriptable,
 };
 
+pub mod action_list;
 pub mod array;
 pub mod boolean;
+pub mod branches;
 pub mod decimal;
 pub mod duration;
 pub mod enumeration;
 pub mod integer;
 pub mod label;
+pub mod labelled_branches;
 pub mod position;
 pub mod source_code;
 pub mod text;
@@ -31,10 +36,14 @@ pub mod variable;
 
 #[derive(Debug)]
 pub enum ParameterKind {
+    /// A list of actions used as inputs to a flow action.
+    ActionList(ActionListParameter),
     /// A JavaScript expression that must evaluate to an array.
     Array(ArrayParameter),
     /// A true-or-false value.
     Boolean(BooleanParameter),
+    /// User-defined branch names.
+    Branches(BranchesParameter),
     /// A signed whole number.
     Integer(IntegerParameter),
     /// A point on the screen.
@@ -51,6 +60,8 @@ pub enum ParameterKind {
     Decimal(DecimalParameter),
     /// A label that identifies an action-tree location.
     Label(LabelParameter),
+    /// User-defined branches that each carry a label value.
+    LabelledBranches(LabelledBranchesParameter),
     /// A non-negative whole number.
     UnsignedInteger(UnsignedIntegerParameter),
     /// A script variable name.

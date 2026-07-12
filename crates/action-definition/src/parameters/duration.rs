@@ -47,9 +47,13 @@ impl Serialize for DurationValue {
     where
         S: Serializer,
     {
-        humantime::format_duration(self.0)
-            .to_string()
-            .serialize(serializer)
+        if serializer.is_human_readable() {
+            humantime::format_duration(self.0)
+                .to_string()
+                .serialize(serializer)
+        } else {
+            (self.0.as_secs(), self.0.subsec_nanos()).serialize(serializer)
+        }
     }
 }
 
@@ -58,7 +62,12 @@ impl<'de> Deserialize<'de> for DurationValue {
     where
         D: Deserializer<'de>,
     {
-        deserializer.deserialize_any(DurationValueVisitor)
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_any(DurationValueVisitor)
+        } else {
+            let (seconds, nanoseconds) = <(u64, u32)>::deserialize(deserializer)?;
+            Ok(Self(Duration::new(seconds, nanoseconds)))
+        }
     }
 }
 
@@ -212,5 +221,15 @@ mod tests {
 
         assert_eq!(value.into_inner(), duration);
         assert_eq!(Duration::from(value), duration);
+    }
+
+    #[test]
+    fn roundtrips_as_seconds_and_nanoseconds_in_binary_formats() {
+        let duration = DurationValue::new(Duration::new(1, 500_000_000));
+
+        let bytes = postcard::to_allocvec(&duration).expect("serialize duration");
+        let decoded: DurationValue = postcard::from_bytes(&bytes).expect("deserialize duration");
+
+        assert_eq!(decoded, duration);
     }
 }

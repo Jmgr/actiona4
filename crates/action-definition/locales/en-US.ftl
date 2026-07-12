@@ -289,6 +289,10 @@ action-code-source =
     .name = Source
     .description = The source code to run.
 
+action-code-branches =
+    .name = Branches
+    .description = The named branches that the source code can select.
+
 action-test =
     .name = Test
     .description = Prototype action for testing editor behavior.
@@ -332,6 +336,98 @@ action-wait-duration =
 action-wait-unit =
     .name = Unit
     .description = The time unit for the duration.
+
+action-wait-until =
+    .name = Wait until
+    .description = Wait until a condition becomes true.
+
+action-wait-until-condition =
+    .name = Condition
+    .description = The condition to poll.
+
+action-wait-until-poll-interval =
+    .name = Poll interval
+    .description = The delay between condition checks.
+
+action-wait-while =
+    .name = Wait while
+    .description = Wait while a condition remains true.
+
+action-wait-while-condition =
+    .name = Condition
+    .description = The condition to poll.
+
+action-wait-while-poll-interval =
+    .name = Poll interval
+    .description = The delay between condition checks.
+
+action-random-branch =
+    .name = Random branch
+    .description = Choose one branch at random.
+
+action-random-branch-branches =
+    .name = Branches
+    .description = The branches from which to choose.
+
+action-random-item =
+    .name = Random item
+    .description = Store one randomly selected item from an array.
+
+action-random-item-array =
+    .name = Array
+    .description = The array from which to select an item.
+
+action-random-item-result =
+    .name = Result
+    .description = The variable that receives the selected item.
+
+action-random-integer =
+    .name = Random integer
+    .description = Store a random integer from an inclusive range.
+
+action-random-integer-minimum =
+    .name = Minimum
+    .description = The inclusive lower bound.
+
+action-random-integer-maximum =
+    .name = Maximum
+    .description = The inclusive upper bound.
+
+action-random-integer-result =
+    .name = Result
+    .description = The variable that receives the random integer.
+
+action-random-number =
+    .name = Random number
+    .description = Store a random number from a range.
+
+action-random-number-minimum =
+    .name = Minimum
+    .description = The inclusive lower bound.
+
+action-random-number-maximum =
+    .name = Maximum
+    .description = The exclusive upper bound.
+
+action-random-number-result =
+    .name = Result
+    .description = The variable that receives the random number.
+
+action-random-string =
+    .name = Random string
+    .description = Store a random string assembled from a character pool.
+
+action-random-string-length =
+    .name = Length
+    .description = The number of characters in the result.
+
+action-random-string-characters =
+    .name = Characters
+    .description = The characters from which to build the string.
+
+action-random-string-result =
+    .name = Result
+    .description = The variable that receives the random string.
 
 enum-wait-unit =
     .milliseconds = Milliseconds
@@ -388,9 +484,17 @@ action-and =
     .name = Wait for all
     .description = Wait until every input completes.
 
+action-and-inputs =
+    .name = Inputs
+    .description = The actions that must complete.
+
 action-or =
     .name = Wait for any
     .description = Wait until one input completes.
+
+action-or-inputs =
+    .name = Inputs
+    .description = The actions that can complete.
 
 action-if =
     .name = If
@@ -407,6 +511,10 @@ action-switch =
 action-switch-value =
     .name = Value
     .description = The value to compare against each case; execution continues through the matching case branch, or the default branch if none match.
+
+action-switch-cases =
+    .name = Cases
+    .description = The labelled branches and values used to select them.
 
 action-timeout =
     .name = Timeout

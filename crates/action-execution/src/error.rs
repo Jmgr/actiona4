@@ -66,6 +66,14 @@ pub enum RunErrorKind {
     InvalidWaitUnit { value: String },
     #[error("invalid wait duration")]
     InvalidWaitDuration,
+    #[error("random number minimum {minimum} must be less than maximum {maximum}")]
+    InvalidRandomNumberRange { minimum: f64, maximum: f64 },
+    #[error("random integer minimum {minimum} must not exceed maximum {maximum}")]
+    InvalidRandomIntegerRange { minimum: i64, maximum: i64 },
+    #[error("random string characters must not be empty when length is greater than zero")]
+    EmptyRandomCharacters,
+    #[error("random item array must not be empty")]
+    EmptyRandomItem,
     #[error("failed to resolve switch branch `{branch}` value: {source}")]
     SwitchBranchValueResolveFailed {
         branch: String,

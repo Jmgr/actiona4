@@ -56,6 +56,8 @@ impl Waitable for ActionInstance {
 
         match self {
             Self::Wait(action) => action.prepare(context).await,
+            Self::WaitUntil(action) => action.prepare(context).await,
+            Self::WaitWhile(action) => action.prepare(context).await,
             Self::WaitForClipboardChanged(action) => action.prepare(context).await,
             Self::WaitForMovement(action) => action.prepare(context).await,
             Self::WaitForScroll(action) => action.prepare(context).await,

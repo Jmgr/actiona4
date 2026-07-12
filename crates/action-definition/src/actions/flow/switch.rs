@@ -4,24 +4,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::{Param, value::Value},
+    parameters::{
+        Param,
+        labelled_branches::{self, LabelledBranch, LabelledBranches},
+        value::Value,
+    },
     tree::BranchKind,
 };
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct SwitchCase {
-    pub name: String,
-    pub value: Value,
-}
-
-impl SwitchCase {
-    pub fn new(name: impl Into<String>, value: impl Into<Value>) -> Self {
-        Self {
-            name: name.into(),
-            value: value.into(),
-        }
-    }
-}
 
 /// Chooses a branch whose case value matches the input value.
 #[action(icon = CodeXml, effect = ControlFlow, category = Flow)]
@@ -30,8 +19,8 @@ pub struct Switch {
     #[parameter]
     pub value: Value,
 
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cases: Vec<SwitchCase>,
+    #[parameter]
+    pub cases: LabelledBranches,
 }
 
 impl ActionBranches for Switch {
