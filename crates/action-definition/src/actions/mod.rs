@@ -116,13 +116,77 @@ impl<T> Branching for T where T: ActionBranches + WithDefinition + WithCommonPar
 /// the action-specific traits to the inner action, and `Deref` forwards field
 /// access, so `WithCommon<Click>` behaves like a `Click` that also has common
 /// parameters.
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default)]
 pub struct WithCommon<T> {
-    #[serde(flatten, skip_serializing_if = "CommonParameters::is_empty")]
     pub common: CommonParameters,
 
-    #[serde(flatten)]
     pub action: T,
+}
+
+impl<T: Serialize> Serialize for WithCommon<T> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            #[derive(Serialize)]
+            struct HumanReadable<'a, T> {
+                #[serde(flatten, skip_serializing_if = "CommonParameters::is_empty")]
+                common: &'a CommonParameters,
+
+                #[serde(flatten)]
+                action: &'a T,
+            }
+
+            HumanReadable {
+                common: &self.common,
+                action: &self.action,
+            }
+            .serialize(serializer)
+        } else {
+            (
+                (
+                    &self.common.timeout,
+                    &self.common.pause_before,
+                    &self.common.pause_after,
+                ),
+                &self.action,
+            )
+                .serialize(serializer)
+        }
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for WithCommon<T> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            #[derive(Deserialize)]
+            struct HumanReadable<T> {
+                #[serde(flatten, default)]
+                common: CommonParameters,
+
+                #[serde(flatten)]
+                action: T,
+            }
+
+            let HumanReadable { common, action } = HumanReadable::deserialize(deserializer)?;
+            Ok(Self { common, action })
+        } else {
+            let ((timeout, pause_before, pause_after), action) =
+                Deserialize::deserialize(deserializer)?;
+            Ok(Self {
+                common: CommonParameters {
+                    timeout,
+                    pause_before,
+                    pause_after,
+                },
+                action,
+            })
+        }
+    }
 }
 
 impl<T> WithCommon<T> {
@@ -202,8 +266,7 @@ impl<T: ParameterAvailability> ParameterAvailability for WithCommon<T> {
     }
 }
 
-#[derive(ActionDefinitions, Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
+#[derive(ActionDefinitions, Clone, Debug)]
 #[static_dispatch::setup]
 pub enum ActionInstance {
     // Clipboard

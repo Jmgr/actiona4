@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote};
 use syn::{
     Data, DeriveInput, Error, Fields, GenericArgument, PathArguments, Type, parse_macro_input,
 };
@@ -35,9 +35,7 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
             .into();
     };
 
-    // Each variant is a newtype over its action struct (`Click(Click)`), so the
-    // field type is the action whose `DEFINITION` const we list.
-    let definitions = data
+    let variants = data
         .variants
         .iter()
         .map(|variant| {
@@ -54,19 +52,120 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
                     "ActionDefinitions requires each variant to hold exactly one action type",
                 ));
             };
-            let ty = inner_action_type(&field.ty);
-            Ok(quote! { <#ty>::DEFINITION })
+            Ok((&variant.ident, &field.ty, inner_action_type(&field.ty)))
         })
         .collect::<Result<Vec<_>, Error>>();
 
-    let definitions = match definitions {
-        Ok(definitions) => definitions,
+    let variants = match variants {
+        Ok(variants) => variants,
         Err(err) => return err.to_compile_error().into(),
     };
+
+    let definitions = variants
+        .iter()
+        .map(|(_, _, action)| quote! { <#action>::DEFINITION })
+        .collect::<Vec<_>>();
+    let enum_name = &ast.ident;
+    let human_readable_ref = format_ident!("__{enum_name}HumanReadableRef");
+    let human_readable = format_ident!("__{enum_name}HumanReadable");
+    let binary_ref = format_ident!("__{enum_name}BinaryRef");
+    let binary = format_ident!("__{enum_name}Binary");
+    let human_readable_ref_variants = variants
+        .iter()
+        .map(|(name, ty, _)| quote! { #name(&'a #ty) })
+        .collect::<Vec<_>>();
+    let human_readable_variants = variants
+        .iter()
+        .map(|(name, ty, _)| quote! { #name(#ty) })
+        .collect::<Vec<_>>();
+    let binary_ref_variants = variants
+        .iter()
+        .map(|(name, ty, _)| quote! { #name(&'a #ty) })
+        .collect::<Vec<_>>();
+    let binary_variants = variants
+        .iter()
+        .map(|(name, ty, _)| quote! { #name(#ty) })
+        .collect::<Vec<_>>();
+    let human_readable_serialize_arms = variants
+        .iter()
+        .map(|(name, _, _)| quote! { Self::#name(value) => #human_readable_ref::#name(value) })
+        .collect::<Vec<_>>();
+    let binary_serialize_arms = variants
+        .iter()
+        .map(|(name, _, _)| quote! { Self::#name(value) => #binary_ref::#name(value) })
+        .collect::<Vec<_>>();
+    let human_readable_deserialize_arms = variants
+        .iter()
+        .map(|(name, _, _)| quote! { #human_readable::#name(value) => Self::#name(value) })
+        .collect::<Vec<_>>();
+    let binary_deserialize_arms = variants
+        .iter()
+        .map(|(name, _, _)| quote! { #binary::#name(value) => Self::#name(value) })
+        .collect::<Vec<_>>();
 
     quote! {
         pub const ACTION_DEFINITIONS: &[crate::actions::ActionDefinition] =
             &[#(#definitions),*];
+
+        #[derive(serde::Serialize)]
+        #[serde(tag = "kind", rename_all = "snake_case")]
+        enum #human_readable_ref<'a> {
+            #(#human_readable_ref_variants),*
+        }
+
+        #[derive(serde::Deserialize)]
+        #[serde(tag = "kind", rename_all = "snake_case")]
+        enum #human_readable {
+            #(#human_readable_variants),*
+        }
+
+        #[derive(serde::Serialize)]
+        enum #binary_ref<'a> {
+            #(#binary_ref_variants),*
+        }
+
+        #[derive(serde::Deserialize)]
+        enum #binary {
+            #(#binary_variants),*
+        }
+
+        impl serde::Serialize for #enum_name {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: serde::Serializer,
+            {
+                if serializer.is_human_readable() {
+                    let value = match self {
+                        #(#human_readable_serialize_arms),*
+                    };
+                    serde::Serialize::serialize(&value, serializer)
+                } else {
+                    let value = match self {
+                        #(#binary_serialize_arms),*
+                    };
+                    serde::Serialize::serialize(&value, serializer)
+                }
+            }
+        }
+
+        impl<'de> serde::Deserialize<'de> for #enum_name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                if deserializer.is_human_readable() {
+                    let value = <#human_readable as serde::Deserialize>::deserialize(deserializer)?;
+                    Ok(match value {
+                        #(#human_readable_deserialize_arms),*
+                    })
+                } else {
+                    let value = <#binary as serde::Deserialize>::deserialize(deserializer)?;
+                    Ok(match value {
+                        #(#binary_deserialize_arms),*
+                    })
+                }
+            }
+        }
     }
     .into()
 }

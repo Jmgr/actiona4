@@ -5,6 +5,7 @@ use strum::{Display, EnumIs, EnumTryAs};
 use crate::actions::ActionInstance;
 
 #[derive(Clone, Debug, Deserialize, Display, EnumIs, EnumTryAs, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BranchKind {
     Body,
     Ok,
@@ -21,6 +22,7 @@ pub enum BranchKind {
 }
 
 #[derive(Clone, Debug, Deserialize, EnumIs, EnumTryAs, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Static {
     Root,
     Branch(BranchKind),
@@ -28,6 +30,7 @@ pub enum Static {
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Deserialize, EnumIs, EnumTryAs, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum NodePayload {
     Static(Static),
     Action(ActionInstance),
@@ -37,24 +40,172 @@ new_key_type! {
     pub struct NodeId;
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-#[serde(default)]
+#[derive(Clone, Debug, Default)]
 pub struct Metadata {
     pub(super) label: Option<String>,
     pub(super) comment: Option<String>,
     /// Depth of the node in the tree: the root is `0`, its children `1`, and so on.
-    #[serde(skip)]
     pub(super) depth: usize,
     /// Whether the node's children are hidden (collapsed) in the UI.
     pub(super) collapsed: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+impl Serialize for Metadata {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            #[derive(Serialize)]
+            struct HumanReadable<'a> {
+                #[serde(skip_serializing_if = "Option::is_none")]
+                label: Option<&'a str>,
+                #[serde(skip_serializing_if = "Option::is_none")]
+                comment: Option<&'a str>,
+                #[serde(skip_serializing_if = "is_false")]
+                collapsed: bool,
+            }
+
+            HumanReadable {
+                label: self.label.as_deref(),
+                comment: self.comment.as_deref(),
+                collapsed: self.collapsed,
+            }
+            .serialize(serializer)
+        } else {
+            (&self.label, &self.comment, self.collapsed).serialize(serializer)
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Metadata {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            #[derive(Default, Deserialize)]
+            #[serde(default)]
+            struct HumanReadable {
+                label: Option<String>,
+                comment: Option<String>,
+                collapsed: bool,
+            }
+
+            let HumanReadable {
+                label,
+                comment,
+                collapsed,
+            } = HumanReadable::deserialize(deserializer)?;
+            Ok(Self {
+                label,
+                comment,
+                collapsed,
+                ..Default::default()
+            })
+        } else {
+            let (label, comment, collapsed) = Deserialize::deserialize(deserializer)?;
+            Ok(Self {
+                label,
+                comment,
+                collapsed,
+                ..Default::default()
+            })
+        }
+    }
+}
+
+impl Metadata {
+    pub(super) fn is_empty(&self) -> bool {
+        self.label.is_none() && self.comment.is_none() && !self.collapsed
+    }
+}
+
+const fn is_false(value: &bool) -> bool {
+    !*value
+}
+
+#[derive(Clone, Debug)]
 pub struct Node {
     pub(super) parent_id: Option<NodeId>,
     pub(super) children: Vec<NodeId>,
     pub(super) payload: NodePayload,
     pub(super) metadata: Metadata,
+}
+
+impl Serialize for Node {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            #[derive(Serialize)]
+            struct HumanReadable<'a> {
+                parent_id: Option<NodeId>,
+                #[serde(skip_serializing_if = "Option::is_none")]
+                children: Option<&'a [NodeId]>,
+                payload: &'a NodePayload,
+                #[serde(skip_serializing_if = "Option::is_none")]
+                metadata: Option<&'a Metadata>,
+            }
+
+            HumanReadable {
+                parent_id: self.parent_id,
+                children: (!self.children.is_empty()).then_some(&self.children),
+                payload: &self.payload,
+                metadata: (!self.metadata.is_empty()).then_some(&self.metadata),
+            }
+            .serialize(serializer)
+        } else {
+            (
+                &self.parent_id,
+                &self.children,
+                &self.payload,
+                &self.metadata,
+            )
+                .serialize(serializer)
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Node {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            #[derive(Deserialize)]
+            struct HumanReadable {
+                parent_id: Option<NodeId>,
+                #[serde(default)]
+                children: Vec<NodeId>,
+                payload: NodePayload,
+                #[serde(default)]
+                metadata: Metadata,
+            }
+
+            let HumanReadable {
+                parent_id,
+                children,
+                payload,
+                metadata,
+            } = HumanReadable::deserialize(deserializer)?;
+            Ok(Self {
+                parent_id,
+                children,
+                payload,
+                metadata,
+            })
+        } else {
+            let (parent_id, children, payload, metadata) = Deserialize::deserialize(deserializer)?;
+            Ok(Self {
+                parent_id,
+                children,
+                payload,
+                metadata,
+            })
+        }
+    }
 }
 
 impl Node {

@@ -1,0 +1,33 @@
+[package]
+name = "file-format"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+
+[dependencies]
+action-definition = { path = "../action-definition" }
+types = { path = "../types" }
+
+base64.workspace = true
+image.workspace = true
+indexmap.workspace = true
+mime.workspace = true
+postcard.workspace = true
+rayon.workspace = true
+rodio.workspace = true
+ruopus.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+strum.workspace = true
+tempfile.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+uuid.workspace = true
+zstd.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
