@@ -123,9 +123,7 @@ impl Engine {
         script.hash(&mut hasher);
         let hash = hasher.finish();
 
-        let is_js = filename
-            .map(|f| f.ends_with(".js") || f.ends_with(".mjs"))
-            .unwrap_or(false);
+        let is_js = filename.is_some_and(|f| f.ends_with(".js") || f.ends_with(".mjs"));
 
         let mut sourcemaps = self.sourcemaps.lock();
         let sourcemap = sourcemaps.entry(hash);
@@ -426,8 +424,7 @@ struct ProcessedException {
 /// coercion, falling back to the value's type name if coercion fails.
 fn value_to_string(value: &Value<'_>) -> String {
     Coerced::<String>::from_js(value.ctx(), value.clone())
-        .map(|coerced| coerced.0)
-        .unwrap_or_else(|_| value.type_name().to_string())
+        .map_or_else(|_| value.type_name().to_string(), |coerced| coerced.0)
 }
 
 #[cfg(test)]
@@ -531,10 +528,10 @@ mod tests {
 
         let result: i32 = engine
             .eval(
-                r#"
+                r"
                 function add(a, b) { return a + b; }
                 add(40, 2);
-                "#,
+                ",
             )
             .await
             .unwrap();
@@ -671,13 +668,13 @@ outer();
         // eval_async therefore resolves immediately with ().
         engine
             .eval_async::<()>(
-                r#"
+                r"
                 (async () => {
                     await helper.sleep(0.05);
                     // leave a breadcrumb so we can observe completion from Rust
                     globalThis.__done__ = 99;
                 })();
-                "#,
+                ",
             )
             .await
             .unwrap();
@@ -709,11 +706,11 @@ outer();
 
         let incremented_value: i32 = engine
             .eval(
-                r#"
+                r"
                 const counter = new MacroCounter();
                 counter.value = 41;
                 counter.value + 1;
-                "#,
+                ",
             )
             .await
             .unwrap();

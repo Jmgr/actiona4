@@ -15,14 +15,14 @@ use crate::{
     run_prepared_wait,
 };
 
-fn to_core_direction(direction: ButtonDirection) -> CoreButtonDirection {
+const fn to_core_direction(direction: ButtonDirection) -> CoreButtonDirection {
     match direction {
         ButtonDirection::Press => CoreButtonDirection::Press,
         ButtonDirection::Release => CoreButtonDirection::Release,
     }
 }
 
-fn from_js_direction(direction: JsButtonDirection) -> ButtonDirection {
+const fn from_js_direction(direction: JsButtonDirection) -> ButtonDirection {
     match direction {
         JsButtonDirection::Press => ButtonDirection::Press,
         JsButtonDirection::Release => ButtonDirection::Release,

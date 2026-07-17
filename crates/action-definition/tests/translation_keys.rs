@@ -10,7 +10,7 @@ use fluent_syntax::ast;
 use unic_langid::LanguageIdentifier;
 
 fn bundle() -> FluentBundle<FluentResource> {
-    let ftl = r#"
+    let ftl = r"
 action-message-box-title =
     .name = Title
     .description = The title of the message box
@@ -20,7 +20,7 @@ enum-message-box-buttons =
     .ok-cancel = OK / Cancel
 
 action-code = Run code
-"#;
+";
 
     let resource = match FluentResource::try_new(ftl.to_string()) {
         Ok(resource) => resource,

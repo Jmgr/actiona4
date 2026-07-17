@@ -17,7 +17,7 @@ pub fn prepare_wait_condition(
         loop {
             let condition_value = select! {
                 biased;
-                _ = token.cancelled() => return Err(RunError::new(RunErrorKind::Canceled)),
+                () = token.cancelled() => return Err(RunError::new(RunErrorKind::Canceled)),
                 result = async {
                     match &condition {
                         Scriptable::Static { value } => Ok(*value),
@@ -35,8 +35,8 @@ pub fn prepare_wait_condition(
 
             select! {
                 biased;
-                _ = token.cancelled() => return Err(RunError::new(RunErrorKind::Canceled)),
-                _ = sleep(poll_interval) => {}
+                () = token.cancelled() => return Err(RunError::new(RunErrorKind::Canceled)),
+                () = sleep(poll_interval) => {}
             }
         }
     })

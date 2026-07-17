@@ -26,11 +26,11 @@ use crate::{
 /// ```
 /// Numeric values are interpreted as milliseconds.
 /// @returns Task<void>
-pub fn sleep<'js>(ctx: Ctx<'js>, duration: JsDuration) -> Result<Promise<'js>> {
+pub fn sleep(ctx: Ctx<'_>, duration: JsDuration) -> Result<Promise<'_>> {
     task(ctx, async move |ctx, token| {
         select! {
-            _ = token.cancelled() => { Err(CommonError::Cancelled).into_js_result(&ctx) },
-            _ = tokio_sleep(duration.0) => { Ok(()) },
+            () = token.cancelled() => { Err(CommonError::Cancelled).into_js_result(&ctx) },
+            () = tokio_sleep(duration.0) => { Ok(()) },
         }
     })
 }
@@ -42,7 +42,7 @@ pub fn sleep<'js>(ctx: Ctx<'js>, duration: JsDuration) -> Result<Promise<'js>> {
 ///   exit();
 /// }
 /// ```
-pub fn exit<'js>(ctx: Ctx<'js>) {
+pub fn exit(ctx: Ctx<'_>) {
     let token = ctx.user_data().cancellation_token();
 
     token.cancel();
@@ -73,7 +73,7 @@ pub fn inspect<'js>(ctx: Ctx<'js>, data: Rest<Value<'js>>) {
 }
 
 #[instrument(skip_all)]
-pub(crate) fn register<'js>(ctx: &Ctx<'js>) -> Result<()> {
+pub(crate) fn register(ctx: &Ctx<'_>) -> Result<()> {
     let target = super::classes::registration_target(ctx);
     target.prop("sleep", Function::new(ctx.clone(), sleep))?;
     target.prop("exit", Function::new(ctx.clone(), exit))?;

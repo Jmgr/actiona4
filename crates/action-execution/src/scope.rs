@@ -10,10 +10,12 @@ pub struct ActionFrame {
 }
 
 impl ActionFrame {
+    #[must_use]
     pub const fn owner(&self) -> NodeId {
         self.owner
     }
 
+    #[must_use]
     pub fn state<T>(&self) -> Option<&T>
     where
         T: 'static,
@@ -35,6 +37,7 @@ pub struct ExecutionState {
 }
 
 impl ExecutionState {
+    #[must_use]
     pub fn frames(&self) -> &[ActionFrame] {
         &self.frames
     }

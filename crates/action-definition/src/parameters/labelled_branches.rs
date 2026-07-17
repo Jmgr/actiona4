@@ -45,6 +45,7 @@ impl<N> From<Vec<LabelledBranch>> for Param<LabelledBranches, N> {
     }
 }
 
+#[must_use]
 pub fn is_empty<N>(branches: &Param<LabelledBranches, N>) -> bool {
     branches.is_empty()
 }

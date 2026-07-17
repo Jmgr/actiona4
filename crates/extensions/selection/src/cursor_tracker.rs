@@ -76,8 +76,8 @@ pub fn spawn_cursor_tracker(
                     .query_pointer(root_window)
                     .map(|cookie| cookie.reply())
                 {
-                    let x_position = reply.root_x as f64 - f64::from(desktop_origin.x);
-                    let y_position = reply.root_y as f64 - f64::from(desktop_origin.y);
+                    let x_position = f64::from(reply.root_x) - f64::from(desktop_origin.x);
+                    let y_position = f64::from(reply.root_y) - f64::from(desktop_origin.y);
                     if proxy
                         .send_event(AppEvent::CursorMoved(PhysicalPosition::new(
                             x_position, y_position,
@@ -107,8 +107,8 @@ pub fn spawn_cursor_tracker(
             }
             match event {
                 Event::MotionNotify(motion_event) => {
-                    let x_position = motion_event.root_x as f64 - f64::from(desktop_origin.x);
-                    let y_position = motion_event.root_y as f64 - f64::from(desktop_origin.y);
+                    let x_position = f64::from(motion_event.root_x) - f64::from(desktop_origin.x);
+                    let y_position = f64::from(motion_event.root_y) - f64::from(desktop_origin.y);
                     if proxy
                         .send_event(AppEvent::CursorMoved(PhysicalPosition::new(
                             x_position, y_position,
@@ -119,8 +119,8 @@ pub fn spawn_cursor_tracker(
                     }
                 }
                 Event::ButtonRelease(button_event) if button_event.detail == 1 => {
-                    let x_position = button_event.root_x as f64 - f64::from(desktop_origin.x);
-                    let y_position = button_event.root_y as f64 - f64::from(desktop_origin.y);
+                    let x_position = f64::from(button_event.root_x) - f64::from(desktop_origin.x);
+                    let y_position = f64::from(button_event.root_y) - f64::from(desktop_origin.y);
                     let _ = proxy.send_event(AppEvent::Click(PhysicalPosition::new(
                         x_position, y_position,
                     )));

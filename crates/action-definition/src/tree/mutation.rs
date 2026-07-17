@@ -24,6 +24,7 @@ impl ActionTree {
             .ok_or(Error::NotAnAction(node_id))
     }
 
+    #[must_use]
     pub fn can_drop(&self, selection_ids: &[NodeId], target_id: NodeId, mode: DropMode) -> bool {
         if selection_ids.is_empty() {
             return false;
@@ -95,7 +96,7 @@ impl ActionTree {
 
         let branches = branches
             .into_iter()
-            .map(|kind| Node::new_branch(kind.clone(), action_id, action_depth + 1))
+            .map(|kind| Node::new_branch(kind, action_id, action_depth + 1))
             .map(|node| self.map.insert(node))
             .collect::<Vec<_>>();
 
@@ -143,7 +144,7 @@ impl ActionTree {
 
         let branch_ids = branches
             .into_iter()
-            .map(|kind| Node::new_branch(kind.clone(), action_id, action_depth + 1))
+            .map(|kind| Node::new_branch(kind, action_id, action_depth + 1))
             .map(|node| self.map.insert(node))
             .collect::<Vec<_>>();
 
@@ -342,6 +343,7 @@ impl ActionTree {
         Ok(ClipboardTree { roots })
     }
 
+    #[must_use]
     pub fn can_paste_subtrees(
         &self,
         clipboard: &ClipboardTree,
@@ -452,6 +454,7 @@ impl ActionTree {
         }
     }
 
+    #[must_use]
     pub fn can_place_at_target(&self, target_id: NodeId, mode: DropMode) -> bool {
         let Ok(target) = self.get_node(target_id) else {
             return false;

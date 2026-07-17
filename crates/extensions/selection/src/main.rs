@@ -77,7 +77,7 @@ fn main() -> Result<()> {
         env::args().nth(1).ok_or_eyre("expected a key")?.into(),
         task_tracker.clone(),
         cancellation_token.clone(),
-        Duration::from_secs(60),
+        Duration::from_mins(1),
         SelectionExtension {
             proxy: proxy.clone(),
         },

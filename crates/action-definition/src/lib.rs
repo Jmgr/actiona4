@@ -33,6 +33,7 @@ pub struct TranslationKey {
 
 impl TranslationKey {
     /// A message with no attribute (resolves the message's own value).
+    #[must_use]
     pub const fn new(id: &'static str) -> Self {
         Self {
             id,
@@ -41,6 +42,7 @@ impl TranslationKey {
     }
 
     /// One of a message's attributes (e.g. `.name`, `.description`).
+    #[must_use]
     pub const fn with_attribute(id: &'static str, attribute: &'static str) -> Self {
         Self {
             id,

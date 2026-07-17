@@ -71,7 +71,7 @@ pub enum Context {
     ReturnValue,
 }
 
-#[derive(Clone, Copy, Debug, Display, PartialEq)]
+#[derive(Clone, Copy, Debug, Display, Eq, PartialEq)]
 pub enum RustdocContext {
     StructAlias,
     Struct,
@@ -159,7 +159,7 @@ pub struct Module {
     pub verbatim: Vec<String>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PlatformConstraint {
     Only,
     Not,
@@ -177,7 +177,7 @@ impl TryFrom<char> for PlatformConstraint {
     }
 }
 
-#[derive(Clone, Debug, Display, PartialEq)]
+#[derive(Clone, Debug, Display, Eq, PartialEq)]
 pub enum PlatformType {
     Linux,
     Windows,
@@ -199,7 +199,7 @@ impl TryFrom<&str> for PlatformType {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Platform {
     pub constraint: PlatformConstraint,
     pub type_: PlatformType,
@@ -221,7 +221,7 @@ impl TryFrom<&str> for Platform {
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Platforms(Vec<Platform>);
 
 impl TryFrom<&str> for Platforms {
@@ -260,7 +260,7 @@ impl Display for Platforms {
 }
 
 impl Platforms {
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 

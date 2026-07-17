@@ -12,11 +12,11 @@ use crate::{
 };
 
 /// Expand `#[js_methods]` into `#[rquickjs::methods]`, processing helper attributes.
-pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let arguments = proc_macro2::TokenStream::from(arguments);
     let mut item_impl = parse_macro_input!(item as ItemImpl);
 
-    for impl_item in item_impl.items.iter_mut() {
+    for impl_item in &mut item_impl.items {
         if let ImplItem::Fn(method) = impl_item
             && let Err(error) = apply_accessor_attributes(method)
         {

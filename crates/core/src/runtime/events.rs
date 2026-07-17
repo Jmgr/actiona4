@@ -133,7 +133,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
             let mut topic_started = false;
             loop {
                 let command = select! {
-                    _ = cancellation_token.cancelled() => { break; }
+                    () = cancellation_token.cancelled() => { break; }
                     command = receiver.recv() => { command }
                 };
 

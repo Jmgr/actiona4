@@ -50,7 +50,7 @@ mod tests {
         for _ in 0..1000 {
             let p = random_point_in_circle(center, radius, rng.clone());
             let d = center.distance_to(p);
-            assert!(d <= radius, "d={} > radius", d);
+            assert!(d <= radius, "d={d} > radius");
         }
     }
 }

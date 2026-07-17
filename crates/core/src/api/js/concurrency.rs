@@ -21,7 +21,7 @@ use crate::api::js::{classes::SingletonClass, task::task};
 #[js_class]
 pub struct JsConcurrency {}
 
-impl<'js> SingletonClass<'js> for JsConcurrency {}
+impl SingletonClass<'_> for JsConcurrency {}
 
 #[js_methods]
 impl JsConcurrency {

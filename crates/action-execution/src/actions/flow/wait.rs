@@ -63,8 +63,8 @@ impl Waitable for Wait {
 
         Ok(PreparedWait::new(move |token| async move {
             select! {
-                _ = token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
-                _ = sleep(duration) => Ok(()),
+                () = token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
+                () = sleep(duration) => Ok(()),
             }
         }))
     }
@@ -111,7 +111,7 @@ mod tests {
         );
         assert_eq!(
             to_duration(2.0, WaitUnit::Minutes).unwrap(),
-            Duration::from_secs(120)
+            Duration::from_mins(2)
         );
         assert!(to_duration(-1.0, WaitUnit::Seconds).is_err());
         assert!(to_duration(f64::NAN, WaitUnit::Seconds).is_err());

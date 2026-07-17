@@ -8,14 +8,15 @@ documentation.workspace = true
 license.workspace = true
 
 [dependencies]
+macros = { path = "../macros" }
+types = { path = "../types" }
+
 const-default = { workspace = true, features = ["derive"] }
+derive_more.workspace = true
 fluent.workspace = true
 humantime.workspace = true
 icons.workspace = true
-macros = { path = "../macros" }
 postcard = { workspace = true, features = ["use-std"] }
-types = { path = "../types" }
-
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 slotmap = { workspace = true, features = ["serde"] }

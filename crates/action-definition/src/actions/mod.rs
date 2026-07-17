@@ -46,6 +46,7 @@ pub struct CommonParameters {
 }
 
 impl CommonParameters {
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.timeout.is_none() && self.pause_before.is_none() && self.pause_after.is_none()
     }

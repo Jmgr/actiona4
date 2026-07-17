@@ -109,7 +109,7 @@ pub struct JsNetworkInterface {
     name: String,
 }
 
-impl<'js> HostClass<'js> for JsNetworkInterface {}
+impl HostClass<'_> for JsNetworkInterface {}
 
 impl<'js> Trace<'js> for JsNetworkInterface {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -198,7 +198,7 @@ pub struct JsCounters {
     inner: Counters,
 }
 
-impl<'js> HostClass<'js> for JsCounters {}
+impl HostClass<'_> for JsCounters {}
 
 impl<'js> Trace<'js> for JsCounters {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

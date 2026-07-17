@@ -1,6 +1,7 @@
 use super::{ActionTree, Error, NodeId};
 
 impl ActionTree {
+    #[must_use]
     pub fn node_by_label(&self, label: &str) -> Option<NodeId> {
         self.label_map.get(label).copied()
     }

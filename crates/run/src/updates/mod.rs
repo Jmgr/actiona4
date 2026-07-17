@@ -132,7 +132,7 @@ fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
             print!("v");
         }
         println!();
-        println!("/!\\ {} /!\\", "NEW VERSION AVAILABLE".bold(),);
+        println!("/!\\ {} /!\\", "NEW VERSION AVAILABLE".bold());
 
         let since = OffsetDateTime::now_utc() - version_info.release_date;
         let since = StdDuration::try_from(since).map_or_else(

@@ -26,8 +26,8 @@ pub async fn wait_for_button(
 
     loop {
         let event = select! {
-            _ = runtime_cancellation_token.cancelled() => { break; }
-            _ = cancellation_token.cancelled() => { break; }
+            () = runtime_cancellation_token.cancelled() => { break; }
+            () = cancellation_token.cancelled() => { break; }
             event = receiver.recv() => { event }
         };
 

@@ -5,6 +5,7 @@ use crate::actions::ActionInstance;
 
 impl ActionTree {
     /// The id of the root node, where execution begins.
+    #[must_use]
     pub const fn root(&self) -> NodeId {
         self.root
     }
@@ -21,10 +22,12 @@ impl ActionTree {
     }
 
     /// Whether `ancestor` is a strict ancestor of `descendant`.
+    #[must_use]
     pub fn is_ancestor(&self, ancestor_id: NodeId, descendant_id: NodeId) -> bool {
         self.ancestors(descendant_id).any(|id| id == ancestor_id)
     }
 
+    #[must_use]
     pub fn rows(&self) -> &[NodeId] {
         &self.rows
     }
@@ -41,6 +44,7 @@ impl ActionTree {
 
     /// Returns the nodes to display, in preorder, skipping the descendants of any
     /// collapsed node (the collapsed node itself is still shown).
+    #[must_use]
     pub fn visible_rows(&self) -> Vec<NodeId> {
         let root = self.map.get(self.root).expect("dangling root in tree");
         let mut visible_ids = Vec::with_capacity(self.rows.len().saturating_sub(1));
@@ -111,6 +115,7 @@ impl ActionTree {
     }
 
     /// Returns the next node after `id` in a preorder traversal, or `None` at the end of the tree.
+    #[must_use]
     pub fn next_in_preorder(&self, node_id: NodeId) -> Option<NodeId> {
         if let Some(&first) = self.map[node_id].children.first() {
             return Some(first);
@@ -119,6 +124,7 @@ impl ActionTree {
     }
 
     /// Returns the first node in preorder after `id`'s subtree — its next sibling, or the next sibling of an ancestor.
+    #[must_use]
     pub fn next_sibling_or_ancestor(&self, node_id: NodeId) -> Option<NodeId> {
         let mut current_id = node_id;
         while let Some(parent_id) = self.map[current_id].parent_id {

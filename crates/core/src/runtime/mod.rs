@@ -10,8 +10,6 @@ use std::{
         atomic::{AtomicU8, AtomicU64, Ordering},
     },
 };
-#[cfg(test)]
-use tokio::runtime::{Builder as TokioBuilder, Runtime as TokioRuntime};
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
@@ -26,6 +24,8 @@ use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIs, EnumIter, FromRepr};
+#[cfg(test)]
+use tokio::runtime::{Builder as TokioBuilder, Runtime as TokioRuntime};
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, info, instrument, warn};
@@ -122,11 +122,11 @@ pub fn ensure_x11_session_available(display_name: Option<&str>) -> Result<()> {
 }
 
 pub(crate) trait WithUserData {
-    fn user_data<'a>(&'a self) -> UserDataGuard<'a, JsUserData>;
+    fn user_data(&self) -> UserDataGuard<'_, JsUserData>;
 }
 
-impl<'js> WithUserData for Ctx<'js> {
-    fn user_data<'a>(&'a self) -> UserDataGuard<'a, JsUserData> {
+impl WithUserData for Ctx<'_> {
+    fn user_data(&self) -> UserDataGuard<'_, JsUserData> {
         self.userdata::<JsUserData>().expect("userdata not set")
     }
 }
@@ -194,7 +194,7 @@ impl JsUserData {
         self.platform
     }
 
-    pub(crate) fn require_linux<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+    pub(crate) fn require_linux(&self, ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         if self.platform.is_windows() {
             return Err(
                 CommonError::UnsupportedPlatform("only available on Linux".into()).into_js(ctx),
@@ -203,7 +203,7 @@ impl JsUserData {
         Ok(())
     }
 
-    pub(crate) fn require_not_windows<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+    pub(crate) fn require_not_windows(&self, ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         if self.platform.is_windows() {
             return Err(
                 CommonError::UnsupportedPlatform("not supported on Windows".into()).into_js(ctx),
@@ -212,7 +212,7 @@ impl JsUserData {
         Ok(())
     }
 
-    pub(crate) fn require_not_linux<'js>(&self, ctx: &Ctx<'js>) -> rquickjs::Result<()> {
+    pub(crate) fn require_not_linux(&self, ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         if is_linux() {
             return Err(
                 CommonError::UnsupportedPlatform("not supported on Linux".into()).into_js(ctx),
@@ -1012,7 +1012,7 @@ impl Runtime {
                     _ = signal::ctrl_c() => {
                         local_cancellation_token.cancel();
                     },
-                    _ = local_cancellation_token.cancelled() => {},
+                    () = local_cancellation_token.cancelled() => {},
                 }
             });
         }

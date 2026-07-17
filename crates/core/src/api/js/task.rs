@@ -167,7 +167,7 @@ where
                     let mut rx = rx.lock().await;
 
                     select! {
-                        _ = cancellation_token.cancelled() => { Err(CommonError::Cancelled) },
+                        () = cancellation_token.cancelled() => { Err(CommonError::Cancelled) },
                         value = rx.recv() => { Ok(value) },
                     }
                     .into_js_result(&ctx)?
@@ -285,7 +285,7 @@ mod tests {
         fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
     }
 
-    impl<'js> SingletonClass<'js> for JsTestStruct {}
+    impl SingletonClass<'_> for JsTestStruct {}
 
     #[js_methods]
     impl JsTestStruct {
@@ -367,11 +367,11 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<()>(
-                    r#"
+                    r"
                 const task = testStruct.testTask();
                 task.cancel();
                 await task;
-                "#,
+                ",
                 )
                 .await;
 
@@ -395,9 +395,9 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<()>(
-                    r#"
+                    r"
                 await testStruct.testTaskWithToken();
-                "#,
+                ",
                 )
                 .await;
 
@@ -418,7 +418,7 @@ mod tests {
 
             let counter = script_engine
                 .eval_async::<u64>(
-                    r#"
+                    r"
                 const task = testStruct.testTaskWithProgress();
                 let counter = 0;
                 for await (const p of task) {
@@ -426,7 +426,7 @@ mod tests {
                 }
                 await task;
                 counter
-                "#,
+                ",
                 )
                 .await
                 .unwrap();

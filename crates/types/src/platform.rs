@@ -35,12 +35,14 @@ pub struct Platforms(pub &'static [PlatformConstraint]);
 impl Platforms {
     pub const ALL: Self = Self(&[]);
 
+    #[must_use]
     pub const fn is_unconstrained(&self) -> bool {
         self.0.is_empty()
     }
 
     /// `active` describes the current session, e.g. an X11 session is
     /// `&[PlatformKind::Linux, PlatformKind::X11]`.
+    #[must_use]
     pub fn is_supported(&self, active: &[PlatformKind]) -> bool {
         let mut has_only = false;
         let mut only_matched = false;

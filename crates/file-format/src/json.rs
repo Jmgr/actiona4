@@ -28,7 +28,7 @@ const MAX_IMAGE_DIMENSION: u32 = 32_768;
 const MAX_IMAGE_ALLOC: u64 = MAX_ATTACHMENT_UNCOMPRESSED_SIZE as u64;
 
 #[derive(Deserialize, Serialize)]
-pub(crate) struct FileWire {
+pub struct FileWire {
     pub version: u16,
     pub tree: ActionTree,
     pub attachments: Vec<(Uuid, AttachmentWire)>,
@@ -37,7 +37,7 @@ pub(crate) struct FileWire {
 }
 
 #[derive(Deserialize, Serialize)]
-pub(crate) struct AttachmentWire {
+pub struct AttachmentWire {
     filename: Option<String>,
     kind: AttachmentKindWire,
 }
@@ -361,9 +361,9 @@ fn resample_to_48khz(
         return Ok(Vec::new());
     }
     let target_frames = (frames as u64)
-        .checked_mul(TARGET_RATE as u64)
+        .checked_mul(u64::from(TARGET_RATE))
         .ok_or_else(|| Error::Attachment("resampled audio is too large".to_owned()))?
-        .div_ceil(sample_rate as u64);
+        .div_ceil(u64::from(sample_rate));
     let target_samples = target_frames
         .checked_mul(channels as u64)
         .ok_or_else(|| Error::Attachment("resampled audio is too large".to_owned()))?;
@@ -379,14 +379,14 @@ fn resample_to_48khz(
         if target_frame % 8_192 == 0 && cancellation_token.is_cancelled() {
             return Err(Error::Canceled);
         }
-        let source = target_frame as f64 * sample_rate as f64 / TARGET_RATE as f64;
+        let source = target_frame as f64 * f64::from(sample_rate) / f64::from(TARGET_RATE);
         let before = source.floor() as usize;
         let after = (before + 1).min(frames - 1);
         let fraction = (source - before as f64) as f32;
         for channel in 0..channels {
             let a = samples[before.min(frames - 1) * channels + channel];
             let b = samples[after * channels + channel];
-            output.push(a + (b - a) * fraction);
+            output.push((b - a).mul_add(fraction, a));
         }
     }
 

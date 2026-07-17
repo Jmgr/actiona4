@@ -1,13 +1,14 @@
 use std::{fmt, time::Duration};
 
 use const_default::ConstDefault;
+use derive_more::Deref;
 use macros::Parameter;
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{self, MapAccess, Visitor},
 };
 
-#[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Deref, Eq, Ord, PartialEq, PartialOrd)]
 pub struct DurationValue(Duration);
 
 impl DurationValue {
@@ -16,11 +17,6 @@ impl DurationValue {
     #[must_use]
     pub const fn new(duration: Duration) -> Self {
         Self(duration)
-    }
-
-    #[must_use]
-    pub const fn into_inner(self) -> Duration {
-        self.0
     }
 }
 
@@ -219,7 +215,7 @@ mod tests {
         let duration = Duration::from_millis(250);
         let value = DurationValue::from(duration);
 
-        assert_eq!(value.into_inner(), duration);
+        assert_eq!(*value, duration);
         assert_eq!(Duration::from(value), duration);
     }
 

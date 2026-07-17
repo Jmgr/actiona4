@@ -11,6 +11,7 @@ impl Variable {
         Self(variable.into())
     }
 
+    #[must_use]
     pub fn inner(&self) -> &str {
         &self.0
     }

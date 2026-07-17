@@ -48,7 +48,7 @@ fn to_core_buttons(
     })
 }
 
-fn to_core_icon(icon: MessageBoxIcon) -> JsMessageBoxIcon {
+const fn to_core_icon(icon: MessageBoxIcon) -> JsMessageBoxIcon {
     match icon {
         MessageBoxIcon::Info => JsMessageBoxIcon::Info,
         MessageBoxIcon::Warning => JsMessageBoxIcon::Warning,
@@ -56,7 +56,7 @@ fn to_core_icon(icon: MessageBoxIcon) -> JsMessageBoxIcon {
     }
 }
 
-fn from_core_icon(icon: JsMessageBoxIcon) -> MessageBoxIcon {
+const fn from_core_icon(icon: JsMessageBoxIcon) -> MessageBoxIcon {
     match icon {
         JsMessageBoxIcon::Info => MessageBoxIcon::Info,
         JsMessageBoxIcon::Warning => MessageBoxIcon::Warning,

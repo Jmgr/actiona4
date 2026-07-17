@@ -5,7 +5,7 @@ use syn::{Error, FnArg, ItemTrait, Pat, ReturnType, TraitItem, parse_macro_input
 
 /// One declaration → a typed client, a host dispatcher, and shared wire types;
 /// see [`crate::rpc`].
-pub(crate) fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let trait_def = parse_macro_input!(item as ItemTrait);
     let vis = trait_def.vis.clone();
     let trait_ident = trait_def.ident.clone();

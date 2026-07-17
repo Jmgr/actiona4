@@ -11,7 +11,7 @@ use crate::{
     resolve_param::{ResolveParam, ScriptableParamValue, ValidateParamValue, ValidationError},
 };
 
-pub(crate) fn to_core_button(button: MouseButton) -> Button {
+pub const fn to_core_button(button: MouseButton) -> Button {
     match button {
         MouseButton::Left => Button::Left,
         MouseButton::Middle => Button::Middle,
@@ -21,7 +21,7 @@ pub(crate) fn to_core_button(button: MouseButton) -> Button {
     }
 }
 
-fn from_core_button(button: Button) -> MouseButton {
+const fn from_core_button(button: Button) -> MouseButton {
     match button {
         Button::Left => MouseButton::Left,
         Button::Middle => MouseButton::Middle,
@@ -73,11 +73,11 @@ impl Runnable for Click {
         }
 
         if let Some(interval) = interval {
-            options.interval = interval.into_inner().into();
+            options.interval = (*interval).into();
         }
 
         if let Some(duration) = duration {
-            options.duration = duration.into_inner().into();
+            options.duration = (*duration).into();
         }
 
         let mouse = context.runtime.mouse()?;

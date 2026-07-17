@@ -10,7 +10,7 @@ use crate::{
     resolve_param::{ScriptableParamValue, ValidateParamValue, ValidationError},
 };
 
-fn to_core_tween(tween: Tween) -> CoreTween {
+const fn to_core_tween(tween: Tween) -> CoreTween {
     match tween {
         Tween::BackIn => CoreTween::BackIn,
         Tween::BackInOut => CoreTween::BackInOut,
@@ -46,7 +46,7 @@ fn to_core_tween(tween: Tween) -> CoreTween {
     }
 }
 
-fn from_core_tween(tween: CoreTween) -> Tween {
+const fn from_core_tween(tween: CoreTween) -> Tween {
     match tween {
         CoreTween::BackIn => Tween::BackIn,
         CoreTween::BackInOut => Tween::BackInOut,
@@ -129,7 +129,7 @@ impl Runnable for MoveCursor {
         }
 
         if let Some(interval) = interval {
-            options.interval = interval.into_inner().into();
+            options.interval = (*interval).into();
         }
 
         let mouse = context.runtime.mouse()?;

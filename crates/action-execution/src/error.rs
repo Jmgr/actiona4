@@ -38,7 +38,8 @@ impl RunError {
         }
     }
 
-    pub fn at_node(mut self, node_id: NodeId) -> Self {
+    #[must_use]
+    pub const fn at_node(mut self, node_id: NodeId) -> Self {
         self.node_id = Some(node_id);
         self
     }

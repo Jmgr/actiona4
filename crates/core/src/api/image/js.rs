@@ -754,7 +754,7 @@ impl<'js> Trace<'js> for JsFont {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl<'js> ValueClass<'js> for JsFont {}
+impl ValueClass<'_> for JsFont {}
 
 #[js_methods]
 impl JsFont {
@@ -1340,9 +1340,9 @@ impl JsImage {
     }
 
     /// Draw a rectangle on a copy of this image.
-    pub fn with_rectangle<'js>(
+    pub fn with_rectangle(
         &self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         rect: JsRectLike,
         color: JsColorLike,
         options: Opt<JsDrawingOptions>,

@@ -190,11 +190,13 @@ impl Point {
         }
     }
 
+    #[must_use]
     pub fn as_f64(&self) -> (f64, f64) {
         (self.x.into(), self.y.into())
     }
 
-    pub fn as_f32(&self) -> (f32, f32) {
+    #[must_use]
+    pub const fn as_f32(&self) -> (f32, f32) {
         (self.x.into_inner() as f32, self.y.into_inner() as f32)
     }
 }

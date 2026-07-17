@@ -26,20 +26,20 @@ fn visit_sender() -> &'static broadcast::Sender<i64> {
     })
 }
 
-pub(crate) fn register_test_action_visit_label(label: &'static str) -> i64 {
+pub fn register_test_action_visit_label(label: &'static str) -> i64 {
     let id = NEXT_TEST_ACTION_VISIT_ID.fetch_add(1, Ordering::Relaxed);
     visit_labels().lock().insert(id, label);
     id
 }
 
-pub(crate) fn test_action_visit_label(id: i64) -> Option<&'static str> {
+pub fn test_action_visit_label(id: i64) -> Option<&'static str> {
     visit_labels().lock().get(&id).copied()
 }
 
-pub(crate) fn subscribe_test_action_visits() -> broadcast::Receiver<i64> {
+pub fn subscribe_test_action_visits() -> broadcast::Receiver<i64> {
     visit_sender().subscribe()
 }
 
-pub(crate) fn record_test_action_visit(id: i64) {
+pub fn record_test_action_visit(id: i64) {
     _ = visit_sender().send(id);
 }

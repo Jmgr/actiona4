@@ -8,7 +8,7 @@ use syn::{
     Attribute, FnArg, Ident, ItemTrait, Pat, ReturnType, TraitItem, Type, parse_macro_input,
 };
 
-pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     if !proc_macro2::TokenStream::from(arguments).is_empty() {
         return syn::Error::new(
             proc_macro2::Span::call_site(),

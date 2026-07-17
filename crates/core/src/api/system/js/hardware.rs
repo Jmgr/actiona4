@@ -162,7 +162,7 @@ pub struct JsMotherboard {
     inner: Motherboard,
 }
 
-impl<'js> HostClass<'js> for JsMotherboard {}
+impl HostClass<'_> for JsMotherboard {}
 
 impl<'js> Trace<'js> for JsMotherboard {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -234,7 +234,7 @@ pub struct JsTemperatureSensor {
     inner: TemperatureSensor,
 }
 
-impl<'js> HostClass<'js> for JsTemperatureSensor {}
+impl HostClass<'_> for JsTemperatureSensor {}
 
 impl<'js> Trace<'js> for JsTemperatureSensor {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

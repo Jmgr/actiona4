@@ -8,13 +8,13 @@ use syn::{
 };
 
 #[derive(Clone, Debug, Default, FromMeta)]
-pub(crate) struct JsDefaultArguments {
+pub struct JsDefaultArguments {
     pub rust: Option<Expr>,
     pub ts: Option<String>,
 }
 
 #[derive(Clone, Debug, Default, FromMeta)]
-pub(crate) struct PlatformArguments {
+pub struct PlatformArguments {
     pub only: Option<String>,
     #[darling(rename = "not")]
     pub not_platform: Option<String>,
@@ -24,7 +24,7 @@ pub(crate) struct PlatformArguments {
 }
 
 /// Parse a `#[name(...)]` attribute into a darling-backed struct.
-pub(crate) fn parse_attribute_arguments<T: FromMeta + Default>(
+pub fn parse_attribute_arguments<T: FromMeta + Default>(
     attribute: &Attribute,
     expected_name: &str,
 ) -> syn::Result<T> {
@@ -50,7 +50,7 @@ pub(crate) fn parse_attribute_arguments<T: FromMeta + Default>(
 }
 
 /// Parse a raw token stream as a `MetaList` for darling.
-pub(crate) fn parse_meta_list_tokens<T: FromMeta + Default>(
+pub fn parse_meta_list_tokens<T: FromMeta + Default>(
     tokens: proc_macro2::TokenStream,
     error_span: Span,
 ) -> syn::Result<T> {
@@ -89,7 +89,7 @@ impl Parse for DefaultArgumentEntry {
 }
 
 /// Return `true` when any `#[doc = "..."]` attribute on `attributes` contains `needle`.
-pub(crate) fn doc_contains(attributes: &[Attribute], needle: &str) -> bool {
+pub fn doc_contains(attributes: &[Attribute], needle: &str) -> bool {
     attributes.iter().any(|attribute| {
         if !attribute.path().is_ident("doc") {
             return false;
@@ -108,7 +108,7 @@ pub(crate) fn doc_contains(attributes: &[Attribute], needle: &str) -> bool {
 }
 
 /// Parse `#[default(...)]` arguments into Rust/TS defaults.
-pub(crate) fn parse_default_arguments(
+pub fn parse_default_arguments(
     attribute: &Attribute,
     expected_name: &str,
 ) -> syn::Result<JsDefaultArguments> {

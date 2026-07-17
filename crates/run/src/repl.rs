@@ -26,13 +26,13 @@ use rustyline::{
 use tokio::{fs, runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::sync::CancellationToken;
 use tracing::{instrument, warn};
-use two_face::re_exports::syntect::{
-    easy::HighlightLines,
-    highlighting::{Style, Theme},
-    parsing::{SyntaxReference, SyntaxSet},
-    util::as_24_bit_terminal_escaped,
-};
 use two_face::{
+    re_exports::syntect::{
+        easy::HighlightLines,
+        highlighting::{Style, Theme},
+        parsing::{SyntaxReference, SyntaxSet},
+        util::as_24_bit_terminal_escaped,
+    },
     syntax::extra_no_newlines,
     theme::{EmbeddedThemeName, extra},
 };
@@ -153,7 +153,7 @@ impl Completer for ReplHelper {
 
         if let Some(rest) = input.strip_prefix('.') {
             return self.complete_commands(rest, line, pos, ctx);
-        };
+        }
 
         self.complete_js(input)
     }
@@ -163,7 +163,7 @@ impl Validator for ReplHelper {
     fn validate(&self, ctx: &mut ValidationContext) -> rustyline::Result<ValidationResult> {
         let input = ctx.input();
 
-        if input.starts_with(".") {
+        if input.starts_with('.') {
             return Ok(ValidationResult::Valid(None));
         }
 
@@ -341,7 +341,7 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                             None
                         } else if value.is_promise() {
                             let rendered = format_js_value_for_console(value.clone());
-                            Some(format!("{} (hint: call `await {line}`)", rendered))
+                            Some(format!("{rendered} (hint: call `await {line}`)"))
                         } else {
                             Some(format_js_value_for_console(value))
                         })
@@ -398,7 +398,7 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                 break;
             }
             Err(err) => {
-                eprintln!("Error: {:?}", err);
+                eprintln!("Error: {err:?}");
                 break;
             }
         }
@@ -517,11 +517,7 @@ fn parse_identifier_ending_at(line: &str, end: usize) -> Option<(usize, usize)> 
     is_js_identifier_start(first).then_some((start, end))
 }
 
-fn validate_repl_input<'js>(
-    ctx: &Ctx<'js>,
-    code: &str,
-    script_engine: &Engine,
-) -> ValidationResult {
+fn validate_repl_input(ctx: &Ctx<'_>, code: &str, script_engine: &Engine) -> ValidationResult {
     let (_, js) = match script_engine.prepare_script(code, None, true) {
         Ok(compiled) => compiled,
         Err(err) => {

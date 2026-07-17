@@ -98,10 +98,9 @@ fn desktop_notifications_available() -> bool {
 mod tests {
     use std::time::Duration as StdDuration;
 
-    use tokio::{runtime::Builder, time::sleep};
-
     use config::{Channel, VersionInfo};
     use time::OffsetDateTime;
+    use tokio::{runtime::Builder, time::sleep};
     use tokio_util::task::TaskTracker;
     use versions::SemVer;
 

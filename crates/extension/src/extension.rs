@@ -28,6 +28,7 @@ pub struct Extension<P: Protocol> {
 }
 
 impl<P: Protocol> Extension<P> {
+    #[must_use]
     pub fn new(
         key: ConnectionKey,
         task_tracker: TaskTracker,
@@ -80,7 +81,7 @@ impl<P: Protocol> Extension<P> {
         });
 
         tokio::select! {
-            _ = self.token.cancelled() => {
+            () = self.token.cancelled() => {
                 info!("extension cancellation requested");
             }
             res = inner.wait_for_host_to_disconnect() => {

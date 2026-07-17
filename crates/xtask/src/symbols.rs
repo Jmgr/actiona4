@@ -174,10 +174,10 @@ fn read_archive_metadata(zip_archive: &mut ZipArchive<File>) -> Result<Option<Du
 }
 
 fn dump_metadata_path(dump_path: &Path) -> PathBuf {
-    let file_name = dump_path
-        .file_name()
-        .map(|name| format!("{}.meta", name.to_string_lossy()))
-        .unwrap_or_else(|| "actiona-run.dmp.meta".to_owned());
+    let file_name = dump_path.file_name().map_or_else(
+        || "actiona-run.dmp.meta".to_owned(),
+        |name| format!("{}.meta", name.to_string_lossy()),
+    );
 
     dump_path.with_file_name(file_name)
 }

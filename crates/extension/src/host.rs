@@ -130,15 +130,14 @@ impl<P: Protocol> Host<P> {
                     .spawn(forward_lines(stderr, true, self.token.clone()));
             }
 
-            match child.id() {
-                Some(pid) => info!("started process with PID {pid}"),
-                None => {
-                    error!("started process but it exited immediately");
-                    if restart_delay_cancelled(&self.token).await {
-                        return Ok(());
-                    }
-                    continue;
+            if let Some(pid) = child.id() {
+                info!("started process with PID {pid}")
+            } else {
+                error!("started process but it exited immediately");
+                if restart_delay_cancelled(&self.token).await {
+                    return Ok(());
                 }
+                continue;
             }
 
             // Phase 1: wait for the client to connect, the child to die first,
@@ -147,7 +146,7 @@ impl<P: Protocol> Host<P> {
             let connect_result = {
                 let inner = self.inner.lock().clone();
                 tokio::select! {
-                    _ = self.token.cancelled() => {
+                    () = self.token.cancelled() => {
                         let _ = child.kill().await;
                         return Ok(());
                     }
@@ -191,7 +190,7 @@ impl<P: Protocol> Host<P> {
             {
                 let inner = self.inner.lock().clone();
                 tokio::select! {
-                    _ = self.token.cancelled() => {
+                    () = self.token.cancelled() => {
                         let _ = child.kill().await;
                         return Ok(());
                     }

@@ -214,7 +214,7 @@ mod tests {
     #[js_class]
     struct JsTest {}
 
-    impl<'js> SingletonClass<'js> for JsTest {}
+    impl SingletonClass<'_> for JsTest {}
 
     #[js_methods]
     impl JsTest {

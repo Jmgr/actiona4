@@ -430,6 +430,7 @@ mod tests {
         ] {
             let next = super::next_occurrence_of_schedule(None, None, None, Some(dow), None);
             let diff = next.duration_since(now).unwrap();
+            #[allow(clippy::duration_suboptimal_units)]
             assert!(
                 diff <= Duration::from_secs(7 * 24 * 3600),
                 "{dow}: next occurrence is unexpectedly far: {diff:?}"
@@ -443,6 +444,7 @@ mod tests {
         for dom in 1..=31u32 {
             let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
             let diff = next.duration_since(now).unwrap();
+            #[allow(clippy::duration_suboptimal_units)]
             assert!(
                 diff <= Duration::from_secs(63 * 24 * 3600),
                 "day {dom}: next occurrence is unexpectedly far: {diff:?}"

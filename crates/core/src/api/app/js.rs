@@ -40,7 +40,7 @@ pub type JsWaitAtEnd = WaitAtEnd;
 /// ```
 ///
 /// @singleton
-/// @prop waitAtEnd: WaitAtEnd | boolean // Should the app wait at the end of execution
+/// @prop waitAtEnd: `WaitAtEnd` | boolean // Should the app wait at the end of execution
 #[derive(Debug, JsLifetime)]
 #[js_class]
 pub struct JsApp {

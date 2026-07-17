@@ -252,7 +252,7 @@ pub struct JsScrollEvent {
     length: i32,
 }
 
-impl<'js> HostClass<'js> for JsScrollEvent {}
+impl HostClass<'_> for JsScrollEvent {}
 
 impl<'js> Trace<'js> for JsScrollEvent {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -1230,7 +1230,7 @@ mod tests {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
-                    r#"
+                    r"
                     async function timeout(ms) {
                         await mouse.pause(ms);
                     }
@@ -1244,7 +1244,7 @@ mod tests {
                         timeout(2000),
                         timeConsumingTask(),
                     ]);
-                    "#,
+                    ",
                 )
                 .await
                 .unwrap();

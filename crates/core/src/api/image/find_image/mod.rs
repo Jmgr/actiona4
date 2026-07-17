@@ -455,11 +455,13 @@ mod tests {
     use tracing_subscriber::{EnvFilter, fmt, fmt::format::FmtSpan};
 
     use crate::{
-        api::image::{
-            Image,
-            find_image::{FindImageProgress, FindImageTemplateOptions, Source, Template},
+        api::{
+            image::{
+                Image,
+                find_image::{FindImageProgress, FindImageTemplateOptions, Source, Template},
+            },
+            point::point,
         },
-        api::point::point,
         runtime::Runtime,
     };
 

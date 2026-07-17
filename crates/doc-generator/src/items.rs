@@ -12,6 +12,7 @@ use rustdoc_types::{Crate, Id, Item, ItemEnum, StructKind, VariantKind};
 
 /// Compare two items by their source span (filename, then line, then column).
 /// Items without a span are sorted to the end.
+#[must_use]
 pub fn cmp_by_span(a: &Item, b: &Item) -> Ordering {
     match (&a.span, &b.span) {
         (Some(a_span), Some(b_span)) => a_span
@@ -51,7 +52,7 @@ impl Items {
             .filter(|item| {
                 item.name
                     .as_ref()
-                    .is_some_and(|name| !name.starts_with("_"))
+                    .is_some_and(|name| !name.starts_with('_'))
             })
             .cloned()
             .collect_vec();
@@ -134,6 +135,7 @@ impl Items {
         }
     }
 
+    #[must_use]
     pub fn get(&self, id: Id) -> &Item {
         self.items
             .get(&id)
@@ -141,6 +143,7 @@ impl Items {
     }
 
     /// Resolve a list of IDs and return the items sorted by source span.
+    #[must_use]
     pub fn get_sorted(&self, ids: &[Id]) -> Vec<&Item> {
         let mut items: Vec<&Item> = ids
             .iter()
@@ -155,6 +158,7 @@ impl Items {
         self.js_items.iter()
     }
 
+    #[must_use]
     pub fn category_for_item(&self, item: &Item) -> Option<String> {
         item.span
             .as_ref()
@@ -186,6 +190,7 @@ impl Items {
         None
     }
 
+    #[must_use]
     pub fn aliases(&self) -> Self {
         let js_items = self
             .js_items

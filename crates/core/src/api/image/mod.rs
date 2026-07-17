@@ -500,28 +500,25 @@ impl Image {
 
     #[must_use]
     pub fn rotated(&self, angle: f32, options: RotationOptions) -> Self {
-        match options.center {
-            Some(_) => {
-                let mut clone = self.clone();
-                clone.rotate_mut(angle, options);
-                clone
-            }
-            None => {
-                let result = match angle.rem_euclid(360.0) {
-                    0.0 => self.inner.clone(),
-                    90.0 => imageops::rotate90(&self.inner),
-                    180.0 => imageops::rotate180(&self.inner),
-                    270.0 => imageops::rotate270(&self.inner),
-                    _ => rotate_about_center(
-                        &self.inner,
-                        angle.to_radians(),
-                        options.interpolation.into(),
-                        Border::Constant(options.default_color.into()),
-                    ),
-                };
+        if options.center.is_some() {
+            let mut clone = self.clone();
+            clone.rotate_mut(angle, options);
+            clone
+        } else {
+            let result = match angle.rem_euclid(360.0) {
+                0.0 => self.inner.clone(),
+                90.0 => imageops::rotate90(&self.inner),
+                180.0 => imageops::rotate180(&self.inner),
+                270.0 => imageops::rotate270(&self.inner),
+                _ => rotate_about_center(
+                    &self.inner,
+                    angle.to_radians(),
+                    options.interpolation.into(),
+                    Border::Constant(options.default_color.into()),
+                ),
+            };
 
-                Self::from_rgba8(result)
-            }
+            Self::from_rgba8(result)
         }
     }
 
@@ -985,10 +982,10 @@ impl Image {
     const fn clamp_f32_to_i32(value: f32) -> i32 {
         #[allow(clippy::as_conversions)]
         {
-            if !value.is_finite() {
-                0
-            } else {
+            if value.is_finite() {
                 value.clamp(Self::i32_to_f32(i32::MIN), Self::i32_to_f32(i32::MAX)) as i32
+            } else {
+                0
             }
         }
     }

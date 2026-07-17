@@ -16,7 +16,7 @@ use crate::{
 };
 
 /// Expand `#[options]` to rustdoc instructions and generated defaults.
-pub(crate) fn expand(
+pub fn expand(
     arguments: TokenStream,
     item: TokenStream,
     attribute_name: &str,
@@ -80,7 +80,7 @@ fn expand_struct(
     let derives_from_js_object = has_derive(&item_struct.attrs, "FromJsObject");
 
     let mut default_assignments = Vec::with_capacity(fields_named.named.len());
-    for field in fields_named.named.iter_mut() {
+    for field in &mut fields_named.named {
         let is_public = matches!(field.vis, Visibility::Public(_));
         let is_skipped = doc_contains(&field.attrs, INSTR_SKIP);
         let infer_when_attribute_missing = is_public && !is_skipped;
@@ -146,7 +146,7 @@ fn expand_struct(
 }
 
 /// Append a single `#[doc = "..."]` line to an item.
-pub(crate) fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: String) {
+pub fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: String) {
     let doc_attribute: Attribute = parse_quote! {
         #[doc = #doc_line]
     };
@@ -178,9 +178,7 @@ fn is_default_attribute(attribute: &Attribute) -> bool {
 }
 
 /// Extract `platform(only = "...")` from a field or variant.
-pub(crate) fn platform_only_from_attributes(
-    attributes: &[Attribute],
-) -> syn::Result<Option<String>> {
+pub fn platform_only_from_attributes(attributes: &[Attribute]) -> syn::Result<Option<String>> {
     let mut only_platform: Option<String> = None;
 
     for attribute in attributes {
@@ -203,9 +201,7 @@ pub(crate) fn platform_only_from_attributes(
 }
 
 /// Extract `platform(not = "...")` from a field or variant.
-pub(crate) fn platform_not_from_attributes(
-    attributes: &[Attribute],
-) -> syn::Result<Option<String>> {
+pub fn platform_not_from_attributes(attributes: &[Attribute]) -> syn::Result<Option<String>> {
     let mut not_platform: Option<String> = None;
 
     for attribute in attributes {

@@ -15,7 +15,7 @@ struct JsEnumArguments {
 }
 
 /// Expand `#[js_enum]` for enum items.
-pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let args_tokens = proc_macro2::TokenStream::from(arguments);
     let args: JsEnumArguments =
         match parse_meta_list_tokens(args_tokens, proc_macro2::Span::call_site()) {

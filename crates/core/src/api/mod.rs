@@ -90,7 +90,7 @@ pub(crate) mod test_helpers {
         count: u64,
     }
 
-    impl<'js> ValueClass<'js> for JsCounter {}
+    impl ValueClass<'_> for JsCounter {}
 
     #[js_methods]
     impl JsCounter {

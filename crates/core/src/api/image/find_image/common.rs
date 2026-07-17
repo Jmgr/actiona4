@@ -9,6 +9,6 @@ use satint::{SaturatingInto, Su32};
 ///
 /// Minimum is 1, maximum is half of the available hardware threads.
 pub fn ideal_thread_count() -> Su32 {
-    let available = available_parallelism().map(|n| n.get()).unwrap_or(1);
+    let available = available_parallelism().map_or(1, |n| n.get());
     (available / 2).max(1).saturating_into()
 }

@@ -20,7 +20,7 @@ struct ActionParams {
     not: Option<Expr>,
 }
 
-pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let params = match parse_action_arguments(arguments) {
         Ok(params) => params,
         Err(err) => return err.to_compile_error().into(),
@@ -40,7 +40,7 @@ pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let variant = quote::format_ident!("{name_str}");
     let id = params
         .id
-        .unwrap_or_else(|| name_str.to_string().to_case(Case::Snake));
+        .unwrap_or_else(|| name_str.clone().to_case(Case::Snake));
     let id_kebab = id.to_case(Case::Kebab);
     let action_base = format!("action-{id_kebab}");
     let icon = params.icon;
@@ -114,7 +114,7 @@ pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
 /// `Parameter` definition. Shared between `#[action]` (for an action's own
 /// fields) and `#[common_parameters]` (for the fields every action carries
 /// via `CommonParameters`).
-pub(crate) struct ProcessedField {
+pub struct ProcessedField {
     pub(crate) markers: proc_macro2::TokenStream,
     pub(crate) parameter: proc_macro2::TokenStream,
     pub(crate) field_name: String,
@@ -123,7 +123,7 @@ pub(crate) struct ProcessedField {
 /// Turns a `#[parameter]`-tagged field into its marker type, rewrites the
 /// field's type to `Param<T, Marker>`, and builds its `Parameter` definition.
 /// Returns `Ok(None)` for fields without `#[parameter]`.
-pub(crate) fn process_parameter_field(
+pub fn process_parameter_field(
     owner_name: &Ident,
     id_kebab: &str,
     visibility: &syn::Visibility,

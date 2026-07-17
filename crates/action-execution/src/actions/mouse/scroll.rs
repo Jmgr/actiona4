@@ -12,14 +12,14 @@ use crate::{
     resolve_param::{ResolveParam, ScriptableParamValue, ValidateParamValue, ValidationError},
 };
 
-pub(crate) fn to_core_axis(axis: Axis) -> CoreAxis {
+pub const fn to_core_axis(axis: Axis) -> CoreAxis {
     match axis {
         Axis::Horizontal => CoreAxis::Horizontal,
         Axis::Vertical => CoreAxis::Vertical,
     }
 }
 
-fn from_core_axis(axis: CoreAxis) -> Axis {
+const fn from_core_axis(axis: CoreAxis) -> Axis {
     match axis {
         CoreAxis::Horizontal => Axis::Horizontal,
         CoreAxis::Vertical => Axis::Vertical,

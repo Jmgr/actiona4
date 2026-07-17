@@ -67,6 +67,6 @@ mod tests {
                 })
                 .await
                 .unwrap();
-        })
+        });
     }
 }

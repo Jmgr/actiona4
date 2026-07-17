@@ -188,7 +188,7 @@ mod tests {
         Runtime::test(async move |runtime| {
             let system = System::new(runtime.task_tracker()).await.unwrap();
 
-            assert!(*system.cpu().refresh_global_usage().await.unwrap() > 0.)
+            assert!(*system.cpu().refresh_global_usage().await.unwrap() > 0.);
         });
     }
 }

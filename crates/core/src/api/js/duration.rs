@@ -79,7 +79,7 @@ mod tests {
                 .eval_async::<JsDuration>("\"10m\"")
                 .await
                 .unwrap();
-            assert_eq!(duration.0, Duration::from_secs(10 * 60));
+            assert_eq!(duration.0, Duration::from_mins(10));
         });
     }
 

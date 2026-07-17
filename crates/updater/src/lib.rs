@@ -144,7 +144,7 @@ impl Updater {
 
                             if let Err(error) = local_config
                                 .state_mut(|state| {
-                                    apply_successful_check(state, new_version_available)
+                                    apply_successful_check(state, new_version_available);
                                 })
                                 .await
                             {
@@ -298,7 +298,7 @@ where
     F: Future<Output = T>,
 {
     tokio::select! {
-        _ = cancellation_token.cancelled() => Err(eyre!("cancelled")),
+        () = cancellation_token.cancelled() => Err(eyre!("cancelled")),
         value = future => Ok(value),
     }
 }

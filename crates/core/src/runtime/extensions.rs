@@ -89,7 +89,7 @@ impl Extensions {
                 executable_filepath,
                 task_tracker.clone(),
                 cancellation_token.clone(),
-                Duration::from_secs(60),
+                Duration::from_mins(1),
             )
             .await?,
         );

@@ -302,7 +302,7 @@ impl JsPoint {
     /// const p = new Point(3, 4).scaled(2);
     /// println(p); // "Point(6, 8)"
     /// ```
-    pub fn scaled<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
+    pub fn scaled(&self, ctx: Ctx<'_>, factor: f64) -> Result<Self> {
         self.inner
             .scaled(factor)
             .map(Into::into)

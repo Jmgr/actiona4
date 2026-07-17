@@ -274,7 +274,7 @@ pub struct JsIoStats {
     inner: IoStats,
 }
 
-impl<'js> HostClass<'js> for JsIoStats {}
+impl HostClass<'_> for JsIoStats {}
 
 impl<'js> Trace<'js> for JsIoStats {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

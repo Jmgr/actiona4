@@ -57,7 +57,7 @@ impl SerdeRename {
     }
 }
 
-pub(crate) fn derive(input: TokenStream) -> TokenStream {
+pub fn derive(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     let Data::Enum(data) = &ast.data else {

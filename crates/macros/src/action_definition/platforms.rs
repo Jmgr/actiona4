@@ -11,7 +11,7 @@ use syn::{Error, Expr, Ident};
 /// variant names. The variant name isn't validated here; an unknown one simply
 /// fails to compile in the generated `PlatformKind::#name` reference, the same
 /// way `icon`/`effect`/`category` are handled.
-pub(crate) fn platform_constraints(
+pub fn platform_constraints(
     only: Option<&Expr>,
     not: Option<&Expr>,
 ) -> syn::Result<Vec<TokenStream>> {

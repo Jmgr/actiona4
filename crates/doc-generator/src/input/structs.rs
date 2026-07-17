@@ -38,7 +38,13 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
             .iter()
             .any(|instruction| instruction.is_property());
 
-        if !has_properties {
+        if has_properties {
+            for instruction in instructions.0 {
+                if let Instruction::Property(property) = instruction {
+                    result.push(property);
+                }
+            }
+        } else {
             let fields = items
                 .get_sorted(fields)
                 .into_iter()
@@ -68,7 +74,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                 };
 
                 result.push(Variable {
-                    name: field_name.to_string(),
+                    name: field_name.clone(),
                     type_,
                     comments,
                     is_readonly: false,
@@ -77,12 +83,6 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
                     platforms,
                     is_promise: false,
                 });
-            }
-        } else {
-            for instruction in instructions.0.into_iter() {
-                if let Instruction::Property(property) = instruction {
-                    result.push(property);
-                }
             }
         }
 

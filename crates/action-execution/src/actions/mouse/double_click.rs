@@ -30,7 +30,7 @@ impl Runnable for DoubleClick {
         }
 
         if let Some(delay) = delay {
-            options.delay = delay.into_inner().into();
+            options.delay = (*delay).into();
         }
 
         let mouse = context.runtime.mouse()?;

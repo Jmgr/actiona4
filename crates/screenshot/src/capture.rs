@@ -10,6 +10,7 @@ pub struct Capture {
 
 impl Capture {
     /// Consume the capture and return its bytes converted to RGBA.
+    #[must_use]
     pub fn into_rgba(mut self) -> Vec<u8> {
         bgra_to_rgba_in_place(&mut self.bgra);
         self.bgra

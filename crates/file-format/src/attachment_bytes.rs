@@ -11,6 +11,7 @@ use serde::{
 pub struct AttachmentBytes(Arc<Vec<u8>>);
 
 impl AttachmentBytes {
+    #[must_use]
     pub fn as_slice(&self) -> &[u8] {
         &self.0
     }

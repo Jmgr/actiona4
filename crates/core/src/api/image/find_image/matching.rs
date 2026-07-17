@@ -179,6 +179,8 @@ pub fn match_template(
     tile_results.sort_by_key(|(start_row, ..)| *start_row);
 
     // Stitch the per-tile results into a single matrix.
+    // SAFETY: `build_tiles` produces contiguous ranges covering every result row, and the
+    // loops below initialize each `f32` element before `result` is returned or read.
     let mut result = unsafe {
         Mat::new_rows_cols(
             result_rows.saturating_into(),

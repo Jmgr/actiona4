@@ -33,15 +33,12 @@ impl<P: Protocol> Extension<P> {
         let client = IpcRpcClient::initialize_client(key, move |message| {
             let message_handler = Arc::clone(&message_handler);
             async move {
-                match message {
-                    WireMessage::HostRequest(request) => {
-                        let response = message_handler(request).await;
-                        Some(WireMessage::ExtensionResponse(response))
-                    }
-                    _ => {
-                        error!("extension: unexpected message received: {message:?}");
-                        None
-                    }
+                if let WireMessage::HostRequest(request) = message {
+                    let response = message_handler(request).await;
+                    Some(WireMessage::ExtensionResponse(response))
+                } else {
+                    error!("extension: unexpected message received: {message:?}");
+                    None
                 }
             }
         })

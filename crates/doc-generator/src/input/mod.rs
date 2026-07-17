@@ -1,4 +1,4 @@
-use std::mem::take;
+use std::{mem::take, sync::LazyLock};
 
 use actiona_core::newtype;
 use color_eyre::{
@@ -7,7 +7,6 @@ use color_eyre::{
 };
 use enums::process_enums;
 use itertools::Itertools;
-use once_cell::sync::Lazy;
 use regex::Regex;
 use rustdoc_types::{Crate, Item};
 use structs::process_structs;
@@ -245,14 +244,15 @@ impl Instructions {
 
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
-static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^@(\w+) ?(.*)$"#).unwrap());
-static RETURNS_AND_TYPE_REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r#"^([\w\s\[\]<>,|]+)$"#).unwrap());
-static CONST_REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r#"^(?P<value>[\w]+)(?: // (?P<comment>.+))?$"#).unwrap());
-static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
+static INSTRUCTION_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^@(\w+) ?(.*)$").unwrap());
+static RETURNS_AND_TYPE_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^([\w\s\[\]<>,|]+)$").unwrap());
+static CONST_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(?P<value>[\w]+)(?: // (?P<comment>.+))?$").unwrap());
+static VARIABLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
-        r#"(?x)
+        r"(?x)
         ^
         \s*
         (?: (?P<keyword>\w+) \s+ )?           # optional keyword
@@ -285,7 +285,7 @@ static VARIABLE_REGEX: Lazy<Regex> = Lazy::new(|| {
         (?: \s*=\s*(?P<default>[^/]+?))?      # optional default
         (?: \s*//\s*(?P<comment>.*))?         # optional comment
         \s*
-        $"#,
+        $",
     )
     .unwrap()
 });
@@ -641,7 +641,7 @@ fn process_rustdoc(
 
     for line in lines {
         let line_without_prefix_whitespace = line.trim_start();
-        let is_instruction = line_without_prefix_whitespace.starts_with("@");
+        let is_instruction = line_without_prefix_whitespace.starts_with('@');
         if !is_instruction {
             comments.push(line.to_string());
             continue;
@@ -649,7 +649,7 @@ fn process_rustdoc(
 
         let instruction = parse_instruction(line_without_prefix_whitespace)?;
 
-        if let Instruction::Overload = instruction {
+        if instruction == Instruction::Overload {
             check_instruction(&Instruction::Overload, &context)?;
 
             if has_overload {
@@ -873,7 +873,7 @@ impl TryFrom<Crate> for File {
 
         let functions = process_functions(&items)?;
 
-        Ok(File {
+        Ok(Self {
             enums,
             structs,
             functions,
@@ -909,7 +909,7 @@ mod tests {
 
     #[test]
     fn test_only_comment() {
-        let rustdoc = r#"Test"#;
+        let rustdoc = r"Test";
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Struct).unwrap();
         assert_eq!(comments, vec!["Test".to_string()].into());
@@ -919,7 +919,7 @@ mod tests {
 
     #[test]
     fn test_only_instruction() {
-        let rustdoc = r#"@skip"#;
+        let rustdoc = r"@skip";
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Struct).unwrap();
         assert_eq!(comments, Comments::default());
@@ -929,19 +929,19 @@ mod tests {
 
     #[test]
     fn test_both() {
-        let rustdoc = r#"Some comment
+        let rustdoc = r"Some comment
 
 Another comment
 
 @constructor
-@skip"#;
+@skip";
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Method).unwrap();
         assert_eq!(
             comments,
             vec![
                 "Some comment".to_string(),
-                "".to_string(),
+                String::new(),
                 "Another comment".to_string()
             ]
             .into()
@@ -955,7 +955,7 @@ Another comment
 
     #[test]
     fn test_overloading() {
-        let rustdoc = r#"Constructor.
+        let rustdoc = r"Constructor.
 
 @constructor
 
@@ -969,7 +969,7 @@ Comment for the first overload
 
 @overload
 Comment for the last overload
-@param p: Point // Other point"#;
+@param p: Point // Other point";
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Method).unwrap();
         assert_eq!(comments, vec!["Constructor.".to_string()].into());

@@ -324,7 +324,7 @@ pub struct JsWindowHandle {
     id: super::WindowId,
 }
 
-impl<'js> HostClass<'js> for JsWindowHandle {}
+impl HostClass<'_> for JsWindowHandle {}
 
 impl<'js> Trace<'js> for JsWindowHandle {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -605,11 +605,11 @@ mod tests {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(&format!(
-                    r#"
+                    r"
                     {XEYES_SETUP}
                     win.close();
                     await win.closed;
-                    "#
+                    "
                 ))
                 .await
                 .unwrap();
@@ -624,13 +624,13 @@ mod tests {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(&format!(
-                    r#"
+                    r"
                     {XEYES_SETUP}
                     // Subscribe first, then close — the promise must still resolve
                     const closedPromise = win.closed;
                     win.close();
                     await closedPromise;
-                    "#
+                    "
                 ))
                 .await
                 .unwrap();

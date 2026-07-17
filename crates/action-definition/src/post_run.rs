@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::tree::BranchKind;
 
 /// What to do once the action has finished running.
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub enum PostRun {
     /// Run the next sibling.
     #[default]

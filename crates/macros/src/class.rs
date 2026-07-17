@@ -9,7 +9,7 @@ use syn::{
 use crate::consts::JS_TYPE_PREFIX;
 
 /// Expand `#[js_class]` into `#[rquickjs::class(rename = "...")]`.
-pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let arguments = TokenStream2::from(arguments);
     let parsed_item = parse_macro_input!(item as Item);
 

@@ -60,7 +60,7 @@ pub struct JsMacro {
     data: Arc<MacroData>,
 }
 
-impl<'js> HostClass<'js> for JsMacro {}
+impl HostClass<'_> for JsMacro {}
 
 impl<'js> Trace<'js> for JsMacro {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

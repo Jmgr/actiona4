@@ -1,7 +1,6 @@
-use std::{error::Error as StdError, fmt, result::Result as StdResult};
+use std::{error::Error as StdError, fmt, result::Result as StdResult, sync::LazyLock};
 
 use color_eyre::Report;
-use once_cell::sync::Lazy;
 use regex::Regex;
 use thiserror::Error;
 
@@ -11,7 +10,7 @@ pub type Result<T> = StdResult<T, ScriptError>;
 
 pub type UnhandledException = (String, Vec<CallStackFrame>);
 
-static CALLSTACK_REGEX: Lazy<Regex> = Lazy::new(|| {
+static CALLSTACK_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^\s*at(?: (?P<func>.+?) \()?(?P<file>.+?):(?P<line>\d+):(?P<col>\d+)\)?$")
         .expect("Failed to compile regex")
 });

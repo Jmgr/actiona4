@@ -5,7 +5,7 @@ use syn::{Data, DeriveInput, Fields, GenericArgument, PathArguments, Type, parse
 use crate::{consts::INSTR_SKIP, default_args::doc_contains};
 
 /// Derive `rquickjs::FromJs` for named-field option structs.
-pub(crate) fn derive(input: TokenStream) -> TokenStream {
+pub fn derive(input: TokenStream) -> TokenStream {
     // Parse the user's struct
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;

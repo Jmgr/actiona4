@@ -87,99 +87,7 @@ pub fn extract_functions(
         let is_readonly_type = instructions.has_readonly_type();
 
         // No @param instructions
-        if !has_parameters {
-            is_static = true;
-
-            let mut parameters = Vec::new();
-
-            for (parameter_name, parameter_type) in &info.inner.sig.inputs {
-                let parameter_type = convert_type(parameter_type, struct_name)
-                    .wrap_err_with(|| function_name.clone());
-                match parameter_type {
-                    Ok(Type::This) => {
-                        if parameter_name == "self" || parameter_name == "this" {
-                            // Receiver-like parameters (`self` and the explicit `this` helper) are not exposed in TS.
-                            is_static = false;
-                            continue;
-                        }
-
-                        let parameter_type = if let Some(struct_name) = struct_name {
-                            // Extra `Class<'js, Self>` parameters are regular arguments, not the method receiver.
-                            Type::Verbatim(struct_name.to_string())
-                        } else {
-                            Type::This
-                        };
-
-                        parameters.push(Variable {
-                            name: parameter_name.to_string(),
-                            type_: parameter_type,
-                            comments: Default::default(), // TODO
-                            is_readonly: false,
-                            is_readonly_type: false,
-                            default_value: None,
-                            platforms: instructions.platforms(),
-                            is_promise: false,
-                        });
-                    }
-                    Ok(Type::Ignore) => {
-                        continue;
-                    }
-                    Ok(Type::Unknown) => {
-                        if instructions.rest_params().is_some() {
-                            continue;
-                        }
-
-                        error!("{function_name}'s parameters should be manually defined.");
-                        continue 'func;
-                    }
-                    Ok(parameter_type) => {
-                        parameters.push(Variable {
-                            name: parameter_name.to_string(),
-                            type_: parameter_type,
-                            comments: Default::default(), // TODO
-                            is_readonly: false,
-                            is_readonly_type: false,
-                            default_value: None,
-                            platforms: instructions.platforms(),
-                            is_promise: false,
-                        });
-                    }
-                    Err(err) => error!("{err:?}"),
-                }
-            }
-
-            let return_ = instructions.returns();
-
-            let return_ = if let Some(return_) = return_ {
-                return_
-            } else {
-                let return_ = info
-                    .inner
-                    .sig
-                    .output
-                    .as_ref()
-                    .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
-                    .wrap_err_with(|| function_name.to_string());
-
-                match return_ {
-                    Ok(return_) => return_,
-                    Err(err) => {
-                        error!("{err:?}");
-                        continue;
-                    }
-                }
-            };
-
-            overloads.push(MethodOverload {
-                parameters,
-                return_,
-                is_readonly_type,
-                comments: comments.clone(),
-                rest_params,
-                platforms: instructions.platforms(),
-                constructor_only: instructions.has_constructor_only(),
-            });
-        } else {
+        if has_parameters {
             is_static = instructions.has_static();
 
             let default_result = if instructions.has_constructor() {
@@ -198,7 +106,7 @@ pub fn extract_functions(
                     .output
                     .as_ref()
                     .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
-                    .wrap_err_with(|| function_name.to_string())?
+                    .wrap_err_with(|| function_name.clone())?
             };
 
             let method_platforms = instructions.platforms();
@@ -258,7 +166,99 @@ pub fn extract_functions(
                     constructor_only: instructions.has_constructor_only(),
                 });
             }
-        };
+        } else {
+            is_static = true;
+
+            let mut parameters = Vec::new();
+
+            for (parameter_name, parameter_type) in &info.inner.sig.inputs {
+                let parameter_type = convert_type(parameter_type, struct_name)
+                    .wrap_err_with(|| function_name.clone());
+                match parameter_type {
+                    Ok(Type::This) => {
+                        if parameter_name == "self" || parameter_name == "this" {
+                            // Receiver-like parameters (`self` and the explicit `this` helper) are not exposed in TS.
+                            is_static = false;
+                            continue;
+                        }
+
+                        let parameter_type = if let Some(struct_name) = struct_name {
+                            // Extra `Class<'js, Self>` parameters are regular arguments, not the method receiver.
+                            Type::Verbatim(struct_name.to_string())
+                        } else {
+                            Type::This
+                        };
+
+                        parameters.push(Variable {
+                            name: parameter_name.clone(),
+                            type_: parameter_type,
+                            comments: Default::default(), // TODO
+                            is_readonly: false,
+                            is_readonly_type: false,
+                            default_value: None,
+                            platforms: instructions.platforms(),
+                            is_promise: false,
+                        });
+                    }
+                    Ok(Type::Ignore) => {
+                        continue;
+                    }
+                    Ok(Type::Unknown) => {
+                        if instructions.rest_params().is_some() {
+                            continue;
+                        }
+
+                        error!("{function_name}'s parameters should be manually defined.");
+                        continue 'func;
+                    }
+                    Ok(parameter_type) => {
+                        parameters.push(Variable {
+                            name: parameter_name.clone(),
+                            type_: parameter_type,
+                            comments: Default::default(), // TODO
+                            is_readonly: false,
+                            is_readonly_type: false,
+                            default_value: None,
+                            platforms: instructions.platforms(),
+                            is_promise: false,
+                        });
+                    }
+                    Err(err) => error!("{err:?}"),
+                }
+            }
+
+            let return_ = instructions.returns();
+
+            let return_ = if let Some(return_) = return_ {
+                return_
+            } else {
+                let return_ = info
+                    .inner
+                    .sig
+                    .output
+                    .as_ref()
+                    .map_or(Ok(Type::Void), |output| convert_type(output, struct_name))
+                    .wrap_err_with(|| function_name.clone());
+
+                match return_ {
+                    Ok(return_) => return_,
+                    Err(err) => {
+                        error!("{err:?}");
+                        continue;
+                    }
+                }
+            };
+
+            overloads.push(MethodOverload {
+                parameters,
+                return_,
+                is_readonly_type,
+                comments: comments.clone(),
+                rest_params,
+                platforms: instructions.platforms(),
+                constructor_only: instructions.has_constructor_only(),
+            });
+        }
 
         // If the function is @get then it appears as a property, so we skip it
         if instructions.has_getter() {

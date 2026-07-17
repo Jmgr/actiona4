@@ -153,7 +153,7 @@ impl File {
         };
         let (mut file, header, header_size, actual_file_size) = select! {
             biased;
-            _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+            () = cancellation_token.cancelled() => return Err(Error::Canceled),
             result = header_read => result?,
         };
         if header.version != BINARY_VERSION {
@@ -195,7 +195,7 @@ impl File {
         let mut payload = vec![0; compressed_size];
         select! {
             biased;
-            _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+            () = cancellation_token.cancelled() => return Err(Error::Canceled),
             result = file.read_exact(&mut payload) => { result?; },
         }
 
@@ -203,7 +203,7 @@ impl File {
         let handle = task_tracker.spawn_blocking(move || {
             check_canceled(&task_token)?;
             let payload = decompress(&payload, uncompressed_size, MAX_BINARY_UNCOMPRESSED_SIZE)?;
-            let (file, remaining): (File, &[u8]) = postcard::take_from_bytes(&payload)?;
+            let (file, remaining): (Self, &[u8]) = postcard::take_from_bytes(&payload)?;
             if !remaining.is_empty() {
                 return Err(Error::BinaryPayloadTrailingData);
             }
@@ -212,7 +212,7 @@ impl File {
         });
         select! {
             biased;
-            _ = cancellation_token.cancelled() => Err(Error::Canceled),
+            () = cancellation_token.cancelled() => Err(Error::Canceled),
             result = handle => result?,
         }
     }
@@ -256,13 +256,13 @@ impl File {
         });
         let buffer = select! {
             biased;
-            _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+            () = cancellation_token.cancelled() => return Err(Error::Canceled),
             result = handle => result??,
         };
 
         select! {
             biased;
-            _ = cancellation_token.cancelled() => Err(Error::Canceled),
+            () = cancellation_token.cancelled() => Err(Error::Canceled),
             result = write_atomically(filepath, &buffer, task_tracker, cancellation_token) => result,
         }
     }
@@ -276,14 +276,14 @@ impl File {
         check_canceled(cancellation_token)?;
         let file = select! {
             biased;
-            _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+            () = cancellation_token.cancelled() => return Err(Error::Canceled),
             result = fs::File::open(filepath) => result?,
         };
         let mut data = Vec::new();
         let mut reader = file.take(MAX_JSON_FILE_SIZE as u64 + 1);
         select! {
             biased;
-            _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+            () = cancellation_token.cancelled() => return Err(Error::Canceled),
             result = reader.read_to_end(&mut data) => { result?; },
         };
         checked_payload_size("JSON file", data.len() as u64, MAX_JSON_FILE_SIZE)?;
@@ -299,7 +299,7 @@ impl File {
         });
         select! {
             biased;
-            _ = cancellation_token.cancelled() => Err(Error::Canceled),
+            () = cancellation_token.cancelled() => Err(Error::Canceled),
             result = handle => result?,
         }
     }
@@ -324,20 +324,20 @@ impl File {
         });
         let buffer = select! {
             biased;
-            _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+            () = cancellation_token.cancelled() => return Err(Error::Canceled),
             result = handle => result??,
         };
 
         select! {
             biased;
-            _ = cancellation_token.cancelled() => Err(Error::Canceled),
+            () = cancellation_token.cancelled() => Err(Error::Canceled),
             result = write_atomically(filepath, &buffer, task_tracker, cancellation_token) => result,
         }
     }
 }
 
 // Converts and validates untrusted header lengths before they are used for allocation.
-pub(crate) fn checked_payload_size(
+pub(crate) const fn checked_payload_size(
     kind: &'static str,
     size: u64,
     limit: usize,
@@ -368,7 +368,7 @@ async fn write_atomically(
     let directory = destination_directory(filepath);
     let existing_permissions = select! {
         biased;
-        _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+        () = cancellation_token.cancelled() => return Err(Error::Canceled),
         result = fs::metadata(filepath) => match result {
             Ok(metadata) => Some(metadata.permissions()),
             Err(error) if error.kind() == ErrorKind::NotFound => None,
@@ -387,13 +387,13 @@ async fn write_atomically(
 
     select! {
         biased;
-        _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+        () = cancellation_token.cancelled() => return Err(Error::Canceled),
         result = file.write_all(data) => result?,
     }
 
     select! {
         biased;
-        _ = cancellation_token.cancelled() => return Err(Error::Canceled),
+        () = cancellation_token.cancelled() => return Err(Error::Canceled),
         result = file.sync_all() => result?,
     }
     drop(file);
@@ -440,9 +440,11 @@ async fn sync_directory(_: &Path, _: &TaskTracker) -> Result<(), Error> {
 
 #[cfg(test)]
 mod tests {
-    use std::{io::ErrorKind, mem::size_of, path::Path};
-
-    use std::io::Cursor;
+    use std::{
+        io::{Cursor, ErrorKind},
+        mem::size_of,
+        path::Path,
+    };
 
     use action_definition::{
         actions::{ActionInstance, Code},
@@ -453,8 +455,7 @@ mod tests {
     use indexmap::IndexMap;
     use rstest::rstest;
     use serde_json::json;
-    use tokio::fs;
-    use tokio::io::AsyncSeekExt as _;
+    use tokio::{fs, io::AsyncSeekExt as _};
     use tokio_util::{sync::CancellationToken, task::TaskTracker};
     use uuid::Uuid;
 

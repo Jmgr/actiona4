@@ -247,10 +247,10 @@ impl Clipboard {
 
         loop {
             select! {
-                _ = cancellation_token.cancelled() => {
+                () = cancellation_token.cancelled() => {
                     return Err(CommonError::Cancelled.into());
                 }
-                _ = sleep(options.interval) => {}
+                () = sleep(options.interval) => {}
             }
 
             let current_snapshot = self.snapshot(options.mode)?;

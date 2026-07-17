@@ -3,7 +3,7 @@ use quote::quote;
 use syn::{DeriveInput, parse_macro_input};
 
 /// Derive `rquickjs::IntoJs` by delegating through serde.
-pub(crate) fn derive_into_serde(input: TokenStream) -> TokenStream {
+pub fn derive_into_serde(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
@@ -19,7 +19,7 @@ pub(crate) fn derive_into_serde(input: TokenStream) -> TokenStream {
 }
 
 /// Derive `rquickjs::FromJs` by delegating through serde.
-pub(crate) fn derive_from_serde(input: TokenStream) -> TokenStream {
+pub fn derive_from_serde(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 

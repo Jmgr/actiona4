@@ -82,7 +82,7 @@ impl ScrollTriggers {
         for action in to_fire {
             match action {
                 TriggerAction::Macro(data) => {
-                    macro_player.play_detached(data, PlayConfig::default())
+                    macro_player.play_detached(data, PlayConfig::default());
                 }
                 TriggerAction::Callback(context, function_key) => {
                     let player_clone = macro_player.clone();

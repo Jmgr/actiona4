@@ -15,7 +15,7 @@ use crate::action_definition::action::process_parameter_field;
 /// generated `Parameter` definition, so an action's own `#[action(...)]`
 /// expansion can splice specific common fields into its parameter list (e.g.
 /// `timeout`, gated on `supports_timeout`).
-pub(crate) fn expand(item: TokenStream) -> TokenStream {
+pub fn expand(item: TokenStream) -> TokenStream {
     let mut item = parse_macro_input!(item as ItemStruct);
 
     let Fields::Named(fields) = &mut item.fields else {

@@ -72,7 +72,7 @@ impl Callbacks {
             info!("Callbacks::worker start");
             loop {
                 let call_key = select! {
-                    _ = cancellation_token.cancelled() => { break; },
+                    () = cancellation_token.cancelled() => { break; },
                     call_key = call_receiver.recv() => call_key,
                 };
 
@@ -289,7 +289,7 @@ impl Callbacks {
     ///
     /// If the callback returns a Promise it is spawned into the scheduler for background
     /// execution.
-    pub fn call_sync<'js>(&self, ctx: &Ctx<'js>, function_key: FunctionKey) {
+    pub fn call_sync(&self, ctx: &Ctx<'_>, function_key: FunctionKey) {
         self.call_sync_fire_and_forget(ctx, function_key, &[], "call_sync");
     }
 
@@ -457,7 +457,7 @@ impl Callbacks {
         info!(
             "call {:?} finished, duration: {}",
             call_id,
-            format_duration(Instant::now() - start)
+            format_duration(start.elapsed())
         );
 
         self.retrieve_result(ctx, call_id)

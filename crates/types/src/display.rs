@@ -40,7 +40,7 @@ impl DisplayFields {
         self
     }
 
-    pub fn finish<'a, 'f>(self, f: &'a mut Formatter<'f>) -> fmt::Result {
+    pub fn finish(self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "({})", self.buffer)
     }
 
@@ -52,7 +52,7 @@ impl DisplayFields {
 
 pub struct DisplayList<'a, T>(&'a [T]);
 
-impl<'a, T: Display> Display for DisplayList<'a, T> {
+impl<T: Display> Display for DisplayList<'_, T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.write_str("[")?;
         for (i, item) in self.0.iter().enumerate() {

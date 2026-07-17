@@ -50,7 +50,7 @@ impl Screen {
 
         task_tracker.spawn(async move {
             select! {
-                _ = cancellation_token.cancelled() => {},
+                () = cancellation_token.cancelled() => {},
                 result = packet_reader => {
                     let Err(err) = result;
                     error!("X11 packet reader exited with error: {err}");
@@ -70,16 +70,19 @@ impl Screen {
     }
 
     /// The X11 root depth (typically 24 for true-color displays).
+    #[must_use]
     pub fn root_depth(&self) -> u8 {
         self.inner.root_depth
     }
 
     /// Width of the full root window in pixels.
+    #[must_use]
     pub fn full_screen_width(&self) -> u32 {
         u32::from(self.inner.full_screen_width)
     }
 
     /// Height of the full root window in pixels.
+    #[must_use]
     pub fn full_screen_height(&self) -> u32 {
         u32::from(self.inner.full_screen_height)
     }

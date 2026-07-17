@@ -36,7 +36,7 @@ pub struct JsCpu {
     cores: Vec<CpuCore>,
 }
 
-impl<'js> HostClass<'js> for JsCpu {}
+impl HostClass<'_> for JsCpu {}
 
 impl<'js> Trace<'js> for JsCpu {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

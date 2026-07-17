@@ -117,8 +117,8 @@ impl PlayingSound {
         });
 
         select! {
-            _ = self.cancellation_token.cancelled() => { self.player.stop() },
-            _ = cancellation_token.cancelled() => { self.player.stop() },
+            () = self.cancellation_token.cancelled() => { self.player.stop() },
+            () = cancellation_token.cancelled() => { self.player.stop() },
             _ = handle => {},
         }
     }
@@ -245,8 +245,8 @@ impl Audio {
             task_tracker.spawn(async move {
                 loop {
                     select! {
-                        _ = local_cancellation_token.cancelled() => break,
-                        _ = local_tracker.notified() => {
+                        () = local_cancellation_token.cancelled() => break,
+                        () = local_tracker.notified() => {
                             local_output_stream.clear_if_idle(&local_tracker, &local_inflight);
                         },
                     }
@@ -375,7 +375,7 @@ fn validate_playback_rate(playback_rate: f32, source_sample_rate: u32) -> Result
     );
 
     #[allow(clippy::as_conversions)]
-    let effective_sample_rate = source_sample_rate as f64 * playback_rate as f64;
+    let effective_sample_rate = f64::from(source_sample_rate) * f64::from(playback_rate);
     ensure!(
         effective_sample_rate >= 1.0,
         "audio playback rate is too small for this source sample rate"
@@ -521,7 +521,7 @@ mod tests {
             let start = Instant::now();
             script_engine
                 .eval_async::<()>(&format!(
-                    r#"await audio.playFileAndWait({:?})"#,
+                    r"await audio.playFileAndWait({:?})",
                     path.display()
                 ))
                 .await
@@ -544,7 +544,7 @@ mod tests {
             let path = test_audio();
             // Fire and forget — do not await
             script_engine
-                .eval_async::<()>(&format!(r#"audio.playFile({:?})"#, path.display()))
+                .eval_async::<()>(&format!(r"audio.playFile({:?})", path.display()))
                 .await
                 .unwrap();
         });

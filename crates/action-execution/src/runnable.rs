@@ -1,6 +1,7 @@
 // The generated impl refers to `ActionInstance` and each variant's field type
 // by the bare names used in `action_definition`'s enum definition, so they must be in
 // scope here under those exact names.
+#[allow(clippy::wildcard_imports)]
 use action_definition::{actions::*, post_run::PostRun};
 
 use crate::{ExecutionContext, error::RunError};

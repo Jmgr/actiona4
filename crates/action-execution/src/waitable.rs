@@ -25,6 +25,7 @@ impl PreparedWait {
         }
     }
 
+    #[must_use]
     pub fn start(self, token: CancellationToken) -> WaitFuture {
         (self.start)(token)
     }
@@ -69,7 +70,7 @@ impl Waitable for ActionInstance {
     }
 }
 
-pub(crate) async fn run_prepared_wait(
+pub async fn run_prepared_wait(
     waitable: &impl Waitable,
     context: &ExecutionContext,
 ) -> Result<(), RunError> {
@@ -80,7 +81,7 @@ pub(crate) async fn run_prepared_wait(
         .await
 }
 
-pub(crate) async fn prepare_inputs(
+pub async fn prepare_inputs(
     inputs: &[ActionInstance],
     context: &ExecutionContext,
     action: &'static str,
@@ -96,7 +97,7 @@ pub(crate) async fn prepare_inputs(
     Ok(prepared)
 }
 
-pub(crate) async fn join_waits(
+pub async fn join_waits(
     prepared: Vec<PreparedWait>,
     parent_token: &CancellationToken,
 ) -> Result<(), RunError> {
@@ -116,7 +117,7 @@ pub(crate) async fn join_waits(
     Ok(())
 }
 
-pub(crate) async fn race_waits(
+pub async fn race_waits(
     prepared: Vec<PreparedWait>,
     parent_token: &CancellationToken,
 ) -> Result<usize, RunError> {
@@ -158,8 +159,8 @@ mod tests {
     fn succeeds_after(duration: Duration) -> PreparedWait {
         PreparedWait::new(move |token| async move {
             tokio::select! {
-                _ = token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
-                _ = sleep(duration) => Ok(()),
+                () = token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
+                () = sleep(duration) => Ok(()),
             }
         })
     }

@@ -7,7 +7,6 @@ use std::{
 
 use color_eyre::Result;
 use installer_tools::notification::ensure_notification_registration;
-use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use tokio::sync::{broadcast, oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -50,7 +49,7 @@ use crate::{
 
 pub mod events;
 
-static RUNTIME: Lazy<Mutex<Weak<Runtime>>> = Lazy::new(|| Mutex::new(Weak::new()));
+static RUNTIME: LazyLock<Mutex<Weak<Runtime>>> = LazyLock::new(|| Mutex::new(Weak::new()));
 
 #[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {

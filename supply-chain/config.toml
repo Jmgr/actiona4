@@ -1416,10 +1416,6 @@ criteria = "safe-to-deploy"
 version = "0.36.7"
 criteria = "safe-to-deploy"
 
-[[exemptions.once_cell]]
-version = "1.21.3"
-criteria = "safe-to-deploy"
-
 [[exemptions.opencv]]
 version = "0.95.0"
 criteria = "safe-to-deploy"

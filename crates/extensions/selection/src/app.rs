@@ -16,6 +16,8 @@ use winit::{
     window::{Window, WindowId, WindowLevel},
 };
 
+#[cfg(not(windows))]
+use crate::cursor_tracker::{get_window_xid, spawn_cursor_tracker};
 use crate::{
     events::AppEvent,
     magnifier::{
@@ -25,9 +27,6 @@ use crate::{
     screenshot::Screenshot,
     text::{draw_text, line_height},
 };
-
-#[cfg(not(windows))]
-use crate::cursor_tracker::{get_window_xid, spawn_cursor_tracker};
 
 const CROSSHAIR_GAP: u32 = 5;
 const CROSSHAIR_COLOR: [u8; 4] = [255, 255, 255, 220];
@@ -72,7 +71,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(proxy: EventLoopProxy<AppEvent>) -> Self {
+    pub const fn new(proxy: EventLoopProxy<AppEvent>) -> Self {
         #[cfg(windows)]
         let _ = proxy;
         Self {
@@ -158,7 +157,7 @@ impl App {
         );
     }
 
-    fn render_surface(&mut self, window_width: u32, window_height: u32) {
+    fn render_surface(&self, window_width: u32, window_height: u32) {
         let Some(pixels) = self.pixels.as_ref() else {
             return;
         };
@@ -470,7 +469,7 @@ impl ApplicationHandler<AppEvent> for App {
                 self.desktop_origin = position;
             }
             WindowEvent::KeyboardInput { event, .. } if event.state == ElementState::Pressed => {
-                if let PhysicalKey::Code(KeyCode::Escape) = event.physical_key {
+                if event.physical_key == PhysicalKey::Code(KeyCode::Escape) {
                     self.cancel_selection();
                 }
             }

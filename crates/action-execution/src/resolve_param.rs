@@ -36,6 +36,7 @@ pub struct ResolveParamError {
 }
 
 impl ResolveParamError {
+    #[must_use]
     pub fn new(parameter: &'static str, script_error: ScriptError) -> Self {
         Self {
             parameter,
@@ -45,7 +46,8 @@ impl ResolveParamError {
         }
     }
 
-    pub fn validation(parameter: &'static str, error: ValidationError) -> Self {
+    #[must_use]
+    pub const fn validation(parameter: &'static str, error: ValidationError) -> Self {
         Self {
             parameter,
             message: ResolveParamErrorMessage::Validation(error),
@@ -54,6 +56,7 @@ impl ResolveParamError {
         }
     }
 
+    #[must_use]
     pub const fn parameter(&self) -> &'static str {
         self.parameter
     }
@@ -61,6 +64,7 @@ impl ResolveParamError {
     /// The validation error, if this failure came from parameter validation
     /// rather than script evaluation. A future localization layer can match
     /// on its variant instead of parsing [`Self::error`]'s text.
+    #[must_use]
     pub const fn validation_error(&self) -> Option<&ValidationError> {
         match &self.message {
             ResolveParamErrorMessage::Validation(error) => Some(error),
@@ -68,14 +72,17 @@ impl ResolveParamError {
         }
     }
 
+    #[must_use]
     pub fn error(&self) -> String {
         self.message.to_string()
     }
 
+    #[must_use]
     pub const fn line(&self) -> Option<u32> {
         self.line
     }
 
+    #[must_use]
     pub const fn column(&self) -> Option<u32> {
         self.column
     }
@@ -290,22 +297,22 @@ impl ValidateParamValue for Array {
     }
 }
 
-impl ResolveParamValue<Variable> for Variable {
+impl ResolveParamValue<Self> for Variable {
     async fn resolve_value(
         &self,
         _parameter: &'static str,
         _context: &ExecutionContext,
-    ) -> Result<Variable, ResolveParamError> {
+    ) -> Result<Self, ResolveParamError> {
         Ok(self.clone())
     }
 }
 
-impl ResolveParamValue<Array> for Array {
+impl ResolveParamValue<Self> for Array {
     async fn resolve_value(
         &self,
         _parameter: &'static str,
         _context: &ExecutionContext,
-    ) -> Result<Array, ResolveParamError> {
+    ) -> Result<Self, ResolveParamError> {
         Ok(self.clone())
     }
 }
@@ -326,8 +333,8 @@ where
         context: &ExecutionContext,
     ) -> Result<T, ResolveParamError> {
         match self {
-            Scriptable::Static { value } => Ok(value.clone()),
-            Scriptable::Script { source } => {
+            Self::Static { value } => Ok(value.clone()),
+            Self::Script { source } => {
                 let value = context
                     .script_engine
                     .eval_async::<T::ScriptValue>(source)
@@ -340,7 +347,7 @@ where
 }
 
 impl ScriptableParamValue for String {
-    type ScriptValue = String;
+    type ScriptValue = Self;
 
     fn from_script_value(value: Self::ScriptValue) -> Self {
         value
@@ -356,7 +363,7 @@ impl ScriptableParamValue for Point {
 }
 
 impl ScriptableParamValue for i64 {
-    type ScriptValue = i64;
+    type ScriptValue = Self;
 
     fn from_script_value(value: Self::ScriptValue) -> Self {
         value
@@ -364,7 +371,7 @@ impl ScriptableParamValue for i64 {
 }
 
 impl ScriptableParamValue for f64 {
-    type ScriptValue = f64;
+    type ScriptValue = Self;
 
     fn from_script_value(value: Self::ScriptValue) -> Self {
         value
@@ -372,7 +379,7 @@ impl ScriptableParamValue for f64 {
 }
 
 impl ScriptableParamValue for u32 {
-    type ScriptValue = u32;
+    type ScriptValue = Self;
 
     fn from_script_value(value: Self::ScriptValue) -> Self {
         value
@@ -380,7 +387,7 @@ impl ScriptableParamValue for u32 {
 }
 
 impl ScriptableParamValue for bool {
-    type ScriptValue = bool;
+    type ScriptValue = Self;
 
     fn from_script_value(value: Self::ScriptValue) -> Self {
         value

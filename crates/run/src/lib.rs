@@ -6,8 +6,6 @@
 #![allow(clippy::significant_drop_tightening)]
 #![allow(clippy::future_not_send)]
 #![allow(clippy::too_many_arguments)]
-#![allow(rustdoc::invalid_html_tags)]
-
 use std::{
     convert::identity,
     env, error,
@@ -440,7 +438,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                     | Commands::Setup => {
                         unreachable!("handled before runtime startup")
                     }
-                };
+                }
 
                 Ok(())
             },

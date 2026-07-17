@@ -218,7 +218,7 @@ impl JsSize {
     /// const s = new Size(10, 20).scale(3);
     /// println(s); // "Size(30, 60)"
     /// ```
-    pub fn scale<'js>(&self, ctx: Ctx<'js>, factor: f64) -> Result<Self> {
+    pub fn scale(&self, ctx: Ctx<'_>, factor: f64) -> Result<Self> {
         self.inner
             .scaled(factor)
             .map(|value| value.into())

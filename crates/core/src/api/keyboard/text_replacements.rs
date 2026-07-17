@@ -430,7 +430,7 @@ impl TextReplacements {
 
             loop {
                 select! {
-                    _ = worker_cancellation_token.cancelled() => { break; }
+                    () = worker_cancellation_token.cancelled() => { break; }
                     text = text_receiver.recv() => {
                         let Ok(text) = text else { break; };
                         Self::on_text(
@@ -670,11 +670,10 @@ impl StringRingBuffer {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::input::Direction;
-
     use unicode_segmentation::UnicodeSegmentation;
 
     use super::*;
+    use crate::types::input::Direction;
 
     #[test]
     fn test_grapheme_prefix_len() {

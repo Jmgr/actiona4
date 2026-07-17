@@ -23,6 +23,7 @@ name = "action-definition"
 version = "0.2.0"
 dependencies = [
  "const-default",
+ "derive_more",
  "fluent",
  "fluent-syntax",
  "humantime",
@@ -1494,7 +1495,6 @@ dependencies = [
  "notify-rust",
  "notzero",
  "num-traits",
- "once_cell",
  "open",
  "opencv",
  "parking_lot",
@@ -2096,7 +2096,6 @@ dependencies = [
  "env_logger",
  "itertools 0.15.0",
  "log",
- "once_cell",
  "regex",
  "rustdoc-types",
  "serde_json",
@@ -3579,6 +3578,7 @@ version = "0.2.0"
 dependencies = [
  "config",
  "eyre",
+ "serial_test",
  "tokio",
  "updater",
  "versions",

@@ -56,7 +56,7 @@ impl<T: Copy> Copy for OptionalUnit<T> {}
 impl<T: Clone + Display> Display for OptionalUnit<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.0 {
-            Some(v) => write!(f, "{}", v),
+            Some(v) => write!(f, "{v}"),
             None => write!(f, "<NONE>"),
         }
     }
@@ -121,10 +121,12 @@ pub type OptionalSystemString = OptionalUnit<String>;
 impl From<Option<&str>> for OptionalSystemString {
     fn from(value: Option<&str>) -> Self {
         Self(match value.map(|s| s.trim()) {
-            Some("Default string")
-            | Some("To be filled by O.E.M.")
-            | Some("System Product Name")
-            | Some("Not Specified") => None,
+            Some(
+                "Default string"
+                | "To be filled by O.E.M."
+                | "System Product Name"
+                | "Not Specified",
+            ) => None,
             None | Some("") => None,
             Some(s) => Some(s.to_string()),
         })

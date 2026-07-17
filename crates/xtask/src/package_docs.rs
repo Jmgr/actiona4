@@ -143,7 +143,7 @@ mod tests {
             .iter()
             .map(|staged_file| staged_file.destination_name.as_str())
             .collect();
-        staged_names.sort();
+        staged_names.sort_unstable();
         assert_eq!(staged_names, vec!["LICENSE", "README.md"]);
         assert_eq!(
             tokio_fs::read(destination.join("README.md")).await.unwrap(),

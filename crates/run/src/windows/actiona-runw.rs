@@ -2,7 +2,7 @@
 
 use std::process::ExitCode;
 
-fn main() -> ExitCode {
+const fn main() -> ExitCode {
     main_impl()
 }
 
@@ -63,7 +63,7 @@ fn main_impl() -> ExitCode {
 }
 
 #[cfg(not(windows))]
-fn main_impl() -> ExitCode {
+const fn main_impl() -> ExitCode {
     ExitCode::FAILURE
 }
 

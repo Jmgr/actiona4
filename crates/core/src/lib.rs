@@ -7,8 +7,6 @@
 #![allow(clippy::significant_drop_tightening)]
 #![allow(clippy::future_not_send)]
 #![allow(clippy::too_many_arguments)]
-#![allow(rustdoc::invalid_html_tags)]
-
 use std::result::Result as StdResult;
 
 use color_eyre::Result;
@@ -66,7 +64,7 @@ pub trait JsValueToString {
     fn to_string_coerced(&self) -> Result<String>;
 }
 
-impl<'js> JsValueToString for Value<'js> {
+impl JsValueToString for Value<'_> {
     fn to_string_coerced(&self) -> Result<String> {
         Ok(self.get::<Coerced<String>>()?.0)
     }
@@ -132,7 +130,7 @@ where
     F: Future<Output = T>,
 {
     select! {
-        _ = token.cancelled() => Err(CommonError::Cancelled.into()),
+        () = token.cancelled() => Err(CommonError::Cancelled.into()),
         v = fut => Ok(v),
     }
 }

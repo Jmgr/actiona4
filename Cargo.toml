@@ -31,12 +31,34 @@ documentation = "https://actiona.app"
 license = "MIT"
 
 [workspace.lints.clippy]
-all = "warn"
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
 dbg_macro = "warn"
 todo = "warn"
 unimplemented = "warn"
 panic_in_result_fn = "warn"
 absolute_paths = "warn"
+undocumented_unsafe_blocks = "warn"
+mem_forget = "warn"
+rc_mutex = "warn"
+float_cmp = "warn"
+lossy_float_literal = "warn"
+too_many_lines = "allow"
+enum_glob_use = "allow"
+ignore_without_reason = "allow"
+too_long_first_doc_paragraph = "allow"
+significant_drop_tightening = "allow"
+future_not_send = "allow"
+too_many_arguments = "allow"
+as_conversions = "warn"
+must_use_candidate = "warn"
+unwrap_used = "warn"
+redundant_closure_for_method_calls = "allow"
+doc_markdown = "allow"
+
+[workspace.lints.rustdoc]
+invalid_html_tags = "allow"
 
 [workspace.dependencies]
 ab_glyph = "0.2.32"
@@ -88,7 +110,6 @@ mime_guess = "2.0.5"
 noiselib = "0.2.4"
 notzero = "1.1.0"
 num-traits = "0.2.19"
-once_cell = "1.21.4"
 open = "5.4.0"
 opencv = { version = "0.99.0", default-features = false }
 parking_lot = "0.12.5"

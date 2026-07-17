@@ -20,5 +20,8 @@ eyre.workspace = true
 tokio.workspace = true
 versions.workspace = true
 
+[dev-dependencies]
+serial_test.workspace = true
+
 [lints]
 workspace = true

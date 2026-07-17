@@ -102,7 +102,7 @@ pub struct JsMemoryUsage {
     inner: MemoryUsage,
 }
 
-impl<'js> HostClass<'js> for JsMemoryUsage {}
+impl HostClass<'_> for JsMemoryUsage {}
 
 impl<'js> Trace<'js> for JsMemoryUsage {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -173,7 +173,7 @@ pub struct JsCGroupLimits {
     inner: CGroupLimits,
 }
 
-impl<'js> HostClass<'js> for JsCGroupLimits {}
+impl HostClass<'_> for JsCGroupLimits {}
 
 impl<'js> Trace<'js> for JsCGroupLimits {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

@@ -72,8 +72,8 @@ impl ProcessSignal {
                 }
                 Ok(None) => {
                     select! {
-                        _ = sleep(Duration::from_millis(10)) => continue,
-                        _ = cancellation_token.cancelled() => return Err(Cancelled.into()),
+                        () = sleep(Duration::from_millis(10)) => continue,
+                        () = cancellation_token.cancelled() => return Err(Cancelled.into()),
                     }
                 }
                 Err(err) if err == Errno::INTR => {
@@ -99,8 +99,8 @@ impl ProcessSignal {
             }
 
             select! {
-                _ = sleep(Duration::from_millis(10)) => continue,
-                _ = cancellation_token.cancelled() => return Err(Cancelled.into()),
+                () = sleep(Duration::from_millis(10)) => continue,
+                () = cancellation_token.cancelled() => return Err(Cancelled.into()),
             }
         }
     }
@@ -133,7 +133,7 @@ impl ProcessSignal {
         .map_err(|error| ProcessSignalErrors::Other(error.into()))?;
 
         let _guard = select! {
-            _ = cancellation_token.cancelled() => {
+            () = cancellation_token.cancelled() => {
                 return Err(ProcessSignalErrors::Other(Cancelled.into()));
             }
             guard = async_fd.readable() => guard,

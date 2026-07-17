@@ -29,7 +29,7 @@ use crate::api::js::{
 #[derive(Clone, Copy, Debug)]
 pub struct JsColorLike(pub Color);
 
-fn color_from_value<'js>(value: &Value<'js>) -> Result<Color> {
+fn color_from_value(value: &Value<'_>) -> Result<Color> {
     if let Some(object) = value.as_object() {
         if has_registered_class_prototype::<JsColor>(value.ctx(), object)? {
             return value.clone().get::<JsColor>().map(Into::into);

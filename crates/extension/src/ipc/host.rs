@@ -30,15 +30,12 @@ impl<P: Protocol> Host<P> {
         let (key, server) = IpcRpcServer::initialize_server(move |message| {
             let message_handler = Arc::clone(&message_handler);
             async move {
-                match message {
-                    WireMessage::ExtensionRequest(request) => {
-                        let response = message_handler(request).await;
-                        Some(WireMessage::HostResponse(response))
-                    }
-                    _ => {
-                        error!("host: unexpected message received: {message:?}");
-                        None
-                    }
+                if let WireMessage::ExtensionRequest(request) = message {
+                    let response = message_handler(request).await;
+                    Some(WireMessage::HostResponse(response))
+                } else {
+                    error!("host: unexpected message received: {message:?}");
+                    None
                 }
             }
         })
@@ -51,6 +48,7 @@ impl<P: Protocol> Host<P> {
         })
     }
 
+    #[must_use]
     pub fn key(&self) -> ConnectionKey {
         self.key.clone()
     }

@@ -20,7 +20,8 @@ pub struct ClipboardTree {
 }
 
 impl ClipboardTree {
-    pub fn is_empty(&self) -> bool {
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
         self.roots.is_empty()
     }
 }
@@ -29,7 +30,7 @@ impl ClipboardTree {
 struct ClipboardNode {
     payload: NodePayload,
     metadata: Metadata,
-    children: Vec<ClipboardNode>,
+    children: Vec<Self>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

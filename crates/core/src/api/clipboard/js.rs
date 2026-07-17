@@ -245,7 +245,7 @@ pub struct JsClipboardText {
     inner: super::Clipboard,
 }
 
-impl<'js> HostClass<'js> for JsClipboardText {}
+impl HostClass<'_> for JsClipboardText {}
 
 impl<'js> Trace<'js> for JsClipboardText {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -292,7 +292,7 @@ pub struct JsClipboardImage {
     inner: super::Clipboard,
 }
 
-impl<'js> HostClass<'js> for JsClipboardImage {}
+impl HostClass<'_> for JsClipboardImage {}
 
 impl<'js> Trace<'js> for JsClipboardImage {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -342,7 +342,7 @@ pub struct JsClipboardFileList {
     inner: super::Clipboard,
 }
 
-impl<'js> HostClass<'js> for JsClipboardFileList {}
+impl HostClass<'_> for JsClipboardFileList {}
 
 impl<'js> Trace<'js> for JsClipboardFileList {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -401,7 +401,7 @@ pub struct JsClipboardHtml {
     inner: super::Clipboard,
 }
 
-impl<'js> HostClass<'js> for JsClipboardHtml {}
+impl HostClass<'_> for JsClipboardHtml {}
 
 impl<'js> Trace<'js> for JsClipboardHtml {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

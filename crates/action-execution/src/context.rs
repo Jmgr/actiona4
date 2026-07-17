@@ -115,7 +115,8 @@ impl ExecutionContext {
         Ok(())
     }
 
-    pub fn node_id(&self) -> NodeId {
+    #[must_use]
+    pub const fn node_id(&self) -> NodeId {
         self.current_node
             .expect("execution context should have a current node while an action runs")
     }
@@ -128,6 +129,7 @@ impl ExecutionContext {
         self.state.runtime_state_mut_or_insert_with(node_id, create)
     }
 
+    #[must_use]
     pub fn runtime_state<T>(&self) -> Option<&T>
     where
         T: 'static,

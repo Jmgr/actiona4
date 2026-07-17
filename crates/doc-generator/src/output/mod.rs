@@ -50,21 +50,21 @@ fn add_category_comment(comments: &mut Vec<String>, category: Option<&str>) {
 impl Type {
     pub fn to_string(&self, context: Context) -> Result<String> {
         Ok(match self {
-            Type::Void => "void".into(),
-            Type::Bool => "boolean".into(),
-            Type::Number => "number".into(),
-            Type::This => "this".into(),
-            Type::Ignore => unreachable!("ignored type should not be output"),
-            Type::Unknown => "unknown".into(),
-            Type::String => "string".into(),
-            Type::Option(option) => match context {
+            Self::Void => "void".into(),
+            Self::Bool => "boolean".into(),
+            Self::Number => "number".into(),
+            Self::This => "this".into(),
+            Self::Ignore => unreachable!("ignored type should not be output"),
+            Self::Unknown => "unknown".into(),
+            Self::String => "string".into(),
+            Self::Option(option) => match context {
                 // When a parameter or property is optional we use ? after the name
                 Context::Variable | Context::Property => option.to_string(context)?,
 
                 // If it's a return value then we have to use the "| undefined" syntax instead
                 Context::ReturnValue => format!("{} | undefined", option.to_string(context)?),
             },
-            Type::Verbatim(type_) => {
+            Self::Verbatim(type_) => {
                 let type_ = strip_modules(type_);
 
                 // Remove "Js" prefix if present
@@ -72,8 +72,8 @@ impl Type {
 
                 type_.to_string()
             }
-            Type::Array(type_) => format!("{}[]", type_.to_string(context)?),
-            Type::Record(key_type, value_type) => format!(
+            Self::Array(type_) => format!("{}[]", type_.to_string(context)?),
+            Self::Record(key_type, value_type) => format!(
                 "Record<{}, {} | undefined>",
                 key_type.to_string(context)?,
                 value_type.to_string(context)?
@@ -149,7 +149,7 @@ impl File {
         }
 
         // 2) Now for each struct & each method, expand the overloads
-        for s in self.structs.iter_mut() {
+        for s in &mut self.structs {
             for method in &mut s.methods {
                 if method.is_constructor {
                     continue;
@@ -237,7 +237,7 @@ impl File {
         )?;
         writeln!(output_file)?;
 
-        for module in self.modules.iter() {
+        for module in &self.modules {
             let verbatim = module.verbatim.join("\n");
             if !verbatim.is_empty() {
                 writeln!(output_file, "{verbatim}")?;
@@ -246,7 +246,7 @@ impl File {
 
         output_methods(&self.functions, true, &mut output_file)?;
 
-        for enum_ in self.enums.iter() {
+        for enum_ in &self.enums {
             let mut comments = enum_.comments.clone();
             add_category_comment(&mut comments, enum_.category.as_deref());
 
@@ -292,7 +292,7 @@ impl File {
             }
         }
 
-        for struct_ in self.structs.iter() {
+        for struct_ in &self.structs {
             let mut comments = struct_.comments.clone();
             add_category_comment(&mut comments, struct_.category.as_deref());
 
@@ -338,7 +338,7 @@ impl File {
                     )?;
                 }
 
-                for property in struct_.properties.iter() {
+                for property in &struct_.properties {
                     let mut comments = property.comments.clone();
 
                     if let Some(default) = &property.default_value {

@@ -40,6 +40,8 @@ impl ShmSegment {
 
         memfd.add_seals(&[FileSeal::SealGrow, FileSeal::SealShrink, FileSeal::SealSeal])?;
 
+        // SAFETY: the memfd is sized to `capacity` and sealed against size changes before
+        // mapping, and it remains open while the mapping is created.
         let map = unsafe { MmapMut::map_mut(memfd_file)? };
 
         use x11rb_async::protocol::shm::ConnectionExt;
@@ -103,6 +105,7 @@ impl ShmSegment {
 
     /// Bytes required to back a capture of the given rectangle.
     #[allow(clippy::as_conversions)]
+    #[must_use]
     pub fn capacity_for_rect(rect: Rect) -> usize {
         let width: u32 = rect.size.width.into();
         let height: u32 = rect.size.height.into();
@@ -110,7 +113,7 @@ impl ShmSegment {
     }
 
     /// Capacity of this segment, in bytes.
-    pub fn capacity(&self) -> usize {
+    pub const fn capacity(&self) -> usize {
         self.capacity
     }
 }

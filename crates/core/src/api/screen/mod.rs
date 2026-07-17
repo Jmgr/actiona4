@@ -168,8 +168,7 @@ impl Screen {
 
                 let rect = self.ask_overlay_rect().await.wrap_err_with(|| {
                     format!(
-                        "native screenshot failed and overlay fallback was unavailable: {}",
-                        native_error
+                        "native screenshot failed and overlay fallback was unavailable: {native_error}"
                     )
                 })?;
                 match rect {

@@ -14,13 +14,13 @@ use crate::{ExecutionContext, RunError, RunErrorKind, Runnable};
 impl Runnable for NodePayload {
     async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         match self {
-            NodePayload::Static(_) => Ok(PostRun::NextChild), // Static nodes are branches or root, so we should run their children next
-            NodePayload::Action(action_instance) => action_instance.run(context).await,
+            Self::Static(_) => Ok(PostRun::NextChild), // Static nodes are branches or root, so we should run their children next
+            Self::Action(action_instance) => action_instance.run(context).await,
         }
     }
 
     async fn on_body_enter(&self, context: &mut ExecutionContext) -> Result<(), RunError> {
-        if let NodePayload::Action(action_instance) = self {
+        if let Self::Action(action_instance) = self {
             action_instance.on_body_enter(context).await?;
         }
         Ok(())
@@ -28,10 +28,8 @@ impl Runnable for NodePayload {
 
     async fn on_body_completed(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         match self {
-            NodePayload::Static(_) => Ok(PostRun::default()),
-            NodePayload::Action(action_instance) => {
-                action_instance.on_body_completed(context).await
-            }
+            Self::Static(_) => Ok(PostRun::default()),
+            Self::Action(action_instance) => action_instance.on_body_completed(context).await,
         }
     }
 }
@@ -199,10 +197,10 @@ impl Runner<'_> {
                 action
                     .definition()
                     .supports_timeout
-                    .then(|| action.timeout().map(|timeout| timeout.into_inner()))
+                    .then(|| action.timeout().map(|timeout| *timeout))
                     .flatten(),
-                action.pause_before().map(|pause| pause.into_inner()),
-                action.pause_after().map(|pause| pause.into_inner()),
+                action.pause_before().map(|pause| *pause),
+                action.pause_after().map(|pause| *pause),
             ),
             _ => (None, None, None),
         };
@@ -226,7 +224,7 @@ impl Runner<'_> {
                 Some(timeout) => {
                     select! {
                         result = action => result,
-                        _ = sleep(timeout) => {
+                        () = sleep(timeout) => {
                             action_token.cancel();
                             Ok(PostRun::Branch(BranchKind::Timeout))
                         }
@@ -352,8 +350,8 @@ async fn wait_for_pause(
 ) -> Result<(), RunError> {
     select! {
         biased;
-        _ = cancellation_token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
-        _ = sleep(duration) => Ok(()),
+        () = cancellation_token.cancelled() => Err(RunError::new(RunErrorKind::Canceled)),
+        () = sleep(duration) => Ok(()),
     }
 }
 
@@ -364,26 +362,23 @@ enum NodeRun {
 
 enum RunStep {
     Normal(NodeId),
-    BodyEnter {
-        owner_id: NodeId,
-        next: Box<RunStep>,
-    },
+    BodyEnter { owner_id: NodeId, next: Box<Self> },
     BodyCompleted(NodeId),
 }
 
 impl RunStep {
-    fn normal(node_id: NodeId) -> Self {
+    const fn normal(node_id: NodeId) -> Self {
         Self::Normal(node_id)
     }
 
-    fn body_enter(owner_id: NodeId, next: RunStep) -> Self {
+    fn body_enter(owner_id: NodeId, next: Self) -> Self {
         Self::BodyEnter {
             owner_id,
             next: Box::new(next),
         }
     }
 
-    fn body_completed(owner_id: NodeId) -> Self {
+    const fn body_completed(owner_id: NodeId) -> Self {
         Self::BodyCompleted(owner_id)
     }
 }
@@ -1029,7 +1024,7 @@ mod tests {
                     },
                     action: WaitUntil {
                         condition: Scriptable::new_static(false).into(),
-                        poll_interval: Scriptable::new_static(Duration::from_secs(60)).into(),
+                        poll_interval: Scriptable::new_static(Duration::from_mins(1)).into(),
                     },
                 }),
                 tree.root(),
@@ -1477,7 +1472,7 @@ mod tests {
             cancel.cancel();
         });
 
-        let result = wait_for_pause(Duration::from_secs(60), &cancellation_token).await;
+        let result = wait_for_pause(Duration::from_mins(1), &cancellation_token).await;
         cancellation.await.unwrap();
 
         assert!(matches!(
@@ -1771,13 +1766,13 @@ mod tests {
             .append_action_instance(
                 ActionInstance::Code(
                     Code::new(SourceCode::from(
-                        r#"const value: number = 1;
+                        r"const value: number = 1;
 const explode = (): never => {
     throw new Error('source exploded');
 };
 explode();
 value
-"#,
+",
                     ))
                     .into(),
                 ),

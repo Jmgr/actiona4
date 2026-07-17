@@ -11,6 +11,7 @@ impl Value {
         Self(source.into())
     }
 
+    #[must_use]
     pub fn inner(&self) -> &str {
         &self.0
     }

@@ -11,7 +11,6 @@ use std::{
 use color_eyre::Result;
 use derive_more::{Constructor, Deref, Display};
 use enigo::Key;
-use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::debug;
@@ -65,8 +64,8 @@ use crate::{
     types::input::Direction,
 };
 
-static KEYBOARD_INPUT_DISPATCHER: Lazy<Mutex<Weak<KeyboardInputDispatcher>>> =
-    Lazy::new(|| Mutex::new(Weak::new()));
+static KEYBOARD_INPUT_DISPATCHER: LazyLock<Mutex<Weak<KeyboardInputDispatcher>>> =
+    LazyLock::new(|| Mutex::new(Weak::new()));
 
 #[derive(Default)]
 pub struct KeyboardHook {}

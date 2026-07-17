@@ -670,7 +670,7 @@ impl JsFile {
     pub fn path(&self, ctx: Ctx<'_>) -> Result<String> {
         let opened_file = self.opened_file(&ctx)?;
 
-        Ok(opened_file.path.to_string())
+        Ok(opened_file.path.clone())
     }
 
     /// Returns `true` if a file exists at the given path.

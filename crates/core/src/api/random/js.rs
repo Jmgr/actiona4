@@ -77,7 +77,7 @@ impl<'js> Trace<'js> for JsRandom {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl<'js> SingletonClass<'js> for JsRandom {}
+impl SingletonClass<'_> for JsRandom {}
 
 #[js_methods]
 impl JsRandom {
@@ -356,12 +356,11 @@ impl JsRandom {
         if array.is_empty() {
             if let Some(fallback) = fallback.0 {
                 return Ok(fallback);
-            } else {
-                return Err(Exception::throw_message(
-                    &ctx,
-                    "empty array and no fallback set",
-                ));
             }
+            return Err(Exception::throw_message(
+                &ctx,
+                "empty array and no fallback set",
+            ));
         }
 
         let index = ctx.user_data().rng().random_range(0..array.len());

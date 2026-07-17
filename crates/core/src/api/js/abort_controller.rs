@@ -31,7 +31,7 @@ pub struct JsAbortSignal {
     token: CancellationToken,
 }
 
-impl<'js> HostClass<'js> for JsAbortSignal {}
+impl HostClass<'_> for JsAbortSignal {}
 
 impl<'js> Trace<'js> for JsAbortSignal {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -82,7 +82,7 @@ pub struct JsAbortController {
     token: CancellationToken,
 }
 
-impl<'js> ValueClass<'js> for JsAbortController {}
+impl ValueClass<'_> for JsAbortController {}
 
 impl<'js> Trace<'js> for JsAbortController {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -151,7 +151,7 @@ mod tests {
         fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
     }
 
-    impl<'js> SingletonClass<'js> for JsTestStruct {}
+    impl SingletonClass<'_> for JsTestStruct {}
 
     #[js_methods]
     impl JsTestStruct {

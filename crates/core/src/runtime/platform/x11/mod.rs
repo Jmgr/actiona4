@@ -304,7 +304,7 @@ impl Runtime {
 
             loop {
                 let event = select! {
-                    _ = local_cancellation_token.cancelled() => { break; }
+                    () = local_cancellation_token.cancelled() => { break; }
                     event = connection
                     .wait_for_event() => {
                         let Ok(event) = event else {
@@ -413,8 +413,8 @@ impl Runtime {
 
                             task_tracker.spawn(async move {
                                 select! {
-                                    _ = sleep(Duration::from_millis(delay.into())) => {},
-                                    _ = cancellation_token.cancelled() => { return; },
+                                    () = sleep(Duration::from_millis(delay.into())) => {},
+                                    () = cancellation_token.cancelled() => { return; },
                                 }
 
                                 loop {
@@ -424,8 +424,8 @@ impl Runtime {
                                     }
 
                                     select! {
-                                        _ = sleep(Duration::from_millis(interval.into())) => {},
-                                        _ = cancellation_token.cancelled() => { return; },
+                                        () = sleep(Duration::from_millis(interval.into())) => {},
+                                        () = cancellation_token.cancelled() => { return; },
                                     }
                                 }
                             });
@@ -480,7 +480,7 @@ impl Runtime {
                         _ = local_window_event_sender.send(WindowEvent::Closed(handle));
                     }
                     _ => {}
-                };
+                }
             }
 
             Result::<()>::Ok(())

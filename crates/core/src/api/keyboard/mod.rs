@@ -175,9 +175,8 @@ impl Keyboard {
             if event.direction.is_release() {
                 pressed_keys.remove(&key);
                 continue;
-            } else {
-                pressed_keys.insert(key);
             }
+            pressed_keys.insert(key);
 
             if exclusive {
                 if pressed_keys == keys {

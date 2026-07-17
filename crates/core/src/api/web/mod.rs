@@ -529,13 +529,11 @@ impl Web {
         let progress = options.progress.take();
         let response = self.fetch_response(url, &token, &progress, options).await?;
 
-        let directory = directory
-            .map(|directory| directory.to_path_buf())
-            .unwrap_or_else(env::temp_dir);
+        let directory = directory.map_or_else(env::temp_dir, |directory| directory.to_path_buf());
 
         let filename = Self::guess_filename(&response, url);
         let filepath = directory.join(&filename);
-        let tmp_filepath = directory.join(format!("{}.part", filename));
+        let tmp_filepath = directory.join(format!("{filename}.part"));
 
         let file = cancel_on(&token, File::create(&tmp_filepath)).await??;
 
@@ -568,7 +566,7 @@ impl Web {
         self.task_tracker.spawn(async move {
             loop {
                 select! {
-                    _ = local_token.cancelled() => {
+                    () = local_token.cancelled() => {
                         break;
                     },
                     changed = upload_progress.changed() => {

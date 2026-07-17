@@ -94,7 +94,7 @@ impl JsConsole {
     }
 
     pub(crate) fn print_value<'js>(ctx: &Ctx<'js>, value: Value<'js>) -> String {
-        use rquickjs::*;
+        use rquickjs::{Coerced, Object, String, Type, Value};
 
         match value.type_of() {
             Type::Uninitialized => "uninitialized".to_string(),
@@ -284,7 +284,7 @@ impl JsConsole {
     }
 
     fn print_value_pretty<'js>(ctx: &Ctx<'js>, value: Value<'js>, indent: usize) -> String {
-        use rquickjs::*;
+        use rquickjs::{String, Type, Value};
 
         match value.type_of() {
             Type::Array => {
@@ -508,14 +508,14 @@ impl JsConsole {
         if let Some(timer_start) = self.timers.remove(&label) {
             println!(
                 "{label}: {} - timer ended",
-                format_duration(Instant::now() - timer_start)
+                format_duration(timer_start.elapsed())
             );
         } else {
             return Err(Exception::throw_message(
                 &ctx,
                 &format!("Timer \"{label}\" doesn't exist."),
             ));
-        };
+        }
 
         Ok(())
     }

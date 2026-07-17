@@ -512,10 +512,10 @@ mod tests {
             ));
             script_engine
                 .eval_async::<()>(&format!(
-                    r#"
+                    r"
                     const image = await screen.captureDesktop();
                     await image.save({});
-                    "#,
+                    ",
                     js_path(&output_path)
                 ))
                 .await
@@ -605,11 +605,11 @@ mod tests {
                 temp_dir().join(format!("actiona4_capture_window_{}.png", random_name()));
             script_engine
                 .eval_async::<()>(&format!(
-                    r#"
+                    r"
                     const win = windows.foreground();
                     const image = await screen.captureWindow(win);
                     await image.save({});
-                    "#,
+                    ",
                     js_path(&output_path)
                 ))
                 .await

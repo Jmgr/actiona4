@@ -27,7 +27,7 @@ pub struct Subnet {
 impl Display for Subnet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Ok(ipnet) = IpNet::new(self.address, self.prefix) {
-            write!(f, "{}", ipnet)
+            write!(f, "{ipnet}")
         } else {
             write!(f, "<INVALID>")
         }

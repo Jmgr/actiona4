@@ -210,7 +210,7 @@ pub struct JsPlayingSound {
     inner: PlayingSound,
 }
 
-impl<'js> HostClass<'js> for JsPlayingSound {}
+impl HostClass<'_> for JsPlayingSound {}
 
 impl<'js> Trace<'js> for JsPlayingSound {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

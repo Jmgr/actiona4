@@ -486,8 +486,7 @@ impl From<JsNotificationInput> for NotificationInput {
             id: value.id,
             input_type: value
                 .input_type
-                .map(Into::into)
-                .unwrap_or(NotificationInputType::Text),
+                .map_or(NotificationInputType::Text, Into::into),
             placeholder: value.placeholder,
             title: value.title,
             default_input: value.default_input,
@@ -910,7 +909,7 @@ impl JsNotificationHandle {
     }
 }
 
-impl<'js> HostClass<'js> for JsNotificationHandle {}
+impl HostClass<'_> for JsNotificationHandle {}
 
 impl<'js> Trace<'js> for JsNotificationHandle {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

@@ -386,8 +386,8 @@ impl Mouse {
 
         loop {
             let event = select! {
-                _ = runtime_cancellation_token.cancelled() => { break; }
-                _ = cancellation_token.cancelled() => { break; }
+                () = runtime_cancellation_token.cancelled() => { break; }
+                () = cancellation_token.cancelled() => { break; }
                 event = receiver.recv() => { event }
             };
 
@@ -416,8 +416,8 @@ impl Mouse {
 
         loop {
             let changed = select! {
-                _ = runtime_cancellation_token.cancelled() => { break; }
-                _ = cancellation_token.cancelled() => { break; }
+                () = runtime_cancellation_token.cancelled() => { break; }
+                () = cancellation_token.cancelled() => { break; }
                 result = receiver.changed() => { result }
             };
 
@@ -623,10 +623,10 @@ impl Mouse {
             self.set_position(position, Coordinate::Abs)?;
 
             select! {
-                _ = cancellation_token.cancelled() => {
+                () = cancellation_token.cancelled() => {
                     return Ok(());
                 },
-                _ = sleep(options.interval.0) => {},
+                () = sleep(options.interval.0) => {},
             }
         }
 
@@ -683,21 +683,25 @@ impl Mouse {
         }
 
         for i in 0..options.amount {
-            if !options.duration.0.is_zero() {
+            if options.duration.0.is_zero() {
+                self.enigo
+                    .lock()
+                    .button(options.press.button.into(), enigo::Direction::Click)?;
+            } else {
                 let contains = {
                     let lock = self.pressed_buttons.lock();
                     lock.contains(&options.press.button)
                 };
 
-                if !contains {
-                    self.enigo
-                        .lock()
-                        .button(options.press.button.into(), enigo::Direction::Press)?;
-                } else {
+                if contains {
                     info!(
                         "button {} is already pressed, ignoring",
                         options.press.button
                     );
+                } else {
+                    self.enigo
+                        .lock()
+                        .button(options.press.button.into(), enigo::Direction::Press)?;
                 }
                 select! {
                     () = cancellation_token.cancelled() => {
@@ -713,10 +717,6 @@ impl Mouse {
                 self.enigo
                     .lock()
                     .button(options.press.button.into(), enigo::Direction::Release)?;
-            } else {
-                self.enigo
-                    .lock()
-                    .button(options.press.button.into(), enigo::Direction::Click)?;
             }
 
             info!("removing {} from the pressed buttons", options.press.button);
@@ -929,7 +929,7 @@ mod tests {
                         rng.clone(),
                     )
                     .await
-                    .unwrap()
+                    .unwrap();
             }
         });
     }
@@ -951,7 +951,7 @@ mod tests {
                 )
                 .await
                 .unwrap();
-            println!("Done: {:?}", button);
+            println!("Done: {button:?}");
         });
     }
 }

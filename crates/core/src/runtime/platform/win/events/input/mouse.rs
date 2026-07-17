@@ -4,7 +4,6 @@ use std::sync::{
 };
 
 use color_eyre::Result;
-use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use windows::Win32::{
@@ -35,8 +34,8 @@ use crate::{
     types::input::Direction,
 };
 
-static MOUSE_INPUT_DISPATCHER: Lazy<Mutex<Weak<MouseInputDispatcher>>> =
-    Lazy::new(|| Mutex::new(Weak::new()));
+static MOUSE_INPUT_DISPATCHER: LazyLock<Mutex<Weak<MouseInputDispatcher>>> =
+    LazyLock::new(|| Mutex::new(Weak::new()));
 
 #[allow(clippy::as_conversions)] // bit extraction: mask guarantees value fits in u16
 const fn get_xbutton_wparam(mouse_data: u32) -> u16 {

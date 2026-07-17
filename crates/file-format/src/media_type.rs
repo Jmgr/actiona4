@@ -7,7 +7,8 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
 pub struct MediaType(Mime);
 
 impl MediaType {
-    pub fn as_mime(&self) -> &Mime {
+    #[must_use]
+    pub const fn as_mime(&self) -> &Mime {
         &self.0
     }
 }

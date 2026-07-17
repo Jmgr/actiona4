@@ -15,7 +15,7 @@ use crate::{
 };
 
 /// Derive `validate_for_platform(...)` for structs and enums.
-pub(crate) fn derive(input: TokenStream) -> TokenStream {
+pub fn derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let type_name = &input.ident;
 

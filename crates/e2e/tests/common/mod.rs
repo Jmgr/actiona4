@@ -109,7 +109,7 @@ fn configure_web_server(command: &mut Command) -> Server {
                     "Content-Disposition",
                     r#"attachment; filename="example.png""#,
                 )
-                .body(image_bytes.clone()),
+                .body(image_bytes),
         ),
     );
 

@@ -28,7 +28,7 @@ pub async fn ask_screenshot() -> Result<Option<Image>> {
     let path = Url::parse(uri)
         .map_err(|e| eyre!("portal returned invalid URI `{uri}`: {e}"))?
         .to_file_path()
-        .map_err(|_| eyre!("portal returned non-file URI: {uri}"))?;
+        .map_err(|()| eyre!("portal returned non-file URI: {uri}"))?;
     let image = Image::load(path).await?;
     Ok(Some(image))
 }

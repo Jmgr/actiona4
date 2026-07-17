@@ -254,7 +254,10 @@ mod tests {
     }
 
     #[test]
+    #[serial_test::serial]
     fn expand_environment_variables_handles_dollar_brace_and_plain_forms() {
+        // SAFETY: this serial test is the only test in this binary that accesses this
+        // dedicated variable, and it does not spawn threads while it is modified.
         unsafe { env::set_var("TEST_ACTIONA_VAR", "/expanded") };
         assert_eq!(
             expand_environment_variables("${TEST_ACTIONA_VAR}/bin"),
@@ -264,6 +267,7 @@ mod tests {
             expand_environment_variables("$TEST_ACTIONA_VAR/bin"),
             "/expanded/bin"
         );
+        // SAFETY: see the `set_var` safety rationale above.
         unsafe { env::remove_var("TEST_ACTIONA_VAR") };
     }
 

@@ -15,7 +15,7 @@ use crate::{
 };
 
 /// Expand `#[platform]` to a runtime guard and rustdoc instruction.
-pub(crate) fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
+pub fn expand(arguments: TokenStream, item: TokenStream) -> TokenStream {
     let raw_arguments = match parse_meta_list_tokens::<RawPlatformArguments>(
         proc_macro2::TokenStream::from(arguments),
         Span::call_site(),

@@ -87,6 +87,7 @@ fn ensure_selection_extension_bin_exists(path: &Path) {
 /// Walks up from the running test binary (target/debug/deps/<exe>) to
 /// target/debug/ and appends the binary name. If the binary is missing,
 /// build it on demand so `cargo test` works without a separate pre-build step.
+#[must_use]
 pub fn actiona_run_bin() -> PathBuf {
     let path = actiona_run_bin_path();
     ensure_actiona_run_bin_exists(&path);
@@ -97,6 +98,7 @@ pub fn actiona_run_bin() -> PathBuf {
 ///
 /// This is intentionally used only by manual/ignored e2e tests that exercise
 /// interactive overlay selection.
+#[must_use]
 pub fn selection_extension_bin() -> PathBuf {
     let path = selection_extension_bin_path();
     ensure_selection_extension_bin_exists(&path);

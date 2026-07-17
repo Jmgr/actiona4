@@ -4,7 +4,7 @@ use strum::{Display, EnumIs, EnumTryAs};
 
 use crate::actions::ActionInstance;
 
-#[derive(Clone, Debug, Deserialize, Display, EnumIs, EnumTryAs, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Display, EnumIs, EnumTryAs, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BranchKind {
     Body,
@@ -116,7 +116,7 @@ impl<'de> Deserialize<'de> for Metadata {
 }
 
 impl Metadata {
-    pub(super) fn is_empty(&self) -> bool {
+    pub(super) const fn is_empty(&self) -> bool {
         self.label.is_none() && self.comment.is_none() && !self.collapsed
     }
 }
@@ -233,67 +233,82 @@ impl Node {
         }
     }
 
+    #[must_use]
     pub const fn can_have_children(&self) -> bool {
         self.payload.is_static()
     }
 
+    #[must_use]
     pub const fn can_be_removed(&self) -> bool {
         self.payload.is_action()
     }
 
+    #[must_use]
     pub const fn can_be_moved(&self) -> bool {
         self.payload.is_action()
     }
 
+    #[must_use]
     pub const fn is_selectable(&self) -> bool {
         self.payload.is_action()
     }
 
+    #[must_use]
     pub const fn is_action(&self) -> bool {
         self.payload.is_action()
     }
 
+    #[must_use]
     pub const fn is_static(&self) -> bool {
         self.payload.is_static()
     }
 
+    #[must_use]
     pub const fn is_root(&self) -> bool {
         matches!(&self.payload, NodePayload::Static(Static::Root))
     }
 
+    #[must_use]
     pub const fn is_branch(&self) -> bool {
         matches!(&self.payload, NodePayload::Static(Static::Branch(_)))
     }
 
     /// The node's payload (its static role or action instance).
+    #[must_use]
     pub const fn payload(&self) -> &NodePayload {
         &self.payload
     }
 
     /// The node's children, in order.
+    #[must_use]
     pub fn children(&self) -> &[NodeId] {
         &self.children
     }
 
+    #[must_use]
     pub fn label(&self) -> Option<&str> {
         self.metadata.label.as_deref()
     }
 
+    #[must_use]
     pub fn comment(&self) -> Option<&str> {
         self.metadata.comment.as_deref()
     }
 
     /// The node's depth in the tree: the root is `0`, its children `1`, and so on.
+    #[must_use]
     pub const fn depth(&self) -> usize {
         self.metadata.depth
     }
 
     /// Whether the node has any children.
-    pub fn has_children(&self) -> bool {
+    #[must_use]
+    pub const fn has_children(&self) -> bool {
         !self.children.is_empty()
     }
 
     /// Whether the node's children are hidden (collapsed) in the UI.
+    #[must_use]
     pub const fn is_collapsed(&self) -> bool {
         self.metadata.collapsed
     }

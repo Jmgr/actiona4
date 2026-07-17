@@ -22,6 +22,7 @@ pub enum PackagedFilePlatform {
 }
 
 impl PackagedFile {
+    #[must_use]
     pub fn destination_name_for(&self, platform: PackagedFilePlatform) -> &str {
         match platform {
             PackagedFilePlatform::Linux => &self.destination_name,

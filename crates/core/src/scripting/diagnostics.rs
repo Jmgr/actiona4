@@ -36,6 +36,7 @@ pub fn try_emit_script_diagnostic(err: &ScriptError, source_code: &str) -> bool 
         |span| handler.struct_span_err(span, runtime_error.message()),
     );
 
+    #[allow(clippy::bool_to_int_with_if)]
     let first_note_index = if primary_span.is_some() { 1 } else { 0 };
     for frame in runtime_error
         .stack()

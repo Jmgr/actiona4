@@ -1,12 +1,11 @@
+#[cfg(windows)]
+use std::path::Path;
 use std::{
     collections::HashMap,
     env,
     fmt::{self, Display},
     process::Stdio,
 };
-
-#[cfg(windows)]
-use std::path::Path;
 
 use color_eyre::{Result, eyre::eyre};
 use tokio::{
@@ -251,7 +250,7 @@ impl ProcessRunner {
         });
 
         let status = tokio::select! {
-            _ = cancellation_token.cancelled() => {
+            () = cancellation_token.cancelled() => {
                 child.kill().await?;
                 child.wait().await?
             }
@@ -295,7 +294,7 @@ impl ProcessRunner {
             .spawn()?;
 
         let status = tokio::select! {
-            _ = cancellation_token.cancelled() => {
+            () = cancellation_token.cancelled() => {
                 child.kill().await?;
                 child.wait().await?
             }

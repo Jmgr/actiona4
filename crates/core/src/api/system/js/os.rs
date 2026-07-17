@@ -197,7 +197,7 @@ pub struct JsUser {
     group_names: Vec<String>,
 }
 
-impl<'js> HostClass<'js> for JsUser {}
+impl HostClass<'_> for JsUser {}
 
 impl<'js> Trace<'js> for JsUser {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -302,7 +302,7 @@ pub struct JsGroup {
     id: u32,
 }
 
-impl<'js> HostClass<'js> for JsGroup {}
+impl HostClass<'_> for JsGroup {}
 
 impl<'js> Trace<'js> for JsGroup {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}

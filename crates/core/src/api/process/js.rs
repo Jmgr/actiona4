@@ -248,9 +248,9 @@ impl JsProcess {
     /// }
     /// await handle.closed;
     /// ```
-    pub fn start<'js>(
+    pub fn start(
         &self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         command: String,
         options: Opt<JsStartProcessOptions>,
     ) -> Result<JsProcessHandle> {
@@ -459,7 +459,7 @@ pub struct JsProcessHandle {
     cancellation_token: CancellationToken,
 }
 
-impl<'js> HostClass<'js> for JsProcessHandle {}
+impl HostClass<'_> for JsProcessHandle {}
 
 impl<'js> Trace<'js> for JsProcessHandle {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
@@ -643,7 +643,7 @@ impl JsProcessHandle {
             let mut child = child.lock().await;
 
             let status = tokio::select! {
-                _ = cancel_token.cancelled() => {
+                () = cancel_token.cancelled() => {
                     child.kill().await.into_js_result(&ctx)?;
                     child.wait().await.into_js_result(&ctx)?
                 },
@@ -697,7 +697,7 @@ pub struct JsProcessExitResult {
     stderr: Option<String>,
 }
 
-impl<'js> HostClass<'js> for JsProcessExitResult {}
+impl HostClass<'_> for JsProcessExitResult {}
 
 impl<'js> Trace<'js> for JsProcessExitResult {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
