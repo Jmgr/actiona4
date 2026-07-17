@@ -502,7 +502,7 @@ const fn seed_from_command(command: &Commands) -> Option<u64> {
         | Config { .. }
         | Macros { .. }
         | Setup
-        | CrashTest { .. } => todo!(),
+        | CrashTest { .. } => None,
     }
 }
 
@@ -627,8 +627,6 @@ mod tests {
     use std::ffi::OsString;
 
     use clap::{Parser, error::ErrorKind};
-    #[cfg(unix)]
-    use color_eyre::Result;
 
     use super::maybe_insert_default_run;
     #[cfg(unix)]
@@ -637,15 +635,13 @@ mod tests {
 
     #[cfg(unix)]
     #[test]
-    fn x11_preflight_fails_with_clear_message_when_no_display_is_available() -> Result<()> {
+    fn x11_preflight_fails_with_clear_message_when_no_display_is_available() {
         let error = ensure_x11_session_available(None, None).unwrap_err();
 
         assert_eq!(
             error.to_string(),
             "No X11 session is available. Set the DISPLAY environment variable or pass --display to an active X11 server."
         );
-
-        Ok(())
     }
 
     #[cfg(unix)]

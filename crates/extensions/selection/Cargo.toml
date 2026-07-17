@@ -20,16 +20,19 @@ extension = { path = "../../extension" }
 screenshot = { path = "../../screenshot" }
 types = { path = "../../types" }
 
-bytemuck.workspace = true
+bytemuck = { workspace = true, features = ["derive"] }
 color-eyre.workspace = true
 pixels.workspace = true
 satint.workspace = true
 tokio = { workspace = true, features = ["rt", "macros"] }
 tokio-util.workspace = true
-winit.workspace = true
+winit = { workspace = true, features = ["x11", "rwh_06"] }
 
 [build-dependencies]
 build-support = { path = "../../build-support" }
 
 built.workspace = true
 embed-resource.workspace = true
+
+[lints]
+workspace = true

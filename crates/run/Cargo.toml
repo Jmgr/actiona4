@@ -32,6 +32,7 @@ windows = { workspace = true, features = [
     "Wdk_System_SystemServices",
     "Win32_System_Console",
     "Win32_System_SystemInformation",
+    "Win32_System_Threading",
     "Win32_UI_WindowsAndMessaging",
 ] }
 winrt-toast-reborn.workspace = true
@@ -43,7 +44,7 @@ config = { path = "../config" }
 installer-tools = { path = "../installer-tools" }
 updater = { path = "../updater" }
 
-clap = { workspace = true, features = ["env"] }
+clap = { workspace = true, features = ["derive", "env"] }
 clap_complete.workspace = true
 color-eyre.workspace = true
 dialoguer.workspace = true
@@ -54,15 +55,15 @@ humantime.workspace = true
 indicatif.workspace = true
 rfd.workspace = true
 rquickjs.workspace = true
-rustyline.workspace = true
+rustyline = { workspace = true, features = ["derive"] }
 sadness-generator.workspace = true
 shell-words.workspace = true
-strum.workspace = true
+strum = { workspace = true, features = ["derive"] }
 time.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
-tracing-subscriber.workspace = true
+tracing-subscriber = { workspace = true, features = ["std", "env-filter", "fmt", "ansi", "tracing-log", "time"] }
 two-face.workspace = true
 versions.workspace = true
 
@@ -71,11 +72,14 @@ build-support = { path = "../build-support" }
 
 built.workspace = true
 cfg_aliases.workspace = true
-clap = { workspace = true, features = ["env"] }
+clap = { workspace = true, features = ["derive", "env"] }
 clap_complete.workspace = true
 embed-resource.workspace = true
 flate2.workspace = true
-strum.workspace = true
+strum = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]
 tempfile.workspace = true
+
+[lints]
+workspace = true

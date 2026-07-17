@@ -15,7 +15,10 @@ ipc-rpc.workspace = true
 macros = { path = "../macros" }
 parking_lot.workspace = true
 serde.workspace = true
-tokio.workspace = true
-tokio-util = { workspace = true, features = ["codec"] }
+tokio = { workspace = true, features = ["signal"] }
+tokio-util = { workspace = true, features = ["rt", "codec"] }
 tracing.workspace = true
 types = { path = "../types" }
+
+[lints]
+workspace = true

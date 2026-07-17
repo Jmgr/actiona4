@@ -19,3 +19,6 @@ updater = { path = "../updater" }
 eyre.workspace = true
 tokio.workspace = true
 versions.workspace = true
+
+[lints]
+workspace = true

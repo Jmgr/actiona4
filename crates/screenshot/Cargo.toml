@@ -10,10 +10,10 @@ license.workspace = true
 [target.'cfg(unix)'.dependencies]
 memfd.workspace = true
 memmap2.workspace = true
-x11rb-async.workspace = true
+x11rb-async = { workspace = true, features = ["shm"] }
 
 [target.'cfg(windows)'.dependencies]
-windows.workspace = true
+windows = { workspace = true, features = ["Win32_Graphics_Gdi", "Win32_UI_WindowsAndMessaging"] }
 
 [dependencies]
 types = { path = "../types" }
@@ -24,3 +24,6 @@ satint.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
+
+[lints]
+workspace = true

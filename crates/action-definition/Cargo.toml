@@ -8,18 +8,19 @@ documentation.workspace = true
 license.workspace = true
 
 [dependencies]
-const-default.workspace = true
+const-default = { workspace = true, features = ["derive"] }
 fluent.workspace = true
 humantime.workspace = true
 icons.workspace = true
 macros = { path = "../macros" }
+postcard = { workspace = true, features = ["use-std"] }
 types = { path = "../types" }
 
-serde .workspace = true
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-slotmap.workspace = true
+slotmap = { workspace = true, features = ["serde"] }
 static-dispatch.workspace = true
-strum.workspace = true
+strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 
 [dev-dependencies]
@@ -28,3 +29,6 @@ postcard.workspace = true
 rstest.workspace = true
 serde_json.workspace = true
 unic-langid.workspace = true
+
+[lints]
+workspace = true

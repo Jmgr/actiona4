@@ -12,12 +12,15 @@ color-eyre.workspace = true
 directories.workspace = true
 parking_lot.workspace = true
 serde = { workspace = true, features = ["derive"] }
-strum.workspace = true
+strum = { workspace = true, features = ["derive"] }
 time = { workspace = true, features = ["serde", "formatting", "parsing"] }
-tokio.workspace = true
+tokio = { workspace = true, features = ["fs"] }
 toml.workspace = true
-uuid.workspace = true
-versions.workspace = true
+uuid = { workspace = true, features = ["v4", "serde"] }
+versions = { workspace = true, features = ["serde"] }
 
 [build-dependencies]
 cfg_aliases.workspace = true
+
+[lints]
+workspace = true

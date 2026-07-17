@@ -12,10 +12,10 @@ action-definition = { path = "../action-definition" }
 types = { path = "../types" }
 
 base64.workspace = true
-image.workspace = true
-indexmap.workspace = true
+image = { workspace = true, features = ["png", "webp"] }
+indexmap = { workspace = true, features = ["rayon"] }
 mime.workspace = true
-postcard.workspace = true
+postcard = { workspace = true, features = ["use-std"] }
 rayon.workspace = true
 rodio.workspace = true
 ruopus.workspace = true
@@ -26,8 +26,11 @@ tempfile.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
-uuid.workspace = true
+uuid = { workspace = true, features = ["serde"] }
 zstd.workspace = true
 
 [dev-dependencies]
 rstest.workspace = true
+
+[lints]
+workspace = true

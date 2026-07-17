@@ -11,23 +11,26 @@ license.workspace = true
 interprocess.workspace = true
 pe-parser.workspace = true
 tray-icon.workspace = true
-windows.workspace = true
+windows = { workspace = true, features = [
+    "Win32_UI_Accessibility",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_Console",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_DataExchange",
+    "Win32_System_Threading",
+    "Win32_System_LibraryLoader",
+    "Win32_Graphics_Gdi",
+    "Win32_System_Memory",
+    "Win32_System_StationsAndDesktops",
+    "Win32_Security",
+    "Win32_UI_Shell",
+    "Win32_System_Registry",
+    "ApplicationModel_DataTransfer",
+    "Storage_Streams",
+] }
 windows-result.workspace = true
 winit.workspace = true
 winrt-toast-reborn.workspace = true
-
-[target.'cfg(unix)'.dependencies]
-ashpd.workspace = true
-ksni.workspace = true
-libwmctl.workspace = true
-notify-rust.workspace = true
-procfs.workspace = true
-rustix.workspace = true
-x11rb.workspace = true
-x11rb-async.workspace = true
-xkbcommon.workspace = true
-xkeysym.workspace = true
-zbus.workspace = true
 
 [package.metadata.actiona]
 notification-aumid = "app.actiona.actiona-run"
@@ -37,6 +40,19 @@ ignored = ["built", "cfg_aliases"]
 
 [lib]
 name = "actiona_core"
+
+[target.'cfg(unix)'.dependencies]
+ashpd = { workspace = true, features = ["screencast", "screenshot"] }
+ksni.workspace = true
+libwmctl.workspace = true
+notify-rust = { workspace = true, features = ["z-with-tokio", "async", "images"] }
+procfs.workspace = true
+rustix.workspace = true
+x11rb = { workspace = true, features = ["randr", "xinput", "allow-unsafe-code"] }
+x11rb-async = { workspace = true, features = ["xinput", "randr", "shm", "extra-traits", "xkb", "allow-unsafe-code"] }
+xkbcommon = { workspace = true, features = ["x11"] }
+xkeysym.workspace = true
+zbus.workspace = true
 
 [dependencies]
 common = { path = "../common" }
@@ -52,12 +68,12 @@ arc-swap.workspace = true
 base64.workspace = true
 bimap.workspace = true
 bytes.workspace = true
-chrono.workspace = true
+chrono = { workspace = true, features = ["clock", "std"] }
 color-eyre.workspace = true
 console.workspace = true
 convert_case.workspace = true
 derive-where.workspace = true
-derive_more.workspace = true
+derive_more = { workspace = true, features = ["display", "deref", "deref_mut", "from", "into", "constructor"] }
 directories.workspace = true
 display-info.workspace = true
 encoding_rs.workspace = true
@@ -66,12 +82,12 @@ flate2.workspace = true
 futures.workspace = true
 http-body.workspace = true
 http-body-util.workspace = true
-human-units.workspace = true
+human-units = { workspace = true, features = ["si-units"] }
 humansize.workspace = true
 humantime.workspace = true
-image.workspace = true
-imageproc.workspace = true
-indexmap.workspace = true
+image = { workspace = true, features = ["png", "jpeg", "bmp", "gif", "tga", "tiff", "webp"] }
+imageproc = { workspace = true, features = ["text"] }
+indexmap = { workspace = true, features = ["serde"] }
 indicatif.workspace = true
 infer.workspace = true
 ipnet.workspace = true
@@ -83,25 +99,25 @@ notzero.workspace = true
 num-traits.workspace = true
 once_cell.workspace = true
 open.workspace = true
-opencv.workspace = true
+opencv = { workspace = true, features = ["clang-runtime", "imgproc"] }
 parking_lot.workspace = true
 rand.workspace = true
 rand_chacha.workspace = true
 rayon.workspace = true
 regex.workspace = true
-reqwest.workspace = true
+reqwest = { workspace = true, features = ["native-tls", "stream", "multipart", "json", "form", "query"] }
 rfd.workspace = true
-rodio.workspace = true
-rquickjs.workspace = true
+rodio = { workspace = true, features = ["playback", "flac", "mp3", "mp4", "vorbis", "wav", "tracing"] }
+rquickjs = { workspace = true, features = ["macro", "futures", "parallel", "indexmap"] }
 rquickjs-serde.workspace = true
 rustydialogs.workspace = true
-satint.workspace = true
+satint = { workspace = true, features = ["rand"] }
 serde.workspace = true
 serde_json.workspace = true
 serde_plain.workspace = true
 slotmap.workspace = true
-strum.workspace = true
-swc_common.workspace = true
+strum = { workspace = true, features = ["derive"] }
+swc_common = { workspace = true, features = ["tty-emitter", "sourcemap"] }
 swc_ecma_ast.workspace = true
 swc_ecma_codegen.workspace = true
 swc_ecma_parser.workspace = true
@@ -111,14 +127,14 @@ swc_sourcemap.workspace = true
 sysinfo.workspace = true
 system_shutdown.workspace = true
 thiserror.workspace = true
-time.workspace = true
-tokio.workspace = true
-tokio-util.workspace = true
+time = { workspace = true, features = ["serde"] }
+tokio = { workspace = true, features = ["rt-multi-thread", "signal", "macros", "time", "process", "sync", "fs", "io-util"] }
+tokio-util = { workspace = true, features = ["rt"] }
 tracing.workspace = true
 tween.workspace = true
 unicode-segmentation.workspace = true
 url.workspace = true
-uuid.workspace = true
+uuid = { workspace = true, features = ["v4"] }
 wildmatch.workspace = true
 
 [build-dependencies]
@@ -136,6 +152,9 @@ rstest.workspace = true
 serial_test.workspace = true
 tracing-subscriber.workspace = true
 tracing-test.workspace = true
+
+[lints]
+workspace = true
 
 [[bench]]
 name = "find_image"

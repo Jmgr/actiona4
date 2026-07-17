@@ -17,3 +17,6 @@ name = "e2e"
 assert_cmd.workspace = true
 httptest.workspace = true
 tempfile.workspace = true
+
+[lints]
+workspace = true
