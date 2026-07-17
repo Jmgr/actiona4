@@ -1,5 +1,7 @@
 use std::{
     borrow::Cow,
+    convert::identity,
+    io,
     path::{Path, PathBuf},
 };
 
@@ -21,7 +23,7 @@ use rustyline::{
     highlight::{CmdKind, Highlighter, MatchingBracketHighlighter},
     validate::{ValidationContext, ValidationResult, Validator},
 };
-use tokio::{fs, runtime::Handle, select, signal};
+use tokio::{fs, runtime::Handle, select, signal, task::block_in_place};
 use tokio_util::sync::CancellationToken;
 use tracing::{instrument, warn};
 use two_face::re_exports::syntect::{
@@ -29,6 +31,10 @@ use two_face::re_exports::syntect::{
     highlighting::{Style, Theme},
     parsing::{SyntaxReference, SyntaxSet},
     util::as_24_bit_terminal_escaped,
+};
+use two_face::{
+    syntax::extra_no_newlines,
+    theme::{EmbeddedThemeName, extra},
 };
 
 #[derive(Parser)]
@@ -71,7 +77,7 @@ impl Highlighter for ReplHelper {
         let trimmed = line.trim_start();
         if trimmed.starts_with('.') {
             // we don't apply JS highlighting for commands
-            return std::borrow::Cow::Borrowed(line);
+            return Cow::Borrowed(line);
         }
 
         // Otherwise apply JS highlighting
@@ -81,14 +87,14 @@ impl Highlighter for ReplHelper {
             Ok(r) => r,
             Err(_) => {
                 // fallback: no highlight
-                return std::borrow::Cow::Borrowed(line);
+                return Cow::Borrowed(line);
             }
         };
         let mut escaped = as_24_bit_terminal_escaped(&ranges[..], false);
         escaped.push_str(&format!("{}", owo_colors::Style::new().suffix_formatter()));
         // Now apply bracket highlighting on the result
         let bracket_processed = self.bracket.highlight(&escaped, pos);
-        std::borrow::Cow::Owned(bracket_processed.to_string())
+        Cow::Owned(bracket_processed.to_string())
     }
 
     fn highlight_prompt<'b, 's: 'b, 'p: 'b>(&self, prompt: &'p str, default: bool) -> Cow<'b, str> {
@@ -165,7 +171,7 @@ impl Validator for ReplHelper {
             return Ok(ValidationResult::Valid(None));
         }
 
-        let result = tokio::task::block_in_place(|| {
+        let result = block_in_place(|| {
             let script_engine = self.script_engine.clone();
             Handle::current().block_on(async move {
                 self.script_engine
@@ -174,7 +180,7 @@ impl Validator for ReplHelper {
             })
         });
 
-        result.map_err(|e| ReadlineError::Io(std::io::Error::other(e)))
+        result.map_err(|e| ReadlineError::Io(io::Error::other(e)))
     }
 }
 
@@ -241,9 +247,9 @@ async fn parse_and_process_dot_command(
 
 #[instrument(skip_all)]
 fn setup_highlighting() -> (SyntaxSet, Theme, SyntaxReference) {
-    let syntax_set = two_face::syntax::extra_no_newlines();
-    let theme_set = two_face::theme::extra();
-    let theme = theme_set.get(two_face::theme::EmbeddedThemeName::Nord);
+    let syntax_set = extra_no_newlines();
+    let theme_set = extra();
+    let theme = theme_set.get(EmbeddedThemeName::Nord);
     let syntax_reference = syntax_set.find_syntax_by_extension("ts").map_or_else(
         || {
             warn!(
@@ -340,7 +346,7 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                             Some(format_js_value_for_console(value))
                         })
                     },
-                    std::convert::identity,
+                    identity,
                 );
 
                 let value = select! {

@@ -1,5 +1,5 @@
 use std::{
-    fmt::Display,
+    fmt::{self, Display},
     fs::File,
     path::Path,
     sync::{
@@ -125,7 +125,7 @@ impl PlayingSound {
 }
 
 impl Display for PlayingSound {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display_if_some("filename", &self.filename)
             .finish(f)
@@ -220,7 +220,7 @@ pub struct Audio {
 }
 
 impl Display for Audio {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default().finish(f)
     }
 }
@@ -392,7 +392,7 @@ mod tests {
         time::{Duration, Instant},
     };
 
-    use tokio::time::sleep;
+    use tokio::time::{Duration as TokioDuration, sleep};
     use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
     use super::{
@@ -471,7 +471,7 @@ mod tests {
         assert!(tracker.has_playing_sounds());
         sound.stop();
         // sleep_until_end wakes within ~5ms after stop(); give it a moment
-        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        sleep(TokioDuration::from_millis(50)).await;
         assert!(!tracker.has_playing_sounds());
     }
 
@@ -487,7 +487,7 @@ mod tests {
             .unwrap();
         assert!(tracker.has_playing_sounds());
         token.cancel();
-        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        sleep(TokioDuration::from_millis(50)).await;
         assert!(!tracker.has_playing_sounds());
     }
 

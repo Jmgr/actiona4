@@ -9,7 +9,10 @@ use rquickjs::{
 use crate::{
     IntoJsResult,
     api::{
-        color::js::{JsColor, JsColorLike},
+        color::{
+            Color,
+            js::{JsColor, JsColorLike},
+        },
         dialogs::{
             Dialogs, MessageBoxButtons,
             native_dialog::{ColorPickerOptions, TextInputOptions},
@@ -381,7 +384,7 @@ impl JsDialogs {
                 title: options.title.unwrap_or_default(),
                 value: options
                     .value
-                    .map_or(crate::api::color::Color::new(0, 0, 0, 255), |color| color.0),
+                    .map_or(Color::new(0, 0, 0, 255), |color| color.0),
             },
             task_tracker,
         )

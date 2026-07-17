@@ -1,10 +1,13 @@
 use action_definition::{
-    actions::{ACTION_DEFINITIONS, ActionBranches, ActionInstance, flow::Or, random::RandomBranch},
+    actions::{
+        ACTION_DEFINITIONS, ActionBranches, ActionDefinition, ActionInstance, flow::Or,
+        random::RandomBranch,
+    },
     parameters::ParameterKind,
     tree::BranchKind,
 };
 
-fn definition(id: &str) -> &'static action_definition::actions::ActionDefinition {
+fn definition(id: &str) -> &'static ActionDefinition {
     ACTION_DEFINITIONS
         .iter()
         .find(|definition| definition.id == id)

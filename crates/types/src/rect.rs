@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{self, Display};
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
@@ -24,7 +24,7 @@ pub const fn rect(origin: Point, size: Size) -> Rect {
 }
 
 impl Display for Rect {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("x", self.top_left.x)
             .display("y", self.top_left.y)

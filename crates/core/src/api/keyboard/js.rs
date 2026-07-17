@@ -41,7 +41,7 @@
 //! @verbatim  */
 //! @verbatim type ReplacementHandler = ReplacementValue | (() => ReplacementValue | void | Promise<ReplacementValue | void>);
 
-use std::{collections::HashSet, str::FromStr, sync::Arc};
+use std::{collections::HashSet, result::Result as StdResult, str::FromStr, sync::Arc};
 
 use derive_more::Display;
 use enigo::Key;
@@ -55,7 +55,7 @@ use rquickjs::{
     function::Constructor,
     prelude::Opt,
 };
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de, ser};
 use strum::{EnumIter, EnumString};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{debug, instrument};
@@ -1661,7 +1661,7 @@ pub enum KeyError {
 impl TryFrom<JsKey> for enigo::Key {
     type Error = KeyError;
 
-    fn try_from(value: JsKey) -> std::result::Result<Self, KeyError> {
+    fn try_from(value: JsKey) -> StdResult<Self, KeyError> {
         use JsKey::*;
         Ok(match value {
             Standard(js_standard_key) => js_standard_key.try_into()?,
@@ -1674,7 +1674,7 @@ impl TryFrom<JsKey> for enigo::Key {
 impl TryFrom<JsStandardKey> for enigo::Key {
     type Error = KeyError;
 
-    fn try_from(value: JsStandardKey) -> std::result::Result<Self, KeyError> {
+    fn try_from(value: JsStandardKey) -> StdResult<Self, KeyError> {
         use JsStandardKey::*;
         Ok(match value {
             Add => Self::Add,
@@ -2341,7 +2341,7 @@ impl TryFrom<JsStandardKey> for enigo::Key {
 impl TryFrom<enigo::Key> for JsKey {
     type Error = KeyError;
 
-    fn try_from(value: enigo::Key) -> std::result::Result<Self, KeyError> {
+    fn try_from(value: enigo::Key) -> StdResult<Self, KeyError> {
         use enigo::Key::*;
         Ok(match value {
             Unicode(c) => Self::Unicode(c),
@@ -2352,13 +2352,10 @@ impl TryFrom<enigo::Key> for JsKey {
 }
 
 impl serde::Serialize for JsKey {
-    fn serialize<S: serde::Serializer>(
-        &self,
-        serializer: S,
-    ) -> std::result::Result<S::Ok, S::Error> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> StdResult<S::Ok, S::Error> {
         match self {
             Self::Standard(key) => serde_plain::to_string(key)
-                .map_err(serde::ser::Error::custom)?
+                .map_err(ser::Error::custom)?
                 .serialize(serializer),
             Self::Unicode(c) => format!("u+{:04X}", u32::from(*c)).serialize(serializer),
             Self::Other(n) => n.serialize(serializer),
@@ -2367,11 +2364,7 @@ impl serde::Serialize for JsKey {
 }
 
 impl<'de> serde::Deserialize<'de> for JsKey {
-    fn deserialize<D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> std::result::Result<Self, D::Error> {
-        use std::str::FromStr;
-
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> StdResult<Self, D::Error> {
         #[derive(serde::Deserialize)]
         #[serde(untagged)]
         enum Helper {
@@ -2383,9 +2376,8 @@ impl<'de> serde::Deserialize<'de> for JsKey {
             Helper::Number(n) => Ok(Self::Other(n)),
             Helper::Text(s) => {
                 if let Some(hex) = s.strip_prefix("u+") {
-                    let codepoint =
-                        u32::from_str_radix(hex, 16).map_err(serde::de::Error::custom)?;
-                    let c = char::try_from(codepoint).map_err(serde::de::Error::custom)?;
+                    let codepoint = u32::from_str_radix(hex, 16).map_err(de::Error::custom)?;
+                    let c = char::try_from(codepoint).map_err(de::Error::custom)?;
                     return Ok(Self::Unicode(c));
                 }
                 if let Ok(key) = JsStandardKey::from_str(&s) {
@@ -2395,7 +2387,7 @@ impl<'de> serde::Deserialize<'de> for JsKey {
                 if let (Some(c), None) = (chars.next(), chars.next()) {
                     return Ok(Self::Unicode(c));
                 }
-                Err(serde::de::Error::custom(format!("unknown key name: {s}")))
+                Err(de::Error::custom(format!("unknown key name: {s}")))
             }
         }
     }
@@ -2404,7 +2396,7 @@ impl<'de> serde::Deserialize<'de> for JsKey {
 impl TryFrom<enigo::Key> for JsStandardKey {
     type Error = KeyError;
 
-    fn try_from(value: enigo::Key) -> std::result::Result<Self, KeyError> {
+    fn try_from(value: enigo::Key) -> StdResult<Self, KeyError> {
         use enigo::Key::*;
         Ok(match value {
             Add => Self::Add,

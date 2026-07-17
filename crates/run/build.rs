@@ -2,7 +2,7 @@ use std::{
     env,
     fs::{self, File},
     io::Write,
-    path::Path,
+    path::{Path, PathBuf as StdPathBuf},
 };
 
 #[cfg(windows)]
@@ -14,8 +14,8 @@ include!("src/args.rs");
 
 fn build_compressed_index_dts() {
     let input_path = Path::new("assets").join("index.d.ts");
-    let output_path = std::path::PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR not set"))
-        .join("index.d.ts.gz");
+    let output_path =
+        StdPathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR not set")).join("index.d.ts.gz");
 
     let input = fs::read(&input_path).expect("Failed to read assets/index.d.ts");
     let output_file = File::create(&output_path)

@@ -6,7 +6,10 @@ use std::{
     },
 };
 
-use color_eyre::{Result, eyre::ensure};
+use color_eyre::{
+    Result,
+    eyre::{Error, ensure},
+};
 use itertools::Itertools;
 use opencv::{
     core::{AccessFlag, CV_32FC1, Mat, Rect, UMat, UMatUsageFlags, no_array},
@@ -169,7 +172,7 @@ pub fn match_template(
                 percent.min(su32(70)).saturating_into(),
             ));
 
-            Ok::<_, color_eyre::eyre::Error>((start_row, tile_result))
+            Ok::<_, Error>((start_row, tile_result))
         })
         .collect::<Result<Vec<_>>>()?;
 

@@ -1,4 +1,7 @@
-use std::{fmt::Display, sync::Arc};
+use std::{
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use color_eyre::Result;
 use derive_where::derive_where;
@@ -44,7 +47,7 @@ impl Default for Motherboard {
 }
 
 impl Display for Motherboard {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("name", &self.name)
             .display_if_some("vendor", &self.vendor)
@@ -104,7 +107,7 @@ impl From<&sysinfo::Component> for TemperatureSensor {
 }
 
 impl Display for TemperatureSensor {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             DisplayFields::default()
                 .display("label", &self.label)
@@ -175,7 +178,7 @@ pub struct Hardware {
 }
 
 impl Display for Hardware {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display_if_some("name", &self.inner.name)
             .display_if_some("family", &self.inner.family)

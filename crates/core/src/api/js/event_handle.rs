@@ -1,6 +1,9 @@
-use std::sync::{
-    Arc,
-    atomic::{AtomicU64, Ordering},
+use std::{
+    fmt::Debug,
+    sync::{
+        Arc,
+        atomic::{AtomicU64, Ordering},
+    },
 };
 
 use macros::{js_class, js_methods};
@@ -25,7 +28,7 @@ impl Default for HandleId {
 }
 
 /// A registry that can remove a specific handle by ID.
-pub(crate) trait HandleRegistry: std::fmt::Debug + Send + Sync {
+pub(crate) trait HandleRegistry: Debug + Send + Sync {
     fn remove_handle(&self, id: HandleId);
 }
 

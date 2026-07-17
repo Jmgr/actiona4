@@ -1,5 +1,5 @@
 use rquickjs::{Ctx, Function, Promise, Result, Value, prelude::Rest};
-use tokio::select;
+use tokio::{select, time::sleep as tokio_sleep};
 use tracing::instrument;
 
 use crate::{
@@ -30,7 +30,7 @@ pub fn sleep<'js>(ctx: Ctx<'js>, duration: JsDuration) -> Result<Promise<'js>> {
     task(ctx, async move |ctx, token| {
         select! {
             _ = token.cancelled() => { Err(CommonError::Cancelled).into_js_result(&ctx) },
-            _ = tokio::time::sleep(duration.0) => { Ok(()) },
+            _ = tokio_sleep(duration.0) => { Ok(()) },
         }
     })
 }

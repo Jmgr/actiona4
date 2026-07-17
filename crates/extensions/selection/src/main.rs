@@ -1,6 +1,6 @@
 #![cfg_attr(windows, windows_subsystem = "console")]
 
-use std::time::Duration;
+use std::{env, time::Duration};
 
 use actiona_common::sentry::setup_crash_reporting;
 use color_eyre::{
@@ -11,7 +11,7 @@ use extension::{
     Extension,
     protocols::selection::{SelectionProtocol, SelectionProtocolExtension},
 };
-use tokio::sync::oneshot;
+use tokio::{runtime::Builder, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use types::{Point, Rect};
 use winit::event_loop::{EventLoop, EventLoopProxy};
@@ -66,9 +66,7 @@ impl SelectionProtocolExtension for SelectionExtension {
 
 fn main() -> Result<()> {
     let _guard = setup_crash_reporting(built_info::PKG_NAME)?;
-    let runtime = tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()?;
+    let runtime = Builder::new_multi_thread().enable_all().build()?;
     let task_tracker = TaskTracker::new();
     let cancellation_token = CancellationToken::new();
 
@@ -76,7 +74,7 @@ fn main() -> Result<()> {
     let proxy = event_loop.create_proxy();
 
     let extension = Extension::<SelectionProtocol>::with_handler_impl(
-        std::env::args().nth(1).ok_or_eyre("expected a key")?.into(),
+        env::args().nth(1).ok_or_eyre("expected a key")?.into(),
         task_tracker.clone(),
         cancellation_token.clone(),
         Duration::from_secs(60),

@@ -32,7 +32,10 @@ use rquickjs::{
     atom::PredefinedAtom,
     prelude::{Opt, This},
 };
-use tokio::{select, sync::mpsc};
+use tokio::{
+    select,
+    sync::{Mutex, mpsc},
+};
 use tokio_util::sync::CancellationToken;
 
 use crate::{IntoJsResult, error::CommonError, runtime::WithUserData};
@@ -149,7 +152,7 @@ where
     FromP: Send + 'static,
 {
     let iter = Object::new(ctx.clone())?;
-    let rx = Arc::new(tokio::sync::Mutex::new(rx));
+    let rx = Arc::new(Mutex::new(rx));
 
     // `next(): Promise<Value>`
     let next_fn = Function::new(ctx, {

@@ -8,6 +8,8 @@
 //! @verbatim  */
 //! @verbatim type SizeLike = Size | { width: number; height: number };
 
+use std::result::Result as StdResult;
+
 use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime, Result, Value,
@@ -111,7 +113,7 @@ pub struct JsSize {
 }
 
 impl DeepEqualClass for JsSize {
-    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+    fn deep_equal_class(&self, other: &Self) -> StdResult<bool, DeepEqualError> {
         Ok(self == other)
     }
 }

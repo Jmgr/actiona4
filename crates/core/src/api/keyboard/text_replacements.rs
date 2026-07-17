@@ -1,6 +1,9 @@
-use std::sync::{
-    Arc,
-    atomic::{AtomicUsize, Ordering},
+use std::{
+    fmt,
+    sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    },
 };
 
 use color_eyre::Result;
@@ -63,8 +66,8 @@ struct TextHandler {
     options: OnTextOptions,
 }
 
-impl std::fmt::Debug for TextHandler {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Debug for TextHandler {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("TextHandler")
             .field("id", &self.id)
             .field("options", &self.options)
@@ -667,6 +670,8 @@ impl StringRingBuffer {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::input::Direction;
+
     use unicode_segmentation::UnicodeSegmentation;
 
     use super::*;
@@ -767,7 +772,7 @@ mod tests {
         let matching_release = KeyboardKeyEvent::new(
             Key::Unicode('a'),
             42,
-            crate::types::input::Direction::Release,
+            Direction::Release,
             false,
             String::new(),
             false,
@@ -780,7 +785,7 @@ mod tests {
         let wrong_scan_code = KeyboardKeyEvent::new(
             Key::Unicode('a'),
             99,
-            crate::types::input::Direction::Release,
+            Direction::Release,
             false,
             String::new(),
             false,
@@ -793,7 +798,7 @@ mod tests {
         let wrong_direction = KeyboardKeyEvent::new(
             Key::Unicode('a'),
             42,
-            crate::types::input::Direction::Press,
+            Direction::Press,
             false,
             String::new(),
             false,

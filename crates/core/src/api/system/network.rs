@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fmt::Display, net::IpAddr, sync::Arc};
+use std::{
+    collections::HashMap,
+    fmt::{self, Display},
+    net::IpAddr,
+    sync::Arc,
+};
 
 use color_eyre::Result;
 use derive_where::derive_where;
@@ -20,7 +25,7 @@ pub struct Subnet {
 }
 
 impl Display for Subnet {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Ok(ipnet) = IpNet::new(self.address, self.prefix) {
             write!(f, "{}", ipnet)
         } else {
@@ -55,7 +60,7 @@ pub struct Counters {
 }
 
 impl Display for Counters {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("data", self.data)
             .display("packets", self.packets)
@@ -88,7 +93,7 @@ pub struct Traffic {
 }
 
 impl Display for Traffic {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("total", self.total)
             .display("delta", self.delta)
@@ -118,7 +123,7 @@ pub struct NetworkInterface {
 }
 
 impl Display for NetworkInterface {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("inbound", self.inbound)
             .display("outbound", self.outbound)
@@ -202,7 +207,7 @@ pub struct Network {
 }
 
 impl Display for Network {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display_if_some("hostname", &self.hostname())
             .display("interfaces", display_map(&self.interfaces()))

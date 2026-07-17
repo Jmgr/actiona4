@@ -1,7 +1,7 @@
 use std::fmt;
 
 use mime::Mime;
-use serde::{Deserializer, Serializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
 
 #[derive(Clone)]
 pub struct MediaType(Mime);
@@ -24,7 +24,7 @@ impl fmt::Display for MediaType {
     }
 }
 
-impl serde::Serialize for MediaType {
+impl Serialize for MediaType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -33,7 +33,7 @@ impl serde::Serialize for MediaType {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for MediaType {
+impl<'de> Deserialize<'de> for MediaType {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -41,7 +41,7 @@ impl<'de> serde::Deserialize<'de> for MediaType {
         String::deserialize(deserializer)?
             .parse()
             .map(Self)
-            .map_err(serde::de::Error::custom)
+            .map_err(de::Error::custom)
     }
 }
 

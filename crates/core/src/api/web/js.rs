@@ -1,4 +1,4 @@
-use std::{path::PathBuf, str::FromStr};
+use std::{path::PathBuf, result::Result as StdResult, str::FromStr};
 
 use bytes::Bytes;
 use indexmap::IndexMap;
@@ -238,7 +238,7 @@ impl JsWebOptions {
 
                         Ok((header_name, header_value))
                     })
-                    .collect::<std::result::Result<HeaderMap<_>, CommonError>>()
+                    .collect::<StdResult<HeaderMap<_>, CommonError>>()
                     .into_js_result(ctx)?,
             )
         } else {

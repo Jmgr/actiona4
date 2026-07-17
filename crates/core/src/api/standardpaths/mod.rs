@@ -1,4 +1,7 @@
-use std::fmt::Display;
+use std::{
+    env,
+    fmt::{self, Display},
+};
 
 use directories::{BaseDirs, UserDirs};
 use tracing::instrument;
@@ -24,7 +27,7 @@ impl Default for StandardPaths {
 }
 
 impl Display for StandardPaths {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display_if_some("home", &self.home())
             .display_if_some("temp", &self.temp())
@@ -50,7 +53,7 @@ impl StandardPaths {
 
     #[must_use]
     pub fn temp(&self) -> OptionalPath {
-        let temp_dir = std::env::temp_dir();
+        let temp_dir = env::temp_dir();
         Some(temp_dir.as_path()).into()
     }
 

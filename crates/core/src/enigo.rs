@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{self, Display};
 
 use enigo::{InputError, NewConError};
 use rquickjs::{Ctx, Exception};
@@ -11,7 +11,7 @@ pub enum EnigoError {
 }
 
 impl Display for EnigoError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(
             f,
             "{}",

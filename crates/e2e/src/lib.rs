@@ -1,10 +1,15 @@
-use std::sync::OnceLock;
+use std::{
+    env,
+    path::{Path, PathBuf},
+    process::Command,
+    sync::OnceLock,
+};
 
-fn target_profile_dir() -> std::path::PathBuf {
+fn target_profile_dir() -> PathBuf {
     // current_exe -> target/{profile}/deps/<test-exe>
     // parent()    -> target/{profile}/deps/
     // parent()    -> target/{profile}/
-    std::env::current_exe()
+    env::current_exe()
         .expect("cannot determine test binary path")
         .parent()
         .expect("no parent")
@@ -13,7 +18,7 @@ fn target_profile_dir() -> std::path::PathBuf {
         .to_path_buf()
 }
 
-fn actiona_run_bin_path() -> std::path::PathBuf {
+fn actiona_run_bin_path() -> PathBuf {
     let mut path = target_profile_dir();
 
     path.push(if cfg!(windows) {
@@ -25,7 +30,7 @@ fn actiona_run_bin_path() -> std::path::PathBuf {
     path
 }
 
-fn selection_extension_bin_path() -> std::path::PathBuf {
+fn selection_extension_bin_path() -> PathBuf {
     let mut path = target_profile_dir();
 
     path.push(if cfg!(windows) {
@@ -37,7 +42,7 @@ fn selection_extension_bin_path() -> std::path::PathBuf {
     path
 }
 
-fn ensure_actiona_run_bin_exists(path: &std::path::Path) {
+fn ensure_actiona_run_bin_exists(path: &Path) {
     static BUILD_ONCE: OnceLock<()> = OnceLock::new();
 
     if path.exists() {
@@ -45,7 +50,7 @@ fn ensure_actiona_run_bin_exists(path: &std::path::Path) {
     }
 
     BUILD_ONCE.get_or_init(|| {
-        let status = std::process::Command::new("cargo")
+        let status = Command::new("cargo")
             .args(["build", "-p", "run", "--bin", "actiona-run"])
             .status()
             .expect("failed to spawn `cargo build` for actiona-run");
@@ -57,7 +62,7 @@ fn ensure_actiona_run_bin_exists(path: &std::path::Path) {
     });
 }
 
-fn ensure_selection_extension_bin_exists(path: &std::path::Path) {
+fn ensure_selection_extension_bin_exists(path: &Path) {
     static BUILD_ONCE: OnceLock<()> = OnceLock::new();
 
     if path.exists() {
@@ -65,7 +70,7 @@ fn ensure_selection_extension_bin_exists(path: &std::path::Path) {
     }
 
     BUILD_ONCE.get_or_init(|| {
-        let status = std::process::Command::new("cargo")
+        let status = Command::new("cargo")
             .args(["build", "-p", "selection", "--bin", "extension-selection"])
             .status()
             .expect("failed to spawn `cargo build` for extension-selection");
@@ -82,7 +87,7 @@ fn ensure_selection_extension_bin_exists(path: &std::path::Path) {
 /// Walks up from the running test binary (target/debug/deps/<exe>) to
 /// target/debug/ and appends the binary name. If the binary is missing,
 /// build it on demand so `cargo test` works without a separate pre-build step.
-pub fn actiona_run_bin() -> std::path::PathBuf {
+pub fn actiona_run_bin() -> PathBuf {
     let path = actiona_run_bin_path();
     ensure_actiona_run_bin_exists(&path);
     path
@@ -92,7 +97,7 @@ pub fn actiona_run_bin() -> std::path::PathBuf {
 ///
 /// This is intentionally used only by manual/ignored e2e tests that exercise
 /// interactive overlay selection.
-pub fn selection_extension_bin() -> std::path::PathBuf {
+pub fn selection_extension_bin() -> PathBuf {
     let path = selection_extension_bin_path();
     ensure_selection_extension_bin_exists(&path);
     path

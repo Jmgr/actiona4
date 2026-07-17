@@ -1,3 +1,5 @@
+use std::any::type_name;
+
 use color_eyre::eyre::Context;
 use convert_case::{Case, Casing};
 use rquickjs::{Class, Ctx, Exception, IntoJs, Object, class::JsClass};
@@ -181,7 +183,7 @@ where
 }
 
 fn enum_registration_name<E>() -> String {
-    let type_name = std::any::type_name::<E>();
+    let type_name = type_name::<E>();
     let enum_name = type_name
         .rsplit("::")
         .next()

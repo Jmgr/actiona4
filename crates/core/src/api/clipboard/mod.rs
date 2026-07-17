@@ -1,6 +1,6 @@
 use std::{
     borrow::Cow,
-    fmt::Debug,
+    fmt::{self, Debug},
     hash::{DefaultHasher, Hash, Hasher},
     path::{Path, PathBuf},
     sync::Arc,
@@ -393,7 +393,7 @@ impl Clipboard {
 }
 
 impl Debug for Clipboard {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Clipboard").finish()
     }
 }

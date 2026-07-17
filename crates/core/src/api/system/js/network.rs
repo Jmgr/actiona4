@@ -1,6 +1,11 @@
 use itertools::Itertools;
 use macros::{FromJsObject, js_class, js_methods, options};
-use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
+use rquickjs::{
+    Ctx, JsLifetime, Result,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+    prelude::Opt,
+};
 
 use crate::{
     IntoJsResult,
@@ -33,7 +38,7 @@ impl<'js> HostClass<'js> for JsNetwork {
 }
 
 impl<'js> Trace<'js> for JsNetwork {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsNetwork {
@@ -107,7 +112,7 @@ pub struct JsNetworkInterface {
 impl<'js> HostClass<'js> for JsNetworkInterface {}
 
 impl<'js> Trace<'js> for JsNetworkInterface {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsNetworkInterface {
@@ -196,7 +201,7 @@ pub struct JsCounters {
 impl<'js> HostClass<'js> for JsCounters {}
 
 impl<'js> Trace<'js> for JsCounters {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<Counters> for JsCounters {
@@ -262,7 +267,7 @@ impl<'js> HostClass<'js> for JsTraffic {
 }
 
 impl<'js> Trace<'js> for JsTraffic {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<Traffic> for JsTraffic {

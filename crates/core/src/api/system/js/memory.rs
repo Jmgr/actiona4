@@ -1,5 +1,9 @@
 use macros::{js_class, js_methods, platform};
-use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace};
+use rquickjs::{
+    Ctx, JsLifetime, Result,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+};
 
 use crate::{
     IntoJsResult,
@@ -34,7 +38,7 @@ impl<'js> HostClass<'js> for JsMemory {
 }
 
 impl<'js> Trace<'js> for JsMemory {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsMemory {
@@ -101,7 +105,7 @@ pub struct JsMemoryUsage {
 impl<'js> HostClass<'js> for JsMemoryUsage {}
 
 impl<'js> Trace<'js> for JsMemoryUsage {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<MemoryUsage> for JsMemoryUsage {
@@ -172,7 +176,7 @@ pub struct JsCGroupLimits {
 impl<'js> HostClass<'js> for JsCGroupLimits {}
 
 impl<'js> Trace<'js> for JsCGroupLimits {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<CGroupLimits> for JsCGroupLimits {

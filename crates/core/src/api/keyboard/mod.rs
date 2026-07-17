@@ -1,4 +1,8 @@
-use std::{collections::HashSet, fmt::Display, sync::Arc};
+use std::{
+    collections::HashSet,
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use color_eyre::Result;
 use enigo::{Direction, Enigo, Key};
@@ -28,7 +32,7 @@ pub struct Keyboard {
 }
 
 impl Display for Keyboard {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default().finish(f)
     }
 }

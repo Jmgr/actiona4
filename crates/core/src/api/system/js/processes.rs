@@ -4,7 +4,10 @@ use macros::{
     FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform,
 };
 use rquickjs::{
-    Ctx, JsLifetime, Object, Result, Value, atom::PredefinedAtom, class::Trace, prelude::Opt,
+    Ctx, JsLifetime, Object, Result, Value,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+    prelude::Opt,
 };
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
@@ -18,7 +21,7 @@ use crate::{
             date::date_from_system_time,
         },
         name::js::{JsNameLike, value_to_name_like},
-        process::js::JsSignal,
+        process::{js::JsSignal, kill_by_pid, send_signal, terminate_by_pid},
         system::{
             js::storage::JsDiskUsage,
             processes::{Process, Processes, Status},
@@ -47,7 +50,7 @@ impl<'js> HostClass<'js> for JsProcesses {
 }
 
 impl<'js> Trace<'js> for JsProcesses {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsProcesses {
@@ -227,7 +230,7 @@ impl<'js> HostClass<'js> for JsProcessInfo {
 }
 
 impl<'js> Trace<'js> for JsProcessInfo {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<Process> for JsProcessInfo {
@@ -436,7 +439,7 @@ impl JsProcessInfo {
     /// if (proc) proc.kill();
     /// ```
     pub fn kill(&self, ctx: Ctx<'_>) -> Result<()> {
-        crate::api::process::kill_by_pid(self.inner.pid()).into_js_result(&ctx)
+        kill_by_pid(self.inner.pid()).into_js_result(&ctx)
     }
 
     /// Gracefully terminate the process (SIGTERM on Unix, WM_CLOSE on Windows).
@@ -448,7 +451,7 @@ impl JsProcessInfo {
     /// if (proc) proc.terminate();
     /// ```
     pub fn terminate(&self, ctx: Ctx<'_>) -> Result<()> {
-        crate::api::process::terminate_by_pid(self.inner.pid()).into_js_result(&ctx)
+        terminate_by_pid(self.inner.pid()).into_js_result(&ctx)
     }
 
     /// Send a signal to the process.
@@ -463,7 +466,7 @@ impl JsProcessInfo {
     pub fn send_signal(&self, ctx: Ctx<'_>, signal: JsSignal) -> Result<()> {
         #[cfg(unix)]
         {
-            crate::api::process::send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)
+            send_signal(self.inner.pid(), signal.into()).into_js_result(&ctx)
         }
 
         #[cfg(not(unix))]

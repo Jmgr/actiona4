@@ -1,4 +1,10 @@
-use std::{env::consts::EXE_SUFFIX, fs::exists, path::Path, sync::Arc, time::Duration};
+use std::{
+    env::{self, consts::EXE_SUFFIX},
+    fs::exists,
+    path::{Path, PathBuf},
+    sync::Arc,
+    time::Duration,
+};
 
 use color_eyre::{Result, eyre::OptionExt};
 use extension::{Host, protocol::Protocol, protocols::selection::SelectionProtocol};
@@ -30,7 +36,7 @@ impl Extensions {
             });
         }
 
-        let current_exe = std::env::current_exe()?; // TODO: will that work from within an appimage?
+        let current_exe = env::current_exe()?; // TODO: will that work from within an appimage?
         let directory = current_exe
             .parent()
             .ok_or_eyre("expected current executable to have a parent directory")?;
@@ -113,10 +119,7 @@ pub(crate) fn extension_executable_name(name: &str) -> String {
     format!("{EXTENSION_PREFIX}{name}{EXE_SUFFIX}")
 }
 
-pub(crate) fn extension_executable_candidates(
-    name: &str,
-    directory: &Path,
-) -> Vec<std::path::PathBuf> {
+pub(crate) fn extension_executable_candidates(name: &str, directory: &Path) -> Vec<PathBuf> {
     let filename = extension_executable_name(name);
     let mut candidates = vec![directory.join(&filename)];
 

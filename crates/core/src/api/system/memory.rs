@@ -1,4 +1,7 @@
-use std::{fmt::Display, sync::Arc};
+use std::{
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use color_eyre::Result;
 use derive_where::derive_where;
@@ -18,7 +21,7 @@ pub struct MemoryUsage {
 }
 
 impl Display for MemoryUsage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("used", self.used)
             .display("free", self.free)
@@ -89,7 +92,7 @@ impl From<sysinfo::CGroupLimits> for CGroupLimits {
 }
 
 impl Display for CGroupLimits {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("free_memory", self.free_memory)
             .display("free_swap", self.free_swap)
@@ -132,7 +135,7 @@ pub struct Memory {
 }
 
 impl Display for Memory {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("memory", self.memory_usage())
             .display("swap", self.swap_usage())

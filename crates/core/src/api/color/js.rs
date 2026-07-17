@@ -9,6 +9,8 @@
 //! @verbatim  */
 //! @verbatim type ColorLike = Color | { r: number; g: number; b: number; a?: number };
 
+use std::result::Result as StdResult;
+
 use image::Rgba;
 use macros::{js_class, js_methods};
 use rquickjs::{
@@ -277,7 +279,7 @@ pub struct JsColor {
 }
 
 impl DeepEqualClass for JsColor {
-    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+    fn deep_equal_class(&self, other: &Self) -> StdResult<bool, DeepEqualError> {
         Ok(self == other)
     }
 }

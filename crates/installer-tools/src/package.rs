@@ -1,4 +1,4 @@
-use std::{collections::HashSet, ffi::OsStr, path::Path};
+use std::{collections::HashSet, ffi::OsStr, fs, path::Path};
 
 use eyre::{Result, eyre};
 
@@ -166,7 +166,7 @@ fn expand_root_markdown_files(
 ) -> Result<Vec<PackagedFile>> {
     let mut packaged_files = Vec::new();
 
-    for entry in std::fs::read_dir(workspace_root)? {
+    for entry in fs::read_dir(workspace_root)? {
         let entry = entry?;
         let path = entry.path();
 

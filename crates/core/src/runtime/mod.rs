@@ -10,6 +10,8 @@ use std::{
         atomic::{AtomicU8, AtomicU64, Ordering},
     },
 };
+#[cfg(test)]
+use tokio::runtime::{Builder as TokioBuilder, Runtime as TokioRuntime};
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
@@ -17,7 +19,7 @@ use derive_where::derive_where;
 use enigo::{Enigo, Settings};
 #[cfg(unix)]
 #[cfg_attr(test, allow(unused_imports))]
-use ksni::TrayMethods as _;
+use ksni::{TrayMethods as _, menu::StandardItem};
 use macros::{FromSerde, IntoSerde};
 use opencv::core::set_num_threads;
 use parking_lot::Mutex;
@@ -43,6 +45,8 @@ use winit::{
     window::WindowId,
 };
 
+#[cfg(unix)]
+use crate::platform::x11::ensure_session_available;
 #[cfg(unix)]
 use crate::runtime::platform::x11::events::input::{
     KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic, MouseMoveTopic, MouseScrollTopic,
@@ -114,7 +118,7 @@ use platform::x11;
 
 #[cfg(unix)]
 pub fn ensure_x11_session_available(display_name: Option<&str>) -> Result<()> {
-    crate::platform::x11::ensure_session_available(display_name)
+    ensure_session_available(display_name)
 }
 
 pub(crate) trait WithUserData {
@@ -386,7 +390,7 @@ impl ksni::Tray for ActionaTray {
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
         vec![
-            ksni::menu::StandardItem {
+            StandardItem {
                 label: "Quit".into(),
                 activate: Box::new(|this: &mut Self| {
                     this.cancellation_token.cancel();
@@ -519,14 +523,14 @@ impl RuntimePlatformSetup {
 
 impl Runtime {
     #[cfg(test)]
-    fn test_tokio_runtime() -> &'static tokio::runtime::Runtime {
-        static TOKIO_RUNTIME: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
+    fn test_tokio_runtime() -> &'static TokioRuntime {
+        static TOKIO_RUNTIME: OnceLock<TokioRuntime> = OnceLock::new();
 
         TOKIO_RUNTIME.get_or_init(|| {
             // A single shared multi-thread runtime avoids per-test teardown
             // crashes (e.g. X11 connection exhaustion) and allows
             // block_in_place (which current_thread runtimes forbid).
-            tokio::runtime::Builder::new_multi_thread()
+            TokioBuilder::new_multi_thread()
                 .enable_all()
                 .build()
                 .expect("failed to build shared Tokio test runtime")
@@ -561,9 +565,8 @@ impl Runtime {
         }
         let cancellation_token = CancellationToken::new();
         let task_tracker = TaskTracker::new();
-        let displays =
-            crate::api::displays::Displays::new(cancellation_token.clone(), task_tracker.clone())
-                .expect("failed to create Displays for shared test X11 runtime");
+        let displays = Displays::new(cancellation_token.clone(), task_tracker.clone())
+            .expect("failed to create Displays for shared test X11 runtime");
         let rt = Self::test_tokio_runtime()
             .block_on(x11::Runtime::new(
                 cancellation_token,

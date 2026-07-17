@@ -7,10 +7,14 @@ impl Runnable for Test {
         // TODO
 
         #[cfg(test)]
-        if let action_definition::scriptable::Scriptable::Static { value } = self.percent.value() {
+        {
+            use action_definition::scriptable::Scriptable;
+
             use crate::test_support::record_test_action_visit;
 
-            record_test_action_visit(*value);
+            if let Scriptable::Static { value } = self.percent.value() {
+                record_test_action_visit(*value);
+            }
         }
 
         Ok(self.post_run.clone())

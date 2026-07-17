@@ -1,4 +1,7 @@
-use std::{fmt::Display, sync::Arc};
+use std::{
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use satint::Su32;
 use tokio_util::sync::CancellationToken;
@@ -29,7 +32,7 @@ pub struct Windows {
 }
 
 impl Display for Windows {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default().finish(f)
     }
 }

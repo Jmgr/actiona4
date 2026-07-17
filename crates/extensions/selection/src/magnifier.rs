@@ -1,3 +1,5 @@
+use std::mem::size_of;
+
 use bytemuck::{Pod, Zeroable};
 use pixels::{PixelsContext, wgpu};
 
@@ -84,7 +86,7 @@ pub fn create_magnifier_pipeline(
 
     let params_buffer = device.create_buffer(&wgpu::BufferDescriptor {
         label: Some("mag_params"),
-        size: std::mem::size_of::<MagnifierParams>() as u64,
+        size: size_of::<MagnifierParams>() as u64,
         usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         mapped_at_creation: false,
     });

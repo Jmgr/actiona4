@@ -1,5 +1,5 @@
 use std::{
-    fmt::{Debug, Display},
+    fmt::{self, Debug, Display},
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -335,7 +335,7 @@ pub struct Mouse {
 }
 
 impl Display for Mouse {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default().finish(f)
     }
 }

@@ -1,4 +1,4 @@
-use std::{os::fd::AsFd, time::Duration};
+use std::{os::fd::AsFd, result::Result as StdResult, time::Duration};
 
 use color_eyre::{
     Result,
@@ -8,7 +8,8 @@ use procfs::process::Process;
 use rustix::{
     io::Errno,
     process::{
-        PidfdFlags, WaitId, WaitIdOptions, kill_process, pidfd_open, pidfd_send_signal, waitid,
+        PidfdFlags, Signal as RustixSignal, WaitId, WaitIdOptions, kill_process, pidfd_open,
+        pidfd_send_signal, waitid,
     },
 };
 use tokio::{
@@ -20,7 +21,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{CommonError::Cancelled, api::system::processes::Signal, types::pid::Pid};
 
-impl From<Signal> for rustix::process::Signal {
+impl From<Signal> for RustixSignal {
     fn from(signal: Signal) -> Self {
         match signal {
             Signal::Hup => Self::HUP,
@@ -108,7 +109,7 @@ impl ProcessSignal {
         pid: Pid,
         signal: Signal,
         cancellation_token: CancellationToken,
-    ) -> std::result::Result<Option<i32>, ProcessSignalErrors> {
+    ) -> StdResult<Option<i32>, ProcessSignalErrors> {
         let pid = pid
             .try_into()
             .map_err(|error: eyre::Error| ProcessSignalErrors::Other(error))?;

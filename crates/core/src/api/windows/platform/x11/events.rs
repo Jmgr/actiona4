@@ -4,7 +4,7 @@ use color_eyre::Result;
 use parking_lot::Mutex;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use x11rb::protocol::xproto::{ChangeWindowAttributesAux, EventMask};
-use x11rb_async::protocol::xproto::ConnectionExt as _;
+use x11rb_async::{connection::Connection, protocol::xproto::ConnectionExt as _};
 
 use crate::{
     api::windows::platform::x11::WindowHandle,
@@ -50,7 +50,7 @@ async fn set_mask(x11_connection: &X11Connection, window_id: u32, mask: EventMas
             &ChangeWindowAttributesAux::new().event_mask(mask),
         )
         .await?;
-    x11rb_async::connection::Connection::flush(connection).await?;
+    Connection::flush(connection).await?;
     Ok(())
 }
 

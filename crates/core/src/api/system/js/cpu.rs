@@ -1,6 +1,10 @@
 use itertools::Itertools;
 use macros::{js_class, js_methods};
-use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace};
+use rquickjs::{
+    Ctx, JsLifetime, Result,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+};
 
 use crate::{
     IntoJsResult,
@@ -35,7 +39,7 @@ pub struct JsCpu {
 impl<'js> HostClass<'js> for JsCpu {}
 
 impl<'js> Trace<'js> for JsCpu {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsCpu {

@@ -1,4 +1,7 @@
-use std::fmt::Display;
+use std::{
+    fmt::{self, Display},
+    result::Result as StdResult,
+};
 
 use color_eyre::{Result, eyre::eyre};
 use itertools::Itertools;
@@ -165,7 +168,7 @@ pub enum PlatformConstraint {
 impl TryFrom<char> for PlatformConstraint {
     type Error = color_eyre::Report;
 
-    fn try_from(value: char) -> std::result::Result<Self, Self::Error> {
+    fn try_from(value: char) -> StdResult<Self, Self::Error> {
         Ok(match value {
             '=' => Self::Only,
             '-' => Self::Not,
@@ -185,7 +188,7 @@ pub enum PlatformType {
 impl TryFrom<&str> for PlatformType {
     type Error = color_eyre::Report;
 
-    fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+    fn try_from(value: &str) -> StdResult<Self, Self::Error> {
         Ok(match value {
             "linux" => Self::Linux,
             "windows" => Self::Windows,
@@ -205,7 +208,7 @@ pub struct Platform {
 impl TryFrom<&str> for Platform {
     type Error = color_eyre::Report;
 
-    fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+    fn try_from(value: &str) -> StdResult<Self, Self::Error> {
         let mut chars = value.chars();
         let constraint = chars
             .next()
@@ -224,7 +227,7 @@ pub struct Platforms(Vec<Platform>);
 impl TryFrom<&str> for Platforms {
     type Error = color_eyre::Report;
 
-    fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+    fn try_from(value: &str) -> StdResult<Self, Self::Error> {
         let platforms = value
             .split_whitespace()
             .map(Platform::try_from)
@@ -239,7 +242,7 @@ impl TryFrom<&str> for Platforms {
 }
 
 impl Display for Platforms {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut result = Vec::new();
 
         let only_platforms = self.to_string_with_constraint(PlatformConstraint::Only);

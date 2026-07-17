@@ -3,13 +3,15 @@ use types::{Point, Rect};
 #[cfg(not(windows))]
 use winit::dpi::PhysicalPosition;
 
+use crate::screenshot::Screenshot;
+
 pub enum AppEvent {
     SelectRect {
-        screenshot: crate::screenshot::Screenshot,
+        screenshot: Screenshot,
         response: oneshot::Sender<Option<Rect>>,
     },
     SelectPosition {
-        screenshot: crate::screenshot::Screenshot,
+        screenshot: Screenshot,
         response: oneshot::Sender<Option<Point>>,
     },
     Shutdown,

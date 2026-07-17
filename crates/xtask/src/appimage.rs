@@ -1,5 +1,5 @@
 use std::{
-    env,
+    env, fs,
     os::unix::fs::PermissionsExt,
     path::{Path, PathBuf},
     process::Command,
@@ -7,6 +7,7 @@ use std::{
 
 use color_eyre::{Result, eyre::eyre};
 use installer_tools::package::{PackagedFilePlatform, packaged_files};
+use tokio::fs as tokio_fs;
 
 use crate::package_docs::stage_packaged_files;
 
@@ -34,7 +35,7 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
         .filter(|packaged_file| packaged_file.include_in_appimage)
         .collect();
 
-    std::fs::create_dir_all(&appimage_dir)?;
+    fs::create_dir_all(&appimage_dir)?;
     reset_app_dir(&app_dir)?;
     stage_packaged_files(
         workspace_root,
@@ -47,7 +48,7 @@ pub async fn build_appimage(workspace_root: &Path, sign: bool) -> Result<()> {
     remove_output_if_exists(&output_path)?;
 
     let tools_dir = workspace_root.join("target").join("tools");
-    std::fs::create_dir_all(&tools_dir)?;
+    fs::create_dir_all(&tools_dir)?;
 
     let linuxdeploy = ensure_linuxdeploy(arch, &tools_dir).await?;
     ensure_linuxdeploy_appimage_plugin(arch, &tools_dir).await?;
@@ -74,24 +75,24 @@ fn stage_appstream_metainfo(workspace_root: &Path, metainfo_dir: &Path) -> Resul
     let source_file = require_file(&source_path)?;
     let destination_path = metainfo_dir.join("app.actiona.run.appdata.xml");
 
-    std::fs::create_dir_all(metainfo_dir)?;
-    std::fs::copy(source_file, &destination_path)?;
+    fs::create_dir_all(metainfo_dir)?;
+    fs::copy(source_file, &destination_path)?;
 
     Ok(())
 }
 
 fn reset_app_dir(app_dir: &Path) -> Result<()> {
     if app_dir.exists() {
-        std::fs::remove_dir_all(app_dir)?;
+        fs::remove_dir_all(app_dir)?;
     }
 
-    std::fs::create_dir_all(app_dir)?;
+    fs::create_dir_all(app_dir)?;
     Ok(())
 }
 
 fn remove_output_if_exists(output_path: &Path) -> Result<()> {
     if output_path.exists() {
-        std::fs::remove_file(output_path)?;
+        fs::remove_file(output_path)?;
     }
 
     Ok(())
@@ -172,8 +173,8 @@ async fn download_file(url: &str, dest: &Path) -> Result<()> {
         .await
         .map_err(|error| eyre!("Failed to read download response for {url}: {error}"))?;
 
-    tokio::fs::write(dest, &bytes).await?;
-    tokio::fs::set_permissions(dest, std::fs::Permissions::from_mode(0o755)).await?;
+    tokio_fs::write(dest, &bytes).await?;
+    tokio_fs::set_permissions(dest, fs::Permissions::from_mode(0o755)).await?;
 
     Ok(())
 }
@@ -246,8 +247,8 @@ fn run_linuxdeploy(
 
 fn prepare_linuxdeploy_icon(icon_source: &Path, tools_dir: &Path) -> Result<PathBuf> {
     let icon_path = tools_dir.join("actiona-run.png");
-    std::fs::copy(icon_source, &icon_path)?;
-    std::fs::set_permissions(&icon_path, std::fs::Permissions::from_mode(0o644))?;
+    fs::copy(icon_source, &icon_path)?;
+    fs::set_permissions(&icon_path, fs::Permissions::from_mode(0o644))?;
     Ok(icon_path)
 }
 
@@ -294,7 +295,7 @@ fn appimage_arch() -> Result<&'static str> {
 
 async fn read_version(workspace_root: &Path) -> Result<String> {
     let cargo_toml_path = workspace_root.join("Cargo.toml");
-    let contents = tokio::fs::read_to_string(&cargo_toml_path).await?;
+    let contents = tokio_fs::read_to_string(&cargo_toml_path).await?;
     let value: toml::Value = toml::from_str(&contents)?;
 
     value

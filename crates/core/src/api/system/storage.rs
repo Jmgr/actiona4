@@ -1,5 +1,5 @@
 use std::{
-    fmt::Display,
+    fmt::{self, Display},
     path::{Path, PathBuf},
     sync::Arc,
 };
@@ -24,7 +24,7 @@ pub struct IoStats {
 }
 
 impl Display for IoStats {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("total", self.total)
             .display("delta", self.delta)
@@ -51,7 +51,7 @@ pub struct DiskUsage {
 }
 
 impl Display for DiskUsage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("written", self.written)
             .display("read", self.read)
@@ -100,7 +100,7 @@ pub struct Disk {
 }
 
 impl Display for Disk {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display_if_some("name", &self.name)
             .display("kind", self.kind)
@@ -189,7 +189,7 @@ pub struct Storage {
 }
 
 impl Display for Storage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("disks", display_list(&self.disks()))
             .finish(f)

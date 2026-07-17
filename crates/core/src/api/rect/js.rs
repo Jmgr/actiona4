@@ -8,6 +8,8 @@
 //! @verbatim  */
 //! @verbatim type RectLike = Rect | { x: number; y: number; width: number; height: number };
 
+use std::result::Result as StdResult;
+
 use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime, Result, Value,
@@ -130,7 +132,7 @@ pub struct JsRect {
 }
 
 impl DeepEqualClass for JsRect {
-    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+    fn deep_equal_class(&self, other: &Self) -> StdResult<bool, DeepEqualError> {
         Ok(self == other)
     }
 }

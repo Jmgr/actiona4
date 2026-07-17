@@ -13,6 +13,7 @@ use std::{
     collections::{HashMap, hash_map::Entry},
     hash::{DefaultHasher, Hash, Hasher},
     mem::take,
+    result::Result as StdResult,
     sync::Arc,
 };
 
@@ -255,9 +256,9 @@ impl Engine {
     pub async fn eval_async_fn_result<T, E>(
         &self,
         script: &str,
-        f: impl FnOnce(Value) -> std::result::Result<T, E> + Send,
+        f: impl FnOnce(Value) -> StdResult<T, E> + Send,
         map_script_error: impl Fn(ScriptError) -> E + Send + Sync,
-    ) -> std::result::Result<T, E>
+    ) -> StdResult<T, E>
     where
         T: Send + 'static,
         E: Send + 'static,
@@ -274,9 +275,9 @@ impl Engine {
     pub async fn eval_async_values_fn_result<T, E>(
         &self,
         scripts: &[&str],
-        f: impl FnOnce(Vec<Value>) -> std::result::Result<T, E> + Send,
+        f: impl FnOnce(Vec<Value>) -> StdResult<T, E> + Send,
         map_script_error: impl Fn(usize, ScriptError) -> E + Send + Sync,
-    ) -> std::result::Result<T, E>
+    ) -> StdResult<T, E>
     where
         T: Send + 'static,
         E: Send + 'static,
@@ -288,7 +289,7 @@ impl Engine {
                 self.prepare_script(script, None, false)
                     .map_err(|error| map_script_error(index, error))
             })
-            .collect::<std::result::Result<Vec<_>, _>>()?;
+            .collect::<StdResult<Vec<_>, _>>()?;
         let sourcemaps = self.sourcemaps.clone();
 
         self.context
@@ -431,14 +432,14 @@ fn value_to_string(value: &Value<'_>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use std::{fs, path::PathBuf};
 
     use macros::{FromJsObject, PlatformValidate, js_class, js_methods, options, platform};
     use rquickjs::Function;
     use swc_common::{FileName, SourceMap, SourceMapper, sync::Lrc};
     use swc_ecma_ast::EsVersion;
     use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
-    use tokio::time::Duration;
+    use tokio::time::{Duration, sleep};
 
     use super::*;
     use crate::{IntoJsResult, platform_info::Platform};
@@ -460,7 +461,7 @@ mod tests {
                 )
             })?;
 
-            tokio::time::sleep(duration).await;
+            sleep(duration).await;
             Ok(())
         }
 
@@ -600,7 +601,7 @@ outer();
     #[test]
     fn generated_index_d_ts_is_parseable() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../run/assets/index.d.ts");
-        let code = std::fs::read_to_string(&path).unwrap();
+        let code = fs::read_to_string(&path).unwrap();
 
         let cm: Lrc<SourceMap> = Default::default();
         let fm = cm.new_source_file(FileName::Custom("index.d.ts".into()).into(), code);

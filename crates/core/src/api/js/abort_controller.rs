@@ -1,5 +1,9 @@
 use macros::{js_class, js_methods};
-use rquickjs::{Ctx, JsLifetime, atom::PredefinedAtom, class::Trace};
+use rquickjs::{
+    Ctx, JsLifetime,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+};
 use tokio_util::sync::CancellationToken;
 
 use crate::{
@@ -30,7 +34,7 @@ pub struct JsAbortSignal {
 impl<'js> HostClass<'js> for JsAbortSignal {}
 
 impl<'js> Trace<'js> for JsAbortSignal {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsAbortSignal {
@@ -81,7 +85,7 @@ pub struct JsAbortController {
 impl<'js> ValueClass<'js> for JsAbortController {}
 
 impl<'js> Trace<'js> for JsAbortController {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 #[js_methods]

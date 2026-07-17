@@ -1,6 +1,6 @@
-use std::io::Write as _;
+use std::{fs, io::Write as _, process::Command};
 
-use assert_cmd::prelude::*;
+use assert_cmd::{assert::Assert, prelude::*};
 use httptest::{
     Expectation, Server, all_of,
     matchers::{contains, matches, request},
@@ -13,7 +13,7 @@ const HELPERS: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/scripts
 /// that actiona-run can execute directly.
 fn script_file(name: &str) -> tempfile::NamedTempFile {
     let script_path = format!("{}/scripts/{name}", env!("CARGO_MANIFEST_DIR"));
-    let script = std::fs::read_to_string(&script_path)
+    let script = fs::read_to_string(&script_path)
         .unwrap_or_else(|e| panic!("failed to read {script_path}: {e}"));
 
     let mut tmp = tempfile::Builder::new()
@@ -35,9 +35,9 @@ fn script_file(name: &str) -> tempfile::NamedTempFile {
 ///
 /// The temp file lives until the process exits (actiona-run reads the file
 /// synchronously before `assert()` returns).
-pub fn run(name: &str) -> assert_cmd::assert::Assert {
+pub fn run(name: &str) -> Assert {
     let script = script_file(name);
-    let mut command = std::process::Command::new(e2e::actiona_run_bin());
+    let mut command = Command::new(e2e::actiona_run_bin());
     command.arg(script.path());
 
     let _web_server = if name == "web.ts" {
@@ -49,13 +49,13 @@ pub fn run(name: &str) -> assert_cmd::assert::Assert {
     command.assert()
 }
 
-fn configure_web_server(command: &mut std::process::Command) -> Server {
+fn configure_web_server(command: &mut Command) -> Server {
     let server = Server::run();
     let image_fixture_path = format!(
         "{}/../core/test-data/Crown_icon_transparent.png",
         env!("CARGO_MANIFEST_DIR")
     );
-    let image_bytes = std::fs::read(&image_fixture_path).unwrap_or_else(|error| {
+    let image_bytes = fs::read(&image_fixture_path).unwrap_or_else(|error| {
         panic!("failed to read web image fixture {image_fixture_path}: {error}")
     });
 

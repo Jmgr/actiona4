@@ -1,5 +1,5 @@
 use convert_case::{Case, Casing};
-use darling::{FromDeriveInput, FromMeta, FromVariant};
+use darling::{FromDeriveInput, FromMeta, FromVariant, Result as DarlingResult, ast::NestedMeta};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, Error, Expr, parse_macro_input};
@@ -16,16 +16,13 @@ struct SerdeOpts {
 #[darling(attributes(serde), supports(unit))]
 struct SerdeVariantOpts {
     ident: syn::Ident,
-    #[darling(default)]
     rename: Option<SerdeRename>,
 }
 
 #[derive(FromVariant)]
 #[darling(attributes(action_enum), supports(unit))]
 struct ActionEnumVariantOpts {
-    #[darling(default)]
     only: Option<Expr>,
-    #[darling(default)]
     not: Option<Expr>,
 }
 
@@ -36,18 +33,17 @@ enum SerdeRename {
 
 #[derive(FromMeta)]
 struct SplitSerdeRename {
-    #[darling(default)]
     serialize: Option<String>,
-    #[darling(default, rename = "deserialize")]
+    #[darling(rename = "deserialize")]
     _deserialize: Option<String>,
 }
 
 impl FromMeta for SerdeRename {
-    fn from_string(value: &str) -> darling::Result<Self> {
+    fn from_string(value: &str) -> DarlingResult<Self> {
         Ok(Self::Both(value.to_owned()))
     }
 
-    fn from_list(items: &[darling::ast::NestedMeta]) -> darling::Result<Self> {
+    fn from_list(items: &[NestedMeta]) -> DarlingResult<Self> {
         SplitSerdeRename::from_list(items).map(Self::Split)
     }
 }

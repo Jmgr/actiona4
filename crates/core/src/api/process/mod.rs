@@ -1,7 +1,12 @@
 use std::{
     collections::HashMap,
+    env,
     fmt::{self, Display},
+    process::Stdio,
 };
+
+#[cfg(windows)]
+use std::path::Path;
 
 use color_eyre::{Result, eyre::eyre};
 use tokio::{
@@ -76,7 +81,7 @@ impl Display for ProcessExitResult {
 /// Spawns a reader task for a stdio stream that sends lines to the mpsc channel.
 fn spawn_line_reader(
     task_tracker: &TaskTracker,
-    reader: BufReader<impl tokio::io::AsyncRead + Unpin + Send + 'static>,
+    reader: BufReader<impl AsyncRead + Unpin + Send + 'static>,
     sender: mpsc::Sender<String>,
     cancellation_token: CancellationToken,
 ) {
@@ -167,9 +172,9 @@ impl ProcessRunner {
         cancellation_token: CancellationToken,
     ) -> Result<StartedProcess> {
         let mut cmd = Self::build_command(command, &options);
-        cmd.stdin(std::process::Stdio::piped())
-            .stdout(std::process::Stdio::piped())
-            .stderr(std::process::Stdio::piped())
+        cmd.stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
             .kill_on_drop(true);
 
         let mut child = cmd.spawn()?;
@@ -222,9 +227,9 @@ impl ProcessRunner {
         cancellation_token: CancellationToken,
     ) -> Result<ProcessExitResult> {
         let mut cmd = Self::build_command(command, &options);
-        cmd.stdin(std::process::Stdio::null())
-            .stdout(std::process::Stdio::piped())
-            .stderr(std::process::Stdio::piped())
+        cmd.stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
             .kill_on_drop(true);
 
         let mut child = cmd.spawn()?;
@@ -283,9 +288,9 @@ impl ProcessRunner {
         let mut child = Command::new(&shell_binary)
             .arg(&shell_flag)
             .arg(command)
-            .stdin(std::process::Stdio::inherit())
-            .stdout(std::process::Stdio::inherit())
-            .stderr(std::process::Stdio::inherit())
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
             .kill_on_drop(true)
             .spawn()?;
 
@@ -303,9 +308,9 @@ impl ProcessRunner {
     /// Start a detached process and return only its PID.
     pub fn start_detached(&self, command: &str, options: StartProcessOptions) -> Result<Pid> {
         let mut cmd = Self::build_command(command, &options);
-        cmd.stdin(std::process::Stdio::null())
-            .stdout(std::process::Stdio::null())
-            .stderr(std::process::Stdio::null())
+        cmd.stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
             .kill_on_drop(false);
 
         let child = cmd.spawn()?;
@@ -371,7 +376,7 @@ pub fn terminate_by_pid(pid: Pid) -> Result<()> {
 fn resolve_shell(override_shell: &Option<String>) -> (String, String) {
     let shell = override_shell
         .clone()
-        .unwrap_or_else(|| std::env::var("SHELL").unwrap_or_else(|_| "bash".to_string()));
+        .unwrap_or_else(|| env::var("SHELL").unwrap_or_else(|_| "bash".to_string()));
     (shell, "-c".to_string())
 }
 
@@ -386,7 +391,7 @@ fn resolve_shell(override_shell: &Option<String>) -> (String, String) {
 
 #[cfg(windows)]
 fn shell_flag_for(shell: &str) -> String {
-    let name = std::path::Path::new(shell)
+    let name = Path::new(shell)
         .file_stem()
         .and_then(|s| s.to_str())
         .unwrap_or(shell)

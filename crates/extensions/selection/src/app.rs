@@ -26,6 +26,9 @@ use crate::{
     text::{draw_text, line_height},
 };
 
+#[cfg(not(windows))]
+use crate::cursor_tracker::{get_window_xid, spawn_cursor_tracker};
+
 const CROSSHAIR_GAP: u32 = 5;
 const CROSSHAIR_COLOR: [u8; 4] = [255, 255, 255, 220];
 const SELECTION_BORDER_COLOR: [u8; 4] = [255, 255, 255, 255];
@@ -397,10 +400,10 @@ impl App {
 
         #[cfg(not(windows))]
         if matches!(self.active_mode(), Some(SelectionMode::Position))
-            && let Some(window_xid) = crate::cursor_tracker::get_window_xid(&window)
+            && let Some(window_xid) = get_window_xid(&window)
         {
             let stop = Arc::new(AtomicBool::new(false));
-            crate::cursor_tracker::spawn_cursor_tracker(
+            spawn_cursor_tracker(
                 self.proxy.clone(),
                 window_xid,
                 self.desktop_origin,

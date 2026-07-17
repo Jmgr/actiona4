@@ -9,9 +9,11 @@
 #![allow(rustdoc::invalid_html_tags)]
 
 use std::{
-    env,
+    convert::identity,
+    env, error,
     ffi::OsString,
-    io::{IsTerminal, stdin},
+    fmt,
+    io::{IsTerminal, stderr, stdin, stdout},
     path::Path,
     sync::Arc,
 };
@@ -20,10 +22,16 @@ use ::config::{CommonConfig, DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK};
 use actiona_common::sentry::setup_crash_reporting;
 use actiona_core::{
     format_js_value_for_console,
-    runtime::{Runtime, RuntimeOptions, RuntimePlatformSetup, WaitAtEnd},
+    runtime::{
+        Runtime, RuntimeOptions, RuntimePlatformSetup, WaitAtEnd,
+        ensure_x11_session_available as core_ensure_x11_session_available,
+    },
     scripting::{self},
 };
-use clap::{CommandFactory, Parser, error::ErrorKind};
+use clap::{
+    CommandFactory, Parser,
+    error::{ErrorKind, Result as ClapResult},
+};
 use color_eyre::{
     Result,
     config::HookBuilder,
@@ -33,8 +41,12 @@ use dialoguer::{Confirm, theme::ColorfulTheme};
 use installer_tools::path::{PathScope, add_directory_to_path, remove_directory_from_path};
 #[cfg(not(windows))]
 use rfd::{MessageButtons, MessageLevel};
+use tokio::{fs, runtime::Builder};
 use tracing_subscriber::{
-    EnvFilter, fmt::format::FmtSpan, layer::SubscriberExt, util::SubscriberInitExt,
+    EnvFilter,
+    fmt::{self as tracing_fmt, format::FmtSpan},
+    layer::SubscriberExt,
+    util::SubscriberInitExt,
 };
 #[cfg(windows)]
 use windows::{
@@ -73,13 +85,13 @@ fn is_windows10_1607_or_newer() -> Option<bool> {
 #[derive(Debug)]
 pub struct ScriptFailed;
 
-impl std::fmt::Display for ScriptFailed {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for ScriptFailed {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("script failed")
     }
 }
 
-impl std::error::Error for ScriptFailed {}
+impl error::Error for ScriptFailed {}
 
 pub const NO_ARGS_MESSAGE: &str = "Actiona Run is a command-line tool.\n\nUse it from a terminal, for example:\n  actiona-run script.ts\n  actiona-run repl\n\nFor full help, run:\n  actiona-run --help";
 
@@ -100,7 +112,7 @@ pub fn run_cli() -> Result<()> {
     // the AppImage on Linux), show a dialog explaining this is a CLI tool.
     // On Windows this is handled by actiona-runw.exe before actiona-run.exe runs.
     #[cfg(not(windows))]
-    if std::env::args_os().len() == 1 && !stdin().is_terminal() {
+    if env::args_os().len() == 1 && !stdin().is_terminal() {
         rfd::MessageDialog::new()
             .set_title("Actiona Run")
             .set_description(NO_ARGS_MESSAGE)
@@ -143,7 +155,7 @@ fn ensure_x11_session_available(
             )
         })?;
 
-    actiona_core::runtime::ensure_x11_session_available(Some(display_name)).with_context(|| {
+    core_ensure_x11_session_available(Some(display_name)).with_context(|| {
         format!(
             "No X11 session is available on display `{display_name}`. Start an X11 session, or pass --display to a reachable X11 server."
         )
@@ -236,9 +248,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
     let show_tray_icon = args.command.is_run() || args.command.is_eval();
     let platform = RuntimePlatformSetup::new(show_tray_icon)?;
 
-    let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()?;
+    let tokio_runtime = Builder::new_multi_thread().enable_all().build()?;
 
     tokio_runtime.block_on(async move {
         let config = CommonConfig::new().await?;
@@ -268,8 +278,8 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                 return check_updates_now(&config).await;
             }
             Commands::Completions { shell } => {
-                let mut cmd = <Args as clap::CommandFactory>::command();
-                let bin_name = std::env::args_os()
+                let mut cmd = <Args as CommandFactory>::command();
+                let bin_name = env::args_os()
                     .next()
                     .and_then(|arg0| {
                         Path::new(&arg0)
@@ -278,7 +288,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                     })
                     .unwrap_or_else(|| "actiona-run".to_owned());
 
-                clap_complete::generate(*shell, &mut cmd, &bin_name, &mut std::io::stdout());
+                clap_complete::generate(*shell, &mut cmd, &bin_name, &mut stdout());
                 return Ok(());
             }
             Commands::Setup => {
@@ -309,10 +319,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
         }
 
         #[cfg(unix)]
-        ensure_x11_session_available(
-            args.display.as_deref(),
-            std::env::var("DISPLAY").ok().as_deref(),
-        )?;
+        ensure_x11_session_available(args.display.as_deref(), env::var("DISPLAY").ok().as_deref())?;
 
         let runtime_options = RuntimeOptions {
             #[cfg(unix)]
@@ -337,7 +344,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                     Commands::Run { filepath, .. } => {
                         init::ensure_index_dts(filepath)?;
 
-                        let script: String = tokio::fs::read_to_string(&filepath)
+                        let script: String = fs::read_to_string(&filepath)
                             .await
                             .context("reading input file")?;
 
@@ -366,7 +373,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                                     Some(format_js_value_for_console(value))
                                 })
                             },
-                            std::convert::identity,
+                            identity,
                         );
 
                         match value.await {
@@ -449,11 +456,11 @@ fn parse_args_with_default_run() -> Args {
     try_parse_args_with_default_run().unwrap_or_else(|error| error.exit())
 }
 
-fn try_parse_args_with_default_run() -> clap::error::Result<Args> {
-    try_parse_args_with_default_run_from(std::env::args_os().collect())
+fn try_parse_args_with_default_run() -> ClapResult<Args> {
+    try_parse_args_with_default_run_from(env::args_os().collect())
 }
 
-fn try_parse_args_with_default_run_from(args: Vec<OsString>) -> clap::error::Result<Args> {
+fn try_parse_args_with_default_run_from(args: Vec<OsString>) -> ClapResult<Args> {
     let args = maybe_insert_default_run(args);
 
     match Args::try_parse_from(&args) {
@@ -607,10 +614,10 @@ fn init_tracing() {
     let filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| EnvFilter::new("warn,enigo::platform::x11=off,minidump_writer=error"));
 
-    let stdout_layer = tracing_subscriber::fmt::layer()
+    let stdout_layer = tracing_fmt::layer()
         // Keep command output deterministic on stdout (e.g. scripts/tests) by
         // sending tracing logs to stderr.
-        .with_writer(std::io::stderr)
+        .with_writer(stderr)
         .with_ansi(true)
         .with_target(true)
         .with_line_number(true)
@@ -624,14 +631,14 @@ fn init_tracing() {
 
 #[cfg(test)]
 mod tests {
-    use std::ffi::OsString;
+    use std::{ffi::OsString, path::PathBuf};
 
     use clap::{Parser, error::ErrorKind};
 
     use super::maybe_insert_default_run;
     #[cfg(unix)]
     use super::{effective_x11_display, ensure_x11_session_available};
-    use crate::args::Args;
+    use crate::args::{Args, Commands};
 
     #[cfg(unix)]
     #[test]
@@ -766,8 +773,8 @@ mod tests {
         let parsed = Args::try_parse_from(args).expect("parse args");
 
         match parsed.command {
-            crate::args::Commands::Run { filepath, run_args } => {
-                assert_eq!(filepath, std::path::PathBuf::from("script.ts"));
+            Commands::Run { filepath, run_args } => {
+                assert_eq!(filepath, PathBuf::from("script.ts"));
                 assert_eq!(run_args.seed, Some(42));
             }
             other => panic!("expected run command, got {other:?}"),
@@ -781,7 +788,7 @@ mod tests {
                 .expect("parse args");
 
         match parsed.command {
-            crate::args::Commands::Eval { code, run_args } => {
+            Commands::Eval { code, run_args } => {
                 assert_eq!(run_args.seed, Some(123));
                 assert_eq!(code, vec!["console.log('hi')"]);
             }
@@ -795,7 +802,7 @@ mod tests {
             Args::try_parse_from(["actiona-run", "repl", "--seed", "99"]).expect("parse args");
 
         match parsed.command {
-            crate::args::Commands::Repl { run_args } => {
+            Commands::Repl { run_args } => {
                 assert_eq!(run_args.seed, Some(99));
             }
             other => panic!("expected repl command, got {other:?}"),

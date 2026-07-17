@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::{collections::BTreeMap, env, sync::Arc};
 
 use macros::{js_class, js_methods};
 use rquickjs::{
@@ -136,7 +136,7 @@ impl JsApp {
     ///
     #[get]
     pub fn cwd(&self, ctx: Ctx<'_>) -> Result<String> {
-        std::env::current_dir()
+        env::current_dir()
             .map(|dir| dir.to_string_lossy().to_string())
             .into_js_result(&ctx)
     }
@@ -147,7 +147,7 @@ impl JsApp {
     /// app.setCwd("/tmp");
     /// ```
     pub fn set_cwd(&self, ctx: Ctx<'_>, cwd: String) -> Result<()> {
-        std::env::set_current_dir(&cwd).into_js_result(&ctx)?;
+        env::set_current_dir(&cwd).into_js_result(&ctx)?;
         Ok(())
     }
 
@@ -159,7 +159,7 @@ impl JsApp {
     ///
     #[get]
     pub fn executable_path(&self, ctx: Ctx<'_>) -> Result<String> {
-        std::env::current_exe()
+        env::current_exe()
             .map(|dir| dir.to_string_lossy().to_string())
             .into_js_result(&ctx)
     }

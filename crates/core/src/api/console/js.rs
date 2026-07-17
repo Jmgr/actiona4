@@ -1,4 +1,8 @@
-use std::{collections::HashMap, io::Write, time::Instant};
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+    time::Instant,
+};
 
 use console::{Style, Term};
 use humantime::format_duration;
@@ -412,7 +416,7 @@ impl JsConsole {
 
     pub(crate) fn do_print<'js>(ctx: &Ctx<'js>, data: Rest<Value<'js>>) {
         print!("{}", Self::args_to_string(ctx, data));
-        if let Err(error) = std::io::stdout().flush() {
+        if let Err(error) = io::stdout().flush() {
             warn!(error = %error, "failed to flush stdout");
         }
     }

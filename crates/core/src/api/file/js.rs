@@ -2,7 +2,12 @@
 use std::os::unix::fs::PermissionsExt;
 #[cfg(windows)]
 use std::os::windows::fs::FileTimesExt;
-use std::{fmt::Debug, fs::FileTimes, io::SeekFrom, sync::Arc};
+use std::{
+    fmt::Debug,
+    fs::{File as StdFile, FileTimes},
+    io::SeekFrom,
+    sync::Arc,
+};
 
 use color_eyre::eyre::eyre;
 use macros::{FromJsObject, js_class, js_methods, options, platform};
@@ -526,7 +531,7 @@ impl JsFile {
 
         task_tracker
             .spawn_blocking(move || {
-                let file = std::fs::File::options().write(true).open(path)?;
+                let file = StdFile::options().write(true).open(path)?;
                 file.set_times(times)?; // No implemented in tokio::fs
                 Result::<_>::Ok(())
             })

@@ -1,10 +1,10 @@
-use core::fmt::Display;
+use core::fmt::{self, Display};
 use std::{
     collections::HashSet,
     ffi::{OsStr, OsString},
     marker::PhantomData,
     ops::Deref,
-    path::PathBuf,
+    path::{Path as StdPath, PathBuf},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -54,7 +54,7 @@ impl<T: Clone> Clone for OptionalUnit<T> {
 impl<T: Copy> Copy for OptionalUnit<T> {}
 
 impl<T: Clone + Display> Display for OptionalUnit<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.0 {
             Some(v) => write!(f, "{}", v),
             None => write!(f, "<NONE>"),
@@ -81,7 +81,7 @@ pub struct DegreesCelsiusTag;
 pub type DegreesCelsius = Unit<f64, DegreesCelsiusTag>;
 
 impl Display for DegreesCelsius {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:.0}°C", self.0)
     }
 }
@@ -105,7 +105,7 @@ pub struct ByteCountTag;
 pub type ByteCount = Unit<u64, ByteCountTag>;
 
 impl Display for ByteCount {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", humansize::format_size(self.0, BINARY))
     }
 }
@@ -148,7 +148,7 @@ pub struct PercentTag;
 pub type Percent = Unit<f32, PercentTag>;
 
 impl Display for Percent {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}%", self.0)
     }
 }
@@ -158,7 +158,7 @@ pub struct FrequencyTag;
 pub type Frequency = Unit<u64, FrequencyTag>;
 
 impl Display for Frequency {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} Hz", self.0)
     }
 }
@@ -168,7 +168,7 @@ pub struct OsStringListTag;
 pub type OsStringList = Unit<Vec<String>, OsStringListTag>;
 
 impl Display for OsStringList {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[{}]", self.iter().join(", "))
     }
 }
@@ -188,21 +188,21 @@ pub struct PathTag;
 pub type Path = Unit<PathBuf, PathTag>;
 
 impl Display for Path {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0.display())
     }
 }
 
-impl From<&std::path::Path> for Path {
-    fn from(value: &std::path::Path) -> Self {
+impl From<&StdPath> for Path {
+    fn from(value: &StdPath) -> Self {
         value.to_path_buf().into()
     }
 }
 
 pub type OptionalPath = OptionalUnit<Path>;
 
-impl From<Option<&std::path::Path>> for OptionalPath {
-    fn from(value: Option<&std::path::Path>) -> Self {
+impl From<Option<&StdPath>> for OptionalPath {
+    fn from(value: Option<&StdPath>) -> Self {
         Self(value.map(|path| path.into()))
     }
 }
@@ -236,7 +236,7 @@ pub struct TaskListTag;
 pub type TaskList = Unit<HashSet<u32>, TaskListTag>;
 
 impl Display for TaskList {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[{}]", self.0.iter().join(", "))
     }
 }
@@ -269,7 +269,7 @@ impl SystemTimeUnit {
 }
 
 impl Display for SystemTimeUnit {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", humantime::format_rfc3339(self.0))
     }
 }
@@ -279,7 +279,7 @@ pub struct DurationUnitTag;
 pub type DurationUnit = Unit<Duration, DurationUnitTag>;
 
 impl Display for DurationUnit {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", humantime::format_duration(self.0))
     }
 }
@@ -296,7 +296,7 @@ pub struct UidTag;
 pub type UidUnit = Unit<Uid, UidTag>;
 
 impl Display for UidUnit {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // sysinfo::Uid has no cross-platform Display impl, so fall back to its opaque debug form.
         write!(f, "{:?}", self.0)
     }

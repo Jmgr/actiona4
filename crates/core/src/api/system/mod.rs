@@ -1,4 +1,8 @@
-use std::{ffi::OsStr, fmt::Display, path::Path};
+use std::{
+    ffi::OsStr,
+    fmt::{self, Display},
+    path::Path,
+};
 
 use color_eyre::Result;
 use system_shutdown::{
@@ -38,7 +42,7 @@ pub struct System {
 }
 
 impl Display for System {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("cpu", self.cpu())
             .display("memory", self.memory())

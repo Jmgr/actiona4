@@ -1,3 +1,5 @@
+use std::env;
+
 use actiona_core::api::notification::{Notification as DesktopNotification, NotificationOptions};
 use color_eyre::Result;
 use config::{CommonConfig, CommonState};
@@ -87,14 +89,16 @@ async fn show_notification(title: &str, body: &str, task_tracker: TaskTracker) -
 }
 
 fn desktop_notifications_available() -> bool {
-    std::env::var_os("DBUS_SESSION_BUS_ADDRESS").is_some()
-        || std::env::var_os("DISPLAY").is_some()
-        || std::env::var_os("WAYLAND_DISPLAY").is_some()
+    env::var_os("DBUS_SESSION_BUS_ADDRESS").is_some()
+        || env::var_os("DISPLAY").is_some()
+        || env::var_os("WAYLAND_DISPLAY").is_some()
 }
 
 #[cfg(test)]
 mod tests {
     use std::time::Duration as StdDuration;
+
+    use tokio::{runtime::Builder, time::sleep};
 
     use config::{Channel, VersionInfo};
     use time::OffsetDateTime;
@@ -146,16 +150,13 @@ mod tests {
             return;
         }
 
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
 
         runtime.block_on(async {
             show_notification(title, body, TaskTracker::new())
                 .await
                 .unwrap();
-            tokio::time::sleep(StdDuration::from_secs(2)).await;
+            sleep(StdDuration::from_secs(2)).await;
         });
     }
 }

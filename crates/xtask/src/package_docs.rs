@@ -2,6 +2,7 @@ use std::path::{Path, PathBuf};
 
 use color_eyre::Result;
 use installer_tools::package::{PackagedFile, PackagedFilePlatform};
+use tokio::fs;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StagedPackagedFile {
@@ -19,7 +20,7 @@ pub async fn read_packaged_file_contents(
     if packaged_file.use_dos_line_feeds {
         read_document_contents_with_dos_line_feeds(&source_path).await
     } else {
-        Ok(tokio::fs::read(&source_path).await?)
+        Ok(fs::read(&source_path).await?)
     }
 }
 
@@ -29,7 +30,7 @@ pub async fn stage_packaged_files(
     packaged_files: &[PackagedFile],
     platform: PackagedFilePlatform,
 ) -> Result<Vec<StagedPackagedFile>> {
-    tokio::fs::create_dir_all(destination_dir).await?;
+    fs::create_dir_all(destination_dir).await?;
 
     let mut staged_files = Vec::new();
     for packaged_file in packaged_files
@@ -41,7 +42,7 @@ pub async fn stage_packaged_files(
             &workspace_root.join(&packaged_file.source_path),
         )
         .await?;
-        tokio::fs::write(&staged_source_path, contents).await?;
+        fs::write(&staged_source_path, contents).await?;
         staged_files.push(StagedPackagedFile {
             source_path: staged_source_path,
             destination_name: packaged_file.destination_name_for(platform).to_owned(),
@@ -52,7 +53,7 @@ pub async fn stage_packaged_files(
 }
 
 async fn read_document_contents_with_dos_line_feeds(source_path: &Path) -> Result<Vec<u8>> {
-    let contents = tokio::fs::read_to_string(source_path).await?;
+    let contents = fs::read_to_string(source_path).await?;
     Ok(normalize_to_crlf(&contents).into_bytes())
 }
 
@@ -69,6 +70,7 @@ mod tests {
 
     use installer_tools::package::{PackagedFilePlatform, packaged_files};
     use tempfile::tempdir;
+    use tokio::fs as tokio_fs;
 
     use super::{normalize_to_crlf, stage_packaged_files};
 
@@ -144,9 +146,7 @@ mod tests {
         staged_names.sort();
         assert_eq!(staged_names, vec!["LICENSE", "README.md"]);
         assert_eq!(
-            tokio::fs::read(destination.join("README.md"))
-                .await
-                .unwrap(),
+            tokio_fs::read(destination.join("README.md")).await.unwrap(),
             b"line1\r\nline2\r\n"
         );
     }

@@ -1,7 +1,8 @@
-use std::{path::Path, process::Command};
+use std::{fs, path::Path, process::Command};
 
 use color_eyre::{Result, eyre::eyre};
 use tempfile::tempdir;
+use tokio::fs as tokio_fs;
 
 use crate::util::run_command;
 
@@ -27,7 +28,7 @@ fn validate_typescript_declarations(workspace_root: &Path, path: &Path) -> Resul
         "extends": base_tsconfig_path,
         "files": [path]
     });
-    std::fs::write(&tsconfig_path, serde_json::to_vec_pretty(&tsconfig)?)?;
+    fs::write(&tsconfig_path, serde_json::to_vec_pretty(&tsconfig)?)?;
 
     run_command(
         Command::new(&tsc_path)
@@ -73,8 +74,8 @@ pub async fn generate_docs(workspace_root: &Path) -> Result<()> {
 
     validate_typescript_declarations(workspace_root, &output_path)?;
 
-    tokio::fs::create_dir_all(&run_assets_directory).await?;
-    tokio::fs::copy(&output_path, run_assets_directory.join("index.d.ts")).await?;
+    tokio_fs::create_dir_all(&run_assets_directory).await?;
+    tokio_fs::copy(&output_path, run_assets_directory.join("index.d.ts")).await?;
 
     Ok(())
 }

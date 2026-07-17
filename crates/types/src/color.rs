@@ -1,6 +1,6 @@
 //! Represents a color.
 
-use std::fmt::Display;
+use std::fmt::{self, Display};
 
 use derive_more::{Deref, DerefMut, From, Into};
 use image::Rgba;
@@ -12,7 +12,7 @@ use crate::display::DisplayFields;
 pub struct Color(Rgba<u8>);
 
 impl Display for Color {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("r", self.0[0])
             .display("g", self.0[1])

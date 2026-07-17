@@ -150,6 +150,7 @@ mod tests {
     use std::{sync::Arc, time::Duration};
 
     use tokio::{sync::Notify, time::sleep};
+    use tokio_util::sync::CancellationToken;
 
     use super::{PreparedWait, join_waits, race_waits};
     use crate::{RunError, RunErrorKind};
@@ -171,7 +172,7 @@ mod tests {
     async fn starts_with_the_token_provided_by_the_caller() {
         let started = Arc::new(Notify::new());
         let observed = started.clone();
-        let token = tokio_util::sync::CancellationToken::new();
+        let token = CancellationToken::new();
         token.cancel();
 
         let wait = PreparedWait::new(move |token| async move {
@@ -186,7 +187,7 @@ mod tests {
 
     #[tokio::test]
     async fn join_waits_until_every_input_completes() {
-        let token = tokio_util::sync::CancellationToken::new();
+        let token = CancellationToken::new();
         join_waits(
             vec![
                 succeeds_after(Duration::from_millis(1)),
@@ -200,7 +201,7 @@ mod tests {
 
     #[tokio::test]
     async fn join_waits_propagates_an_input_error() {
-        let token = tokio_util::sync::CancellationToken::new();
+        let token = CancellationToken::new();
         let error = join_waits(
             vec![succeeds_after(Duration::from_secs(1)), fails()],
             &token,
@@ -213,7 +214,7 @@ mod tests {
 
     #[tokio::test]
     async fn race_waits_uses_the_first_success() {
-        let token = tokio_util::sync::CancellationToken::new();
+        let token = CancellationToken::new();
         let winner = race_waits(
             vec![
                 succeeds_after(Duration::from_millis(5)),
@@ -229,7 +230,7 @@ mod tests {
 
     #[tokio::test]
     async fn race_waits_ignores_errors_when_another_input_succeeds() {
-        let token = tokio_util::sync::CancellationToken::new();
+        let token = CancellationToken::new();
         let winner = race_waits(
             vec![fails(), succeeds_after(Duration::from_millis(1))],
             &token,

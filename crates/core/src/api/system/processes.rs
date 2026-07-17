@@ -1,6 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
-    fmt::Display,
+    fmt::{self, Display},
     sync::Arc,
 };
 
@@ -212,7 +212,7 @@ impl TryFrom<sysinfo::Process> for Process {
 }
 
 impl Display for Process {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             DisplayFields::default()
                 .display_if_some("name", &self.name)
@@ -413,11 +413,11 @@ pub struct Processes {
 }
 
 impl Display for Processes {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let processes = self.processes().map_err(|err| {
             error!("fetching processes failed: {err}");
 
-            std::fmt::Error
+            fmt::Error
         })?;
         DisplayFields::default()
             .display("processes", display_map(&processes))

@@ -1,4 +1,9 @@
-use std::{cmp::Reverse, collections::HashMap, fs, io::Write};
+use std::{
+    cmp::Reverse,
+    collections::HashMap,
+    fs::{self, File as StdFile},
+    io::Write,
+};
 
 use color_eyre::Result;
 use convert_case::{Case, Casing};
@@ -412,7 +417,7 @@ impl File {
 fn output_methods(
     methods: &[Method],
     is_free_function: bool,
-    output_file: &mut std::fs::File,
+    output_file: &mut StdFile,
 ) -> Result<()> {
     let mut methods = methods.to_vec();
 

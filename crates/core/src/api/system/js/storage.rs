@@ -1,7 +1,12 @@
 use derive_more::Display;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options};
-use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
+use rquickjs::{
+    Ctx, JsLifetime, Result,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+    prelude::Opt,
+};
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 use sysinfo::DiskKind;
@@ -38,7 +43,7 @@ impl<'js> HostClass<'js> for JsStorage {
 }
 
 impl<'js> Trace<'js> for JsStorage {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsStorage {
@@ -116,7 +121,7 @@ impl<'js> HostClass<'js> for JsDisk {
 }
 
 impl<'js> Trace<'js> for JsDisk {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<Disk> for JsDisk {
@@ -272,7 +277,7 @@ pub struct JsIoStats {
 impl<'js> HostClass<'js> for JsIoStats {}
 
 impl<'js> Trace<'js> for JsIoStats {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<IoStats> for JsIoStats {
@@ -331,7 +336,7 @@ impl<'js> HostClass<'js> for JsDiskUsage {
 }
 
 impl<'js> Trace<'js> for JsDiskUsage {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<DiskUsage> for JsDiskUsage {

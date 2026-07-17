@@ -1,7 +1,9 @@
+use std::fmt::Debug;
+
 use ipc_rpc::UserMessage;
 use serde::{Deserialize, Serialize};
 
-pub trait Protocol: std::fmt::Debug + Clone + 'static {
+pub trait Protocol: Debug + Clone + 'static {
     type HostRequest: UserMessage;
     type HostResponse: UserMessage;
     type ExtensionRequest: UserMessage;

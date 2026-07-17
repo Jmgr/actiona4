@@ -1,6 +1,11 @@
 use itertools::Itertools;
 use macros::{FromJsObject, js_class, js_methods, options};
-use rquickjs::{Ctx, JsLifetime, Result, atom::PredefinedAtom, class::Trace, prelude::Opt};
+use rquickjs::{
+    Ctx, JsLifetime, Result,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+    prelude::Opt,
+};
 
 use crate::{
     IntoJsResult,
@@ -36,7 +41,7 @@ impl<'js> HostClass<'js> for JsHardware {
 }
 
 impl<'js> Trace<'js> for JsHardware {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsHardware {
@@ -160,7 +165,7 @@ pub struct JsMotherboard {
 impl<'js> HostClass<'js> for JsMotherboard {}
 
 impl<'js> Trace<'js> for JsMotherboard {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<Motherboard> for JsMotherboard {
@@ -232,7 +237,7 @@ pub struct JsTemperatureSensor {
 impl<'js> HostClass<'js> for JsTemperatureSensor {}
 
 impl<'js> Trace<'js> for JsTemperatureSensor {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl From<TemperatureSensor> for JsTemperatureSensor {

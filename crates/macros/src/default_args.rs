@@ -20,8 +20,7 @@ pub(crate) struct PlatformArguments {
     pub not_platform: Option<String>,
     pub check: Option<String>,
     pub label: Option<String>,
-    #[darling(default)]
-    pub nested: bool,
+    pub nested: Option<bool>,
 }
 
 /// Parse a `#[name(...)]` attribute into a darling-backed struct.

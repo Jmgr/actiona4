@@ -1,4 +1,4 @@
-use std::{io, sync::Arc};
+use std::{io, result::Result as StdResult, sync::Arc};
 
 use image::ImageResult;
 use itertools::Itertools;
@@ -18,12 +18,15 @@ use tokio::sync::mpsc;
 use crate::{
     IntoJsResult,
     api::{
-        color::js::{JsColor, JsColorLike},
+        color::{
+            Color,
+            js::{JsColor, JsColorLike},
+        },
         image::{
             BlurOptions, DrawImageOptions, DrawTextOptions, DrawingOptions, FlipDirection,
             Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
             TextVerticalAlign,
-            find_image::{FindImageProgress, Source, Template},
+            find_image::{FindImageProgress, SearchIn, Source, Template},
         },
         js::{
             DeepEqualClass, DeepEqualError,
@@ -284,10 +287,7 @@ pub struct JsRotationOptions {
     pub center: Option<JsPointLike>,
 
     /// Default color, used if the rotation triggers more pixels to be displayed
-    #[default(
-        crate::api::color::js::JsColorLike(crate::api::color::Color::new(0, 0, 0, 255)),
-        ts = "Color.Black"
-    )]
+    #[default(JsColorLike(Color::new(0, 0, 0, 255)), ts = "Color.Black")]
     pub default_color: JsColorLike,
 }
 
@@ -534,7 +534,7 @@ pub struct JsMatch {
 impl HostClass<'_> for JsMatch {}
 
 impl DeepEqualClass for JsMatch {
-    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+    fn deep_equal_class(&self, other: &Self) -> StdResult<bool, DeepEqualError> {
         validate_deep_equal_score(self.inner.score)?;
         validate_deep_equal_score(other.inner.score)?;
 
@@ -542,7 +542,7 @@ impl DeepEqualClass for JsMatch {
     }
 }
 
-const fn validate_deep_equal_score(score: f64) -> std::result::Result<(), DeepEqualError> {
+const fn validate_deep_equal_score(score: f64) -> StdResult<(), DeepEqualError> {
     if score.is_finite() {
         return Ok(());
     }
@@ -836,7 +836,7 @@ pub struct JsImage {
 }
 
 impl DeepEqualClass for JsImage {
-    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+    fn deep_equal_class(&self, other: &Self) -> StdResult<bool, DeepEqualError> {
         Ok(self == other)
     }
 }
@@ -1588,7 +1588,7 @@ impl JsImage {
             signal,
             progress_receiver,
             async move |ctx, token| {
-                let search_in = crate::api::image::find_image::SearchIn::from(search_in);
+                let search_in = SearchIn::from(search_in);
                 let result = screen
                     .find_on_screen(
                         &template,
@@ -1641,7 +1641,7 @@ impl JsImage {
             signal,
             progress_receiver,
             async move |ctx, token| {
-                let search_in = crate::api::image::find_image::SearchIn::from(search_in);
+                let search_in = SearchIn::from(search_in);
                 let results = screen
                     .find_all_on_screen(
                         &template,

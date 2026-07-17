@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{self, Display};
 
 use serde::{Deserialize, Serialize};
 use strum::EnumIs;
@@ -19,7 +19,7 @@ impl<T: Default> Default for Scriptable<T> {
 }
 
 impl<T: Display> Display for Scriptable<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Static { value } => write!(f, "{value}"),
             Self::Script { source } => write!(f, "{source}"),

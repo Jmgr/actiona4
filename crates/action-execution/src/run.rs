@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{iter, sync::Arc, time::Duration};
 
 use action_definition::{
     actions::{WithCommonParameters, WithDefinition},
@@ -326,7 +326,7 @@ impl Runner<'_> {
     }
 
     fn enter_body(&self, target: NodeId) -> Result<RunStep, RunErrorKind> {
-        let mut owners = std::iter::once(target)
+        let mut owners = iter::once(target)
             .chain(self.tree.ancestors(target))
             .filter_map(|node_id| {
                 let node = self.tree.get_node(node_id).ok()?;
@@ -408,15 +408,23 @@ mod tests {
         },
         post_run::PostRun,
         scriptable::Scriptable,
-        tree::{ActionTree, BranchKind, NodeId, NodePayload},
+        tree::{ActionTree, BranchKind, NodeId, NodePayload, Static},
     };
     use actiona_core::runtime::{Runtime, RuntimeOptions, RuntimePlatformSetup};
     use parking_lot::Mutex;
-    use tokio::sync::broadcast::error::TryRecvError;
+    use tokio::{
+        sync::broadcast::{Receiver, error::TryRecvError},
+        task::yield_now,
+    };
     use tokio_util::sync::CancellationToken;
 
     use super::{RunTree, wait_for_pause};
-    use crate::{RunError, RunErrorKind};
+    use crate::{
+        RunError, RunErrorKind,
+        test_support::{
+            register_test_action_visit_label, subscribe_test_action_visits, test_action_visit_label,
+        },
+    };
 
     fn post_run_script(post_run: PostRun) -> String {
         match post_run {
@@ -442,7 +450,7 @@ mod tests {
     }
 
     fn test_action(label: &'static str, post_run: PostRun) -> ActionInstance {
-        let visit_id = crate::test_support::register_test_action_visit_label(label);
+        let visit_id = register_test_action_visit_label(label);
         ActionInstance::Test(
             Test {
                 percent: Scriptable::new_static(visit_id).into(),
@@ -542,7 +550,7 @@ mod tests {
         setup_script: &str,
     ) -> Result<Vec<String>, RunError> {
         let test_action_visit_ids = test_action_visit_ids(&tree);
-        let mut test_action_visits = crate::test_support::subscribe_test_action_visits();
+        let mut test_action_visits = subscribe_test_action_visits();
         let result = Arc::new(Mutex::new(None));
         let output = result.clone();
         let setup_script = setup_script.to_owned();
@@ -617,7 +625,7 @@ mod tests {
     }
 
     fn drain_test_action_visits(
-        receiver: &mut tokio::sync::broadcast::Receiver<i64>,
+        receiver: &mut Receiver<i64>,
         expected_ids: &HashSet<i64>,
     ) -> Vec<String> {
         let mut visits = Vec::new();
@@ -625,7 +633,7 @@ mod tests {
         loop {
             match receiver.try_recv() {
                 Ok(id) if expected_ids.contains(&id) => {
-                    if let Some(label) = crate::test_support::test_action_visit_label(id) {
+                    if let Some(label) = test_action_visit_label(id) {
                         visits.push(label.to_owned());
                     }
                 }
@@ -1376,9 +1384,7 @@ mod tests {
             .find(|&child| {
                 matches!(
                     tree.get_node(child).unwrap().payload(),
-                    action_definition::tree::NodePayload::Static(
-                        action_definition::tree::Static::Branch(BranchKind::Timeout)
-                    )
+                    NodePayload::Static(Static::Branch(BranchKind::Timeout))
                 )
             })
             .expect("wait action should have a timeout branch");
@@ -1467,7 +1473,7 @@ mod tests {
         let cancellation_token = CancellationToken::new();
         let cancel = cancellation_token.clone();
         let cancellation = tokio::spawn(async move {
-            tokio::task::yield_now().await;
+            yield_now().await;
             cancel.cancel();
         });
 
@@ -1846,9 +1852,7 @@ value
             .find(|&child| {
                 matches!(
                     tree.get_node(child).unwrap().payload(),
-                    action_definition::tree::NodePayload::Static(
-                        action_definition::tree::Static::Branch(BranchKind::Timeout)
-                    )
+                    NodePayload::Static(Static::Branch(BranchKind::Timeout))
                 )
             })
             .expect("wait action should have a timeout branch");

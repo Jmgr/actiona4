@@ -213,7 +213,7 @@ pub struct JsPlayingSound {
 impl<'js> HostClass<'js> for JsPlayingSound {}
 
 impl<'js> Trace<'js> for JsPlayingSound {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsPlayingSound {

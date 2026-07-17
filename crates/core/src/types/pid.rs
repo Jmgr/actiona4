@@ -7,6 +7,7 @@ use color_eyre::{
     eyre::{OptionExt, bail},
 };
 use derive_more::{Constructor, Display, From, Into};
+use rustix::thread::Pid as RustixPid;
 
 /// Process ID
 #[derive(Clone, Constructor, Copy, Debug, Display, Eq, From, Hash, Into, PartialEq)]
@@ -74,17 +75,17 @@ impl TryFrom<Pid> for i32 {
 }
 
 #[cfg(unix)]
-impl TryFrom<rustix::thread::Pid> for Pid {
+impl TryFrom<RustixPid> for Pid {
     type Error = Report;
 
-    fn try_from(value: rustix::thread::Pid) -> Result<Self> {
+    fn try_from(value: RustixPid) -> Result<Self> {
         value.as_raw_nonzero().try_into()
     }
 }
 
 #[cfg(unix)]
 #[allow(unsafe_code)]
-impl TryFrom<Pid> for rustix::thread::Pid {
+impl TryFrom<Pid> for RustixPid {
     type Error = Report;
 
     fn try_from(value: Pid) -> Result<Self> {

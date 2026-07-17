@@ -1,5 +1,6 @@
 use std::{
-    fmt::{Debug, Display},
+    any::type_name,
+    fmt::{self, Debug, Display},
     sync::Arc,
 };
 
@@ -116,7 +117,7 @@ impl<T: Topic> Clone for TopicWrapper<T> {
 }
 
 impl<T: Topic> Debug for TopicWrapper<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("TopicWrapper").finish()
     }
 }
@@ -153,7 +154,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
                                     // Keep subscriber accounting consistent even if startup fails.
                                     // This avoids unbalanced decrement handling on drop.
                                     error!(
-                                        topic = std::any::type_name::<T>(),
+                                        topic = type_name::<T>(),
                                         error = %err,
                                         "failed to start topic"
                                     );
@@ -174,7 +175,7 @@ impl<T: Topic + 'static> TopicWrapper<T> {
                         if subscriber_count == 0 && topic_started {
                             if let Err(err) = local_topic.on_stop().await {
                                 error!(
-                                    topic = std::any::type_name::<T>(),
+                                    topic = type_name::<T>(),
                                     error = %err,
                                     "failed to stop topic"
                                 );
@@ -295,7 +296,7 @@ pub struct DisplayInfo {
 }
 
 impl Display for DisplayInfo {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("id", self.id)
             .display("name", &self.name)

@@ -1,4 +1,6 @@
 use std::{
+    env,
+    error::Error,
     fmt,
     io::Cursor,
     path::{Path, PathBuf},
@@ -248,7 +250,7 @@ impl Body {
     ) -> (reqwest::Body, u64)
     where
         S: Stream<Item = Result<Bytes, E>> + Send + Sync + Unpin + 'static,
-        E: std::error::Error + Send + Sync + 'static,
+        E: Error + Send + Sync + 'static,
     {
         let async_stream = stream
             .map_ok(move |bytes| {
@@ -529,7 +531,7 @@ impl Web {
 
         let directory = directory
             .map(|directory| directory.to_path_buf())
-            .unwrap_or_else(std::env::temp_dir);
+            .unwrap_or_else(env::temp_dir);
 
         let filename = Self::guess_filename(&response, url);
         let filepath = directory.join(&filename);
@@ -932,7 +934,7 @@ mod tests {
 
             let test_image = TestImage::default();
 
-            let directory = std::env::temp_dir();
+            let directory = env::temp_dir();
 
             server.expect(
                 Expectation::matching(request::method_path("GET", "/image")).respond_with(

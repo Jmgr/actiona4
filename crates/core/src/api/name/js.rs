@@ -9,6 +9,8 @@
 //! @verbatim  */
 //! @verbatim type NameLike = string | Wildcard | RegExp;
 
+use std::result::Result as StdResult;
+
 use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result, Value,
@@ -61,7 +63,7 @@ impl PartialEq for JsWildcard {
 }
 
 impl DeepEqualClass for JsWildcard {
-    fn deep_equal_class(&self, other: &Self) -> std::result::Result<bool, DeepEqualError> {
+    fn deep_equal_class(&self, other: &Self) -> StdResult<bool, DeepEqualError> {
         Ok(self == other)
     }
 }

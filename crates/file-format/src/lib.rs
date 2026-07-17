@@ -1,11 +1,18 @@
-use std::{io::Cursor, mem::size_of, path::Path};
+use std::{
+    fs::File as StdFile,
+    io::{self, Cursor, ErrorKind, Write},
+    mem::size_of,
+    path::{Path, PathBuf},
+};
 
 use action_definition::tree::ActionTree;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use tokio::{
+    fs,
     io::{AsyncRead, AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
     select,
+    task::JoinError,
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use uuid::Uuid;
@@ -63,7 +70,7 @@ impl BinaryHeader {
         })
     }
 
-    fn write_to(&self, writer: &mut impl std::io::Write) -> std::io::Result<()> {
+    fn write_to(&self, writer: &mut impl io::Write) -> io::Result<()> {
         writer.write_all(&Self::MAGIC)?;
         writer.write_all(&self.version.to_le_bytes())?;
         writer.write_all(&[self.codec])?;
@@ -89,7 +96,7 @@ pub struct WriterInfo {
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
-    Io(#[from] std::io::Error),
+    Io(#[from] io::Error),
     #[error("invalid binary magic")]
     BinaryMagic,
     #[error("unexpected version {0}")]
@@ -111,7 +118,7 @@ pub enum Error {
     #[error("invalid JSON payload: {0}")]
     Json(#[from] serde_json::Error),
     #[error("file processing task failed: {0}")]
-    Task(#[from] tokio::task::JoinError),
+    Task(#[from] JoinError),
     #[error("operation canceled")]
     Canceled,
     #[error("invalid attachment payload: {0}")]
@@ -138,7 +145,7 @@ impl File {
     ) -> Result<Self, Error> {
         check_canceled(cancellation_token)?;
         let header_read = async {
-            let mut file = tokio::fs::File::open(filepath).await?;
+            let mut file = fs::File::open(filepath).await?;
             let header = BinaryHeader::read_from(&mut file).await?;
             let header_size = file.stream_position().await?;
             let file_size = file.metadata().await?.len();
@@ -178,8 +185,8 @@ impl File {
             return Err(Error::BinaryFileTrailingData);
         }
         if actual_file_size < declared_file_size {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::UnexpectedEof,
+            return Err(io::Error::new(
+                ErrorKind::UnexpectedEof,
                 "binary file is shorter than its declared compressed payload",
             )
             .into());
@@ -244,7 +251,7 @@ impl File {
             let mut writer = Cursor::new(Vec::new());
             header.write_to(&mut writer)?;
             writer.get_mut().reserve(compressed.len());
-            std::io::Write::write_all(&mut writer, &compressed)?;
+            Write::write_all(&mut writer, &compressed)?;
             Ok::<Vec<u8>, Error>(writer.into_inner())
         });
         let buffer = select! {
@@ -270,7 +277,7 @@ impl File {
         let file = select! {
             biased;
             _ = cancellation_token.cancelled() => return Err(Error::Canceled),
-            result = tokio::fs::File::open(filepath) => result?,
+            result = fs::File::open(filepath) => result?,
         };
         let mut data = Vec::new();
         let mut reader = file.take(MAX_JSON_FILE_SIZE as u64 + 1);
@@ -362,9 +369,9 @@ async fn write_atomically(
     let existing_permissions = select! {
         biased;
         _ = cancellation_token.cancelled() => return Err(Error::Canceled),
-        result = tokio::fs::metadata(filepath) => match result {
+        result = fs::metadata(filepath) => match result {
             Ok(metadata) => Some(metadata.permissions()),
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+            Err(error) if error.kind() == ErrorKind::NotFound => None,
             Err(error) => return Err(error.into()),
         },
     };
@@ -376,7 +383,7 @@ async fn write_atomically(
         // are durable before it replaces the destination.
         temporary.as_file().set_permissions(permissions)?;
     }
-    let mut file = tokio::fs::File::from_std(temporary.reopen()?);
+    let mut file = fs::File::from_std(temporary.reopen()?);
 
     select! {
         biased;
@@ -407,7 +414,7 @@ async fn write_atomically(
     Ok(())
 }
 
-fn destination_directory(filepath: &Path) -> std::path::PathBuf {
+fn destination_directory(filepath: &Path) -> PathBuf {
     filepath
         .parent()
         .filter(|directory| !directory.as_os_str().is_empty())
@@ -420,7 +427,7 @@ fn destination_directory(filepath: &Path) -> std::path::PathBuf {
 async fn sync_directory(directory: &Path, task_tracker: &TaskTracker) -> Result<(), Error> {
     let directory = directory.to_path_buf();
     let handle = task_tracker.spawn_blocking(move || {
-        std::fs::File::open(directory)?.sync_all()?;
+        StdFile::open(directory)?.sync_all()?;
         Ok(())
     });
     handle.await?
@@ -433,6 +440,8 @@ async fn sync_directory(_: &Path, _: &TaskTracker) -> Result<(), Error> {
 
 #[cfg(test)]
 mod tests {
+    use std::{io::ErrorKind, mem::size_of, path::Path};
+
     use std::io::Cursor;
 
     use action_definition::{
@@ -444,6 +453,7 @@ mod tests {
     use indexmap::IndexMap;
     use rstest::rstest;
     use serde_json::json;
+    use tokio::fs;
     use tokio::io::AsyncSeekExt as _;
     use tokio_util::{sync::CancellationToken, task::TaskTracker};
     use uuid::Uuid;
@@ -481,7 +491,7 @@ mod tests {
         const CHANNELS: u16 = 1;
         const BITS_PER_SAMPLE: u16 = 16;
         let samples = vec![0_i16; 960];
-        let data_size = (samples.len() * std::mem::size_of::<i16>()) as u32;
+        let data_size = (samples.len() * size_of::<i16>()) as u32;
         let byte_rate = SAMPLE_RATE * u32::from(CHANNELS) * u32::from(BITS_PER_SAMPLE) / 8;
         let block_align = CHANNELS * BITS_PER_SAMPLE / 8;
 
@@ -678,10 +688,10 @@ mod tests {
         file.write_binary(&filepath, &task_tracker, &cancellation_token)
             .await
             .expect("write compressed binary file");
-        let bytes = tokio::fs::read(&filepath)
+        let bytes = fs::read(&filepath)
             .await
             .expect("read compressed binary file");
-        let mut reader = tokio::fs::File::open(&filepath)
+        let mut reader = fs::File::open(&filepath)
             .await
             .expect("open compressed binary file");
         let header = super::BinaryHeader::read_from(&mut reader)
@@ -711,7 +721,7 @@ mod tests {
         let directory = tempfile::tempdir().expect("create temporary directory");
         let filepath = directory.path().join("oversized.actiona");
         let (task_tracker, cancellation_token) = task_context();
-        tokio::fs::write(
+        fs::write(
             &filepath,
             binary_header(super::MAX_BINARY_COMPRESSED_SIZE as u64 + 1, 0),
         )
@@ -734,7 +744,7 @@ mod tests {
         let (task_tracker, cancellation_token) = task_context();
         let mut data = binary_header(0, 0);
         data.push(0);
-        tokio::fs::write(&filepath, data)
+        fs::write(&filepath, data)
             .await
             .expect("write binary header with trailing byte");
 
@@ -749,21 +759,21 @@ mod tests {
         let directory = tempfile::tempdir().expect("create temporary directory");
         let filepath = directory.path().join("short.actiona");
         let (task_tracker, cancellation_token) = task_context();
-        tokio::fs::write(&filepath, binary_header(16 * 1024 * 1024, 0))
+        fs::write(&filepath, binary_header(16 * 1024 * 1024, 0))
             .await
             .expect("write short binary file");
 
         assert!(matches!(
             File::read_binary(&filepath, &task_tracker, &cancellation_token).await,
-            Err(Error::Io(error)) if error.kind() == std::io::ErrorKind::UnexpectedEof
+            Err(Error::Io(error)) if error.kind() == ErrorKind::UnexpectedEof
         ));
     }
 
     #[test]
     fn relative_destinations_use_the_current_directory_for_atomic_sync() {
         assert_eq!(
-            super::destination_directory(std::path::Path::new("file.actiona")),
-            std::path::Path::new("."),
+            super::destination_directory(Path::new("file.actiona")),
+            Path::new("."),
         );
     }
 
@@ -785,7 +795,7 @@ mod tests {
                 [attachment_id(7), attachment],
             ],
         });
-        tokio::fs::write(
+        fs::write(
             &filepath,
             serde_json::to_vec(&contents).expect("serialize JSON"),
         )
@@ -859,7 +869,7 @@ mod tests {
             .await
             .expect("write compressed JSON file");
         let json: serde_json::Value = serde_json::from_slice(
-            &tokio::fs::read(&filepath)
+            &fs::read(&filepath)
                 .await
                 .expect("read compressed JSON file"),
         )
@@ -957,7 +967,7 @@ mod tests {
 
     #[tokio::test]
     async fn write_samples_for_inspection() {
-        let target = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target");
+        let target = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target");
         let file = file_with_content();
         let (task_tracker, cancellation_token) = task_context();
 

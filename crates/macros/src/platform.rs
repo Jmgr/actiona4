@@ -187,7 +187,10 @@ struct PlatformAttributeArguments {
 
 impl PlatformAttributeArguments {
     fn from_raw(raw_arguments: RawPlatformArguments) -> syn::Result<Self> {
-        if raw_arguments.check.is_some() || raw_arguments.label.is_some() || raw_arguments.nested {
+        if raw_arguments.check.is_some()
+            || raw_arguments.label.is_some()
+            || raw_arguments.nested.is_some_and(|nested| nested)
+        {
             return Err(syn::Error::new(
                 Span::call_site(),
                 "`platform` only supports `only` or `not`",

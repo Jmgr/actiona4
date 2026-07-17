@@ -4,7 +4,7 @@ use color_eyre::eyre::eyre;
 use derive_more::Constructor;
 use notify_rust::{Hint, Urgency, get_capabilities};
 use parking_lot::Mutex;
-use tokio::sync::oneshot;
+use tokio::{sync::oneshot, task::spawn_blocking};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
@@ -150,7 +150,7 @@ impl NotificationHandle {
         let notification = Notification::build_notification(options)?;
         let inner = self.inner.clone();
 
-        tokio::task::spawn_blocking(move || {
+        spawn_blocking(move || {
             let mut handle = inner.lock();
             **handle = notification;
             handle.update()

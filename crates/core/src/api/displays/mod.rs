@@ -1,10 +1,14 @@
-use std::{fmt::Display, sync::Arc};
+use std::{
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use color_eyre::eyre::eyre;
 
 pub type Result<T> = color_eyre::Result<T>;
 use itertools::Itertools;
 use satint::Su32;
+use tokio::task::block_in_place;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 
@@ -28,7 +32,7 @@ pub struct Displays {
 }
 
 impl Display for Displays {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.displays_info.try_get() {
             Some(info) => DisplayFields::default()
                 .display("displays", display_list(info.as_slice()))
@@ -63,7 +67,7 @@ impl Displays {
         if let Some(v) = self.displays_info.try_get() {
             return Ok(v);
         }
-        tokio::task::block_in_place(|| {
+        block_in_place(|| {
             let info = display_info::DisplayInfo::all().map_err(|e| eyre!("{e}"))?;
             self.displays_info.set(DisplayInfoVec::from(info));
             Ok(self.displays_info.try_get().expect("just set"))

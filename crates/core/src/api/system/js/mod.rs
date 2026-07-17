@@ -1,11 +1,14 @@
 use std::path::Path;
 
-use human_units::{FormatSize, si::Prefix};
+use human_units::{
+    FormatSize,
+    si::{Frequency, Prefix},
+};
 use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, Exception, JsLifetime, Result,
     atom::PredefinedAtom,
-    class::Trace,
+    class::{Trace, Tracer},
     prelude::{Func, Opt},
 };
 use tokio_util::task::TaskTracker;
@@ -75,7 +78,7 @@ impl SingletonClass<'_> for JsSystem {
 }
 
 impl<'js> Trace<'js> for JsSystem {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl JsSystem {
@@ -230,11 +233,9 @@ impl JsSystem {
 /// formatFrequency(3400000);  // "3.4 MHz"
 /// ```
 pub fn format_frequency(ctx: Ctx<'_>, frequency: u64) -> Result<String> {
-    Ok(
-        human_units::si::Frequency::try_with_si_prefix(frequency, Prefix::None)
-            .map_err(|_| Exception::throw_range(&ctx, "out of range"))?
-            .to_string(),
-    )
+    Ok(Frequency::try_with_si_prefix(frequency, Prefix::None)
+        .map_err(|_| Exception::throw_range(&ctx, "out of range"))?
+        .to_string())
 }
 
 /// Formats a percentage value and appends `%`.

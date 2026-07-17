@@ -1,4 +1,5 @@
 use std::{
+    error::Error,
     pin::Pin,
     task::{Context, Poll},
 };
@@ -7,7 +8,7 @@ use bytes::Bytes;
 use derive_more::Constructor;
 use http_body::{Body, Frame, SizeHint};
 
-pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
+pub type BoxError = Box<dyn Error + Send + Sync>;
 
 #[derive(Constructor)]
 pub struct SizedBody<B> {

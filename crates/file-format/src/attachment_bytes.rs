@@ -2,8 +2,8 @@ use std::{fmt, sync::Arc};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD as Base64};
 use serde::{
-    Deserializer, Serializer,
-    de::{Error as _, Visitor},
+    Deserialize, Deserializer, Serialize, Serializer,
+    de::{self, Error as _, Visitor},
 };
 
 // Payloads are shared via `Arc` so cloning a `File` before a blocking task is cheap.
@@ -28,7 +28,7 @@ impl From<Vec<u8>> for AttachmentBytes {
     }
 }
 
-impl serde::Serialize for AttachmentBytes {
+impl Serialize for AttachmentBytes {
     // Keeps binary files compact while making JSON attachments portable text.
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -42,7 +42,7 @@ impl serde::Serialize for AttachmentBytes {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for AttachmentBytes {
+impl<'de> Deserialize<'de> for AttachmentBytes {
     // Accepts the matching Base64 or raw-byte representation selected by the deserializer.
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -73,21 +73,21 @@ impl<'de> Visitor<'de> for BytesVisitor {
 
     fn visit_bytes<E>(self, value: &[u8]) -> Result<Vec<u8>, E>
     where
-        E: serde::de::Error,
+        E: de::Error,
     {
         Ok(value.to_vec())
     }
 
     fn visit_borrowed_bytes<E>(self, value: &'de [u8]) -> Result<Vec<u8>, E>
     where
-        E: serde::de::Error,
+        E: de::Error,
     {
         Ok(value.to_vec())
     }
 
     fn visit_byte_buf<E>(self, value: Vec<u8>) -> Result<Vec<u8>, E>
     where
-        E: serde::de::Error,
+        E: de::Error,
     {
         Ok(value)
     }

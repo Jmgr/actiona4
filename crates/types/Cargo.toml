@@ -21,7 +21,7 @@ notzero.workspace = true
 opencv = { workspace = true, optional = true }
 rand.workspace = true
 satint = { workspace = true, features = ["serde"] }
-serde.workspace = true
+serde = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]
 rstest.workspace = true

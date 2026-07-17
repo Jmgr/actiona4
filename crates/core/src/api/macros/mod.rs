@@ -1,6 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     fmt,
+    future::pending,
     io::{Read, Write},
     path::Path,
     sync::Arc,
@@ -14,7 +15,11 @@ use satint::{Si32, Su32};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use time::OffsetDateTime;
-use tokio::{select, sync::mpsc, time::sleep};
+use tokio::{
+    fs, select,
+    sync::mpsc,
+    time::{MissedTickBehavior, interval, sleep},
+};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::warn;
 
@@ -27,7 +32,7 @@ use crate::{
     },
     cancel_on,
     error::CommonError,
-    runtime::Runtime,
+    runtime::{Runtime, events::DisplayInfo},
     types::{
         display::{DisplayFields, display_with_type},
         input::Direction,
@@ -130,8 +135,8 @@ pub struct MacroDisplayInfo {
     pub is_primary: bool,
 }
 
-impl From<&crate::runtime::events::DisplayInfo> for MacroDisplayInfo {
-    fn from(d: &crate::runtime::events::DisplayInfo) -> Self {
+impl From<&DisplayInfo> for MacroDisplayInfo {
+    fn from(d: &DisplayInfo) -> Self {
         Self {
             x: d.rect.top_left.x,
             y: d.rect.top_left.y,
@@ -180,13 +185,13 @@ impl MacroData {
             })
             .await
             .map_err(|err| eyre!("Task join error: {err}"))??;
-        tokio::fs::write(path, compressed).await?;
+        fs::write(path, compressed).await?;
         Ok(())
     }
 
     /// Loads a macro from a gzip-compressed JSON file previously written by `save()`.
     pub async fn load(path: impl AsRef<Path>, task_tracker: TaskTracker) -> Result<Self> {
-        let compressed = tokio::fs::read(path.as_ref()).await?;
+        let compressed = fs::read(path.as_ref()).await?;
 
         task_tracker
             .spawn_blocking(move || {
@@ -251,14 +256,14 @@ pub async fn record_impl(
     let key_guard = runtime.keyboard_keys();
     let mut key_rx = key_guard.subscribe();
 
-    let mut position_ticker = tokio::time::interval(config.mouse_position_interval);
-    position_ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+    let mut position_ticker = interval(config.mouse_position_interval);
+    position_ticker.set_missed_tick_behavior(MissedTickBehavior::Skip);
 
     tokio::pin! {
         let timeout_fut = async {
             match config.timeout {
-                Some(dur) => tokio::time::sleep(dur).await,
-                None => std::future::pending::<()>().await,
+                Some(dur) => sleep(dur).await,
+                None => pending::<()>().await,
             }
         };
     }

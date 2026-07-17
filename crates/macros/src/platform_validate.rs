@@ -373,7 +373,7 @@ fn parse_platform_config_from_attributes(
             config.label = Some(LitStr::new(&label_text, attribute.span()));
         }
 
-        if parsed_arguments.nested {
+        if parsed_arguments.nested.is_some_and(|nested| nested) {
             config.nested = true;
         }
     }

@@ -1,3 +1,5 @@
+use std::string::String as StdString;
+
 use swc_common::{
     FileName, GLOBALS, Globals, Mark, source_map::DefaultSourceMapGenConfig, sync::Lrc,
 };
@@ -88,7 +90,7 @@ impl TsToJs {
         let globals = Globals::default();
         let (code, srcmap) = GLOBALS.set(
             &globals,
-            || -> Result<(std::string::String, swc_sourcemap::SourceMap), TranspileError> {
+            || -> Result<(StdString, swc_sourcemap::SourceMap), TranspileError> {
                 let unresolved_mark = Mark::new();
                 let top_level_mark = Mark::new();
 

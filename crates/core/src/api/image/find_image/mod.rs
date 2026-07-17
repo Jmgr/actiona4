@@ -1,4 +1,8 @@
-use std::{borrow::Cow, fmt::Display, sync::Arc};
+use std::{
+    borrow::Cow,
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use color_eyre::{
     Result,
@@ -7,7 +11,7 @@ use color_eyre::{
 use derive_more::{Constructor, Display};
 use macros::{FromJsObject, options};
 use opencv::{
-    core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vector, extract_channel, split},
+    core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vec4b, Vector, extract_channel, split},
     imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
 };
 use satint::{SaturatingInto, Su32, su32};
@@ -95,7 +99,7 @@ impl BgrMat {
         }
 
         // Create a Mat view over the BGRA data
-        let bgra_mat = Mat::new_rows_cols_with_bytes::<opencv::core::Vec4b>(
+        let bgra_mat = Mat::new_rows_cols_with_bytes::<Vec4b>(
             size.height.saturating_into(),
             size.width.saturating_into(),
             &data[..needed],
@@ -185,7 +189,7 @@ pub struct Match {
 }
 
 impl Display for Match {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("position", self.position)
             .display("rect", self.rect)
@@ -248,7 +252,7 @@ pub struct FindImageProgress {
 }
 
 impl Display for FindImageProgress {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("stage", self.stage)
             .display("percent", self.percent)
@@ -455,6 +459,7 @@ mod tests {
             Image,
             find_image::{FindImageProgress, FindImageTemplateOptions, Source, Template},
         },
+        api::point::point,
         runtime::Runtime,
     };
 
@@ -495,8 +500,8 @@ mod tests {
 
             assert_eq!(result.len(), 2);
             let match_positions = result.iter().map(|result| result.position).collect_vec();
-            assert!(match_positions.contains(&crate::api::point::point(287, 352)));
-            assert!(match_positions.contains(&crate::api::point::point(727, 932)));
+            assert!(match_positions.contains(&point(287, 352)));
+            assert!(match_positions.contains(&point(727, 932)));
         });
     }
 

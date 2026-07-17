@@ -1,4 +1,4 @@
-use std::io::ErrorKind;
+use std::{env, fs, io::ErrorKind, path::PathBuf};
 
 use eyre::{Result, eyre};
 
@@ -56,7 +56,7 @@ pub(super) fn expand_environment_variables(path_entry: &str) -> String {
             continue;
         }
 
-        match std::env::var(var_name) {
+        match env::var(var_name) {
             Ok(value) => expanded.push_str(&value),
             Err(_) => {
                 expanded.push_str(&remaining[dollar_index..dollar_index + 1 + var_end_offset]);
@@ -87,9 +87,9 @@ pub(super) fn write_path_entries(
     }
 }
 
-fn user_profile_path() -> Result<std::path::PathBuf> {
-    let home = std::env::var("HOME").map_err(|_| eyre!("HOME environment variable not set"))?;
-    Ok(std::path::PathBuf::from(home).join(".profile"))
+fn user_profile_path() -> Result<PathBuf> {
+    let home = env::var("HOME").map_err(|_| eyre!("HOME environment variable not set"))?;
+    Ok(PathBuf::from(home).join(".profile"))
 }
 
 /// Extracts the directory from a managed PATH export line in `~/.profile`.
@@ -112,7 +112,7 @@ fn extract_profile_path_entry(line: &str) -> Option<String> {
 fn read_user_path_entries() -> Result<Vec<String>> {
     let profile_path = user_profile_path()?;
 
-    let content = match std::fs::read_to_string(&profile_path) {
+    let content = match fs::read_to_string(&profile_path) {
         Ok(content) => content,
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(vec![]),
         Err(error) => {
@@ -129,7 +129,7 @@ fn read_user_path_entries() -> Result<Vec<String>> {
 fn write_user_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
     let profile_path = user_profile_path()?;
 
-    let existing_content = match std::fs::read_to_string(&profile_path) {
+    let existing_content = match fs::read_to_string(&profile_path) {
         Ok(content) => content,
         Err(error) if error.kind() == ErrorKind::NotFound => String::new(),
         Err(error) => {
@@ -152,14 +152,14 @@ fn write_user_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
         new_content.push_str(&format!("export PATH=\"${{PATH}}:{}\"\n", entry.as_ref()));
     }
 
-    std::fs::write(&profile_path, new_content)
+    fs::write(&profile_path, new_content)
         .map_err(|error| eyre!("Failed to write {}: {error}", profile_path.display()))?;
 
     Ok(())
 }
 
 fn read_system_path_entries() -> Result<Vec<String>> {
-    let content = match std::fs::read_to_string(SYSTEM_ENVIRONMENT_FILE) {
+    let content = match fs::read_to_string(SYSTEM_ENVIRONMENT_FILE) {
         Ok(content) => content,
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(vec![]),
         Err(error) => {
@@ -177,7 +177,7 @@ fn read_system_path_entries() -> Result<Vec<String>> {
 }
 
 fn write_system_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
-    let existing_content = match std::fs::read_to_string(SYSTEM_ENVIRONMENT_FILE) {
+    let existing_content = match fs::read_to_string(SYSTEM_ENVIRONMENT_FILE) {
         Ok(content) => content,
         Err(error) if error.kind() == ErrorKind::NotFound => String::new(),
         Err(error) => {
@@ -200,7 +200,7 @@ fn write_system_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
         new_content.push_str(&format!("PATH=\"{path_value}\"\n"));
     }
 
-    std::fs::write(SYSTEM_ENVIRONMENT_FILE, new_content)
+    fs::write(SYSTEM_ENVIRONMENT_FILE, new_content)
         .map_err(|error| eyre!("Failed to write {SYSTEM_ENVIRONMENT_FILE}: {error}"))?;
 
     Ok(())
@@ -208,6 +208,8 @@ fn write_system_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use std::env;
+
     use super::{
         super::{join_path_entries, path_contains_entry, split_path_entries},
         expand_environment_variables, extract_profile_path_entry, normalize_path_entry,
@@ -253,7 +255,7 @@ mod tests {
 
     #[test]
     fn expand_environment_variables_handles_dollar_brace_and_plain_forms() {
-        unsafe { std::env::set_var("TEST_ACTIONA_VAR", "/expanded") };
+        unsafe { env::set_var("TEST_ACTIONA_VAR", "/expanded") };
         assert_eq!(
             expand_environment_variables("${TEST_ACTIONA_VAR}/bin"),
             "/expanded/bin"
@@ -262,7 +264,7 @@ mod tests {
             expand_environment_variables("$TEST_ACTIONA_VAR/bin"),
             "/expanded/bin"
         );
-        unsafe { std::env::remove_var("TEST_ACTIONA_VAR") };
+        unsafe { env::remove_var("TEST_ACTIONA_VAR") };
     }
 
     #[test]

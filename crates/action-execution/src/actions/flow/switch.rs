@@ -1,3 +1,5 @@
+use std::iter;
+
 use action_definition::{actions::Switch, post_run::PostRun, tree::BranchKind};
 use actiona_core::{api::js::deep_equal, scripting::ScriptError};
 use itertools::Itertools;
@@ -48,10 +50,10 @@ fn selected_branch<'js>(
 impl Runnable for Switch {
     async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         // Slot 0 is the value being switched on; the rest are the case values, in order.
-        let slots = std::iter::once(Slot::Value(self.value.name()))
+        let slots = iter::once(Slot::Value(self.value.name()))
             .chain(self.cases.iter().map(|case| Slot::Case(case.name.clone())))
             .collect_vec();
-        let scripts = std::iter::once(self.value.inner())
+        let scripts = iter::once(self.value.inner())
             .chain(self.cases.iter().map(|case| case.value.inner()))
             .collect_vec();
         let branch_names = self

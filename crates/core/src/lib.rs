@@ -9,6 +9,8 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(rustdoc::invalid_html_tags)]
 
+use std::result::Result as StdResult;
+
 use color_eyre::Result;
 use rquickjs::{Coerced, Ctx, Exception, Value};
 use tokio::select;
@@ -45,7 +47,7 @@ pub trait IntoJsResult<T> {
     fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T>;
 }
 
-impl<T, E> IntoJsResult<T> for std::result::Result<T, E>
+impl<T, E> IntoJsResult<T> for StdResult<T, E>
 where
     E: IntoJSError,
 {
@@ -54,7 +56,7 @@ where
     }
 }
 
-impl<T> IntoJsResult<T> for std::result::Result<T, color_eyre::Report> {
+impl<T> IntoJsResult<T> for StdResult<T, color_eyre::Report> {
     fn into_js_result(self, ctx: &Ctx<'_>) -> rquickjs::Result<T> {
         self.map_err(|err| Exception::throw_message(ctx, &err.to_string()))
     }

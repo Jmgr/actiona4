@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, mem};
 
 use super::{
     ActionTree, BranchKind, ClipboardNode, ClipboardTree, DropMode, Error, Metadata, Node, NodeId,
@@ -548,7 +548,7 @@ impl ActionTree {
     fn reconcile_action_branches(&mut self, node_id: NodeId) -> Result<(), Error> {
         let desired = { self.get_action(node_id)?.branches() };
         let depth = self.map[node_id].depth() + 1;
-        let mut existing = std::mem::take(&mut self.map[node_id].children);
+        let mut existing = mem::take(&mut self.map[node_id].children);
         let mut children = Vec::with_capacity(desired.len());
 
         for kind in desired {

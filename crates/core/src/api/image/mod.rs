@@ -1,6 +1,7 @@
 use std::{
-    fmt::Display,
+    fmt::{self, Debug, Display},
     io::Cursor,
+    mem,
     ops::DerefMut,
     path::Path,
     sync::{Arc, OnceLock},
@@ -184,14 +185,14 @@ pub struct Font {
     path: String,
 }
 
-impl std::fmt::Debug for Font {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Debug for Font {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Font").field("path", &self.path).finish()
     }
 }
 
 impl Display for Font {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("path", &self.path)
             .finish(f)
@@ -269,7 +270,7 @@ pub struct Image {
 }
 
 impl Display for Image {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("width", self.inner.width())
             .display("height", self.inner.height())
@@ -416,7 +417,7 @@ impl Image {
     where
         F: FnOnce(DynamicImage) -> DynamicImage,
     {
-        let dyn_img = DynamicImage::ImageRgba8(std::mem::take(&mut self.inner));
+        let dyn_img = DynamicImage::ImageRgba8(mem::take(&mut self.inner));
         *self = Self::from_dynamic_image(f(dyn_img));
     }
 }
@@ -1132,10 +1133,7 @@ mod tests {
         let rgba = RgbaImage::from_pixel(2, 2, Rgba([255, 0, 0, 255]));
         let mut bytes = Vec::new();
         DynamicImage::ImageRgba8(rgba)
-            .write_to(
-                &mut std::io::Cursor::new(&mut bytes),
-                image::ImageFormat::Png,
-            )
+            .write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)
             .unwrap();
 
         let img = Image::from_bytes(&bytes).unwrap();

@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{error::Error as StdError, fmt, result::Result as StdResult};
 
 use color_eyre::Report;
 use once_cell::sync::Lazy;
@@ -7,7 +7,7 @@ use thiserror::Error;
 
 use crate::scripting::typescript::TranspileError;
 
-pub type Result<T> = std::result::Result<T, ScriptError>;
+pub type Result<T> = StdResult<T, ScriptError>;
 
 pub type UnhandledException = (String, Vec<CallStackFrame>);
 
@@ -206,7 +206,7 @@ impl fmt::Display for RuntimeScriptError {
     }
 }
 
-impl std::error::Error for RuntimeScriptError {}
+impl StdError for RuntimeScriptError {}
 
 /// Parses a JavaScript stack trace into frames, keeping every line that parses and
 /// silently skipping any that do not (e.g. anonymous or native frames), rather than

@@ -1,4 +1,5 @@
 use std::{
+    cmp::Ordering,
     collections::{BTreeMap, BTreeSet, VecDeque},
     path::Path,
     rc::Rc,
@@ -11,15 +12,15 @@ use rustdoc_types::{Crate, Id, Item, ItemEnum, StructKind, VariantKind};
 
 /// Compare two items by their source span (filename, then line, then column).
 /// Items without a span are sorted to the end.
-pub fn cmp_by_span(a: &Item, b: &Item) -> std::cmp::Ordering {
+pub fn cmp_by_span(a: &Item, b: &Item) -> Ordering {
     match (&a.span, &b.span) {
         (Some(a_span), Some(b_span)) => a_span
             .filename
             .cmp(&b_span.filename)
             .then(a_span.begin.cmp(&b_span.begin)),
-        (Some(_), None) => std::cmp::Ordering::Less,
-        (None, Some(_)) => std::cmp::Ordering::Greater,
-        (None, None) => std::cmp::Ordering::Equal,
+        (Some(_), None) => Ordering::Less,
+        (None, Some(_)) => Ordering::Greater,
+        (None, None) => Ordering::Equal,
     }
 }
 

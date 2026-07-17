@@ -1,7 +1,8 @@
 use std::{
-    fmt::Display,
+    fmt::{self, Display},
     num::NonZero,
     ops::{Div, DivAssign, Mul, MulAssign},
+    result::Result as StdResult,
 };
 
 use color_eyre::{Result, eyre::eyre};
@@ -73,13 +74,13 @@ impl DivAssign<NonZero<i32>> for Point {
 impl TryDiv<i32> for Point {
     type Output = Self;
 
-    fn try_div(self, rhs: i32) -> std::result::Result<Self::Output, DivError> {
+    fn try_div(self, rhs: i32) -> StdResult<Self::Output, DivError> {
         Ok(Self::new(self.x.try_div(rhs)?, self.y.try_div(rhs)?))
     }
 }
 
 impl TryDivAssign<i32> for Point {
-    fn try_div_assign(&mut self, rhs: i32) -> std::result::Result<(), DivError> {
+    fn try_div_assign(&mut self, rhs: i32) -> StdResult<(), DivError> {
         self.x.try_div_assign(rhs)?;
         self.y.try_div_assign(rhs)?;
         Ok(())
@@ -87,7 +88,7 @@ impl TryDivAssign<i32> for Point {
 }
 
 impl Display for Point {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("x", self.x)
             .display("y", self.y)

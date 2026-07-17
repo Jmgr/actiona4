@@ -1,6 +1,6 @@
 use color_eyre::Result;
 use opencv::{
-    core::{Mat, ToInputArray, ToOutputArray},
+    core::{AlgorithmHint, Mat, ToInputArray, ToOutputArray},
     imgproc::cvt_color,
 };
 use tracing::instrument;
@@ -30,7 +30,7 @@ pub fn convert_colors_into(
     (|| {
         opencv::opencv_has_inherent_feature_algorithm_hint! {
             {
-                cvt_color(source, destination, conversion_code, 0, opencv::core::AlgorithmHint::ALGO_HINT_DEFAULT)
+                cvt_color(source, destination, conversion_code, 0, AlgorithmHint::ALGO_HINT_DEFAULT)
             } else {
                 cvt_color(source, destination, conversion_code, 0)
             }

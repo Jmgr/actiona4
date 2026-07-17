@@ -320,7 +320,7 @@ impl JsWindows {
 #[js_class]
 pub struct JsWindowHandle {
     inner: super::Windows,
-    screen: crate::api::screen::Screen,
+    screen: Screen,
     id: super::WindowId,
 }
 

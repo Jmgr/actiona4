@@ -1,4 +1,8 @@
-use std::{collections::HashMap, fmt::Display, sync::Arc};
+use std::{
+    collections::HashMap,
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 use color_eyre::Result;
 use derive_where::derive_where;
@@ -18,7 +22,7 @@ pub struct Group {
 }
 
 impl Display for Group {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("name", &self.name)
             .finish(f)
@@ -54,7 +58,7 @@ pub struct User {
 }
 
 impl Display for User {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("name", &self.name)
             .display_if_some("group_id", &self.group_id)
@@ -123,7 +127,7 @@ pub struct Os {
 }
 
 impl Display for Os {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             DisplayFields::default()
                 .display_if_some("name", &self.inner.name)

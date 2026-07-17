@@ -79,6 +79,8 @@ impl Runnable for Wait {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
     use super::{WaitUnit, parse_wait_unit, to_duration};
 
     #[test]
@@ -105,11 +107,11 @@ mod tests {
     fn converts_wait_duration_to_std_duration() {
         assert_eq!(
             to_duration(1.5, WaitUnit::Seconds).unwrap(),
-            std::time::Duration::from_millis(1500)
+            Duration::from_millis(1500)
         );
         assert_eq!(
             to_duration(2.0, WaitUnit::Minutes).unwrap(),
-            std::time::Duration::from_secs(120)
+            Duration::from_secs(120)
         );
         assert!(to_duration(-1.0, WaitUnit::Seconds).is_err());
         assert!(to_duration(f64::NAN, WaitUnit::Seconds).is_err());

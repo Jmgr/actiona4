@@ -1,5 +1,6 @@
 use std::{
     fmt::Debug,
+    future::Future,
     sync::Arc,
     thread::{self, JoinHandle},
     time::Duration,
@@ -548,7 +549,7 @@ impl Runtime {
 fn spawn_on_dedicated_thread<F, Fut, T>(make_fut: F) -> JoinHandle<T>
 where
     F: FnOnce() -> Fut + Send + 'static,
-    Fut: std::future::Future<Output = T> + 'static,
+    Fut: Future<Output = T> + 'static,
     T: Debug + Send + 'static,
 {
     thread::spawn(move || {

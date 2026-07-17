@@ -1,5 +1,7 @@
 use std::io;
 
+use zstd::bulk;
+
 // Safety limits for operations that allocate based on untrusted metadata.
 // Largest accepted compressed binary payload.
 pub const MAX_BINARY_COMPRESSED_SIZE: usize = 256 * 1024 * 1024;
@@ -15,7 +17,7 @@ pub const MAX_AUDIO_DECODED_SIZE: usize = 128 * 1024 * 1024;
 pub const JSON_COMPRESSION_THRESHOLD: usize = 4 * 1024;
 
 pub fn compress(data: &[u8]) -> io::Result<Vec<u8>> {
-    zstd::bulk::compress(data, 3)
+    bulk::compress(data, 3)
 }
 
 // Enforces both a caller-provided limit and the exact size recorded in the file format.
@@ -27,7 +29,7 @@ pub fn decompress(data: &[u8], expected_size: usize, limit: usize) -> io::Result
         ));
     }
 
-    let decoded = zstd::bulk::decompress(data, expected_size)?;
+    let decoded = bulk::decompress(data, expected_size)?;
     if decoded.len() != expected_size {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,

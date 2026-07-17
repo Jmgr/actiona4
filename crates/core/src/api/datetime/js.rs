@@ -11,12 +11,14 @@ use rquickjs::{
 };
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
+use tokio::time::sleep;
 
 use crate::{
     IntoJsResult,
     api::js::{
         abort_controller::JsAbortSignal,
         classes::{SingletonClass, register_enum},
+        date::system_time_from_date,
         duration::JsDuration,
         task::task_with_token,
     },
@@ -177,7 +179,7 @@ impl JsDatetime {
     ) -> Result<Promise<'js>> {
         let signal = options.0.and_then(|o| o.signal);
         task_with_token(ctx, signal, async move |ctx, token| {
-            cancel_on(&token, tokio::time::sleep(duration.0))
+            cancel_on(&token, sleep(duration.0))
                 .await
                 .into_js_result(&ctx)
         })
@@ -205,11 +207,11 @@ impl JsDatetime {
         date: Object<'js>,
         options: Opt<JsWaitOptions>,
     ) -> Result<Promise<'js>> {
-        let target = crate::api::js::date::system_time_from_date(ctx.clone(), date)?;
+        let target = system_time_from_date(ctx.clone(), date)?;
         let signal = options.0.and_then(|o| o.signal);
         task_with_token(ctx, signal, async move |ctx, token| {
             let duration = target.duration_since(SystemTime::now()).unwrap_or_default();
-            cancel_on(&token, tokio::time::sleep(duration))
+            cancel_on(&token, sleep(duration))
                 .await
                 .into_js_result(&ctx)
         })
@@ -292,7 +294,7 @@ impl JsDatetime {
             )
             .duration_since(SystemTime::now())
             .unwrap_or_default();
-            cancel_on(&token, tokio::time::sleep(duration))
+            cancel_on(&token, sleep(duration))
                 .await
                 .into_js_result(&ctx)
         })

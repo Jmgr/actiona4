@@ -5,13 +5,19 @@ use macros::{
     FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options, platform,
 };
 use rquickjs::{
-    Ctx, Exception, Function, JsLifetime, Object, Promise, Result, Value, atom::PredefinedAtom,
-    class::Trace, prelude::Opt,
+    Ctx, Exception, Function, JsLifetime, Object, Promise, Result, Value,
+    atom::PredefinedAtom,
+    class::{Trace, Tracer},
+    prelude::Opt,
 };
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-use tokio::sync::{Mutex, mpsc};
-use tokio_util::sync::CancellationToken;
+use tokio::{
+    io::AsyncWriteExt,
+    process::{Child, ChildStdin},
+    sync::{Mutex, mpsc},
+};
+use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 #[cfg(unix)]
 use crate::api::system::processes::Signal;
@@ -198,7 +204,7 @@ pub struct JsProcess {
 }
 
 impl<'js> Trace<'js> for JsProcess {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 impl<'js> SingletonClass<'js> for JsProcess {
@@ -213,7 +219,7 @@ impl<'js> SingletonClass<'js> for JsProcess {
 impl JsProcess {
     /// @skip
     #[must_use]
-    pub const fn new(task_tracker: tokio_util::task::TaskTracker) -> Self {
+    pub const fn new(task_tracker: TaskTracker) -> Self {
         Self {
             inner: ProcessRunner::new(task_tracker),
         }
@@ -446,17 +452,17 @@ impl JsProcess {
 #[js_class]
 pub struct JsProcessHandle {
     pid: u32,
-    stdin: Option<Arc<Mutex<Option<tokio::process::ChildStdin>>>>,
+    stdin: Option<Arc<Mutex<Option<ChildStdin>>>>,
     stdout_receiver: Option<Arc<Mutex<mpsc::Receiver<String>>>>,
     stderr_receiver: Option<Arc<Mutex<mpsc::Receiver<String>>>>,
-    child: Arc<Mutex<tokio::process::Child>>,
+    child: Arc<Mutex<Child>>,
     cancellation_token: CancellationToken,
 }
 
 impl<'js> HostClass<'js> for JsProcessHandle {}
 
 impl<'js> Trace<'js> for JsProcessHandle {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 /// Creates an async iterable object from an mpsc receiver.
@@ -573,12 +579,11 @@ impl JsProcessHandle {
             .as_mut()
             .ok_or_else(|| Exception::throw_message(&ctx, "stdin has been closed"))?;
 
-        tokio::io::AsyncWriteExt::write_all(stdin, data.as_bytes())
+        stdin
+            .write_all(data.as_bytes())
             .await
             .into_js_result(&ctx)?;
-        tokio::io::AsyncWriteExt::flush(stdin)
-            .await
-            .into_js_result(&ctx)?;
+        stdin.flush().await.into_js_result(&ctx)?;
         Ok(())
     }
 
@@ -695,7 +700,7 @@ pub struct JsProcessExitResult {
 impl<'js> HostClass<'js> for JsProcessExitResult {}
 
 impl<'js> Trace<'js> for JsProcessExitResult {
-    fn trace<'a>(&self, _tracer: rquickjs::class::Tracer<'a, 'js>) {}
+    fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
 #[js_methods]

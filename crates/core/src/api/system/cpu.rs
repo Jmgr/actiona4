@@ -1,10 +1,15 @@
-use std::{collections::HashSet, fmt::Display, sync::Arc, thread::sleep};
+use std::{
+    collections::HashSet,
+    fmt::{self, Display},
+    sync::Arc,
+    thread::sleep,
+};
 
 use color_eyre::{Result, eyre::eyre};
 use derive_where::derive_where;
 use itertools::Itertools;
 use parking_lot::Mutex;
-use sysinfo::{CpuRefreshKind, RefreshKind};
+use sysinfo::{Cpu as SysinfoCpu, CpuRefreshKind, RefreshKind};
 use tokio_util::task::TaskTracker;
 use tracing::instrument;
 
@@ -25,7 +30,7 @@ pub struct CpuCore {
 
 impl CpuCore {
     #[must_use]
-    pub fn new(cpu: &sysinfo::Cpu, index: usize) -> Self {
+    pub fn new(cpu: &SysinfoCpu, index: usize) -> Self {
         Self {
             index,
             name: cpu.name().to_string(),
@@ -68,7 +73,7 @@ impl CpuCore {
 }
 
 impl Display for CpuCore {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("name", &self.name)
             .display("vendor", &self.vendor)
@@ -86,7 +91,7 @@ struct CpuVariant {
 }
 
 impl Display for CpuVariant {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
             .display("vendor", &self.vendor)
             .display("brand", &self.brand)
@@ -113,7 +118,7 @@ pub struct Cpu {
 }
 
 impl Display for Cpu {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             DisplayFields::default()
                 .display("architecture", &self.inner.architecture)

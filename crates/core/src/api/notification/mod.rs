@@ -1,4 +1,7 @@
-use std::{fmt::Display, time::Duration};
+use std::{
+    fmt::{self, Display},
+    time::Duration,
+};
 
 use color_eyre::Result;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -175,7 +178,7 @@ pub struct Notification {
 }
 
 impl Display for Notification {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default().finish(f)
     }
 }
@@ -203,7 +206,7 @@ pub struct NotificationHandle {
 }
 
 impl Display for NotificationHandle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default().finish(f)
     }
 }
