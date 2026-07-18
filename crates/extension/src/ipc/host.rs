@@ -16,7 +16,7 @@ pub struct Host<P: Protocol> {
 impl<P: Protocol> Host<P> {
     pub async fn new(timeout: Duration) -> Result<Self> {
         Self::with_handler(timeout, async |_message| {
-            Err("unexpected message".to_string())
+            Err("unexpected message".to_owned())
         })
         .await
     }

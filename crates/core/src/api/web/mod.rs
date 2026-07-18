@@ -225,7 +225,7 @@ impl Body {
 
         // Try to guess using the magic number first
         if let Some(mime) = infer::get(head) {
-            return Some(mime.mime_type().to_string());
+            return Some(mime.mime_type().to_owned());
         }
 
         // If that fails, fall back to the file extension
@@ -675,13 +675,12 @@ impl Web {
                 .find_map(|p| p.trim().strip_prefix("filename="))
                 .map(|s| s.trim_matches('"'))
         {
-            return name.to_string();
+            return name.to_owned();
         }
         url.split('/')
             .next_back()
             .filter(|s| !s.is_empty())
-            .unwrap_or("download.bin")
-            .to_string()
+            .unwrap_or("download.bin").to_owned()
     }
 }
 
@@ -832,8 +831,8 @@ mod tests {
                     &server.url("/foo").to_string(),
                     cancellation_token,
                     Some(WebOptions {
-                        user_name: Some("user".to_string()),
-                        password: Some("password".to_string()),
+                        user_name: Some("user".to_owned()),
+                        password: Some("password".to_owned()),
                         method: Method::Post,
                         ..Default::default()
                     }),
@@ -1001,7 +1000,7 @@ mod tests {
                 Some(WebOptions {
                     method: Method::Post,
                     request_body: Body::Text {
-                        text: TEST_STRING.to_string(),
+                        text: TEST_STRING.to_owned(),
                         content_type: None,
                     },
                     ..Default::default()
@@ -1075,9 +1074,9 @@ mod tests {
                 Some(WebOptions {
                     method: Method::Post,
                     request_body: Body::Multipart(vec![MultipartField {
-                        name: "file".to_string(),
+                        name: "file".to_owned(),
                         value: MultipartValue::Bytes(test_image.bytes.into()),
-                        filename: Some("image.png".to_string()),
+                        filename: Some("image.png".to_owned()),
                         mimetype: None,
                     }]),
                     ..Default::default()

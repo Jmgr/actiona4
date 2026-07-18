@@ -603,7 +603,7 @@ impl ActionTree {
 
     fn unique_pasted_label(&self, label: &str) -> String {
         if self.node_by_label(label).is_none() {
-            return label.to_string();
+            return label.to_owned();
         }
 
         let base = format!("{label}_copy");

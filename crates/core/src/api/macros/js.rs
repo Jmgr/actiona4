@@ -535,7 +535,7 @@ impl JsMacros {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Macros".to_string()
+        "Macros".to_owned()
     }
 }
 

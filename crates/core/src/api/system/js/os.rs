@@ -147,12 +147,12 @@ impl JsOs {
                 let group_name = user
                     .group_id()
                     .and_then(|id| groups.get(&id))
-                    .map(|group| group.name().to_string());
+                    .map(|group| group.name().to_owned());
                 let group_names = user
                     .groups()
                     .iter()
                     .filter_map(|group_id| groups.get(group_id))
-                    .map(|group| group.name().to_string())
+                    .map(|group| group.name().to_owned())
                     .collect_vec();
 
                 JsUser::new(user, id.to_string(), group_name, group_names)

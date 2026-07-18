@@ -100,9 +100,9 @@ impl Highlighter for ReplHelper {
 
     fn highlight_prompt<'b, 's: 'b, 'p: 'b>(&self, prompt: &'p str, default: bool) -> Cow<'b, str> {
         if default {
-            Cow::Owned(prompt.to_string().bold().cyan().to_string())
+            Cow::Owned(prompt.to_owned().bold().cyan().to_string())
         } else {
-            Cow::Owned(prompt.to_string().bold().bright_blue().to_string())
+            Cow::Owned(prompt.to_owned().bold().bright_blue().to_string())
         }
     }
 
@@ -277,7 +277,7 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
         file_completer: FilenameCompleter::new(),
         cmd_names: ReplArgs::command()
             .get_subcommands()
-            .map(|command| command.get_name().to_string())
+            .map(|command| command.get_name().to_owned())
             .collect(),
         bracket: MatchingBracketHighlighter::new(),
         syntax_set,
@@ -447,7 +447,7 @@ async fn missing_await_promise_receiver_hint(
     }
 
     let receiver = extract_simple_member_call_receiver(line)?;
-    let receiver_name = receiver.to_string();
+    let receiver_name = receiver.to_owned();
     let lookup_name = receiver_name.clone();
     let is_promise = script_engine
         .with(move |ctx| {

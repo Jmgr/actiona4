@@ -484,7 +484,7 @@ impl TextReplacements {
             let was_empty = reg.is_empty();
 
             let is_new_trigger = !reg.contains_key(trigger);
-            reg.entry(trigger.to_string())
+            reg.entry(trigger.to_owned())
                 .or_default()
                 .push(TextHandler {
                     id,

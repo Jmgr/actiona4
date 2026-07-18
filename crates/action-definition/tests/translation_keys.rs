@@ -22,7 +22,7 @@ enum-message-box-buttons =
 action-code = Run code
 ";
 
-    let resource = match FluentResource::try_new(ftl.to_string()) {
+    let resource = match FluentResource::try_new(ftl.to_owned()) {
         Ok(resource) => resource,
         Err((_, errors)) => panic!("invalid FTL: {errors:?}"),
     };
@@ -35,7 +35,7 @@ action-code = Run code
 
 fn english_resource() -> FluentResource {
     let ftl = include_str!("../locales/en-US.ftl");
-    match FluentResource::try_new(ftl.to_string()) {
+    match FluentResource::try_new(ftl.to_owned()) {
         Ok(resource) => resource,
         Err((_, errors)) => panic!("invalid English FTL: {errors:?}"),
     }

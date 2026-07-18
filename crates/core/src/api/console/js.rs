@@ -100,9 +100,9 @@ impl JsConsole {
         use rquickjs::{Coerced, Object, String, Type, Value};
 
         match value.type_of() {
-            Type::Uninitialized => "uninitialized".to_string(),
-            Type::Undefined => "undefined".to_string(),
-            Type::Null => "null".to_string(),
+            Type::Uninitialized => "uninitialized".to_owned(),
+            Type::Undefined => "undefined".to_owned(),
+            Type::Null => "null".to_owned(),
             Type::Bool => value.as_bool().map_or_else(
                 || {
                     warn!(
@@ -110,7 +110,7 @@ impl JsConsole {
                         fallback = "[InvalidBool]",
                         "failed to inspect js bool value"
                     );
-                    "[InvalidBool]".to_string()
+                    "[InvalidBool]".to_owned()
                 },
                 |bool_value| bool_value.to_string(),
             ),
@@ -121,7 +121,7 @@ impl JsConsole {
                         fallback = "[InvalidInt]",
                         "failed to inspect js int value"
                     );
-                    "[InvalidInt]".to_string()
+                    "[InvalidInt]".to_owned()
                 },
                 |int_value| int_value.to_string(),
             ),
@@ -132,7 +132,7 @@ impl JsConsole {
                         fallback = "[InvalidFloat]",
                         "failed to inspect js float value"
                     );
-                    "[InvalidFloat]".to_string()
+                    "[InvalidFloat]".to_owned()
                 },
                 |float_value| float_value.to_string(),
             ),
@@ -146,11 +146,11 @@ impl JsConsole {
                             fallback = "[InvalidString]",
                             "failed to inspect js string value"
                         );
-                        "[InvalidString]".to_string()
+                        "[InvalidString]".to_owned()
                     });
                 Self::inspect_string(&string_value)
             }
-            Type::Symbol => "[Symbol]".to_string(),
+            Type::Symbol => "[Symbol]".to_owned(),
             Type::Array => {
                 let Some(arr) = value.as_array() else {
                     warn!(
@@ -158,7 +158,7 @@ impl JsConsole {
                         fallback = "[InvalidArray]",
                         "failed to inspect js array value"
                     );
-                    return "[InvalidArray]".to_string();
+                    return "[InvalidArray]".to_owned();
                 };
                 let mut elems = vec![];
                 for i in 0..arr.len() {
@@ -172,14 +172,14 @@ impl JsConsole {
                                 fallback = "[InvalidElement]",
                                 "failed to inspect js array element"
                             );
-                            "[InvalidElement]".to_string()
+                            "[InvalidElement]".to_owned()
                         }
                     };
                     elems.push(item);
                 }
 
                 if elems.is_empty() {
-                    "[]".to_string()
+                    "[]".to_owned()
                 } else {
                     format!("[ {} ]", elems.join(", "))
                 }
@@ -191,7 +191,7 @@ impl JsConsole {
                         fallback = "[Function]",
                         "failed to inspect js function value"
                     );
-                    return "[Function]".to_string();
+                    return "[Function]".to_owned();
                 };
 
                 let kind = obj
@@ -199,7 +199,7 @@ impl JsConsole {
                     .ok()
                     .and_then(|constructor| constructor.get::<_, String>("name").ok())
                     .and_then(|name| name.to_string().ok())
-                    .unwrap_or_else(|| "Function".to_string());
+                    .unwrap_or_else(|| "Function".to_owned());
 
                 let name = obj
                     .get::<_, String>("name")
@@ -213,7 +213,7 @@ impl JsConsole {
                     format!("[{kind}: {name}]")
                 }
             }
-            Type::Promise => "[Promise]".to_string(),
+            Type::Promise => "[Promise]".to_owned(),
             Type::Exception | Type::Object => {
                 let Some(obj) = value.as_object() else {
                     warn!(
@@ -221,7 +221,7 @@ impl JsConsole {
                         fallback = "{}",
                         "failed to inspect js object value"
                     );
-                    return "{}".to_string();
+                    return "{}".to_owned();
                 };
 
                 if let Some(s) = Self::try_custom_to_string(ctx, obj, &value) {
@@ -263,12 +263,12 @@ impl JsConsole {
                     fields.push(format!("{key_str}: {val_str}"));
                 }
                 if fields.is_empty() {
-                    "{}".to_string()
+                    "{}".to_owned()
                 } else {
                     format!("{{ {} }}", fields.join(", "))
                 }
             }
-            Type::Module => "[Module]".to_string(),
+            Type::Module => "[Module]".to_owned(),
             Type::BigInt => value
                 .get::<Coerced<String>>()
                 .ok()
@@ -279,10 +279,10 @@ impl JsConsole {
                         fallback = "[BigInt]",
                         "failed to inspect js bigint value"
                     );
-                    "[BigInt]".to_string()
+                    "[BigInt]".to_owned()
                 }),
-            Type::Unknown => "[Unknown]".to_string(),
-            Type::Proxy => "[Proxy]".to_string(),
+            Type::Unknown => "[Unknown]".to_owned(),
+            Type::Proxy => "[Proxy]".to_owned(),
         }
     }
 
@@ -297,10 +297,10 @@ impl JsConsole {
                         fallback = "[InvalidArray]",
                         "failed to pretty-print js array value"
                     );
-                    return "[InvalidArray]".to_string();
+                    return "[InvalidArray]".to_owned();
                 };
                 if arr.is_empty() {
-                    return "[]".to_string();
+                    return "[]".to_owned();
                 }
 
                 let indentation = " ".repeat(indent + 2);
@@ -316,7 +316,7 @@ impl JsConsole {
                                 fallback = "[InvalidElement]",
                                 "failed to pretty-print js array element"
                             );
-                            "[InvalidElement]".to_string()
+                            "[InvalidElement]".to_owned()
                         }
                     };
                     elems.push(format!("{indentation}{item_str}"));
@@ -331,7 +331,7 @@ impl JsConsole {
                         fallback = "{}",
                         "failed to pretty-print js object value"
                     );
-                    return "{}".to_string();
+                    return "{}".to_owned();
                 };
 
                 if let Some(s) = Self::try_custom_to_string(ctx, obj, &value) {
@@ -375,7 +375,7 @@ impl JsConsole {
                 }
 
                 if fields.is_empty() {
-                    "{}".to_string()
+                    "{}".to_owned()
                 } else {
                     format!("{{\n{}\n{}}}", fields.join(",\n"), " ".repeat(indent))
                 }
@@ -401,7 +401,7 @@ impl JsConsole {
                                 fallback = "[InvalidString]",
                                 "failed to convert top-level js string argument"
                             );
-                            "[InvalidString]".to_string()
+                            "[InvalidString]".to_owned()
                         }),
                     // Everything else: use full inspector
                     _ => Self::print_value(ctx, arg),
@@ -495,7 +495,7 @@ impl JsConsole {
     /// console.time("myTimer");
     /// ```
     pub fn time(&mut self, label: Opt<String>) {
-        let name = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
+        let name = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_owned());
         self.timers.insert(name, Instant::now());
     }
 
@@ -507,7 +507,7 @@ impl JsConsole {
     /// console.timeEnd("myTimer"); // prints "myTimer: 1s 234ms - timer ended"
     /// ```
     pub fn time_end(&mut self, ctx: Ctx<'_>, label: Opt<String>) -> Result<()> {
-        let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
+        let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_owned());
         if let Some(timer_start) = self.timers.remove(&label) {
             println!(
                 "{label}: {} - timer ended",
@@ -530,7 +530,7 @@ impl JsConsole {
     /// console.count("loop"); // prints "loop: 2"
     /// ```
     pub fn count(&mut self, label: Opt<String>) {
-        let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_string());
+        let label = label.clone().unwrap_or_else(|| DEFAULT_LABEL.to_owned());
         let value = self.counters.entry(label.clone()).or_default();
         *value += 1;
         println!("{label}: {value}");
@@ -540,7 +540,7 @@ impl JsConsole {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Console".to_string()
+        "Console".to_owned()
     }
 }
 

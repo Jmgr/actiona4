@@ -138,13 +138,12 @@ impl Engine {
         Ok((
             hash,
             match sourcemap {
-                Entry::Occupied(entry) => entry.get().code().to_string(),
+                Entry::Occupied(entry) => entry.get().code().to_owned(),
                 Entry::Vacant(entry) => {
                     if is_js {
                         entry
                             .insert(TsToJs::passthrough(script, display_name))
-                            .code()
-                            .to_string()
+                            .code().to_owned()
                     } else {
                         let ts_to_js = if silent {
                             TsToJs::new_silent(script, display_name)?
@@ -152,7 +151,7 @@ impl Engine {
                             TsToJs::new(script, display_name)?
                         };
 
-                        entry.insert(ts_to_js).code().to_string()
+                        entry.insert(ts_to_js).code().to_owned()
                     }
                 }
             },
@@ -330,7 +329,7 @@ impl Engine {
         let name: String = exception
             .as_object()
             .get("name")
-            .unwrap_or_else(|_| "Error".to_string());
+            .unwrap_or_else(|_| "Error".to_owned());
         let raw_message = exception.message().unwrap_or_default();
         let cancelled = raw_message == CommonError::Cancelled.to_string();
         let message = format!("{name}: {raw_message}");
@@ -429,7 +428,7 @@ struct ProcessedException {
 /// coercion, falling back to the value's type name if coercion fails.
 fn value_to_string(value: &Value<'_>) -> String {
     Coerced::<String>::from_js(value.ctx(), value.clone())
-        .map_or_else(|_| value.type_name().to_string(), |coerced| coerced.0)
+        .map_or_else(|_| value.type_name().to_owned(), |coerced| coerced.0)
 }
 
 #[cfg(test)]
@@ -1087,7 +1086,7 @@ await fail();
     #[test]
     fn runtime_primary_span_highlights_reference_identifier() {
         let runtime_error = RuntimeScriptError::new(
-            "ReferenceError: mouse2 is not defined".to_string(),
+            "ReferenceError: mouse2 is not defined".to_owned(),
             vec![CallStackFrame::new("", "test2.ts", 1, 21)],
             false,
         );
@@ -1106,7 +1105,7 @@ await fail();
     #[test]
     fn runtime_primary_span_highlights_not_a_function_callsite() {
         let runtime_error = RuntimeScriptError::new(
-            "TypeError: not a function".to_string(),
+            "TypeError: not a function".to_owned(),
             vec![CallStackFrame::new("", "script", 1, 41)],
             false,
         );
@@ -1125,7 +1124,7 @@ await fail();
     #[test]
     fn runtime_primary_span_highlights_not_a_function_method_not_constructor_argument() {
         let runtime_error = RuntimeScriptError::new(
-            "TypeError: not a function".to_string(),
+            "TypeError: not a function".to_owned(),
             vec![CallStackFrame::new("", "script", 1, 34)],
             false,
         );
@@ -1162,7 +1161,7 @@ await fail();
     #[test]
     fn cancelled_runtime_error_is_suppressed() {
         let runtime_error =
-            RuntimeScriptError::new("Error: Cancelled".to_string(), Vec::new(), true);
+            RuntimeScriptError::new("Error: Cancelled".to_owned(), Vec::new(), true);
         assert!(runtime_error.is_cancelled());
 
         let err: ScriptError = runtime_error.into();

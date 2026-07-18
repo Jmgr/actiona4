@@ -74,7 +74,7 @@ impl Comments {
                 let trimmed_line = line
                     .strip_prefix(&" ".repeat(common_left_padding))
                     .unwrap_or(line);
-                *line = trimmed_line.to_string();
+                *line = trimmed_line.to_owned();
             }
         }
 
@@ -300,17 +300,17 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
         .captures(parameters)
         .ok_or_else(|| eyre!("expected parameters, got: \"{parameters}\""))?;
 
-    let keyword = captures.name("keyword").map(|m| m.as_str().to_string());
+    let keyword = captures.name("keyword").map(|m| m.as_str().to_owned());
     let name = captures
         .name("name")
-        .map(|m| m.as_str().to_string())
+        .map(|m| m.as_str().to_owned())
         .ok_or_eyre("expected name")?;
     let type_ = captures
         .name("type")
-        .map(|m| m.as_str().to_string())
+        .map(|m| m.as_str().to_owned())
         .ok_or_eyre("expected type")?;
-    let default = captures.name("default").map(|m| m.as_str().to_string());
-    let comment = captures.name("comment").map(|m| m.as_str().to_string());
+    let default = captures.name("default").map(|m| m.as_str().to_owned());
+    let comment = captures.name("comment").map(|m| m.as_str().to_owned());
 
     let is_readonly = keyword.is_some_and(|keyword| keyword == "readonly");
 
@@ -339,9 +339,9 @@ fn extract_const(parameters: &str) -> Result<Const> {
 
     let value = captures
         .name("value")
-        .map(|m| m.as_str().to_string())
+        .map(|m| m.as_str().to_owned())
         .ok_or_eyre("expected value")?;
-    let comment = captures.name("comment").map(|m| m.as_str().to_string());
+    let comment = captures.name("comment").map(|m| m.as_str().to_owned());
 
     let comments = if let Some(comment) = comment {
         vec![comment]
@@ -474,23 +474,23 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         "rest" => Instruction::Rest(if parameters.is_empty() {
             None
         } else {
-            Some(parameters.to_string())
+            Some(parameters.to_owned())
         }),
 
         // @const // comment
         "const" => Instruction::Const(extract_const(parameters)?),
 
         // @extends
-        "extends" => Instruction::Extends(parameters.to_string()),
+        "extends" => Instruction::Extends(parameters.to_owned()),
 
         // @default
-        "default" => Instruction::Default(parameters.to_string()),
+        "default" => Instruction::Default(parameters.to_owned()),
 
         // @rename
-        "rename" => Instruction::Rename(parameters.to_string()),
+        "rename" => Instruction::Rename(parameters.to_owned()),
 
         // @verbatim
-        "verbatim" => Instruction::Verbatim(parameters.to_string()),
+        "verbatim" => Instruction::Verbatim(parameters.to_owned()),
 
         // @platforms
         "platforms" => Instruction::Platforms(Platforms::try_from(parameters)?),
@@ -503,7 +503,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
 
             let type_ = captures.get(1).ok_or_eyre("expected type")?.as_str();
 
-            Instruction::Returns(Type::Verbatim(type_.to_string()))
+            Instruction::Returns(Type::Verbatim(type_.to_owned()))
         }
 
         // @prop name: type // comment
@@ -513,7 +513,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         "param" => Instruction::Parameter(extract_variable(parameters)?),
 
         // @method
-        "method" => Instruction::Method(parameters.to_string()),
+        "method" => Instruction::Method(parameters.to_owned()),
 
         // @type type // comment
         "type" => {
@@ -523,7 +523,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
 
             let type_ = captures.get(1).ok_or_eyre("expected type")?.as_str();
 
-            Instruction::Type(Type::Verbatim(type_.to_string()))
+            Instruction::Type(Type::Verbatim(type_.to_owned()))
         }
 
         // @category CategoryName
@@ -532,7 +532,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
                 bail!("expected category name");
             }
 
-            Instruction::Category(parameters.to_string())
+            Instruction::Category(parameters.to_owned())
         }
 
         // @expand
@@ -637,7 +637,7 @@ fn process_rustdoc(
         let line_without_prefix_whitespace = line.trim_start();
         let is_instruction = line_without_prefix_whitespace.starts_with('@');
         if !is_instruction {
-            comments.push(line.to_string());
+            comments.push(line.to_owned());
             continue;
         }
 
@@ -753,8 +753,7 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
         rustdoc_types::Type::Generic(generic) => match generic.as_str() {
             "Self" => Type::Verbatim(
                 struct_name
-                    .ok_or_eyre("expected struct name, but none set (free function?)")?
-                    .to_string(),
+                    .ok_or_eyre("expected struct name, but none set (free function?)")?.to_owned(),
             ),
             _ => {
                 bail!("Unsupported generic type: {generic}, struct: {struct_name:?}");
@@ -788,7 +787,7 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
 fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result<Type> {
     Ok(match strip_modules(path.path.as_str()) {
         // JsName is the internal parser type for APIs that accept NameLike.
-        "JsName" => Type::Verbatim("NameLike".to_string()),
+        "JsName" => Type::Verbatim("NameLike".to_owned()),
         "String" => Type::String,
         "Result" => {
             let type_ = unwrap_generic(path)?;
@@ -838,12 +837,11 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
                     _ => {
                         bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
                     }
-                }
-                .to_string(),
+                }.to_owned(),
             )
         }
-        "JsDuration" => Type::Verbatim("DurationLike".to_string()),
-        object => Type::Verbatim(object.to_string()),
+        "JsDuration" => Type::Verbatim("DurationLike".to_owned()),
+        object => Type::Verbatim(object.to_owned()),
     })
 }
 
@@ -904,8 +902,8 @@ mod tests {
     fn only_comment() {
         let rustdoc = "Test";
         let (comments, instructions, overloads) =
-            process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Struct).unwrap();
-        assert_eq!(comments, vec!["Test".to_string()].into());
+            process_rustdoc(Some(&rustdoc.to_owned()), RustdocContext::Struct).unwrap();
+        assert_eq!(comments, vec!["Test".to_owned()].into());
         assert_eq!(instructions, Instructions::default());
         assert_eq!(overloads, Overloads::default());
     }
@@ -914,7 +912,7 @@ mod tests {
     fn only_instruction() {
         let rustdoc = "@skip";
         let (comments, instructions, overloads) =
-            process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Struct).unwrap();
+            process_rustdoc(Some(&rustdoc.to_owned()), RustdocContext::Struct).unwrap();
         assert_eq!(comments, Comments::default());
         assert_eq!(instructions, vec![Instruction::Skip].into());
         assert_eq!(overloads, Overloads::default());
@@ -929,13 +927,13 @@ Another comment
 @constructor
 @skip";
         let (comments, instructions, overloads) =
-            process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Method).unwrap();
+            process_rustdoc(Some(&rustdoc.to_owned()), RustdocContext::Method).unwrap();
         assert_eq!(
             comments,
             vec![
-                "Some comment".to_string(),
+                "Some comment".to_owned(),
                 String::new(),
-                "Another comment".to_string()
+                "Another comment".to_owned()
             ]
             .into()
         );
@@ -964,8 +962,8 @@ Comment for the first overload
 Comment for the last overload
 @param p: Point // Other point";
         let (comments, instructions, overloads) =
-            process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Method).unwrap();
-        assert_eq!(comments, vec!["Constructor.".to_string()].into());
+            process_rustdoc(Some(&rustdoc.to_owned()), RustdocContext::Method).unwrap();
+        assert_eq!(comments, vec!["Constructor.".to_owned()].into());
         assert_eq!(instructions, vec![Instruction::Constructor].into());
         assert_eq!(
             overloads,
@@ -974,9 +972,9 @@ Comment for the last overload
                     Instructions(vec![
                         Instruction::Overload,
                         Instruction::Parameter(Variable {
-                            name: "x?".to_string(),
-                            type_: Type::Verbatim("number".to_string()),
-                            comments: Comments(vec!["X coordinate".to_string()]),
+                            name: "x?".to_owned(),
+                            type_: Type::Verbatim("number".to_owned()),
+                            comments: Comments(vec!["X coordinate".to_owned()]),
                             is_readonly: false,
                             is_readonly_type: false,
                             default_value: None,
@@ -984,26 +982,26 @@ Comment for the last overload
                             is_promise: false,
                         }),
                         Instruction::Parameter(Variable {
-                            name: "y".to_string(),
-                            type_: Type::Verbatim("number".to_string()),
-                            comments: Comments(vec!["Y coordinate".to_string()]),
+                            name: "y".to_owned(),
+                            type_: Type::Verbatim("number".to_owned()),
+                            comments: Comments(vec!["Y coordinate".to_owned()]),
                             is_readonly: false,
                             is_readonly_type: false,
-                            default_value: Some("42".to_string()),
+                            default_value: Some("42".to_owned()),
                             platforms: instructions.platforms(),
                             is_promise: false,
                         })
                     ]),
-                    Comments(vec!["Comment for the first overload".to_string()])
+                    Comments(vec!["Comment for the first overload".to_owned()])
                 ),
                 (
                     Instructions(vec![
                         Instruction::Overload,
                         Instruction::Parameter(Variable {
-                            name: "o".to_string(),
-                            type_: Type::Verbatim("{x: number, y: number}".to_string()),
+                            name: "o".to_owned(),
+                            type_: Type::Verbatim("{x: number, y: number}".to_owned()),
                             comments: Comments(vec![
-                                "Object containing the x and y coordinates".to_string()
+                                "Object containing the x and y coordinates".to_owned()
                             ]),
                             is_readonly: false,
                             is_readonly_type: false,
@@ -1018,9 +1016,9 @@ Comment for the last overload
                     Instructions(vec![
                         Instruction::Overload,
                         Instruction::Parameter(Variable {
-                            name: "p".to_string(),
-                            type_: Type::Verbatim("Point".to_string()),
-                            comments: Comments(vec!["Other point".to_string()]),
+                            name: "p".to_owned(),
+                            type_: Type::Verbatim("Point".to_owned()),
+                            comments: Comments(vec!["Other point".to_owned()]),
                             is_readonly: false,
                             is_readonly_type: false,
                             default_value: None,
@@ -1028,7 +1026,7 @@ Comment for the last overload
                             is_promise: false,
                         })
                     ]),
-                    Comments(vec!["Comment for the last overload".to_string()])
+                    Comments(vec!["Comment for the last overload".to_owned()])
                 )
             ])
         );
@@ -1037,26 +1035,26 @@ Comment for the last overload
     #[test]
     fn convert_js_name_to_name_like() {
         let rustdoc_type = rustdoc_types::Type::ResolvedPath(Path {
-            path: "crate::api::name::js::JsName".to_string(),
+            path: "crate::api::name::js::JsName".to_owned(),
             id: Id(0),
             args: None,
         });
 
         let type_ = convert_type(&rustdoc_type, None).unwrap();
-        assert_eq!(type_, Type::Verbatim("NameLike".to_string()));
+        assert_eq!(type_, Type::Verbatim("NameLike".to_owned()));
         assert_eq!(type_.to_string(Context::Property).unwrap(), "NameLike");
     }
 
     #[test]
     fn convert_js_duration_to_duration_like() {
         let rustdoc_type = rustdoc_types::Type::ResolvedPath(Path {
-            path: "crate::api::js::duration::JsDuration".to_string(),
+            path: "crate::api::js::duration::JsDuration".to_owned(),
             id: Id(0),
             args: None,
         });
 
         let type_ = convert_type(&rustdoc_type, None).unwrap();
-        assert_eq!(type_, Type::Verbatim("DurationLike".to_string()));
+        assert_eq!(type_, Type::Verbatim("DurationLike".to_owned()));
         assert_eq!(type_.to_string(Context::Property).unwrap(), "DurationLike");
     }
 }

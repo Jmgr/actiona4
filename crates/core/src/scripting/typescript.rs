@@ -57,8 +57,8 @@ impl TsToJs {
         let (cm, handler) = super::new_tty_handler();
 
         let fm = cm.new_source_file(
-            Lrc::new(FileName::Custom(filename.to_string())),
-            code.to_string(),
+            Lrc::new(FileName::Custom(filename.to_owned())),
+            code.to_owned(),
         );
 
         let lexer = Lexer::new(
@@ -136,16 +136,16 @@ impl TsToJs {
         Ok(Self {
             js_code: code,
             sourcemap: srcmap,
-            filename: filename.to_string(),
+            filename: filename.to_owned(),
         })
     }
 
     /// Creates a passthrough entry for plain JS files (no transpilation, no sourcemap).
     pub fn passthrough(code: &str, filename: &str) -> Self {
         Self {
-            js_code: code.to_string(),
+            js_code: code.to_owned(),
             sourcemap: swc_sourcemap::SourceMap::new(None, vec![], vec![], vec![], None),
-            filename: filename.to_string(),
+            filename: filename.to_owned(),
         }
     }
 
@@ -214,12 +214,12 @@ mod tests {
     fn diagnostics_already_emitted_only_for_emitted() {
         assert!(
             TranspileError::Emitted {
-                message: "boom".to_string()
+                message: "boom".to_owned()
             }
             .diagnostics_already_emitted()
         );
-        assert!(!TranspileError::Parse("boom".to_string()).diagnostics_already_emitted());
-        assert!(!TranspileError::Codegen("boom".to_string()).diagnostics_already_emitted());
+        assert!(!TranspileError::Parse("boom".to_owned()).diagnostics_already_emitted());
+        assert!(!TranspileError::Codegen("boom".to_owned()).diagnostics_already_emitted());
     }
 
     #[test]

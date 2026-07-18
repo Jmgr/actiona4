@@ -136,7 +136,7 @@ fn print_update_available(version_info: &VersionInfo, app_version: &SemVer) {
 
         let since = OffsetDateTime::now_utc() - version_info.release_date;
         let since = StdDuration::try_from(since).map_or_else(
-            |_| "just now".to_string(),
+            |_| "just now".to_owned(),
             |since| format!("{} ago", HumanDuration(since)),
         );
 

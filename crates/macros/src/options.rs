@@ -272,7 +272,7 @@ fn compute_field_defaults(
                 let field_name = field
                     .ident
                     .as_ref()
-                    .map_or_else(|| "<unnamed field>".to_string(), ToString::to_string);
+                    .map_or_else(|| "<unnamed field>".to_owned(), ToString::to_string);
                 return Err(syn::Error::new_spanned(
                     &field.ty,
                     format!(
@@ -326,12 +326,12 @@ fn infer_ts_default_from_type_default(field_type: &Type) -> Option<String> {
         .unwrap_or(&type_name);
 
     match normalized_type_name {
-        "bool" => Some("false".to_string()),
+        "bool" => Some("false".to_owned()),
         "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128"
-        | "usize" | "f32" | "f64" => Some("0".to_string()),
-        "Option" => Some("undefined".to_string()),
-        "Vec" => Some("[]".to_string()),
-        "String" => Some("\"\"".to_string()),
+        | "usize" | "f32" | "f64" => Some("0".to_owned()),
+        "Option" => Some("undefined".to_owned()),
+        "Vec" => Some("[]".to_owned()),
+        "String" => Some("\"\"".to_owned()),
         _ => None,
     }
 }
@@ -366,7 +366,7 @@ fn infer_ts_default_from_path(expr_path: &ExprPath) -> Option<String> {
     }
 
     if expr_path.path.is_ident("None") {
-        return Some("undefined".to_string());
+        return Some("undefined".to_owned());
     }
 
     let mut path_parts = Vec::new();
@@ -379,7 +379,7 @@ fn infer_ts_default_from_path(expr_path: &ExprPath) -> Option<String> {
         let normalized_path_segment = path_segment_string
             .strip_prefix(RAW_IDENT_PREFIX)
             .unwrap_or(&path_segment_string);
-        path_parts.push(normalized_path_segment.to_string());
+        path_parts.push(normalized_path_segment.to_owned());
     }
 
     if path_parts.len() < 2 {

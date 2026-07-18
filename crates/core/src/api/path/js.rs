@@ -169,6 +169,6 @@ impl JsPath {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Path".to_string()
+        "Path".to_owned()
     }
 }

@@ -12,7 +12,7 @@ pub(super) fn normalize_path_entry(path_entry: &str) -> String {
         return String::new();
     }
 
-    let mut normalized = trimmed.to_string();
+    let mut normalized = trimmed.to_owned();
     while normalized.len() > 1 && normalized.ends_with('/') {
         normalized.pop();
     }
@@ -109,7 +109,7 @@ fn extract_profile_path_entry(line: &str) -> Option<String> {
     if dir.is_empty() {
         return None;
     }
-    Some(dir.to_string())
+    Some(dir.to_owned())
 }
 
 fn read_user_path_entries() -> Result<Vec<String>> {

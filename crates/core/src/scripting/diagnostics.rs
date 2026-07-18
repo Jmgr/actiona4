@@ -70,8 +70,8 @@ pub(in crate::scripting) fn runtime_primary_span(
     let column_index = usize::try_from(frame.column().checked_sub(1)?).ok()?;
 
     let source_file = cm.new_source_file(
-        Lrc::new(FileName::Custom(frame.file().to_string())),
-        source_code.to_string(),
+        Lrc::new(FileName::Custom(frame.file().to_owned())),
+        source_code.to_owned(),
     );
 
     let line_start = *source_file.analyze().lines.get(line_index)?;

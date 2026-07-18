@@ -70,7 +70,7 @@ fn expand_enum(item_enum: &mut ItemEnum, rename: Option<String>) -> syn::Result<
                 "`#[js_enum]` expects characters after the `Js` prefix",
             ));
         }
-        (Some(stripped.to_string()), false)
+        (Some(stripped.to_owned()), false)
     } else {
         (None, false)
     };

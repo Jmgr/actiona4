@@ -548,19 +548,19 @@ impl JsWindowHandle {
         let title = self
             .inner
             .title(self.id)
-            .unwrap_or_else(|_| "<unavailable>".to_string());
+            .unwrap_or_else(|_| "<unavailable>".to_owned());
         let class_name = self
             .inner
             .classname(self.id)
-            .unwrap_or_else(|_| "<unavailable>".to_string());
+            .unwrap_or_else(|_| "<unavailable>".to_owned());
         let process_id = self
             .inner
             .process_id(self.id)
-            .map_or_else(|_| "?".to_string(), |pid| pid.to_string());
+            .map_or_else(|_| "?".to_owned(), |pid| pid.to_string());
         let visible = self
             .inner
             .is_visible(self.id)
-            .map_or_else(|_| "?".to_string(), |value| value.to_string());
+            .map_or_else(|_| "?".to_owned(), |value| value.to_string());
 
         display_with_type(
             "WindowHandle",

@@ -71,6 +71,6 @@ impl JsFilesystem {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Filesystem".to_string()
+        "Filesystem".to_owned()
     }
 }

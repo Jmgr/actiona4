@@ -98,7 +98,7 @@ fn spawn_line_reader(
                 Ok(0) | Err(_) => break, // EOF or read error
                 Ok(_) => {
                     let trimmed = line.trim_end_matches('\n').trim_end_matches('\r');
-                    if sender.send(trimmed.to_string()).await.is_err() {
+                    if sender.send(trimmed.to_owned()).await.is_err() {
                         break;
                     }
                 }
@@ -121,8 +121,7 @@ async fn read_stream_to_string(mut stream: impl AsyncRead + Unpin) -> Result<Str
 
         lines.push(
             line.trim_end_matches('\n')
-                .trim_end_matches('\r')
-                .to_string(),
+                .trim_end_matches('\r').to_owned(),
         );
     }
 
@@ -373,10 +372,10 @@ pub fn terminate_by_pid(pid: Pid) -> Result<()> {
 #[cfg(unix)]
 fn resolve_shell(override_shell: Option<&str>) -> (String, String) {
     let shell = override_shell.map_or_else(
-        || env::var("SHELL").unwrap_or_else(|_| "bash".to_string()),
+        || env::var("SHELL").unwrap_or_else(|_| "bash".to_owned()),
         str::to_owned,
     );
-    (shell, "-c".to_string())
+    (shell, "-c".to_owned())
 }
 
 #[cfg(windows)]

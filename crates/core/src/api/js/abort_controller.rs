@@ -53,7 +53,7 @@ impl JsAbortSignal {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "AbortSignal".to_string()
+        "AbortSignal".to_owned()
     }
 }
 
@@ -118,7 +118,7 @@ impl JsAbortController {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "AbortController".to_string()
+        "AbortController".to_owned()
     }
 }
 

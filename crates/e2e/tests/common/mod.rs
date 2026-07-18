@@ -86,7 +86,7 @@ fn configure_web_server(command: &mut Command) -> Server {
             request::method_path("POST", "/auth"),
             request::headers(contains((
                 "authorization",
-                "Basic dXNlcjpwYXNzd29yZA==".to_string()
+                "Basic dXNlcjpwYXNzd29yZA==".to_owned()
             )))
         ])
         .respond_with(status_code(200).body("hello")),

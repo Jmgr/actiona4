@@ -32,7 +32,7 @@ impl Display for Group {
 impl From<&sysinfo::Group> for Group {
     fn from(value: &sysinfo::Group) -> Self {
         Self {
-            name: value.name().to_string(),
+            name: value.name().to_owned(),
         }
     }
 }
@@ -70,7 +70,7 @@ impl Display for User {
 impl From<&sysinfo::User> for User {
     fn from(value: &sysinfo::User) -> Self {
         Self {
-            name: value.name().to_string(),
+            name: value.name().to_owned(),
             #[cfg(windows)]
             group_id: None,
             #[cfg(not(windows))]

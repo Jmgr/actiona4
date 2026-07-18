@@ -36,7 +36,7 @@ impl<P: Protocol> Extension<P> {
         timeout: Duration,
     ) -> Self {
         Self::with_handler(key, task_tracker, token, timeout, async |_| {
-            Err("unexpected message".to_string())
+            Err("unexpected message".to_owned())
         })
     }
 

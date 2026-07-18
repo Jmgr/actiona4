@@ -97,7 +97,7 @@ pub struct TemperatureSensor {
 impl From<&sysinfo::Component> for TemperatureSensor {
     fn from(value: &sysinfo::Component) -> Self {
         Self {
-            label: value.label().to_string(),
+            label: value.label().to_owned(),
             id: value.id().into(),
             temperature: value.temperature().into(),
             max_temperature: value.max().into(),

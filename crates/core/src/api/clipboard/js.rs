@@ -231,7 +231,7 @@ impl JsClipboard {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Clipboard".to_string()
+        "Clipboard".to_owned()
     }
 }
 
@@ -277,7 +277,7 @@ impl JsClipboardText {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "ClipboardText".to_string()
+        "ClipboardText".to_owned()
     }
 }
 
@@ -328,7 +328,7 @@ impl JsClipboardImage {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "ClipboardImage".to_string()
+        "ClipboardImage".to_owned()
     }
 }
 
@@ -382,7 +382,7 @@ impl JsClipboardFileList {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "ClipboardFileList".to_string()
+        "ClipboardFileList".to_owned()
     }
 }
 
@@ -441,6 +441,6 @@ impl JsClipboardHtml {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "ClipboardHtml".to_string()
+        "ClipboardHtml".to_owned()
     }
 }

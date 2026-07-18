@@ -274,6 +274,6 @@ impl JsDirectory {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Directory".to_string()
+        "Directory".to_owned()
     }
 }

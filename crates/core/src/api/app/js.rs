@@ -170,6 +170,6 @@ impl JsApp {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "App".to_string()
+        "App".to_owned()
     }
 }

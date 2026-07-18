@@ -50,7 +50,7 @@ impl<P: Protocol> Host<P> {
         timeout: Duration,
     ) -> Result<Self> {
         Self::with_handler(executable_path, task_tracker, token, timeout, async |_| {
-            Err("unexpected message".to_string())
+            Err("unexpected message".to_owned())
         })
         .await
     }

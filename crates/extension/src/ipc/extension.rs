@@ -15,7 +15,7 @@ pub struct Extension<P: Protocol> {
 impl<P: Protocol> Extension<P> {
     pub async fn new(key: ConnectionKey, timeout: Duration) -> Result<Self> {
         Self::with_handler(key, timeout, async |_message| {
-            Err("unexpected message".to_string())
+            Err("unexpected message".to_owned())
         })
         .await
     }

@@ -306,7 +306,7 @@ impl JsDatetime {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Datetime".to_string()
+        "Datetime".to_owned()
     }
 }
 

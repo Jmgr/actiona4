@@ -110,12 +110,12 @@ impl ActionTree {
         let root = self
             .map
             .get(self.root)
-            .ok_or_else(|| "tree root does not exist".to_string())?;
+            .ok_or_else(|| "tree root does not exist".to_owned())?;
         if !root.is_root() {
-            return Err("tree root node must have root payload".to_string());
+            return Err("tree root node must have root payload".to_owned());
         }
         if root.parent_id.is_some() {
-            return Err("tree root node must not have a parent".to_string());
+            return Err("tree root node must not have a parent".to_owned());
         }
 
         let mut visited = HashSet::with_capacity(self.map.len());
@@ -163,7 +163,7 @@ impl ActionTree {
         }
 
         if visited.len() != self.map.len() {
-            return Err("tree contains unreachable nodes".to_string());
+            return Err("tree contains unreachable nodes".to_owned());
         }
 
         Ok(())

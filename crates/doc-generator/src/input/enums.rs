@@ -35,7 +35,7 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
 
         let enum_name = enum_instructions
             .rename()
-            .unwrap_or_else(|| info.name.to_string());
+            .unwrap_or_else(|| info.name.to_owned());
 
         let variants = items
             .get_sorted(&info.inner.variants)
@@ -87,7 +87,7 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
         let default_value = enum_instructions.default_value();
 
         result.push(Enum {
-            name: enum_name.to_string(),
+            name: enum_name.to_owned(),
             variants: result_variants,
             comments,
             category,

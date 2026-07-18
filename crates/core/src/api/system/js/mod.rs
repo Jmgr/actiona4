@@ -256,7 +256,7 @@ pub fn format_percent(ctx: Ctx<'_>, percent: f64, precision: Opt<u32>) -> Result
 
     let mut s = format!("{percent:.precision$}");
     if s.contains('.') {
-        s = s.trim_end_matches('0').trim_end_matches('.').to_string();
+        s = s.trim_end_matches('0').trim_end_matches('.').to_owned();
     }
 
     Ok(format!("{s}%"))

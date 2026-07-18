@@ -193,6 +193,5 @@ fn enum_registration_name<E>() -> String {
 
     enum_name
         .strip_prefix("Js")
-        .unwrap_or(enum_name)
-        .to_string()
+        .unwrap_or(enum_name).to_owned()
 }

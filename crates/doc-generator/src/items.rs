@@ -174,7 +174,7 @@ impl Items {
             && let Some(core_child) = segments.get(core_index + 1)
         {
             if *core_child == "js" {
-                return Some("Core".to_string());
+                return Some("Core".to_owned());
             }
 
             return Some(core_child.to_case(Case::Pascal));
@@ -248,27 +248,27 @@ mod tests {
     fn category_from_filename_works() {
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/mouse/js.rs")),
-            Some("Mouse".to_string())
+            Some("Mouse".to_owned())
         );
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/js/mod.rs")),
-            Some("Core".to_string())
+            Some("Core".to_owned())
         );
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/dialogs/js.rs")),
-            Some("Dialogs".to_string())
+            Some("Dialogs".to_owned())
         );
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/standardpaths/js.rs")),
-            Some("Standardpaths".to_string())
+            Some("Standardpaths".to_owned())
         );
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/js/abort_controller.rs")),
-            Some("Core".to_string())
+            Some("Core".to_owned())
         );
         assert_eq!(
             Items::category_from_filename(Path::new("src/something/mod.rs")),
-            Some("Something".to_string())
+            Some("Something".to_owned())
         );
         assert_eq!(Items::category_from_filename(Path::new("lib.rs")), None);
     }
@@ -284,7 +284,7 @@ mod tests {
         Item {
             id: Id(id),
             crate_id: 0,
-            name: name.map(str::to_string),
+            name: name.map(str::to_owned),
             span: None,
             visibility: Visibility::Public,
             docs: None,
@@ -305,7 +305,7 @@ mod tests {
         Item {
             id: Id(id),
             crate_id: 0,
-            name: Some(name.to_string()),
+            name: Some(name.to_owned()),
             span: None,
             visibility: Visibility::Public,
             docs: None,
@@ -351,7 +351,7 @@ mod tests {
                 generics: empty_generics(),
                 provided_trait_methods: Vec::new(),
                 trait_: None,
-                for_: Type::Primitive("i32".to_string()),
+                for_: Type::Primitive("i32".to_owned()),
                 items: impl_items,
                 is_negative: false,
                 is_synthetic: false,

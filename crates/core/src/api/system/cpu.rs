@@ -33,9 +33,9 @@ impl CpuCore {
     pub fn new(cpu: &SysinfoCpu, index: usize) -> Self {
         Self {
             index,
-            name: cpu.name().to_string(),
-            vendor: cpu.vendor_id().to_string(),
-            brand: cpu.brand().to_string(),
+            name: cpu.name().to_owned(),
+            vendor: cpu.vendor_id().to_owned(),
+            brand: cpu.brand().to_owned(),
             usage: cpu.cpu_usage().into(),
             frequency: cpu.frequency().into(),
         }
@@ -160,8 +160,8 @@ impl Cpu {
             .cpus()
             .iter()
             .map(|cpu| CpuVariant {
-                vendor: cpu.vendor_id().to_string(),
-                brand: cpu.brand().to_string(),
+                vendor: cpu.vendor_id().to_owned(),
+                brand: cpu.brand().to_owned(),
             })
             .collect::<HashSet<_>>()
             .into_iter()

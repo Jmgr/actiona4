@@ -375,6 +375,6 @@ impl JsRandom {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Random".to_string()
+        "Random".to_owned()
     }
 }

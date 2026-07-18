@@ -399,7 +399,7 @@ impl JsDialogs {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Dialogs".to_string()
+        "Dialogs".to_owned()
     }
 }
 
@@ -516,7 +516,7 @@ impl JsMessageBoxButtons {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "MessageBoxButtons".to_string()
+        "MessageBoxButtons".to_owned()
     }
 }
 

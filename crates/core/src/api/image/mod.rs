@@ -227,7 +227,7 @@ impl Default for Font {
     fn default() -> Self {
         Self {
             inner: Self::builtin(),
-            path: "<built-in>".to_string(),
+            path: "<built-in>".to_owned(),
         }
     }
 }
@@ -1449,7 +1449,7 @@ mod tests {
     fn font_display_loaded_path() {
         let font = Font {
             inner: Font::builtin(),
-            path: "/usr/share/fonts/MyFont.ttf".to_string(),
+            path: "/usr/share/fonts/MyFont.ttf".to_owned(),
         };
         assert_eq!(font.to_string(), "(path: /usr/share/fonts/MyFont.ttf)");
     }

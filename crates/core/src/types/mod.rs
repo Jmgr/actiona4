@@ -122,7 +122,7 @@ impl From<Option<&str>> for OptionalSystemString {
                 | "System Product Name"
                 | "Not Specified",
             ) => None,
-            Some(s) => Some(s.to_string()),
+            Some(s) => Some(s.to_owned()),
         })
     }
 }

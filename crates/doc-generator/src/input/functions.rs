@@ -95,8 +95,7 @@ pub fn extract_functions(
                     struct_name
                         .ok_or_else(|| {
                             eyre!("expected struct name, but none set (free function?)")
-                        })?
-                        .to_string(),
+                        })?.to_owned(),
                 )
             } else if let Some(method_returns) = instructions.returns() {
                 method_returns
@@ -184,7 +183,7 @@ pub fn extract_functions(
 
                         let parameter_type = if let Some(struct_name) = struct_name {
                             // Extra `Class<'js, Self>` parameters are regular arguments, not the method receiver.
-                            Type::Verbatim(struct_name.to_string())
+                            Type::Verbatim(struct_name.to_owned())
                         } else {
                             Type::This
                         };

@@ -237,21 +237,21 @@ mod tests {
         #[must_use]
         #[allow(clippy::unused_self)] // Instance method required for JS registration as `test.toString`.
         pub fn to_string_js(&self) -> String {
-            "Test".to_string()
+            "Test".to_owned()
         }
     }
 
     #[test]
     fn wildcard() {
-        let wildcard = JsWildcard::new("foo*".to_string()).unwrap();
+        let wildcard = JsWildcard::new("foo*".to_owned()).unwrap();
         assert!(wildcard.inner().matches("football"));
         assert!(!wildcard.inner().matches("cat"));
 
-        let wildcard = JsWildcard::new("*😄*".to_string()).unwrap();
+        let wildcard = JsWildcard::new("*😄*".to_owned()).unwrap();
         assert!(wildcard.inner().matches("foot 😄 ball"));
         assert!(!wildcard.inner().matches("cat"));
 
-        let wildcard = JsWildcard::new("😄?😁".to_string()).unwrap();
+        let wildcard = JsWildcard::new("😄?😁".to_owned()).unwrap();
         assert!(!wildcard.inner().matches("😄😁"));
         assert!(wildcard.inner().matches("😄😆😁"));
         assert!(wildcard.inner().matches("😄-😁"));

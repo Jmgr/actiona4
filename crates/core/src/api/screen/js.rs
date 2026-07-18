@@ -149,7 +149,7 @@ impl From<JsSearchIn> for SearchIn {
 impl JsSearchIn {
     fn to_string_inner(&self) -> String {
         let fields = match &self.inner {
-            JsSearchInInner::Desktop => "(desktop)".to_string(),
+            JsSearchInInner::Desktop => "(desktop)".to_owned(),
             JsSearchInInner::Display(id) => DisplayFields::default()
                 .display("display_id", id)
                 .finish_as_string(),
@@ -440,7 +440,7 @@ impl JsScreen {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Screen".to_string()
+        "Screen".to_owned()
     }
 }
 

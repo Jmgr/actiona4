@@ -964,7 +964,7 @@ fn inject_legacy_depth_fields(value: &mut serde_json::Value, depth: usize) {
                 .get_mut("metadata")
                 .and_then(serde_json::Value::as_object_mut)
             {
-                metadata.insert("depth".to_string(), serde_json::json!(depth));
+                metadata.insert("depth".to_owned(), serde_json::json!(depth));
             }
             for value in object.values_mut() {
                 inject_legacy_depth_fields(value, depth);

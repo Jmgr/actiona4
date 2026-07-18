@@ -384,7 +384,7 @@ pub async fn record_impl(
     let metadata = MacroMetadata {
         duration_ms: elapsed_ms(),
         recorded_at: OffsetDateTime::now_utc(),
-        platform: CURRENT_PLATFORM_NAME.to_string(),
+        platform: CURRENT_PLATFORM_NAME.to_owned(),
         displays: current_displays,
     };
 

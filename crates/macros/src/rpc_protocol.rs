@@ -343,7 +343,7 @@ fn enum_definition(
 
 fn protocol_base_name(protocol_ident: &Ident) -> String {
     let name = protocol_ident.to_string();
-    name.strip_suffix("Protocol").unwrap_or(&name).to_string()
+    name.strip_suffix("Protocol").unwrap_or(&name).to_owned()
 }
 
 struct ProtocolMethod {

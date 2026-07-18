@@ -71,7 +71,7 @@ impl Type {
                 // Remove "Js" prefix if present
                 let type_ = type_.strip_prefix("Js").unwrap_or(type_);
 
-                type_.to_string()
+                type_.to_owned()
             }
             Self::Array(type_) => format!("{}[]", type_.to_string(context)?),
             Self::Record(key_type, value_type) => format!(
@@ -254,7 +254,7 @@ impl File {
             }
 
             if enum_.is_expand {
-                comments.push("@expand".to_string());
+                comments.push("@expand".to_owned());
             }
 
             write_comments(&comments, "", &mut output_file)?;
@@ -292,7 +292,7 @@ impl File {
             add_category_comment(&mut comments, struct_.category.as_deref());
 
             if struct_.is_options {
-                comments.push("@expand".to_string());
+                comments.push("@expand".to_owned());
             }
 
             if !struct_.platforms.is_empty() {
@@ -524,14 +524,14 @@ mod tests {
 
         // Create a Foo struct that has two constructors: Foo(a: number, b: string) and Foo(p: Foo)
         file.structs.push(Struct {
-            name: "Foo".to_string(),
+            name: "Foo".to_owned(),
             methods: vec![Method {
                 overloads: vec![
                     MethodOverload {
                         comments: Comments::default(),
                         parameters: vec![
                             Variable {
-                                name: "a".to_string(),
+                                name: "a".to_owned(),
                                 type_: Type::Number,
                                 comments: Comments::default(),
                                 is_readonly: false,
@@ -541,7 +541,7 @@ mod tests {
                                 is_promise: false,
                             },
                             Variable {
-                                name: "b".to_string(),
+                                name: "b".to_owned(),
                                 type_: Type::String,
                                 comments: Comments::default(),
                                 is_readonly: false,
@@ -551,7 +551,7 @@ mod tests {
                                 is_promise: false,
                             },
                         ],
-                        return_: Type::Verbatim("Foo".to_string()),
+                        return_: Type::Verbatim("Foo".to_owned()),
                         is_readonly_type: false,
                         rest_params: None,
                         platforms: Platforms::default(),
@@ -560,8 +560,8 @@ mod tests {
                     MethodOverload {
                         comments: Comments::default(),
                         parameters: vec![Variable {
-                            name: "p".to_string(),
-                            type_: Type::Verbatim("Foo".to_string()),
+                            name: "p".to_owned(),
+                            type_: Type::Verbatim("Foo".to_owned()),
                             comments: Comments::default(),
                             is_readonly: false,
                             is_readonly_type: false,
@@ -569,7 +569,7 @@ mod tests {
                             platforms: Platforms::default(),
                             is_promise: false,
                         }],
-                        return_: Type::Verbatim("Foo".to_string()),
+                        return_: Type::Verbatim("Foo".to_owned()),
                         is_readonly_type: false,
                         rest_params: None,
                         platforms: Platforms::default(),
@@ -584,13 +584,13 @@ mod tests {
 
         // Create a Bar struct that has a constructor method that takes a Foo as a parameter
         file.structs.push(Struct {
-            name: "Bar".to_string(),
+            name: "Bar".to_owned(),
             methods: vec![Method {
                 overloads: vec![MethodOverload {
                     comments: Comments::default(),
                     parameters: vec![Variable {
-                        name: "p".to_string(),
-                        type_: Type::Verbatim("Foo".to_string()),
+                        name: "p".to_owned(),
+                        type_: Type::Verbatim("Foo".to_owned()),
                         comments: Comments::default(),
                         is_readonly: false,
                         is_readonly_type: false,
@@ -598,7 +598,7 @@ mod tests {
                         platforms: Platforms::default(),
                         is_promise: false,
                     }],
-                    return_: Type::Verbatim("Bar".to_string()),
+                    return_: Type::Verbatim("Bar".to_owned()),
                     is_readonly_type: false,
                     rest_params: None,
                     platforms: Platforms::default(),
@@ -629,7 +629,7 @@ mod tests {
 
     #[test]
     fn write_comments_escapes_comment_terminators() {
-        let comments = vec!["const match = /HDMI-.*/;".to_string()];
+        let comments = vec!["const match = /HDMI-.*/;".to_owned()];
         let mut output = Vec::new();
 
         write_comments(&comments, "", &mut output).unwrap();

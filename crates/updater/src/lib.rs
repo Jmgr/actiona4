@@ -77,7 +77,7 @@ impl Updater {
     ) -> Result<Option<VersionInfo>> {
         let updater = Self {
             config: config.clone(),
-            app: app.to_string(),
+            app: app.to_owned(),
             app_version,
         };
 
@@ -103,7 +103,7 @@ impl Updater {
         let local_config = config.clone();
         let result = Arc::new(Self {
             config,
-            app: app.to_string(),
+            app: app.to_owned(),
             app_version,
         });
 
@@ -118,7 +118,7 @@ impl Updater {
 
         let local_updater = result.clone();
         let mut sender = Some(sender);
-        let app_distribution = app_distribution.to_string();
+        let app_distribution = app_distribution.to_owned();
         task_tracker.spawn(async move {
             loop {
                 let now = OffsetDateTime::now_utc();
@@ -241,7 +241,7 @@ impl Updater {
 
         params.insert("app_channel", Channel::Stable.to_string());
         params.insert("app_version", self.app_version.to_string());
-        params.insert("os_name", OS_NAME.to_string());
+        params.insert("os_name", OS_NAME.to_owned());
 
         if let Some(distribution) = distribution {
             params.insert("os_distribution", distribution);
@@ -261,7 +261,7 @@ impl Updater {
             params.insert("os_display", os_display);
         }
 
-        params.insert("app_distribution", app_distribution.to_string());
+        params.insert("app_distribution", app_distribution.to_owned());
 
         let request = client.post(UPDATER_URL).json(&params).build()?;
         let response = client

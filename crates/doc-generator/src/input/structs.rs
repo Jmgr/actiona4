@@ -141,7 +141,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         for impl_ in impls {
             let (mut impl_methods, mut extra_properties) =
                 extract_functions(items, &impl_.items, Some(info.name))
-                    .wrap_err_with(|| info.name.to_string())?;
+                    .wrap_err_with(|| info.name.to_owned())?;
             methods.append(&mut impl_methods);
             properties.append(&mut extra_properties);
         }
@@ -150,7 +150,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
         let name = info.name.strip_prefix("Js").unwrap_or(info.name);
 
         result.push(Struct {
-            name: name.to_string(),
+            name: name.to_owned(),
             properties,
             methods,
             comments: struct_comments,

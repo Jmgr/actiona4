@@ -262,7 +262,7 @@ impl JsWebOptions {
         let request_body = match (self.form, self.multipart) {
             (Some(_), Some(_)) => {
                 return Err(CommonError::Unsupported(
-                    "Cannot use both form and multipart".to_string(),
+                    "Cannot use both form and multipart".to_owned(),
                 ))
                 .into_js_result(ctx);
             }
@@ -596,6 +596,6 @@ impl JsWeb {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "Web".to_string()
+        "Web".to_owned()
     }
 }

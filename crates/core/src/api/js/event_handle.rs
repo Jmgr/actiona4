@@ -71,6 +71,6 @@ impl JsEventHandle {
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "EventHandle".to_string()
+        "EventHandle".to_owned()
     }
 }

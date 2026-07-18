@@ -388,7 +388,7 @@ fn default_platform_label(field_name: &syn::Ident) -> LitStr {
         .strip_prefix(RAW_IDENT_PREFIX)
         .unwrap_or(&field_name_string);
     let field_name_in_camel_case = convert_case::Casing::to_case(
-        &normalized_field_name.to_string(),
+        &normalized_field_name.to_owned(),
         convert_case::Case::Camel,
     );
 
