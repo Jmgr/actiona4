@@ -152,7 +152,10 @@ fn find_dump_entry_name(zip_archive: &mut ZipArchive<File>) -> Result<String> {
             file.name().to_owned()
         };
 
-        if entry_name.ends_with(".dmp") {
+        if Path::new(&entry_name)
+            .extension()
+            .is_some_and(|extension| extension.eq_ignore_ascii_case("dmp"))
+        {
             return Ok(entry_name);
         }
     }
@@ -285,6 +288,9 @@ fn symbolize_stackwalk_output(
     symbolicated_lines.join("\n")
 }
 
+// `marker_index` and `offset_start` come from `find`/ASCII-length arithmetic on `frame_marker`,
+// so they always land on char boundaries.
+#[allow(clippy::string_slice)]
 fn symbolize_stackwalk_line(line: &str, symbol_functions: &[SymbolFunction]) -> String {
     let frame_marker = format!("{STACKWALK_MODULE_NAME} + 0x");
     let Some(marker_index) = line.find(&frame_marker) else {

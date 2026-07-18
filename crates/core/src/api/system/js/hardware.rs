@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use itertools::Itertools;
 use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
@@ -124,9 +126,9 @@ impl JsHardware {
 
     /// Hardware temperature sensors
     /// @readonly
-    pub async fn list_temperature_sensors<'js>(
+    pub async fn list_temperature_sensors(
         &self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         options: Opt<ListTemperatureSensorsOptions>,
     ) -> Result<Vec<JsTemperatureSensor>> {
         let options = options.unwrap_or_default();

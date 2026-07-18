@@ -26,6 +26,7 @@ mod magnifier;
 mod screenshot;
 mod text;
 
+#[allow(clippy::needless_raw_strings)]
 mod built_info {
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }

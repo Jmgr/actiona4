@@ -3,7 +3,10 @@ use std::{
     result::Result as StdResult,
 };
 
-use color_eyre::{Result, eyre::eyre};
+use color_eyre::{
+    Result,
+    eyre::{OptionExt, eyre},
+};
 use itertools::Itertools;
 use strum::{Display, EnumDiscriminants, EnumIs};
 
@@ -123,7 +126,7 @@ pub struct MethodOverload {
     pub constructor_only: bool,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Const {
     pub value: String,
     pub comments: Comments,
@@ -159,7 +162,7 @@ pub struct Module {
     pub verbatim: Vec<String>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PlatformConstraint {
     Only,
     Not,
@@ -212,7 +215,7 @@ impl TryFrom<&str> for Platform {
         let mut chars = value.chars();
         let constraint = chars
             .next()
-            .ok_or(eyre!("unexpected empty platform string"))?;
+            .ok_or_eyre("unexpected empty platform string")?;
 
         Ok(Self {
             constraint: constraint.try_into()?,

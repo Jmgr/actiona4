@@ -187,7 +187,9 @@ pub struct Font {
 
 impl Debug for Font {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Font").field("path", &self.path).finish()
+        f.debug_struct("Font")
+            .field("path", &self.path)
+            .finish_non_exhaustive()
     }
 }
 
@@ -235,7 +237,7 @@ struct Cache<T>(ArcSwapOption<T>);
 
 impl<T> Default for Cache<T> {
     fn default() -> Self {
-        Self(Default::default())
+        Self(ArcSwapOption::default())
     }
 }
 
@@ -291,8 +293,8 @@ impl Clone for Image {
     fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
-            source: Default::default(),
-            template: Default::default(),
+            source: Cache::default(),
+            template: Cache::default(),
         }
     }
 }
@@ -325,8 +327,8 @@ impl Image {
     pub fn from_rgba8(image: RgbaImage) -> Self {
         Self {
             inner: image,
-            source: Default::default(),
-            template: Default::default(),
+            source: Cache::default(),
+            template: Cache::default(),
         }
     }
 
@@ -813,13 +815,14 @@ impl Image {
         position: Point,
         text: &str,
         color: Color,
-        options: DrawTextOptions,
+        options: &DrawTextOptions,
     ) -> Result<()> {
         if text.is_empty() {
             return Ok(());
         }
 
-        Self::render_text(self, position, text, color, options)
+        Self::render_text(self, position, text, color, options);
+        Ok(())
     }
 
     pub fn with_text(
@@ -827,7 +830,7 @@ impl Image {
         position: Point,
         text: &str,
         color: Color,
-        options: DrawTextOptions,
+        options: &DrawTextOptions,
     ) -> Result<Self> {
         let mut clone = self.clone();
         clone.draw_text_mut(position, text, color, options)?;
@@ -921,8 +924,8 @@ impl Image {
         position: Point,
         text: &str,
         color: Color,
-        options: DrawTextOptions,
-    ) -> Result<()> {
+        options: &DrawTextOptions,
+    ) {
         let font = &options.font.inner;
         let scale = PxScale::from(options.font_size.max(1.0));
         let scaled_font = font.as_scaled(scale);
@@ -975,26 +978,10 @@ impl Image {
                 current_y += line_step_i32;
             }
         });
-
-        Ok(())
     }
 
-    const fn clamp_f32_to_i32(value: f32) -> i32 {
-        #[allow(clippy::as_conversions)]
-        {
-            if value.is_finite() {
-                value.clamp(Self::i32_to_f32(i32::MIN), Self::i32_to_f32(i32::MAX)) as i32
-            } else {
-                0
-            }
-        }
-    }
-
-    const fn i32_to_f32(value: i32) -> f32 {
-        #[allow(clippy::as_conversions)]
-        {
-            value as f32
-        }
+    fn clamp_f32_to_i32(value: f32) -> i32 {
+        value.saturating_into()
     }
 
     const fn u32_to_f32(value: u32) -> f32 {

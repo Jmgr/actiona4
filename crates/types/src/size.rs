@@ -110,7 +110,7 @@ impl Size {
         })
     }
 
-    pub(crate) fn as_f64(&self) -> (f64, f64) {
+    pub(crate) fn as_f64(self) -> (f64, f64) {
         (self.width.into(), self.height.into())
     }
 }
@@ -123,47 +123,47 @@ mod tests {
 
     #[test]
     fn ctor_and_default() {
-        assert_eq!(Size::default(), size(0u32, 0u32));
-        assert_eq!(size(3u32, 5u32), Size::new(3u32.into(), 5u32.into()));
+        assert_eq!(Size::default(), size(0_u32, 0_u32));
+        assert_eq!(size(3_u32, 5_u32), Size::new(3_u32.into(), 5_u32.into()));
     }
 
     #[test]
     fn mul_and_mul_assign_by_u32() {
-        let a = size(3u32, 4u32) * 2;
-        assert_eq!(a, size(6u32, 8u32));
+        let a = size(3_u32, 4_u32) * 2;
+        assert_eq!(a, size(6_u32, 8_u32));
 
-        let mut b = size(3u32, 4u32);
+        let mut b = size(3_u32, 4_u32);
         b *= 3;
-        assert_eq!(b, size(9u32, 12u32));
+        assert_eq!(b, size(9_u32, 12_u32));
     }
 
     #[test]
     fn try_div_and_try_div_assign() {
-        let c = size(8u32, 10u32).try_div(2).unwrap();
-        assert_eq!(c, size(4u32, 5u32));
+        let c = size(8_u32, 10_u32).try_div(2).unwrap();
+        assert_eq!(c, size(4_u32, 5_u32));
 
-        let mut d = size(9u32, 12u32);
+        let mut d = size(9_u32, 12_u32);
         d.try_div_assign(3).unwrap();
-        assert_eq!(d, size(3u32, 4u32));
+        assert_eq!(d, size(3_u32, 4_u32));
     }
 
     #[test]
     fn try_div_by_zero_errorsize() {
-        assert!(size(1u32, 1u32).try_div(0).is_err());
+        assert!(size(1_u32, 1_u32).try_div(0).is_err());
 
-        let mut e = size(6u32, 6u32);
+        let mut e = size(6_u32, 6_u32);
         let err = e.try_div_assign(0).unwrap_err();
         assert_eq!(
             e,
-            size(6u32, 6u32),
+            size(6_u32, 6_u32),
             "Size mutated on failed division: {err}"
         );
     }
 
     #[rstest]
-    #[case::double(size(3u32, 4u32), 2.0, size(6u32, 8u32))]
-    #[case::zero(size(3u32, 4u32), 0.0, size(0u32, 0u32))]
-    #[case::fraction_exact(size(10u32, 5u32), 0.2, size(2u32, 1u32))] // exact integers after scaling
+    #[case::double(size(3_u32, 4_u32), 2.0, size(6_u32, 8_u32))]
+    #[case::zero(size(3_u32, 4_u32), 0.0, size(0_u32, 0_u32))]
+    #[case::fraction_exact(size(10_u32, 5_u32), 0.2, size(2_u32, 1_u32))] // exact integers after scaling
     fn scaled_ok(#[case] input: Size, #[case] factor: f64, #[case] want: Size) {
         let got = input.scaled(factor).unwrap();
         assert_eq!(got, want);

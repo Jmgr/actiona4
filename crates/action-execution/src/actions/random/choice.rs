@@ -9,7 +9,7 @@ impl Runnable for RandomItem {
         let count = context
             .store_array(array.inner())
             .await
-            .map_err(|source| ResolveParamError::new(self.array.name(), source))?;
+            .map_err(|source| ResolveParamError::new(self.array.name(), &source))?;
         if count == 0 {
             return Err(RunError::new(RunErrorKind::EmptyRandomItem));
         }

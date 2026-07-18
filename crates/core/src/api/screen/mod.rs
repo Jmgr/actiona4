@@ -102,7 +102,7 @@ impl Screen {
     /// Finds the best match of an image within the given search area.
     pub async fn find_on_screen(
         &self,
-        template: &Arc<Template>,
+        template: Arc<Template>,
         search_in: &SearchIn,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
@@ -117,7 +117,7 @@ impl Screen {
             .runtime
             .task_tracker()
             .spawn_blocking(move || {
-                source.find_template(&template, options, cancellation_token, progress)
+                source.find_template(&template, options, &cancellation_token, &progress)
             })
             .await??;
         Ok(matches.map(|m| m.offset(origin)))
@@ -126,7 +126,7 @@ impl Screen {
     /// Finds all matches of an image within the given search area.
     pub async fn find_all_on_screen(
         &self,
-        template: &Arc<Template>,
+        template: Arc<Template>,
         search_in: &SearchIn,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
@@ -141,7 +141,7 @@ impl Screen {
             .runtime
             .task_tracker()
             .spawn_blocking(move || {
-                source.find_template_all(&template, options, cancellation_token, progress)
+                source.find_template_all(&template, options, &cancellation_token, &progress)
             })
             .await??;
         Ok(matches.into_iter().map(|m| m.offset(origin)).collect())

@@ -47,7 +47,7 @@ enum ProcessSignalErrors {
 }
 
 #[derive(Debug, Default)]
-pub struct ProcessSignal {}
+pub struct ProcessSignal;
 
 impl ProcessSignal {
     async fn send_signal_and_wait_legacy(
@@ -72,13 +72,11 @@ impl ProcessSignal {
                 }
                 Ok(None) => {
                     select! {
-                        () = sleep(Duration::from_millis(10)) => continue,
+                        () = sleep(Duration::from_millis(10)) => {},
                         () = cancellation_token.cancelled() => return Err(Cancelled.into()),
                     }
                 }
-                Err(err) if err == Errno::INTR => {
-                    continue;
-                }
+                Err(err) if err == Errno::INTR => {}
                 Err(err) if err == Errno::CHILD => {
                     break;
                 }
@@ -99,7 +97,7 @@ impl ProcessSignal {
             }
 
             select! {
-                () = sleep(Duration::from_millis(10)) => continue,
+                () = sleep(Duration::from_millis(10)) => {},
                 () = cancellation_token.cancelled() => return Err(Cancelled.into()),
             }
         }

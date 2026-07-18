@@ -46,12 +46,12 @@ fn expand_enum(item_enum: &mut ItemEnum, rename: Option<String>) -> syn::Result<
         if let Some(platform_name) = platform_only_from_attributes(&variant.attrs)? {
             append_doc_line(
                 &mut variant.attrs,
-                format!("{INSTR_PLATFORMS} ={platform_name}"),
+                &format!("{INSTR_PLATFORMS} ={platform_name}"),
             );
         } else if let Some(platform_name) = platform_not_from_attributes(&variant.attrs)? {
             append_doc_line(
                 &mut variant.attrs,
-                format!("{INSTR_PLATFORMS} -{platform_name}"),
+                &format!("{INSTR_PLATFORMS} -{platform_name}"),
             );
         }
     }
@@ -81,7 +81,7 @@ fn expand_enum(item_enum: &mut ItemEnum, rename: Option<String>) -> syn::Result<
         item_enum.attrs.push(serde_attr);
 
         if inject_rename_instr && !doc_contains(&item_enum.attrs, INSTR_RENAME) {
-            append_doc_line(&mut item_enum.attrs, format!("{INSTR_RENAME} {name}"));
+            append_doc_line(&mut item_enum.attrs, &format!("{INSTR_RENAME} {name}"));
         }
     }
 

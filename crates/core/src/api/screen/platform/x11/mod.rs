@@ -85,8 +85,7 @@ impl ScreenImpl {
             runtime.clone(),
             displays.clone(),
             capture_screen,
-        )
-        .await?;
+        );
 
         let desktop_shm = AsyncResource::new(runtime.cancellation_token());
 

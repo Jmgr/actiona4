@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability},
-    parameters::duration::DurationValue,
+    parameters::{Param, duration::DurationValue},
     scriptable::Scriptable,
 };
 
@@ -33,7 +33,7 @@ impl Default for WaitForClipboardChanged {
                 value: Duration::from_millis(200).into(),
             }
             .into(),
-            selection: Default::default(),
+            selection: Param::default(),
         }
     }
 }

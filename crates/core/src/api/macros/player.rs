@@ -60,7 +60,7 @@ pub struct MacroPlayer {
 }
 
 impl MacroPlayer {
-    pub async fn new(runtime: Arc<Runtime>, keyboard: Keyboard, mouse: Mouse) -> Result<Self> {
+    pub fn new(runtime: Arc<Runtime>, keyboard: Keyboard, mouse: Mouse) -> Result<Self> {
         Ok(Self {
             displays: runtime.displays(),
             keyboard,
@@ -99,7 +99,7 @@ impl MacroPlayer {
         result
     }
 
-    pub fn play_detached(self: &Arc<Self>, data: Arc<MacroData>, config: PlayConfig) {
+    pub fn play_detached(self: Arc<Self>, data: Arc<MacroData>, config: PlayConfig) {
         if data.events.is_empty() {
             return;
         }

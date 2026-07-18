@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A key as a {@link Key} enum value, a character string, or a numeric key code.
 //! @verbatim  *
@@ -573,7 +575,7 @@ impl JsKeyboard {
                 "callback must be a function or Macro",
             ));
         };
-        self.key_triggers.add(id, keys, action, options.into());
+        self.key_triggers.add(id, &keys, action, options.into());
 
         let handle = JsEventHandle::new(id, Arc::new(self.key_triggers.clone()));
         Self::cancel_handle_on_signal(&ctx, signal, handle.clone());
@@ -2957,7 +2959,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_keyboard_is_pressed() {
+    fn keyboard_is_pressed() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
@@ -2975,7 +2977,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_wait_for_key() {
+    fn wait_for_key() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -2991,7 +2993,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_text() {
+    fn on_text() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -3020,7 +3022,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_key() {
+    fn on_key() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -3041,7 +3043,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_key_return_macro() {
+    fn on_key_return_macro() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -3064,7 +3066,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_keys_and_clear_event_handles() {
+    fn on_keys_and_clear_event_handles() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -3093,7 +3095,7 @@ mod tests {
     }
 
     #[test]
-    fn test_standard_key() {
+    fn standard_key() {
         Runtime::test_with_script_engine(async |script_engine| {
             let key = script_engine
                 .eval::<JsStandardKey>("Key.Space")
@@ -3114,7 +3116,7 @@ mod tests {
     }
 
     #[test]
-    fn test_key() {
+    fn key() {
         Runtime::test_with_script_engine(async |script_engine| {
             let key = script_engine.eval::<JsKey>("Key.Space").await.unwrap();
             assert_eq!(key, JsKey::Standard(JsStandardKey::Space));
@@ -3138,7 +3140,7 @@ mod tests {
     }
 
     #[test]
-    fn test_standard_key_platform_validation() {
+    fn standard_key_platform_validation() {
         let validation_result = if Platform::detect().is_windows() {
             JsStandardKey::Linefeed.validate_for_platform(Platform::detect())
         } else {

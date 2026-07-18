@@ -11,6 +11,7 @@ use crate::{
 /// Marks a location that other flow actions can target.
 #[action(icon = MapPin, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[allow(clippy::empty_structs_with_brackets)]
 pub struct Marker {}
 
 impl ActionBranches for Marker {}

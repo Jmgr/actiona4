@@ -15,6 +15,13 @@ use satint::{Si32, Su32};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use time::OffsetDateTime;
+
+#[cfg(linux)]
+const CURRENT_PLATFORM_NAME: &str = "linux";
+#[cfg(windows)]
+const CURRENT_PLATFORM_NAME: &str = "windows";
+#[cfg(not(any(linux, windows)))]
+const CURRENT_PLATFORM_NAME: &str = "unknown";
 use tokio::{
     fs, select,
     sync::mpsc,
@@ -87,14 +94,14 @@ impl MacroEvent {
 }
 
 impl fmt::Display for MacroEvent {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::MouseMove { x, y, .. } => {
                 let fields = DisplayFields::default()
                     .display("x", x)
                     .display("y", y)
                     .finish_as_string();
-                formatter.write_str(&display_with_type("MouseMove", fields))
+                f.write_str(&display_with_type("MouseMove", fields))
             }
             Self::MouseButton {
                 button, direction, ..
@@ -103,21 +110,21 @@ impl fmt::Display for MacroEvent {
                     .display("button", button)
                     .display("direction", direction)
                     .finish_as_string();
-                formatter.write_str(&display_with_type("MouseButton", fields))
+                f.write_str(&display_with_type("MouseButton", fields))
             }
             Self::MouseScroll { axis, length, .. } => {
                 let fields = DisplayFields::default()
                     .display("axis", axis)
                     .display("length", length)
                     .finish_as_string();
-                formatter.write_str(&display_with_type("MouseScroll", fields))
+                f.write_str(&display_with_type("MouseScroll", fields))
             }
             Self::KeyboardKey { key, direction, .. } => {
                 let fields = DisplayFields::default()
                     .display("key", key)
                     .display("direction", direction)
                     .finish_as_string();
-                formatter.write_str(&display_with_type("KeyboardKey", fields))
+                f.write_str(&display_with_type("KeyboardKey", fields))
             }
         }
     }
@@ -374,17 +381,10 @@ pub async fn record_impl(
         }
     }
 
-    #[cfg(linux)]
-    const OS_NAME: &str = "linux";
-    #[cfg(windows)]
-    const OS_NAME: &str = "windows";
-    #[cfg(not(any(linux, windows)))]
-    const OS_NAME: &str = "unknown";
-
     let metadata = MacroMetadata {
         duration_ms: elapsed_ms(),
         recorded_at: OffsetDateTime::now_utc(),
-        platform: OS_NAME.to_string(),
+        platform: CURRENT_PLATFORM_NAME.to_string(),
         displays: current_displays,
     };
 
@@ -508,6 +508,12 @@ pub async fn play_impl(
     progress_tx: mpsc::UnboundedSender<PlayProgress>,
     token: CancellationToken,
 ) -> Result<()> {
+    if !config.speed.is_finite() || config.speed <= 0.0 {
+        return Err(eyre!(
+            "macro playback speed must be finite and greater than zero"
+        ));
+    }
+
     let current_displays = displays
         .wait_get_info()
         .await
@@ -533,7 +539,7 @@ pub async fn play_impl(
 
     let mouse_offset = relative_mouse_offset(config, data, &mouse);
 
-    let mut last_time_ms = 0u64;
+    let mut last_time_ms = 0_u64;
 
     let playback_result: Result<()> = async {
         for (index, event) in data.events.iter().enumerate() {
@@ -545,9 +551,11 @@ pub async fn play_impl(
             let delay_ms = event_time_ms.saturating_sub(last_time_ms);
 
             if delay_ms > 0 {
-                #[allow(clippy::as_conversions)]
-                let scaled_ms = (delay_ms as f64 / config.speed) as u64;
-                cancel_on(&token, sleep(Duration::from_millis(scaled_ms)))
+                let scaled_delay = Duration::try_from_secs_f64(
+                    Duration::from_millis(delay_ms).as_secs_f64() / config.speed,
+                )
+                .map_err(|_| eyre!("scaled macro event delay cannot be represented"))?;
+                cancel_on(&token, sleep(scaled_delay))
                     .await
                     .map_err(|_| CommonError::Cancelled)?;
             }

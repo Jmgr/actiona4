@@ -19,8 +19,8 @@ impl<T> AsyncResource<T> {
     #[must_use]
     pub fn new(cancellation_token: CancellationToken) -> Self {
         Self {
-            value: Default::default(),
-            notify: Default::default(),
+            value: Arc::default(),
+            notify: Arc::default(),
             cancellation_token,
         }
     }

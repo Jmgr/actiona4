@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A size as a {@link Size} instance or a plain `{width, height}` object.
 //! @verbatim  *

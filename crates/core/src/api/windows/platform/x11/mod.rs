@@ -5,7 +5,7 @@ use std::{
 };
 
 use derive_more::{Deref, From};
-use libwmctl::{Position, Shape, window, windows};
+use libwmctl::{MapState, Position, Shape, window, windows};
 use parking_lot::Mutex;
 use satint::{SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
@@ -31,6 +31,10 @@ use crate::{
 };
 
 pub mod events;
+
+// ICCCM WM_STATE values: 1 = NormalState, 3 = IconicState.
+// WM_CHANGE_STATE expects one of these in data[0]; use IconicState for minimize.
+const ICCCM_WM_STATE_ICONIC: u32 = 3;
 
 #[derive(Clone, Deref, From)]
 pub struct WindowHandle(libwmctl::Window);
@@ -75,10 +79,9 @@ impl WindowsHandler for X11WindowHandler {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let state = handle.mapped()?;
 
-        use libwmctl::MapState::*;
         Ok(match state {
-            Unmapped | Unviewable => false,
-            Viewable => true,
+            MapState::Unmapped | MapState::Unviewable => false,
+            MapState::Viewable => true,
         })
     }
 
@@ -176,10 +179,6 @@ impl WindowsHandler for X11WindowHandler {
             .intern_atom(false, b"WM_CHANGE_STATE")?
             .reply()?
             .atom;
-
-        // ICCCM WM_STATE values: 1 = NormalState, 3 = IconicState.
-        // WM_CHANGE_STATE expects one of these in data[0]; use IconicState for minimize.
-        const ICCCM_WM_STATE_ICONIC: u32 = 3;
 
         connection.send_event(
             false,

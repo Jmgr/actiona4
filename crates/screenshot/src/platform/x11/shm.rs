@@ -6,7 +6,10 @@ use memmap2::MmapMut;
 use satint::SaturatingInto;
 use tokio::sync::Mutex;
 use types::Rect;
-use x11rb_async::{connection::Connection, protocol::xproto::ImageFormat};
+use x11rb_async::{
+    connection::Connection,
+    protocol::{shm::ConnectionExt as _, xproto::ImageFormat},
+};
 
 use crate::{Capture, platform::x11::Screen};
 
@@ -43,8 +46,6 @@ impl ShmSegment {
         // SAFETY: the memfd is sized to `capacity` and sealed against size changes before
         // mapping, and it remains open while the mapping is created.
         let map = unsafe { MmapMut::map_mut(memfd_file)? };
-
-        use x11rb_async::protocol::shm::ConnectionExt;
 
         let owned_fd: OwnedFd = memfd.into_file().into();
         screen

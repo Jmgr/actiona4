@@ -13,6 +13,7 @@ use std::{
     collections::{HashMap, hash_map::Entry},
     hash::{DefaultHasher, Hash, Hasher},
     mem::take,
+    path::Path,
     result::Result as StdResult,
     sync::Arc,
 };
@@ -64,12 +65,12 @@ pub struct Engine {
 impl Engine {
     #[instrument(skip_all)]
     pub async fn new() -> Result<Self> {
-        let runtime = AsyncRuntime::new().map_err(ScriptError::quickjs)?;
+        let runtime = AsyncRuntime::new().map_err(|error| ScriptError::quickjs(&error))?;
         let context = AsyncContext::full(&runtime)
             .await
-            .map_err(ScriptError::quickjs)?;
+            .map_err(|error| ScriptError::quickjs(&error))?;
 
-        let sourcemaps = Arc::new(Mutex::new(Default::default()));
+        let sourcemaps = Arc::new(Mutex::new(HashMap::default()));
         let unhandled_exceptions = Arc::new(Mutex::new(Vec::default()));
 
         let sourcemaps_clone = sourcemaps.clone();
@@ -82,7 +83,7 @@ impl Engine {
                     }
 
                     if let Ok(object) = reason.try_into_exception() {
-                        let processed = Self::process_exception(object, sourcemaps_clone.clone());
+                        let processed = Self::process_exception(&object, sourcemaps_clone.as_ref());
                         let mut unhandled_exceptions_clone = unhandled_exceptions_clone.lock();
                         unhandled_exceptions_clone.push((processed.message, processed.stack));
                     }
@@ -107,7 +108,7 @@ impl Engine {
         self.context
             .with(move |ctx| {
                 let result = f(ctx.clone()).catch(&ctx);
-                Self::process_caught_result(result, sourcemaps)
+                Self::process_caught_result(result, sourcemaps.as_ref())
             })
             .await
     }
@@ -123,7 +124,11 @@ impl Engine {
         script.hash(&mut hasher);
         let hash = hasher.finish();
 
-        let is_js = filename.is_some_and(|f| f.ends_with(".js") || f.ends_with(".mjs"));
+        let is_js = filename.is_some_and(|filename| {
+            Path::new(filename).extension().is_some_and(|extension| {
+                extension.eq_ignore_ascii_case("js") || extension.eq_ignore_ascii_case("mjs")
+            })
+        });
 
         let mut sourcemaps = self.sourcemaps.lock();
         let sourcemap = sourcemaps.entry(hash);
@@ -174,7 +179,7 @@ impl Engine {
         self.context
             .with(|ctx| {
                 let result = ctx.eval_with_options::<T, _>(js_code, options).catch(&ctx);
-                Self::process_caught_result(result, sourcemaps)
+                Self::process_caught_result(result, sourcemaps.as_ref())
             })
             .await
     }
@@ -213,9 +218,9 @@ impl Engine {
                     future.get::<_, Value>("value").catch(&ctx)
                 }
                 .await;
-                let value = Self::process_caught_result(result, sourcemaps.clone())?;
+                let value = Self::process_caught_result(result, sourcemaps.as_ref())?;
 
-                Self::process_caught_result(f(ctx.clone(), value).catch(&ctx), sourcemaps)
+                Self::process_caught_result(f(ctx.clone(), value).catch(&ctx), sourcemaps.as_ref())
             })
             .await
     }
@@ -245,7 +250,7 @@ impl Engine {
                 }
                 .await;
 
-                Self::process_caught_result(result, sourcemaps)
+                Self::process_caught_result(result, sourcemaps.as_ref())
             })
             .await
     }
@@ -307,7 +312,7 @@ impl Engine {
                     .await;
 
                     values.push(
-                        Self::process_caught_result(result, sourcemaps.clone())
+                        Self::process_caught_result(result, sourcemaps.as_ref())
                             .map_err(|error| map_script_error(index, error))?,
                     );
                 }
@@ -319,8 +324,8 @@ impl Engine {
 
     #[allow(clippy::significant_drop_tightening)]
     fn process_exception(
-        exception: Exception,
-        sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
+        exception: &Exception,
+        sourcemaps: &Mutex<HashMap<u64, TsToJs>>,
     ) -> ProcessedException {
         let name: String = exception
             .as_object()
@@ -367,14 +372,14 @@ impl Engine {
 
     fn process_caught_result<T>(
         result: CaughtResult<T>,
-        sourcemaps: Arc<Mutex<HashMap<u64, TsToJs>>>,
+        sourcemaps: &Mutex<HashMap<u64, TsToJs>>,
     ) -> Result<T> {
         match result {
             Ok(value) => Ok(value),
             Err(err) => match err {
-                CaughtError::Error(err) => Err(ScriptError::quickjs(err)),
+                CaughtError::Error(err) => Err(ScriptError::quickjs(&err)),
                 CaughtError::Exception(exception) => {
-                    let processed = Self::process_exception(exception, sourcemaps);
+                    let processed = Self::process_exception(&exception, sourcemaps);
                     Err(RuntimeScriptError::new(
                         processed.message,
                         processed.stack,
@@ -462,6 +467,7 @@ mod tests {
             Ok(())
         }
 
+        #[allow(clippy::needless_pass_by_value)]
         fn log(s: String) {
             println!("{s}");
         }
@@ -502,6 +508,7 @@ mod tests {
         windows_label: Option<String>,
     }
 
+    #[allow(clippy::needless_pass_by_value)]
     fn validate_macro_options(ctx: Ctx<'_>, options: JsMacroOptions) -> rquickjs::Result<bool> {
         options
             .validate_for_platform(Platform::detect())
@@ -528,7 +535,7 @@ mod tests {
 
         let result: i32 = engine
             .eval(
-                r"
+                "
                 function add(a, b) { return a + b; }
                 add(40, 2);
                 ",
@@ -600,7 +607,7 @@ outer();
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../run/assets/index.d.ts");
         let code = fs::read_to_string(&path).unwrap();
 
-        let cm: Lrc<SourceMap> = Default::default();
+        let cm: Lrc<SourceMap> = Lrc::default();
         let fm = cm.new_source_file(FileName::Custom("index.d.ts".into()).into(), code);
         let lexer = Lexer::new(
             Syntax::Typescript(TsSyntax {
@@ -668,7 +675,7 @@ outer();
         // eval_async therefore resolves immediately with ().
         engine
             .eval_async::<()>(
-                r"
+                "
                 (async () => {
                     await helper.sleep(0.05);
                     // leave a breadcrumb so we can observe completion from Rust
@@ -706,7 +713,7 @@ outer();
 
         let incremented_value: i32 = engine
             .eval(
-                r"
+                "
                 const counter = new MacroCounter();
                 counter.value = 41;
                 counter.value + 1;

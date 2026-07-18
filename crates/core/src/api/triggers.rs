@@ -23,7 +23,7 @@ impl TriggerAction {
     ///
     /// Uses `call_sync_returning` so the `async_with` closure does not yield,
     /// preserving the rquickjs scheduler's queue waker.
-    pub async fn fire(self, macro_player: &Arc<MacroPlayer>, label: &'static str) {
+    pub async fn fire(self, macro_player: Arc<MacroPlayer>, label: &'static str) {
         match self {
             Self::Macro(data) => macro_player.play_detached(data, PlayConfig::default()),
             Self::Callback(context, function_key) => {
@@ -31,7 +31,7 @@ impl TriggerAction {
 
                 context
                     .async_with(async |ctx| {
-                        fire_callback(&ctx, function_key, &macro_player_clone, vec![], label);
+                        fire_callback(&ctx, function_key, macro_player_clone, &[], label);
                     })
                     .await;
             }
@@ -48,8 +48,8 @@ impl TriggerAction {
 pub fn fire_callback<'js>(
     ctx: &Ctx<'js>,
     function_key: FunctionKey,
-    macro_player: &Arc<MacroPlayer>,
-    args: Vec<Value<'js>>,
+    macro_player: Arc<MacroPlayer>,
+    args: &[Value<'js>],
     label: &'static str,
 ) {
     let value = ctx
@@ -59,7 +59,7 @@ pub fn fire_callback<'js>(
 
     if let Some(promise) = value.as_promise() {
         let promise = promise.clone();
-        let player_for_spawn = macro_player.clone();
+        let player_for_spawn = macro_player;
         ctx.spawn(async move {
             match promise.into_future::<Value<'_>>().await {
                 Ok(resolved) => {

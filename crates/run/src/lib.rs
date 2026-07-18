@@ -1,11 +1,3 @@
-#![warn(clippy::all, clippy::nursery)]
-#![warn(clippy::as_conversions)]
-#![warn(clippy::must_use_candidate)]
-#![warn(clippy::unwrap_used)]
-#![allow(clippy::too_long_first_doc_paragraph)]
-#![allow(clippy::significant_drop_tightening)]
-#![allow(clippy::future_not_send)]
-#![allow(clippy::too_many_arguments)]
 use std::{
     convert::identity,
     env, error,
@@ -57,6 +49,7 @@ use crate::{
     updates::{check_updates, check_updates_now},
 };
 
+#[allow(clippy::needless_raw_strings)]
 mod built_info {
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }
@@ -498,9 +491,7 @@ fn maybe_insert_default_run(mut args: Vec<OsString>) -> Vec<OsString> {
 const fn seed_from_command(command: &Commands) -> Option<u64> {
     use Commands::*;
     match command {
-        Run { run_args, .. } => run_args.seed,
-        Eval { run_args, .. } => run_args.seed,
-        Repl { run_args } => run_args.seed,
+        Run { run_args, .. } | Eval { run_args, .. } | Repl { run_args } => run_args.seed,
         Init { .. }
         | Update
         | Completions { .. }

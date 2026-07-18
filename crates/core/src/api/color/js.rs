@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A color as a {@link Color} instance or a plain RGBA object.
 //! @verbatim  *
@@ -589,7 +591,7 @@ mod tests {
     use super::JsColor;
 
     #[test]
-    fn test_color_rust_methods() {
+    fn color_rust_methods() {
         let mut color = JsColor::new(1, 2, 3, 4);
 
         assert_eq!(color.get_r(), 1);
@@ -608,7 +610,7 @@ mod tests {
     }
 
     #[test]
-    fn test_color_conversions() {
+    fn color_conversions() {
         let color = Color::new(9, 8, 7, 6);
         let js_color = JsColor::from(color);
         assert_eq!(js_color, JsColor::new(9, 8, 7, 6));

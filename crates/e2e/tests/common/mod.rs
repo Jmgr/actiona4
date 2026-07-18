@@ -25,9 +25,9 @@ fn script_file(name: &str) -> tempfile::NamedTempFile {
         "const __e2eManifestDir = {:?};",
         env!("CARGO_MANIFEST_DIR")
     )
-    .unwrap();
-    writeln!(tmp, "{HELPERS}").unwrap();
-    writeln!(tmp, "{script}").unwrap();
+    .expect("write manifest directory to temporary script");
+    writeln!(tmp, "{HELPERS}").expect("write helpers to temporary script");
+    writeln!(tmp, "{script}").expect("write test script to temporary script");
     tmp
 }
 

@@ -144,7 +144,7 @@ impl Point {
             .map_err(|_| eyre!("Point::length_squared overflowed i32: {self}"))
     }
 
-    fn as_i64(&self) -> (i64, i64) {
+    fn as_i64(self) -> (i64, i64) {
         (
             i64::from(self.x.into_inner()),
             i64::from(self.y.into_inner()),

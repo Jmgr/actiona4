@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 #[cfg(windows)]
@@ -31,7 +33,7 @@ use crate::{
         date::{date_from_system_time, system_time_from_date},
     },
     error::CommonError,
-    runtime::WithUserData,
+    runtime::{JsUserData, WithUserData},
     types::display::display_with_type,
 };
 
@@ -594,8 +596,9 @@ impl JsFile {
     /// Sets the creation time of the file.
     /// @param date: Date
     #[platform(not = "linux")]
+    #[allow(clippy::unused_async)] // The Windows implementation awaits set_times.
     pub async fn set_creation_time<'js>(&mut self, ctx: Ctx<'js>, date: Object<'js>) -> Result<()> {
-        ctx.user_data().require_not_linux(&ctx)?;
+        JsUserData::require_not_linux(&ctx)?;
         #[cfg(unix)]
         {
             _ = ctx;

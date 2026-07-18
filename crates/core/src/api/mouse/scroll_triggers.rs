@@ -60,8 +60,8 @@ impl ScrollTriggers {
 
     async fn on_scroll(
         event: MouseScrollEvent,
-        triggers: &Arc<Mutex<TriggerList>>,
-        macro_player: &Arc<MacroPlayer>,
+        triggers: &Mutex<TriggerList>,
+        macro_player: Arc<MacroPlayer>,
     ) -> Result<()> {
         if event.is_injected {
             return Ok(());
@@ -82,7 +82,9 @@ impl ScrollTriggers {
         for action in to_fire {
             match action {
                 TriggerAction::Macro(data) => {
-                    macro_player.play_detached(data, PlayConfig::default());
+                    macro_player
+                        .clone()
+                        .play_detached(data, PlayConfig::default());
                 }
                 TriggerAction::Callback(context, function_key) => {
                     let player_clone = macro_player.clone();
@@ -99,7 +101,7 @@ impl ScrollTriggers {
                                 },
                                 |v| vec![v],
                             );
-                            fire_callback(&ctx, function_key, &player_clone, args, "onScroll");
+                            fire_callback(&ctx, function_key, player_clone, &args, "onScroll");
                         })
                         .await;
                 }
@@ -127,12 +129,12 @@ impl ScrollTriggers {
             let mut receiver = guard.subscribe();
 
             loop {
-                let event = match cancel_on(&worker_cancellation_token, receiver.recv()).await {
-                    Ok(Ok(event)) => event,
-                    Ok(Err(_)) | Err(_) => break,
+                let Ok(Ok(event)) = cancel_on(&worker_cancellation_token, receiver.recv()).await
+                else {
+                    break;
                 };
 
-                Self::on_scroll(event, &local_triggers, &local_macro_player).await?;
+                Self::on_scroll(event, &local_triggers, local_macro_player.clone()).await?;
             }
 
             Result::<()>::Ok(())

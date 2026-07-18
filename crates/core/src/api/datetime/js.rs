@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::time::SystemTime;
 
 use chrono::{Datelike, Duration, Local, NaiveTime, TimeZone, Weekday};
@@ -336,10 +338,11 @@ fn next_occurrence_of_schedule(
     }
 
     loop {
-        let dow_ok = day_of_week.is_none_or(|dow| candidate.weekday() == Weekday::from(dow));
-        let dom_ok = day_of_month.is_none_or(|dom| candidate.day() == dom);
+        let day_of_week_matches =
+            day_of_week.is_none_or(|day| candidate.weekday() == Weekday::from(day));
+        let day_of_month_matches = day_of_month.is_none_or(|day| candidate.day() == day);
 
-        if dow_ok && dom_ok {
+        if day_of_week_matches && day_of_month_matches {
             let naive = candidate.and_time(target_time);
             return SystemTime::from(Local.from_local_datetime(&naive).unwrap());
         }
@@ -359,10 +362,10 @@ mod tests {
     // ── Unit tests for next_occurrence_of_schedule ────────────────────────────
 
     #[test]
-    fn test_next_occurrence_is_always_future() {
+    fn next_occurrence_is_always_future() {
         let now = SystemTime::now();
-        for hour in [0u32, 9, 13, 23] {
-            for minute in [0u32, 15, 30, 59] {
+        for hour in [0_u32, 9, 13, 23] {
+            for minute in [0_u32, 15, 30, 59] {
                 let next =
                     super::next_occurrence_of_schedule(Some(hour), Some(minute), None, None, None);
                 assert!(
@@ -376,7 +379,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_occurrence_respects_day_of_week() {
+    fn next_occurrence_respects_day_of_week() {
         use chrono::Weekday;
         for dow in [
             JsDayOfWeek::Monday,
@@ -399,8 +402,8 @@ mod tests {
     }
 
     #[test]
-    fn test_next_occurrence_respects_day_of_month() {
-        for dom in [1u32, 15, 28] {
+    fn next_occurrence_respects_day_of_month() {
+        for dom in [1_u32, 15, 28] {
             let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
             let next_local = chrono::DateTime::<Local>::from(next);
             assert_eq!(next_local.day(), dom, "day of month should match");
@@ -408,7 +411,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_occurrence_respects_hour_minute_second() {
+    fn next_occurrence_respects_hour_minute_second() {
         let next = super::next_occurrence_of_schedule(Some(13), Some(15), Some(30), None, None);
         let next_local = chrono::DateTime::<Local>::from(next);
         assert_eq!(next_local.hour(), 13);
@@ -417,7 +420,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_occurrence_day_of_week_within_one_week() {
+    fn next_occurrence_day_of_week_within_one_week() {
         let now = SystemTime::now();
         for dow in [
             JsDayOfWeek::Monday,
@@ -431,22 +434,24 @@ mod tests {
             let next = super::next_occurrence_of_schedule(None, None, None, Some(dow), None);
             let diff = next.duration_since(now).unwrap();
             #[allow(clippy::duration_suboptimal_units)]
+            let is_within_one_week = diff <= Duration::from_secs(7 * 24 * 3600);
             assert!(
-                diff <= Duration::from_secs(7 * 24 * 3600),
+                is_within_one_week,
                 "{dow}: next occurrence is unexpectedly far: {diff:?}"
             );
         }
     }
 
     #[test]
-    fn test_next_occurrence_day_of_month_within_two_months() {
+    fn next_occurrence_day_of_month_within_two_months() {
         let now = SystemTime::now();
-        for dom in 1..=31u32 {
+        for dom in 1..=31_u32 {
             let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
             let diff = next.duration_since(now).unwrap();
             #[allow(clippy::duration_suboptimal_units)]
+            let is_within_two_months = diff <= Duration::from_secs(63 * 24 * 3600);
             assert!(
-                diff <= Duration::from_secs(63 * 24 * 3600),
+                is_within_two_months,
                 "day {dom}: next occurrence is unexpectedly far: {diff:?}"
             );
         }

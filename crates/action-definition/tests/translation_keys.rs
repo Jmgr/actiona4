@@ -10,7 +10,7 @@ use fluent_syntax::ast;
 use unic_langid::LanguageIdentifier;
 
 fn bundle() -> FluentBundle<FluentResource> {
-    let ftl = r"
+    let ftl = "
 action-message-box-title =
     .name = Title
     .description = The title of the message box
@@ -27,7 +27,7 @@ action-code = Run code
         Err((_, errors)) => panic!("invalid FTL: {errors:?}"),
     };
 
-    let langid: LanguageIdentifier = "en-US".parse().unwrap();
+    let langid: LanguageIdentifier = "en-US".parse().expect("valid English language tag");
     let mut bundle = FluentBundle::new(vec![langid]);
     bundle.add_resource(resource).expect("add resource");
     bundle
@@ -44,7 +44,7 @@ fn english_resource() -> FluentResource {
 fn english_bundle() -> FluentBundle<FluentResource> {
     let resource = english_resource();
 
-    let langid: LanguageIdentifier = "en-US".parse().unwrap();
+    let langid: LanguageIdentifier = "en-US".parse().expect("valid English language tag");
     let mut bundle = FluentBundle::new(vec![langid]);
     bundle.add_resource(resource).expect("add English resource");
     bundle
@@ -110,75 +110,80 @@ fn display_key(key: TranslationKey) -> String {
     }
 }
 
-#[test]
-fn resolves_an_attribute() {
-    let bundle = bundle();
-    let key = TranslationKey::with_attribute("action-message-box-title", "name");
-    assert_eq!(key.resolve(&bundle).as_deref(), Some("Title"));
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn resolves_a_hyphenated_attribute() {
-    let bundle = bundle();
-    let key = TranslationKey::with_attribute("enum-message-box-buttons", "ok-cancel");
-    assert_eq!(key.resolve(&bundle).as_deref(), Some("OK / Cancel"));
-}
+    #[test]
+    fn resolves_an_attribute() {
+        let bundle = bundle();
+        let key = TranslationKey::with_attribute("action-message-box-title", "name");
+        assert_eq!(key.resolve(&bundle).as_deref(), Some("Title"));
+    }
 
-#[test]
-fn resolves_a_message_without_attribute() {
-    let bundle = bundle();
-    let key = TranslationKey::new("action-code");
-    assert_eq!(key.resolve(&bundle).as_deref(), Some("Run code"));
-}
+    #[test]
+    fn resolves_a_hyphenated_attribute() {
+        let bundle = bundle();
+        let key = TranslationKey::with_attribute("enum-message-box-buttons", "ok-cancel");
+        assert_eq!(key.resolve(&bundle).as_deref(), Some("OK / Cancel"));
+    }
 
-#[test]
-fn missing_attribute_resolves_to_none() {
-    let bundle = bundle();
-    let key = TranslationKey::with_attribute("action-message-box-title", "nope");
-    assert_eq!(key.resolve(&bundle), None);
-}
+    #[test]
+    fn resolves_a_message_without_attribute() {
+        let bundle = bundle();
+        let key = TranslationKey::new("action-code");
+        assert_eq!(key.resolve(&bundle).as_deref(), Some("Run code"));
+    }
 
-#[test]
-fn missing_message_resolves_to_none() {
-    let bundle = bundle();
-    let key = TranslationKey::with_attribute("does-not-exist", "name");
-    assert_eq!(key.resolve(&bundle), None);
-}
+    #[test]
+    fn missing_attribute_resolves_to_none() {
+        let bundle = bundle();
+        let key = TranslationKey::with_attribute("action-message-box-title", "nope");
+        assert_eq!(key.resolve(&bundle), None);
+    }
 
-#[test]
-fn english_locale_contains_all_action_metadata_keys() {
-    let bundle = english_bundle();
+    #[test]
+    fn missing_message_resolves_to_none() {
+        let bundle = bundle();
+        let key = TranslationKey::with_attribute("does-not-exist", "name");
+        assert_eq!(key.resolve(&bundle), None);
+    }
 
-    for key in ACTION_DEFINITIONS.iter().flat_map(|action| {
-        [action.name, action.description].into_iter().chain(
-            action
-                .parameters
-                .iter()
-                .flat_map(parameter_translation_keys),
-        )
-    }) {
-        let value = key
-            .resolve(&bundle)
-            .unwrap_or_else(|| panic!("missing English translation for {}", display_key(key)));
+    #[test]
+    fn english_locale_contains_all_action_metadata_keys() {
+        let bundle = english_bundle();
+
+        for key in ACTION_DEFINITIONS.iter().flat_map(|action| {
+            [action.name, action.description].into_iter().chain(
+                action
+                    .parameters
+                    .iter()
+                    .flat_map(parameter_translation_keys),
+            )
+        }) {
+            let value = key
+                .resolve(&bundle)
+                .unwrap_or_else(|| panic!("missing English translation for {}", display_key(key)));
+
+            assert!(
+                !value.trim().is_empty(),
+                "empty English translation for {}",
+                display_key(key)
+            );
+        }
+    }
+
+    #[test]
+    fn english_locale_has_exactly_the_action_metadata_keys() {
+        let resource = english_resource();
+        let expected = expected_action_metadata_keys();
+        let actual = resource_keys(&resource);
+        let missing = expected.difference(&actual).collect::<Vec<_>>();
+        let unexpected = actual.difference(&expected).collect::<Vec<_>>();
 
         assert!(
-            !value.trim().is_empty(),
-            "empty English translation for {}",
-            display_key(key)
+            missing.is_empty() && unexpected.is_empty(),
+            "English locale keys do not match action metadata.\nmissing: {missing:#?}\nunexpected: {unexpected:#?}",
         );
     }
-}
-
-#[test]
-fn english_locale_has_exactly_the_action_metadata_keys() {
-    let resource = english_resource();
-    let expected = expected_action_metadata_keys();
-    let actual = resource_keys(&resource);
-    let missing = expected.difference(&actual).collect::<Vec<_>>();
-    let unexpected = actual.difference(&expected).collect::<Vec<_>>();
-
-    assert!(
-        missing.is_empty() && unexpected.is_empty(),
-        "English locale keys do not match action metadata.\nmissing: {missing:#?}\nunexpected: {unexpected:#?}",
-    );
 }

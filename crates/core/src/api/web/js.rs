@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{path::PathBuf, result::Result as StdResult, str::FromStr};
 
 use bytes::Bytes;

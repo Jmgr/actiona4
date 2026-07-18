@@ -74,8 +74,8 @@ impl KeyTriggers {
         event: KeyboardKeyEvent,
         pressed_keys: &mut HashSet<Key>,
         fired: &mut HashSet<(Vec<Key>, HandleId)>,
-        triggers: &Arc<Mutex<TriggerMap>>,
-        macro_player: &Arc<MacroPlayer>,
+        triggers: &Mutex<TriggerMap>,
+        macro_player: Arc<MacroPlayer>,
     ) -> Result<()> {
         if event.is_injected || event.is_repeat {
             return Ok(());
@@ -120,7 +120,7 @@ impl KeyTriggers {
 
         for (trigger_keys, handle_id, action) in to_fire {
             fired.insert((trigger_keys, handle_id));
-            action.fire(macro_player, "onKey/onKeys").await;
+            action.fire(macro_player.clone(), "onKey/onKeys").await;
         }
 
         Ok(())
@@ -147,9 +147,9 @@ impl KeyTriggers {
             let mut fired: HashSet<(Vec<Key>, HandleId)> = HashSet::new();
 
             loop {
-                let event = match cancel_on(&worker_cancellation_token, receiver.recv()).await {
-                    Ok(Ok(event)) => event,
-                    Ok(Err(_)) | Err(_) => break,
+                let Ok(Ok(event)) = cancel_on(&worker_cancellation_token, receiver.recv()).await
+                else {
+                    break;
                 };
 
                 Self::on_key(
@@ -157,7 +157,7 @@ impl KeyTriggers {
                     &mut pressed_keys,
                     &mut fired,
                     &local_triggers,
-                    &local_macro_player,
+                    local_macro_player.clone(),
                 )
                 .await?;
             }
@@ -173,7 +173,7 @@ impl KeyTriggers {
         }
     }
 
-    pub fn add(&self, id: HandleId, keys: Vec<Key>, action: TriggerAction, options: OnKeysOptions) {
+    pub fn add(&self, id: HandleId, keys: &[Key], action: TriggerAction, options: OnKeysOptions) {
         let was_empty = {
             let mut triggers = self.triggers.lock();
             let was_empty = triggers.is_empty();

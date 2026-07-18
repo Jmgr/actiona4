@@ -24,7 +24,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
             derive_platform_validate_for_struct(type_name, &data_struct.fields)
         }
         Data::Enum(data_enum) => derive_platform_validate_for_enum(type_name, data_enum),
-        _ => Err(syn::Error::new_spanned(
+        Data::Union(_) => Err(syn::Error::new_spanned(
             &input,
             "`PlatformValidate` only supports structs with named fields or enums",
         )),

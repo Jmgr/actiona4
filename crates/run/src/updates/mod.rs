@@ -53,7 +53,7 @@ pub async fn check_updates(
         app_version.clone(),
         built_info::PKG_NAME,
         cancellation_token,
-        task_tracker.clone(),
+        &task_tracker,
     );
 
     if !update_check {
@@ -103,7 +103,7 @@ pub async fn check_updates_now(config: &CommonConfig) -> Result<()> {
 
     if let Err(err) = config
         .state_mut(|state| {
-            state.new_version_available = version_info.clone();
+            state.new_version_available.clone_from(&version_info);
             state.consecutive_update_check_failures = 0;
             state.last_update_check_failure_notice = None;
         })

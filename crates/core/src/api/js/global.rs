@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use rquickjs::{Ctx, Function, Promise, Result, Value, prelude::Rest};
 use tokio::{select, time::sleep as tokio_sleep};
 use tracing::instrument;

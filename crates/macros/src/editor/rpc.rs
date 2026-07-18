@@ -3,6 +3,15 @@ use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{Error, FnArg, ItemTrait, Pat, ReturnType, TraitItem, parse_macro_input};
 
+struct CallMethod {
+    ident: syn::Ident,
+    module: syn::Ident,
+    name: String,
+    arg_idents: Vec<syn::Ident>,
+    arg_types: Vec<syn::Type>,
+    ret: proc_macro2::TokenStream,
+}
+
 /// One declaration → a typed client, a host dispatcher, and shared wire types;
 /// see [`crate::rpc`].
 pub fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
@@ -11,15 +20,6 @@ pub fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let trait_ident = trait_def.ident.clone();
     let client_ident = format_ident!("{trait_ident}Client");
     let serve_ident = format_ident!("{}_serve", trait_ident.to_string().to_case(Case::Snake));
-
-    struct CallMethod {
-        ident: syn::Ident,
-        module: syn::Ident,
-        name: String,
-        arg_idents: Vec<syn::Ident>,
-        arg_types: Vec<syn::Type>,
-        ret: proc_macro2::TokenStream,
-    }
 
     let mut methods = Vec::new();
     for item in &trait_def.items {

@@ -94,7 +94,7 @@ impl Default for ActionTree {
         Self {
             map,
             root: root_id,
-            label_map: Default::default(),
+            label_map: HashMap::default(),
             rows,
             row_of,
         }

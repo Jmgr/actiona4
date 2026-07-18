@@ -1,4 +1,4 @@
-use std::{env, fs, io::ErrorKind, path::PathBuf};
+use std::{env, fmt::Write as _, fs, io::ErrorKind, path::PathBuf};
 
 use eyre::{Result, eyre};
 
@@ -25,6 +25,9 @@ pub(super) fn strings_equal(left: &str, right: &str) -> bool {
 }
 
 /// Expands `$VAR` and `${VAR}` references in a path entry.
+// Every byte offset used for slicing below comes from `find`/`starts_with` on ASCII
+// delimiters, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 pub(super) fn expand_environment_variables(path_entry: &str) -> String {
     let mut expanded = String::new();
     let mut remaining = path_entry;
@@ -149,7 +152,7 @@ fn write_user_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
     }
 
     for entry in path_entries {
-        new_content.push_str(&format!("export PATH=\"${{PATH}}:{}\"\n", entry.as_ref()));
+        _ = writeln!(new_content, "export PATH=\"${{PATH}}:{}\"", entry.as_ref());
     }
 
     fs::write(&profile_path, new_content)
@@ -197,7 +200,7 @@ fn write_system_path_entries(path_entries: &[impl AsRef<str>]) -> Result<()> {
         new_content.push('\n');
     }
     if !path_value.is_empty() {
-        new_content.push_str(&format!("PATH=\"{path_value}\"\n"));
+        _ = writeln!(new_content, "PATH=\"{path_value}\"");
     }
 
     fs::write(SYSTEM_ENVIRONMENT_FILE, new_content)

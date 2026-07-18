@@ -1,6 +1,7 @@
 use std::{
     borrow::Cow,
     convert::identity,
+    fmt::Write as _,
     io,
     path::{Path, PathBuf},
 };
@@ -91,7 +92,7 @@ impl Highlighter for ReplHelper {
             }
         };
         let mut escaped = as_24_bit_terminal_escaped(&ranges[..], false);
-        escaped.push_str(&format!("{}", owo_colors::Style::new().suffix_formatter()));
+        _ = write!(escaped, "{}", owo_colors::Style::new().suffix_formatter());
         // Now apply bracket highlighting on the result
         let bracket_processed = self.bracket.highlight(&escaped, pos);
         Cow::Owned(bracket_processed.to_string())
@@ -135,14 +136,18 @@ impl ReplHelper {
         Ok((1, matches))
     }
 
-    const fn complete_js(&self, _input: &str) -> rustyline::Result<(usize, Vec<Pair>)> {
-        Ok((0, Vec::new())) // TODO: autocomplete
+    #[allow(clippy::unused_self)] // Required by rustyline's Completer trait.
+    const fn complete_js(&self, _input: &str) -> (usize, Vec<Pair>) {
+        (0, Vec::new()) // TODO: autocomplete
     }
 }
 
 impl Completer for ReplHelper {
     type Candidate = Pair;
 
+    // rustyline guarantees `pos` is the cursor's byte offset and always lands on a char
+    // boundary.
+    #[allow(clippy::string_slice)]
     fn complete(
         &self,
         line: &str,
@@ -155,7 +160,7 @@ impl Completer for ReplHelper {
             return self.complete_commands(rest, line, pos, ctx);
         }
 
-        self.complete_js(input)
+        Ok(self.complete_js(input))
     }
 }
 
@@ -391,7 +396,6 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
                     break;
                 }
                 println!("(hint: press Ctrl+D to exit)");
-                continue;
             }
             Err(ReadlineError::Eof) => {
                 // Ctrl + D
@@ -412,6 +416,8 @@ pub async fn repl(script_engine: Engine, cancellation_token: CancellationToken) 
     Ok(())
 }
 
+// `idx` comes from `match_indices`, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 fn likely_print_without_newline(line: &str) -> bool {
     // Best-effort heuristic on source text to emit a trailing newline after `print(...)` calls
     // so the next REPL prompt starts on its own line.
@@ -447,9 +453,8 @@ async fn missing_await_promise_receiver_hint(
         .with(move |ctx| {
             // `let` bindings in the REPL are lexical bindings and may not exist on `globalThis`.
             // Evaluate the identifier directly so we can detect both lexical and global bindings.
-            let value = match ctx.eval::<Value, _>(lookup_name.as_str()) {
-                Ok(value) => value,
-                Err(_) => return Ok(false),
+            let Ok(value) = ctx.eval::<Value, _>(lookup_name.as_str()) else {
+                return Ok(false);
             };
             Ok(value.is_promise())
         })
@@ -466,6 +471,9 @@ fn is_plain_not_a_function_error(err: &ScriptError) -> bool {
         .is_some_and(|line| line.trim() == "TypeError: not a function")
 }
 
+// Every byte offset used for slicing below comes from `char_indices` or the helpers below
+// (which themselves only return char-indices offsets), so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 fn extract_simple_member_call_receiver(line: &str) -> Option<&str> {
     for (open_paren_idx, ch) in line.char_indices() {
         if ch != '(' {
@@ -488,6 +496,8 @@ fn extract_simple_member_call_receiver(line: &str) -> Option<&str> {
     None
 }
 
+// `end` is always a char-indices offset from a caller, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 fn trim_trailing_whitespace(line: &str, mut end: usize) -> usize {
     while let Some((idx, ch)) = line[..end].char_indices().next_back() {
         if ch.is_whitespace() {
@@ -499,6 +509,8 @@ fn trim_trailing_whitespace(line: &str, mut end: usize) -> usize {
     end
 }
 
+// `end` is always a char-indices offset from a caller, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 fn parse_identifier_ending_at(line: &str, end: usize) -> Option<(usize, usize)> {
     let (mut start, last) = line[..end].char_indices().next_back()?;
     if !is_js_identifier_continue(last) {

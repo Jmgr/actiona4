@@ -141,11 +141,11 @@ fn attachment_to_wire(
 ) -> Result<AttachmentWire, Error> {
     let kind = match &attachment.kind {
         AttachmentKind::Image { data, .. } => image_to_wire(data.as_slice())?,
-        AttachmentKind::Binary { media_type, data } => binary_to_wire(media_type, data)?,
+        AttachmentKind::Binary { media_type, data } => binary_to_wire(media_type.as_ref(), data)?,
         AttachmentKind::Audio { media_type, data } => {
             audio_to_wire(media_type, data, cancellation_token)?
         }
-        AttachmentKind::Text { media_type, text } => text_to_wire(media_type, text)?,
+        AttachmentKind::Text { media_type, text } => text_to_wire(media_type.as_ref(), text)?,
     };
 
     Ok(AttachmentWire {
@@ -162,7 +162,7 @@ fn attachment_from_wire(id: Uuid, attachment: AttachmentWire) -> Result<(Uuid, A
             data,
             dimensions,
         } => AttachmentKind::Image {
-            media_type: parse_media_type(media_type)?,
+            media_type: parse_media_type(&media_type)?,
             data: AttachmentBytes::from(
                 Base64
                     .decode(data)
@@ -176,11 +176,11 @@ fn attachment_from_wire(id: Uuid, attachment: AttachmentWire) -> Result<(Uuid, A
             compression,
             uncompressed_size,
         } => AttachmentKind::Binary {
-            media_type: media_type.map(parse_media_type).transpose()?,
+            media_type: media_type.as_deref().map(parse_media_type).transpose()?,
             data: decode_bytes(data, compression, uncompressed_size)?.into(),
         },
         AttachmentKindWire::Audio { media_type, data } => AttachmentKind::Audio {
-            media_type: parse_media_type(media_type)?,
+            media_type: parse_media_type(&media_type)?,
             data: AttachmentBytes::from(
                 Base64
                     .decode(data)
@@ -194,7 +194,7 @@ fn attachment_from_wire(id: Uuid, attachment: AttachmentWire) -> Result<(Uuid, A
             compression,
             uncompressed_size,
         } => AttachmentKind::Text {
-            media_type: media_type.map(parse_media_type).transpose()?,
+            media_type: media_type.as_deref().map(parse_media_type).transpose()?,
             text: decode_text(text, data, compression, uncompressed_size)?,
         },
     };
@@ -208,7 +208,7 @@ fn attachment_from_wire(id: Uuid, attachment: AttachmentWire) -> Result<(Uuid, A
     ))
 }
 
-fn parse_media_type(value: String) -> Result<MediaType, Error> {
+fn parse_media_type(value: &str) -> Result<MediaType, Error> {
     value
         .parse::<mime::Mime>()
         .map(MediaType::from)
@@ -255,18 +255,18 @@ fn image_to_wire(data: &[u8]) -> Result<AttachmentKindWire, Error> {
     })
 }
 
-fn text_to_wire(media_type: &Option<MediaType>, text: &str) -> Result<AttachmentKindWire, Error> {
+fn text_to_wire(media_type: Option<&MediaType>, text: &str) -> Result<AttachmentKindWire, Error> {
     let compressed = compressed_bytes(text.as_bytes())?;
     Ok(match compressed {
         Some(data) => AttachmentKindWire::Text {
-            media_type: media_type.as_ref().map(ToString::to_string),
+            media_type: media_type.map(ToString::to_string),
             text: None,
             data: Some(Base64.encode(data)),
             compression: Some(CompressionWire::Zstd),
             uncompressed_size: Some(text.len() as u64),
         },
         None => AttachmentKindWire::Text {
-            media_type: media_type.as_ref().map(ToString::to_string),
+            media_type: media_type.map(ToString::to_string),
             text: Some(text.to_owned()),
             data: None,
             compression: None,
@@ -373,16 +373,22 @@ fn resample_to_48khz(
     checked_payload_size("resampled audio", target_bytes, MAX_AUDIO_DECODED_SIZE)?;
     let target_samples = usize::try_from(target_samples)
         .map_err(|_| Error::Attachment("resampled audio is too large".to_owned()))?;
+    let target_frames = usize::try_from(target_frames)
+        .map_err(|_| Error::Attachment("resampled audio is too large".to_owned()))?;
     let mut output = Vec::with_capacity(target_samples);
 
-    for target_frame in 0..target_frames as usize {
+    for target_frame in 0..target_frames {
         if target_frame % 8_192 == 0 && cancellation_token.is_cancelled() {
             return Err(Error::Canceled);
         }
-        let source = target_frame as f64 * f64::from(sample_rate) / f64::from(TARGET_RATE);
-        let before = source.floor() as usize;
+        let source_numerator = u64::try_from(target_frame)
+            .map_err(|_| Error::Attachment("resampled audio is too large".to_owned()))?
+            .checked_mul(u64::from(sample_rate))
+            .ok_or_else(|| Error::Attachment("resampled audio is too large".to_owned()))?;
+        let before = usize::try_from(source_numerator / u64::from(TARGET_RATE))
+            .map_err(|_| Error::Attachment("resampled audio is too large".to_owned()))?;
         let after = (before + 1).min(frames - 1);
-        let fraction = (source - before as f64) as f32;
+        let fraction = (source_numerator % u64::from(TARGET_RATE)) as f32 / TARGET_RATE as f32;
         for channel in 0..channels {
             let a = samples[before.min(frames - 1) * channels + channel];
             let b = samples[after * channels + channel];
@@ -394,12 +400,12 @@ fn resample_to_48khz(
 }
 
 fn binary_to_wire(
-    media_type: &Option<MediaType>,
+    media_type: Option<&MediaType>,
     data: &AttachmentBytes,
 ) -> Result<AttachmentKindWire, Error> {
     let compressed = compressed_bytes(data.as_slice())?;
     Ok(AttachmentKindWire::Binary {
-        media_type: media_type.as_ref().map(ToString::to_string),
+        media_type: media_type.map(ToString::to_string),
         data: Base64.encode(compressed.as_deref().unwrap_or(data.as_slice())),
         compression: compressed.as_ref().map(|_| CompressionWire::Zstd),
         uncompressed_size: compressed.as_ref().map(|_| data.as_slice().len() as u64),

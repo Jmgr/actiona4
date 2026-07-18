@@ -37,7 +37,7 @@ pub struct ResolveParamError {
 
 impl ResolveParamError {
     #[must_use]
-    pub fn new(parameter: &'static str, script_error: ScriptError) -> Self {
+    pub fn new(parameter: &'static str, script_error: &ScriptError) -> Self {
         Self {
             parameter,
             message: ResolveParamErrorMessage::Script(script_error.to_string()),
@@ -339,7 +339,7 @@ where
                     .script_engine
                     .eval_async::<T::ScriptValue>(source)
                     .await
-                    .map_err(|err| ResolveParamError::new(parameter, err))?;
+                    .map_err(|err| ResolveParamError::new(parameter, &err))?;
                 Ok(T::from_script_value(value))
             }
         }
@@ -439,7 +439,7 @@ impl ResolveParamValue<()> for SourceCode {
             .script_engine
             .eval_async::<()>(self.inner())
             .await
-            .map_err(|err| ResolveParamError::new(parameter, err))?;
+            .map_err(|err| ResolveParamError::new(parameter, &err))?;
         Ok(())
     }
 }
@@ -454,7 +454,7 @@ impl ResolveParamValue<Option<ActionResult>> for SourceCode {
             .script_engine
             .eval_async::<Option<JsActionResult>>(self.inner())
             .await
-            .map_err(|err| ResolveParamError::new(parameter, err))?;
+            .map_err(|err| ResolveParamError::new(parameter, &err))?;
         Ok(result.map(JsActionResult::into_inner))
     }
 }
@@ -472,7 +472,7 @@ where
             .script_engine
             .eval_async::<T>(self.inner())
             .await
-            .map_err(|err| ResolveParamError::new(parameter, err))?;
+            .map_err(|err| ResolveParamError::new(parameter, &err))?;
         Ok(result)
     }
 }

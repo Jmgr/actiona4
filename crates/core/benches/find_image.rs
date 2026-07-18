@@ -1,3 +1,6 @@
+// Benchmark fixtures are real-world-sized screenshots; the lint's default 1 MB cap doesn't apply here.
+#![allow(clippy::large_include_file)]
+
 use std::{hint::black_box, sync::Arc, time::Duration};
 
 use actiona_core::api::image::{
@@ -14,13 +17,14 @@ static TEMPLATE_BYTES: &[u8] = include_bytes!("../test-data/Crown_icon_transpare
 static TEMPLATE_BYTES_2X: &[u8] = include_bytes!("../test-data/Crown_icon_transparent_2x.png");
 
 fn make_source(bytes: &[u8]) -> Arc<Source> {
-    let image = Image::from_bytes(bytes).unwrap();
-    Arc::<Source>::try_from(&image).unwrap()
+    let image = Image::from_bytes(bytes).expect("benchmark source image is valid");
+    Arc::<Source>::try_from(&image).expect("benchmark source image has source-compatible format")
 }
 
 fn make_template(bytes: &[u8]) -> Arc<Template> {
-    let image = Image::from_bytes(bytes).unwrap();
-    Arc::<Template>::try_from(&image).unwrap()
+    let image = Image::from_bytes(bytes).expect("benchmark template image is valid");
+    Arc::<Template>::try_from(&image)
+        .expect("benchmark template image has template-compatible format")
 }
 
 fn find_image_benches(c: &mut Criterion) {
@@ -79,15 +83,11 @@ fn find_image_benches(c: &mut Criterion) {
                 |b, opts| {
                     b.iter(|| {
                         let (tx, _rx) = mpsc::unbounded_channel();
+                        let cancellation_token = CancellationToken::new();
                         black_box(
                             source
-                                .find_template_all(
-                                    &template,
-                                    opts.clone(),
-                                    CancellationToken::new(),
-                                    tx,
-                                )
-                                .unwrap(),
+                                .find_template_all(&template, *opts, &cancellation_token, &tx)
+                                .expect("find-image benchmark succeeds"),
                         )
                     });
                 },
@@ -99,17 +99,13 @@ fn find_image_benches(c: &mut Criterion) {
                 |b, opts| {
                     b.iter(|| {
                         let (tx, _rx) = mpsc::unbounded_channel();
-                        let mut gpu_opts = opts.clone();
+                        let cancellation_token = CancellationToken::new();
+                        let mut gpu_opts = *opts;
                         gpu_opts.enable_gpu = true;
                         black_box(
                             source
-                                .find_template_all(
-                                    &template,
-                                    gpu_opts,
-                                    CancellationToken::new(),
-                                    tx,
-                                )
-                                .unwrap(),
+                                .find_template_all(&template, gpu_opts, &cancellation_token, &tx)
+                                .expect("GPU find-image benchmark succeeds"),
                         )
                     });
                 },
@@ -121,15 +117,11 @@ fn find_image_benches(c: &mut Criterion) {
                 |b, opts| {
                     b.iter(|| {
                         let (tx, _rx) = mpsc::unbounded_channel();
+                        let cancellation_token = CancellationToken::new();
                         black_box(
                             source
-                                .find_template(
-                                    &template,
-                                    opts.clone(),
-                                    CancellationToken::new(),
-                                    tx,
-                                )
-                                .unwrap(),
+                                .find_template(&template, *opts, &cancellation_token, &tx)
+                                .expect("find-image benchmark succeeds"),
                         )
                     });
                 },
@@ -141,12 +133,13 @@ fn find_image_benches(c: &mut Criterion) {
                 |b, opts| {
                     b.iter(|| {
                         let (tx, _rx) = mpsc::unbounded_channel();
-                        let mut gpu_opts = opts.clone();
+                        let cancellation_token = CancellationToken::new();
+                        let mut gpu_opts = *opts;
                         gpu_opts.enable_gpu = true;
                         black_box(
                             source
-                                .find_template(&template, gpu_opts, CancellationToken::new(), tx)
-                                .unwrap(),
+                                .find_template(&template, gpu_opts, &cancellation_token, &tx)
+                                .expect("GPU find-image benchmark succeeds"),
                         )
                     });
                 },
@@ -166,14 +159,21 @@ fn prepare_benches(c: &mut Criterion) {
     let mut group = c.benchmark_group("find_image_prepare");
 
     for (dataset_name, source_bytes, template_bytes) in datasets {
-        let source_image = Image::from_bytes(source_bytes).unwrap();
-        let template_image = Image::from_bytes(template_bytes).unwrap();
+        let source_image =
+            Image::from_bytes(source_bytes).expect("benchmark source image is valid");
+        let template_image =
+            Image::from_bytes(template_bytes).expect("benchmark template image is valid");
 
         group.bench_with_input(
             BenchmarkId::new("prepare_source", dataset_name),
             &source_image,
             |b, source_image| {
-                b.iter(|| black_box(Arc::<Source>::try_from(black_box(source_image)).unwrap()));
+                b.iter(|| {
+                    black_box(
+                        Arc::<Source>::try_from(black_box(source_image))
+                            .expect("benchmark source image has source-compatible format"),
+                    )
+                });
             },
         );
 
@@ -181,7 +181,12 @@ fn prepare_benches(c: &mut Criterion) {
             BenchmarkId::new("prepare_template", dataset_name),
             &template_image,
             |b, template_image| {
-                b.iter(|| black_box(Arc::<Template>::try_from(black_box(template_image)).unwrap()));
+                b.iter(|| {
+                    black_box(
+                        Arc::<Template>::try_from(black_box(template_image))
+                            .expect("benchmark template image has template-compatible format"),
+                    )
+                });
             },
         );
     }

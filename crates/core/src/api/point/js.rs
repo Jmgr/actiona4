@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A point as a {@link Point} instance, a plain `{x, y}` object, or a {@link Match}.
 //! @verbatim  *
@@ -211,8 +213,9 @@ impl JsPoint {
     #[qjs(static)]
     pub fn random_in_circle(ctx: Ctx<'_>, center: JsPointLike, radius: f64) -> Result<Self> {
         let user_data = ctx.user_data();
+        let rng = user_data.rng();
 
-        let point = random_point_in_circle(center.0, radius, user_data.rng());
+        let point = random_point_in_circle(center.0, radius, &rng);
         Ok(point.into())
     }
 

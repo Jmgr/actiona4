@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::collections::HashSet;
 
 use rquickjs::{Array, Class, Function, Object, Value, class::JsClass};

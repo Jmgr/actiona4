@@ -151,6 +151,9 @@ fn is_plain_not_a_function_type_error(message: &str) -> bool {
     message.trim() == "TypeError: not a function"
 }
 
+// Slicing off the leading/trailing byte is safe: the match on `as_bytes()` guarantees both
+// are single-byte ASCII quote characters.
+#[allow(clippy::string_slice)]
 fn strip_matching_quotes(value: &str) -> &str {
     match value.as_bytes() {
         [b'\'' | b'"', .., last] if *last == value.as_bytes()[0] => &value[1..value.len() - 1],
@@ -158,6 +161,9 @@ fn strip_matching_quotes(value: &str) -> &str {
     }
 }
 
+// Every byte offset used for slicing below comes from `match_indices`/`char_indices`/
+// `char::len_utf8` arithmetic, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 pub(in crate::scripting) fn find_closest_identifier_range(
     line: &str,
     identifier: &str,
@@ -184,6 +190,9 @@ pub(in crate::scripting) fn find_closest_identifier_range(
     best_match.map(|(_, start_byte, end_byte)| (start_byte, end_byte))
 }
 
+// Every byte offset used for slicing below comes from `char_indices`/`char::len_utf8`
+// arithmetic, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 pub(in crate::scripting) fn find_closest_call_identifier_range(
     line: &str,
     reported_col: usize,
@@ -245,6 +254,8 @@ pub(in crate::scripting) fn find_closest_call_identifier_range(
         .map(|(_, start_byte, end_byte)| (start_byte, end_byte))
 }
 
+// `start_byte` comes from `char_indices`, so it always lands on a char boundary.
+#[allow(clippy::string_slice)]
 fn is_constructor_call(line: &str, start_byte: usize) -> bool {
     let prefix = line[..start_byte].trim_end_matches(char::is_whitespace);
     let Some(before_new) = prefix.strip_suffix("new") else {
@@ -270,6 +281,9 @@ const fn column_distance_to_identifier(
     }
 }
 
+// `start_byte`/`end_byte` come from `match_indices` on `identifier`, so both always land on
+// char boundaries.
+#[allow(clippy::string_slice)]
 fn is_identifier_boundary(line: &str, start_byte: usize, end_byte: usize) -> bool {
     let prev = line[..start_byte].chars().next_back();
     let next = line[end_byte..].chars().next();

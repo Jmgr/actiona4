@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::duration::DurationValue,
+    parameters::{Param, duration::DurationValue},
     scriptable::Scriptable,
 };
 
@@ -28,7 +28,7 @@ pub struct WaitUntil {
 impl Default for WaitUntil {
     fn default() -> Self {
         Self {
-            condition: Default::default(),
+            condition: Param::default(),
             poll_interval: Scriptable::new_static(Duration::from_millis(200)).into(),
         }
     }

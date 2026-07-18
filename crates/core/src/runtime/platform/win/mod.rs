@@ -1,7 +1,7 @@
 #![allow(unsafe_code)]
 
 use std::{
-    sync::{Arc, Weak},
+    sync::{Arc, LazyLock, Weak},
     thread::{self, JoinHandle},
 };
 

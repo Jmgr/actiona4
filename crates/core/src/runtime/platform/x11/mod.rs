@@ -253,33 +253,33 @@ impl Runtime {
             },
         );
 
-        let input_mask = InputMask::new(x11_connection.clone()).await?;
+        let input_mask = InputMask::new(x11_connection.clone())?;
         let mouse_activation_counter = ActivationCounter::default();
         let mouse_buttons_topic = TopicWrapper::new(
             MouseButtonsTopic::new(input_mask.clone(), mouse_activation_counter.clone()),
             cancellation_token.clone(),
-            task_tracker.clone(),
+            &task_tracker,
         );
         let mouse_move_topic = TopicWrapper::new(
             MouseMoveTopic::new(input_mask.clone()),
             cancellation_token.clone(),
-            task_tracker.clone(),
+            &task_tracker,
         );
         let mouse_scroll_topic = TopicWrapper::new(
             MouseScrollTopic::new(input_mask.clone(), mouse_activation_counter),
             cancellation_token.clone(),
-            task_tracker.clone(),
+            &task_tracker,
         );
         let activation_counter = ActivationCounter::default();
         let keyboard_keys_topic = TopicWrapper::new(
             KeyboardKeysTopic::new(input_mask.clone(), activation_counter.clone()),
             cancellation_token.clone(),
-            task_tracker.clone(),
+            &task_tracker,
         );
         let keyboard_text_topic = TopicWrapper::new(
             KeyboardTextTopic::new(input_mask, activation_counter),
             cancellation_token.clone(),
-            task_tracker.clone(),
+            &task_tracker,
         );
         let (window_event_sender, _) = broadcast::channel(1024);
 
@@ -294,7 +294,7 @@ impl Runtime {
 
         let main_loop_thread = spawn_on_dedicated_thread(move || async move {
             let mut input_devices = InputDevices::new(local_x11_connection.clone()).await?;
-            let mut keyboard_state = KeyboardState::new(local_x11_connection.clone());
+            let mut keyboard_state = KeyboardState::new(&local_x11_connection);
 
             let connection = local_x11_connection.async_connection();
 
@@ -378,7 +378,7 @@ impl Runtime {
                             false,
                         );
 
-                        if let Some(ref text_event) = text_event {
+                        if let Some(text_event) = &text_event {
                             local_keyboard_text_topic.publish(text_event.clone());
                         }
 
@@ -419,7 +419,7 @@ impl Runtime {
 
                                 loop {
                                     local_keyboard_keys_topic.publish(key_event.clone());
-                                    if let Some(ref text_event) = text_event {
+                                    if let Some(text_event) = &text_event {
                                         local_keyboard_text_topic.publish(text_event.clone());
                                     }
 
@@ -466,10 +466,10 @@ impl Runtime {
                             repeating_key.take();
                         }
 
-                        keyboard_state = KeyboardState::new(local_x11_connection.clone());
+                        keyboard_state = KeyboardState::new(&local_x11_connection);
                     }
                     Event::XkbMapNotify(_) => {
-                        keyboard_state = KeyboardState::new(local_x11_connection.clone());
+                        keyboard_state = KeyboardState::new(&local_x11_connection);
                     }
                     Event::RandrScreenChangeNotify(_event) => {
                         displays.refresh();
@@ -567,7 +567,7 @@ where
 struct KeyboardState(xkb::State);
 
 impl KeyboardState {
-    pub fn new(x11_connection: Arc<X11Connection>) -> Self {
+    pub fn new(x11_connection: &X11Connection) -> Self {
         let xcb_connection = x11_connection.xcb_connection();
         let ctx = xkb::Context::new(CONTEXT_NO_FLAGS);
         let dev = xkb::x11::get_core_keyboard_device_id(xcb_connection);

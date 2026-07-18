@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A name matcher: an exact string, a {@link Wildcard} pattern, or a {@link RegExp}.
 //! @verbatim  *
@@ -216,8 +218,11 @@ mod tests {
 
     impl SingletonClass<'_> for JsTest {}
 
+    // `#[js_methods]` registers these dynamically, which the dead-code analysis cannot observe.
+    #[allow(dead_code)]
     #[js_methods]
     impl JsTest {
+        #[allow(clippy::unused_self)] // Instance method required for JS registration as `test.nameMatch`.
         pub fn name_match<'js>(
             &self,
             ctx: Ctx<'js>,
@@ -230,13 +235,14 @@ mod tests {
         /// Returns a string representation of this test.
         #[qjs(rename = PredefinedAtom::ToString)]
         #[must_use]
+        #[allow(clippy::unused_self)] // Instance method required for JS registration as `test.toString`.
         pub fn to_string_js(&self) -> String {
             "Test".to_string()
         }
     }
 
     #[test]
-    fn test_wildcard() {
+    fn wildcard() {
         let wildcard = JsWildcard::new("foo*".to_string()).unwrap();
         assert!(wildcard.inner().matches("football"));
         assert!(!wildcard.inner().matches("cat"));
@@ -252,7 +258,7 @@ mod tests {
     }
 
     #[test]
-    fn test_name() {
+    fn name() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .with(|ctx| {

@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use macros::{js_class, js_methods, options, platform};
 use rquickjs::{
     Ctx, JsLifetime, Promise, Result, Value,
@@ -601,11 +603,11 @@ mod tests {
     /// and checks that `win.closed` resolves. Requires `xeyes` to be installed.
     #[test]
     #[ignore]
-    fn test_window_closed() {
+    fn window_closed() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(&format!(
-                    r"
+                    "
                     {XEYES_SETUP}
                     win.close();
                     await win.closed;
@@ -620,11 +622,11 @@ mod tests {
     /// missed in the gap between subscription setup and the DestroyNotify event.
     #[test]
     #[ignore]
-    fn test_closed_subscribe_before_close() {
+    fn closed_subscribe_before_close() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(&format!(
-                    r"
+                    "
                     {XEYES_SETUP}
                     // Subscribe first, then close — the promise must still resolve
                     const closedPromise = win.closed;

@@ -60,13 +60,13 @@ impl Callbacks {
     pub fn new(
         context: AsyncContext,
         cancellation_token: CancellationToken,
-        task_tracker: TaskTracker,
+        task_tracker: &TaskTracker,
     ) -> Self {
         info!("Callbacks::new");
 
         let (call_sender, mut call_receiver) = mpsc::unbounded_channel();
-        let functions = Default::default();
-        let calls = Default::default();
+        let functions = Arc::default();
+        let calls = Arc::default();
 
         task_tracker.spawn(async move {
             info!("Callbacks::worker start");
@@ -254,7 +254,7 @@ impl Callbacks {
         &self,
         ctx: &Ctx<'js>,
         function_key: FunctionKey,
-        args: Vec<Value<'js>>,
+        args: &[Value<'js>],
     ) -> Value<'js> {
         let Some(function) = self.get_function(ctx, function_key, "call_sync_returning") else {
             return Value::new_undefined(ctx.clone());

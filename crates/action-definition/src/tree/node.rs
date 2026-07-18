@@ -121,6 +121,7 @@ impl Metadata {
     }
 }
 
+#[allow(clippy::trivially_copy_pass_by_ref)] // Required by serde's skip_serializing_if callback.
 const fn is_false(value: &bool) -> bool {
     !*value
 }
@@ -212,7 +213,7 @@ impl Node {
     pub(super) fn new_root() -> Self {
         Self {
             parent_id: None,
-            children: Default::default(),
+            children: Vec::default(),
             payload: NodePayload::Static(Static::Root),
             metadata: Metadata {
                 depth: 0,
@@ -224,7 +225,7 @@ impl Node {
     pub(super) fn new_branch(kind: BranchKind, parent_id: NodeId, depth: usize) -> Self {
         Self {
             parent_id: Some(parent_id),
-            children: Default::default(),
+            children: Vec::default(),
             payload: NodePayload::Static(Static::Branch(kind)),
             metadata: Metadata {
                 depth,

@@ -157,7 +157,6 @@ impl Runner<'_> {
                         RunError::new(RunErrorKind::LabelNotFound(label)).at_node(node_id)
                     })?;
                     self.enter_body(target)
-                        .map_err(|err| RunError::new(err).at_node(node_id))?
                 }
                 PostRun::Stop => break,
                 PostRun::Exit => {
@@ -202,7 +201,7 @@ impl Runner<'_> {
                 action.pause_before().map(|pause| *pause),
                 action.pause_after().map(|pause| *pause),
             ),
-            _ => (None, None, None),
+            NodePayload::Static(_) => (None, None, None),
         };
 
         let parent_token = self.context.cancellation_token.clone();
@@ -323,7 +322,7 @@ impl Runner<'_> {
         })
     }
 
-    fn enter_body(&self, target: NodeId) -> Result<RunStep, RunErrorKind> {
+    fn enter_body(&self, target: NodeId) -> RunStep {
         let mut owners = iter::once(target)
             .chain(self.tree.ancestors(target))
             .filter_map(|node_id| {
@@ -340,7 +339,7 @@ impl Runner<'_> {
         for owner_id in owners.into_iter().rev() {
             next = RunStep::body_enter(owner_id, next);
         }
-        Ok(next)
+        next
     }
 }
 
@@ -1766,7 +1765,7 @@ mod tests {
             .append_action_instance(
                 ActionInstance::Code(
                     Code::new(SourceCode::from(
-                        r"const value: number = 1;
+                        "const value: number = 1;
 const explode = (): never => {
     throw new Error('source exploded');
 };

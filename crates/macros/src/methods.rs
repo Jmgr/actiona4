@@ -107,7 +107,7 @@ fn apply_accessor_attributes(method: &mut ImplItemFn) -> syn::Result<()> {
         }
 
         if !doc_contains(&method.attrs, INSTR_GET) {
-            append_doc_line(&mut method.attrs, INSTR_GET.to_string());
+            append_doc_line(&mut method.attrs, INSTR_GET);
         }
 
         let qjs_attribute: Attribute = match get_rename {
@@ -127,7 +127,7 @@ fn apply_accessor_attributes(method: &mut ImplItemFn) -> syn::Result<()> {
         }
 
         if !doc_contains(&method.attrs, INSTR_GET) {
-            append_doc_line(&mut method.attrs, INSTR_GET.to_string());
+            append_doc_line(&mut method.attrs, INSTR_GET);
         }
 
         let qjs_attribute: Attribute = match prop_rename {
@@ -199,7 +199,7 @@ fn has_qjs_flag(attributes: &[Attribute], flag: &str) -> bool {
 }
 
 /// Append a single `#[doc = "..."]` line.
-fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: String) {
+fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: &str) {
     let doc_attribute: Attribute = parse_quote! {
         #[doc = #doc_line]
     };

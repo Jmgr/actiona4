@@ -95,14 +95,13 @@ fn spawn_line_reader(
             };
 
             match result {
-                Ok(0) => break, // EOF
+                Ok(0) | Err(_) => break, // EOF or read error
                 Ok(_) => {
                     let trimmed = line.trim_end_matches('\n').trim_end_matches('\r');
                     if sender.send(trimmed.to_string()).await.is_err() {
                         break;
                     }
                 }
-                Err(_) => break,
             }
         }
     });
@@ -152,11 +151,11 @@ impl ProcessRunner {
         let mut cmd = Command::new(command);
         cmd.args(&options.args);
 
-        if let Some(ref cwd) = options.working_directory {
+        if let Some(cwd) = &options.working_directory {
             cmd.current_dir(cwd);
         }
 
-        if let Some(ref env) = options.env {
+        if let Some(env) = &options.env {
             cmd.envs(env);
         }
 
@@ -167,10 +166,10 @@ impl ProcessRunner {
     pub fn start(
         &self,
         command: &str,
-        options: StartProcessOptions,
-        cancellation_token: CancellationToken,
+        options: &StartProcessOptions,
+        cancellation_token: &CancellationToken,
     ) -> Result<StartedProcess> {
-        let mut cmd = Self::build_command(command, &options);
+        let mut cmd = Self::build_command(command, options);
         cmd.stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
@@ -282,7 +281,7 @@ impl ProcessRunner {
         options: ShellOptions,
         cancellation_token: CancellationToken,
     ) -> Result<Option<i32>> {
-        let (shell_binary, shell_flag) = resolve_shell(&options.shell);
+        let (shell_binary, shell_flag) = resolve_shell(options.shell.as_deref());
 
         let mut child = Command::new(&shell_binary)
             .arg(&shell_flag)
@@ -305,8 +304,8 @@ impl ProcessRunner {
     }
 
     /// Start a detached process and return only its PID.
-    pub fn start_detached(&self, command: &str, options: StartProcessOptions) -> Result<Pid> {
-        let mut cmd = Self::build_command(command, &options);
+    pub fn start_detached(&self, command: &str, options: &StartProcessOptions) -> Result<Pid> {
+        let mut cmd = Self::build_command(command, options);
         cmd.stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
@@ -372,18 +371,17 @@ pub fn terminate_by_pid(pid: Pid) -> Result<()> {
 /// On Unix the flag is always `-c`. On Windows it is chosen based on the shell name:
 /// `cmd` → `/C`, `powershell`/`pwsh` → `-Command`, anything else → `-c`.
 #[cfg(unix)]
-fn resolve_shell(override_shell: &Option<String>) -> (String, String) {
-    let shell = override_shell
-        .clone()
-        .unwrap_or_else(|| env::var("SHELL").unwrap_or_else(|_| "bash".to_string()));
+fn resolve_shell(override_shell: Option<&str>) -> (String, String) {
+    let shell = override_shell.map_or_else(
+        || env::var("SHELL").unwrap_or_else(|_| "bash".to_string()),
+        str::to_owned,
+    );
     (shell, "-c".to_string())
 }
 
 #[cfg(windows)]
-fn resolve_shell(override_shell: &Option<String>) -> (String, String) {
-    let shell = override_shell
-        .clone()
-        .unwrap_or_else(|| "powershell".to_string());
+fn resolve_shell(override_shell: Option<&str>) -> (String, String) {
+    let shell = override_shell.map_or_else(|| "powershell".to_string(), str::to_owned);
     let flag = shell_flag_for(&shell);
     (shell, flag)
 }

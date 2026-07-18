@@ -6,6 +6,10 @@ authors.workspace = true
 description.workspace = true
 documentation.workspace = true
 license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 action-definition = { path = "../action-definition" }
@@ -17,7 +21,7 @@ indexmap = { workspace = true, features = ["rayon", "serde"] }
 mime.workspace = true
 postcard = { workspace = true, features = ["use-std"] }
 rayon.workspace = true
-rodio.workspace = true
+rodio = { workspace = true, features = ["flac", "mp3", "mp4", "vorbis", "wav"] }
 ruopus.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true

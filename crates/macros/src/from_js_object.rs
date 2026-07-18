@@ -34,10 +34,13 @@ pub fn derive(input: TokenStream) -> TokenStream {
     };
 
     let build_fields = fields.iter().map(|field| {
-        let field_name = &field.ident;
+        let Some(field_name) = &field.ident else {
+            return syn::Error::new_spanned(field, "named fields must have identifiers")
+                .to_compile_error();
+        };
         let field_ty = &field.ty;
         let name_str = convert_case::Casing::to_case(
-            &field_name.as_ref().unwrap().to_string(),
+            &field_name.to_string(),
             convert_case::Case::Camel,
         );
 

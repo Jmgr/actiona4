@@ -4,8 +4,8 @@ use swc_common::{
     FileName, GLOBALS, Globals, Mark, source_map::DefaultSourceMapGenConfig, sync::Lrc,
 };
 use swc_ecma_ast::EsVersion;
-use swc_ecma_codegen::{Emitter, text_writer::JsWriter};
-use swc_ecma_parser::{Parser, StringInput, Syntax, lexer::Lexer};
+use swc_ecma_codegen::{Config, Emitter, text_writer::JsWriter};
+use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
 use swc_ecma_transforms_base::{fixer::fixer, hygiene::hygiene, resolver};
 use swc_ecma_transforms_typescript::strip;
 use thiserror::Error;
@@ -62,7 +62,7 @@ impl TsToJs {
         );
 
         let lexer = Lexer::new(
-            Syntax::Typescript(Default::default()),
+            Syntax::Typescript(TsSyntax::default()),
             EsVersion::Es2020,
             StringInput::from(&*fm),
             None,
@@ -114,7 +114,7 @@ impl TsToJs {
 
                 {
                     let mut emitter = Emitter {
-                        cfg: Default::default(),
+                        cfg: Config::default(),
                         cm: cm.clone(),
                         comments: None,
                         wr: JsWriter::new(cm.clone(), "\n", &mut code, Some(&mut srcmap)),
@@ -185,24 +185,24 @@ impl TsToJs {
         let zero_based_col = js_col - 1;
 
         // Perform the lookup using the sourcemap crate
-        self.sourcemap
-            .lookup_token(zero_based_line, zero_based_col)
-            .and_then(|token| {
-                // Check if the token has source information
-                match (
-                    token.get_source(),
-                    token.get_src_line(),
-                    token.get_src_col(),
-                ) {
-                    (Some(filename), src_line, src_col) => {
-                        // Convert 0-based source location back to 1-based for the user
-                        let one_based_ts_line = src_line + 1;
-                        let one_based_ts_col = src_col + 1;
-                        Some((filename.to_string(), one_based_ts_line, one_based_ts_col))
-                    }
-                    _ => None, // No mapping found for this specific token
-                }
-            })
+        let token = self
+            .sourcemap
+            .lookup_token(zero_based_line, zero_based_col)?;
+
+        // Check if the token has source information
+        match (
+            token.get_source(),
+            token.get_src_line(),
+            token.get_src_col(),
+        ) {
+            (Some(filename), src_line, src_col) => {
+                // Convert 0-based source location back to 1-based for the user
+                let one_based_ts_line = src_line + 1;
+                let one_based_ts_col = src_col + 1;
+                Some((filename.to_string(), one_based_ts_line, one_based_ts_col))
+            }
+            _ => None, // No mapping found for this specific token
+        }
     }
 }
 
@@ -225,9 +225,8 @@ mod tests {
     #[test]
     fn silent_parse_error_is_parse_variant() {
         // `TsToJs` isn't `Debug`, so match instead of `unwrap_err`.
-        let err = match TsToJs::new_silent("function {{{ invalid", "bad.ts") {
-            Ok(_) => panic!("expected a parse error"),
-            Err(err) => err,
+        let Err(err) = TsToJs::new_silent("function {{{ invalid", "bad.ts") else {
+            panic!("expected a parse error");
         };
         assert!(
             matches!(err, TranspileError::Parse(_)),

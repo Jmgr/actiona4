@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use itertools::Itertools;
 use macros::{js_class, js_methods};
 use rquickjs::{
@@ -72,7 +74,7 @@ impl JsCpu {
     }
 
     /// @readonly
-    pub async fn frequencies<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<u64>> {
+    pub async fn frequencies(&self, ctx: Ctx<'_>) -> Result<Vec<u64>> {
         let cores = self
             .inner
             .refresh_frequencies()

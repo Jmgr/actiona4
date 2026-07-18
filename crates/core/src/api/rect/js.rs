@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A rectangle as a {@link Rect} instance or a plain `{x, y, width, height}` object.
 //! @verbatim  *

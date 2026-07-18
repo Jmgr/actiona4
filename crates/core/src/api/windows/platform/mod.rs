@@ -68,8 +68,8 @@ pub struct Registry<H: Clone + Eq + Hash> {
 impl<H: Clone + Eq + Hash> Default for Registry<H> {
     fn default() -> Self {
         Self {
-            map: Default::default(),
-            next_id: Default::default(),
+            map: BiMap::default(),
+            next_id: WindowId::default(),
         }
     }
 }

@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * An action that fires when a trigger is activated: either a {@link Macro} to play
 //! @verbatim  * directly, or a (possibly async) callback that optionally returns one.
@@ -502,10 +504,10 @@ impl JsMacros {
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
 
-        if options.speed <= 0.0 {
+        if !options.speed.is_finite() || options.speed <= 0.0 {
             return Err(Exception::throw_message(
                 &ctx,
-                "play: speed must be greater than zero",
+                "play: speed must be finite and greater than zero",
             ));
         }
 
@@ -552,7 +554,7 @@ mod tests {
     /// Press Escape to stop recording.
     #[test]
     #[ignore]
-    fn test_record_and_play() {
+    fn record_and_play() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
@@ -574,7 +576,7 @@ mod tests {
     /// Manual test: record, save to /tmp, reload, play back.
     #[test]
     #[ignore]
-    fn test_save_and_load() {
+    fn save_and_load() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
@@ -599,7 +601,7 @@ mod tests {
     /// Manual test: verify playback speed scaling.
     #[test]
     #[ignore]
-    fn test_playback_speed() {
+    fn playback_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
@@ -620,7 +622,7 @@ mod tests {
     /// Manual test: keyboard-only recording.
     #[test]
     #[ignore]
-    fn test_keyboard_only() {
+    fn keyboard_only() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
@@ -644,7 +646,7 @@ mod tests {
     /// Manual test: starting a new playback cancels the previous one.
     #[test]
     #[ignore]
-    fn test_concurrent_play_cancels_previous() {
+    fn concurrent_play_cancels_previous() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(

@@ -6,6 +6,8 @@ use types::Size;
 
 use crate::api::image::Image;
 
+const CAPTURE_BYTES_PER_PIXEL: usize = 4;
+
 impl Image {
     /// Build an [`Image`] from a raw BGRA buffer, converting to RGBA.
     pub fn from_bgra(data: &[u8], size: Size) -> Result<Self> {
@@ -32,12 +34,11 @@ impl Image {
     /// Build an [`Image`] from a [`Capture`], converting BGRA→RGBA in place.
     pub fn from_capture(capture: Capture) -> Result<Self> {
         let Capture { size, mut bgra } = capture;
-        const BYTES_PER_PIXEL: usize = 4;
         let width: usize = size.width.saturating_into();
         let height: usize = size.height.saturating_into();
         let needed = width
             .checked_mul(height)
-            .and_then(|pixel_count| pixel_count.checked_mul(BYTES_PER_PIXEL))
+            .and_then(|pixel_count| pixel_count.checked_mul(CAPTURE_BYTES_PER_PIXEL))
             .ok_or_else(|| eyre!("image dimensions overflow: {size}"))?;
         if bgra.len() < needed {
             return Err(eyre!(

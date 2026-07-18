@@ -24,7 +24,7 @@ async fn initialize_state(
     let count = context
         .store_array(array.inner())
         .await
-        .map_err(|source| ResolveParamError::new(action.array.name(), source))?;
+        .map_err(|source| ResolveParamError::new(action.array.name(), &source))?;
 
     context.runtime_state_mut(|| RuntimeState {
         count,

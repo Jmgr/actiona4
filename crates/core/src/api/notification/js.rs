@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::sync::Arc;
 
 use macros::{
@@ -937,11 +939,7 @@ impl JsNotificationHandle {
     /// ```
 
     #[platform(only = "linux")]
-    pub async fn update<'js>(
-        &self,
-        ctx: Ctx<'js>,
-        options: Opt<JsNotificationOptions>,
-    ) -> Result<()> {
+    pub async fn update(&self, ctx: Ctx<'_>, options: Opt<JsNotificationOptions>) -> Result<()> {
         let handle = self.inner.lock().as_ref().cloned().ok_or_else(|| {
             Exception::throw_message(
                 &ctx,
@@ -1026,7 +1024,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_show() {
+    fn show() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(
@@ -1042,7 +1040,7 @@ mod tests {
     #[test]
     #[ignore]
     #[cfg(unix)]
-    fn test_update() {
+    fn update() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(
@@ -1059,7 +1057,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_closed() {
+    fn closed() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(
@@ -1075,7 +1073,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_close() {
+    fn close() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(
@@ -1092,7 +1090,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_action() {
+    fn action() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(

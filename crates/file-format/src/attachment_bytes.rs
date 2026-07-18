@@ -8,7 +8,7 @@ use serde::{
 
 // Payloads are shared via `Arc` so cloning a `File` before a blocking task is cheap.
 #[derive(Clone)]
-pub struct AttachmentBytes(Arc<Vec<u8>>);
+pub struct AttachmentBytes(Arc<[u8]>);
 
 impl AttachmentBytes {
     #[must_use]
@@ -25,7 +25,7 @@ impl AsRef<[u8]> for AttachmentBytes {
 
 impl From<Vec<u8>> for AttachmentBytes {
     fn from(value: Vec<u8>) -> Self {
-        Self(Arc::new(value))
+        Self(Arc::from(value))
     }
 }
 
@@ -53,12 +53,12 @@ impl<'de> Deserialize<'de> for AttachmentBytes {
             let value = String::deserialize(deserializer)?;
             Base64
                 .decode(value)
-                .map(|bytes| Self(Arc::new(bytes)))
+                .map(|bytes| Self(Arc::from(bytes)))
                 .map_err(D::Error::custom)
         } else {
             deserializer
                 .deserialize_byte_buf(BytesVisitor)
-                .map(|bytes| Self(Arc::new(bytes)))
+                .map(|bytes| Self(Arc::from(bytes)))
         }
     }
 }
@@ -72,25 +72,25 @@ impl<'de> Visitor<'de> for BytesVisitor {
         formatter.write_str("a byte buffer")
     }
 
-    fn visit_bytes<E>(self, value: &[u8]) -> Result<Vec<u8>, E>
+    fn visit_bytes<E>(self, v: &[u8]) -> Result<Vec<u8>, E>
     where
         E: de::Error,
     {
-        Ok(value.to_vec())
+        Ok(v.to_vec())
     }
 
-    fn visit_borrowed_bytes<E>(self, value: &'de [u8]) -> Result<Vec<u8>, E>
+    fn visit_borrowed_bytes<E>(self, v: &'de [u8]) -> Result<Vec<u8>, E>
     where
         E: de::Error,
     {
-        Ok(value.to_vec())
+        Ok(v.to_vec())
     }
 
-    fn visit_byte_buf<E>(self, value: Vec<u8>) -> Result<Vec<u8>, E>
+    fn visit_byte_buf<E>(self, v: Vec<u8>) -> Result<Vec<u8>, E>
     where
         E: de::Error,
     {
-        Ok(value)
+        Ok(v)
     }
 }
 

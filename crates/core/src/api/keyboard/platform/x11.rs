@@ -15,8 +15,8 @@ pub struct KeyboardImpl {
 }
 
 impl KeyboardImpl {
-    pub const fn new(runtime: Arc<Runtime>) -> Result<Self> {
-        Ok(Self { runtime })
+    pub const fn new(runtime: Arc<Runtime>) -> Self {
+        Self { runtime }
     }
 
     pub fn is_key_pressed(&self, key: Key) -> Result<bool> {

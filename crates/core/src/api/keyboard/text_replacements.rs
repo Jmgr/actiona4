@@ -119,10 +119,10 @@ impl TextReplacements {
         }
     }
 
-    async fn on_key(
-        event: KeyboardKeyEvent,
+    fn on_key(
+        event: &KeyboardKeyEvent,
         buffer: &mut StringRingBuffer,
-        runtime: Arc<Runtime>,
+        runtime: &Runtime,
         macro_player: Arc<MacroPlayer>,
         pending_replacement: &mut Option<PendingTextReplacement>,
     ) -> Result<()> {
@@ -132,7 +132,7 @@ impl TextReplacements {
 
         if pending_replacement
             .as_ref()
-            .is_some_and(|pending| Self::is_pending_trigger_release(&event, pending))
+            .is_some_and(|pending| Self::is_pending_trigger_release(event, pending))
         {
             let pending = pending_replacement
                 .take()
@@ -148,8 +148,9 @@ impl TextReplacements {
 
         match event.key {
             Key::Backspace => buffer.pop(),
-            Key::Escape => buffer.clear(),
-            Key::LeftArrow | Key::RightArrow | Key::UpArrow | Key::DownArrow => buffer.clear(),
+            Key::Escape | Key::LeftArrow | Key::RightArrow | Key::UpArrow | Key::DownArrow => {
+                buffer.clear();
+            }
             _ => {}
         }
         Ok(())
@@ -315,9 +316,13 @@ impl TextReplacements {
             && event.key == pending.key
     }
 
+    #[allow(
+        clippy::needless_pass_by_value,
+        reason = "Callers transfer their Arc<MacroPlayer> ownership to the replacement operation."
+    )]
     fn apply_pending_replacement(
         pending: PendingTextReplacement,
-        runtime: Arc<Runtime>,
+        runtime: &Runtime,
         macro_player: Arc<MacroPlayer>,
     ) -> Result<()> {
         for action in pending.actions {
@@ -338,7 +343,9 @@ impl TextReplacements {
             match replacement_data {
                 ReplacementData::None => {}
                 ReplacementData::Macro(data) => {
-                    macro_player.play_detached(data, PlayConfig::default());
+                    macro_player
+                        .clone()
+                        .play_detached(data, PlayConfig::default());
                 }
                 ReplacementData::Text(text) => {
                     if action.options.use_clipboard_for_text {
@@ -444,12 +451,12 @@ impl TextReplacements {
                     key = keys_receiver.recv() => {
                         let Ok(key) = key else { break; };
                         Self::on_key(
-                            key,
+                            &key,
                             &mut buffer,
-                            local_runtime.clone(),
+                            &local_runtime,
                             local_macro_player.clone(),
                             &mut pending_replacement,
-                        ).await?;
+                        )?;
                     },
                 }
             }
@@ -639,9 +646,8 @@ impl StringRingBuffer {
         if self.buffer.is_empty() {
             return;
         }
-        let (start, _) = match self.buffer.grapheme_indices(true).next_back() {
-            Some(pair) => pair,
-            None => return,
+        let Some((start, _)) = self.buffer.grapheme_indices(true).next_back() else {
+            return;
         };
         self.buffer.truncate(start);
     }
@@ -676,7 +682,7 @@ mod tests {
     use crate::types::input::Direction;
 
     #[test]
-    fn test_grapheme_prefix_len() {
+    fn grapheme_prefix_len_works() {
         assert_eq!(grapheme_prefix_len("", "abc"), 0);
         assert_eq!(grapheme_prefix_len("a", "abc"), 1);
         assert_eq!(grapheme_prefix_len("abcd", "abc"), 3);

@@ -1,12 +1,3 @@
-#![warn(clippy::all, clippy::nursery)]
-#![warn(clippy::as_conversions)]
-#![warn(clippy::must_use_candidate)]
-#![warn(clippy::unwrap_used)]
-#![deny(unsafe_code)]
-#![allow(clippy::too_long_first_doc_paragraph)]
-#![allow(clippy::significant_drop_tightening)]
-#![allow(clippy::future_not_send)]
-#![allow(clippy::too_many_arguments)]
 use std::result::Result as StdResult;
 
 use color_eyre::Result;
@@ -26,6 +17,7 @@ pub mod scripting;
 pub mod sized_body;
 pub mod types;
 
+#[allow(clippy::needless_raw_strings)]
 pub mod built_info {
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 

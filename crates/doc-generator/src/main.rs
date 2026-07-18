@@ -10,6 +10,7 @@ pub mod items;
 mod output;
 mod types;
 
+#[allow(clippy::needless_raw_strings)]
 pub mod built_info {
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }

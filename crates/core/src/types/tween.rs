@@ -56,8 +56,8 @@ mod tests {
     // On NaN -> returns Point::default() (ZERO); otherwise scales like scaled().
 
     #[rstest]
-    #[case::ok(point(2, -3), 2.0f32, point(4, -6))]
-    #[case::ok_round(point(1, 1), 1.6f32, point(1, 1))]
+    #[case::ok(point(2, -3), 2.0_f32, point(4, -6))]
+    #[case::ok_round(point(1, 1), 1.6_f32, point(1, 1))]
     #[case::nan(point(9, 9), f32::NAN, Point::ZERO)]
     fn tween_scale(#[case] p: Point, #[case] s: f32, #[case] want: Point) {
         let got = TweenValue::scale(TweenPoint::from(p), s);

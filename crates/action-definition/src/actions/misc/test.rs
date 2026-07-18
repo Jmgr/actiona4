@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::duration::DurationValue,
+    parameters::{Param, duration::DurationValue},
     post_run::PostRun,
     scriptable::Scriptable,
     tree::BranchKind,
@@ -26,8 +26,8 @@ impl Default for Test {
     fn default() -> Self {
         Self {
             percent: Scriptable::Static { value: 50 }.into(),
-            duration: Default::default(),
-            post_run: Default::default(),
+            duration: Param::default(),
+            post_run: PostRun::default(),
         }
     }
 }

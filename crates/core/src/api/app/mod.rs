@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, env};
 
 pub mod js;
 
-pub struct App {}
+pub struct App;
 
 impl App {
     #[must_use]

@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use macros::{js_class, js_methods, platform};
 use rquickjs::{
     Ctx, JsLifetime, Result,
@@ -52,7 +54,7 @@ impl JsMemory {
 #[js_methods]
 impl JsMemory {
     /// Memory usage
-    pub async fn usage<'js>(&self, ctx: Ctx<'js>) -> Result<JsMemoryUsage> {
+    pub async fn usage(&self, ctx: Ctx<'_>) -> Result<JsMemoryUsage> {
         self.inner
             .refresh_memory_usage()
             .await
@@ -61,7 +63,7 @@ impl JsMemory {
     }
 
     /// Swap usage
-    pub async fn swap_usage<'js>(&self, ctx: Ctx<'js>) -> Result<JsMemoryUsage> {
+    pub async fn swap_usage(&self, ctx: Ctx<'_>) -> Result<JsMemoryUsage> {
         self.inner
             .refresh_swap_usage()
             .await

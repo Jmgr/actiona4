@@ -269,7 +269,7 @@ impl FindImageProgress {
 
 /// Find image template options
 #[options]
-#[derive(Clone, Debug, FromJsObject, PartialEq)]
+#[derive(Clone, Copy, Debug, FromJsObject, PartialEq)]
 pub struct FindImageTemplateOptions {
     /// Use color matching.
     #[default(true)]
@@ -303,8 +303,8 @@ impl Source {
         &self,
         template: &Template,
         options: FindImageTemplateOptions,
-        cancellation_token: CancellationToken,
-        progress: mpsc::UnboundedSender<FindImageProgress>,
+        cancellation_token: &CancellationToken,
+        progress: &mpsc::UnboundedSender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
         self.find_template_impl(template, options, false, cancellation_token, progress)
     }
@@ -315,8 +315,8 @@ impl Source {
         &self,
         template: &Template,
         options: FindImageTemplateOptions,
-        cancellation_token: CancellationToken,
-        progress: mpsc::UnboundedSender<FindImageProgress>,
+        cancellation_token: &CancellationToken,
+        progress: &mpsc::UnboundedSender<FindImageProgress>,
     ) -> Result<Option<Match>> {
         let matches =
             self.find_template_impl(template, options, true, cancellation_token, progress)?;
@@ -329,8 +329,8 @@ impl Source {
         template: &Template,
         options: FindImageTemplateOptions,
         search_one: bool,
-        cancellation_token: CancellationToken,
-        progress: mpsc::UnboundedSender<FindImageProgress>,
+        cancellation_token: &CancellationToken,
+        progress: &mpsc::UnboundedSender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
         // Check cancellation at the start
         if cancellation_token.is_cancelled() {
@@ -387,8 +387,8 @@ impl Source {
             template_lightness.as_ref(),
             template_mask.as_deref(),
             options.enable_gpu,
-            cancellation_token.clone(),
-            progress.clone(),
+            cancellation_token,
+            progress,
         )?;
 
         // Resize the result if needed
@@ -446,6 +446,8 @@ impl Source {
 }
 
 #[cfg(test)]
+// The test fixture is a real-world-sized screenshot; the lint's default 1 MB cap doesn't apply here.
+#[allow(clippy::large_include_file)]
 mod tests {
     use std::sync::Arc;
 
@@ -466,7 +468,7 @@ mod tests {
     };
 
     #[test]
-    fn test_find_image() {
+    fn find_image() {
         let _ = fmt()
             .with_env_filter(EnvFilter::new("info"))
             .with_span_events(FmtSpan::CLOSE)
@@ -495,8 +497,8 @@ mod tests {
                         non_maximum_suppression_radius: Some(10),
                         downscale: 0,
                     },
-                    cancellation_token,
-                    progress_sender,
+                    &cancellation_token,
+                    &progress_sender,
                 )
                 .unwrap();
 
@@ -508,7 +510,7 @@ mod tests {
     }
 
     #[test]
-    fn test_find_image_errors_when_template_larger_than_source() {
+    fn find_image_errors_when_template_larger_than_source() {
         let source = Image::new(8, 8);
         let source = Arc::<Source>::try_from(&source).unwrap();
 
@@ -516,12 +518,13 @@ mod tests {
         let template = Arc::<Template>::try_from(&template).unwrap();
 
         let (progress_sender, _) = mpsc::unbounded_channel::<FindImageProgress>();
+        let cancellation_token = CancellationToken::new();
         let error = source
             .find_template_all(
                 &template,
                 FindImageTemplateOptions::default(),
-                CancellationToken::new(),
-                progress_sender,
+                &cancellation_token,
+                &progress_sender,
             )
             .unwrap_err();
 

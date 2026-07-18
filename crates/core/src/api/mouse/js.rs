@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{sync::Arc, time::Duration};
 
 use macros::{FromJsObject, FromSerde, js_class, js_methods, options, platform};
@@ -1001,7 +1003,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_position() {
+    fn position() {
         Runtime::test_with_script_engine(async |script_engine| {
             let mut position: JsPoint = script_engine.eval_async("mouse.position()").await.unwrap();
             position = point(position.get_x() + 5, position.get_y() + 5).into();
@@ -1038,7 +1040,7 @@ mod tests {
     }
 
     #[test]
-    fn test_button() {
+    fn button() {
         Runtime::test_with_script_engine(async |script_engine| {
             let button: JsButton = script_engine.eval("Button.Left").await.unwrap();
             assert_eq!(button, JsButton::Left);
@@ -1050,7 +1052,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_press_release() {
+    fn press_release() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine.eval::<()>("mouse.press()").await.unwrap();
 
@@ -1072,7 +1074,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_scroll() {
+    fn scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>("mouse.scroll(1)")
@@ -1096,7 +1098,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_wait_for_button_js() {
+    fn wait_for_button_js() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -1112,7 +1114,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_wait_for_scroll() {
+    fn wait_for_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -1128,7 +1130,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_wait_for_movement() {
+    fn wait_for_movement() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -1144,7 +1146,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_button() {
+    fn on_button() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -1168,7 +1170,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_button_return_macro() {
+    fn on_button_return_macro() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -1191,7 +1193,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_on_scroll() {
+    fn on_scroll() {
         Runtime::test_with_script_engine(async |script_engine| {
             _ = script_engine
                 .eval_async::<()>(
@@ -1214,7 +1216,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_measure_speed() {
+    fn measure_speed() {
         Runtime::test_with_script_engine(async |script_engine| {
             let speed: f64 = script_engine
                 .eval_async("await mouse.measureSpeed({ duration: \"2s\" })")
@@ -1226,11 +1228,11 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_random_move_timeout() {
+    fn random_move_timeout() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .eval_async::<()>(
-                    r"
+                    "
                     async function timeout(ms) {
                         await mouse.pause(ms);
                     }

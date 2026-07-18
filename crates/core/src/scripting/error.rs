@@ -38,7 +38,7 @@ pub enum ScriptError {
 }
 
 impl ScriptError {
-    pub(super) fn quickjs(error: impl ToString) -> Self {
+    pub(super) fn quickjs(error: &impl ToString) -> Self {
         Self::QuickJs(error.to_string())
     }
 
@@ -218,12 +218,11 @@ pub(super) fn parse_callstack(stack: &str) -> Vec<CallStackFrame> {
 }
 
 pub(super) fn parse_callstack_line(line: &str) -> Option<CallStackFrame> {
-    CALLSTACK_REGEX.captures(line).and_then(|caps| {
-        let function = caps.name("func").map_or("", |cap| cap.as_str());
-        let file = caps.name("file").map_or("", |cap| cap.as_str());
-        let line = caps.name("line")?.as_str().parse::<u32>().ok()?;
-        let col = caps.name("col")?.as_str().parse::<u32>().ok()?;
+    let caps = CALLSTACK_REGEX.captures(line)?;
+    let function = caps.name("func").map_or("", |cap| cap.as_str());
+    let file = caps.name("file").map_or("", |cap| cap.as_str());
+    let line = caps.name("line")?.as_str().parse::<u32>().ok()?;
+    let col = caps.name("col")?.as_str().parse::<u32>().ok()?;
 
-        Some(CallStackFrame::new(function, file, line, col))
-    })
+    Some(CallStackFrame::new(function, file, line, col))
 }

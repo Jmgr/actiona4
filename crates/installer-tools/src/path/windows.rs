@@ -186,7 +186,7 @@ fn registry_root_key(path_scope: PathScope) -> RegKey {
     }
 }
 
-fn encode_expand_string(path_value: &str) -> RegValue<'_> {
+fn encode_expand_string(path_value: &str) -> RegValue {
     let mut bytes = Vec::with_capacity((path_value.encode_utf16().count() + 1) * 2);
     for path_value_unit in path_value.encode_utf16().chain(std::iter::once(0)) {
         bytes.extend_from_slice(&path_value_unit.to_le_bytes());

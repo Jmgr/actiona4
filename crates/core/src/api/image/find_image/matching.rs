@@ -106,8 +106,8 @@ pub fn match_template(
     template_lightness: &LabLightnessMat,
     template_mask: Option<&MaskMat>,
     enable_gpu: bool,
-    cancellation_token: CancellationToken,
-    progress: mpsc::UnboundedSender<FindImageProgress>,
+    cancellation_token: &CancellationToken,
+    progress: &mpsc::UnboundedSender<FindImageProgress>,
 ) -> Result<Mat> {
     if cancellation_token.is_cancelled() {
         return Err(CommonError::Cancelled.into());

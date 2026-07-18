@@ -19,7 +19,7 @@ enum Slot {
 impl Slot {
     fn resolve_error(&self, source: ScriptError) -> RunError {
         match self {
-            Self::Value(parameter) => RunError::new(ResolveParamError::new(parameter, source)),
+            Self::Value(parameter) => RunError::new(ResolveParamError::new(parameter, &source)),
             Self::Case(branch) => RunError::new(RunErrorKind::SwitchBranchValueResolveFailed {
                 branch: branch.clone(),
                 source,
@@ -77,9 +77,8 @@ impl Runnable for Switch {
             )
             .await?;
 
-        Ok(PostRun::Branch(match branch {
-            Some(branch) => BranchKind::Named(branch),
-            None => BranchKind::Default,
-        }))
+        Ok(PostRun::Branch(
+            branch.map_or(BranchKind::Default, BranchKind::Named),
+        ))
     }
 }

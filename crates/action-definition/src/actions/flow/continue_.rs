@@ -5,6 +5,7 @@ use crate::actions::{ActionBranches, ParameterAvailability, action};
 /// Skips to the next iteration of the nearest enclosing loop.
 #[action(icon = CircleArrowRight, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[allow(clippy::empty_structs_with_brackets)]
 pub struct Continue {}
 
 impl ActionBranches for Continue {}

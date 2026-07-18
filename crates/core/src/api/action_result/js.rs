@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime, Result,

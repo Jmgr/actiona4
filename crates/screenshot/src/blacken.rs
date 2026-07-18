@@ -16,11 +16,11 @@ pub fn blacken_non_display_areas(image: &mut [u8], desktop_rect: Rect, display_r
         .filter_map(|&display_rect| {
             let overlap = display_rect.intersection(desktop_rect)?;
             let offset = overlap.top_left - desktop_rect.top_left;
-            let img_x0 = offset.x.to_unsigned();
-            let img_y0 = offset.y.to_unsigned();
-            let img_x1 = img_x0 + overlap.size.width;
-            let img_y1 = img_y0 + overlap.size.height;
-            Some((img_y0, img_y1, img_x0, img_x1))
+            let left = offset.x.to_unsigned();
+            let top = offset.y.to_unsigned();
+            let right = left + overlap.size.width;
+            let bottom = top + overlap.size.height;
+            Some((top, bottom, left, right))
         })
         .collect();
     bands.sort_unstable_by_key(|&(_, _, x0, _)| x0);

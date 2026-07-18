@@ -218,7 +218,7 @@ impl Body {
         // The infer crate only offers sync I/O, so we manually get the magic number
         let mut file = File::open(path).await.ok()?;
 
-        let mut buffer = vec![0u8; MAGIC_NUMBER_MAX_LEN];
+        let mut buffer = vec![0_u8; MAGIC_NUMBER_MAX_LEN];
 
         let n = file.read(&mut buffer).await.ok()?;
         let head = &buffer[..n];
@@ -279,7 +279,7 @@ impl Body {
         ))
     }
 
-    async fn bytes_to_body(
+    fn bytes_to_body(
         bytes: Bytes,
         progress_reporter: Arc<ProgressReporter>,
     ) -> Result<(reqwest::Body, u64)> {
@@ -324,7 +324,7 @@ impl Body {
                     request = request.header(CONTENT_TYPE, mime);
                 }
 
-                let (body, size) = Self::bytes_to_body(bytes, progress_reporter.clone()).await?;
+                let (body, size) = Self::bytes_to_body(bytes, progress_reporter.clone())?;
 
                 request = request.body(body);
                 total_size += size;
@@ -354,8 +354,7 @@ impl Body {
                         }
                         MultipartValue::Bytes(bytes) => {
                             let (body, size) =
-                                Self::bytes_to_body(bytes.clone(), progress_reporter.clone())
-                                    .await?;
+                                Self::bytes_to_body(bytes.clone(), progress_reporter.clone())?;
 
                             total_size += size;
 
@@ -448,7 +447,8 @@ impl Web {
     ) -> Result<()> {
         let mut options = options.unwrap_or_default();
         let progress = options.progress.take();
-        self.fetch_response(url, &token, &progress, options).await?;
+        self.fetch_response(url, &token, progress.as_ref(), options)
+            .await?;
         Ok(())
     }
 
@@ -461,9 +461,11 @@ impl Web {
     ) -> Result<Vec<u8>> {
         let mut options = options.unwrap_or_default();
         let progress = options.progress.take();
-        let response = self.fetch_response(url, &token, &progress, options).await?;
+        let response = self
+            .fetch_response(url, &token, progress.as_ref(), options)
+            .await?;
         let buffer = self
-            .download_impl_with_buffer(token, response, &progress)
+            .download_impl_with_buffer(token, response, progress.as_ref())
             .await?;
         Ok(buffer)
     }
@@ -477,7 +479,9 @@ impl Web {
     ) -> Result<String> {
         let mut options = options.unwrap_or_default();
         let progress = options.progress.take();
-        let response = self.fetch_response(url, &token, &progress, options).await?;
+        let response = self
+            .fetch_response(url, &token, progress.as_ref(), options)
+            .await?;
 
         // This is basically the same as in reqwest::async_impl::response::Response::text_with_charset
         let content_type = response
@@ -492,7 +496,7 @@ impl Web {
         let encoding = Encoding::for_label(encoding_name.as_bytes()).unwrap_or(UTF_8);
 
         let buffer = self
-            .download_impl_with_buffer(token, response, &progress)
+            .download_impl_with_buffer(token, response, progress.as_ref())
             .await?;
         let (text, _, _) = encoding.decode(&buffer);
 
@@ -508,9 +512,11 @@ impl Web {
     ) -> Result<Image> {
         let mut options = options.unwrap_or_default();
         let progress = options.progress.take();
-        let response = self.fetch_response(url, &token, &progress, options).await?;
+        let response = self
+            .fetch_response(url, &token, progress.as_ref(), options)
+            .await?;
         let buffer = self
-            .download_impl_with_buffer(token, response, &progress)
+            .download_impl_with_buffer(token, response, progress.as_ref())
             .await?;
         let image = Image::from_bytes(&buffer)?;
 
@@ -527,7 +533,9 @@ impl Web {
     ) -> Result<String> {
         let mut options = options.unwrap_or_default();
         let progress = options.progress.take();
-        let response = self.fetch_response(url, &token, &progress, options).await?;
+        let response = self
+            .fetch_response(url, &token, progress.as_ref(), options)
+            .await?;
 
         let directory = directory.map_or_else(env::temp_dir, |directory| directory.to_path_buf());
 
@@ -537,7 +545,7 @@ impl Web {
 
         let file = cancel_on(&token, File::create(&tmp_filepath)).await??;
 
-        self.download_impl(token.clone(), response, &progress, file)
+        self.download_impl(token.clone(), response, progress.as_ref(), file)
             .await?;
 
         cancel_on(&token, fs::rename(&tmp_filepath, &filepath)).await??;
@@ -549,10 +557,10 @@ impl Web {
         &self,
         url: &str,
         token: &CancellationToken,
-        progress: &Option<mpsc::UnboundedSender<Progress>>,
+        progress: Option<&mpsc::UnboundedSender<Progress>>,
         options: WebOptions,
     ) -> Result<Response> {
-        if let Some(progress) = &progress {
+        if let Some(progress) = progress {
             let _ = progress.send(Progress::Uploading {
                 current: 0,
                 total: 0,
@@ -562,7 +570,7 @@ impl Web {
         let (request, mut upload_progress, total_upload) = self.build_request(url, options).await?;
 
         let local_token = token.clone();
-        let local_progress = progress.clone();
+        let local_progress = progress.cloned();
         self.task_tracker.spawn(async move {
             loop {
                 select! {
@@ -597,13 +605,13 @@ impl Web {
         &self,
         token: CancellationToken,
         response: Response,
-        progress: &Option<mpsc::UnboundedSender<Progress>>,
+        progress: Option<&mpsc::UnboundedSender<Progress>>,
         mut writer: W,
     ) -> Result<()> {
         let total_size = response.content_length();
         let mut current = 0;
 
-        if let Some(progress) = &progress {
+        if let Some(progress) = progress {
             let _ = progress.send(Progress::Downloading {
                 current,
                 total: total_size,
@@ -624,7 +632,7 @@ impl Web {
 
             current += u64::try_from(chunk.len())?;
 
-            if let Some(progress) = &progress {
+            if let Some(progress) = progress {
                 let _ = progress.send(Progress::Downloading {
                     current,
                     total: total_size,
@@ -632,7 +640,7 @@ impl Web {
             }
         }
 
-        if let Some(progress) = &progress {
+        if let Some(progress) = progress {
             let _ = progress.send(Progress::Finished);
         }
 
@@ -643,7 +651,7 @@ impl Web {
         &self,
         token: CancellationToken,
         response: Response,
-        progress: &Option<mpsc::UnboundedSender<Progress>>,
+        progress: Option<&mpsc::UnboundedSender<Progress>>,
     ) -> Result<Vec<u8>> {
         let mut buffer = if let Some(length) = response.content_length() {
             Vec::with_capacity(length.try_into()?)
@@ -725,7 +733,7 @@ mod tests {
     use crate::{api::web::helper::TestImage, runtime::Runtime};
 
     #[test]
-    fn test_download_text() {
+    fn download_text() {
         Runtime::test(async move |runtime| {
             let server = Server::run();
 
@@ -746,7 +754,7 @@ mod tests {
     }
 
     #[test]
-    fn test_download_image() {
+    fn download_image() {
         Runtime::test(async move |runtime| {
             let server = Server::run();
 
@@ -777,7 +785,7 @@ mod tests {
     }
 
     #[test]
-    fn test_download_binary() {
+    fn download_binary() {
         Runtime::test(async move |runtime| {
             let server = Server::run();
 
@@ -803,7 +811,7 @@ mod tests {
     }
 
     #[test]
-    fn test_download_basic_auth() {
+    fn download_basic_auth() {
         Runtime::test(async move |runtime| {
             let server = Server::run();
 
@@ -838,7 +846,7 @@ mod tests {
     }
 
     #[test]
-    fn test_download_progress() {
+    fn download_progress() {
         Runtime::test(async move |runtime| {
             let server = Server::run();
 
@@ -926,7 +934,7 @@ mod tests {
     }
 
     #[test]
-    fn test_download_file() {
+    fn download_file() {
         Runtime::test(async move |runtime| {
             let server = Server::run();
 
@@ -967,7 +975,7 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_text_body() {
+    fn upload_text_body() {
         Runtime::test(async move |runtime| {
             const TEST_STRING: &str = "this is a test";
 
@@ -1005,7 +1013,7 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_binary_body() {
+    fn upload_binary_body() {
         Runtime::test(async move |runtime| {
             let test_image = TestImage::default();
 
@@ -1044,7 +1052,7 @@ mod tests {
     }
 
     #[test]
-    fn test_upload_multipart_bytes_content_type() {
+    fn upload_multipart_bytes_content_type() {
         Runtime::test(async move |runtime| {
             let test_image = TestImage::default();
 

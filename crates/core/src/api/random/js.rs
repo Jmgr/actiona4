@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{borrow::Cow, fmt::Debug};
 
 use macros::{FromJsObject, js_class, js_methods, options};

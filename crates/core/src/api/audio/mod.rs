@@ -521,7 +521,7 @@ mod tests {
             let start = Instant::now();
             script_engine
                 .eval_async::<()>(&format!(
-                    r"await audio.playFileAndWait({:?})",
+                    "await audio.playFileAndWait({:?})",
                     path.display()
                 ))
                 .await
@@ -544,7 +544,7 @@ mod tests {
             let path = test_audio();
             // Fire and forget — do not await
             script_engine
-                .eval_async::<()>(&format!(r"audio.playFile({:?})", path.display()))
+                .eval_async::<()>(&format!("audio.playFile({:?})", path.display()))
                 .await
                 .unwrap();
         });

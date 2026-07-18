@@ -33,7 +33,7 @@ where
     pub fn new(directory: PathBuf, filename: &'static str) -> Self {
         Self {
             inner: Arc::new(StoreInner {
-                value: Default::default(),
+                value: RwLock::default(),
                 directory,
                 filename,
             }),

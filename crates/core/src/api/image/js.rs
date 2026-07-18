@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{io, result::Result as StdResult, sync::Arc};
 
 use image::ImageResult;
@@ -1363,13 +1365,9 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawTextOptions>,
     ) -> Result<Class<'js, Self>> {
+        let options = options.0.unwrap_or_default().into();
         self.inner
-            .draw_text_mut(
-                position.0,
-                &text,
-                color.0,
-                options.0.unwrap_or_default().into(),
-            )
+            .draw_text_mut(position.0, &text, color.0, &options)
             .into_js_result(&ctx)?;
 
         Ok(this.0)
@@ -1384,13 +1382,9 @@ impl JsImage {
         color: JsColorLike,
         options: Opt<JsDrawTextOptions>,
     ) -> Result<Self> {
+        let options = options.0.unwrap_or_default().into();
         self.inner
-            .with_text(
-                position.0,
-                &text,
-                color.0,
-                options.0.unwrap_or_default().into(),
-            )
+            .with_text(position.0, &text, color.0, &options)
             .into_js_result(&ctx)
             .map(Into::into)
     }
@@ -1476,8 +1470,8 @@ impl JsImage {
                         source.find_template(
                             &template,
                             options.into_inner(),
-                            token,
-                            progress_sender,
+                            &token,
+                            &progress_sender,
                         )
                     })
                     .await
@@ -1533,8 +1527,8 @@ impl JsImage {
                         source.find_template_all(
                             &template,
                             options.into_inner(),
-                            token,
-                            progress_sender,
+                            &token,
+                            &progress_sender,
                         )
                     })
                     .await
@@ -1591,7 +1585,7 @@ impl JsImage {
                 let search_in = SearchIn::from(search_in);
                 let result = screen
                     .find_on_screen(
-                        &template,
+                        template,
                         &search_in,
                         options.into_inner(),
                         token,
@@ -1644,7 +1638,7 @@ impl JsImage {
                 let search_in = SearchIn::from(search_in);
                 let results = screen
                     .find_all_on_screen(
-                        &template,
+                        template,
                         &search_in,
                         options.into_inner(),
                         token,

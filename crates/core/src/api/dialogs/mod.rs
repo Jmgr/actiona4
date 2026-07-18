@@ -18,6 +18,7 @@ pub mod native_dialog;
 
 #[derive(
     Clone,
+    Copy,
     Debug,
     Default,
     Deserialize,
@@ -86,7 +87,7 @@ pub struct MessageBoxOptions {
 }
 
 #[derive(Constructor, Debug)]
-pub struct Dialogs {}
+pub struct Dialogs;
 
 impl Dialogs {
     pub async fn message_box(
@@ -147,14 +148,14 @@ fn message_box_result_from_rfd(
         RfdMessageDialogResult::Ok => Ok(MessageBoxResult::Ok),
         RfdMessageDialogResult::Cancel => Ok(MessageBoxResult::Cancel),
         RfdMessageDialogResult::Custom(selected_label) => {
-            message_box_custom_result_from_rfd(buttons, selected_label)
+            message_box_custom_result_from_rfd(buttons, &selected_label)
         }
     }
 }
 
 fn message_box_custom_result_from_rfd(
     buttons: &MessageBoxButtons,
-    selected_label: String,
+    selected_label: &str,
 ) -> Result<MessageBoxResult> {
     match buttons {
         MessageBoxButtons::OkCustom(_) => Ok(MessageBoxResult::Ok),

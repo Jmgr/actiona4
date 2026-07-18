@@ -28,7 +28,7 @@ async fn resolve_unit(
                 .script_engine
                 .eval_async::<String>(source)
                 .await
-                .map_err(|err| RunError::new(ResolveParamError::new(parameter, err)))?;
+                .map_err(|err| RunError::new(ResolveParamError::new(parameter, &err)))?;
             parse_wait_unit(&value)
                 .ok_or_else(|| RunError::new(RunErrorKind::InvalidWaitUnit { value }))
         }

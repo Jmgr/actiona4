@@ -43,7 +43,7 @@ impl Keyboard {
         let enigo = runtime.enigo();
 
         #[cfg(unix)]
-        let implementation = KeyboardImpl::new(runtime.clone())?;
+        let implementation = KeyboardImpl::new(runtime.clone());
         #[cfg(windows)]
         let implementation = KeyboardImpl::default();
 
@@ -200,7 +200,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_keyboard() {
+    fn keyboard() {
         Runtime::test(async |runtime| {
             let keyboard = Keyboard::new(runtime).unwrap();
 

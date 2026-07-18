@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use macros::{js_class, js_methods};
 use rquickjs::{
     Ctx, JsLifetime,
@@ -167,7 +169,7 @@ mod tests {
     }
 
     #[test]
-    fn test_abort_controller() {
+    fn abort_controller() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let test = JsTestStruct::default();
 

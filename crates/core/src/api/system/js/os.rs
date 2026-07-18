@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use itertools::Itertools;
 use macros::{js_class, js_methods, platform};
 use rquickjs::{
@@ -132,7 +134,7 @@ impl JsOs {
 
     /// Users
     /// @readonly
-    pub async fn list_users<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsUser>> {
+    pub async fn list_users(&self, ctx: Ctx<'_>) -> Result<Vec<JsUser>> {
         let groups = self.inner.refresh_groups().await.into_js_result(&ctx)?;
 
         Ok(self
@@ -160,7 +162,7 @@ impl JsOs {
 
     /// Groups
     /// @readonly
-    pub async fn list_groups<'js>(&self, ctx: Ctx<'js>) -> Result<Vec<JsGroup>> {
+    pub async fn list_groups(&self, ctx: Ctx<'_>) -> Result<Vec<JsGroup>> {
         Ok(self
             .inner
             .refresh_groups()

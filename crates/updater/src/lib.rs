@@ -98,7 +98,7 @@ impl Updater {
         app_version: SemVer,
         app_distribution: &str,
         cancellation_token: CancellationToken,
-        task_tracker: TaskTracker,
+        task_tracker: &TaskTracker,
     ) -> (Arc<Self>, oneshot::Receiver<()>) {
         let local_config = config.clone();
         let result = Arc::new(Self {
@@ -201,8 +201,6 @@ impl Updater {
     }
 
     async fn check_updates(&self, app_distribution: &str) -> Result<UpdateResponse> {
-        let client = Client::new();
-
         #[cfg(linux)]
         const OS_NAME: &str = "linux";
 
@@ -211,6 +209,8 @@ impl Updater {
 
         #[cfg(not(any(windows, linux)))]
         const OS_NAME: &str = "unknown";
+
+        let client = Client::new();
 
         #[cfg(not(windows))]
         let display = LinuxDisplay::detect();

@@ -9,7 +9,7 @@ pub mod js;
 const RANDOM_POINT_MAX_ATTEMPTS: usize = 64;
 
 #[must_use]
-pub fn random_point_in_circle(center: Point, radius: f64, rng: SharedRng) -> Point {
+pub fn random_point_in_circle(center: Point, radius: f64, rng: &SharedRng) -> Point {
     if !radius.is_finite() || radius <= 0.0 {
         return center;
     }
@@ -48,7 +48,7 @@ mod tests {
         let rng = SharedRng::default();
 
         for _ in 0..1000 {
-            let p = random_point_in_circle(center, radius, rng.clone());
+            let p = random_point_in_circle(center, radius, &rng);
             let d = center.distance_to(p);
             assert!(d <= radius, "d={d} > radius");
         }

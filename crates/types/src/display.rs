@@ -26,12 +26,14 @@ impl DisplayFields {
         }
     }
 
+    #[must_use]
     pub fn display<T: Display>(mut self, name: &str, value: T) -> Self {
         self.maybe_space();
         _ = write!(self.buffer, "{name}: {value}");
         self
     }
 
+    #[must_use]
     pub fn display_if_some<T: Display>(mut self, name: &str, value: &Option<T>) -> Self {
         if let Some(value) = value {
             self.maybe_space();

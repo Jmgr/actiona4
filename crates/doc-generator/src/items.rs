@@ -26,9 +26,9 @@ pub fn cmp_by_span(a: &Item, b: &Item) -> Ordering {
 }
 
 pub struct Items {
-    items: Rc<BTreeMap<Id, Item>>,
+    index: Rc<BTreeMap<Id, Item>>,
     ignored_ids: Rc<BTreeSet<Id>>,
-    js_items: Vec<Item>,
+    javascript: Vec<Item>,
 }
 
 impl Items {
@@ -45,7 +45,7 @@ impl Items {
             .filter(|item| {
                 item.span.as_ref().is_some_and(|span| {
                     span.filename.ends_with("js.rs")
-                        || span.filename.to_str().unwrap().contains("/js/")
+                        || span.filename.to_string_lossy().contains("/js/")
                 })
             })
             // With a name that doesn't start with _
@@ -61,9 +61,9 @@ impl Items {
         js_items.sort_by(cmp_by_span);
 
         Self {
-            items,
+            index: items,
             ignored_ids,
-            js_items,
+            javascript: js_items,
         }
     }
 
@@ -137,7 +137,7 @@ impl Items {
 
     #[must_use]
     pub fn get(&self, id: Id) -> &Item {
-        self.items
+        self.index
             .get(&id)
             .unwrap_or_else(|| panic!("failed to find item with id {id:?}"))
     }
@@ -155,14 +155,13 @@ impl Items {
     }
 
     pub fn iter(&'_ self) -> Iter<'_, Item> {
-        self.js_items.iter()
+        self.javascript.iter()
     }
 
     #[must_use]
     pub fn category_for_item(&self, item: &Item) -> Option<String> {
-        item.span
-            .as_ref()
-            .and_then(|span| Self::category_from_filename(span.filename.as_path()))
+        let span = item.span.as_ref()?;
+        Self::category_from_filename(span.filename.as_path())
     }
 
     fn category_from_filename(path: &Path) -> Option<String> {
@@ -193,7 +192,7 @@ impl Items {
     #[must_use]
     pub fn aliases(&self) -> Self {
         let js_items = self
-            .js_items
+            .javascript
             .iter()
             .filter_map(|item| match &item.inner {
                 ItemEnum::TypeAlias(alias) => {
@@ -215,10 +214,19 @@ impl Items {
             .collect_vec();
 
         Self {
-            items: self.items.clone(),
+            index: self.index.clone(),
             ignored_ids: self.ignored_ids.clone(),
-            js_items,
+            javascript: js_items,
         }
+    }
+}
+
+impl<'a> IntoIterator for &'a Items {
+    type Item = &'a Item;
+    type IntoIter = Iter<'a, Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.javascript.iter()
     }
 }
 
@@ -237,7 +245,7 @@ mod tests {
     use super::Items;
 
     #[test]
-    fn test_category_from_filename() {
+    fn category_from_filename_works() {
         assert_eq!(
             Items::category_from_filename(Path::new("src/api/mouse/js.rs")),
             Some("Mouse".to_string())
@@ -353,7 +361,7 @@ mod tests {
     }
 
     #[test]
-    fn test_collect_ignored_ids_from_tests_module_subtree() {
+    fn collect_ignored_ids_from_tests_module_subtree() {
         let items = BTreeMap::from([
             (
                 Id(1),

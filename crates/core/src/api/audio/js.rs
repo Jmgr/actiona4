@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{path::Path, sync::Arc};
 
 use macros::{FromJsObject, js_class, js_methods, options};

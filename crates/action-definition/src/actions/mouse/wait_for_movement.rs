@@ -12,6 +12,7 @@ use crate::actions::{ActionBranches, ParameterAvailability};
     waitable = true
 )]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[allow(clippy::empty_structs_with_brackets)]
 pub struct WaitForMovement {}
 
 impl ActionBranches for WaitForMovement {}

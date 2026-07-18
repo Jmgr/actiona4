@@ -70,8 +70,8 @@ impl ClickTriggers {
         event: MouseButtonEvent,
         pressed_buttons: &mut HashSet<Button>,
         fired: &mut HashSet<(Button, HandleId)>,
-        triggers: &Arc<Mutex<TriggerList>>,
-        macro_player: &Arc<MacroPlayer>,
+        triggers: &Mutex<TriggerList>,
+        macro_player: Arc<MacroPlayer>,
     ) -> Result<()> {
         if event.is_injected {
             return Ok(());
@@ -102,7 +102,7 @@ impl ClickTriggers {
 
         for (handle_id, action) in to_fire {
             fired.insert((event.button, handle_id));
-            action.fire(macro_player, "onButton").await;
+            action.fire(macro_player.clone(), "onButton").await;
         }
 
         Ok(())
@@ -129,9 +129,9 @@ impl ClickTriggers {
             let mut fired: HashSet<(Button, HandleId)> = HashSet::new();
 
             loop {
-                let event = match cancel_on(&worker_cancellation_token, receiver.recv()).await {
-                    Ok(Ok(event)) => event,
-                    Ok(Err(_)) | Err(_) => break,
+                let Ok(Ok(event)) = cancel_on(&worker_cancellation_token, receiver.recv()).await
+                else {
+                    break;
                 };
 
                 Self::on_button(
@@ -139,7 +139,7 @@ impl ClickTriggers {
                     &mut pressed_buttons,
                     &mut fired,
                     &local_triggers,
-                    &local_macro_player,
+                    local_macro_player.clone(),
                 )
                 .await?;
             }

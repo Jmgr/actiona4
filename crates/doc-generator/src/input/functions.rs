@@ -8,7 +8,7 @@ use log::error;
 use rustdoc_types::{Id, ItemEnum};
 
 use crate::{
-    input::{ItemInfo, convert_type, process_rustdoc},
+    input::{Comments, ItemInfo, convert_type, process_rustdoc},
     items::Items,
     types::{Instruction, Method, MethodOverload, RustdocContext, Type, Variable},
 };
@@ -192,7 +192,7 @@ pub fn extract_functions(
                         parameters.push(Variable {
                             name: parameter_name.clone(),
                             type_: parameter_type,
-                            comments: Default::default(), // TODO
+                            comments: Comments::default(), // TODO
                             is_readonly: false,
                             is_readonly_type: false,
                             default_value: None,
@@ -200,9 +200,7 @@ pub fn extract_functions(
                             is_promise: false,
                         });
                     }
-                    Ok(Type::Ignore) => {
-                        continue;
-                    }
+                    Ok(Type::Ignore) => {}
                     Ok(Type::Unknown) => {
                         if instructions.rest_params().is_some() {
                             continue;
@@ -215,7 +213,7 @@ pub fn extract_functions(
                         parameters.push(Variable {
                             name: parameter_name.clone(),
                             type_: parameter_type,
-                            comments: Default::default(), // TODO
+                            comments: Comments::default(), // TODO
                             is_readonly: false,
                             is_readonly_type: false,
                             default_value: None,

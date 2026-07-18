@@ -9,6 +9,70 @@ use crate::{
     types::{Instruction, RustdocContext, Struct, Variable},
 };
 
+fn list_properties(
+    items: &Items,
+    struct_name: &str,
+    fields: &[Id],
+    struct_docs: Option<&String>,
+) -> Result<Vec<Variable>> {
+    let mut result = Vec::new();
+
+    let (_, instructions, _) = process_rustdoc(struct_docs, RustdocContext::Struct)?;
+    let has_properties = instructions
+        .iter()
+        .any(|instruction| instruction.is_property());
+
+    if has_properties {
+        for instruction in instructions.0 {
+            if let Instruction::Property(property) = instruction {
+                result.push(property);
+            }
+        }
+    } else {
+        let fields = items
+            .get_sorted(fields)
+            .into_iter()
+            // Select only Fields
+            .filter_map(|item| match &item.inner {
+                ItemEnum::StructField(field) => item
+                    .name
+                    .as_ref()
+                    .map(|name| (name, item.docs.as_ref(), field)),
+                _ => None,
+            });
+
+        for (field_name, field_docs, field) in fields {
+            let (comments, instructions, _) =
+                process_rustdoc(field_docs, RustdocContext::Property)?;
+            if instructions.has_skip() {
+                continue;
+            }
+
+            let default_value = instructions.default_value();
+            let platforms = instructions.platforms();
+
+            let type_ = if let Some(type_) = instructions.type_() {
+                type_
+            } else {
+                convert_type(field, Some(struct_name))?
+            };
+
+            result.push(Variable {
+                name: field_name.clone(),
+                type_,
+                comments,
+                is_readonly: false,
+                is_readonly_type: false,
+                default_value,
+                platforms,
+                is_promise: false,
+            });
+        }
+    }
+
+    Ok(result)
+}
+
 pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
     let mut result = Vec::new();
 
@@ -24,70 +88,6 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
             }),
             _ => None,
         });
-
-    fn list_properties(
-        items: &Items,
-        struct_name: &str,
-        fields: &[Id],
-        struct_docs: &Option<String>,
-    ) -> Result<Vec<Variable>> {
-        let mut result = Vec::new();
-
-        let (_, instructions, _) = process_rustdoc(struct_docs.as_ref(), RustdocContext::Struct)?;
-        let has_properties = instructions
-            .iter()
-            .any(|instruction| instruction.is_property());
-
-        if has_properties {
-            for instruction in instructions.0 {
-                if let Instruction::Property(property) = instruction {
-                    result.push(property);
-                }
-            }
-        } else {
-            let fields = items
-                .get_sorted(fields)
-                .into_iter()
-                // Select only Fields
-                .filter_map(|item| match &item.inner {
-                    ItemEnum::StructField(field) => item
-                        .name
-                        .as_ref()
-                        .map(|name| (name, item.docs.as_ref(), field)),
-                    _ => None,
-                });
-
-            for (field_name, field_docs, field) in fields {
-                let (comments, instructions, _) =
-                    process_rustdoc(field_docs, RustdocContext::Property)?;
-                if instructions.has_skip() {
-                    continue;
-                }
-
-                let default_value = instructions.default_value();
-                let platforms = instructions.platforms();
-
-                let type_ = if let Some(type_) = instructions.type_() {
-                    type_
-                } else {
-                    convert_type(field, Some(struct_name))?
-                };
-
-                result.push(Variable {
-                    name: field_name.clone(),
-                    type_,
-                    comments,
-                    is_readonly: false,
-                    is_readonly_type: false,
-                    default_value,
-                    platforms,
-                    is_promise: false,
-                });
-            }
-        }
-
-        Ok(result)
-    }
 
     for info in structs {
         let StructKind::Plain { fields, .. } = &info.inner.kind else {
@@ -123,7 +123,7 @@ pub fn process_structs(items: &Items) -> Result<Vec<Struct>> {
             .category()
             .or_else(|| items.category_for_item(info.item));
 
-        let mut properties = list_properties(items, info.name, fields, info.docs)?;
+        let mut properties = list_properties(items, info.name, fields, info.docs.as_ref())?;
 
         let impls = items
             .get_sorted(&info.inner.impls)

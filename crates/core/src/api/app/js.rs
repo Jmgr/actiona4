@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{collections::BTreeMap, env, sync::Arc};
 
 use macros::{js_class, js_methods};

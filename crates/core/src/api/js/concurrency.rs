@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::pin::Pin;
 
 use futures::future::select_all;

@@ -52,20 +52,21 @@ pub struct ScreenImplBase<D: DisplayCapture> {
 }
 
 impl<D: DisplayCapture> ScreenImplBase<D> {
-    pub async fn from_capture_screen(
+    pub fn from_capture_screen(
         runtime: Arc<Runtime>,
         displays: Displays,
         capture_screen: screenshot::Screen,
-    ) -> Result<Arc<Self>> {
+    ) -> Arc<Self> {
+        let display_map = AsyncResource::new(runtime.cancellation_token());
         let screen_impl = Arc::new(Self {
-            runtime: runtime.clone(),
+            runtime,
             displays: displays.clone(),
             capture_screen,
-            display_map: AsyncResource::new(runtime.cancellation_token()),
+            display_map,
         });
 
         let local_screen_impl = screen_impl.clone();
-        runtime.task_tracker().spawn(async move {
+        screen_impl.runtime.task_tracker().spawn(async move {
             loop {
                 if displays.changed().await.is_err() {
                     break;
@@ -77,7 +78,7 @@ impl<D: DisplayCapture> ScreenImplBase<D> {
             }
         });
 
-        Ok(screen_impl)
+        screen_impl
     }
 
     pub const fn capture_screen(&self) -> &screenshot::Screen {

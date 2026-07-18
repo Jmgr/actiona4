@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
     Ctx, JsLifetime, Result,
@@ -525,7 +527,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_message_box() {
+    fn message_box() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let _ = script_engine
                 .eval_async::<JsMessageBoxResult>(
@@ -544,7 +546,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_pick_file() {
+    fn pick_file() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let path = script_engine
                 .eval_async::<Option<String>>(
@@ -563,7 +565,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_pick_files() {
+    fn pick_files() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let paths = script_engine
                 .eval_async::<Vec<String>>(
@@ -579,7 +581,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_pick_folder() {
+    fn pick_folder() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let path = script_engine
                 .eval_async::<Option<String>>(
@@ -595,7 +597,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_pick_folders() {
+    fn pick_folders() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let paths = script_engine
                 .eval_async::<Vec<String>>(
@@ -611,7 +613,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_save_file() {
+    fn save_file() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let path = script_engine
                 .eval_async::<Option<String>>(
@@ -630,7 +632,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_text_input() {
+    fn text_input() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let result = script_engine
                 .eval_async::<Option<String>>(
@@ -649,7 +651,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_color_picker() {
+    fn color_picker() {
         Runtime::test_with_script_engine(|script_engine| async move {
             script_engine
                 .eval_async::<()>(

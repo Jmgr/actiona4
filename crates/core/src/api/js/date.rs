@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use color_eyre::eyre::eyre;
@@ -52,7 +54,7 @@ mod tests {
     };
 
     #[test]
-    fn test_date_system_time() {
+    fn date_system_time() {
         Runtime::test_with_script_engine(async |script_engine| {
             script_engine
                 .with::<_, _>(|ctx| {

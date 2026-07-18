@@ -78,39 +78,41 @@ impl<'de> Visitor<'de> for DurationValueVisitor {
         )
     }
 
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        duration_from_str(value).map(DurationValue)
+        duration_from_str(v).map(DurationValue)
     }
 
-    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+    fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        self.visit_str(&value)
+        self.visit_str(&v)
     }
 
-    fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        duration_from_milliseconds(value as f64).map(DurationValue)
+        Ok(DurationValue(Duration::from_millis(v)))
     }
 
-    fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
+    fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        duration_from_milliseconds(value as f64).map(DurationValue)
+        let milliseconds = u64::try_from(v)
+            .map_err(|_| E::custom("duration number must be greater than or equal to 0"))?;
+        Ok(DurationValue(Duration::from_millis(milliseconds)))
     }
 
-    fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E>
+    fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        duration_from_milliseconds(value).map(DurationValue)
+        duration_from_milliseconds(v).map(DurationValue)
     }
 
     fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
@@ -196,6 +198,18 @@ mod tests {
         let duration: DurationValue = serde_json::from_value(json).expect("deserialize duration");
 
         assert_eq!(duration, DurationValue::new(expected));
+    }
+
+    #[test]
+    fn deserializes_large_integer_milliseconds_exactly() {
+        let milliseconds = 9_007_199_254_740_993_u64;
+        let duration: DurationValue =
+            serde_json::from_value(json!(milliseconds)).expect("deserialize duration");
+
+        assert_eq!(
+            duration,
+            DurationValue::new(Duration::from_millis(milliseconds))
+        );
     }
 
     #[rstest]

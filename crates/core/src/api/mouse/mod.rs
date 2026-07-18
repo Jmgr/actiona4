@@ -346,7 +346,7 @@ impl Mouse {
         Ok(Self {
             enigo: runtime.enigo(),
             implementation: MouseImpl::new(runtime.clone()).await?,
-            pressed_buttons: Arc::new(Mutex::new(Default::default())),
+            pressed_buttons: Arc::new(Mutex::new(IndexSet::default())),
             runtime,
         })
     }
@@ -554,7 +554,7 @@ impl Mouse {
         self.runtime.require_not_wayland()?;
         if options.target_randomness > 0. {
             target_position =
-                random_point_in_circle(target_position, options.target_randomness, rng.clone());
+                random_point_in_circle(target_position, options.target_randomness, &rng);
         }
 
         let start_position = self.position()?;
@@ -907,7 +907,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_position() {
+    fn position() {
         Runtime::test(|runtime| async {
             let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
             let cancellation_token = CancellationToken::new();
@@ -936,7 +936,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_wait_for_button() {
+    fn wait_for_button() {
         Runtime::test(async |runtime| {
             let mouse = Arc::new(Mouse::new(runtime).await.unwrap());
 

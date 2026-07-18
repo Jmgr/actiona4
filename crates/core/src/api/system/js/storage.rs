@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use derive_more::Display;
 use itertools::Itertools;
 use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options};
@@ -67,9 +69,9 @@ pub struct ListDisksOptions {
 impl JsStorage {
     /// Disks
     /// @readonly
-    pub async fn list_disks<'js>(
+    pub async fn list_disks(
         &self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         options: Opt<ListDisksOptions>,
     ) -> Result<Vec<JsDisk>> {
         let options = options.unwrap_or_default();

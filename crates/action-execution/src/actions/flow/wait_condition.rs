@@ -24,7 +24,7 @@ pub fn prepare_wait_condition(
                         Scriptable::Script { source } => script_engine
                             .eval_async(source)
                             .await
-                            .map_err(|source| ResolveParamError::new(condition_parameter, source)),
+                            .map_err(|source| ResolveParamError::new(condition_parameter, &source)),
                     }
                 } => result?,
             };

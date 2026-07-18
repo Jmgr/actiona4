@@ -183,21 +183,21 @@ impl Clipboard {
 
                 match data {
                     ClipboardData::Text(text) => {
-                        0u8.hash(&mut hasher);
+                        0_u8.hash(&mut hasher);
                         text.hash(&mut hasher);
                     }
                     ClipboardData::Image(image) => {
-                        1u8.hash(&mut hasher);
+                        1_u8.hash(&mut hasher);
                         image.width.hash(&mut hasher);
                         image.height.hash(&mut hasher);
                         image.bytes.hash(&mut hasher);
                     }
                     ClipboardData::Html(html) => {
-                        2u8.hash(&mut hasher);
+                        2_u8.hash(&mut hasher);
                         html.hash(&mut hasher);
                     }
                     ClipboardData::FileList(files) => {
-                        3u8.hash(&mut hasher);
+                        3_u8.hash(&mut hasher);
                         files.hash(&mut hasher);
                     }
                 }

@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use derive_more::Display;
 use itertools::Itertools;
 use macros::{
@@ -128,9 +130,9 @@ impl<'js> rquickjs::FromJs<'js> for JsProcessesFindOptions<'js> {
 impl JsProcesses {
     /// Lists all processes
     /// @readonly
-    pub async fn list<'js>(
+    pub async fn list(
         &self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         options: Opt<ListProcessesOptions>,
     ) -> Result<Vec<JsProcessInfo>> {
         let options = options.unwrap_or_default();

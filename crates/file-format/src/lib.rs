@@ -127,6 +127,7 @@ pub enum Error {
     Image(#[from] image::ImageError),
 }
 
+#[allow(clippy::unsafe_derive_deserialize)]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct File {
     pub actions: ActionTree,
@@ -337,7 +338,7 @@ impl File {
 }
 
 // Converts and validates untrusted header lengths before they are used for allocation.
-pub(crate) const fn checked_payload_size(
+pub(crate) fn checked_payload_size(
     kind: &'static str,
     size: u64,
     limit: usize,
@@ -346,7 +347,7 @@ pub(crate) const fn checked_payload_size(
         return Err(Error::PayloadTooLarge { kind, size, limit });
     }
 
-    Ok(size as usize)
+    usize::try_from(size).map_err(|_| Error::PayloadTooLarge { kind, size, limit })
 }
 
 fn check_canceled(cancellation_token: &CancellationToken) -> Result<(), Error> {
@@ -492,7 +493,8 @@ mod tests {
         const CHANNELS: u16 = 1;
         const BITS_PER_SAMPLE: u16 = 16;
         let samples = vec![0_i16; 960];
-        let data_size = (samples.len() * size_of::<i16>()) as u32;
+        let data_size = u32::try_from(samples.len() * size_of::<i16>())
+            .expect("WAV test data size fits in u32");
         let byte_rate = SAMPLE_RATE * u32::from(CHANNELS) * u32::from(BITS_PER_SAMPLE) / 8;
         let block_align = CHANNELS * BITS_PER_SAMPLE / 8;
 
@@ -702,8 +704,8 @@ mod tests {
 
         assert_eq!(header.codec, super::BINARY_CODEC_ZSTD);
         assert_eq!(
-            bytes.len() - header_size as usize,
-            header.compressed_size as usize
+            bytes.len() - usize::try_from(header_size).expect("header size fits in usize"),
+            usize::try_from(header.compressed_size).expect("compressed size fits in usize")
         );
         assert!(header.compressed_size < header.uncompressed_size);
         let read = File::read_binary(&filepath, &task_tracker, &cancellation_token)

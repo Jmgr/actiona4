@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::{array::Array, variable::Variable},
+    parameters::{Param, array::Array, variable::Variable},
     tree::BranchKind,
 };
 
@@ -25,7 +25,7 @@ pub struct ForEach {
 impl Default for ForEach {
     fn default() -> Self {
         Self {
-            array: Default::default(),
+            array: Param::default(),
             item_variable: Variable::new("item").into(),
         }
     }

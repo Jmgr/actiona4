@@ -1,10 +1,12 @@
 use std::sync::OnceLock;
 
 use ab_glyph::{Font, FontRef, PxScale, ScaleFont};
+use satint::SaturatingInto;
 
 pub mod selection;
 pub mod sentry;
 
+#[allow(clippy::needless_raw_strings)]
 mod built_info {
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }
@@ -22,7 +24,9 @@ fn font() -> &'static FontRef<'static> {
 pub fn line_height() -> i32 {
     let font = font();
     let scaled = font.as_scaled(PxScale::from(FONT_SIZE));
-    (scaled.ascent() - scaled.descent()).ceil() as i32
+    (scaled.ascent() - scaled.descent())
+        .ceil()
+        .saturating_into()
 }
 
 pub fn draw_text(
@@ -54,18 +58,23 @@ pub fn draw_text(
         if let Some(outlined) = font.outline_glyph(glyph) {
             let bounds = outlined.px_bounds();
             outlined.draw(|dx, dy, coverage| {
-                let px = bounds.min.x as i32 + dx as i32;
-                let py = bounds.min.y as i32 + dy as i32;
+                let px: i32 = bounds.min.x.saturating_into();
+                let px = px.saturating_add(dx.saturating_into());
+                let py: i32 = bounds.min.y.saturating_into();
+                let py = py.saturating_add(dy.saturating_into());
                 if px >= 0 && py >= 0 && (px as u32) < window_width && (py as u32) < window_height {
                     let idx = ((py as u32 * window_width + px as u32) * 4) as usize;
                     if let Some(pixel) = frame.get_mut(idx..idx + 4) {
                         let a = coverage;
-                        pixel[0] =
-                            f32::from(pixel[0]).mul_add(1.0 - a, f32::from(color[0]) * a) as u8;
-                        pixel[1] =
-                            f32::from(pixel[1]).mul_add(1.0 - a, f32::from(color[1]) * a) as u8;
-                        pixel[2] =
-                            f32::from(pixel[2]).mul_add(1.0 - a, f32::from(color[2]) * a) as u8;
+                        pixel[0] = f32::from(pixel[0])
+                            .mul_add(1.0 - a, f32::from(color[0]) * a)
+                            .saturating_into();
+                        pixel[1] = f32::from(pixel[1])
+                            .mul_add(1.0 - a, f32::from(color[1]) * a)
+                            .saturating_into();
+                        pixel[2] = f32::from(pixel[2])
+                            .mul_add(1.0 - a, f32::from(color[2]) * a)
+                            .saturating_into();
                         pixel[3] = 255;
                     }
                 }

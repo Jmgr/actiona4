@@ -141,12 +141,19 @@ pub fn filter_results_by_color(
             let col = i32::try_from(col_idx)
                 .wrap_err("chroma-filter column index does not fit in i32")?;
             let roi = Rect::new(col, row, template_size.width, template_size.height);
-            let source_a_roi = source_a.0.roi(roi)?;
-            let source_b_roi = source_b.0.roi(roi)?;
-
-            let rms_a = channel_rms(&source_a_roi, &template_a.0, template_mask, normalization)?;
-            let rms_b = channel_rms(&source_b_roi, &template_b.0, template_mask, normalization)?;
-            let combined_rms = rms_a.hypot(rms_b);
+            let first_rms = channel_rms(
+                &source_a.0.roi(roi)?,
+                &template_a.0,
+                template_mask,
+                normalization,
+            )?;
+            let second_rms = channel_rms(
+                &source_b.0.roi(roi)?,
+                &template_b.0,
+                template_mask,
+                normalization,
+            )?;
+            let combined_rms = first_rms.hypot(second_rms);
 
             if combined_rms > CHROMA_RMS_THRESHOLD {
                 *value = 0.0;

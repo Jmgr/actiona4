@@ -212,7 +212,7 @@ impl JsUserData {
         Ok(())
     }
 
-    pub(crate) fn require_not_linux(&self, ctx: &Ctx<'_>) -> rquickjs::Result<()> {
+    pub(crate) fn require_not_linux(ctx: &Ctx<'_>) -> rquickjs::Result<()> {
         if is_linux() {
             return Err(
                 CommonError::UnsupportedPlatform("not supported on Linux".into()).into_js(ctx),
@@ -292,10 +292,10 @@ impl Default for RuntimeOptions {
 #[derive_where(Debug)]
 pub struct Runtime {
     #[cfg(unix)]
-    runtime: Arc<x11::Runtime>,
+    backend: Arc<x11::Runtime>,
 
     #[cfg(windows)]
-    runtime: Arc<win::Runtime>,
+    backend: Arc<win::Runtime>,
 
     enigo: Arc<Mutex<Enigo>>,
     cancellation_token: CancellationToken,
@@ -679,7 +679,7 @@ impl Runtime {
 
         let platform = Platform::detect();
         let runtime = Arc::new(Self {
-            runtime,
+            backend: runtime,
             enigo: new_enigo()?,
             cancellation_token: cancellation_token.clone(),
             task_tracker: task_tracker.clone(),
@@ -700,9 +700,11 @@ impl Runtime {
         let keyboard_inner = Keyboard::new(runtime.clone())?;
         *runtime.mouse.lock() = Some(mouse_inner.clone());
         *runtime.keyboard.lock() = Some(keyboard_inner.clone());
-        let macro_player = Arc::new(
-            MacroPlayer::new(runtime.clone(), keyboard_inner.clone(), mouse_inner.clone()).await?,
-        );
+        let macro_player = Arc::new(MacroPlayer::new(
+            runtime.clone(),
+            keyboard_inner.clone(),
+            mouse_inner.clone(),
+        )?);
         let app = JsApp::new(runtime.clone());
         let mouse =
             JsMouse::new(runtime.clone(), mouse_inner.clone(), macro_player.clone()).await?;
@@ -741,7 +743,7 @@ impl Runtime {
                 let callbacks = Callbacks::new(
                     script_engine.context(),
                     cancellation_token.clone(),
-                    task_tracker.clone(),
+                    &task_tracker,
                 );
 
                 ctx.store_userdata(JsUserData::new(
@@ -757,7 +759,7 @@ impl Runtime {
                 ))?;
 
                 Self::register_classes(
-                    ctx.clone(),
+                    &ctx,
                     app,
                     mouse,
                     keyboard,
@@ -785,7 +787,7 @@ impl Runtime {
     #[instrument(skip_all)]
     #[allow(clippy::too_many_arguments)]
     fn register_classes(
-        ctx: Ctx,
+        ctx: &Ctx,
         app: JsApp,
         mouse: JsMouse,
         keyboard: JsKeyboard,
@@ -803,47 +805,47 @@ impl Runtime {
         macros: JsMacros,
     ) -> rquickjs::Result<()> {
         // Tools
-        register_singleton_class::<JsConcurrency>(&ctx, JsConcurrency::new())?;
-        global::register(&ctx)?;
+        register_singleton_class::<JsConcurrency>(ctx, JsConcurrency::new())?;
+        global::register(ctx)?;
 
         // Host classes
-        register_host_class::<JsFile>(&ctx)?;
-        register_host_class::<JsDirectory>(&ctx)?;
-        register_host_class::<JsPath>(&ctx)?;
-        register_host_class::<JsFilesystem>(&ctx)?;
-        register_host_class::<JsAbortSignal>(&ctx)?;
-        register_host_class::<JsMatch>(&ctx)?;
-        register_host_class::<JsActionBranch>(&ctx)?;
-        register_host_class::<JsActionResult>(&ctx)?;
+        register_host_class::<JsFile>(ctx)?;
+        register_host_class::<JsDirectory>(ctx)?;
+        register_host_class::<JsPath>(ctx)?;
+        register_host_class::<JsFilesystem>(ctx)?;
+        register_host_class::<JsAbortSignal>(ctx)?;
+        register_host_class::<JsMatch>(ctx)?;
+        register_host_class::<JsActionBranch>(ctx)?;
+        register_host_class::<JsActionResult>(ctx)?;
 
         // Value classes
-        register_value_class::<JsPoint>(&ctx)?;
-        register_value_class::<JsSize>(&ctx)?;
-        register_value_class::<JsRect>(&ctx)?;
-        register_value_class::<JsColor>(&ctx)?;
-        register_value_class::<JsImage>(&ctx)?;
-        register_value_class::<JsWildcard>(&ctx)?;
-        register_value_class::<JsAbortController>(&ctx)?;
+        register_value_class::<JsPoint>(ctx)?;
+        register_value_class::<JsSize>(ctx)?;
+        register_value_class::<JsRect>(ctx)?;
+        register_value_class::<JsColor>(ctx)?;
+        register_value_class::<JsImage>(ctx)?;
+        register_value_class::<JsWildcard>(ctx)?;
+        register_value_class::<JsAbortController>(ctx)?;
 
         // Singletons
-        register_singleton_class::<JsApp>(&ctx, app)?;
-        register_singleton_class::<JsMouse>(&ctx, mouse)?;
-        register_singleton_class::<JsKeyboard>(&ctx, keyboard)?;
-        register_singleton_class::<JsDialogs>(&ctx, JsDialogs::default())?;
-        register_singleton_class::<JsConsole>(&ctx, console)?;
-        register_singleton_class::<JsDisplays>(&ctx, js_displays)?;
-        register_singleton_class::<JsScreen>(&ctx, screen)?;
-        register_singleton_class::<JsClipboard>(&ctx, clipboard)?;
-        register_singleton_class::<JsRandom>(&ctx, JsRandom::default())?;
-        register_singleton_class::<JsDatetime>(&ctx, JsDatetime::default())?;
-        register_singleton_class::<JsWeb>(&ctx, JsWeb::new(task_tracker))?;
-        register_singleton_class::<JsSystem>(&ctx, system)?;
-        register_singleton_class::<JsAudio>(&ctx, audio)?;
-        register_singleton_class::<JsProcess>(&ctx, process)?;
-        register_singleton_class::<JsNotification>(&ctx, notification)?;
-        register_singleton_class::<JsStandardPaths>(&ctx, standard_paths)?;
-        register_singleton_class::<JsWindows>(&ctx, windows)?;
-        register_singleton_class::<JsMacros>(&ctx, macros)?;
+        register_singleton_class::<JsApp>(ctx, app)?;
+        register_singleton_class::<JsMouse>(ctx, mouse)?;
+        register_singleton_class::<JsKeyboard>(ctx, keyboard)?;
+        register_singleton_class::<JsDialogs>(ctx, JsDialogs::default())?;
+        register_singleton_class::<JsConsole>(ctx, console)?;
+        register_singleton_class::<JsDisplays>(ctx, js_displays)?;
+        register_singleton_class::<JsScreen>(ctx, screen)?;
+        register_singleton_class::<JsClipboard>(ctx, clipboard)?;
+        register_singleton_class::<JsRandom>(ctx, JsRandom::default())?;
+        register_singleton_class::<JsDatetime>(ctx, JsDatetime::default())?;
+        register_singleton_class::<JsWeb>(ctx, JsWeb::new(task_tracker))?;
+        register_singleton_class::<JsSystem>(ctx, system)?;
+        register_singleton_class::<JsAudio>(ctx, audio)?;
+        register_singleton_class::<JsProcess>(ctx, process)?;
+        register_singleton_class::<JsNotification>(ctx, notification)?;
+        register_singleton_class::<JsStandardPaths>(ctx, standard_paths)?;
+        register_singleton_class::<JsWindows>(ctx, windows)?;
+        register_singleton_class::<JsMacros>(ctx, macros)?;
 
         Ok(())
     }
@@ -1064,13 +1066,12 @@ impl Runtime {
 
         // Remove userdata to break the reference cycle:
         // ScriptEngine -> AsyncContext -> JsUserData -> ScriptEngine
-        script_engine
+        let _ = script_engine
             .with(|ctx| {
                 let _ = ctx.remove_userdata::<JsUserData>();
                 Ok(())
             })
-            .await
-            .ok();
+            .await;
         // Cancel and wait for all background tasks (including the drive task)
         // BEFORE dropping script_engine or runtime.  The drive task holds the
         // InnerRuntime lock and executes QuickJS code; if the QuickJS context
@@ -1097,13 +1098,13 @@ impl Runtime {
     #[cfg(unix)]
     #[must_use]
     pub fn platform(&self) -> &x11::Runtime {
-        &self.runtime
+        &self.backend
     }
 
     #[cfg(windows)]
     #[must_use]
     pub fn platform(&self) -> &win::Runtime {
-        &self.runtime
+        &self.backend
     }
 
     #[must_use]

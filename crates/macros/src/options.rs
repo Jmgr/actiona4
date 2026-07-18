@@ -56,7 +56,7 @@ fn expand_struct(
     add_options_instruction: bool,
 ) -> syn::Result<TokenStream2> {
     if add_options_instruction && !doc_contains(&item_struct.attrs, INSTR_OPTIONS) {
-        append_doc_line(&mut item_struct.attrs, INSTR_OPTIONS.to_string());
+        append_doc_line(&mut item_struct.attrs, INSTR_OPTIONS);
     }
 
     let Fields::Named(fields_named) = &mut item_struct.fields else {
@@ -91,19 +91,19 @@ fn expand_struct(
             && !doc_contains(&field.attrs, INSTR_DEFAULT)
             && let Some(ts_default) = &field_defaults.ts_default
         {
-            append_doc_line(&mut field.attrs, format!("{INSTR_DEFAULT} `{ts_default}`"));
+            append_doc_line(&mut field.attrs, &format!("{INSTR_DEFAULT} `{ts_default}`"));
         }
 
         if !doc_contains(&field.attrs, INSTR_PLATFORMS) {
             if let Some(platform_name) = platform_only_from_attributes(&field.attrs)? {
                 append_doc_line(
                     &mut field.attrs,
-                    format!("{INSTR_PLATFORMS} ={platform_name}"),
+                    &format!("{INSTR_PLATFORMS} ={platform_name}"),
                 );
             } else if let Some(platform_name) = platform_not_from_attributes(&field.attrs)? {
                 append_doc_line(
                     &mut field.attrs,
-                    format!("{INSTR_PLATFORMS} -{platform_name}"),
+                    &format!("{INSTR_PLATFORMS} -{platform_name}"),
                 );
             }
         }
@@ -146,7 +146,7 @@ fn expand_struct(
 }
 
 /// Append a single `#[doc = "..."]` line to an item.
-pub fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: String) {
+pub fn append_doc_line(attributes: &mut Vec<Attribute>, doc_line: &str) {
     let doc_attribute: Attribute = parse_quote! {
         #[doc = #doc_line]
     };
@@ -272,7 +272,7 @@ fn compute_field_defaults(
                 let field_name = field
                     .ident
                     .as_ref()
-                    .map_or("<unnamed field>".to_string(), ToString::to_string);
+                    .map_or_else(|| "<unnamed field>".to_string(), ToString::to_string);
                 return Err(syn::Error::new_spanned(
                     &field.ty,
                     format!(
@@ -328,8 +328,7 @@ fn infer_ts_default_from_type_default(field_type: &Type) -> Option<String> {
     match normalized_type_name {
         "bool" => Some("false".to_string()),
         "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128"
-        | "usize" => Some("0".to_string()),
-        "f32" | "f64" => Some("0".to_string()),
+        | "usize" | "f32" | "f64" => Some("0".to_string()),
         "Option" => Some("undefined".to_string()),
         "Vec" => Some("[]".to_string()),
         "String" => Some("\"\"".to_string()),

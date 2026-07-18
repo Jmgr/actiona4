@@ -1,5 +1,8 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{
     collections::HashMap,
+    fmt::Write as _,
     io::{self, Write},
     time::Instant,
 };
@@ -84,7 +87,7 @@ impl JsConsole {
                 c if c.is_control() => {
                     // Escape remaining control characters as \xHH
                     for byte in c.to_string().bytes() {
-                        escaped.push_str(&format!("\\x{byte:02x}"));
+                        _ = write!(escaped, "\\x{byte:02x}");
                     }
                 }
                 c => escaped.push(c),
@@ -546,7 +549,7 @@ mod tests {
     use rquickjs::{Context, Runtime as JsRuntime, prelude::Rest};
 
     #[test]
-    fn test_exception_values_use_js_to_string() {
+    fn exception_values_use_js_to_string() {
         let runtime = JsRuntime::new().unwrap();
         let context = Context::full(&runtime).unwrap();
 
@@ -571,7 +574,7 @@ mod tests {
     }
 
     #[test]
-    fn test_array_values_use_node_style_format() {
+    fn array_values_use_node_style_format() {
         let runtime = JsRuntime::new().unwrap();
         let context = Context::full(&runtime).unwrap();
 
@@ -583,7 +586,7 @@ mod tests {
     }
 
     #[test]
-    fn test_object_values_use_node_style_format() {
+    fn object_values_use_node_style_format() {
         let runtime = JsRuntime::new().unwrap();
         let context = Context::full(&runtime).unwrap();
 
@@ -595,7 +598,7 @@ mod tests {
     }
 
     #[test]
-    fn test_named_function_values_use_node_style_format() {
+    fn named_function_values_use_node_style_format() {
         let runtime = JsRuntime::new().unwrap();
         let context = Context::full(&runtime).unwrap();
 
@@ -607,7 +610,7 @@ mod tests {
     }
 
     #[test]
-    fn test_anonymous_function_values_use_node_style_format() {
+    fn anonymous_function_values_use_node_style_format() {
         let runtime = JsRuntime::new().unwrap();
         let context = Context::full(&runtime).unwrap();
 
@@ -619,7 +622,7 @@ mod tests {
     }
 
     #[test]
-    fn test_pretty_print_uses_multiline_format() {
+    fn pretty_print_uses_multiline_format() {
         let runtime = JsRuntime::new().unwrap();
         let context = Context::full(&runtime).unwrap();
 

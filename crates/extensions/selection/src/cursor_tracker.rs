@@ -26,7 +26,7 @@ use crate::events::AppEvent;
 pub fn get_window_xid(window: &Window) -> Option<u32> {
     match window.window_handle().ok()?.as_raw() {
         RawWindowHandle::Xcb(handle) => Some(handle.window.get()),
-        RawWindowHandle::Xlib(handle) => Some(handle.window as u32),
+        RawWindowHandle::Xlib(handle) => u32::try_from(handle.window).ok(),
         _ => None,
     }
 }

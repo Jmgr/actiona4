@@ -6,6 +6,10 @@ authors.workspace = true
 description.workspace = true
 documentation.workspace = true
 license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 action-definition = { path = "../action-definition" }

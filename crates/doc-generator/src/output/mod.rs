@@ -1,6 +1,7 @@
 use std::{
     cmp::Reverse,
     collections::HashMap,
+    fmt::Write as _,
     fs::{self, File as StdFile},
     io::Write,
 };
@@ -137,11 +138,10 @@ impl File {
                 overloads
                     .iter()
                     .filter(|overload| {
-                        if let Some(parameter) = overload.parameters.first() {
-                            parameter.type_ != struct_type
-                        } else {
-                            false
-                        }
+                        overload
+                            .parameters
+                            .first()
+                            .is_some_and(|parameter| parameter.type_ != struct_type)
                     })
                     .cloned()
                     .collect_vec(),
@@ -188,10 +188,8 @@ impl File {
 
                         let param = &ov.parameters[param_idx];
                         let type_ = param.type_.to_string(Context::Variable)?;
+                        next_round.push(ov.clone());
                         if let Some(ctor_overloads) = constructors_for_type.get(&type_) {
-                            // Keep the original overload:
-                            next_round.push(ov.clone());
-
                             // For each constructor form, generate a new Overload
                             //     with those parameters inlined at param_idx.
                             for ctor_ov in ctor_overloads {
@@ -205,9 +203,6 @@ impl File {
                                 }
                                 next_round.push(new_ov);
                             }
-                        } else {
-                            // If no multiple constructor expansions, just carry forward the overload
-                            next_round.push(ov.clone());
                         }
                     }
 
@@ -432,11 +427,7 @@ fn output_methods(
             if let Some(rest_params) = &overload.rest_params {
                 parameters = format!(
                     "...args: {}[]",
-                    if let Some(type_) = &rest_params.type_ {
-                        &type_
-                    } else {
-                        "unknown"
-                    }
+                    rest_params.type_.as_deref().unwrap_or("unknown")
                 );
             } else {
                 for parameter in &overload.parameters {
@@ -445,13 +436,11 @@ fn output_methods(
                     }
 
                     if !is_first {
-                        use std::fmt::Write;
                         write!(parameters, ", ")?;
                     }
 
                     is_first = false;
 
-                    use std::fmt::Write;
                     write!(
                         parameters,
                         "{}{}: {}",
@@ -526,11 +515,11 @@ mod tests {
     use super::write_comments;
     use crate::{
         input::Comments,
-        types::{File, Method, MethodOverload, Struct, Type, Variable},
+        types::{File, Method, MethodOverload, Platforms, Struct, Type, Variable},
     };
 
     #[test]
-    fn test_overloading() {
+    fn overloading() {
         let mut file = File::default();
 
         // Create a Foo struct that has two constructors: Foo(a: number, b: string) and Foo(p: Foo)
@@ -548,7 +537,7 @@ mod tests {
                                 is_readonly: false,
                                 is_readonly_type: false,
                                 default_value: None,
-                                platforms: Default::default(),
+                                platforms: Platforms::default(),
                                 is_promise: false,
                             },
                             Variable {
@@ -558,14 +547,14 @@ mod tests {
                                 is_readonly: false,
                                 is_readonly_type: false,
                                 default_value: None,
-                                platforms: Default::default(),
+                                platforms: Platforms::default(),
                                 is_promise: false,
                             },
                         ],
                         return_: Type::Verbatim("Foo".to_string()),
                         is_readonly_type: false,
                         rest_params: None,
-                        platforms: Default::default(),
+                        platforms: Platforms::default(),
                         constructor_only: false,
                     },
                     MethodOverload {
@@ -577,13 +566,13 @@ mod tests {
                             is_readonly: false,
                             is_readonly_type: false,
                             default_value: None,
-                            platforms: Default::default(),
+                            platforms: Platforms::default(),
                             is_promise: false,
                         }],
                         return_: Type::Verbatim("Foo".to_string()),
                         is_readonly_type: false,
                         rest_params: None,
-                        platforms: Default::default(),
+                        platforms: Platforms::default(),
                         constructor_only: false,
                     },
                 ],
@@ -606,13 +595,13 @@ mod tests {
                         is_readonly: false,
                         is_readonly_type: false,
                         default_value: None,
-                        platforms: Default::default(),
+                        platforms: Platforms::default(),
                         is_promise: false,
                     }],
                     return_: Type::Verbatim("Bar".to_string()),
                     is_readonly_type: false,
                     rest_params: None,
-                    platforms: Default::default(),
+                    platforms: Platforms::default(),
                     constructor_only: false,
                 }],
                 is_constructor: true,
@@ -639,7 +628,7 @@ mod tests {
     }
 
     #[test]
-    fn test_write_comments_escapes_comment_terminators() {
+    fn write_comments_escapes_comment_terminators() {
         let comments = vec!["const match = /HDMI-.*/;".to_string()];
         let mut output = Vec::new();
 

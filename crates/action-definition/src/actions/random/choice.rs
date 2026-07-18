@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::{array::Array, variable::Variable},
+    parameters::{Param, array::Array, variable::Variable},
 };
 
 /// Stores one randomly selected item from an array.
@@ -19,7 +19,7 @@ pub struct RandomItem {
 impl Default for RandomItem {
     fn default() -> Self {
         Self {
-            array: Default::default(),
+            array: Param::default(),
             result: Variable::new("random_item").into(),
         }
     }

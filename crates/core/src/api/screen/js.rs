@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use macros::{
     FromJsObject, FromSerde, IntoSerde, PlatformValidate, js_class, js_enum, js_methods, options,
     platform,
@@ -453,7 +455,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_desktop() {
+    fn capture_desktop() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
                 .eval_async("(await screen.captureDesktop()).width")
@@ -470,7 +472,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_display_primary() {
+    fn capture_display_primary() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
                 .eval_async("(await screen.captureDisplay(displays.primary())).width")
@@ -487,7 +489,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_display_largest() {
+    fn capture_display_largest() {
         Runtime::test_with_script_engine(async |script_engine| {
             let width: u32 = script_engine
                 .eval_async("(await screen.captureDisplay(displays.largest())).width")
@@ -504,7 +506,7 @@ mod tests {
 
     #[test]
     //#[ignore]
-    fn test_capture_display_from_id_to_file() {
+    fn capture_display_from_id_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
                 "actiona4_capture_display_from_id_{}.png",
@@ -512,7 +514,7 @@ mod tests {
             ));
             script_engine
                 .eval_async::<()>(&format!(
-                    r"
+                    "
                     const image = await screen.captureDesktop();
                     await image.save({});
                     ",
@@ -526,7 +528,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_display_from_name_to_file() {
+    fn capture_display_from_name_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
                 "actiona4_capture_display_from_name_{}.png",
@@ -550,7 +552,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_display_from_point_to_file() {
+    fn capture_display_from_point_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
                 "actiona4_capture_display_from_point_{}.png",
@@ -574,7 +576,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_rect_to_file() {
+    fn capture_rect_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path =
                 temp_dir().join(format!("actiona4_capture_rect_{}.png", random_name()));
@@ -599,13 +601,13 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_capture_window_to_file() {
+    fn capture_window_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path =
                 temp_dir().join(format!("actiona4_capture_window_{}.png", random_name()));
             script_engine
                 .eval_async::<()>(&format!(
-                    r"
+                    "
                     const win = windows.foreground();
                     const image = await screen.captureWindow(win);
                     await image.save({});
@@ -620,7 +622,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_ask_screenshot_to_file() {
+    fn ask_screenshot_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path =
                 temp_dir().join(format!("actiona4_ask_screenshot_{}.png", random_name()));
@@ -641,7 +643,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_ask_screenshot_native_to_file() {
+    fn ask_screenshot_native_to_file() {
         Runtime::test_with_script_engine(async |script_engine| {
             let output_path = temp_dir().join(format!(
                 "actiona4_ask_screenshot_native_{}.png",

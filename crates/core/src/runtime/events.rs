@@ -123,7 +123,11 @@ impl<T: Topic> Debug for TopicWrapper<T> {
 }
 
 impl<T: Topic + 'static> TopicWrapper<T> {
-    pub fn new(topic: T, cancellation_token: CancellationToken, task_tracker: TaskTracker) -> Self {
+    pub fn new(
+        topic: T,
+        cancellation_token: CancellationToken,
+        task_tracker: &TaskTracker,
+    ) -> Self {
         let (sender, mut receiver) = mpsc::unbounded_channel();
         let topic = Arc::new(topic);
 

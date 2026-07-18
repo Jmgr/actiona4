@@ -11,6 +11,7 @@ use crate::{
 /// Stops the current action tree execution.
 #[action(icon = ShieldX, effect = ControlFlow, category = Flow)]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[allow(clippy::empty_structs_with_brackets)]
 pub struct Stop {}
 
 impl ActionBranches for Stop {}

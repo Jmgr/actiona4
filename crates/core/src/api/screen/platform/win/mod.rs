@@ -54,8 +54,11 @@ impl ScreenImpl {
     ) -> Result<Arc<Self>> {
         let capture_screen =
             screenshot::Screen::new(runtime.task_tracker(), runtime.cancellation_token()).await?;
-        ScreenImplBase::<WindowsDisplay>::from_capture_screen(runtime, displays, capture_screen)
-            .await
+        Ok(ScreenImplBase::<WindowsDisplay>::from_capture_screen(
+            runtime,
+            displays,
+            capture_screen,
+        ))
     }
 
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {

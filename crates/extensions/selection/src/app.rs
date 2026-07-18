@@ -3,6 +3,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use pixels::{Pixels, PixelsBuilder, SurfaceTexture, wgpu};
+use satint::SaturatingInto;
 use tokio::sync::oneshot;
 use types::{Point, Rect, point, rect, size};
 #[cfg(not(windows))]
@@ -36,6 +37,11 @@ const SELECTION_BORDER_COLOR: [u8; 4] = [255, 255, 255, 255];
 /// channel of the resulting overlay is left at fully opaque.
 const RECT_OVERLAY_DARKEN: u8 = 140;
 const DEFAULT_ZOOM: f32 = 10.0;
+
+#[allow(clippy::cast_possible_truncation)]
+fn saturating_f64_to_f32(value: f64) -> f32 {
+    value.clamp(f64::from(f32::MIN), f64::from(f32::MAX)) as f32
+}
 
 #[derive(Clone, Copy)]
 enum SelectionMode {
@@ -139,11 +145,13 @@ impl App {
             (None, _) => {}
         }
 
-        let global_x = self.current_cursor.x as i32 + self.desktop_origin.x;
-        let global_y = self.current_cursor.y as i32 + self.desktop_origin.y;
+        let global_x: i32 =
+            (self.current_cursor.x + f64::from(self.desktop_origin.x)).saturating_into();
+        let global_y: i32 =
+            (self.current_cursor.y + f64::from(self.desktop_origin.y)).saturating_into();
         let rect_size = self.drag_start.map(|start| {
-            let w = (start.x - self.current_cursor.x).abs() as i32;
-            let h = (start.y - self.current_cursor.y).abs() as i32;
+            let w = (start.x - self.current_cursor.x).abs().saturating_into();
+            let h = (start.y - self.current_cursor.y).abs().saturating_into();
             (w, h)
         });
         draw_cursor_coords(
@@ -184,7 +192,10 @@ impl App {
                     &context.queue,
                     magnifier,
                     MagnifierRenderInput {
-                        cursor_position: [cursor_position.x as f32, cursor_position.y as f32],
+                        cursor_position: [
+                            saturating_f64_to_f32(cursor_position.x),
+                            saturating_f64_to_f32(cursor_position.y),
+                        ],
                         desktop_origin: [desktop_origin.x as f32, desktop_origin.y as f32],
                         screenshot_size: [screenshot_size.0 as f32, screenshot_size.1 as f32],
                         window_size: [window_width as f32, window_height as f32],
@@ -218,20 +229,26 @@ impl App {
     }
 
     fn position_selection(&self, position: PhysicalPosition<f64>) -> Point {
-        let global_x = position.x as i32 + self.desktop_origin.x;
-        let global_y = position.y as i32 + self.desktop_origin.y;
+        let global_x: i32 = (position.x + f64::from(self.desktop_origin.x)).saturating_into();
+        let global_y: i32 = (position.y + f64::from(self.desktop_origin.y)).saturating_into();
         point(global_x, global_y)
     }
 
     fn rect_selection(&self) -> Option<Rect> {
         let drag_start = self.drag_start?;
 
-        let global_x =
-            (drag_start.x.min(self.current_cursor.x) + f64::from(self.desktop_origin.x)) as i32;
-        let global_y =
-            (drag_start.y.min(self.current_cursor.y) + f64::from(self.desktop_origin.y)) as i32;
-        let width = (drag_start.x - self.current_cursor.x).abs() as u32;
-        let height = (drag_start.y - self.current_cursor.y).abs() as u32;
+        let global_x: i32 = (drag_start.x.min(self.current_cursor.x)
+            + f64::from(self.desktop_origin.x))
+        .saturating_into();
+        let global_y: i32 = (drag_start.y.min(self.current_cursor.y)
+            + f64::from(self.desktop_origin.y))
+        .saturating_into();
+        let width: u32 = (drag_start.x - self.current_cursor.x)
+            .abs()
+            .saturating_into();
+        let height: u32 = (drag_start.y - self.current_cursor.y)
+            .abs()
+            .saturating_into();
         Some(rect(point(global_x, global_y), size(width, height)))
     }
 
@@ -367,14 +384,21 @@ impl App {
         #[cfg(not(windows))]
         let window_attributes = window_attributes.with_override_redirect(true);
 
-        let window = Arc::new(event_loop.create_window(window_attributes).unwrap());
+        let Ok(window) = event_loop.create_window(window_attributes) else {
+            self.cancel_selection();
+            return;
+        };
+        let window = Arc::new(window);
         let window_size = window.inner_size();
 
         let surface_texture =
             SurfaceTexture::new(window_size.width, window_size.height, Arc::clone(&window));
-        let pixels = PixelsBuilder::new(window_size.width, window_size.height, surface_texture)
-            .build()
-            .unwrap();
+        let Ok(pixels) =
+            PixelsBuilder::new(window_size.width, window_size.height, surface_texture).build()
+        else {
+            self.cancel_selection();
+            return;
+        };
 
         if matches!(self.active_mode(), Some(SelectionMode::Rect)) {
             let screenshot_rgba = self
@@ -521,8 +545,8 @@ fn draw_crosshair(
     frame[..copy_len].copy_from_slice(&screenshot_rgba[..copy_len]);
     frame[copy_len..].fill(0);
 
-    let cursor_x = cursor_position.x as u32;
-    let cursor_y = cursor_position.y as u32;
+    let cursor_x: u32 = cursor_position.x.saturating_into();
+    let cursor_y: u32 = cursor_position.y.saturating_into();
     let stride = window_width as usize * 4;
 
     if cursor_y < window_height {
@@ -564,10 +588,28 @@ fn draw_rect_selection(
         return;
     };
 
-    let left = drag_start.x.min(cursor_position.x) as u32;
-    let top = drag_start.y.min(cursor_position.y) as u32;
-    let right = (drag_start.x.max(cursor_position.x) as u32).min(window_width.saturating_sub(1));
-    let bottom = (drag_start.y.max(cursor_position.y) as u32).min(window_height.saturating_sub(1));
+    let max_x = f64::from(window_width.saturating_sub(1));
+    let max_y = f64::from(window_height.saturating_sub(1));
+    let left = drag_start
+        .x
+        .min(cursor_position.x)
+        .clamp(0.0, max_x)
+        .saturating_into();
+    let top = drag_start
+        .y
+        .min(cursor_position.y)
+        .clamp(0.0, max_y)
+        .saturating_into();
+    let right = drag_start
+        .x
+        .max(cursor_position.x)
+        .clamp(0.0, max_x)
+        .saturating_into();
+    let bottom = drag_start
+        .y
+        .max(cursor_position.y)
+        .clamp(0.0, max_y)
+        .saturating_into();
 
     let stride = window_width as usize * 4;
     let row_length = (right - left + 1) as usize * 4;
@@ -639,14 +681,20 @@ fn draw_cursor_coords(
     rect_size: Option<(i32, i32)>,
 ) {
     let [mag_x, mag_y] = compute_magnifier_origin(
-        [cursor.x as f32, cursor.y as f32],
+        [
+            saturating_f64_to_f32(cursor.x),
+            saturating_f64_to_f32(cursor.y),
+        ],
         [window_width as f32, window_height as f32],
         MAGNIFIER_BOX_SIZE,
         MAGNIFIER_OFFSET,
     );
 
-    let text_x = mag_x as i32;
-    let text_y = mag_y as i32 + MAGNIFIER_BOX_SIZE as i32 + COORD_BELOW_GAP;
+    let text_x: i32 = mag_x.saturating_into();
+    let text_y: i32 = mag_y.saturating_into();
+    let text_y = text_y
+        .saturating_add(MAGNIFIER_BOX_SIZE.saturating_into())
+        .saturating_add(COORD_BELOW_GAP);
 
     let coord_text = format!("X:{global_x}  Y:{global_y}");
     draw_text(
@@ -694,14 +742,14 @@ fn draw_cursor_coords(
 
 fn build_rect_overlay(screenshot_rgba: &[u8], window_width: u32, window_height: u32) -> Vec<u8> {
     let size = window_width as usize * window_height as usize * 4;
-    let mut overlay = vec![0u8; size];
+    let mut overlay = vec![0_u8; size];
     let factor = u32::from(255 - RECT_OVERLAY_DARKEN);
     for (i, pixel) in overlay.chunks_exact_mut(4).enumerate() {
         let src = i * 4;
         if src + 3 < screenshot_rgba.len() {
-            pixel[0] = (u32::from(screenshot_rgba[src]) * factor / 255) as u8;
-            pixel[1] = (u32::from(screenshot_rgba[src + 1]) * factor / 255) as u8;
-            pixel[2] = (u32::from(screenshot_rgba[src + 2]) * factor / 255) as u8;
+            pixel[0] = (u32::from(screenshot_rgba[src]) * factor / 255).saturating_into();
+            pixel[1] = (u32::from(screenshot_rgba[src + 1]) * factor / 255).saturating_into();
+            pixel[2] = (u32::from(screenshot_rgba[src + 2]) * factor / 255).saturating_into();
         }
         pixel[3] = 255;
     }
@@ -721,8 +769,16 @@ fn compute_desktop_bounds(
         let monitor_size = monitor.size();
         min_x = min_x.min(monitor_position.x);
         min_y = min_y.min(monitor_position.y);
-        max_x = max_x.max(monitor_position.x + monitor_size.width as i32);
-        max_y = max_y.max(monitor_position.y + monitor_size.height as i32);
+        max_x = max_x.max(
+            monitor_position
+                .x
+                .saturating_add(monitor_size.width.saturating_into()),
+        );
+        max_y = max_y.max(
+            monitor_position
+                .y
+                .saturating_add(monitor_size.height.saturating_into()),
+        );
     }
 
     if min_x == i32::MAX {

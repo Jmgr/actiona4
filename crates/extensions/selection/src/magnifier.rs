@@ -26,6 +26,7 @@ pub struct MagnifierPipeline {
     pub params_buffer: wgpu::Buffer,
 }
 
+#[derive(Clone, Copy)]
 pub struct MagnifierRenderInput {
     pub cursor_position: [f32; 2],
     pub desktop_origin: [f32; 2],

@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{
     fmt::{self, Debug},
     time::Duration,

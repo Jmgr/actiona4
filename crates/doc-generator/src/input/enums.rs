@@ -33,11 +33,9 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             continue;
         }
 
-        let enum_name = if let Some(new_name) = enum_instructions.rename() {
-            new_name
-        } else {
-            info.name.to_string()
-        };
+        let enum_name = enum_instructions
+            .rename()
+            .unwrap_or_else(|| info.name.to_string());
 
         let variants = items
             .get_sorted(&info.inner.variants)

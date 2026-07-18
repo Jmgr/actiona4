@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::path::{self, Path, PathBuf};
 
 use macros::{js_class, js_methods};

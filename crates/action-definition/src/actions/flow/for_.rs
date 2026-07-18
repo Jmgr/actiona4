@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionBranches, ParameterAvailability, action},
-    parameters::variable::Variable,
+    parameters::{Param, variable::Variable},
     scriptable::Scriptable,
     tree::BranchKind,
 };
@@ -26,7 +26,7 @@ pub struct For {
 impl Default for For {
     fn default() -> Self {
         Self {
-            count: Default::default(),
+            count: Param::default(),
             index_variable: Variable::new("i").into(),
         }
     }

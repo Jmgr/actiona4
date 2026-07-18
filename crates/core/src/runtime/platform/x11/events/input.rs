@@ -27,7 +27,7 @@ pub struct InputMask {
 }
 
 impl InputMask {
-    pub async fn new(x11_connection: Arc<X11Connection>) -> Result<Self> {
+    pub fn new(x11_connection: Arc<X11Connection>) -> Result<Self> {
         let result = Self {
             x11_connection,
             inner: Arc::new(Mutex::new(XIEventMask::default())),

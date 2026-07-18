@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::any::type_name;
 
 use color_eyre::eyre::Context;

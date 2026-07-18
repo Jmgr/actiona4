@@ -131,7 +131,7 @@ impl<P: Protocol> Host<P> {
             }
 
             if let Some(pid) = child.id() {
-                info!("started process with PID {pid}")
+                info!("started process with PID {pid}");
             } else {
                 error!("started process but it exited immediately");
                 if restart_delay_cancelled(&self.token).await {

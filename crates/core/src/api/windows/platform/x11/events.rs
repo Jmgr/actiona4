@@ -91,7 +91,7 @@ impl WindowSubscriptions {
                         x11_connection: self.x11_connection.clone(),
                     },
                     self.cancellation_token.clone(),
-                    self.task_tracker.clone(),
+                    &self.task_tracker,
                 )
             })
             .clone()

@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use itertools::Itertools;
 use macros::{FromJsObject, js_class, js_methods, options};
 use rquickjs::{
@@ -69,9 +71,9 @@ impl JsNetwork {
 
     /// Interfaces
     /// @readonly
-    pub async fn list_interfaces<'js>(
+    pub async fn list_interfaces(
         &self,
-        ctx: Ctx<'js>,
+        ctx: Ctx<'_>,
         options: Opt<ListInterfacesOptions>,
     ) -> Result<Vec<JsNetworkInterface>> {
         let options = options.unwrap_or_default();

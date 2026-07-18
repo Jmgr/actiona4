@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::{collections::HashMap, sync::Arc};
 
 use derive_more::Display;
@@ -265,7 +267,7 @@ impl JsProcess {
 
         let started = self
             .inner
-            .start(&command, start_options, cancellation_token.clone())
+            .start(&command, &start_options, &cancellation_token)
             .into_js_result(&ctx)?;
 
         Ok(JsProcessHandle {
@@ -333,7 +335,7 @@ impl JsProcess {
 
         let pid = self
             .inner
-            .start_detached(&command, start_options)
+            .start_detached(&command, &start_options)
             .into_js_result(&ctx)?;
 
         Ok(pid.into())

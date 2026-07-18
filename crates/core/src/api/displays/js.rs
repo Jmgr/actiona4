@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use itertools::Itertools;
 use macros::{js_class, js_methods};
 use rquickjs::{

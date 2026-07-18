@@ -184,7 +184,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_cpu_usage() {
+    fn cpu_usage() {
         Runtime::test(async move |runtime| {
             let system = System::new(runtime.task_tracker()).await.unwrap();
 

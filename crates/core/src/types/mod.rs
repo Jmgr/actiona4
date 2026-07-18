@@ -43,15 +43,8 @@ impl<T, Tag> Deref for Unit<T, Tag> {
 }
 
 #[repr(transparent)]
-#[derive(Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct OptionalUnit<T>(Option<T>);
-
-impl<T: Clone> Clone for OptionalUnit<T> {
-    fn clone(&self) -> Self {
-        Self(self.0.clone())
-    }
-}
-impl<T: Copy> Copy for OptionalUnit<T> {}
 
 impl<T: Clone + Display> Display for OptionalUnit<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -121,13 +114,14 @@ pub type OptionalSystemString = OptionalUnit<String>;
 impl From<Option<&str>> for OptionalSystemString {
     fn from(value: Option<&str>) -> Self {
         Self(match value.map(|s| s.trim()) {
-            Some(
-                "Default string"
+            None
+            | Some(
+                ""
+                | "Default string"
                 | "To be filled by O.E.M."
                 | "System Product Name"
                 | "Not Specified",
             ) => None,
-            None | Some("") => None,
             Some(s) => Some(s.to_string()),
         })
     }

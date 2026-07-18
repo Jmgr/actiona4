@@ -3,7 +3,7 @@ use std::{mem::take, sync::LazyLock};
 use actiona_core::newtype;
 use color_eyre::{
     Result,
-    eyre::{bail, eyre},
+    eyre::{OptionExt, bail, eyre},
 };
 use enums::process_enums;
 use itertools::Itertools;
@@ -33,7 +33,11 @@ pub struct ItemInfo<'a, T> {
     pub item: &'a Item,
 }
 
-newtype!(pub Comments, Vec<String>);
+newtype!(
+    #[derive(Debug, Clone, Default, PartialEq, Eq)]
+    pub Comments,
+    Vec<String>
+);
 
 impl Comments {
     pub fn trimmed(mut self) -> Self {
@@ -245,11 +249,12 @@ impl Instructions {
 newtype!(pub Overloads, Vec<(Instructions, Comments)>);
 
 static INSTRUCTION_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^@(\w+) ?(.*)$").unwrap());
+    LazyLock::new(|| Regex::new(r"^@(\w+) ?(.*)$").expect("instruction regex is valid"));
 static RETURNS_AND_TYPE_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^([\w\s\[\]<>,|]+)$").unwrap());
-static CONST_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^(?P<value>[\w]+)(?: // (?P<comment>.+))?$").unwrap());
+    LazyLock::new(|| Regex::new(r"^([\w\s\[\]<>,|]+)$").expect("return/type regex is valid"));
+static CONST_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(?P<value>[\w]+)(?: // (?P<comment>.+))?$").expect("constant regex is valid")
+});
 static VARIABLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
         r"(?x)
@@ -287,31 +292,27 @@ static VARIABLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
         \s*
         $",
     )
-    .unwrap()
+    .expect("variable regex is valid")
 });
 
 fn extract_variable(parameters: &str) -> Result<Variable> {
     let captures = VARIABLE_REGEX
         .captures(parameters)
-        .ok_or(eyre!("expected parameters, got: \"{parameters}\""))?;
+        .ok_or_else(|| eyre!("expected parameters, got: \"{parameters}\""))?;
 
     let keyword = captures.name("keyword").map(|m| m.as_str().to_string());
     let name = captures
         .name("name")
         .map(|m| m.as_str().to_string())
-        .ok_or(eyre!("expected name"))?;
+        .ok_or_eyre("expected name")?;
     let type_ = captures
         .name("type")
         .map(|m| m.as_str().to_string())
-        .ok_or(eyre!("expected type"))?;
+        .ok_or_eyre("expected type")?;
     let default = captures.name("default").map(|m| m.as_str().to_string());
     let comment = captures.name("comment").map(|m| m.as_str().to_string());
 
-    let is_readonly = if let Some(keyword) = keyword {
-        keyword == "readonly"
-    } else {
-        false
-    };
+    let is_readonly = keyword.is_some_and(|keyword| keyword == "readonly");
 
     let comments = if let Some(comment) = comment {
         vec![comment]
@@ -326,7 +327,7 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
         is_readonly,
         is_readonly_type: false,
         default_value: default,
-        platforms: Default::default(),
+        platforms: Platforms::default(),
         is_promise: false,
     })
 }
@@ -334,12 +335,12 @@ fn extract_variable(parameters: &str) -> Result<Variable> {
 fn extract_const(parameters: &str) -> Result<Const> {
     let captures = CONST_REGEX
         .captures(parameters)
-        .ok_or(eyre!("expected parameters, got: \"{parameters}\""))?;
+        .ok_or_else(|| eyre!("expected parameters, got: \"{parameters}\""))?;
 
     let value = captures
         .name("value")
         .map(|m| m.as_str().to_string())
-        .ok_or(eyre!("expected value"))?;
+        .ok_or_eyre("expected value")?;
     let comment = captures.name("comment").map(|m| m.as_str().to_string());
 
     let comments = if let Some(comment) = comment {
@@ -357,15 +358,15 @@ fn extract_const(parameters: &str) -> Result<Const> {
 fn parse_instruction(line: &str) -> Result<Instruction> {
     let captures = INSTRUCTION_REGEX
         .captures(line)
-        .ok_or(eyre!("expected instruction format: {line}"))?;
+        .ok_or_else(|| eyre!("expected instruction format: {line}"))?;
 
     let name = captures
         .get(1)
-        .ok_or(eyre!("expected instruction name"))?
+        .ok_or_eyre("expected instruction name")?
         .as_str();
     let parameters = captures
         .get(2)
-        .ok_or(eyre!("expected instruction parameters"))?
+        .ok_or_eyre("expected instruction parameters")?
         .as_str()
         .trim_end();
 
@@ -498,9 +499,9 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         "returns" => {
             let captures = RETURNS_AND_TYPE_REGEX
                 .captures(parameters)
-                .ok_or(eyre!("expected returns parameters"))?;
+                .ok_or_eyre("expected returns parameters")?;
 
-            let type_ = captures.get(1).ok_or(eyre!("expected type"))?.as_str();
+            let type_ = captures.get(1).ok_or_eyre("expected type")?.as_str();
 
             Instruction::Returns(Type::Verbatim(type_.to_string()))
         }
@@ -518,9 +519,9 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
         "type" => {
             let captures = RETURNS_AND_TYPE_REGEX
                 .captures(parameters)
-                .ok_or(eyre!("expected type parameters"))?;
+                .ok_or_eyre("expected type parameters")?;
 
-            let type_ = captures.get(1).ok_or(eyre!("expected type"))?.as_str();
+            let type_ = captures.get(1).ok_or_eyre("expected type")?.as_str();
 
             Instruction::Type(Type::Verbatim(type_.to_string()))
         }
@@ -553,11 +554,13 @@ const fn allowed_context_for_instruction(
     use InstructionDiscriminants::*;
 
     match instruction {
-        Constructor => &[RustdocContext::Method],
-        Private => &[RustdocContext::Method],
-        Property => &[RustdocContext::Struct, RustdocContext::StructAlias],
-        Parameter => &[RustdocContext::Method, RustdocContext::MethodOverload],
-        Overload => &[RustdocContext::Method, RustdocContext::MethodOverload],
+        Constructor | Private | Returns | Rest | Static | Getter | ReadonlyType => {
+            &[RustdocContext::Method]
+        }
+        Property | Singleton | Const | Options | Extends => {
+            &[RustdocContext::Struct, RustdocContext::StructAlias]
+        }
+        Parameter | Overload => &[RustdocContext::Method, RustdocContext::MethodOverload],
         Skip => &[
             RustdocContext::Method,
             RustdocContext::Struct,
@@ -565,15 +568,8 @@ const fn allowed_context_for_instruction(
             RustdocContext::Module,
             RustdocContext::Enum,
         ],
-        Returns => &[RustdocContext::Method],
-        Singleton => &[RustdocContext::Struct, RustdocContext::StructAlias],
-        Const => &[RustdocContext::Struct, RustdocContext::StructAlias],
         Default => &[RustdocContext::Property, RustdocContext::Enum],
-        Options => &[RustdocContext::Struct, RustdocContext::StructAlias],
-        Extends => &[RustdocContext::Struct, RustdocContext::StructAlias],
-        Rest => &[RustdocContext::Method],
         Rename => &[RustdocContext::Method, RustdocContext::Enum],
-        Static => &[RustdocContext::Method],
         Platforms => &[
             RustdocContext::Method,
             RustdocContext::MethodOverload,
@@ -590,8 +586,6 @@ const fn allowed_context_for_instruction(
             RustdocContext::Module,
             RustdocContext::Enum,
         ],
-        Getter => &[RustdocContext::Method],
-        ReadonlyType => &[RustdocContext::Method],
         ConstructorOnly => &[RustdocContext::MethodOverload],
         Category => &[
             RustdocContext::Struct,
@@ -603,9 +597,9 @@ const fn allowed_context_for_instruction(
     }
 }
 
-fn check_instruction(instruction: &Instruction, context: &RustdocContext) -> Result<()> {
+fn check_instruction(instruction: &Instruction, context: RustdocContext) -> Result<()> {
     let instruction = instruction.into();
-    if !allowed_context_for_instruction(instruction).contains(context) {
+    if !allowed_context_for_instruction(instruction).contains(&context) {
         bail!("Instruction {instruction} is not allowed within context {context}");
     }
 
@@ -650,7 +644,7 @@ fn process_rustdoc(
         let instruction = parse_instruction(line_without_prefix_whitespace)?;
 
         if instruction == Instruction::Overload {
-            check_instruction(&Instruction::Overload, &context)?;
+            check_instruction(&Instruction::Overload, context)?;
 
             if has_overload {
                 overloads.push((take(&mut instructions), take(&mut comments)));
@@ -674,7 +668,7 @@ fn process_rustdoc(
     // Check if instructions are valid in overloads
     for (overload, _) in &overloads {
         for instruction in overload {
-            check_instruction(instruction, &RustdocContext::MethodOverload)?;
+            check_instruction(instruction, RustdocContext::MethodOverload)?;
         }
     }
 
@@ -683,7 +677,7 @@ fn process_rustdoc(
 
     // Check if other instructions are valid
     for instruction in &instructions {
-        check_instruction(instruction, &context)?;
+        check_instruction(instruction, context)?;
     }
 
     let overloads = overloads
@@ -759,7 +753,7 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
         rustdoc_types::Type::Generic(generic) => match generic.as_str() {
             "Self" => Type::Verbatim(
                 struct_name
-                    .ok_or_else(|| eyre!("expected struct name, but none set (free function?)"))?
+                    .ok_or_eyre("expected struct name, but none set (free function?)")?
                     .to_string(),
             ),
             _ => {
@@ -827,15 +821,14 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
             };
             let type_ = args
                 .iter()
-                .filter_map(|arg| {
+                .find_map(|arg| {
                     if let rustdoc_types::GenericArg::Type(type_) = arg {
                         Some(type_)
                     } else {
                         None
                     }
                 })
-                .next()
-                .ok_or(eyre!("Unsupported TypedArray: {path:?}"))?;
+                .ok_or_else(|| eyre!("Unsupported TypedArray: {path:?}"))?;
             let rustdoc_types::Type::Primitive(type_) = type_ else {
                 bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
             };
@@ -893,7 +886,7 @@ mod tests {
     };
 
     #[test]
-    fn test_empty() {
+    fn empty() {
         let (comments, instructions, overloads) =
             process_rustdoc(None, RustdocContext::Struct).unwrap();
         assert_eq!(comments, Comments::default());
@@ -908,8 +901,8 @@ mod tests {
     }
 
     #[test]
-    fn test_only_comment() {
-        let rustdoc = r"Test";
+    fn only_comment() {
+        let rustdoc = "Test";
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Struct).unwrap();
         assert_eq!(comments, vec!["Test".to_string()].into());
@@ -918,8 +911,8 @@ mod tests {
     }
 
     #[test]
-    fn test_only_instruction() {
-        let rustdoc = r"@skip";
+    fn only_instruction() {
+        let rustdoc = "@skip";
         let (comments, instructions, overloads) =
             process_rustdoc(Some(&rustdoc.to_string()), RustdocContext::Struct).unwrap();
         assert_eq!(comments, Comments::default());
@@ -928,8 +921,8 @@ mod tests {
     }
 
     #[test]
-    fn test_both() {
-        let rustdoc = r"Some comment
+    fn both() {
+        let rustdoc = "Some comment
 
 Another comment
 
@@ -954,8 +947,8 @@ Another comment
     }
 
     #[test]
-    fn test_overloading() {
-        let rustdoc = r"Constructor.
+    fn overloading() {
+        let rustdoc = "Constructor.
 
 @constructor
 
@@ -1042,7 +1035,7 @@ Comment for the last overload
     }
 
     #[test]
-    fn test_convert_js_name_to_name_like() {
+    fn convert_js_name_to_name_like() {
         let rustdoc_type = rustdoc_types::Type::ResolvedPath(Path {
             path: "crate::api::name::js::JsName".to_string(),
             id: Id(0),
@@ -1055,7 +1048,7 @@ Comment for the last overload
     }
 
     #[test]
-    fn test_convert_js_duration_to_duration_like() {
+    fn convert_js_duration_to_duration_like() {
         let rustdoc_type = rustdoc_types::Type::ResolvedPath(Path {
             path: "crate::api::js::duration::JsDuration".to_string(),
             id: Id(0),

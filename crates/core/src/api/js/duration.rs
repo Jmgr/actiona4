@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A duration as milliseconds (number) or a humantime string.
 //! @verbatim  *

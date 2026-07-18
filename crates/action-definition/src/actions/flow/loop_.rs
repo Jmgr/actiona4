@@ -13,6 +13,7 @@ use crate::{
     looping = true
 )]
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[allow(clippy::empty_structs_with_brackets)]
 pub struct Loop {}
 
 impl ActionBranches for Loop {

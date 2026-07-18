@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 //! @verbatim /**
 //! @verbatim  * A cancellable promise.
 //! @verbatim  *
@@ -357,7 +359,7 @@ mod tests {
     }
 
     #[test]
-    fn test_task() {
+    fn task_cancellation() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let test = JsTestStruct::default();
             let has_started = test.has_started.clone();
@@ -367,7 +369,7 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<()>(
-                    r"
+                    "
                 const task = testStruct.testTask();
                 task.cancel();
                 await task;
@@ -382,7 +384,7 @@ mod tests {
     }
 
     #[test]
-    fn test_task_with_token() {
+    fn task_with_token_cancellation() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let test = JsTestStruct::default();
             let has_started = test.has_started.clone();
@@ -395,7 +397,7 @@ mod tests {
 
             let result = script_engine
                 .eval_async::<()>(
-                    r"
+                    "
                 await testStruct.testTaskWithToken();
                 ",
                 )
@@ -408,7 +410,7 @@ mod tests {
     }
 
     #[test]
-    fn test_task_with_progress() {
+    fn task_with_progress() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let test = JsTestStruct::default();
             let has_started = test.has_started.clone();
@@ -418,7 +420,7 @@ mod tests {
 
             let counter = script_engine
                 .eval_async::<u64>(
-                    r"
+                    "
                 const task = testStruct.testTaskWithProgress();
                 let counter = 0;
                 for await (const p of task) {

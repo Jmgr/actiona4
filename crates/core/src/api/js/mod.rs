@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 pub mod abort_controller;
 pub mod classes;
 pub mod concurrency;

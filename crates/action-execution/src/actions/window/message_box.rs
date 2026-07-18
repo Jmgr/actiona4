@@ -23,10 +23,9 @@ fn to_core_buttons(
     cancel_label: Option<String>,
 ) -> Result<JsMessageBoxButtons, eyre::Report> {
     Ok(match buttons {
-        MessageBoxButtons::Ok => match ok_label {
-            Some(ok_label) => JsMessageBoxButtons::ok_custom(ok_label),
-            None => JsMessageBoxButtons::ok(),
-        },
+        MessageBoxButtons::Ok => {
+            ok_label.map_or_else(JsMessageBoxButtons::ok, JsMessageBoxButtons::ok_custom)
+        }
 
         MessageBoxButtons::OkCancel => match (ok_label, cancel_label) {
             (None, None) => JsMessageBoxButtons::ok_cancel(),
