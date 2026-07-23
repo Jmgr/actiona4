@@ -753,7 +753,8 @@ fn convert_type(output: &rustdoc_types::Type, struct_name: Option<&str>) -> Resu
         rustdoc_types::Type::Generic(generic) => match generic.as_str() {
             "Self" => Type::Verbatim(
                 struct_name
-                    .ok_or_eyre("expected struct name, but none set (free function?)")?.to_owned(),
+                    .ok_or_eyre("expected struct name, but none set (free function?)")?
+                    .to_owned(),
             ),
             _ => {
                 bail!("Unsupported generic type: {generic}, struct: {struct_name:?}");
@@ -837,7 +838,8 @@ fn path_to_type(path: &rustdoc_types::Path, struct_name: Option<&str>) -> Result
                     _ => {
                         bail!("Unsupported TypedArray type: {path:?}, type: {type_:?}");
                     }
-                }.to_owned(),
+                }
+                .to_owned(),
             )
         }
         "JsDuration" => Type::Verbatim("DurationLike".to_owned()),

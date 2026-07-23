@@ -680,7 +680,8 @@ impl Web {
         url.split('/')
             .next_back()
             .filter(|s| !s.is_empty())
-            .unwrap_or("download.bin").to_owned()
+            .unwrap_or("download.bin")
+            .to_owned()
     }
 }
 

@@ -118,6 +118,7 @@ invalid_html_tags = "allow"
 ab_glyph = "0.2.32"
 arboard = "3.6.1"
 arc-swap = "1.9.2"
+async-stream = "0.3.6"
 bimap = "0.6.3"
 bytemuck = "1.25.1"
 bytes = "1.12.1"
@@ -127,6 +128,7 @@ clap_complete = "4.6.7"
 color-eyre = "0.6.5"
 console = "0.16.4"
 const-default = "1.0.0"
+const_format = "0.2.36"
 convert_case = "0.11.0"
 darling = "0.23.0"
 derive-where = "1.6.1"
@@ -138,6 +140,7 @@ encoding_rs = "0.8.35"
 enigo = "0.6.1"
 env_logger = "0.11.11"
 eyre = "0.6.12"
+file_format_types = { package = "file-format", version = "0.29.0" }
 flate2 = "1.1.9"
 fluent = "0.17.0"
 futures = "0.3.33"
@@ -157,6 +160,7 @@ interprocess = "2.4.2"
 ipc-rpc = { version = "3.0.1", default-features = false }
 ipnet = "2.12.0"
 itertools = "0.15.0"
+jiff = "0.2.32"
 libc = { version = "0.2.186", default-features = false }
 log = "0.4.33"
 mime = "0.3.17"
@@ -179,7 +183,8 @@ rfd = "0.17.2"
 rodio = { version = "0.22.2", default-features = false }
 rquickjs = { version = "0.12.1", default-features = false }
 rquickjs-serde = "0.6.1"
-ruopus = "0.1.2"
+rusqlite = "0.40.1"
+rusqlite_migration = "2.6.0"
 rustdoc-types = "0.60.0"
 rustydialogs = "0.4.2"
 rustyline = "18.0.1"
@@ -190,6 +195,7 @@ sentry-rust-minidump = "0.16.0"
 serde = "1.0.228"
 serde_json = "1.0.150"
 serde_plain = "1.0.2"
+sha2 = "0.11.0"
 shell-words = "1.1.1"
 slotmap = "1.1.1"
 static-dispatch = "0.3.0"
@@ -212,7 +218,6 @@ tokio-util = "0.7.18"
 toml = "1.1.3"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", default-features = false }
-turso = { version = "0.7.0", default-features = false }
 tween = "2.2.0"
 two-face = "0.5.1"
 unicode-segmentation = "1.13.3"
@@ -269,7 +274,6 @@ embed-resource = "3.0.11"
 
 [patch.crates-io]
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
-libwmctl = { git = "https://github.com/Jmgr/wmctl", rev = "107e43e" }
 
 [profile.release]
 opt-level = 3

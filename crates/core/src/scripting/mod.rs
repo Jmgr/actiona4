@@ -143,7 +143,8 @@ impl Engine {
                     if is_js {
                         entry
                             .insert(TsToJs::passthrough(script, display_name))
-                            .code().to_owned()
+                            .code()
+                            .to_owned()
                     } else {
                         let ts_to_js = if silent {
                             TsToJs::new_silent(script, display_name)?

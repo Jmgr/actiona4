@@ -14,27 +14,36 @@ categories.workspace = true
 [dependencies]
 action-definition = { path = "../action-definition" }
 types = { path = "../types" }
-
-base64.workspace = true
-image = { workspace = true, features = ["png", "webp"] }
-indexmap = { workspace = true, features = ["rayon", "serde"] }
-mime.workspace = true
-postcard = { workspace = true, features = ["use-std"] }
-rayon.workspace = true
-rodio = { workspace = true, features = ["flac", "mp3", "mp4", "vorbis", "wav"] }
-ruopus.workspace = true
+async-stream.workspace = true
+bytes.workspace = true
+const_format.workspace = true
+file_format_types.workspace = true
+futures.workspace = true
+jiff.workspace = true
+parking_lot.workspace = true
+rusqlite = { workspace = true, features = ["jiff", "serde_json", "uuid"] }
+rusqlite_migration.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+sha2.workspace = true
 strum.workspace = true
 tempfile.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt"] }
 tokio-util = { workspace = true, features = ["io", "rt"] }
-uuid = { workspace = true, features = ["serde"] }
+uuid = { workspace = true, features = ["serde", "v4"] }
 zstd.workspace = true
 
+[target.'cfg(windows)'.dependencies]
+rusqlite = { workspace = true, features = ["bundled", "jiff", "serde_json", "uuid"] }
+
 [dev-dependencies]
+criterion.workspace = true
 rstest.workspace = true
 
 [lints]
 workspace = true
+
+[[bench]]
+name = "attachment_chunks"
+harness = false

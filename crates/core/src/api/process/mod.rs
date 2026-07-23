@@ -121,7 +121,8 @@ async fn read_stream_to_string(mut stream: impl AsyncRead + Unpin) -> Result<Str
 
         lines.push(
             line.trim_end_matches('\n')
-                .trim_end_matches('\r').to_owned(),
+                .trim_end_matches('\r')
+                .to_owned(),
         );
     }
 

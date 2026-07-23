@@ -95,7 +95,8 @@ pub fn extract_functions(
                     struct_name
                         .ok_or_else(|| {
                             eyre!("expected struct name, but none set (free function?)")
-                        })?.to_owned(),
+                        })?
+                        .to_owned(),
                 )
             } else if let Some(method_returns) = instructions.returns() {
                 method_returns

@@ -191,7 +191,5 @@ fn enum_registration_name<E>() -> String {
         .next()
         .expect("type_name should always contain a final segment");
 
-    enum_name
-        .strip_prefix("Js")
-        .unwrap_or(enum_name).to_owned()
+    enum_name.strip_prefix("Js").unwrap_or(enum_name).to_owned()
 }
