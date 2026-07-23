@@ -55,8 +55,8 @@ await keyboard.waitForKeys([Key.Escape]);
 
 ### Windows
 
-* [Installer](https://github.com/Jmgr/actiona4/releases/latest/download/actiona-run-windows-x86_64.exe)
-* [Archive](https://github.com/Jmgr/actiona4/releases/latest/download/actiona-run-windows-x86_64.zip)
+* [Installer](https://github.com/Jmgr/actiona4/releases/latest)
+* [Archive](https://github.com/Jmgr/actiona4/releases/latest)
 <!---
 * One-liner: (PowerShell)
   ```powershell
@@ -66,7 +66,7 @@ await keyboard.waitForKeys([Key.Escape]);
 
 ### Linux
 
-* [AppImage](https://github.com/Jmgr/actiona4/releases/latest/download/actiona-run-x86_64.AppImage)
+* [AppImage](https://github.com/Jmgr/actiona4/releases/latest)
 <!---
 * One-liner: (shell)
   ```sh
