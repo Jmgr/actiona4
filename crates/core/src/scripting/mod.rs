@@ -7,7 +7,7 @@
 //! - the callbacks worker works at the rquickjs FFI boundary and uses `rquickjs::Result`.
 //!
 //! Caught JavaScript errors from every entry point (`eval*` and [`Engine::with`]) flow
-//! through [`Engine::process_caught_result`] so they share one structured, source-mapped path.
+//! through `Engine::process_caught_result` so they share one structured, source-mapped path.
 
 use std::{
     collections::{HashMap, hash_map::Entry},

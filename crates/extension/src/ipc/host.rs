@@ -62,10 +62,11 @@ impl<P: Protocol> Host<P> {
             .send_timeout(WireMessage::HostRequest(message), self.timeout)
             .await?;
 
-        Ok(match response {
-            WireMessage::ExtensionResponse(response) => response,
-            _ => bail!("host: unexpected reply received: {response:?}"),
-        })
+        let WireMessage::ExtensionResponse(response) = response else {
+            bail!("host: unexpected reply received: {response:?}");
+        };
+
+        Ok(response)
     }
 
     pub async fn wait_for_client_to_connect(&self) -> Result<()> {

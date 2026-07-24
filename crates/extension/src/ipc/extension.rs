@@ -56,10 +56,11 @@ impl<P: Protocol> Extension<P> {
             .send_timeout(WireMessage::ExtensionRequest(message), self.timeout)
             .await?;
 
-        Ok(match response {
-            WireMessage::HostResponse(response) => response,
-            _ => bail!("extension: unexpected reply received: {response:?}"),
-        })
+        let WireMessage::HostResponse(response) = response else {
+            bail!("extension: unexpected reply received: {response:?}");
+        };
+
+        Ok(response)
     }
 
     pub async fn wait_for_host_to_disconnect(&self) -> Result<()> {

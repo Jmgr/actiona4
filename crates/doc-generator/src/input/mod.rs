@@ -544,7 +544,7 @@ fn parse_instruction(line: &str) -> Result<Instruction> {
             Instruction::Expand
         }
 
-        _ => bail!("unknown instruction {name}"),
+        _ => return Err(eyre!("unknown instruction {name}")),
     })
 }
 
