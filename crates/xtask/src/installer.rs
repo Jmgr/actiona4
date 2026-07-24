@@ -2,7 +2,7 @@ use std::{fmt::Write, path::Path, process::Command};
 
 use color_eyre::{Result, eyre::eyre};
 use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
-use tokio::fs::{remove_dir_all, try_exists};
+use tokio::fs::{create_dir_all, remove_dir_all, try_exists, write};
 
 use crate::{
     constants::{INNO_SIGN_TOOL_NAME, INSTALLER_FILE_DESCRIPTION, RUN_FILE_DESCRIPTION},
@@ -99,8 +99,8 @@ async fn write_installer_files_include(workspace_root: &Path) -> Result<()> {
     let parent_directory_path = generated_include_path
         .parent()
         .ok_or_else(|| eyre!("Generated installer include path has no parent directory."))?;
-    tokio::fs::create_dir_all(parent_directory_path).await?;
-    tokio::fs::write(generated_include_path, file_contents).await?;
+    create_dir_all(parent_directory_path).await?;
+    write(generated_include_path, file_contents).await?;
 
     Ok(())
 }

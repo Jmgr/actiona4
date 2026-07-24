@@ -11,8 +11,30 @@ readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
+[package.metadata.actiona]
+notification-aumid = "app.actiona.actiona-run"
+
+[package.metadata.cargo-machete]
+ignored = ["built", "cfg_aliases"]
+
+[lib]
+name = "actiona_core"
+
+[target.'cfg(unix)'.dependencies]
+ashpd = { workspace = true, features = ["screencast", "screenshot"] }
+ksni.workspace = true
+libwmctl.workspace = true
+notify-rust = { workspace = true, features = ["z-with-tokio", "async", "images"] }
+procfs.workspace = true
+rustix = { workspace = true, features = ["process", "thread"] }
+x11rb = { workspace = true, features = ["randr", "xinput", "allow-unsafe-code"] }
+x11rb-async = { workspace = true, features = ["xinput", "randr", "shm", "extra-traits", "xkb", "allow-unsafe-code"] }
+xkbcommon = { workspace = true, features = ["x11"] }
+xkeysym.workspace = true
+zbus.workspace = true
+
 [target.'cfg(windows)'.dependencies]
-interprocess.workspace = true
+interprocess = { workspace = true, features = ["tokio"] }
 pe-parser.workspace = true
 tray-icon.workspace = true
 windows = { workspace = true, features = [
@@ -35,28 +57,6 @@ windows = { workspace = true, features = [
 windows-result.workspace = true
 winit.workspace = true
 winrt-toast-reborn.workspace = true
-
-[package.metadata.actiona]
-notification-aumid = "app.actiona.actiona-run"
-
-[package.metadata.cargo-machete]
-ignored = ["built", "cfg_aliases"]
-
-[lib]
-name = "actiona_core"
-
-[target.'cfg(unix)'.dependencies]
-ashpd = { workspace = true, features = ["screencast", "screenshot"] }
-ksni.workspace = true
-libwmctl.workspace = true
-notify-rust = { workspace = true, features = ["z-with-tokio", "async", "images"] }
-procfs.workspace = true
-rustix.workspace = true
-x11rb = { workspace = true, features = ["randr", "xinput", "allow-unsafe-code"] }
-x11rb-async = { workspace = true, features = ["xinput", "randr", "shm", "extra-traits", "xkb", "allow-unsafe-code"] }
-xkbcommon = { workspace = true, features = ["x11"] }
-xkeysym.workspace = true
-zbus.workspace = true
 
 [dependencies]
 common = { path = "../common" }

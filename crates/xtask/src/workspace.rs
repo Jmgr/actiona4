@@ -4,6 +4,8 @@ use std::{
 };
 
 use color_eyre::{Result, eyre::eyre};
+#[cfg(windows)]
+use tokio::fs::read_to_string;
 #[cfg(any(test, windows))]
 use versions::SemVer;
 
@@ -34,7 +36,7 @@ pub fn workspace_root() -> Result<PathBuf> {
 #[cfg(windows)]
 pub async fn read_workspace_package_info(workspace_root: &Path) -> Result<WorkspacePackageInfo> {
     let cargo_toml_path = workspace_root.join("Cargo.toml");
-    let cargo_toml_contents = tokio::fs::read_to_string(&cargo_toml_path).await?;
+    let cargo_toml_contents = read_to_string(&cargo_toml_path).await?;
     let cargo_toml: toml::Value = toml::from_str(&cargo_toml_contents)?;
     let package_table = cargo_toml
         .get("workspace")
@@ -107,7 +109,7 @@ pub async fn read_notification_package_info(
         .join("crates")
         .join("core")
         .join("Cargo.toml");
-    let cargo_toml_contents = tokio::fs::read_to_string(&cargo_toml_path).await?;
+    let cargo_toml_contents = read_to_string(&cargo_toml_path).await?;
     let cargo_toml: toml::Value = toml::from_str(&cargo_toml_contents)?;
 
     let aumid = cargo_toml

@@ -11,9 +11,11 @@ readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
+[target.'cfg(windows)'.dependencies]
+rusqlite = { workspace = true, features = ["bundled", "jiff", "serde_json", "uuid"] }
+
 [dependencies]
 action-definition = { path = "../action-definition" }
-types = { path = "../types" }
 async-stream.workspace = true
 bytes.workspace = true
 const_format.workspace = true
@@ -31,11 +33,9 @@ tempfile.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt"] }
 tokio-util = { workspace = true, features = ["io", "rt"] }
+types = { path = "../types" }
 uuid = { workspace = true, features = ["serde", "v4"] }
 zstd.workspace = true
-
-[target.'cfg(windows)'.dependencies]
-rusqlite = { workspace = true, features = ["bundled", "jiff", "serde_json", "uuid"] }
 
 [dev-dependencies]
 criterion.workspace = true

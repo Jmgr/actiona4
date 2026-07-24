@@ -97,7 +97,7 @@ fn main() -> Result<()> {
         let _ = shutdown_proxy.send_event(AppEvent::Shutdown);
     });
 
-    let mut app = App::new(proxy);
+    let mut app = App::new(&proxy);
     event_loop.run_app(&mut app)?;
 
     cancellation_token.cancel();

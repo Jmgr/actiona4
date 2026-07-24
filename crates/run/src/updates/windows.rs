@@ -172,10 +172,9 @@ mod tests {
     }
 
     fn preview_notification(title: &str, body: &str, actions: Vec<NotificationAction>, tag: &str) {
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        use tokio::{runtime::Builder, time::sleep};
+
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
 
         runtime.block_on(async {
             show_notification(
@@ -187,7 +186,7 @@ mod tests {
             )
             .await
             .unwrap();
-            tokio::time::sleep(StdDuration::from_secs(2)).await;
+            sleep(StdDuration::from_secs(2)).await;
         });
     }
 }

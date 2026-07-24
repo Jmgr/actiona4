@@ -4,6 +4,7 @@ use std::sync::OnceLock;
 #[cfg_attr(test, allow(unused_imports))]
 use std::sync::atomic::AtomicBool;
 use std::{
+    env::args,
     future::Future,
     sync::{
         Arc,
@@ -272,6 +273,9 @@ pub struct RuntimeOptions {
     /// Whether to create the system tray icon and menu.
     pub show_tray_icon: bool,
 
+    /// Whether to discover and launch optional extension processes.
+    pub discover_extensions: bool,
+
     /// Seed for the shared random number generator.
     /// When set, random-dependent APIs become deterministic.
     pub seed: Option<u64>,
@@ -284,6 +288,7 @@ impl Default for RuntimeOptions {
             display_name: None,
             install_ctrl_c_handler: true,
             show_tray_icon: true,
+            discover_extensions: true,
             seed: None,
         }
     }
@@ -692,7 +697,12 @@ impl Runtime {
             platform,
             mouse: Mutex::new(None),
             keyboard: Mutex::new(None),
-            extensions: Extensions::new(task_tracker.clone(), cancellation_token.clone()).await?,
+            extensions: Extensions::new(
+                task_tracker.clone(),
+                cancellation_token.clone(),
+                options.discover_extensions,
+            )
+            .await?,
             rng: rng.clone(),
         });
 
@@ -865,12 +875,8 @@ impl Runtime {
 
         use interprocess::local_socket::{ConnectOptions, GenericNamespaced, ToNsName};
 
-        let url_str = match std::env::args()
-            .skip(1)
-            .find(|arg| arg.starts_with("actiona-run://"))
-        {
-            Some(value) => value,
-            None => return false,
+        let Some(url_str) = args().skip(1).find(|arg| arg.starts_with("actiona-run://")) else {
+            return false;
         };
 
         // Extract the correlation ID to locate the right socket.
@@ -1236,6 +1242,7 @@ impl Runtime {
                     },
                     RuntimeOptions {
                         show_tray_icon: false,
+                        discover_extensions: false,
                         ..Default::default()
                     },
                 )
@@ -1265,6 +1272,7 @@ impl Runtime {
                     },
                     RuntimeOptions {
                         show_tray_icon: false,
+                        discover_extensions: false,
                         ..Default::default()
                     },
                 )

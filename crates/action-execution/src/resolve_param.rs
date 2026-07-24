@@ -529,6 +529,7 @@ mod tests {
             RuntimeOptions {
                 install_ctrl_c_handler: false,
                 show_tray_icon: false,
+                discover_extensions: false,
                 ..Default::default()
             },
         )
@@ -560,6 +561,7 @@ mod tests {
             RuntimeOptions {
                 install_ctrl_c_handler: false,
                 show_tray_icon: false,
+                discover_extensions: false,
                 ..Default::default()
             },
         )

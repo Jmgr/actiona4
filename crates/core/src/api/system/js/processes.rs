@@ -14,6 +14,8 @@ use rquickjs::{
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 
+#[cfg(unix)]
+use crate::api::process::send_signal;
 use crate::{
     IntoJsResult,
     api::{
@@ -23,7 +25,7 @@ use crate::{
             date::date_from_system_time,
         },
         name::js::{JsNameLike, value_to_name_like},
-        process::{js::JsSignal, kill_by_pid, send_signal, terminate_by_pid},
+        process::{js::JsSignal, kill_by_pid, terminate_by_pid},
         system::{
             js::storage::JsDiskUsage,
             processes::{Process, Processes, Status},

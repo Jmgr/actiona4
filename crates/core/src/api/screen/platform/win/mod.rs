@@ -7,6 +7,7 @@ use super::{DisplayCapture, ScreenImplBase, blacken_non_display_areas};
 use crate::{
     api::{
         color::Color,
+        displays::Displays,
         image::{Image, find_image::Source},
         point::{Point, point},
         rect::{Rect, rect},
@@ -48,17 +49,10 @@ impl DisplayCapture for WindowsDisplay {
 pub type ScreenImpl = ScreenImplBase<WindowsDisplay>;
 
 impl ScreenImpl {
-    pub async fn new(
-        runtime: Arc<Runtime>,
-        displays: crate::api::displays::Displays,
-    ) -> Result<Arc<Self>> {
+    pub async fn new(runtime: Arc<Runtime>, displays: Displays) -> Result<Arc<Self>> {
         let capture_screen =
             screenshot::Screen::new(runtime.task_tracker(), runtime.cancellation_token()).await?;
-        Ok(ScreenImplBase::<WindowsDisplay>::from_capture_screen(
-            runtime,
-            displays,
-            capture_screen,
-        ))
+        Ok(Self::from_capture_screen(runtime, displays, capture_screen))
     }
 
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {

@@ -96,6 +96,7 @@ pub struct Clipboard {
 #[cfg(windows)]
 #[allow(unsafe_code)]
 fn clipboard_sequence_number() -> Option<u32> {
+    // SAFETY: GetClipboardSequenceNumber takes no pointers and returns a scalar value.
     let sequence_number = unsafe { GetClipboardSequenceNumber() };
     if sequence_number == 0 {
         None
@@ -225,10 +226,10 @@ impl Clipboard {
         if let Some(initial_sequence_number) = clipboard_sequence_number() {
             loop {
                 select! {
-                    _ = cancellation_token.cancelled() => {
+                    () = cancellation_token.cancelled() => {
                         return Err(CommonError::Cancelled.into());
                     }
-                    _ = sleep(options.interval) => {}
+                    () = sleep(options.interval) => {}
                 }
 
                 match clipboard_sequence_number() {

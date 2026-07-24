@@ -2,7 +2,7 @@
 
 use std::process::ExitCode;
 
-const fn main() -> ExitCode {
+fn main() -> ExitCode {
     main_impl()
 }
 
@@ -50,7 +50,7 @@ fn main_impl() -> ExitCode {
             let message = if stderr.trim().is_empty() {
                 format!("actiona-run exited with status: {}", output.status)
             } else {
-                stderr.trim().to_string()
+                stderr.trim().to_owned()
             };
             show_message_box(&message, MB_OK | MB_ICONERROR);
             ExitCode::FAILURE
@@ -71,6 +71,7 @@ const fn main_impl() -> ExitCode {
 fn show_message_box(message: &str, style: MESSAGEBOX_STYLE) {
     let message = HSTRING::from(message);
 
+    // SAFETY: the message string is valid for the duration of this synchronous call.
     unsafe {
         let _ = MessageBoxW(None, &message, w!("Actiona Run"), style);
     }

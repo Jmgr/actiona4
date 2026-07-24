@@ -65,7 +65,7 @@ fn read_attachment(
 fn make_payload(size: usize) -> Bytes {
     Bytes::from(
         (0..size)
-            .map(|index| (index % 251) as u8)
+            .map(|index| u8::try_from(index % 251).expect("remainder is less than 251"))
             .collect::<Vec<_>>(),
     )
 }

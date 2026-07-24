@@ -1,6 +1,6 @@
 #![allow(unsafe_code, dead_code)]
 
-use std::fmt;
+use std::{fmt, mem};
 
 use tracing::error;
 use windows::Win32::{
@@ -32,16 +32,21 @@ impl<H: Handle> Safe<H> {
     }
 
     pub fn try_new(raw: H::Raw) -> windows_result::Result<Self> {
-        if !H::is_valid(raw) {
-            Err(windows_result::Error::from_thread())
-        } else {
+        if H::is_valid(raw) {
             Ok(Self::new(raw))
+        } else {
+            Err(windows_result::Error::from_thread())
         }
     }
 
     pub const fn leak(self) -> H::Raw {
         let raw = self.raw;
-        std::mem::forget(self);
+        // Intentionally prevent `Drop`: ownership of the raw handle is transferred to the caller.
+        #[expect(
+            clippy::mem_forget,
+            reason = "leaking transfers ownership of the raw Win32 handle"
+        )]
+        mem::forget(self);
         raw
     }
 
@@ -81,6 +86,7 @@ impl Handle for KindHandle {
         !raw.is_invalid()
     }
     fn close(raw: Self::Raw) -> windows_result::Result<()> {
+        // SAFETY: `raw` is owned by `SafeHandle` and closed exactly once by its `Drop` implementation.
         unsafe { CloseHandle(raw) }
     }
 }
@@ -94,6 +100,7 @@ impl Handle for KindDesktop {
         !raw.is_invalid()
     }
     fn close(raw: Self::Raw) -> windows_result::Result<()> {
+        // SAFETY: `raw` is owned by `SafeDesktopHandle` and closed exactly once on drop.
         unsafe { CloseDesktop(raw) }
     }
 }
@@ -107,10 +114,12 @@ impl Handle for KindHook {
         !raw.is_invalid()
     }
     fn close(raw: Self::Raw) -> windows_result::Result<()> {
+        // SAFETY: `raw` is owned by `SafeHookHandle` and unhooked exactly once on drop.
         unsafe { UnhookWindowsHookEx(raw) }
     }
 }
 pub type SafeHookHandle = Safe<KindHook>;
+// SAFETY: the owning wrapper prevents duplicate cleanup and Win32 hook handles are thread-safe.
 unsafe impl Send for SafeHookHandle {}
 
 pub struct KindWindow;
@@ -121,10 +130,12 @@ impl Handle for KindWindow {
         !raw.is_invalid()
     }
     fn close(raw: Self::Raw) -> windows_result::Result<()> {
+        // SAFETY: `raw` is owned by `SafeWindowHandle` and destroyed exactly once on drop.
         unsafe { DestroyWindow(raw) }
     }
 }
 pub type SafeWindowHandle = Safe<KindWindow>;
+// SAFETY: the owning wrapper prevents duplicate cleanup and HWND values may cross threads.
 unsafe impl Send for SafeWindowHandle {}
 
 pub struct KindWinEventHook;
@@ -135,6 +146,7 @@ impl Handle for KindWinEventHook {
         !raw.is_invalid()
     }
     fn close(raw: Self::Raw) -> windows_result::Result<()> {
+        // SAFETY: `raw` is owned by `SafeWinEventHook` and unhooked exactly once on drop.
         unsafe {
             let _ = UnhookWinEvent(raw);
         };
@@ -142,4 +154,5 @@ impl Handle for KindWinEventHook {
     }
 }
 pub type SafeWinEventHook = Safe<KindWinEventHook>;
+// SAFETY: the owning wrapper prevents duplicate cleanup and the hook can be released from this thread.
 unsafe impl Send for SafeWinEventHook {}

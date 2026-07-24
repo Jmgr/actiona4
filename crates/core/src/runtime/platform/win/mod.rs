@@ -36,7 +36,7 @@ use crate::{
     runtime::{
         events::Guard,
         platform::win::events::{
-            WindowEvent,
+            WindowEvent, WindowHandle,
             input::{
                 keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
                 mouse::{
@@ -54,6 +54,7 @@ static RUNTIME: LazyLock<Mutex<Weak<Runtime>>> = LazyLock::new(|| Mutex::new(Wea
 #[allow(unsafe_code)]
 extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
     let Some(runtime) = RUNTIME.lock().upgrade() else {
+        // SAFETY: forwarding preserves the window procedure parameters supplied by Windows.
         return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
     };
 
@@ -61,10 +62,16 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
         WM_DISPLAYCHANGE => {
             runtime.displays.refresh();
         }
-        WM_DESTROY => unsafe {
-            PostQuitMessage(0);
-        },
-        _ => return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) },
+        WM_DESTROY => {
+            // SAFETY: PostQuitMessage takes a scalar exit code and posts to this thread's queue.
+            unsafe {
+                PostQuitMessage(0);
+            }
+        }
+        _ => {
+            // SAFETY: forwarding preserves the window procedure parameters supplied by Windows.
+            return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
+        }
     }
 
     LRESULT(0)
@@ -89,7 +96,6 @@ extern "system" fn win_event_proc(
         return;
     };
 
-    use events::WindowHandle;
     _ = runtime
         .window_event_sender
         .send(WindowEvent::Closed(WindowHandle(hwnd.0 as isize)));
@@ -102,6 +108,7 @@ struct DisplayRunner {
 
 impl MessagePumpRunner for DisplayRunner {
     fn new() -> Result<Self> {
+        // SAFETY: GetModuleHandleW takes no pointers when passed None and returns the current module.
         let instance = unsafe { GetModuleHandleW(None)? };
         let class_name = w!("MessageReceiver");
 
@@ -114,7 +121,8 @@ impl MessagePumpRunner for DisplayRunner {
         };
 
         // Register the class
-        let atom = unsafe { RegisterClassW(&wnd_class) };
+        // SAFETY: `wnd_class` remains valid for this synchronous registration call.
+        let atom = unsafe { RegisterClassW(&raw const wnd_class) };
         if atom == 0 {
             let err = Error::from_thread();
             if err.code() != ERROR_CLASS_ALREADY_EXISTS.to_hresult() {
@@ -122,6 +130,7 @@ impl MessagePumpRunner for DisplayRunner {
             }
         }
 
+        // SAFETY: all class, instance, and optional pointer arguments are valid for window creation.
         let hwnd = unsafe {
             CreateWindowExW(
                 WINDOW_EX_STYLE::default(),
@@ -143,6 +152,7 @@ impl MessagePumpRunner for DisplayRunner {
             return Err(Error::from_thread().into());
         }
 
+        // SAFETY: the callback has the required ABI and the requested hook uses no caller-owned data.
         let hook = unsafe {
             SetWinEventHook(
                 EVENT_OBJECT_DESTROY,
@@ -162,9 +172,11 @@ impl MessagePumpRunner for DisplayRunner {
     }
 
     fn on_message(&mut self, msg: &MSG) {
+        // SAFETY: `msg` is supplied by the Win32 message loop and is valid for translation.
         unsafe {
             _ = TranslateMessage(msg);
         }
+        // SAFETY: `msg` is supplied by the Win32 message loop and is valid for dispatch.
         unsafe {
             DispatchMessageW(msg);
         }
@@ -266,6 +278,7 @@ pub struct SafeMessagePump {
 impl Drop for SafeMessagePump {
     fn drop(&mut self) {
         let thread_id = self.thread_id;
+        // SAFETY: `thread_id` belongs to the message-pump thread created by this wrapper.
         unsafe {
             _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
         }
@@ -289,7 +302,7 @@ impl SafeMessagePump {
         let (thread_id_sender, thread_id_receiver) = oneshot::channel();
 
         let join_handle = thread::Builder::new()
-            .name(name.to_string())
+            .name(name.to_owned())
             .spawn(move || {
                 let mut runner = match R::new() {
                     Ok(runner) => runner,
@@ -300,19 +313,22 @@ impl SafeMessagePump {
                     }
                 };
 
+                // SAFETY: GetCurrentThreadId takes no pointers and returns this thread's identifier.
                 let thread_id = unsafe { GetCurrentThreadId() };
                 // Force creation of the thread's message queue before we report the thread ID.
                 // Without this, a fast shutdown can race with the first GetMessageW call:
                 // PostThreadMessageW(WM_QUIT) fails because the queue does not exist yet, and
                 // the subsequent join blocks forever waiting for a thread that will never wake.
                 let mut msg = MSG::default();
+                // SAFETY: `msg` is valid writable storage used only to initialize this thread's queue.
                 unsafe {
-                    _ = PeekMessageW(&mut msg, None, 0, 0, PM_NOREMOVE);
+                    _ = PeekMessageW(&raw mut msg, None, 0, 0, PM_NOREMOVE);
                 }
                 _ = thread_id_sender.send(thread_id);
 
                 loop {
-                    let message = unsafe { GetMessageW(&mut msg, None, 0, 0).0 };
+                    // SAFETY: `msg` is valid writable storage for the next thread message.
+                    let message = unsafe { GetMessageW(&raw mut msg, None, 0, 0).0 };
                     if message == 0 {
                         break; // Exit loop when WM_QUIT is received
                     }
@@ -329,6 +345,7 @@ impl SafeMessagePump {
 
         task_tracker.spawn(async move {
             cancellation_token.cancelled().await;
+            // SAFETY: `thread_id` belongs to the message-pump thread created above.
             unsafe {
                 _ = PostThreadMessageW(thread_id, WM_QUIT, WPARAM(0), LPARAM(0));
             }
@@ -341,6 +358,7 @@ impl SafeMessagePump {
     }
 
     pub fn send_message(&self, message: u32) {
+        // SAFETY: `self.thread_id` belongs to the message-pump thread created by this wrapper.
         unsafe {
             _ = PostThreadMessageW(self.thread_id, message, WPARAM(0), LPARAM(0));
         }

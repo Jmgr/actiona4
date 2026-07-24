@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[derive(Debug, Default)]
-pub struct ProcessSignal {}
+pub struct ProcessSignal;
 
 impl ProcessSignal {
     pub fn kill_by_pid(pid: Pid) -> Result<()> {

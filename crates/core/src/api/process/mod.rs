@@ -1,8 +1,9 @@
+#[cfg(unix)]
+use std::env;
 #[cfg(windows)]
 use std::path::Path;
 use std::{
     collections::HashMap,
-    env,
     fmt::{self, Display},
     process::Stdio,
 };
@@ -381,7 +382,7 @@ fn resolve_shell(override_shell: Option<&str>) -> (String, String) {
 
 #[cfg(windows)]
 fn resolve_shell(override_shell: Option<&str>) -> (String, String) {
-    let shell = override_shell.map_or_else(|| "powershell".to_string(), str::to_owned);
+    let shell = override_shell.map_or_else(|| "powershell".to_owned(), str::to_owned);
     let flag = shell_flag_for(&shell);
     (shell, flag)
 }
@@ -394,9 +395,9 @@ fn shell_flag_for(shell: &str) -> String {
         .unwrap_or(shell)
         .to_lowercase();
     match name.as_str() {
-        "cmd" => "/C".to_string(),
-        "powershell" | "pwsh" => "-Command".to_string(),
-        _ => "-c".to_string(),
+        "cmd" => "/C".to_owned(),
+        "powershell" | "pwsh" => "-Command".to_owned(),
+        _ => "-c".to_owned(),
     }
 }
 

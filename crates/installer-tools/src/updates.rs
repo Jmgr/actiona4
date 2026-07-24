@@ -2,6 +2,7 @@ use std::future::Future;
 
 use config::CommonConfig;
 use eyre::{Result, eyre};
+use tokio::runtime::Builder;
 use updater::Updater;
 use versions::SemVer;
 
@@ -34,9 +35,7 @@ fn with_runtime<F>(future: F) -> Result<Option<UpdateCheckResult>>
 where
     F: Future<Output = Result<Option<UpdateCheckResult>>>,
 {
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()?;
+    let runtime = Builder::new_current_thread().enable_all().build()?;
 
     runtime.block_on(future)
 }

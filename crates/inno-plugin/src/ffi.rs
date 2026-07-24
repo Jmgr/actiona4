@@ -11,6 +11,7 @@ pub fn parse_required_string(value: *const c_char, value_name: &str) -> Result<S
     }
 
     #[allow(unsafe_code)]
+    // SAFETY: null was rejected above; callers of this FFI helper must provide a NUL-terminated string.
     let value = unsafe { CStr::from_ptr(value) };
     let value = value.to_str().map_err(|error| eyre!(error))?.trim();
     if value.is_empty() {
@@ -51,6 +52,7 @@ pub fn clear_string_buffer(string_buffer: *mut c_char, string_buffer_capacity: u
     }
 
     #[allow(unsafe_code)]
+    // SAFETY: null and zero-length buffers were rejected above, so the first byte is writable.
     unsafe {
         *string_buffer = 0;
     }
@@ -90,6 +92,7 @@ fn write_c_string_to_buffer(
     let copy_len = bytes.len().min(string_buffer_capacity);
 
     #[allow(unsafe_code)]
+    // SAFETY: null and zero-length buffers were rejected above; `copy_len` never exceeds capacity.
     unsafe {
         ptr::copy_nonoverlapping(bytes.as_ptr().cast::<c_char>(), string_buffer, copy_len);
         if copy_len == string_buffer_capacity {

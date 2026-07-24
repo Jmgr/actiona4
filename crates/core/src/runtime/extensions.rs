@@ -27,12 +27,11 @@ impl Extensions {
     pub async fn new(
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
+        discover_extensions: bool,
     ) -> Result<Self> {
-        if Self::disable_extension_discovery_for_tests() {
-            let _ = task_tracker;
-            let _ = cancellation_token;
+        if !discover_extensions {
             return Ok(Self {
-                selection: AsyncResource::with_value(None, cancellation_token.clone()),
+                selection: AsyncResource::with_value(None, cancellation_token),
             });
         }
 
@@ -55,10 +54,6 @@ impl Extensions {
 
     pub async fn selection(&self) -> Result<Option<Arc<Host<SelectionProtocol>>>> {
         Ok(self.selection.wait_get().await?.as_ref().clone())
-    }
-
-    const fn disable_extension_discovery_for_tests() -> bool {
-        cfg!(test)
     }
 
     async fn lookup_extension<P: Protocol>(

@@ -463,6 +463,10 @@ impl JsFile {
 
     /// Returns the Unix file mode (e.g. `0o644`).
     #[platform(not = "windows")]
+    #[expect(
+        clippy::unused_async,
+        reason = "the JavaScript API is async on Unix and Windows"
+    )]
     pub async fn mode(&self, ctx: Ctx<'_>) -> Result<u32> {
         ctx.user_data().require_not_windows(&ctx)?;
         #[cfg(unix)]
@@ -489,6 +493,10 @@ impl JsFile {
     /// Sets the file mode.
     /// You should use the octal notation to specify the mode: `await file.setMode(0o445)`.
     #[platform(not = "windows")]
+    #[expect(
+        clippy::unused_async,
+        reason = "the JavaScript API is async on Unix and Windows"
+    )]
     pub async fn set_mode(&self, ctx: Ctx<'_>, mode: u32) -> Result<()> {
         ctx.user_data().require_not_windows(&ctx)?;
         #[cfg(unix)]

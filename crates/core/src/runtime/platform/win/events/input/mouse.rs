@@ -43,7 +43,7 @@ const fn get_xbutton_wparam(mouse_data: u32) -> u16 {
 }
 
 #[derive(Default)]
-pub struct MouseHook {}
+pub struct MouseHook;
 
 impl HookSpec for MouseHook {
     const ID: WINDOWS_HOOK_ID = WH_MOUSE_LL;
@@ -83,21 +83,21 @@ impl MouseInputDispatcher {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
-                    task_tracker.clone(),
+                    &task_tracker,
                 ),
                 mouse_move: TopicWrapper::new(
                     MouseMoveTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
-                    task_tracker.clone(),
+                    &task_tracker,
                 ),
                 mouse_scroll: TopicWrapper::new(
                     MouseScrollTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
-                    task_tracker.clone(),
+                    &task_tracker,
                 ),
                 subscribers: AtomicUsize::new(0),
                 message_pump,
@@ -132,6 +132,10 @@ impl MouseInputDispatcher {
         self.mouse_scroll.publish(value);
     }
 
+    #[expect(
+        clippy::unused_async,
+        reason = "the hook lifecycle trait uses async callbacks"
+    )]
     async fn on_start(&self) -> Result<()> {
         if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
             self.message_pump.send_message(MSG_START);
@@ -139,6 +143,10 @@ impl MouseInputDispatcher {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async,
+        reason = "the hook lifecycle trait uses async callbacks"
+    )]
     async fn on_stop(&self) -> Result<()> {
         if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
             self.message_pump.send_message(MSG_STOP);
@@ -225,11 +233,13 @@ unsafe extern "system" fn low_level_mouse_proc(
     w_param: WPARAM,
     l_param: LPARAM,
 ) -> LRESULT {
-    if n_code != HC_ACTION as i32 {
+    if n_code != i32::try_from(HC_ACTION).expect("HC_ACTION should fit in i32") {
+        // SAFETY: forwarding preserves the hook callback parameters supplied by Windows.
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     }
 
     let Some(dispatcher) = MOUSE_INPUT_DISPATCHER.lock().upgrade() else {
+        // SAFETY: forwarding preserves the hook callback parameters supplied by Windows.
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     };
 
@@ -237,10 +247,11 @@ unsafe extern "system" fn low_level_mouse_proc(
     let mouse_move = &dispatcher.mouse_move;
     let mouse_scroll = &dispatcher.mouse_scroll;
 
+    // SAFETY: Windows supplies `l_param` as a valid pointer to MSLLHOOKSTRUCT for this hook.
     let mouse_struct = unsafe { *(l_param.0 as *const MSLLHOOKSTRUCT) };
     let injected = mouse_struct.flags & LLMHF_INJECTED == LLMHF_INJECTED;
 
-    match w_param.0 as u32 {
+    match u32::try_from(w_param.0).expect("mouse message code should fit in u32") {
         WM_LBUTTONDOWN => mouse_buttons.publish(MouseButtonEvent::new(
             Button::Left,
             Direction::Press,
@@ -306,7 +317,11 @@ unsafe extern "system" fn low_level_mouse_proc(
         WM_MOUSEWHEEL => {
             // High word of mouseData is a signed delta; WHEEL_DELTA == 120.
             // Positive delta = scrolled away from user (up); we treat down/right as positive.
-            let wheel_delta = (mouse_struct.mouseData >> 16) as i16;
+            let wheel_delta = i16::from_ne_bytes(
+                u16::try_from(mouse_struct.mouseData >> 16)
+                    .expect("mouse wheel delta should fit in u16")
+                    .to_ne_bytes(),
+            );
             let length = -(i32::from(wheel_delta) / 120);
             if length != 0 {
                 mouse_scroll.publish(MouseScrollEvent::new(Axis::Vertical, length, injected));
@@ -321,7 +336,8 @@ unsafe extern "system" fn low_level_mouse_proc(
             }
         }
         _ => {}
-    };
+    }
 
+    // SAFETY: forwarding preserves the hook callback parameters supplied by Windows.
     unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
 }

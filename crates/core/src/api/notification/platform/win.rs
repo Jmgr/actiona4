@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{env::temp_dir, sync::Arc};
 
 use derive_more::Constructor;
 use parking_lot::Mutex;
@@ -6,7 +6,7 @@ use tokio::{select, sync::oneshot};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use uuid::Uuid;
 use winrt_toast_reborn::{
-    Action, Audio, Header, Input, Selection, Toast, ToastDuration, ToastManager,
+    Action, Audio, Header, Image, Input, Selection, Text, Toast, ToastDuration, ToastManager,
     content::{
         action::{ActionPlacement, ActivationType, HintButtonStyle},
         audio::{LoopingSound, Sound},
@@ -31,6 +31,10 @@ pub struct Notification {
 }
 
 impl Notification {
+    #[expect(
+        clippy::unused_async,
+        reason = "notification implementations expose a uniform async API"
+    )]
     pub async fn show(&self, options: NotificationOptions) -> Result<NotificationHandle> {
         let mut toast = build_toast(&options)?;
 
@@ -80,12 +84,20 @@ pub struct NotificationHandle {
 
 impl NotificationHandle {
     /// Programmatically close the notification.
+    #[expect(
+        clippy::unused_async,
+        reason = "notification implementations expose a uniform async API"
+    )]
     pub async fn close(self) -> Result<()> {
         let manager = ToastManager::new(built_info::AUMID);
         manager.remove(&self.tag)?;
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async,
+        reason = "notification implementations expose a uniform async API"
+    )]
     pub async fn update(&self, _options: NotificationOptions) -> Result<()> {
         // Windows Toast notifications do not support in-place updates.
         Ok(())
@@ -104,7 +116,7 @@ impl NotificationHandle {
 
         select! {
             result = receiver => Ok(result.unwrap_or(None)),
-            _ = cancellation_token.cancelled() => Ok(None),
+            () = cancellation_token.cancelled() => Ok(None),
         }
     }
 }
@@ -118,19 +130,15 @@ fn build_toast(options: &NotificationOptions) -> Result<Toast> {
     }
 
     if let Some(attribution) = &options.attribution_text {
-        toast.text3(
-            winrt_toast_reborn::Text::new(attribution.as_str())
-                .with_placement(TextPlacement::Attribution),
-        );
+        toast.text3(Text::new(attribution.as_str()).with_placement(TextPlacement::Attribution));
     }
 
     if let Some(icon) = &options.icon {
-        let temp_dir = std::env::temp_dir();
+        let temp_dir = temp_dir();
         let path = temp_dir.join("actiona4_notification_icon.png");
         icon.as_rgba8().save(&path)?;
 
-        let mut image = winrt_toast_reborn::Image::new_local(path)?
-            .with_placement(ImagePlacement::AppLogoOverride);
+        let mut image = Image::new_local(path)?.with_placement(ImagePlacement::AppLogoOverride);
         if options.icon_crop_circle {
             image = image.with_hint_crop(ImageHintCrop::Circle);
         }
@@ -138,12 +146,11 @@ fn build_toast(options: &NotificationOptions) -> Result<Toast> {
     }
 
     if let Some(hero) = &options.hero_image {
-        let temp_dir = std::env::temp_dir();
+        let temp_dir = temp_dir();
         let path = temp_dir.join("actiona4_notification_hero.png");
         hero.as_rgba8().save(&path)?;
 
-        let image =
-            winrt_toast_reborn::Image::new_local(path)?.with_placement(ImagePlacement::Hero);
+        let image = Image::new_local(path)?.with_placement(ImagePlacement::Hero);
         toast.image(2, image);
     }
 

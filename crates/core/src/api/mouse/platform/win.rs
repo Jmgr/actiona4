@@ -41,6 +41,10 @@ impl Button {
 }
 
 impl MouseImpl {
+    #[expect(
+        clippy::unused_async,
+        reason = "platform implementations share an async constructor API"
+    )]
     pub async fn new(runtime: Arc<Runtime>) -> Result<Self> {
         Ok(Self { runtime })
     }
@@ -56,6 +60,7 @@ impl MouseImpl {
         // Enigo's Windows absolute move path maps through primary-display metrics,
         // which breaks virtual-desktop coordinates on mixed-DPI multi-monitor setups.
         // Use the native cursor API so mouse positions stay aligned with display/capture rects.
+        // SAFETY: SetCursorPos takes only the requested screen coordinates.
         unsafe { SetCursorPos(target_position.x.into(), target_position.y.into()) }
             .map_err(|error| eyre!("{error}"))?;
 
@@ -63,9 +68,14 @@ impl MouseImpl {
     }
 
     #[allow(unsafe_code)]
+    #[expect(
+        clippy::unused_self,
+        reason = "mouse implementations expose an instance API on every platform"
+    )]
     pub fn position(&self) -> Result<Point> {
         let mut current_position = POINT::default();
-        unsafe { GetCursorPos(&mut current_position) }.map_err(|error| eyre!("{error}"))?;
+        // SAFETY: `current_position` is valid writable storage for the cursor coordinates.
+        unsafe { GetCursorPos(&raw mut current_position) }.map_err(|error| eyre!("{error}"))?;
         Ok(point(current_position.x, current_position.y))
     }
 }
@@ -74,7 +84,8 @@ impl MouseImpl {
 impl MouseImplTrait for MouseImpl {
     fn is_button_pressed(&self, button: Button) -> Result<bool> {
         #[allow(clippy::as_conversions)] // i16 → u16 bitwise check, not a numeric conversion
-        Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000u16 != 0 })
+        // SAFETY: GetAsyncKeyState takes a virtual-key code and returns a scalar state.
+        Ok(unsafe { GetAsyncKeyState(button.into_vkey()) as u16 & 0x8000_u16 != 0 })
     }
 
     async fn wait_for_button(

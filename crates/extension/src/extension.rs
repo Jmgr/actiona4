@@ -139,8 +139,14 @@ fn install_signal_handler() -> Result<Pin<Box<dyn Future<Output = ()> + Send + '
 }
 
 #[cfg(not(unix))]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the cfg-specific implementation must match the fallible Unix signal-handler API"
+)]
 fn install_signal_handler() -> Result<Pin<Box<dyn Future<Output = ()> + Send + 'static>>> {
+    use tokio::signal::ctrl_c;
+
     Ok(Box::pin(async {
-        let _ = tokio::signal::ctrl_c().await;
+        let _ = ctrl_c().await;
     }))
 }

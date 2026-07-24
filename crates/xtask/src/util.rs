@@ -3,6 +3,8 @@ use std::path::Path;
 use std::process::Command;
 
 use color_eyre::{Result, eyre::eyre};
+#[cfg(windows)]
+use tokio::fs::{remove_file, try_exists};
 
 pub fn run_command(command: &mut Command, failure_message: &str) -> Result<()> {
     let status = command.status()?;
@@ -18,8 +20,8 @@ pub fn run_command(command: &mut Command, failure_message: &str) -> Result<()> {
 
 #[cfg(windows)]
 pub async fn remove_file_if_exists(file_path: &Path) -> Result<()> {
-    if tokio::fs::try_exists(file_path).await? {
-        tokio::fs::remove_file(file_path).await?;
+    if try_exists(file_path).await? {
+        remove_file(file_path).await?;
     }
 
     Ok(())

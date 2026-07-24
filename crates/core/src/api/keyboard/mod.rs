@@ -45,7 +45,7 @@ impl Keyboard {
         #[cfg(unix)]
         let implementation = KeyboardImpl::new(runtime.clone());
         #[cfg(windows)]
-        let implementation = KeyboardImpl::default();
+        let implementation = KeyboardImpl;
 
         Ok(Self {
             runtime,

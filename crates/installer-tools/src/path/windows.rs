@@ -1,4 +1,4 @@
-use std::io::ErrorKind;
+use std::{env::var, io::ErrorKind, iter::once};
 
 use eyre::{Result, eyre};
 use winreg::{
@@ -55,33 +55,32 @@ pub(super) fn expand_environment_variables(path_entry: &str) -> String {
     let mut expanded_path_entry = String::new();
     let mut remaining_path = path_entry;
 
-    while let Some(prefix_index) = remaining_path.find('%') {
-        expanded_path_entry.push_str(&remaining_path[..prefix_index]);
-        let variable_start_index = prefix_index + 1;
+    while let Some((prefix, after_opening_delimiter)) = remaining_path.split_once('%') {
+        expanded_path_entry.push_str(prefix);
 
-        if let Some(suffix_offset) = remaining_path[variable_start_index..].find('%') {
-            let variable_end_index = variable_start_index + suffix_offset;
-            let variable_name = &remaining_path[variable_start_index..variable_end_index];
-
+        if let Some((variable_name, after_closing_delimiter)) =
+            after_opening_delimiter.split_once('%')
+        {
             if variable_name.is_empty() {
                 expanded_path_entry.push('%');
-                remaining_path = &remaining_path[variable_start_index..];
+                remaining_path = after_opening_delimiter;
                 continue;
             }
 
-            match std::env::var(variable_name) {
-                Ok(variable_value) => expanded_path_entry.push_str(&variable_value),
-                Err(_) => {
-                    expanded_path_entry
-                        .push_str(&remaining_path[prefix_index..=variable_end_index]);
-                }
+            if let Ok(variable_value) = var(variable_name) {
+                expanded_path_entry.push_str(&variable_value);
+            } else {
+                expanded_path_entry.push('%');
+                expanded_path_entry.push_str(variable_name);
+                expanded_path_entry.push('%');
             }
 
-            remaining_path = &remaining_path[variable_end_index + 1..];
+            remaining_path = after_closing_delimiter;
             continue;
         }
 
-        expanded_path_entry.push_str(&remaining_path[prefix_index..]);
+        expanded_path_entry.push('%');
+        expanded_path_entry.push_str(after_opening_delimiter);
         return expanded_path_entry;
     }
 
@@ -179,16 +178,16 @@ fn write_path_value(path_scope: PathScope, path_value: Option<&str>) -> Result<(
     Ok(())
 }
 
-fn registry_root_key(path_scope: PathScope) -> RegKey {
+const fn registry_root_key(path_scope: PathScope) -> RegKey {
     match path_scope {
         PathScope::User => RegKey::predef(HKEY_CURRENT_USER),
         PathScope::System => RegKey::predef(HKEY_LOCAL_MACHINE),
     }
 }
 
-fn encode_expand_string(path_value: &str) -> RegValue {
+fn encode_expand_string(path_value: &str) -> RegValue<'_> {
     let mut bytes = Vec::with_capacity((path_value.encode_utf16().count() + 1) * 2);
-    for path_value_unit in path_value.encode_utf16().chain(std::iter::once(0)) {
+    for path_value_unit in path_value.encode_utf16().chain(once(0)) {
         bytes.extend_from_slice(&path_value_unit.to_le_bytes());
     }
 
@@ -218,7 +217,7 @@ fn decode_registry_string(path_value_bytes: &[u8]) -> Result<String> {
     String::from_utf16(&path_value_units).map_err(|error| eyre!(error))
 }
 
-fn path_scope_name(path_scope: PathScope) -> &'static str {
+const fn path_scope_name(path_scope: PathScope) -> &'static str {
     match path_scope {
         PathScope::User => "user",
         PathScope::System => "system",

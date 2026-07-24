@@ -1,6 +1,7 @@
 #![allow(unsafe_code, dead_code, clippy::non_send_fields_in_send_ty)]
 
 use std::{
+    ffi::c_void,
     io,
     pin::Pin,
     task::{Context, Poll},
@@ -23,14 +24,17 @@ struct Waiting {
     tx_ptr: *mut Option<oneshot::Sender<()>>,
 }
 
+// SAFETY: access is coordinated by the owning future and the callback only consumes the one-shot sender.
 unsafe impl Sync for Waiting {}
+// SAFETY: the wait registration owns the callback state until `Drop` unregisters it.
 unsafe impl Send for Waiting {}
 
 impl Drop for Waiting {
     fn drop(&mut self) {
+        // SAFETY: `wait_object` and `tx_ptr` were created together by `RegisterWaitForSingleObject`.
         unsafe {
             if let Err(err) = UnregisterWaitEx(self.wait_object.as_raw(), None) {
-                panic!("failed to unregister: {}", err);
+                panic!("failed to unregister: {err}");
             }
             drop(Box::from_raw(self.tx_ptr));
         }
@@ -51,6 +55,7 @@ impl WaitHandle {
     }
 
     fn is_signaled(&self) -> bool {
+        // SAFETY: `handle` is supplied by the caller and is only queried with a zero timeout.
         unsafe { WaitForSingleObject(self.handle, 0) == WAIT_OBJECT_0 }
     }
 }
@@ -78,20 +83,23 @@ impl Future for WaitHandle {
             let tx_ptr = Box::into_raw(Box::new(Some(tx)));
             let mut wait_object = INVALID_HANDLE_VALUE;
 
+            // SAFETY: `wait_object` and `tx_ptr` are writable valid storage; the callback owns the
+            // boxed sender until the registration is unregistered.
             if let Err(err) = unsafe {
                 RegisterWaitForSingleObject(
-                    &mut wait_object,
+                    &raw mut wait_object,
                     inner.handle,
                     Some(callback),
                     #[allow(clippy::as_conversions)] // pointer cast
-                    Some(tx_ptr as *mut _),
+                    Some(tx_ptr.cast::<c_void>()),
                     INFINITE,
                     WT_EXECUTEINWAITTHREAD | WT_EXECUTEONLYONCE,
                 )
             } {
+                // SAFETY: registration failed, so no callback can access the boxed sender.
                 drop(unsafe { Box::from_raw(tx_ptr) });
                 return Poll::Ready(Err(err.into()));
-            };
+            }
 
             inner.waiting = Some(Waiting {
                 rx,
@@ -103,8 +111,9 @@ impl Future for WaitHandle {
 }
 
 #[allow(clippy::as_conversions)] // pointer cast required by Windows callback API
-unsafe extern "system" fn callback(ptr: *mut std::ffi::c_void, _timer_fired: bool) {
-    let complete = unsafe { &mut *(ptr as *mut Option<oneshot::Sender<()>>) };
+unsafe extern "system" fn callback(ptr: *mut c_void, _timer_fired: bool) {
+    // SAFETY: `ptr` was created from `Box<Option<Sender>>` when the wait was registered.
+    let complete = unsafe { &mut *ptr.cast::<Option<oneshot::Sender<()>>>() };
     if let Some(sender) = complete.take() {
         _ = sender.send(());
     }
@@ -134,6 +143,7 @@ mod tests {
         if initial_set {
             flags |= CREATE_EVENT_INITIAL_SET;
         }
+        // SAFETY: CreateEventExW is called with valid flags and no optional names or security attributes.
         unsafe {
             CreateEventExW(None, None, flags, EVENT_ALL_ACCESS.0).expect("CreateEventExW failed")
         }
@@ -156,11 +166,12 @@ mod tests {
         let waiter = WaitHandle::new(handle.as_raw());
         let signaler = async {
             sleep(Duration::from_millis(50)).await;
+            // SAFETY: `handle` wraps the event created for this test.
             unsafe { SetEvent(handle.as_raw()).unwrap() };
         };
 
         timeout(Duration::from_secs(2), async {
-            let (wait_res, _) = join!(waiter, signaler);
+            let (wait_res, ()) = join!(waiter, signaler);
             wait_res
         })
         .await
@@ -169,7 +180,12 @@ mod tests {
     }
 
     #[tokio::test]
+    #[expect(
+        clippy::unnecessary_safety_comment,
+        reason = "the test groups related event-handle FFI calls in one audited block"
+    )]
     async fn wait_handle_cancel_safe_drop() {
+        // SAFETY: all calls use the event handle created within this test.
         unsafe {
             let handle = SafeHandle::try_new(create_event(false)).unwrap();
 
@@ -191,7 +207,12 @@ mod tests {
     }
 
     #[tokio::test]
+    #[expect(
+        clippy::unnecessary_safety_comment,
+        reason = "the test groups related event-handle FFI calls in one audited block"
+    )]
     async fn wait_handle_manual_polling_matches_native() {
+        // SAFETY: all calls use the event handle created within this test.
         unsafe {
             let handle = SafeHandle::try_new(create_event(false)).unwrap();
 

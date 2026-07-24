@@ -1,7 +1,7 @@
 #![allow(unsafe_code)]
 
 use std::{
-    fmt::Debug,
+    fmt::{self, Debug},
     hash::{Hash, Hasher},
     sync::Arc,
 };
@@ -43,7 +43,7 @@ use crate::{
 struct WindowHandle(HWND);
 
 impl Debug for WindowHandle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Window").field(&self.0).finish()
     }
 }
@@ -57,6 +57,7 @@ impl Hash for WindowHandle {
 
 // SAFETY: HWND is an opaque handle (integer-like) safe to send/share across threads on Windows.
 unsafe impl Send for WindowHandle {}
+// SAFETY: HWND is an opaque handle (integer-like) safe to send/share across threads on Windows.
 unsafe impl Sync for WindowHandle {}
 
 #[derive(Debug)]
@@ -75,6 +76,8 @@ impl Default for WindowsWindowHandler {
 #[allow(clippy::as_conversions)] // pointer casts required by Windows callback API
 unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     let vec_ptr = lparam.0 as *mut Vec<HWND>;
+    // SAFETY: `lparam` was created from a mutable `Vec<HWND>` pointer in `all` and the callback
+    // is invoked synchronously by `EnumDesktopWindows` while that vector remains alive.
     unsafe {
         let vec = &mut *vec_ptr;
         vec.push(hwnd);
@@ -87,7 +90,9 @@ impl WindowsHandler for WindowsWindowHandler {
     #[allow(clippy::as_conversions)] // pointer casts required by Windows EnumDesktopWindows API
     fn all(&self) -> Result<Vec<WindowId>> {
         let mut result = Vec::new();
-        let result_ptr = &mut result as *mut Vec<HWND>;
+        let result_ptr = &raw mut result;
+        // SAFETY: The desktop handle is valid while enumerating, and `result_ptr` points to the
+        // local vector kept alive for the synchronous callback.
         unsafe {
             let hdesk = SafeDesktopHandle::try_new(OpenInputDesktop(
                 DESKTOP_CONTROL_FLAGS::default(),
@@ -110,12 +115,14 @@ impl WindowsHandler for WindowsWindowHandler {
 
     fn is_visible(&self, id: WindowId) -> Result<bool> {
         let handle = self.inner.lock().get_handle(id)?.clone();
+        // SAFETY: `handle` is retrieved from this handler's registry of Win32 window handles.
         Ok(unsafe { IsWindowVisible(*handle).as_bool() })
     }
 
     fn title(&self, id: WindowId) -> Result<String> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered Win32 window handle.
         let len = unsafe { GetWindowTextLengthW(*handle) };
         if len == 0 {
             return Ok(String::new());
@@ -124,6 +131,7 @@ impl WindowsHandler for WindowsWindowHandler {
         let buffer_len = len + 1;
         let mut buffer = vec![0; buffer_len.saturating_into()];
 
+        // SAFETY: `buffer` has space for the reported text length plus its terminating NUL.
         let len = unsafe { GetWindowTextW(*handle, &mut buffer) };
         if len == 0 {
             return Ok(String::new());
@@ -137,6 +145,7 @@ impl WindowsHandler for WindowsWindowHandler {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
         let mut buffer = [0; 255];
+        // SAFETY: `buffer` is valid writable storage for the class-name UTF-16 string.
         let len = unsafe { GetClassNameW(*handle, &mut buffer) };
         if len == 0 {
             return Ok(String::new());
@@ -149,6 +158,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn close(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered window and the message parameters are defaults for WM_CLOSE.
         unsafe { SendNotifyMessageW(*handle, WM_CLOSE, WPARAM::default(), LPARAM::default())? };
 
         Ok(())
@@ -158,7 +168,8 @@ impl WindowsHandler for WindowsWindowHandler {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let mut process_id = 0;
 
-        unsafe { GetWindowThreadProcessId(*handle, Some(&mut process_id)) };
+        // SAFETY: `process_id` is valid writable storage and `handle` is registered.
+        unsafe { GetWindowThreadProcessId(*handle, Some(&raw mut process_id)) };
 
         Ok(process_id.into())
     }
@@ -167,8 +178,9 @@ impl WindowsHandler for WindowsWindowHandler {
         let handle = self.inner.lock().get_handle(id)?.clone();
         let mut win_rect = RECT::default();
 
+        // SAFETY: `win_rect` is valid writable storage and `handle` is registered.
         unsafe {
-            GetWindowRect(*handle, &mut win_rect)?;
+            GetWindowRect(*handle, &raw mut win_rect)?;
         }
 
         let width = (win_rect.right - win_rect.left).max(0);
@@ -183,6 +195,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn set_active(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered window handle.
         unsafe {
             if !SetForegroundWindow(*handle).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
@@ -195,6 +208,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn minimize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered window handle.
         unsafe {
             if !ShowWindow(*handle, SW_MINIMIZE).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
@@ -207,6 +221,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn maximize(&self, id: WindowId) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered window handle.
         unsafe {
             if !ShowWindow(*handle, SW_MAXIMIZE).as_bool() {
                 return Err(windows_result::Error::from_thread().into());
@@ -219,6 +234,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered window and all position parameters are plain values.
         unsafe {
             SetWindowPos(
                 *handle,
@@ -228,7 +244,7 @@ impl WindowsHandler for WindowsWindowHandler {
                 0,
                 0,
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE,
-            )?
+            )?;
         };
 
         Ok(())
@@ -241,6 +257,7 @@ impl WindowsHandler for WindowsWindowHandler {
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
 
+        // SAFETY: `handle` is a registered window and all size parameters are plain values.
         unsafe {
             SetWindowPos(
                 *handle,
@@ -250,7 +267,7 @@ impl WindowsHandler for WindowsWindowHandler {
                 size.width.saturating_into(),
                 size.height.saturating_into(),
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE,
-            )?
+            )?;
         };
 
         Ok(())
@@ -262,6 +279,7 @@ impl WindowsHandler for WindowsWindowHandler {
 
     fn is_active(&self, id: WindowId) -> Result<bool> {
         let handle = self.inner.lock().get_handle(id)?.clone();
+        // SAFETY: GetForegroundWindow takes no pointers and returns an opaque handle.
         let foreground = unsafe { GetForegroundWindow() };
 
         if foreground.0.is_null() {
@@ -272,6 +290,7 @@ impl WindowsHandler for WindowsWindowHandler {
     }
 
     fn active_window(&self) -> Result<Option<WindowId>> {
+        // SAFETY: GetForegroundWindow takes no pointers and returns an opaque handle.
         let foreground = unsafe { GetForegroundWindow() };
         if foreground.0.is_null() {
             return Ok(None);

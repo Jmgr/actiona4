@@ -1,4 +1,4 @@
-use std::sync::OnceLock;
+use std::{io::ErrorKind, sync::OnceLock};
 
 use eyre::{Result, eyre};
 
@@ -12,7 +12,7 @@ pub fn unregister_notification_application(aumid: &str) -> Result<()> {
     match winrt_toast_reborn::unregister(aumid) {
         Ok(()) => Ok(()),
         Err(winrt_toast_reborn::WinToastError::Io(error))
-            if error.kind() == std::io::ErrorKind::NotFound =>
+            if error.kind() == ErrorKind::NotFound =>
         {
             Ok(())
         }

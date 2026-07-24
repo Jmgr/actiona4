@@ -30,7 +30,7 @@ pub fn release_file_paths(workspace_root: &Path) -> Vec<PathBuf> {
         .collect()
 }
 
-pub(crate) fn signing_arguments(file_description: &str) -> Vec<String> {
+pub fn signing_arguments(file_description: &str) -> Vec<String> {
     vec![
         "sign".to_owned(),
         "/v".to_owned(),

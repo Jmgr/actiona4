@@ -10,12 +10,11 @@ use std::{
 
 use ::config::{CommonConfig, DEFAULT_TELEMETRY, DEFAULT_UPDATE_CHECK};
 use actiona_common::sentry::setup_crash_reporting;
+#[cfg(unix)]
+use actiona_core::runtime::ensure_x11_session_available as core_ensure_x11_session_available;
 use actiona_core::{
     format_js_value_for_console,
-    runtime::{
-        Runtime, RuntimeOptions, RuntimePlatformSetup, WaitAtEnd,
-        ensure_x11_session_available as core_ensure_x11_session_available,
-    },
+    runtime::{Runtime, RuntimeOptions, RuntimePlatformSetup, WaitAtEnd},
     scripting::{self},
 };
 use clap::{
@@ -66,7 +65,8 @@ fn is_windows10_1607_or_newer() -> Option<bool> {
     const WINDOWS_1607_BUILD: u32 = 14393;
 
     let mut info = OSVERSIONINFOW::default();
-    unsafe { RtlGetVersion(&mut info).ok().ok()? };
+    // SAFETY: `info` is valid writable storage for the version structure.
+    unsafe { RtlGetVersion(&raw mut info).ok().ok()? };
 
     Some(info.dwBuildNumber >= WINDOWS_1607_BUILD)
 }
@@ -227,12 +227,12 @@ fn run_cli_with_args(args: Args) -> Result<()> {
         Some(false) => {
             eprintln!(
                 "Warning: You are running an unsupported version of Windows (older than 10 1607). Some features may not work properly."
-            )
+            );
         }
         None => {
             eprintln!(
                 "Warning: Unable to determine your version of Windows. Actiona Run is only supported on Windows 10 1607 or newer."
-            )
+            );
         }
     }
 
@@ -317,6 +317,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
             display_name: args.display.clone(),
             install_ctrl_c_handler: !args.command.is_repl(),
             show_tray_icon,
+            discover_extensions: true,
             seed: seed_from_command(&args.command),
         };
 

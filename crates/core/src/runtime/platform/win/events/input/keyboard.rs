@@ -68,7 +68,7 @@ static KEYBOARD_INPUT_DISPATCHER: LazyLock<Mutex<Weak<KeyboardInputDispatcher>>>
     LazyLock::new(|| Mutex::new(Weak::new()));
 
 #[derive(Default)]
-pub struct KeyboardHook {}
+pub struct KeyboardHook;
 
 impl HookSpec for KeyboardHook {
     const ID: WINDOWS_HOOK_ID = WH_KEYBOARD_LL;
@@ -116,14 +116,14 @@ impl KeyboardInputDispatcher {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
-                    task_tracker.clone(),
+                    &task_tracker,
                 ),
                 text: TopicWrapper::new(
                     KeyboardTextTopic {
                         dispatcher: me.clone(),
                     },
                     cancellation_token.clone(),
-                    task_tracker.clone(),
+                    &task_tracker,
                 ),
                 subscribers: AtomicUsize::new(0),
                 message_pump,
@@ -158,7 +158,7 @@ impl KeyboardInputDispatcher {
         // Injected events are synthetic (produced by enigo / SendInput), so they
         // don't correspond to physical key presses and must not participate in
         // repeat tracking either.
-        if key_id.vk_code == VK_PACKET.0 as u32 || is_injected {
+        if key_id.vk_code == u32::from(VK_PACKET.0) || is_injected {
             return false;
         }
 
@@ -222,9 +222,13 @@ impl KeyboardInputDispatcher {
             is_injected,
             name,
             is_repeat,
-        ))
+        ));
     }
 
+    #[expect(
+        clippy::unused_async,
+        reason = "the hook lifecycle trait uses async callbacks"
+    )]
     async fn on_start(&self) {
         if self.subscribers.fetch_add(1, Ordering::Relaxed) == 0 {
             self.sync_pressed_keys_with_current_state();
@@ -232,6 +236,10 @@ impl KeyboardInputDispatcher {
         }
     }
 
+    #[expect(
+        clippy::unused_async,
+        reason = "the hook lifecycle trait uses async callbacks"
+    )]
     async fn on_stop(&self) {
         if self.subscribers.fetch_sub(1, Ordering::Relaxed) == 1 {
             self.clear_pressed_keys();
@@ -293,23 +301,30 @@ unsafe extern "system" fn low_level_keyboard_proc(
     w_param: WPARAM,
     l_param: LPARAM,
 ) -> LRESULT {
-    if n_code != HC_ACTION as i32 {
+    if n_code != i32::try_from(HC_ACTION).expect("HC_ACTION should fit in i32") {
+        // SAFETY: forwarding preserves the hook callback parameters supplied by Windows.
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     }
 
     let Some(dispatcher) = KEYBOARD_INPUT_DISPATCHER.lock().upgrade() else {
+        // SAFETY: forwarding preserves the hook callback parameters supplied by Windows.
         return unsafe { CallNextHookEx(None, n_code, w_param, l_param) };
     };
 
+    // SAFETY: Windows supplies `l_param` as a valid pointer to KBDLLHOOKSTRUCT for this hook.
     let keyboard_struct = unsafe { *(l_param.0 as *const KBDLLHOOKSTRUCT) };
 
-    dispatcher.event_received(&keyboard_struct, w_param.0 as u32);
+    dispatcher.event_received(
+        &keyboard_struct,
+        u32::try_from(w_param.0).expect("keyboard message code should fit in u32"),
+    );
 
+    // SAFETY: forwarding preserves the hook callback parameters supplied by Windows.
     unsafe { CallNextHookEx(None, n_code, w_param, l_param) }
 }
 
 fn current_pressed_keys() -> HashSet<KeyId> {
-    (0u16..=255)
+    (0_u16..=255)
         .filter(|&vk_code| !skip_repeat_tracking_virtual_key(vk_code))
         .filter_map(current_pressed_key_id)
         .collect()
@@ -320,6 +335,7 @@ fn current_pressed_key_id(vk_code: u16) -> Option<KeyId> {
         return None;
     }
 
+    // SAFETY: MapVirtualKeyW takes only a virtual-key code and a mapping mode.
     let mapped_scan_code = unsafe { MapVirtualKeyW(u32::from(vk_code), MAPVK_VK_TO_VSC_EX) };
     key_id_from_mapped_scan_code(u32::from(vk_code), mapped_scan_code)
 }
@@ -332,8 +348,9 @@ fn key_id_from_mapped_scan_code(vk_code: u32, mapped_scan_code: u32) -> Option<K
 #[allow(unsafe_code)]
 fn is_virtual_key_pressed(key: VIRTUAL_KEY) -> bool {
     #[allow(clippy::as_conversions)]
+    // SAFETY: GetAsyncKeyState takes a virtual-key code and returns a scalar state.
     unsafe {
-        GetAsyncKeyState(i32::from(key.0)) as u16 & 0x8000u16 != 0
+        GetAsyncKeyState(i32::from(key.0)) as u16 & 0x8000_u16 != 0
     }
 }
 
@@ -356,12 +373,13 @@ fn key_name_from_llhook(scan_code: u32, is_extended: bool) -> Option<String> {
     // Build an lParam like WM_KEYDOWN:
     // bits 16..23 = scan code
     // bit 24      = extended (E0 prefix)
-    let mut lparam: i32 = (scan_code as i32) << 16;
+    let mut lparam = i32::try_from(scan_code).ok()? << 16;
     if is_extended {
         lparam |= 1 << 24;
     }
 
-    let mut buf = [0u16; 64];
+    let mut buf = [0_u16; 64];
+    // SAFETY: `buf` is valid writable UTF-16 storage for the key name.
     let len = unsafe { GetKeyNameTextW(lparam, &mut buf) };
     if len > 0 {
         Some(String::from_utf16_lossy(&buf[..len as usize]))
@@ -370,6 +388,10 @@ fn key_name_from_llhook(scan_code: u32, is_extended: bool) -> Option<String> {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "Win32 virtual-key codes are defined as 16-bit values"
+)]
 fn vk_to_enigo_key(vk_code: u32, scan_code: u32, is_extended: bool, keystate: &Keystate) -> Key {
     match VIRTUAL_KEY(vk_code as u16) {
         VK_RETURN if is_extended => Key::NumpadEnter,
@@ -630,9 +652,9 @@ const KEYSTATE_SIZE: usize = 256;
 pub(crate) struct Keystate([u8; KEYSTATE_SIZE]);
 
 pub(crate) fn get_keystate() -> Keystate {
-    let mut keystate = [0u8; KEYSTATE_SIZE];
+    let mut keystate = [0_u8; KEYSTATE_SIZE];
 
-    for &mod_vk in [
+    for &mod_vk in &[
         VK_SHIFT,
         VK_LSHIFT,
         VK_RSHIFT,
@@ -645,10 +667,9 @@ pub(crate) fn get_keystate() -> Keystate {
         VK_LWIN,
         VK_RWIN,
         VK_CAPITAL,
-    ]
-    .iter()
-    {
-        let s = unsafe { GetKeyState(mod_vk.0 as i32) as u16 };
+    ] {
+        // SAFETY: GetKeyState takes a virtual-key code and returns a scalar state.
+        let s = unsafe { GetKeyState(i32::from(mod_vk.0)) as u16 };
         if (s & 0x8000) != 0 {
             keystate[mod_vk.0 as usize] |= 0x80;
         } // key is down
@@ -665,6 +686,10 @@ pub(crate) fn get_keystate() -> Keystate {
     Keystate(keystate)
 }
 
+#[expect(
+    clippy::items_after_statements,
+    reason = "the translation flag is kept next to the Win32 call it configures"
+)]
 fn to_unicode(vk_code: u32, scan_code: u32, keystate: &Keystate) -> Option<String> {
     let mut buf = [0; 8];
 
@@ -675,6 +700,7 @@ fn to_unicode(vk_code: u32, scan_code: u32, keystate: &Keystate) -> Option<Strin
     //  >0 : number of UTF-16 units written
     //  -1 : dead key set (no char committed yet)
     //   0 : no translation
+    // SAFETY: `keystate` and `buf` are valid for the duration of this keyboard translation.
     let res = unsafe {
         ToUnicodeEx(
             vk_code,
@@ -687,13 +713,18 @@ fn to_unicode(vk_code: u32, scan_code: u32, keystate: &Keystate) -> Option<Strin
     };
 
     if res > 0 {
-        let text = String::from_utf16(&buf[..(res as usize)]).ok()?;
+        let length = usize::try_from(res).ok()?;
+        let text = String::from_utf16(&buf[..length]).ok()?;
         (!text.chars().all(char::is_control)).then_some(text)
     } else {
         None
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the Option combinator passes its owned String result directly"
+)]
 fn single_unicode_key(text: String) -> Option<Key> {
     let mut chars = text.chars();
     let character = chars.next()?;
@@ -701,6 +732,7 @@ fn single_unicode_key(text: String) -> Option<Key> {
 }
 
 fn get_keyboard_layout() -> HKL {
+    // SAFETY: both APIs take no caller-owned pointers and return opaque current-thread handles.
     unsafe { GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), None)) }
 }
 
@@ -713,21 +745,24 @@ mod tests {
     #[test]
     fn mapped_scan_code_preserves_main_enter_shape() {
         assert_eq!(
-            key_id_from_mapped_scan_code(VK_RETURN.0 as u32, 0x001c),
-            Some(KeyId::new(0x1c, VK_RETURN.0 as u32, false))
+            key_id_from_mapped_scan_code(u32::from(VK_RETURN.0), 0x001c),
+            Some(KeyId::new(0x1c, u32::from(VK_RETURN.0), false))
         );
     }
 
     #[test]
     fn mapped_scan_code_marks_extended_keys() {
         assert_eq!(
-            key_id_from_mapped_scan_code(VK_RETURN.0 as u32, 0xe01c),
-            Some(KeyId::new(0x1c, VK_RETURN.0 as u32, true))
+            key_id_from_mapped_scan_code(u32::from(VK_RETURN.0), 0xe01c),
+            Some(KeyId::new(0x1c, u32::from(VK_RETURN.0), true))
         );
     }
 
     #[test]
     fn mapped_scan_code_ignores_unmappable_keys() {
-        assert_eq!(key_id_from_mapped_scan_code(VK_RETURN.0 as u32, 0), None);
+        assert_eq!(
+            key_id_from_mapped_scan_code(u32::from(VK_RETURN.0), 0),
+            None
+        );
     }
 }

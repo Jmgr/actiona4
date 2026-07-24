@@ -77,14 +77,18 @@ pub struct App {
 }
 
 impl App {
-    pub const fn new(proxy: EventLoopProxy<AppEvent>) -> Self {
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "the non-Windows implementation clones the event-loop proxy"
+    )]
+    pub fn new(proxy: &EventLoopProxy<AppEvent>) -> Self {
         #[cfg(windows)]
         let _ = proxy;
         Self {
             active_selection: None,
             screenshot: None,
             #[cfg(not(windows))]
-            proxy,
+            proxy: proxy.clone(),
             #[cfg(not(windows))]
             cursor_tracker_stop: None,
             window: None,

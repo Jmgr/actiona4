@@ -57,7 +57,7 @@ pub async fn ask_screenshot(cancellation: CancellationToken) -> Result<Option<Im
 
     select! {
         result = receive_url(listener, cancellation.clone()) => result,
-        _ = cancellation.cancelled() => Ok(None),
+        () = cancellation.cancelled() => Ok(None),
     }
 }
 
@@ -98,7 +98,7 @@ async fn handle_callback(url: Url, cancellation: CancellationToken) -> Result<Op
             let path = redeem_token(&token, cancellation.clone()).await?;
             let image = select! {
                 result = Image::load(&path) => result?,
-                _ = cancellation.cancelled() => return Ok(None),
+                () = cancellation.cancelled() => return Ok(None),
             };
             Ok(Some(image))
         }
@@ -120,6 +120,6 @@ async fn redeem_token(token: &str, cancellation: CancellationToken) -> Result<St
                 .map(|p| p.to_string())
                 .map_err(|e| eyre!("failed to get file path: {e}"))
         } => result,
-        _ = cancellation.cancelled() => Err(eyre!("cancelled")),
+        () = cancellation.cancelled() => Err(eyre!("cancelled")),
     }
 }

@@ -44,6 +44,7 @@ impl<HS: HookSpec + Default> MessagePumpRunner for LowLevelHookRunner<HS> {
 
 impl<HS: HookSpec + Default> LowLevelHookRunner<HS> {
     pub fn start(&mut self) {
+        // SAFETY: the hook specification provides the required callback ABI and hook identifier.
         match unsafe { SetWindowsHookExW(HS::ID, HS::proc(), None, 0) } {
             Ok(hook) => {
                 if hook.is_invalid() {

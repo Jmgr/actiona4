@@ -7,6 +7,7 @@ use color_eyre::{
     eyre::{OptionExt, bail},
 };
 use derive_more::{Constructor, Display, From, Into};
+#[cfg(unix)]
 use rustix::thread::Pid as RustixPid;
 
 /// Process ID

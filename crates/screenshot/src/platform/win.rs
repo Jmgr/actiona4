@@ -28,6 +28,10 @@ pub struct Screen {
 }
 
 impl Screen {
+    #[expect(
+        clippy::unused_async,
+        reason = "screen implementations expose a uniform async constructor API"
+    )]
     pub async fn new(
         task_tracker: TaskTracker,
         cancellation_token: CancellationToken,
@@ -71,6 +75,7 @@ impl Screen {
 
 #[allow(unsafe_code)]
 fn capture_virtual_screen() -> Result<Capture> {
+    // SAFETY: GetSystemMetrics takes only metric constants and returns scalar dimensions.
     let (x, y, width, height) = unsafe {
         (
             GetSystemMetrics(SM_XVIRTUALSCREEN).into(),
@@ -84,13 +89,19 @@ fn capture_virtual_screen() -> Result<Capture> {
 
 #[allow(unsafe_code)]
 fn capture_rect_blocking(x: Si32, y: Si32, width: Si32, height: Si32) -> Result<Capture> {
+    // SAFETY: A null HWND requests the screen device context.
     let hdc_screen = unsafe { GetDC(None) };
+    // SAFETY: `hdc_screen` is the device context returned immediately above.
     let hdc_mem = unsafe { CreateCompatibleDC(Some(hdc_screen)) };
 
+    // SAFETY: The source context and requested dimensions are valid capture inputs.
     let hbm = unsafe { CreateCompatibleBitmap(hdc_screen, width.into(), height.into()) };
+    // SAFETY: `hbm` is compatible with `hdc_mem` and is selected for the lifetime of the copy.
     unsafe { SelectObject(hdc_mem, hbm.into()) };
 
     let result = (|| -> Result<Capture> {
+        // SAFETY: Both contexts and the selected bitmap are valid; the dimensions were checked by
+        // the caller before allocating the destination bitmap.
         unsafe {
             BitBlt(
                 hdc_mem,
@@ -133,11 +144,12 @@ fn capture_rect_blocking(x: Si32, y: Si32, width: Si32, height: Si32) -> Result<
             .checked_mul(height_u)
             .and_then(|pixels| pixels.checked_mul(4))
             .ok_or_else(|| color_eyre::eyre::eyre!("capture dimensions overflow"))?;
-        let mut data = vec![0u8; buffer_size];
+        let mut data = vec![0_u8; buffer_size];
 
         #[allow(clippy::as_conversions)]
-        let data_ptr = data.as_mut_ptr() as *mut c_void;
+        let data_ptr = data.as_mut_ptr().cast::<c_void>();
 
+        // SAFETY: `data` is sized for the requested 32-bit bitmap and `bitmap_info` is initialized.
         unsafe {
             GetDIBits(
                 hdc_mem,
@@ -145,7 +157,7 @@ fn capture_rect_blocking(x: Si32, y: Si32, width: Si32, height: Si32) -> Result<
                 0,
                 height.saturating_into(),
                 Some(data_ptr),
-                &mut bitmap_info,
+                &raw mut bitmap_info,
                 DIB_RGB_COLORS,
             );
         }
@@ -156,6 +168,7 @@ fn capture_rect_blocking(x: Si32, y: Si32, width: Si32, height: Si32) -> Result<
         })
     })();
 
+    // SAFETY: These handles were created above and are released after all GDI operations finish.
     unsafe {
         ReleaseDC(None, hdc_screen);
         _ = DeleteDC(hdc_mem);

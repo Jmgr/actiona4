@@ -113,6 +113,7 @@ const fn has_minimum_compression_savings(uncompressed_size: usize, compressed_si
     compressed_size <= uncompressed_size * (100 - MINIMUM_COMPRESSION_SAVINGS_PERCENT) / 100
 }
 
+#[must_use]
 pub fn guess_format(contents: &[u8]) -> Format {
     let contents_format = FileFormat::from_bytes(contents);
 
@@ -161,7 +162,7 @@ mod tests {
                 state ^= state << 13;
                 state ^= state >> 17;
                 state ^= state << 5;
-                u8::try_from(state).unwrap()
+                state.to_le_bytes()[0]
             })
             .collect::<Vec<_>>();
         assert!(!guess_format(&incompressible).should_compress);

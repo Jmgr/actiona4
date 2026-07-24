@@ -3,6 +3,7 @@ use std::{fs::File, io::Write, path::Path, time::SystemTime};
 use chrono::{DateTime as ChronoDateTime, Datelike, Timelike, Utc};
 use color_eyre::{Result, eyre::eyre};
 use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
+use tokio::fs::metadata;
 use zip::{CompressionMethod, DateTime, ZipWriter, write::SimpleFileOptions};
 
 use crate::{
@@ -55,7 +56,7 @@ async fn read_archive_entries(workspace_root: &Path) -> Result<Vec<ArchiveEntry>
             return Err(eyre!("File not found: {}", source_path.display()));
         }
 
-        let metadata = tokio::fs::metadata(&source_path).await?;
+        let metadata = metadata(&source_path).await?;
         let contents =
             read_packaged_file_contents(workspace_root, &archive_file.packaged_file).await?;
         archive_entries.push(ArchiveEntry {
@@ -91,14 +92,15 @@ fn write_zip_archive(archive_path: &Path, archive_entries: Vec<ArchiveEntry>) ->
 
 fn zip_datetime_from_system_time(system_time: SystemTime) -> DateTime {
     let datetime: ChronoDateTime<Utc> = system_time.into();
-    let clamped_year = datetime.year().clamp(1980, 2107) as u16;
-    let (month, day, hour, minute, second) = if clamped_year == datetime.year() as u16 {
+    let clamped_year = u16::try_from(datetime.year().clamp(1980, 2107))
+        .expect("clamped ZIP timestamp year should fit in u16");
+    let (month, day, hour, minute, second) = if i32::from(clamped_year) == datetime.year() {
         (
-            datetime.month() as u8,
-            datetime.day() as u8,
-            datetime.hour() as u8,
-            datetime.minute() as u8,
-            datetime.second() as u8,
+            u8::try_from(datetime.month()).expect("month should fit in u8"),
+            u8::try_from(datetime.day()).expect("day should fit in u8"),
+            u8::try_from(datetime.hour()).expect("hour should fit in u8"),
+            u8::try_from(datetime.minute()).expect("minute should fit in u8"),
+            u8::try_from(datetime.second()).expect("second should fit in u8"),
         )
     } else if clamped_year == 1980 {
         (1, 1, 0, 0, 0)

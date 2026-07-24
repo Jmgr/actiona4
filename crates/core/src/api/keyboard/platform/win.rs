@@ -12,18 +12,30 @@ use crate::runtime::platform::win::events::input::keyboard::{
 };
 
 #[derive(Clone, Debug, Default)]
-pub struct KeyboardImpl {}
+pub struct KeyboardImpl;
 
 impl KeyboardImpl {
+    #[expect(
+        clippy::unused_self,
+        reason = "keyboard implementations expose an instance API on every platform"
+    )]
     pub fn is_key_pressed(&self, key: Key) -> Result<bool> {
         let key = VIRTUAL_KEY::try_from(key).map_err(|err| eyre!("invalid key: {err}"))?;
 
         Ok(is_virtual_key_pressed(key))
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "keyboard implementations expose an instance API on every platform"
+    )]
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "keyboard implementations share a fallible platform API"
+    )]
     pub fn get_pressed_keys(&self) -> Result<Vec<Key>> {
         let keystate = get_keystate();
-        let keys: HashSet<Key> = (0u16..=255)
+        let keys: HashSet<Key> = (0_u16..=255)
             .filter(|&vk| !skip_virtual_key(vk))
             .filter(|&vk| is_virtual_key_pressed(VIRTUAL_KEY(vk)))
             .map(|vk| vk_to_enigo_key_with_snapshot(u32::from(vk), &keystate))
@@ -36,8 +48,9 @@ impl KeyboardImpl {
 #[allow(unsafe_code)]
 fn is_virtual_key_pressed(key: VIRTUAL_KEY) -> bool {
     #[allow(clippy::as_conversions)] // i16 → u16 bitwise check, not a numeric conversion
+    // SAFETY: GetAsyncKeyState takes a virtual-key code and returns a scalar state.
     unsafe {
-        GetAsyncKeyState(key.0.into()) as u16 & 0x8000u16 != 0
+        GetAsyncKeyState(key.0.into()) as u16 & 0x8000_u16 != 0
     }
 }
 
