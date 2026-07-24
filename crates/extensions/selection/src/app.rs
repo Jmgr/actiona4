@@ -77,9 +77,12 @@ pub struct App {
 }
 
 impl App {
-    #[expect(
-        clippy::missing_const_for_fn,
-        reason = "the non-Windows implementation clones the event-loop proxy"
+    #[cfg_attr(
+        windows,
+        expect(
+            clippy::missing_const_for_fn,
+            reason = "the non-Windows implementation clones the event-loop proxy"
+        )
     )]
     pub fn new(proxy: &EventLoopProxy<AppEvent>) -> Self {
         #[cfg(windows)]

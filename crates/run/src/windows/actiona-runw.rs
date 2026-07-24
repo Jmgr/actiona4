@@ -2,7 +2,14 @@
 
 use std::process::ExitCode;
 
+#[cfg(windows)]
 fn main() -> ExitCode {
+    main_impl()
+}
+
+// `main_impl` is `const` only on non-Windows, so `main` can be `const` there too.
+#[cfg(not(windows))]
+const fn main() -> ExitCode {
     main_impl()
 }
 

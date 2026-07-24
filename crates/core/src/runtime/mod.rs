@@ -1,10 +1,11 @@
+#[cfg(windows)]
+use std::env::args;
 #[cfg(test)]
 use std::sync::OnceLock;
 #[cfg(windows)]
 #[cfg_attr(test, allow(unused_imports))]
 use std::sync::atomic::AtomicBool;
 use std::{
-    env::args,
     future::Future,
     sync::{
         Arc,
