@@ -59,6 +59,14 @@ When a change touches platform-specific code, check the run rather than assuming
 
 Only read CI state. Do not re-run, cancel, or dispatch workflows without being asked.
 
+## Code conventions
+
+- Never use `std::sync::Mutex` or `std::sync::RwLock`. Use `parking_lot::Mutex` /
+  `parking_lot::RwLock` instead: they have no poisoning, so `lock()` returns the guard
+  directly rather than a `Result` that every call site has to unwrap, and `new` is a `const fn`
+  so they work in `static`s. `tokio::sync::Mutex` remains the right choice when the lock must
+  be held across an `await`.
+
 ## Formatting and linting
 
 - After every change, run `cargo make format` and `cargo make lint`.
