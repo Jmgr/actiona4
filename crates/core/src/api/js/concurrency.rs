@@ -117,7 +117,14 @@ impl JsConcurrency {
             };
             futures.push(Box::pin(cancel_fut));
 
-            let (result, idx, _rest) = select_all(futures).await;
+            let (result, idx, rest) = select_all(futures).await;
+
+            // `PromiseFuture` registers itself with QuickJS while it is alive.
+            // Dropping the losing futures before cancelling their promises
+            // prevents a cancellation from leaving an unpolled future in the
+            // runtime's pending queue, which would make `Engine::idle()` wait
+            // forever at script shutdown.
+            drop(rest);
 
             // Cancel all losers.
             for (i, p) in promises.iter().enumerate() {
@@ -133,5 +140,24 @@ impl JsConcurrency {
 
             result
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::runtime::Runtime;
+
+    #[test]
+    fn race_cancels_losers_without_leaving_quickjs_pending() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            script_engine
+                .eval_async::<()>(
+                    "
+                    await concurrency.race([sleep(10), sleep(1000)]);
+                    ",
+                )
+                .await
+                .expect("race should resolve with the first task");
+        });
     }
 }
