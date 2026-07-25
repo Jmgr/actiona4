@@ -14,6 +14,8 @@ mod signing;
 mod symbols;
 mod typescript;
 mod util;
+#[cfg(unix)]
+mod windows_lint;
 mod workspace;
 
 use clap::Parser;
@@ -48,6 +50,8 @@ async fn main() -> Result<()> {
         Commands::AppImageNoSign => appimage::build_appimage(&workspace_root, false).await?,
         Commands::Doc => generate_docs(&workspace_root).await?,
         Commands::LintTs => lint_e2e_typescript(&workspace_root)?,
+        #[cfg(unix)]
+        Commands::LintWindows => windows_lint::lint_windows(&workspace_root).await?,
         Commands::Symbols => generate_symbols(&workspace_root)?,
         Commands::Symbolicate { dump } => symbolicate(&workspace_root, &dump)?,
         #[cfg(windows)]

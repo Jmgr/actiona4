@@ -120,6 +120,12 @@ args = ["bench", "${@}"]
 [tasks.lint]
 dependencies = ["clippy", "lint-ts"]
 
+[tasks.lint-windows]
+condition = { platforms = ["linux"] }
+description = "Lint the Windows-only code from Linux by cross-compiling the workspace with clippy. Downloads ~1.2 GB of Windows SDK and OpenCV headers into target/windows-cross on first run."
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "lint-windows"]
+
 [tasks.install-rustfmt]
 cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
 command = "rustup"

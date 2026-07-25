@@ -21,6 +21,9 @@ pub enum Commands {
     Doc,
     /// Lint and type-check end-to-end TypeScript scripts and shared declarations.
     LintTs,
+    /// Cross-compile the workspace for Windows and run clippy on it (Linux only).
+    #[cfg(unix)]
+    LintWindows,
     /// Generate Breakpad symbol files (.sym) and strip release binaries.
     Symbols,
     /// Symbolicate a crash dump archive or loose minidump using the release symbol files.

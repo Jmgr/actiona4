@@ -38,6 +38,7 @@ TypeScript declaration files:
 - `cargo make test` — unit and integration tests.
 - `cargo make e2e` — builds `actiona-run`, then runs the TypeScript end-to-end tests.
 - `cargo make doc` — regenerates the TypeScript declarations (Linux only).
+- `cargo make lint-windows` — lints the Windows-only code from Linux (Linux only).
 
 ## CI
 
@@ -63,6 +64,17 @@ Only read CI state. Do not re-run, cancel, or dispatch workflows without being a
 - After every change, run `cargo make format` and `cargo make lint`.
 - Do not run `cargo fmt` or `cargo clippy` directly — the `cargo make` tasks wrap them with
   the required toolchain, flags and extra steps (`derivefmt`, `sort`, TypeScript linting).
+
+`cargo make lint-windows` runs clippy over the whole workspace for `x86_64-pc-windows-msvc`
+through `cargo-xwin`, so `cfg(windows)` code can be linted without a Windows machine. It
+needs Clang 19 or newer (`sudo apt install clang-19`) and `7z` (`sudo apt install 7zip`),
+installs `cargo-xwin`, the Rust target and the LLVM tools itself, and on first run
+downloads about 1.2 GB
+into `target/windows-cross`: the Microsoft CRT and Windows SDK headers, which come under the
+MSVC redistributable license, and the prebuilt Windows OpenCV package the `opencv` crate
+needs headers from. Set `ACTIONA_WINDOWS_CROSS_DIR` to keep those downloads somewhere
+`cargo clean` will not reach; the `windows-cross-lint` CI job does that so it can cache them.
+Nothing is linked or run, so it complements the Windows CI jobs rather than replacing them.
 
 ## Git
 

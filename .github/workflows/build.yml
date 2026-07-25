@@ -34,8 +34,9 @@ jobs:
             ~/.cargo/bin/cargo-make
             ~/.cargo/bin/cargo-derivefmt
             ~/.cargo/bin/cargo-sort
+            ~/.cargo/bin/cargo-xwin
             ~/.cargo/bin/dump_syms
-          key: cargo-tools-linux-v5-${{ hashFiles('rust-toolchain.toml') }}
+          key: cargo-tools-linux-v6-${{ hashFiles('rust-toolchain.toml') }}
 
       - name: Install cargo-make
         run: |
@@ -55,6 +56,12 @@ jobs:
             cargo install --locked cargo-sort
           fi
 
+      - name: Install cargo-xwin
+        run: |
+          if ! command -v cargo-xwin >/dev/null 2>&1; then
+            cargo install --locked cargo-xwin
+          fi
+
       - name: Install dump_syms
         run: |
           if ! command -v dump_syms >/dev/null 2>&1; then
@@ -69,6 +76,7 @@ jobs:
             ~/.cargo/bin/cargo-make
             ~/.cargo/bin/cargo-derivefmt
             ~/.cargo/bin/cargo-sort
+            ~/.cargo/bin/cargo-xwin
             ~/.cargo/bin/dump_syms
           key: ${{ steps.cache-linux-tools.outputs.cache-primary-key }}
 
@@ -78,6 +86,7 @@ jobs:
             cargo-make \
             cargo-derivefmt \
             cargo-sort \
+            cargo-xwin \
             dump_syms
 
       - name: Upload Linux cargo tools artifact
@@ -276,6 +285,57 @@ jobs:
 
       - name: Run lint
         run: cargo make lint
+
+  windows-cross-lint:
+    name: Windows Cross Lint
+    runs-on: ubuntu-24.04
+    needs:
+      - format
+      - tooling-linux
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-bin: false
+          shared-key: windows-cross-lint
+
+      - name: Download Linux cargo tools artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: cargo-tools-linux
+          path: ${{ runner.temp }}
+
+      - name: Install Linux cargo tools artifact
+        run: |
+          mkdir -p ~/.cargo/bin
+          tar -xf "${RUNNER_TEMP}/cargo-tools-linux.tar" -C ~/.cargo/bin
+
+      # Only what cross-compiling needs: a Clang recent enough for the Microsoft STL, libclang
+      # for the OpenCV binding generator, 7z to unpack the Windows OpenCV package, and clang
+      # and mold because Makefile.toml links host artifacts with them.
+      - name: Install Windows cross-lint dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y 7zip clang clang-19 libclang-dev mold
+
+      - name: Cache Windows SDK and OpenCV headers
+        uses: actions/cache@v5
+        with:
+          path: ${{ runner.temp }}/windows-cross
+          key: windows-cross-v1-${{ hashFiles('crates/xtask/src/windows_lint.rs') }}
+          restore-keys: windows-cross-v1-
+
+      - name: Run Windows cross-lint
+        env:
+          ACTIONA_WINDOWS_CROSS_DIR: ${{ runner.temp }}/windows-cross
+        run: cargo make lint-windows
 
   doc:
     name: Docs

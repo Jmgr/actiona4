@@ -10109,6 +10109,7 @@ dependencies = [
  "installer-tools",
  "reqwest",
  "serde_json",
+ "sha2",
  "tempfile",
  "tokio",
  "toml",
