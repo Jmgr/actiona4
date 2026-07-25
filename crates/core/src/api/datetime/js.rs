@@ -2,8 +2,11 @@
 
 use std::time::SystemTime;
 
-use chrono::{Datelike, Duration, Local, NaiveTime, TimeZone, Weekday};
 use derive_more::Display;
+use jiff::{
+    Zoned,
+    civil::{Date, Time, Weekday},
+};
 use macros::{FromJsObject, FromSerde, IntoSerde, js_class, js_enum, js_methods, options};
 use rquickjs::{
     Ctx, JsLifetime, Object, Promise, Result,
@@ -70,13 +73,13 @@ pub enum JsDayOfWeek {
 impl From<JsDayOfWeek> for Weekday {
     fn from(day: JsDayOfWeek) -> Self {
         match day {
-            JsDayOfWeek::Monday => Self::Mon,
-            JsDayOfWeek::Tuesday => Self::Tue,
-            JsDayOfWeek::Wednesday => Self::Wed,
-            JsDayOfWeek::Thursday => Self::Thu,
-            JsDayOfWeek::Friday => Self::Fri,
-            JsDayOfWeek::Saturday => Self::Sat,
-            JsDayOfWeek::Sunday => Self::Sun,
+            JsDayOfWeek::Monday => Self::Monday,
+            JsDayOfWeek::Tuesday => Self::Tuesday,
+            JsDayOfWeek::Wednesday => Self::Wednesday,
+            JsDayOfWeek::Thursday => Self::Thursday,
+            JsDayOfWeek::Friday => Self::Friday,
+            JsDayOfWeek::Saturday => Self::Saturday,
+            JsDayOfWeek::Sunday => Self::Sunday,
         }
     }
 }
@@ -294,6 +297,7 @@ impl JsDatetime {
                 options.day_of_week,
                 options.day_of_month,
             )
+            .into_js_result(&ctx)?
             .duration_since(SystemTime::now())
             .unwrap_or_default();
             cancel_on(&token, sleep(duration))
@@ -322,19 +326,22 @@ fn next_occurrence_of_schedule(
     second: Option<u32>,
     day_of_week: Option<JsDayOfWeek>,
     day_of_month: Option<u32>,
-) -> SystemTime {
-    let target_time =
-        NaiveTime::from_hms_opt(hour.unwrap_or(0), minute.unwrap_or(0), second.unwrap_or(0))
-            .expect("hour, minute and second already validated");
-    let now = Local::now();
-    let mut candidate = now.date_naive();
+) -> color_eyre::Result<SystemTime> {
+    let target_time = Time::new(
+        i8::try_from(hour.unwrap_or(0))?,
+        i8::try_from(minute.unwrap_or(0))?,
+        i8::try_from(second.unwrap_or(0))?,
+        0,
+    )?;
+    let day_of_month = day_of_month.map(i8::try_from).transpose()?;
+    let now = Zoned::now();
+    let time_zone = now.time_zone().clone();
+    let occurrence_on = |date: Date| date.to_datetime(target_time).to_zoned(time_zone.clone());
+    let mut candidate = now.date();
 
     // If today's slot is not strictly in the future, start searching from tomorrow.
-    let today_dt = Local
-        .from_local_datetime(&candidate.and_time(target_time))
-        .unwrap();
-    if today_dt <= now {
-        candidate += Duration::days(1);
+    if occurrence_on(candidate)? <= now {
+        candidate = candidate.tomorrow()?;
     }
 
     loop {
@@ -343,11 +350,10 @@ fn next_occurrence_of_schedule(
         let day_of_month_matches = day_of_month.is_none_or(|day| candidate.day() == day);
 
         if day_of_week_matches && day_of_month_matches {
-            let naive = candidate.and_time(target_time);
-            return SystemTime::from(Local.from_local_datetime(&naive).unwrap());
+            return Ok(SystemTime::from(occurrence_on(candidate)?));
         }
 
-        candidate += Duration::days(1);
+        candidate = candidate.tomorrow()?;
     }
 }
 
@@ -355,7 +361,7 @@ fn next_occurrence_of_schedule(
 mod tests {
     use std::time::{Duration, SystemTime};
 
-    use chrono::{Datelike, Local, Timelike};
+    use jiff::Zoned;
 
     use super::JsDayOfWeek;
 
@@ -367,7 +373,8 @@ mod tests {
         for hour in [0_u32, 9, 13, 23] {
             for minute in [0_u32, 15, 30, 59] {
                 let next =
-                    super::next_occurrence_of_schedule(Some(hour), Some(minute), None, None, None);
+                    super::next_occurrence_of_schedule(Some(hour), Some(minute), None, None, None)
+                        .unwrap();
                 assert!(
                     next > now,
                     "h={hour} m={minute}: next occurrence should be in the future"
@@ -375,12 +382,12 @@ mod tests {
             }
         }
         // No constraints: next midnight
-        assert!(super::next_occurrence_of_schedule(None, None, None, None, None) > now);
+        assert!(super::next_occurrence_of_schedule(None, None, None, None, None).unwrap() > now);
     }
 
     #[test]
     fn next_occurrence_respects_day_of_week() {
-        use chrono::Weekday;
+        use jiff::civil::Weekday;
         for dow in [
             JsDayOfWeek::Monday,
             JsDayOfWeek::Tuesday,
@@ -390,8 +397,9 @@ mod tests {
             JsDayOfWeek::Saturday,
             JsDayOfWeek::Sunday,
         ] {
-            let next = super::next_occurrence_of_schedule(None, None, None, Some(dow), None);
-            let next_local = chrono::DateTime::<Local>::from(next);
+            let next =
+                super::next_occurrence_of_schedule(None, None, None, Some(dow), None).unwrap();
+            let next_local = Zoned::try_from(next).unwrap();
             let expected = Weekday::from(dow);
             assert_eq!(
                 next_local.weekday(),
@@ -404,16 +412,22 @@ mod tests {
     #[test]
     fn next_occurrence_respects_day_of_month() {
         for dom in [1_u32, 15, 28] {
-            let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
-            let next_local = chrono::DateTime::<Local>::from(next);
-            assert_eq!(next_local.day(), dom, "day of month should match");
+            let next =
+                super::next_occurrence_of_schedule(None, None, None, None, Some(dom)).unwrap();
+            let next_local = Zoned::try_from(next).unwrap();
+            assert_eq!(
+                u32::try_from(next_local.day()).unwrap(),
+                dom,
+                "day of month should match"
+            );
         }
     }
 
     #[test]
     fn next_occurrence_respects_hour_minute_second() {
-        let next = super::next_occurrence_of_schedule(Some(13), Some(15), Some(30), None, None);
-        let next_local = chrono::DateTime::<Local>::from(next);
+        let next =
+            super::next_occurrence_of_schedule(Some(13), Some(15), Some(30), None, None).unwrap();
+        let next_local = Zoned::try_from(next).unwrap();
         assert_eq!(next_local.hour(), 13);
         assert_eq!(next_local.minute(), 15);
         assert_eq!(next_local.second(), 30);
@@ -431,7 +445,8 @@ mod tests {
             JsDayOfWeek::Saturday,
             JsDayOfWeek::Sunday,
         ] {
-            let next = super::next_occurrence_of_schedule(None, None, None, Some(dow), None);
+            let next =
+                super::next_occurrence_of_schedule(None, None, None, Some(dow), None).unwrap();
             let diff = next.duration_since(now).unwrap();
             #[allow(clippy::duration_suboptimal_units)]
             let is_within_one_week = diff <= Duration::from_secs(7 * 24 * 3600);
@@ -446,7 +461,8 @@ mod tests {
     fn next_occurrence_day_of_month_within_two_months() {
         let now = SystemTime::now();
         for dom in 1..=31_u32 {
-            let next = super::next_occurrence_of_schedule(None, None, None, None, Some(dom));
+            let next =
+                super::next_occurrence_of_schedule(None, None, None, None, Some(dom)).unwrap();
             let diff = next.duration_since(now).unwrap();
             #[allow(clippy::duration_suboptimal_units)]
             let is_within_two_months = diff <= Duration::from_secs(63 * 24 * 3600);

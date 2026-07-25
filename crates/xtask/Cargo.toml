@@ -12,10 +12,10 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-chrono = { workspace = true, features = ["std"] }
 clap = { workspace = true, features = ["derive"] }
 color-eyre.workspace = true
 installer-tools = { path = "../installer-tools" }
+jiff.workspace = true
 reqwest.workspace = true
 serde_json.workspace = true
 sha2.workspace = true

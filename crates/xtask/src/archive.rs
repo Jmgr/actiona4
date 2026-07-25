@@ -1,8 +1,8 @@
 use std::{fs::File, io::Write, path::Path, time::SystemTime};
 
-use chrono::{DateTime as ChronoDateTime, Datelike, Timelike, Utc};
 use color_eyre::{Result, eyre::eyre};
 use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
+use jiff::{Timestamp, tz::TimeZone};
 use tokio::fs::metadata;
 use zip::{CompressionMethod, DateTime, ZipWriter, write::SimpleFileOptions};
 
@@ -65,7 +65,7 @@ async fn read_archive_entries(workspace_root: &Path) -> Result<Vec<ArchiveEntry>
                 .destination_name_for(PackagedFilePlatform::Windows)
                 .to_owned(),
             contents,
-            last_modified_time: zip_datetime_from_system_time(metadata.modified()?),
+            last_modified_time: zip_datetime_from_system_time(metadata.modified()?)?,
         });
     }
 
@@ -90,11 +90,10 @@ fn write_zip_archive(archive_path: &Path, archive_entries: Vec<ArchiveEntry>) ->
     Ok(())
 }
 
-fn zip_datetime_from_system_time(system_time: SystemTime) -> DateTime {
-    let datetime: ChronoDateTime<Utc> = system_time.into();
-    let clamped_year = u16::try_from(datetime.year().clamp(1980, 2107))
-        .expect("clamped ZIP timestamp year should fit in u16");
-    let (month, day, hour, minute, second) = if i32::from(clamped_year) == datetime.year() {
+fn zip_datetime_from_system_time(system_time: SystemTime) -> Result<DateTime> {
+    let datetime = Timestamp::try_from(system_time)?.to_zoned(TimeZone::UTC);
+    let clamped_year = datetime.year().clamp(1980, 2107);
+    let (month, day, hour, minute, second) = if clamped_year == datetime.year() {
         (
             u8::try_from(datetime.month()).expect("month should fit in u8"),
             u8::try_from(datetime.day()).expect("day should fit in u8"),
@@ -107,7 +106,11 @@ fn zip_datetime_from_system_time(system_time: SystemTime) -> DateTime {
     } else {
         (12, 31, 23, 59, 58)
     };
+    let clamped_year =
+        u16::try_from(clamped_year).expect("clamped ZIP timestamp year should fit in u16");
 
-    DateTime::from_date_and_time(clamped_year, month, day, hour, minute, second)
-        .expect("clamped ZIP timestamp should always be valid")
+    Ok(
+        DateTime::from_date_and_time(clamped_year, month, day, hour, minute, second)
+            .expect("clamped ZIP timestamp should always be valid"),
+    )
 }

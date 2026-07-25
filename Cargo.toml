@@ -122,7 +122,6 @@ async-stream = "0.3.6"
 bimap = "0.6.3"
 bytemuck = "1.25.1"
 bytes = "1.12.1"
-chrono = { version = "0.4.45", default-features = false }
 clap = "4.6.2"
 clap_complete = "4.6.7"
 color-eyre = "0.6.5"
