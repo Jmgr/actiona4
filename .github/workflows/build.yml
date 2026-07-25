@@ -491,6 +491,8 @@ jobs:
 
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
+        with:
+          extra-packages: appstream
 
       - name: Build unsigned AppImage
         env:

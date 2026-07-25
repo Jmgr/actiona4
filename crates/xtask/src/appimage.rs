@@ -77,8 +77,32 @@ fn stage_appstream_metainfo(workspace_root: &Path, metainfo_dir: &Path) -> Resul
 
     fs::create_dir_all(metainfo_dir)?;
     fs::copy(source_file, &destination_path)?;
+    validate_appstream_metainfo(&destination_path)?;
 
     Ok(())
+}
+
+fn validate_appstream_metainfo(metainfo_path: &Path) -> Result<()> {
+    if which_appstreamcli().is_err() {
+        eprintln!("appstreamcli not found on PATH, skipping AppStream validation");
+        return Ok(());
+    }
+
+    let status = Command::new("appstreamcli")
+        .arg("validate")
+        .arg("--no-net")
+        .arg(metainfo_path)
+        .status()
+        .map_err(|error| eyre!("Failed to run appstreamcli: {error}"))?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(eyre!(
+            "AppStream validation failed for {}",
+            metainfo_path.display()
+        ))
+    }
 }
 
 fn reset_app_dir(app_dir: &Path) -> Result<()> {
@@ -144,6 +168,16 @@ fn which_linuxdeploy_appimage_plugin() -> Result<PathBuf> {
         Ok(PathBuf::from(path))
     } else {
         Err(eyre!("linuxdeploy-plugin-appimage not found on PATH"))
+    }
+}
+
+fn which_appstreamcli() -> Result<PathBuf> {
+    let output = Command::new("which").arg("appstreamcli").output()?;
+    if output.status.success() {
+        let path = String::from_utf8(output.stdout)?.trim().to_owned();
+        Ok(PathBuf::from(path))
+    } else {
+        Err(eyre!("appstreamcli not found on PATH"))
     }
 }
 
@@ -223,6 +257,8 @@ fn run_linuxdeploy(
             "APPIMAGE_EXTRACT_AND_RUN",
             env::var("APPIMAGE_EXTRACT_AND_RUN").unwrap_or_else(|_| "1".to_owned()),
         )
+        // The metainfo is validated offline by validate_appstream_metainfo.
+        .env("LDAI_NO_APPSTREAM", "1")
         .env("LDAI_OUTPUT", output_path)
         .env("LINUXDEPLOY_OUTPUT_VERSION", version)
         .env("PATH", prepend_to_path(tools_dir)?);
