@@ -1,0 +1,50 @@
+[package]
+name = "extension-opencv"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[[bin]]
+name = "extension-opencv"
+path = "src/main.rs"
+
+[dependencies]
+common = { path = "../../common" }
+extension = { path = "../../extension" }
+screenshot = { path = "../../screenshot" }
+types = { path = "../../types", features = ["opencv"] }
+
+color-eyre.workspace = true
+itertools.workspace = true
+opencv = { workspace = true, features = ["clang-runtime", "imgproc"] }
+parking_lot.workspace = true
+rayon.workspace = true
+satint.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "sync", "time"] }
+tokio-util = { workspace = true, features = ["rt"] }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[build-dependencies]
+build-support = { path = "../../build-support" }
+
+built.workspace = true
+embed-resource.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+image = { workspace = true, features = ["png"] }
+
+[lints]
+workspace = true
+
+[[bench]]
+name = "find_image"
+harness = false

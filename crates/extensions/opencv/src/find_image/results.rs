@@ -1,16 +1,14 @@
 use std::cmp::Ordering;
 
 use color_eyre::{Result, eyre::WrapErr};
+use extension::protocols::opencv::Match;
 use opencv::core::{
     Mat, MatTraitConst, MatTraitConstManual, MatTraitManual, NORM_L2, Point, Rect, Size,
     ToInputArray, count_non_zero, norm2, norm2_def,
 };
 use tracing::instrument;
 
-use crate::api::{
-    image::find_image::{LabAMat, LabBMat, MaskMat, Match},
-    rect,
-};
+use crate::find_image::{LabAMat, LabBMat, MaskMat};
 
 /// Convert a match-score matrix into match locations.
 ///
@@ -37,7 +35,7 @@ pub fn compute_results(
             return;
         }
         let position = Point::new(col, row);
-        let rect: rect::Rect = Rect::from_point_size(position, template_size).into();
+        let rect: types::Rect = Rect::from_point_size(position, template_size).into();
         match_points.push(Match::new(rect.center(), rect, match_score.into()));
     };
 
@@ -188,7 +186,7 @@ mod tests {
         prelude::MatTraitConst,
     };
 
-    use crate::api::image::find_image::results::compute_results;
+    use crate::find_image::results::compute_results;
 
     fn f32_mat(values: &[f32], rows: i32) -> Result<Mat> {
         let mat_boxed = Mat::from_slice(values)?;

@@ -7,7 +7,7 @@ use opencv::{
 };
 use tracing::instrument;
 
-use crate::api::image::find_image::{LabLightnessMat, MaskMat};
+use crate::find_image::{LabLightnessMat, MaskMat};
 
 /// Downscale inputs by the requested pyramid depth to speed up matching.
 ///

@@ -103,7 +103,7 @@ impl PackagedFileDefinition {
     }
 }
 
-const PACKAGED_FILES: [PackagedFileDefinition; 6] = [
+const PACKAGED_FILES: [PackagedFileDefinition; 7] = [
     PackagedFileDefinition::new("target/i686-pc-windows-msvc/release/inno_plugin.dll")
         .with_destination_name("inno_plugin.dll")
         .exclude_from_archive()
@@ -111,6 +111,7 @@ const PACKAGED_FILES: [PackagedFileDefinition; 6] = [
     PackagedFileDefinition::new("target/release/actiona-runw.exe").signed(),
     PackagedFileDefinition::new("target/release/actiona-run.exe").signed(),
     PackagedFileDefinition::new("target/release/extension-selection.exe").signed(),
+    PackagedFileDefinition::new("target/release/extension-opencv.exe").signed(),
     PackagedFileDefinition::new("*.md")
         .include_in_appimage()
         .with_dos_line_feeds()

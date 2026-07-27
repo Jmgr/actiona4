@@ -21,7 +21,6 @@ use enigo::{Enigo, Settings};
 #[cfg_attr(test, allow(unused_imports))]
 use ksni::{TrayMethods as _, menu::StandardItem};
 use macros::{FromSerde, IntoSerde};
-use opencv::core::set_num_threads;
 use parking_lot::Mutex;
 use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
@@ -74,7 +73,7 @@ use crate::{
         file::js::JsFile,
         filesystem::js::JsFilesystem,
         image::{
-            find_image,
+            find_image::OpenCVClient,
             js::{JsImage, JsMatch},
         },
         js::{
@@ -137,6 +136,7 @@ impl WithUserData for Ctx<'_> {
 pub(crate) struct JsUserData {
     displays: Displays,
     screen: Screen,
+    extensions: Extensions,
     cancellation_token: CancellationToken,
     /// An optional scoped token (e.g. per-REPL-expression) whose children are
     /// cancelled independently of the root token. When set, `child_cancellation_token`
@@ -156,6 +156,10 @@ impl JsUserData {
 
     pub(crate) fn screen(&self) -> Screen {
         self.screen.clone()
+    }
+
+    pub(crate) async fn opencv_extension(&self) -> Result<Arc<OpenCVClient>> {
+        self.extensions.opencv().await
     }
 
     pub(crate) fn cancellation_token(&self) -> CancellationToken {
@@ -324,22 +328,6 @@ pub struct Runtime {
 #[instrument(skip_all)]
 fn new_enigo() -> Result<Arc<Mutex<Enigo>>> {
     Ok(Arc::new(Mutex::new(Enigo::new(&Settings::default())?)))
-}
-
-/// Disable OpenCV parallelism since we perform our own parallelism using rayon.
-fn setup_opencv_threading() -> Result<()> {
-    #[allow(clippy::redundant_closure_call)]
-    (|| {
-        opencv::opencv_branch_34! {
-            {
-                set_num_threads(0)
-            } else {
-                set_num_threads(1)
-            }
-        }
-    })()?;
-
-    Ok(())
 }
 
 #[cfg(all(test, unix))]
@@ -658,14 +646,6 @@ impl Runtime {
         )
         .await?;
 
-        setup_opencv_threading()?;
-
-        task_tracker.spawn_blocking(|| {
-            if let Err(err) = find_image::warm_up() {
-                error!("Failed to warm up find_image: {}", err);
-            }
-        });
-
         let clipboard = {
             #[cfg(test)]
             {
@@ -760,6 +740,7 @@ impl Runtime {
                 ctx.store_userdata(JsUserData::new(
                     displays,
                     screen_inner.clone(),
+                    runtime.extensions.clone(),
                     cancellation_token.clone(),
                     Mutex::new(None),
                     local_rng,

@@ -1,9 +1,12 @@
 use std::{
+    collections::BTreeSet,
     env,
     path::{Path, PathBuf},
     process::Command,
     sync::OnceLock,
 };
+
+use parking_lot::Mutex;
 
 fn target_profile_dir() -> PathBuf {
     // current_exe -> target/{profile}/deps/<test-exe>
@@ -30,14 +33,10 @@ fn actiona_run_bin_path() -> PathBuf {
     path
 }
 
-fn selection_extension_bin_path() -> PathBuf {
+fn extension_bin_path(name: &str) -> PathBuf {
     let mut path = target_profile_dir();
 
-    path.push(if cfg!(windows) {
-        "extension-selection.exe" //TODO
-    } else {
-        "extension-selection"
-    });
+    path.push(format!("extension-{name}{}", env::consts::EXE_SUFFIX));
 
     path
 }
@@ -62,24 +61,26 @@ fn ensure_actiona_run_bin_exists(path: &Path) {
     });
 }
 
-fn ensure_selection_extension_bin_exists(path: &Path) {
-    static BUILD_ONCE: OnceLock<()> = OnceLock::new();
+fn ensure_extension_bin_exists(name: &str, path: &Path) {
+    // Tests run in parallel threads, so remember what has already been built
+    // rather than letting every test race on cargo's target-directory lock.
+    static BUILT: Mutex<BTreeSet<String>> = Mutex::new(BTreeSet::new());
 
-    if path.exists() {
+    let mut built = BUILT.lock();
+    if !built.insert(name.to_owned()) || path.exists() {
         return;
     }
 
-    BUILD_ONCE.get_or_init(|| {
-        let status = Command::new("cargo")
-            .args(["build", "-p", "selection", "--bin", "extension-selection"])
-            .status()
-            .expect("failed to spawn `cargo build` for extension-selection");
+    let package = format!("extension-{name}");
+    let status = Command::new("cargo")
+        .args(["build", "-p", &package])
+        .status()
+        .unwrap_or_else(|error| panic!("failed to spawn `cargo build` for {package}: {error}"));
 
-        assert!(
-            status.success(),
-            "`cargo build -p selection --bin extension-selection` failed with status {status}"
-        );
-    });
+    assert!(
+        status.success(),
+        "`cargo build -p {package}` failed with status {status}"
+    );
 }
 
 /// Return the path to the actiona-run binary built by cargo.
@@ -94,13 +95,14 @@ pub fn actiona_run_bin() -> PathBuf {
     path
 }
 
-/// Return the path to the selection extension binary built by cargo.
+/// Return the path to an extension binary built by cargo, building it on
+/// demand so `cargo test` works without a separate pre-build step.
 ///
-/// This is intentionally used only by manual/ignored e2e tests that exercise
-/// interactive overlay selection.
+/// Extensions are discovered next to `actiona-run`, which is where cargo puts
+/// them, so making sure they exist is all the wiring the tests need.
 #[must_use]
-pub fn selection_extension_bin() -> PathBuf {
-    let path = selection_extension_bin_path();
-    ensure_selection_extension_bin_exists(&path);
+pub fn extension_bin(name: &str) -> PathBuf {
+    let path = extension_bin_path(name);
+    ensure_extension_bin_exists(name, &path);
     path
 }

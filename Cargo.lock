@@ -1553,7 +1553,6 @@ dependencies = [
  "notzero",
  "num-traits",
  "open",
- "opencv",
  "parking_lot",
  "pe-parser",
  "procfs",
@@ -2224,6 +2223,7 @@ version = "0.2.0"
 dependencies = [
  "assert_cmd",
  "httptest",
+ "parking_lot",
  "tempfile",
 ]
 
@@ -2458,13 +2458,42 @@ dependencies = [
  "color-eyre",
  "derive-where",
  "futures-util",
+ "image",
  "ipc-rpc",
  "macros",
  "parking_lot",
  "serde",
+ "serde_json",
+ "strum",
  "tokio",
  "tokio-util",
  "tracing",
+ "types",
+ "uuid",
+]
+
+[[package]]
+name = "extension-opencv"
+version = "0.2.0"
+dependencies = [
+ "build-support",
+ "built",
+ "color-eyre",
+ "common",
+ "criterion",
+ "embed-resource",
+ "extension",
+ "image",
+ "itertools 0.15.0",
+ "opencv",
+ "parking_lot",
+ "rayon",
+ "satint",
+ "screenshot",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
  "types",
 ]
 

@@ -9,7 +9,7 @@ use crate::{
     api::{
         color::Color,
         displays::Displays,
-        image::{Image, find_image::Source},
+        image::Image,
         point::{Point, point},
         rect::{Rect, rect},
         size::size,
@@ -129,18 +129,21 @@ impl ScreenImpl {
         self.base.capture_display(display_id).await
     }
 
-    pub async fn capture_display_to_source(&self, display_id: u32) -> Result<(Arc<Source>, Rect)> {
-        self.base.capture_display_to_source(display_id).await
+    pub async fn display_rect(&self, display_id: u32) -> Result<Rect> {
+        self.base.display_rect(display_id).await
+    }
+
+    pub async fn desktop_rect(&self) -> Result<Rect> {
+        self.base.desktop_rect().await
+    }
+
+    pub async fn display_rects(&self) -> Result<Vec<Rect>> {
+        self.base.display_rects().await
     }
 
     pub async fn capture_rect(&self, rect: Rect) -> Result<Image> {
         let capture = self.base.capture_screen().capture_rect(rect).await?;
         Image::from_capture(capture)
-    }
-
-    pub async fn capture_rect_to_source(&self, rect: Rect) -> Result<Arc<Source>> {
-        let capture = self.base.capture_screen().capture_rect(rect).await?;
-        Source::from_bgra(&capture.bgra, capture.size)
     }
 
     pub async fn capture_pixel(&self, position: Point) -> Result<Color> {
@@ -186,11 +189,5 @@ impl ScreenImpl {
     pub async fn capture_desktop(&self) -> Result<Image> {
         let (image, _rect) = self.capture_desktop_impl().await?;
         Ok(image)
-    }
-
-    pub async fn capture_desktop_to_source(&self) -> Result<(Arc<Source>, Rect)> {
-        let (image, rect) = self.capture_desktop_impl().await?;
-        let source = Arc::<Source>::try_from(&image)?;
-        Ok((source, rect))
     }
 }

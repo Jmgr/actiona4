@@ -64,7 +64,7 @@ extension = { path = "../extension" }
 installer-tools = { path = "../installer-tools" }
 macros = { path = "../macros" }
 screenshot = { path = "../screenshot" }
-types = { path = "../types", features = ["opencv", "imageproc"] } # TODO: remove "opencv" once we have moved the opencv code into the extension
+types = { path = "../types", features = ["imageproc"] }
 
 ab_glyph.workspace = true
 arboard.workspace = true
@@ -102,7 +102,6 @@ noiselib.workspace = true
 notzero.workspace = true
 num-traits.workspace = true
 open.workspace = true
-opencv = { workspace = true, features = ["clang-runtime", "imgproc"] }
 parking_lot.workspace = true
 rand.workspace = true
 rand_chacha.workspace = true
@@ -158,7 +157,3 @@ tracing-test.workspace = true
 
 [lints]
 workspace = true
-
-[[bench]]
-name = "find_image"
-harness = false

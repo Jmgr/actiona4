@@ -5,11 +5,7 @@ use screenshot::Capture;
 use tracing::error;
 
 use crate::{
-    api::{
-        displays::Displays,
-        image::{Image, find_image::Source},
-        rect::Rect,
-    },
+    api::{displays::Displays, image::Image, rect::Rect},
     runtime::{Runtime, async_resource::AsyncResource, events::DisplayInfo},
 };
 
@@ -146,14 +142,8 @@ impl<D: DisplayCapture> ScreenImplBase<D> {
         Image::from_capture(capture)
     }
 
-    /// Capture a display directly to a Source for find_image_on_screen.
-    /// This avoids the intermediate RGBA conversion.
-    /// Returns the Source and the display's rectangle (for coordinate offset).
-    pub async fn capture_display_to_source(&self, display_id: u32) -> Result<(Arc<Source>, Rect)> {
-        let display = self.get_display(display_id).await?;
-        let rect = display.rect();
-        let capture = display.capture_raw().await?;
-        let source = Source::from_bgra(&capture.bgra, capture.size)?;
-        Ok((source, rect))
+    /// The rectangle of the display with the given numeric ID.
+    pub async fn display_rect(&self, display_id: u32) -> Result<Rect> {
+        Ok(self.get_display(display_id).await?.rect())
     }
 }

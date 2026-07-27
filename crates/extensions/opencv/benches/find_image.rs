@@ -3,28 +3,37 @@
 
 use std::{hint::black_box, sync::Arc, time::Duration};
 
-use actiona_core::api::image::{
-    Image,
-    find_image::{FindImageTemplateOptions, Source, Template},
-};
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
+use extension::protocols::opencv::FindImageTemplateOptions;
+use extension_opencv::find_image::{Source, Template};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
+use types::{Size, size};
 
-static SOURCE_BYTES: &[u8] = include_bytes!("../test-data/input.png");
-static SOURCE_BYTES_2X: &[u8] = include_bytes!("../test-data/input_2x.png");
-static TEMPLATE_BYTES: &[u8] = include_bytes!("../test-data/Crown_icon_transparent.png");
-static TEMPLATE_BYTES_2X: &[u8] = include_bytes!("../test-data/Crown_icon_transparent_2x.png");
+static SOURCE_BYTES: &[u8] = include_bytes!("../../../core/test-data/input.png");
+static SOURCE_BYTES_2X: &[u8] = include_bytes!("../../../core/test-data/input_2x.png");
+static TEMPLATE_BYTES: &[u8] = include_bytes!("../../../core/test-data/Crown_icon_transparent.png");
+static TEMPLATE_BYTES_2X: &[u8] =
+    include_bytes!("../../../core/test-data/Crown_icon_transparent_2x.png");
+
+/// Decode a PNG fixture into (RGBA8 bytes, size), matching what the host
+/// uploads over IPC.
+fn rgba(bytes: &[u8]) -> (Vec<u8>, Size) {
+    let image = image::load_from_memory(bytes)
+        .expect("benchmark fixture is a valid image")
+        .into_rgba8();
+    let dimensions = size(image.width(), image.height());
+    (image.into_raw(), dimensions)
+}
 
 fn make_source(bytes: &[u8]) -> Arc<Source> {
-    let image = Image::from_bytes(bytes).expect("benchmark source image is valid");
-    Arc::<Source>::try_from(&image).expect("benchmark source image has source-compatible format")
+    let (pixels, dimensions) = rgba(bytes);
+    Source::from_rgba(&pixels, dimensions).expect("benchmark source image is valid")
 }
 
 fn make_template(bytes: &[u8]) -> Arc<Template> {
-    let image = Image::from_bytes(bytes).expect("benchmark template image is valid");
-    Arc::<Template>::try_from(&image)
-        .expect("benchmark template image has template-compatible format")
+    let (pixels, dimensions) = rgba(bytes);
+    Template::from_rgba(&pixels, dimensions).expect("benchmark template image is valid")
 }
 
 fn find_image_benches(c: &mut Criterion) {
@@ -159,18 +168,16 @@ fn prepare_benches(c: &mut Criterion) {
     let mut group = c.benchmark_group("find_image_prepare");
 
     for (dataset_name, source_bytes, template_bytes) in datasets {
-        let source_image =
-            Image::from_bytes(source_bytes).expect("benchmark source image is valid");
-        let template_image =
-            Image::from_bytes(template_bytes).expect("benchmark template image is valid");
+        let source_pixels = rgba(source_bytes);
+        let template_pixels = rgba(template_bytes);
 
         group.bench_with_input(
             BenchmarkId::new("prepare_source", dataset_name),
-            &source_image,
-            |b, source_image| {
+            &source_pixels,
+            |b, (pixels, dimensions)| {
                 b.iter(|| {
                     black_box(
-                        Arc::<Source>::try_from(black_box(source_image))
+                        Source::from_rgba(black_box(pixels), *dimensions)
                             .expect("benchmark source image has source-compatible format"),
                     )
                 });
@@ -179,11 +186,11 @@ fn prepare_benches(c: &mut Criterion) {
 
         group.bench_with_input(
             BenchmarkId::new("prepare_template", dataset_name),
-            &template_image,
-            |b, template_image| {
+            &template_pixels,
+            |b, (pixels, dimensions)| {
                 b.iter(|| {
                     black_box(
-                        Arc::<Template>::try_from(black_box(template_image))
+                        Template::from_rgba(black_box(pixels), *dimensions)
                             .expect("benchmark template image has template-compatible format"),
                     )
                 });

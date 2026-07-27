@@ -226,6 +226,7 @@ fn run_linuxdeploy(
 ) -> Result<()> {
     let run_binary = require_binary(release_dir, "actiona-run")?;
     let selection_binary = require_binary(release_dir, "extension-selection")?;
+    let opencv_binary = require_binary(release_dir, "extension-opencv")?;
     let desktop_file_path = workspace_root
         .join("assets")
         .join("app.actiona.run.desktop");
@@ -250,6 +251,8 @@ fn run_linuxdeploy(
         .arg(run_binary)
         .arg("--executable")
         .arg(selection_binary)
+        .arg("--executable")
+        .arg(opencv_binary)
         .arg("--output")
         .arg("appimage")
         .env("ARCH", appimage_arch()?)

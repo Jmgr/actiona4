@@ -1,6 +1,6 @@
 #![allow(clippy::needless_pass_by_value)]
 
-use std::{io, result::Result as StdResult, sync::Arc};
+use std::{io, result::Result as StdResult};
 
 use image::ImageResult;
 use itertools::Itertools;
@@ -28,7 +28,7 @@ use crate::{
             BlurOptions, DrawImageOptions, DrawTextOptions, DrawingOptions, FlipDirection,
             Interpolation, ResizeFilter, ResizeOptions, RotationOptions, TextHorizontalAlign,
             TextVerticalAlign,
-            find_image::{FindImageProgress, SearchIn, Source, Template},
+            find_image::{FindImageProgress, SearchIn},
         },
         js::{
             DeepEqualClass, DeepEqualError,
@@ -1454,8 +1454,8 @@ impl JsImage {
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
-        let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
-        let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
+        let source = self.inner.clone();
+        let template = image.inner;
         let (progress_sender, progress_receiver) = mpsc::unbounded_channel::<FindImageProgress>();
 
         progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
@@ -1463,22 +1463,25 @@ impl JsImage {
             signal,
             progress_receiver,
             async move |ctx, token| {
-                let task_tracker = ctx.user_data().task_tracker();
-
-                let result = task_tracker
-                    .spawn_blocking(move || {
-                        source.find_template(
-                            &template,
-                            options.into_inner(),
-                            &token,
-                            &progress_sender,
-                        )
-                    })
+                let opencv = ctx
+                    .user_data()
+                    .opencv_extension()
                     .await
-                    .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
                     .into_js_result(&ctx)?;
 
-                Ok(result.map(JsMatch::from))
+                let result = opencv
+                    .find(
+                        &source,
+                        &template,
+                        options.into_inner(),
+                        true,
+                        &token,
+                        &progress_sender,
+                    )
+                    .await
+                    .into_js_result(&ctx)?;
+
+                Ok(result.into_iter().next().map(JsMatch::from))
             },
         )
     }
@@ -1511,8 +1514,8 @@ impl JsImage {
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
-        let source = Arc::<Source>::try_from(&self.inner).into_js_result(&ctx)?;
-        let template = Arc::<Template>::try_from(&image.inner).into_js_result(&ctx)?;
+        let source = self.inner.clone();
+        let template = image.inner;
         let (progress_sender, progress_receiver) = mpsc::unbounded_channel::<FindImageProgress>();
 
         progress_task_with_token::<_, _, _, _, _, JsFindImageProgress>(
@@ -1520,19 +1523,22 @@ impl JsImage {
             signal,
             progress_receiver,
             async move |ctx, token| {
-                let task_tracker = ctx.user_data().task_tracker();
-
-                let result = task_tracker
-                    .spawn_blocking(move || {
-                        source.find_template_all(
-                            &template,
-                            options.into_inner(),
-                            &token,
-                            &progress_sender,
-                        )
-                    })
+                let opencv = ctx
+                    .user_data()
+                    .opencv_extension()
                     .await
-                    .map_err(|e| Exception::throw_message(&ctx, &format!("Task join error: {e}")))?
+                    .into_js_result(&ctx)?;
+
+                let result = opencv
+                    .find(
+                        &source,
+                        &template,
+                        options.into_inner(),
+                        false,
+                        &token,
+                        &progress_sender,
+                    )
+                    .await
                     .into_js_result(&ctx)?
                     .into_iter()
                     .map(JsMatch::from)
@@ -1573,7 +1579,7 @@ impl JsImage {
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
-        let template = Arc::<Template>::try_from(&self.inner).into_js_result(&ctx)?;
+        let template = self.inner.clone();
         let screen = ctx.user_data().screen();
         let (progress_sender, progress_receiver) = mpsc::unbounded_channel::<FindImageProgress>();
 
@@ -1585,7 +1591,7 @@ impl JsImage {
                 let search_in = SearchIn::from(search_in);
                 let result = screen
                     .find_on_screen(
-                        template,
+                        &template,
                         &search_in,
                         options.into_inner(),
                         token,
@@ -1626,7 +1632,7 @@ impl JsImage {
     ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
         let signal = options.signal.clone();
-        let template = Arc::<Template>::try_from(&self.inner).into_js_result(&ctx)?;
+        let template = self.inner.clone();
         let screen = ctx.user_data().screen();
         let (progress_sender, progress_receiver) = mpsc::unbounded_channel::<FindImageProgress>();
 
@@ -1638,7 +1644,7 @@ impl JsImage {
                 let search_in = SearchIn::from(search_in);
                 let results = screen
                     .find_all_on_screen(
-                        template,
+                        &template,
                         &search_in,
                         options.into_inner(),
                         token,

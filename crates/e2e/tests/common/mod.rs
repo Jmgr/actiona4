@@ -37,6 +37,9 @@ fn script_file(name: &str) -> tempfile::NamedTempFile {
 /// synchronously before `assert()` returns).
 pub fn run(name: &str) -> Assert {
     let script = script_file(name);
+    // Image matching runs out of process; actiona-run discovers the extension
+    // as a sibling, which is exactly where cargo puts it.
+    let _ = e2e::extension_bin("opencv");
     let mut command = Command::new(e2e::actiona_run_bin());
     command.arg(script.path());
 

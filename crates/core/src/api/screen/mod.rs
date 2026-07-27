@@ -18,8 +18,8 @@ use super::{
     image::{
         Image,
         find_image::{
-            FindImageProgress, FindImageStage, FindImageTemplateOptions, Match, SearchIn, Source,
-            Template,
+            CaptureSpec, FindImageProgress, FindImageStage, FindImageTemplateOptions, Match,
+            SearchIn,
         },
     },
     rect::Rect,
@@ -102,48 +102,78 @@ impl Screen {
     /// Finds the best match of an image within the given search area.
     pub async fn find_on_screen(
         &self,
-        template: Arc<Template>,
+        template: &Image,
         search_in: &SearchIn,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
         progress: mpsc::UnboundedSender<FindImageProgress>,
     ) -> Result<Option<Match>> {
-        self.runtime.require_not_wayland()?;
-        let _ = progress.send(FindImageProgress::new(FindImageStage::Capturing, 0));
-        let (source, area_rect) = self.capture_search_in_to_source(search_in).await?;
-        let origin = area_rect.top_left;
-        let template = template.clone();
         let matches = self
-            .runtime
-            .task_tracker()
-            .spawn_blocking(move || {
-                source.find_template(&template, options, &cancellation_token, &progress)
-            })
-            .await??;
-        Ok(matches.map(|m| m.offset(origin)))
+            .find_on_screen_impl(
+                template,
+                search_in,
+                options,
+                true,
+                cancellation_token,
+                progress,
+            )
+            .await?;
+        Ok(matches.into_iter().next())
     }
 
     /// Finds all matches of an image within the given search area.
     pub async fn find_all_on_screen(
         &self,
-        template: Arc<Template>,
+        template: &Image,
         search_in: &SearchIn,
         options: FindImageTemplateOptions,
         cancellation_token: CancellationToken,
         progress: mpsc::UnboundedSender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
+        self.find_on_screen_impl(
+            template,
+            search_in,
+            options,
+            false,
+            cancellation_token,
+            progress,
+        )
+        .await
+    }
+
+    /// Captures the search area inside the OpenCV extension and searches it.
+    ///
+    /// The capture happens there rather than here so a full-desktop screenshot
+    /// never has to cross the IPC boundary; only the template does, and only
+    /// once thanks to the handle cache on `Image`.
+    async fn find_on_screen_impl(
+        &self,
+        template: &Image,
+        search_in: &SearchIn,
+        options: FindImageTemplateOptions,
+        search_one: bool,
+        cancellation_token: CancellationToken,
+        progress: mpsc::UnboundedSender<FindImageProgress>,
+    ) -> Result<Vec<Match>> {
         self.runtime.require_not_wayland()?;
         let _ = progress.send(FindImageProgress::new(FindImageStage::Capturing, 0));
-        let (source, area_rect) = self.capture_search_in_to_source(search_in).await?;
-        let origin = area_rect.top_left;
-        let template = template.clone();
-        let matches = self
-            .runtime
-            .task_tracker()
-            .spawn_blocking(move || {
-                source.find_template_all(&template, options, &cancellation_token, &progress)
-            })
-            .await??;
+
+        let opencv = self.runtime.extensions().opencv().await?;
+
+        let capture = self.capture_spec(search_in).await?;
+        let origin = capture.rect.top_left;
+
+        let matches = opencv
+            .find_on_screen(
+                &capture,
+                template,
+                options,
+                search_one,
+                &cancellation_token,
+                &progress,
+            )
+            .await?;
+
         Ok(matches.into_iter().map(|m| m.offset(origin)).collect())
     }
 
@@ -206,22 +236,30 @@ impl Screen {
         ask_position(&self.runtime).await
     }
 
-    async fn capture_search_in_to_source(
-        &self,
-        search_in: &SearchIn,
-    ) -> Result<(Arc<Source>, Rect)> {
-        match search_in {
-            SearchIn::Desktop => self.implementation.capture_desktop_to_source().await,
-            SearchIn::Display(id) => self.implementation.capture_display_to_source(*id).await,
-            SearchIn::Rect(rect) => {
-                let source = self.implementation.capture_rect_to_source(*rect).await?;
-                Ok((source, *rect))
-            }
-            SearchIn::Window(id) => {
-                let rect = self.windows.rect(*id)?;
-                let source = self.implementation.capture_rect_to_source(rect).await?;
-                Ok((source, rect))
-            }
-        }
+    /// Resolves a search area down to the plain geometry the extension needs.
+    ///
+    /// Display enumeration and window lookups stay here; the extension only
+    /// ever receives rectangles.
+    async fn capture_spec(&self, search_in: &SearchIn) -> Result<CaptureSpec> {
+        let (rect, blacken_outside) = match search_in {
+            SearchIn::Desktop => (
+                self.implementation.desktop_rect().await?,
+                self.implementation.display_rects().await?,
+            ),
+            SearchIn::Display(id) => (self.implementation.display_rect(*id).await?, Vec::new()),
+            SearchIn::Rect(rect) => (*rect, Vec::new()),
+            SearchIn::Window(id) => (self.windows.rect(*id)?, Vec::new()),
+        };
+
+        #[cfg(unix)]
+        let use_shm = self.runtime.platform().has_shm();
+        #[cfg(windows)]
+        let use_shm = false;
+
+        Ok(CaptureSpec {
+            rect,
+            blacken_outside,
+            use_shm,
+        })
     }
 }

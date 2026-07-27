@@ -90,14 +90,14 @@ args = ["build", "-p", "run"]
 [tasks.build-extensions]
 description = "Build runtime extension binaries."
 command = "cargo"
-args = ["build", "-p", "selection", "--bin", "extension-selection"]
+args = ["build", "-p", "extension-selection", "-p", "extension-opencv"]
 
 [tasks.build-actiona-run.windows]
 args = ["build", "-p", "run", "--features", "run/windows-bin"]
 
 [tasks.e2e]
-description = "Build actiona-run then run end-to-end TypeScript API tests."
-dependencies = ["build-actiona-run"]
+description = "Build actiona-run and the extensions, then run end-to-end TypeScript API tests."
+dependencies = ["build-actiona-run", "build-extensions"]
 command = "cargo"
 args = ["test", "-p", "e2e"]
 
@@ -216,7 +216,7 @@ args = [
 ]
 
 [tasks.release]
-description = "Build release binaries, including extension-selection and actiona-runw on Windows."
+description = "Build release binaries, including the extensions and actiona-runw on Windows."
 dependencies = ["release-runw"]
 command = "cargo"
 args = [
@@ -225,6 +225,8 @@ args = [
     "run",
     "-p",
     "extension-selection",
+    "-p",
+    "extension-opencv",
     "--release",
 ]
 

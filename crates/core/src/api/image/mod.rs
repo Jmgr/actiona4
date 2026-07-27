@@ -34,7 +34,7 @@ pub mod js;
 use crate::{
     api::{
         color::Color,
-        image::find_image::{Source, Template},
+        image::find_image::{RemoteSource, RemoteTemplate},
         point::{Point, point},
         rect::{Rect, rect},
         size::{self, Size},
@@ -264,11 +264,15 @@ impl<T> Cache<T> {
 pub struct Image {
     inner: RgbaImage,
 
+    /// Handle to this image prepared as a search source by the OpenCV
+    /// extension. Invalidated whenever the pixels change.
     #[deref(ignore)]
-    source: Cache<Source>,
+    source: Cache<RemoteSource>,
 
+    /// Handle to this image prepared as a search template by the OpenCV
+    /// extension. Invalidated whenever the pixels change.
     #[deref(ignore)]
-    template: Cache<Template>,
+    template: Cache<RemoteTemplate>,
 }
 
 impl Display for Image {
@@ -1005,9 +1009,12 @@ impl Image {
     }
 
     /// Populates both source and template caches so tests can verify they get reset.
+    ///
+    /// The handles are detached: preparing a real one needs the OpenCV
+    /// extension, which unit tests deliberately run without.
     pub fn populate_caches(&self) {
-        let _ = Arc::<find_image::Source>::try_from(self).unwrap();
-        let _ = Arc::<find_image::Template>::try_from(self).unwrap();
+        self.source.set(Arc::new(RemoteSource::detached()));
+        self.template.set(Arc::new(RemoteTemplate::detached()));
         assert!(self.has_cached_source(), "source cache should be populated");
         assert!(
             self.has_cached_template(),
@@ -1088,8 +1095,7 @@ mod tests {
         let img_data = RgbaImage::from_pixel(5, 5, Rgba([10, 20, 30, 255]));
         let mut img = Image::from_rgba8(img_data);
 
-        // Populate caches via the TryFrom impl
-        let _source = Arc::<Source>::try_from(&img).unwrap();
+        img.populate_caches();
         assert!(img.source.get().is_some());
 
         img.set_pixel_color(point(0, 0), Color::new(255, 0, 0, 255))
@@ -1102,8 +1108,7 @@ mod tests {
         let img_data = RgbaImage::from_pixel(5, 5, Rgba([10, 20, 30, 255]));
         let img = Image::from_rgba8(img_data);
 
-        // Populate caches via the TryFrom impl
-        let _source = Arc::<Source>::try_from(&img).unwrap();
+        img.populate_caches();
         assert!(img.source.get().is_some());
 
         #[allow(clippy::redundant_clone)]

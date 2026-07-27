@@ -10,6 +10,7 @@ use color_eyre::{
     Result,
     eyre::{Error, ensure},
 };
+use extension::protocols::opencv::{FindImageProgress, FindImageStage};
 use itertools::Itertools;
 use opencv::{
     core::{AccessFlag, CV_32FC1, Mat, Rect, UMat, UMatUsageFlags, no_array},
@@ -23,12 +24,7 @@ use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use types::Size;
 
-use crate::{
-    api::image::find_image::{
-        FindImageProgress, FindImageStage, LabLightnessMat, MaskMat, common::ideal_thread_count,
-    },
-    error::CommonError,
-};
+use crate::find_image::{LabLightnessMat, MaskMat, cancelled, common::ideal_thread_count};
 
 /// Run a single tile's template match against a vertical slice of the source.
 fn match_tile(
@@ -110,7 +106,7 @@ pub fn match_template(
     progress: &mpsc::UnboundedSender<FindImageProgress>,
 ) -> Result<Mat> {
     if cancellation_token.is_cancelled() {
-        return Err(CommonError::Cancelled.into());
+        return Err(cancelled());
     }
 
     ensure!(
@@ -154,7 +150,7 @@ pub fn match_template(
         .into_par_iter()
         .map(|(start_row, roi)| {
             if cancellation_token.is_cancelled() {
-                return Err(CommonError::Cancelled.into());
+                return Err(cancelled());
             }
 
             let tile_result = match_tile(source_lightness, template_lightness, template_mask, roi)?;

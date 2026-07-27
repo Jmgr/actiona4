@@ -1,4 +1,4 @@
-use color_eyre::{Result, eyre::eyre};
+use color_eyre::Result;
 use tracing::instrument;
 
 use crate::{
@@ -10,9 +10,6 @@ use crate::{
 #[instrument(skip_all)]
 pub async fn ask_rect(runtime: &Runtime) -> Result<Option<Rect>> {
     let selection = runtime.extensions().selection().await?;
-    let Some(selection) = selection else {
-        return Err(eyre!("selection extension is not available"));
-    };
 
     cancel_on(&runtime.cancellation_token(), selection.select_rect()).await?
 }
@@ -20,9 +17,6 @@ pub async fn ask_rect(runtime: &Runtime) -> Result<Option<Rect>> {
 #[instrument(skip_all)]
 pub async fn ask_position(runtime: &Runtime) -> Result<Option<Point>> {
     let selection = runtime.extensions().selection().await?;
-    let Some(selection) = selection else {
-        return Err(eyre!("selection extension is not available"));
-    };
 
     cancel_on(&runtime.cancellation_token(), selection.select_position()).await?
 }
