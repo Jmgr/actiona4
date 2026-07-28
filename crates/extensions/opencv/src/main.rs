@@ -5,7 +5,10 @@ use std::{env, sync::Arc, time::Duration};
 use actiona_common::sentry::setup_crash_reporting;
 use color_eyre::{Result, eyre::OptionExt};
 use extension::{Extension, protocols::opencv::OpenCVProtocol};
-use extension_opencv::{find_image, handler::OpenCVExtension};
+use extension_opencv::{
+    find_image,
+    handler::{OpenCVExtension, ProgressReport},
+};
 use tokio::{runtime::Builder, sync::mpsc};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::error;
@@ -79,14 +82,23 @@ async fn run(task_tracker: &TaskTracker, cancellation_token: &CancellationToken)
                 () = progress_token.cancelled() => break,
                 report = progress_receiver.recv() => report,
             };
-            let Some((request_id, progress)) = report else {
+            let Some(report) = report else {
                 break;
             };
 
-            if let Err(error) = progress_extension.progress(request_id, progress).await {
-                // A failed report is not worth failing the search over: the
-                // host either went away or is no longer interested.
-                error!("failed to report progress for request {request_id}: {error}");
+            match report {
+                ProgressReport::Update(request_id, progress) => {
+                    if let Err(error) = progress_extension.progress(request_id, progress).await {
+                        // A failed report is not worth failing the search over: the
+                        // host either went away or is no longer interested.
+                        error!("failed to report progress for request {request_id}: {error}");
+                    }
+                }
+                // Every update sent before this one has now been answered for,
+                // which is all the waiting search needs to know.
+                ProgressReport::Flush(flushed) => {
+                    let _ = flushed.send(());
+                }
             }
         }
     });

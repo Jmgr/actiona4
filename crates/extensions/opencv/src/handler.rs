@@ -10,7 +10,11 @@ use extension::protocols::opencv::{
     OpenCVProtocolExtension, RequestId, RgbaPixels, SourceHandle, TemplateHandle,
 };
 use parking_lot::Mutex;
-use tokio::{sync::mpsc, task::block_in_place, time::sleep};
+use tokio::{
+    sync::{mpsc, oneshot},
+    task::{JoinHandle, block_in_place},
+    time::sleep,
+};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
@@ -18,9 +22,16 @@ use crate::{
     find_image::{Source, Template, cancelled},
 };
 
-/// A progress report on its way back to the host, tagged with the request it
-/// belongs to.
-pub type ProgressReport = (RequestId, FindImageProgress);
+/// A message on its way back to the host over the shared progress stream.
+#[derive(Debug)]
+pub enum ProgressReport {
+    /// A progress report, tagged with the request it belongs to.
+    Update(RequestId, FindImageProgress),
+
+    /// A marker that answers once everything queued ahead of it has reached the
+    /// host. See [`OpenCVExtension::flush_progress`].
+    Flush(oneshot::Sender<()>),
+}
 
 /// A cancellation token for one request, including an entry made by a cancel
 /// message which raced ahead of its find message.
@@ -156,19 +167,43 @@ impl OpenCVExtension {
 
     /// Bridges the synchronous progress channel that `find_template*` writes to
     /// onto the per-request IPC stream back to the host.
-    fn progress_channel(&self, request_id: RequestId) -> mpsc::UnboundedSender<FindImageProgress> {
+    ///
+    /// The returned handle finishes once the search has dropped its end of the
+    /// channel and every update it wrote has been queued for the host.
+    fn progress_channel(
+        &self,
+        request_id: RequestId,
+    ) -> (mpsc::UnboundedSender<FindImageProgress>, JoinHandle<()>) {
         let (sender, mut receiver) = mpsc::unbounded_channel();
         let progress = self.progress.clone();
 
-        self.task_tracker.spawn(async move {
+        let forwarding = self.task_tracker.spawn(async move {
             while let Some(update) = receiver.recv().await {
-                if progress.send((request_id, update)).is_err() {
+                if progress
+                    .send(ProgressReport::Update(request_id, update))
+                    .is_err()
+                {
                     break;
                 }
             }
         });
 
-        sender
+        (sender, forwarding)
+    }
+
+    /// Waits until every progress report queued so far has reached the host.
+    ///
+    /// The stream is drained by a task of its own, so without this a reply
+    /// would overtake the updates a search sent just before finishing. The host
+    /// stops listening for a request as soon as it has an answer for it, so
+    /// those last stages — including `Finished` at 100% — would be dropped.
+    async fn flush_progress(&self) {
+        let (flushed, delivered) = oneshot::channel();
+
+        if self.progress.send(ProgressReport::Flush(flushed)).is_ok() {
+            // An error means the drain has stopped, leaving nothing to wait for.
+            let _ = delivered.await;
+        }
     }
 
     /// Runs one search on the blocking pool, so the IPC reactor stays free to
@@ -182,7 +217,7 @@ impl OpenCVExtension {
         search_one: bool,
         cancellation_token: CancellationToken,
     ) -> Result<Vec<Match>> {
-        let progress = self.progress_channel(request_id);
+        let (progress, forwarding) = self.progress_channel(request_id);
         let result = self
             .task_tracker
             .spawn_blocking(move || {
@@ -195,6 +230,11 @@ impl OpenCVExtension {
                 }
             })
             .await;
+
+        // The search has dropped its sender by now, so this only waits for what
+        // it already wrote, and then for the host to have seen all of it.
+        let _ = forwarding.await;
+        self.flush_progress().await;
 
         result.map_err(|error| eyre!("find task failed: {error}"))?
     }
@@ -271,7 +311,7 @@ impl OpenCVProtocolExtension for OpenCVExtension {
             return Ok(FindOutcome::UnknownHandle);
         };
 
-        let _ = self.progress.send((
+        let _ = self.progress.send(ProgressReport::Update(
             request_id,
             FindImageProgress::new(FindImageStage::Capturing, 0),
         ));
