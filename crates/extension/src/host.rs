@@ -121,6 +121,17 @@ impl<P: Protocol> Host<P> {
                 }
             };
 
+            // Has to happen before anything can give up on this child: dropping
+            // the job takes the whole process tree with it.
+            #[cfg(windows)]
+            let _job = match job::confine(&child) {
+                Ok(job) => Some(job),
+                Err(error) => {
+                    warn!("failed to confine the extension process to a job: {error}");
+                    None
+                }
+            };
+
             if let Some(stdout) = child.stdout.take() {
                 self.task_tracker
                     .spawn(forward_lines(stdout, false, self.token.clone()));
@@ -234,6 +245,83 @@ impl<P: Protocol> Host<P> {
         let new_inner = build_inner(&self.handler, self.timeout).await?;
         *self.inner.lock() = Arc::new(new_inner);
         Ok(())
+    }
+}
+
+/// Ties everything an extension spawns to the extension's own lifetime.
+///
+/// The crash reporter helper started by `sentry-rust-minidump` inherits the
+/// extension's stdout and stderr, and — because Windows hands every inheritable
+/// handle to a new process — whatever this process was given as well. That
+/// helper's server loop only stops once a client has connected to it and gone
+/// away, so an extension killed while it is still starting up leaves behind a
+/// process that holds those pipes open forever. Nothing then reaches end of
+/// file: our own reads of the extension's output never finish, which stalls the
+/// Tokio runtime's blocking pool at shutdown, and whoever is capturing *our*
+/// output waits on us just as long.
+///
+/// A kill-on-close job object makes those grandchildren die with the extension.
+/// Only a process spawned in the sliver between `CreateProcess` returning and
+/// the assignment below can escape it, and the extension has not run a single
+/// instruction of its own that early.
+#[cfg(windows)]
+mod job {
+    use std::{
+        ffi::c_void,
+        mem::size_of,
+        os::windows::io::{AsRawHandle as _, FromRawHandle as _, OwnedHandle},
+        ptr::from_ref,
+    };
+
+    use color_eyre::{Result, eyre::OptionExt};
+    use tokio::process::Child;
+    use windows::Win32::{
+        Foundation::HANDLE,
+        System::JobObjects::{
+            AssignProcessToJobObject, CreateJobObjectW, JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
+            JOBOBJECT_BASIC_LIMIT_INFORMATION, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+            JobObjectExtendedLimitInformation, SetInformationJobObject,
+        },
+    };
+
+    /// Puts `child` in a fresh job object, returned as the handle that keeps it
+    /// open. Dropping that handle terminates every process still in the job.
+    pub fn confine(child: &Child) -> Result<OwnedHandle> {
+        let process = child
+            .raw_handle()
+            .ok_or_eyre("the extension process has already exited")?;
+
+        // SAFETY: an unnamed job object with default security needs no arguments.
+        let job = unsafe { CreateJobObjectW(None, None)? };
+        // SAFETY: `CreateJobObjectW` just handed us this handle and nothing else
+        // owns it, so making it an `OwnedHandle` is what closes it exactly once.
+        let job = unsafe { OwnedHandle::from_raw_handle(job.0) };
+        let job_handle = HANDLE(job.as_raw_handle());
+
+        let limits = JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
+            BasicLimitInformation: JOBOBJECT_BASIC_LIMIT_INFORMATION {
+                LimitFlags: JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        // SAFETY: the information class matches the structure being passed, and
+        // the length given is that structure's own size.
+        unsafe {
+            SetInformationJobObject(
+                job_handle,
+                JobObjectExtendedLimitInformation,
+                from_ref(&limits).cast::<c_void>(),
+                u32::try_from(size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>())?,
+            )?;
+        }
+
+        // SAFETY: both handles are live — the job is owned here and the process
+        // handle belongs to the `Child` borrowed for this call.
+        unsafe { AssignProcessToJobObject(job_handle, HANDLE(process))? };
+
+        Ok(job)
     }
 }
 

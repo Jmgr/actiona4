@@ -11,6 +11,13 @@ readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+    "Win32_Security",
+    "Win32_System_JobObjects",
+    "Win32_System_Threading",
+] }
+
 [dependencies]
 color-eyre.workspace = true
 derive-where.workspace = true
