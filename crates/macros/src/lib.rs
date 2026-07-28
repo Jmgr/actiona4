@@ -200,6 +200,25 @@ pub fn from_serde(input: TokenStream) -> TokenStream {
 /// marked with `#[extension_call]` are extension-to-host calls. Request and
 /// response variants are derived from the method name.
 ///
+/// # No-reply calls
+///
+/// Either attribute takes `no_reply` for a call the peer does not answer. The
+/// message is handed to the transport and forgotten: it can be dropped without
+/// anyone finding out, so it suits high-frequency, lossy reporting where only
+/// the newest value matters.
+///
+/// Such a method is declared with `fn` rather than `async fn` and cannot return
+/// a value. The declaration describes the *call*, not the handler: `async` here
+/// means the peer's answer can be awaited, and a no-reply call has no answer —
+/// awaiting one could only ever mean "queued locally", which at the call site
+/// reads exactly like the delivery guarantee it does not have. The generated
+/// caller is therefore a plain method returning `Result<()>`, where `Ok` says
+/// only that the transport took the message.
+///
+/// Handlers are unaffected and stay `async fn`, because each incoming message
+/// is handled in a task of its own. Nothing carries a handler's error back to
+/// the caller, so one is logged where it happens instead.
+///
 /// # Example
 /// ```rust,ignore
 /// use macros::rpc_protocol;
@@ -211,6 +230,10 @@ pub fn from_serde(input: TokenStream) -> TokenStream {
 ///
 ///     #[extension_call]
 ///     async fn current_window_title() -> Option<String>;
+///
+///     /// Answered by nobody; missing one costs nothing.
+///     #[extension_call(no_reply)]
+///     fn pointer_moved(position: Point);
 /// }
 /// ```
 #[proc_macro_attribute]

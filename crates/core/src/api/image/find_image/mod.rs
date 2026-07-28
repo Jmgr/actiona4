@@ -10,6 +10,6 @@ pub mod search_in;
 
 pub use client::{OpenCVClient, ProgressHandler, ProgressRegistry, RemoteSource, RemoteTemplate};
 pub use extension::protocols::opencv::{
-    CaptureSpec, FindImageProgress, FindImageStage, FindImageTemplateOptions, Match,
+    CaptureSpec, FindImageProgress, FindImageStep, FindImageTemplateOptions, Match,
 };
 pub use search_in::SearchIn;

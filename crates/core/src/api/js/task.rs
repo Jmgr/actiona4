@@ -19,7 +19,7 @@
 //! @verbatim  * ```ts
 //! @verbatim  * const task = source.find(template);
 //! @verbatim  * for await (const progress of task) {
-//! @verbatim  *   console.println(`Stage: ${progress.stage}`);
+//! @verbatim  *   console.println(`Step: ${progress.step}`);
 //! @verbatim  * }
 //! @verbatim  * const match = await task;
 //! @verbatim  * ```

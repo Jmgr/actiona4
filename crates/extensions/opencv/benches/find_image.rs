@@ -5,8 +5,7 @@ use std::{hint::black_box, sync::Arc, time::Duration};
 
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use extension::protocols::opencv::FindImageTemplateOptions;
-use extension_opencv::find_image::{Source, Template};
-use tokio::sync::mpsc;
+use extension_opencv::find_image::{ProgressSink, Source, Template};
 use tokio_util::sync::CancellationToken;
 use types::{Size, size};
 
@@ -91,11 +90,11 @@ fn find_image_benches(c: &mut Criterion) {
                 opts,
                 |b, opts| {
                     b.iter(|| {
-                        let (tx, _rx) = mpsc::unbounded_channel();
+                        let progress = ProgressSink::discarding();
                         let cancellation_token = CancellationToken::new();
                         black_box(
                             source
-                                .find_template_all(&template, *opts, &cancellation_token, &tx)
+                                .find_template_all(&template, *opts, &cancellation_token, &progress)
                                 .expect("find-image benchmark succeeds"),
                         )
                     });
@@ -107,13 +106,18 @@ fn find_image_benches(c: &mut Criterion) {
                 opts,
                 |b, opts| {
                     b.iter(|| {
-                        let (tx, _rx) = mpsc::unbounded_channel();
+                        let progress = ProgressSink::discarding();
                         let cancellation_token = CancellationToken::new();
                         let mut gpu_opts = *opts;
                         gpu_opts.enable_gpu = true;
                         black_box(
                             source
-                                .find_template_all(&template, gpu_opts, &cancellation_token, &tx)
+                                .find_template_all(
+                                    &template,
+                                    gpu_opts,
+                                    &cancellation_token,
+                                    &progress,
+                                )
                                 .expect("GPU find-image benchmark succeeds"),
                         )
                     });
@@ -125,11 +129,11 @@ fn find_image_benches(c: &mut Criterion) {
                 opts,
                 |b, opts| {
                     b.iter(|| {
-                        let (tx, _rx) = mpsc::unbounded_channel();
+                        let progress = ProgressSink::discarding();
                         let cancellation_token = CancellationToken::new();
                         black_box(
                             source
-                                .find_template(&template, *opts, &cancellation_token, &tx)
+                                .find_template(&template, *opts, &cancellation_token, &progress)
                                 .expect("find-image benchmark succeeds"),
                         )
                     });
@@ -141,13 +145,13 @@ fn find_image_benches(c: &mut Criterion) {
                 opts,
                 |b, opts| {
                     b.iter(|| {
-                        let (tx, _rx) = mpsc::unbounded_channel();
+                        let progress = ProgressSink::discarding();
                         let cancellation_token = CancellationToken::new();
                         let mut gpu_opts = *opts;
                         gpu_opts.enable_gpu = true;
                         black_box(
                             source
-                                .find_template(&template, gpu_opts, &cancellation_token, &tx)
+                                .find_template(&template, gpu_opts, &cancellation_token, &progress)
                                 .expect("GPU find-image benchmark succeeds"),
                         )
                     });

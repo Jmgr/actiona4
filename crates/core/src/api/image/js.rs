@@ -621,13 +621,13 @@ impl From<super::find_image::Match> for JsMatch {
     }
 }
 
-/// Stages of a find image operation.
+/// Steps of a find image operation.
 ///
 /// ```ts
 /// const task = source.find(template);
 /// for await (const progress of task) {
-///   if (progress.stage === FindImageStage.Matching) {
-///     println(`Matching: ${formatPercent(progress.percent)}`);
+///   if (progress.step === FindImageStep.Matching) {
+///     println(`Matching: ${formatPercent(progress.progress * 100)}`);
 ///   }
 /// }
 /// ```
@@ -647,34 +647,34 @@ impl From<super::find_image::Match> for JsMatch {
     Serialize,
 )]
 #[js_enum]
-pub enum JsFindImageStage {
-    /// `FindImageStage.Capturing`
+pub enum JsFindImageStep {
+    /// `FindImageStep.Capturing`
     Capturing,
-    /// `FindImageStage.Preparing`
+    /// `FindImageStep.Preparing`
     Preparing,
-    /// `FindImageStage.Downscaling`
+    /// `FindImageStep.Downscaling`
     Downscaling,
-    /// `FindImageStage.Matching`
+    /// `FindImageStep.Matching`
     Matching,
-    /// `FindImageStage.Filtering`
+    /// `FindImageStep.Filtering`
     Filtering,
-    /// `FindImageStage.ComputingResults`
+    /// `FindImageStep.ComputingResults`
     ComputingResults,
-    /// `FindImageStage.Finished`
+    /// `FindImageStep.Finished`
     Finished,
 }
 
-impl From<super::find_image::FindImageStage> for JsFindImageStage {
-    fn from(value: super::find_image::FindImageStage) -> Self {
-        use super::find_image::FindImageStage;
+impl From<super::find_image::FindImageStep> for JsFindImageStep {
+    fn from(value: super::find_image::FindImageStep) -> Self {
+        use super::find_image::FindImageStep;
         match value {
-            FindImageStage::Capturing => Self::Capturing,
-            FindImageStage::Preparing => Self::Preparing,
-            FindImageStage::Downscaling => Self::Downscaling,
-            FindImageStage::Matching => Self::Matching,
-            FindImageStage::Filtering => Self::Filtering,
-            FindImageStage::ComputingResults => Self::ComputingResults,
-            FindImageStage::Finished => Self::Finished,
+            FindImageStep::Capturing => Self::Capturing,
+            FindImageStep::Preparing => Self::Preparing,
+            FindImageStep::Downscaling => Self::Downscaling,
+            FindImageStep::Matching => Self::Matching,
+            FindImageStep::Filtering => Self::Filtering,
+            FindImageStep::ComputingResults => Self::ComputingResults,
+            FindImageStep::Finished => Self::Finished,
         }
     }
 }
@@ -686,12 +686,12 @@ impl From<super::find_image::FindImageStage> for JsFindImageStage {
 /// ```ts
 /// const task = source.find(template);
 /// for await (const progress of task) {
-///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+///   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
 ///   if (progress.finished) break;
 /// }
 /// const result = await task;
 /// ```
-#[derive(Clone, Copy, Debug, Default, Eq, JsLifetime, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, JsLifetime, PartialEq)]
 #[js_class]
 pub struct JsFindImageProgress {
     inner: super::find_image::FindImageProgress,
@@ -711,25 +711,33 @@ impl From<super::find_image::FindImageProgress> for JsFindImageProgress {
 
 #[js_methods]
 impl JsFindImageProgress {
-    /// The current stage of the find image operation.
+    /// The current step of the find image operation.
     #[get]
     #[must_use]
-    pub fn stage(&self) -> JsFindImageStage {
-        self.inner.stage.into()
+    pub fn step(&self) -> JsFindImageStep {
+        self.inner.step.into()
     }
 
-    /// Completion percentage (0-100).
+    /// Completion of the whole search, from 0 to 1.
     #[get]
     #[must_use]
-    pub const fn percent(&self) -> u8 {
-        self.inner.percent
+    pub const fn progress(&self) -> f32 {
+        self.inner.progress
+    }
+
+    /// Completion of the current step, from 0 to 1. Steps that cannot measure
+    /// themselves report 0 when they start and 1 when they end.
+    #[get]
+    #[must_use]
+    pub const fn step_progress(&self) -> f32 {
+        self.inner.step_progress
     }
 
     /// Whether the operation has finished.
     #[get]
     #[must_use]
     pub const fn finished(&self) -> bool {
-        self.inner.stage.is_finished()
+        self.inner.step.is_finished()
     }
 
     /// Returns a string representation of this image search progress.
@@ -865,7 +873,7 @@ impl<'js> ValueClass<'js> for JsImage {
         register_enum::<JsInterpolation>(ctx)?;
         register_enum::<JsTextHorizontalAlign>(ctx)?;
         register_enum::<JsTextVerticalAlign>(ctx)?;
-        register_enum::<JsFindImageStage>(ctx)?;
+        register_enum::<JsFindImageStep>(ctx)?;
         register_host_class::<JsFindImageProgress>(ctx)?;
 
         Ok(())
@@ -1441,7 +1449,7 @@ impl JsImage {
     /// // Track progress while searching
     /// const task = source.find(template);
     /// for await (const progress of task) {
-    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -1501,7 +1509,7 @@ impl JsImage {
     /// // Track progress while searching
     /// const task = source.findAll(template);
     /// for await (const progress of task) {
-    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
     /// }
     /// const matches = await task;
     /// ```
@@ -1565,7 +1573,7 @@ impl JsImage {
     /// const display = displays.primary();
     /// const task = image.findOnScreen(SearchIn.display(display));
     /// for await (const progress of task) {
-    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
     /// }
     /// const match = await task;
     /// ```
@@ -1618,7 +1626,7 @@ impl JsImage {
     /// ```ts
     /// const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
     /// for await (const progress of task) {
-    ///   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+    ///   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
     /// }
     /// const matches = await task;
     /// ```

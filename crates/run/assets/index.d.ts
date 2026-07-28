@@ -41,7 +41,7 @@ type Task<Result> = Promise<Result> & {
  * ```ts
  * const task = source.find(template);
  * for await (const progress of task) {
- *   console.println(`Stage: ${progress.stage}`);
+ *   console.println(`Step: ${progress.step}`);
  * }
  * const match = await task;
  * ```
@@ -413,52 +413,52 @@ declare enum TextVerticalAlign {
     Bottom,
 }
 /**
- * Stages of a find image operation.
+ * Steps of a find image operation.
  * 
  * ```ts
  * const task = source.find(template);
  * for await (const progress of task) {
- *   if (progress.stage === FindImageStage.Matching) {
- *     println(`Matching: ${formatPercent(progress.percent)}`);
+ *   if (progress.step === FindImageStep.Matching) {
+ *     println(`Matching: ${formatPercent(progress.progress * 100)}`);
  *   }
  * }
  * ```
  * @category Image
  * @expand
  */
-declare enum FindImageStage {
+declare enum FindImageStep {
     /**
-     * `FindImageStage.Capturing`
+     * `FindImageStep.Capturing`
      */
     Capturing,
 
     /**
-     * `FindImageStage.Preparing`
+     * `FindImageStep.Preparing`
      */
     Preparing,
 
     /**
-     * `FindImageStage.Downscaling`
+     * `FindImageStep.Downscaling`
      */
     Downscaling,
 
     /**
-     * `FindImageStage.Matching`
+     * `FindImageStep.Matching`
      */
     Matching,
 
     /**
-     * `FindImageStage.Filtering`
+     * `FindImageStep.Filtering`
      */
     Filtering,
 
     /**
-     * `FindImageStage.ComputingResults`
+     * `FindImageStep.ComputingResults`
      */
     ComputingResults,
 
     /**
-     * `FindImageStage.Finished`
+     * `FindImageStep.Finished`
      */
     Finished,
 }
@@ -5818,7 +5818,7 @@ declare interface Match {
  * ```ts
  * const task = source.find(template);
  * for await (const progress of task) {
- *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+ *   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
  *   if (progress.finished) break;
  * }
  * const result = await task;
@@ -5827,13 +5827,18 @@ declare interface Match {
  */
 declare interface FindImageProgress {
     /**
-     * The current stage of the find image operation.
+     * The current step of the find image operation.
      */
-    readonly stage: FindImageStage;
+    readonly step: FindImageStep;
     /**
-     * Completion percentage (0-100).
+     * Completion of the whole search, from 0 to 1.
      */
-    readonly percent: number;
+    readonly progress: number;
+    /**
+     * Completion of the current step, from 0 to 1. Steps that cannot measure
+     * themselves report 0 when they start and 1 when they end.
+     */
+    readonly stepProgress: number;
     /**
      * Whether the operation has finished.
      */
@@ -6361,7 +6366,7 @@ declare class Image {
      * // Track progress while searching
      * const task = source.find(template);
      * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
      * }
      * const match = await task;
      * ```
@@ -6383,7 +6388,7 @@ declare class Image {
      * // Track progress while searching
      * const task = source.findAll(template);
      * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
      * }
      * const matches = await task;
      * ```
@@ -6406,7 +6411,7 @@ declare class Image {
      * const display = displays.primary();
      * const task = image.findOnScreen(SearchIn.display(display));
      * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
      * }
      * const match = await task;
      * ```
@@ -6428,7 +6433,7 @@ declare class Image {
      * ```ts
      * const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
      * for await (const progress of task) {
-     *   println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+     *   println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
      * }
      * const matches = await task;
      * ```

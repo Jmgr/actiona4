@@ -18,7 +18,7 @@ use super::{
     image::{
         Image,
         find_image::{
-            CaptureSpec, FindImageProgress, FindImageStage, FindImageTemplateOptions, Match,
+            CaptureSpec, FindImageProgress, FindImageStep, FindImageTemplateOptions, Match,
             SearchIn,
         },
     },
@@ -156,7 +156,7 @@ impl Screen {
         progress: mpsc::UnboundedSender<FindImageProgress>,
     ) -> Result<Vec<Match>> {
         self.runtime.require_not_wayland()?;
-        let _ = progress.send(FindImageProgress::new(FindImageStage::Capturing, 0));
+        let _ = progress.send(FindImageProgress::started(FindImageStep::Capturing, 0.0));
 
         let opencv = self.runtime.extensions().opencv().await?;
 

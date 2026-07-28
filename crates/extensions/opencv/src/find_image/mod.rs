@@ -5,14 +5,14 @@ use color_eyre::{
     eyre::{Error, ensure, eyre},
 };
 use extension::protocols::opencv::{
-    FindImageProgress, FindImageStage, FindImageTemplateOptions, Match,
+    FindImageProgress, FindImageStep, FindImageTemplateOptions, Match,
 };
 use opencv::{
     core::{CV_8UC3, Mat, MatTraitConst, Scalar, Vec4b, Vector, extract_channel, split},
     imgproc::{COLOR_BGR2Lab, COLOR_BGRA2BGR, COLOR_RGBA2BGR},
 };
 use satint::{SaturatingInto, Su32, su32};
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, watch};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use types::Size;
@@ -36,6 +36,69 @@ mod results;
 /// `cancel` call), so this only needs to unwind the extension's own work.
 pub fn cancelled() -> Error {
     eyre!("Cancelled")
+}
+
+/// Overall completion when each step begins. Matching is the only step that
+/// reports movement of its own, filling the gap up to [`FILTERING_TOTAL`].
+const DOWNSCALING_TOTAL: f32 = 0.1;
+pub(crate) const MATCHING_TOTAL: f32 = 0.2;
+pub(crate) const FILTERING_TOTAL: f32 = 0.7;
+const COMPUTING_RESULTS_TOTAL: f32 = 0.9;
+const FINISHED_TOTAL: f32 = 1.0;
+
+/// Where a search reports how far it has got.
+///
+/// Step changes go out reliably, because a consumer that misses one is left
+/// describing the wrong phase — and the last of them is what says the search is
+/// done. The samples in between go into a watch channel instead: only the most
+/// recent one is worth anything, so dropping the rest costs nothing and keeps a
+/// tile-by-tile stream from flooding the link to the host.
+#[derive(Clone, Debug)]
+pub struct ProgressSink {
+    steps: mpsc::UnboundedSender<FindImageProgress>,
+    samples: watch::Sender<FindImageProgress>,
+}
+
+impl ProgressSink {
+    #[must_use]
+    pub const fn new(
+        steps: mpsc::UnboundedSender<FindImageProgress>,
+        samples: watch::Sender<FindImageProgress>,
+    ) -> Self {
+        Self { steps, samples }
+    }
+
+    /// Announces a step that is about to start.
+    pub fn enter(&self, step: FindImageStep, progress: f32) {
+        let _ = self.steps.send(FindImageProgress::started(step, progress));
+    }
+
+    /// Announces that the whole request is done.
+    pub fn finish(&self) {
+        let _ = self.steps.send(FindImageProgress::new(
+            FindImageStep::Finished,
+            FINISHED_TOTAL,
+            1.0,
+        ));
+    }
+
+    /// Offers a reading from inside the current step, to be sent only if the
+    /// host is keeping up.
+    pub fn sample(&self, step: FindImageStep, progress: f32, step_progress: f32) {
+        let _ = self
+            .samples
+            .send(FindImageProgress::new(step, progress, step_progress));
+    }
+
+    /// A sink with nothing on the other end, for callers that only want the
+    /// matches: both channels report failure, which is already the ignored case.
+    #[must_use]
+    pub fn discarding() -> Self {
+        let (steps, _) = mpsc::unbounded_channel();
+        let (samples, _) = watch::channel(FindImageProgress::default());
+
+        Self::new(steps, samples)
+    }
 }
 
 /// Warms up OpenCV's Lab color space processing code.
@@ -206,7 +269,7 @@ impl Source {
         template: &Template,
         options: FindImageTemplateOptions,
         cancellation_token: &CancellationToken,
-        progress: &mpsc::UnboundedSender<FindImageProgress>,
+        progress: &ProgressSink,
     ) -> Result<Vec<Match>> {
         self.find_template_impl(template, options, false, cancellation_token, progress)
     }
@@ -218,7 +281,7 @@ impl Source {
         template: &Template,
         options: FindImageTemplateOptions,
         cancellation_token: &CancellationToken,
-        progress: &mpsc::UnboundedSender<FindImageProgress>,
+        progress: &ProgressSink,
     ) -> Result<Option<Match>> {
         let matches =
             self.find_template_impl(template, options, true, cancellation_token, progress)?;
@@ -232,7 +295,7 @@ impl Source {
         options: FindImageTemplateOptions,
         search_one: bool,
         cancellation_token: &CancellationToken,
-        progress: &mpsc::UnboundedSender<FindImageProgress>,
+        progress: &ProgressSink,
     ) -> Result<Vec<Match>> {
         // Check cancellation at the start
         if cancellation_token.is_cancelled() {
@@ -266,7 +329,7 @@ impl Source {
             return Err(cancelled());
         }
 
-        let _ = progress.send(FindImageProgress::new(FindImageStage::Downscaling, 10));
+        progress.enter(FindImageStep::Downscaling, DOWNSCALING_TOTAL);
 
         // Reduce the size if needed
         let (source_lightness, template_lightness, template_mask) = prepare_matching_inputs(
@@ -281,7 +344,7 @@ impl Source {
             return Err(cancelled());
         }
 
-        let _ = progress.send(FindImageProgress::new(FindImageStage::Matching, 20));
+        progress.enter(FindImageStep::Matching, MATCHING_TOTAL);
 
         // Apply template matching
         let mut result = match_template(
@@ -303,7 +366,7 @@ impl Source {
             return Err(cancelled());
         }
 
-        let _ = progress.send(FindImageProgress::new(FindImageStage::Filtering, 70));
+        progress.enter(FindImageStep::Filtering, FILTERING_TOTAL);
 
         if options.use_colors {
             // Always use the original (full-resolution) mask here: the result map has
@@ -331,7 +394,7 @@ impl Source {
             return Err(cancelled());
         }
 
-        let _ = progress.send(FindImageProgress::new(FindImageStage::ComputingResults, 90));
+        progress.enter(FindImageStep::ComputingResults, COMPUTING_RESULTS_TOTAL);
 
         let matches = compute_results(
             &result,
@@ -341,7 +404,7 @@ impl Source {
             options.non_maximum_suppression_radius,
         )?;
 
-        let _ = progress.send(FindImageProgress::new(FindImageStage::Finished, 100));
+        progress.finish();
 
         Ok(matches)
     }
@@ -352,11 +415,10 @@ impl Source {
 #[allow(clippy::large_include_file)]
 mod tests {
     use itertools::Itertools;
-    use tokio::sync::mpsc;
     use tokio_util::sync::CancellationToken;
     use types::{Size, point, size};
 
-    use crate::find_image::{FindImageProgress, FindImageTemplateOptions, Source, Template};
+    use crate::find_image::{FindImageTemplateOptions, ProgressSink, Source, Template};
 
     /// Decode a PNG fixture into (RGBA8 bytes, size).
     fn rgba_fixture(bytes: &[u8]) -> (Vec<u8>, Size) {
@@ -377,14 +439,14 @@ mod tests {
         let template = Template::from_rgba(&template_pixels, template_size).unwrap();
 
         let cancellation_token = CancellationToken::new();
-        let (progress_sender, _) = mpsc::unbounded_channel::<FindImageProgress>();
+        let progress = ProgressSink::discarding();
 
         let result = source
             .find_template_all(
                 &template,
                 FindImageTemplateOptions::default(),
                 &cancellation_token,
-                &progress_sender,
+                &progress,
             )
             .unwrap();
 
@@ -399,14 +461,14 @@ mod tests {
         let source = Source::from_rgba(&vec![0; 8 * 8 * 4], size(8, 8)).unwrap();
         let template = Template::from_rgba(&vec![0; 9 * 9 * 4], size(9, 9)).unwrap();
 
-        let (progress_sender, _) = mpsc::unbounded_channel::<FindImageProgress>();
+        let progress = ProgressSink::discarding();
         let cancellation_token = CancellationToken::new();
         let error = source
             .find_template_all(
                 &template,
                 FindImageTemplateOptions::default(),
                 &cancellation_token,
-                &progress_sender,
+                &progress,
             )
             .unwrap_err();
 

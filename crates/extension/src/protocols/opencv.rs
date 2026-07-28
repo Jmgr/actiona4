@@ -212,7 +212,7 @@ pub enum FindOutcome {
 #[derive(
     Clone, Copy, Debug, Default, Deserialize, strum::Display, EnumIs, Eq, PartialEq, Serialize,
 )]
-pub enum FindImageStage {
+pub enum FindImageStep {
     Capturing,
     #[default]
     Preparing,
@@ -223,25 +223,43 @@ pub enum FindImageStage {
     Finished,
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+/// How far along a find request is.
+///
+/// `progress` is the completion ratio from 0 to 1 covering the whole request.
+/// `step_progress` is the completion ratio from 0 to 1 for the step named by
+/// `step`. A step that cannot measure itself reports a `step_progress` of 0
+/// when it starts and 1 when it ends.
+#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct FindImageProgress {
-    pub stage: FindImageStage,
-    pub percent: u8,
+    pub step: FindImageStep,
+    pub progress: f32,
+    pub step_progress: f32,
 }
 
 impl Display for FindImageProgress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         DisplayFields::default()
-            .display("stage", self.stage)
-            .display("percent", self.percent)
+            .display("step", self.step)
+            .display("progress", self.progress)
+            .display("step_progress", self.step_progress)
             .finish(f)
     }
 }
 
 impl FindImageProgress {
     #[must_use]
-    pub const fn new(stage: FindImageStage, percent: u8) -> Self {
-        Self { stage, percent }
+    pub const fn new(step: FindImageStep, progress: f32, step_progress: f32) -> Self {
+        Self {
+            step,
+            progress,
+            step_progress,
+        }
+    }
+
+    /// The report for entering `step`, before it has done anything.
+    #[must_use]
+    pub const fn started(step: FindImageStep, progress: f32) -> Self {
+        Self::new(step, progress, 0.0)
     }
 }
 
@@ -328,9 +346,21 @@ pub trait OpenCVProtocol {
     #[host_call]
     async fn cancel(request_id: RequestId);
 
-    /// Reports progress for an in-flight find request.
+    /// Reports that an in-flight find request has entered a new step.
+    ///
+    /// Step changes are answered, so the extension can tell when the host has
+    /// them all and hold its result back until then.
     #[extension_call]
     async fn progress(request_id: RequestId, progress: FindImageProgress);
+
+    /// Reports how far into its current step an in-flight find request is.
+    ///
+    /// Lossy on purpose: samples are coalesced and sent without a reply, so the
+    /// host sees roughly the shape of a step rather than every value. Anything
+    /// that must not be missed — the step changes, and the final 1 —
+    /// belongs on [`Self::progress`] instead.
+    #[extension_call(no_reply)]
+    fn progress_sample(request_id: RequestId, progress: FindImageProgress);
 }
 
 #[cfg(test)]

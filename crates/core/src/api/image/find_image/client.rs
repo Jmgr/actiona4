@@ -26,26 +26,66 @@ enum Release {
     Template(TemplateHandle),
 }
 
+/// One in-flight request's progress stream.
+#[derive(Debug)]
+struct ProgressStream {
+    sender: mpsc::UnboundedSender<FindImageProgress>,
+    /// The furthest this request has been reported to have got.
+    reached: f32,
+}
+
 /// Progress senders for in-flight requests, keyed by request id.
 ///
 /// Shared between the client (which registers a sender per request) and the
 /// host-side protocol handler (which the extension calls into).
 #[derive(Debug, Default)]
-pub struct ProgressRegistry(Mutex<HashMap<RequestId, mpsc::UnboundedSender<FindImageProgress>>>);
+pub struct ProgressRegistry(Mutex<HashMap<RequestId, ProgressStream>>);
 
 impl ProgressRegistry {
     fn insert(&self, request_id: RequestId, sender: mpsc::UnboundedSender<FindImageProgress>) {
-        self.0.lock().insert(request_id, sender);
+        self.0.lock().insert(
+            request_id,
+            ProgressStream {
+                sender,
+                reached: 0.0,
+            },
+        );
     }
 
     fn remove(&self, request_id: RequestId) {
         self.0.lock().remove(&request_id);
     }
 
+    /// Passes on a step change, which is always the newest word on a request.
     fn dispatch(&self, request_id: RequestId, progress: FindImageProgress) {
-        if let Some(sender) = self.0.lock().get(&request_id) {
-            let _ = sender.send(progress);
+        let mut streams = self.0.lock();
+        let Some(stream) = streams.get_mut(&request_id) else {
+            return;
+        };
+
+        stream.reached = stream.reached.max(progress.progress);
+        let _ = stream.sender.send(progress);
+    }
+
+    /// Passes on a sample, unless the request has already been reported
+    /// further along than this.
+    ///
+    /// Samples travel without a reply and are handled in tasks of their own, so
+    /// one can arrive after a step change that was sent later. Dropping those
+    /// is what keeps a consumer from seeing a search go backwards — or from
+    /// seeing anything at all after the final step.
+    fn dispatch_sample(&self, request_id: RequestId, progress: FindImageProgress) {
+        let mut streams = self.0.lock();
+        let Some(stream) = streams.get_mut(&request_id) else {
+            return;
+        };
+
+        if progress.progress <= stream.reached {
+            return;
         }
+
+        stream.reached = progress.progress;
+        let _ = stream.sender.send(progress);
     }
 }
 
@@ -66,6 +106,48 @@ impl OpenCVProtocolHost for ProgressHandler {
     async fn progress(&self, request_id: RequestId, progress: FindImageProgress) -> Result<()> {
         self.registry.dispatch(request_id, progress);
         Ok(())
+    }
+
+    async fn progress_sample(
+        &self,
+        request_id: RequestId,
+        progress: FindImageProgress,
+    ) -> Result<()> {
+        self.registry.dispatch_sample(request_id, progress);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod progress_tests {
+    use extension::protocols::opencv::FindImageStep;
+    use tokio::sync::mpsc;
+
+    use super::{FindImageProgress, ProgressRegistry, RequestIdProvider};
+
+    #[test]
+    fn drops_sample_at_the_next_step_boundary() {
+        let registry = ProgressRegistry::default();
+        let request_id = RequestIdProvider::default().next_id();
+        let (sender, mut receiver) = mpsc::unbounded_channel();
+        registry.insert(request_id, sender);
+
+        registry.dispatch(
+            request_id,
+            FindImageProgress::started(FindImageStep::Matching, 0.2),
+        );
+        registry.dispatch(
+            request_id,
+            FindImageProgress::started(FindImageStep::Filtering, 0.7),
+        );
+        registry.dispatch_sample(
+            request_id,
+            FindImageProgress::new(FindImageStep::Matching, 0.7, 1.0),
+        );
+
+        assert_eq!(receiver.try_recv().unwrap().step, FindImageStep::Matching);
+        assert_eq!(receiver.try_recv().unwrap().step, FindImageStep::Filtering);
+        assert!(receiver.try_recv().is_err());
     }
 }
 

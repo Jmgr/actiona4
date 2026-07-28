@@ -104,6 +104,7 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
     let extension_response_variants = host_call_methods
         .iter()
         .copied()
+        .filter(|method| !method.no_reply)
         .map(ProtocolMethod::response_variant);
     let extension_request_variants = extension_call_methods
         .iter()
@@ -112,6 +113,7 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
     let host_response_variants = extension_call_methods
         .iter()
         .copied()
+        .filter(|method| !method.no_reply)
         .map(ProtocolMethod::response_variant);
 
     let host_methods = host_call_methods
@@ -125,11 +127,15 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
 
     let has_host_calls = !host_call_methods.is_empty();
     let has_extension_calls = !extension_call_methods.is_empty();
+    // A direction can carry calls without carrying any answers, in which case
+    // the response enum for it has no variants and stays `Never`.
+    let host_calls_reply = host_call_methods.iter().any(|method| !method.no_reply);
+    let extension_calls_reply = extension_call_methods.iter().any(|method| !method.no_reply);
 
     let host_request_type = wire_type(&idents.host_request, has_host_calls);
-    let host_response_type = wire_type(&idents.host_response, has_extension_calls);
+    let host_response_type = wire_type(&idents.host_response, extension_calls_reply);
     let extension_request_type = wire_type(&idents.extension_request, has_extension_calls);
-    let extension_response_type = wire_type(&idents.extension_response, has_host_calls);
+    let extension_response_type = wire_type(&idents.extension_response, host_calls_reply);
 
     let host_request_enum = enum_definition(
         &visibility,
@@ -140,7 +146,7 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
     let extension_response_enum = enum_definition(
         &visibility,
         &idents.extension_response,
-        has_host_calls,
+        host_calls_reply,
         extension_response_variants,
     );
     let extension_request_enum = enum_definition(
@@ -152,7 +158,7 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
     let host_response_enum = enum_definition(
         &visibility,
         &idents.host_response,
-        has_extension_calls,
+        extension_calls_reply,
         host_response_variants,
     );
     let host_trait = side_trait(
@@ -160,6 +166,7 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
         &host_trait_ident,
         &idents.extension_request,
         &idents.host_response,
+        &host_response_type,
         has_extension_calls,
         extension_call_methods.iter().copied(),
     );
@@ -168,6 +175,7 @@ fn expand_trait(item_trait: ItemTrait) -> syn::Result<TokenStream2> {
         &extension_trait_ident,
         &idents.host_request,
         &idents.extension_response,
+        &extension_response_type,
         has_host_calls,
         host_call_methods.iter().copied(),
     );
@@ -217,6 +225,7 @@ fn side_trait<'a>(
     trait_ident: &Ident,
     request_ident: &Ident,
     response_ident: &Ident,
+    response_type: &TokenStream2,
     has_methods: bool,
     methods: impl Iterator<Item = &'a ProtocolMethod>,
 ) -> TokenStream2 {
@@ -225,13 +234,17 @@ fn side_trait<'a>(
     let dispatch_arms = methods
         .iter()
         .map(|method| method.dispatch_arm(request_ident, response_ident));
+    // `None` means the request was a no-reply one and the peer is not waiting
+    // for anything, so nothing goes back on the wire.
     let dispatch_method = if has_methods {
         quote! {
             fn handle_request(
                 &self,
                 request: #request_ident,
             ) -> impl ::std::future::Future<
-                Output = ::std::result::Result<#response_ident, ::std::string::String>,
+                Output = ::std::option::Option<
+                    ::std::result::Result<#response_type, ::std::string::String>,
+                >,
             > + ::std::marker::Send + '_
             where
                 Self: ::std::marker::Sync,
@@ -349,6 +362,10 @@ fn protocol_base_name(protocol_ident: &Ident) -> String {
 struct ProtocolMethod {
     attrs: Vec<Attribute>,
     direction: CallDirection,
+    /// Whether the peer answers this call. A no-reply call is queued and
+    /// forgotten: there is nothing to await and no way to learn whether the
+    /// peer handled it.
+    no_reply: bool,
     method_ident: Ident,
     /// Variant name used in both the request and response enums.
     variant_ident: Ident,
@@ -365,10 +382,34 @@ enum CallDirection {
 
 impl ProtocolMethod {
     fn from_trait_method(mut method: syn::TraitItemFn) -> syn::Result<Self> {
-        if method.sig.asyncness.is_none() {
+        let Call {
+            direction,
+            no_reply,
+        } = parse_call(&mut method.attrs)?;
+
+        // The declaration describes the call, not the handler: `async` here
+        // means "the peer's answer can be awaited". A no-reply call has no
+        // answer, so awaiting one could only ever mean "queued locally", which
+        // reads at the call site exactly like a delivery guarantee it does not
+        // have. Handlers stay async either way.
+        if no_reply && method.sig.asyncness.is_some() {
+            return Err(syn::Error::new_spanned(
+                method.sig.asyncness,
+                "no-reply `rpc_protocol` methods must not be async: there is no reply to await",
+            ));
+        }
+
+        if !no_reply && method.sig.asyncness.is_none() {
             return Err(syn::Error::new_spanned(
                 method.sig.fn_token,
                 "`rpc_protocol` methods must be async",
+            ));
+        }
+
+        if no_reply && !matches!(method.sig.output, ReturnType::Default) {
+            return Err(syn::Error::new_spanned(
+                &method.sig.output,
+                "no-reply `rpc_protocol` methods cannot return a value: nothing comes back",
             ));
         }
 
@@ -379,7 +420,6 @@ impl ProtocolMethod {
             ));
         }
 
-        let direction = parse_call_direction(&mut method.attrs)?;
         let variant_ident = method_variant_ident(&method.sig.ident);
 
         let mut args = Vec::with_capacity(method.sig.inputs.len());
@@ -393,6 +433,7 @@ impl ProtocolMethod {
         Ok(Self {
             attrs: method.attrs,
             direction,
+            no_reply,
             method_ident: method.sig.ident,
             variant_ident,
             args,
@@ -462,6 +503,18 @@ impl ProtocolMethod {
         let return_type = &self.return_type;
         let args = self.arg_signature();
         let request_expr = self.request_construction(request_ident);
+
+        if self.no_reply {
+            // `Ok` only means the message was handed to the transport: there is
+            // no answer coming, so delivery is never confirmed.
+            return quote! {
+                #(#attrs)*
+                pub fn #method_ident(&self, #(#args),*) -> color_eyre::Result<()> {
+                    self.notify(#request_expr)
+                }
+            };
+        }
+
         let response_match = self.response_match(response_ident);
 
         quote! {
@@ -501,22 +554,43 @@ impl ProtocolMethod {
         let variant = &self.variant_ident;
         let args = self.args.iter().map(|arg| &arg.ident);
 
+        if self.no_reply {
+            // Nowhere to report a failure to, so it is logged here instead of
+            // disappearing.
+            let method_name = method_ident.to_string();
+            return quote! {
+                #request_pattern => {
+                    if let Err(error) = self.#method_ident(#(#args),*).await {
+                        ::tracing::error!(
+                            "handling `{}` failed: {error}",
+                            #method_name,
+                        );
+                    }
+                    None
+                }
+            };
+        }
+
         if self.returns_unit {
             quote! {
                 #request_pattern => {
-                    self.#method_ident(#(#args),*)
-                        .await
-                        .map(|()| #response_ident::#variant)
-                        .map_err(|err| err.to_string())
+                    Some(
+                        self.#method_ident(#(#args),*)
+                            .await
+                            .map(|()| #response_ident::#variant)
+                            .map_err(|err| err.to_string())
+                    )
                 }
             }
         } else {
             quote! {
                 #request_pattern => {
-                    self.#method_ident(#(#args),*)
-                        .await
-                        .map(#response_ident::#variant)
-                        .map_err(|err| err.to_string())
+                    Some(
+                        self.#method_ident(#(#args),*)
+                            .await
+                            .map(#response_ident::#variant)
+                            .map_err(|err| err.to_string())
+                    )
                 }
             }
         }
@@ -582,37 +656,63 @@ fn is_unit(ty: &Type) -> bool {
     matches!(ty, Type::Tuple(tuple) if tuple.elems.is_empty())
 }
 
-fn parse_call_direction(attrs: &mut Vec<Attribute>) -> syn::Result<CallDirection> {
-    let mut direction = None;
+/// What a call direction attribute says about one method.
+struct Call {
+    direction: CallDirection,
+    no_reply: bool,
+}
+
+fn parse_call(attrs: &mut Vec<Attribute>) -> syn::Result<Call> {
+    let mut call: Option<Call> = None;
     let mut remaining_attrs = Vec::with_capacity(attrs.len());
 
     for attr in attrs.drain(..) {
-        if attr.path().is_ident("host_call") {
-            if direction.is_some() {
-                return Err(syn::Error::new_spanned(
-                    attr,
-                    "`rpc_protocol` methods must have exactly one call direction attribute",
-                ));
-            }
-            direction = Some(CallDirection::Host);
+        let direction = if attr.path().is_ident("host_call") {
+            CallDirection::Host
         } else if attr.path().is_ident("extension_call") {
-            if direction.is_some() {
-                return Err(syn::Error::new_spanned(
-                    attr,
-                    "`rpc_protocol` methods must have exactly one call direction attribute",
-                ));
-            }
-            direction = Some(CallDirection::Extension);
+            CallDirection::Extension
         } else {
             remaining_attrs.push(attr);
+            continue;
+        };
+
+        if call.is_some() {
+            return Err(syn::Error::new_spanned(
+                attr,
+                "`rpc_protocol` methods must have exactly one call direction attribute",
+            ));
         }
+
+        call = Some(Call {
+            direction,
+            no_reply: parse_no_reply(&attr)?,
+        });
     }
 
     *attrs = remaining_attrs;
-    direction.ok_or_else(|| {
+    call.ok_or_else(|| {
         syn::Error::new(
             proc_macro2::Span::call_site(),
             "`rpc_protocol` methods must be marked with `#[host_call]` or `#[extension_call]`",
         )
     })
+}
+
+/// Reads the only option a call direction attribute takes: `no_reply`.
+fn parse_no_reply(attr: &Attribute) -> syn::Result<bool> {
+    if matches!(attr.meta, syn::Meta::Path(_)) {
+        return Ok(false);
+    }
+
+    let mut no_reply = false;
+    attr.parse_nested_meta(|meta| {
+        if meta.path.is_ident("no_reply") {
+            no_reply = true;
+            Ok(())
+        } else {
+            Err(meta.error("expected `no_reply`"))
+        }
+    })?;
+
+    Ok(no_reply)
 }

@@ -10,7 +10,11 @@ use tracing::{info, warn};
 use crate::{IpcExtension, protocol::Protocol};
 
 type ExtensionHandlerFut<P> = Pin<
-    Box<dyn Future<Output = Result<<P as Protocol>::ExtensionResponse, String>> + Send + 'static>,
+    Box<
+        dyn Future<Output = Option<Result<<P as Protocol>::ExtensionResponse, String>>>
+            + Send
+            + 'static,
+    >,
 >;
 
 type ExtensionHandler<P> =
@@ -36,10 +40,12 @@ impl<P: Protocol> Extension<P> {
         timeout: Duration,
     ) -> Self {
         Self::with_handler(key, task_tracker, token, timeout, async |_| {
-            Err("unexpected message".to_owned())
+            Some(Err("unexpected message".to_owned()))
         })
     }
 
+    /// `message_handler` answering `None` leaves the message unanswered, which
+    /// is what a no-reply call expects.
     pub fn with_handler<F, Fut>(
         key: ConnectionKey,
         task_tracker: TaskTracker,
@@ -49,7 +55,7 @@ impl<P: Protocol> Extension<P> {
     ) -> Self
     where
         F: Fn(P::HostRequest) -> Fut + Send + Sync + 'static,
-        Fut: Future<Output = Result<P::ExtensionResponse, String>> + Send + 'static,
+        Fut: Future<Output = Option<Result<P::ExtensionResponse, String>>> + Send + 'static,
     {
         let handler: ExtensionHandler<P> =
             Arc::new(move |request| Box::pin(message_handler(request)) as ExtensionHandlerFut<P>);
@@ -113,6 +119,24 @@ impl<P: Protocol> Extension<P> {
             () = self.token.cancelled() => Err(eyre!("extension cancelled")),
             result = inner.send(message) => result,
         }
+    }
+
+    /// Sends a request the host will not answer.
+    ///
+    /// `Ok` only means the message reached the transport: a no-reply call has
+    /// nothing to wait for, so delivery is never confirmed.
+    pub fn notify(&self, message: P::ExtensionRequest) -> Result<()> {
+        if self.token.is_cancelled() {
+            return Err(eyre!("extension cancelled"));
+        }
+
+        let inner = self
+            .inner
+            .lock()
+            .clone()
+            .ok_or_else(|| eyre!("extension is not connected"))?;
+
+        inner.notify(message)
     }
 }
 

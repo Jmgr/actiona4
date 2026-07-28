@@ -15,11 +15,13 @@ pub struct Extension<P: Protocol> {
 impl<P: Protocol> Extension<P> {
     pub async fn new(key: ConnectionKey, timeout: Duration) -> Result<Self> {
         Self::with_handler(key, timeout, async |_message| {
-            Err("unexpected message".to_owned())
+            Some(Err("unexpected message".to_owned()))
         })
         .await
     }
 
+    /// `message_handler` answering `None` leaves the message unanswered, which
+    /// is what a no-reply call expects.
     pub async fn with_handler<F, Fut>(
         key: ConnectionKey,
         timeout: Duration,
@@ -27,15 +29,16 @@ impl<P: Protocol> Extension<P> {
     ) -> Result<Self>
     where
         F: Fn(P::HostRequest) -> Fut + Send + Sync + 'static,
-        Fut: Future<Output = Result<P::ExtensionResponse, String>> + Send,
+        Fut: Future<Output = Option<Result<P::ExtensionResponse, String>>> + Send,
     {
         let message_handler = Arc::new(message_handler);
         let client = IpcRpcClient::initialize_client(key, move |message| {
             let message_handler = Arc::clone(&message_handler);
             async move {
                 if let WireMessage::HostRequest(request) = message {
-                    let response = message_handler(request).await;
-                    Some(WireMessage::ExtensionResponse(response))
+                    message_handler(request)
+                        .await
+                        .map(WireMessage::ExtensionResponse)
                 } else {
                     error!("extension: unexpected message received: {message:?}");
                     None
@@ -61,6 +64,24 @@ impl<P: Protocol> Extension<P> {
         };
 
         Ok(response)
+    }
+
+    /// Sends a message the host will not answer.
+    ///
+    /// `send_timeout` hands the message to the transport before it returns and
+    /// the future it gives back only waits for a reply, so dropping that future
+    /// is the send. The timeout is not a delivery deadline: it only says how
+    /// long the reply slot registered for the message lingers before being
+    /// reaped, so it stays short regardless of the protocol's own timeout.
+    pub fn notify(&self, message: P::ExtensionRequest) -> Result<()> {
+        const REPLY_SLOT_TTL: Duration = Duration::from_secs(5);
+
+        drop(
+            self.client
+                .send_timeout(WireMessage::ExtensionRequest(message), REPLY_SLOT_TTL),
+        );
+
+        Ok(())
     }
 
     pub async fn wait_for_host_to_disconnect(&self) -> Result<()> {

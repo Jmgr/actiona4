@@ -10,7 +10,7 @@ use color_eyre::{
     Result,
     eyre::{Error, ensure},
 };
-use extension::protocols::opencv::{FindImageProgress, FindImageStage};
+use extension::protocols::opencv::FindImageStep;
 use itertools::Itertools;
 use opencv::{
     core::{AccessFlag, CV_32FC1, Mat, Rect, UMat, UMatUsageFlags, no_array},
@@ -18,13 +18,15 @@ use opencv::{
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual, UMatTraitConst},
 };
 use rayon::prelude::*;
-use satint::{SaturatingFrom, SaturatingInto, Su32, TryDiv, su32};
-use tokio::sync::mpsc;
+use satint::{SaturatingFrom, SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use types::Size;
 
-use crate::find_image::{LabLightnessMat, MaskMat, cancelled, common::ideal_thread_count};
+use crate::find_image::{
+    FILTERING_TOTAL, LabLightnessMat, MATCHING_TOTAL, MaskMat, ProgressSink, cancelled,
+    common::ideal_thread_count,
+};
 
 /// Run a single tile's template match against a vertical slice of the source.
 fn match_tile(
@@ -103,7 +105,7 @@ pub fn match_template(
     template_mask: Option<&MaskMat>,
     enable_gpu: bool,
     cancellation_token: &CancellationToken,
-    progress: &mpsc::UnboundedSender<FindImageProgress>,
+    progress: &ProgressSink,
 ) -> Result<Mat> {
     if cancellation_token.is_cancelled() {
         return Err(cancelled());
@@ -142,7 +144,7 @@ pub fn match_template(
         })
         .collect_vec();
 
-    let total_tiles: Su32 = tile_ranges.len().saturating_into();
+    let total_tiles = tile_ranges.len();
     let completed_tiles = Arc::new(AtomicUsize::new(0));
 
     // Run template matching on each tile in parallel.
@@ -155,18 +157,16 @@ pub fn match_template(
 
             let tile_result = match_tile(source_lightness, template_lightness, template_mask, roi)?;
 
-            // Update progress: matching phase is 20-70%, so 50% of total range
-            let completed: Su32 =
-                (completed_tiles.fetch_add(1, Ordering::Relaxed) + 1).saturating_into();
-            let percent = su32(20)
-                + ((completed * su32(50))
-                    .try_div(total_tiles)
-                    .expect("total_tiles cannot be 0"));
+            // Matching is the one step that can measure itself: each finished
+            // tile moves it a little further between the two step boundaries.
+            let completed = completed_tiles.fetch_add(1, Ordering::Relaxed) + 1;
+            let step = (completed as f32 / total_tiles as f32).clamp(0.0, 1.0);
 
-            let _ = progress.send(FindImageProgress::new(
-                FindImageStage::Matching,
-                percent.min(su32(70)).saturating_into(),
-            ));
+            progress.sample(
+                FindImageStep::Matching,
+                (FILTERING_TOTAL - MATCHING_TOTAL).mul_add(step, MATCHING_TOTAL),
+                step,
+            );
 
             Ok::<_, Error>((start_row, tile_result))
         })

@@ -6,12 +6,12 @@ use std::{
 
 use color_eyre::{Result, eyre::eyre};
 use extension::protocols::opencv::{
-    CaptureSpec, FindImageProgress, FindImageStage, FindImageTemplateOptions, FindOutcome, Match,
+    CaptureSpec, FindImageProgress, FindImageStep, FindImageTemplateOptions, FindOutcome, Match,
     OpenCVProtocolExtension, RequestId, RgbaPixels, SourceHandle, TemplateHandle,
 };
 use parking_lot::Mutex;
 use tokio::{
-    sync::{mpsc, oneshot},
+    sync::{mpsc, oneshot, watch},
     task::{JoinHandle, block_in_place},
     time::sleep,
 };
@@ -19,17 +19,24 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 use crate::{
     capture::Capturer,
-    find_image::{Source, Template, cancelled},
+    find_image::{ProgressSink, Source, Template, cancelled},
 };
+
+/// How often a search's intra-step samples are picked up and sent on.
+const SAMPLE_INTERVAL: Duration = Duration::from_millis(50);
 
 /// A message on its way back to the host over the shared progress stream.
 #[derive(Debug)]
 pub enum ProgressReport {
-    /// A progress report, tagged with the request it belongs to.
-    Update(RequestId, FindImageProgress),
+    /// A step change, tagged with the request it belongs to. Delivered
+    /// reliably, in order, and waited for before the request answers.
+    Step(RequestId, FindImageProgress),
 
-    /// A marker that answers once everything queued ahead of it has reached the
-    /// host. See [`OpenCVExtension::flush_progress`].
+    /// A reading from inside a step. Sent without a reply and dropped freely.
+    Sample(RequestId, FindImageProgress),
+
+    /// A marker that answers once every step change queued ahead of it has
+    /// reached the host. See [`OpenCVExtension::flush_progress`].
     Flush(oneshot::Sender<()>),
 }
 
@@ -165,22 +172,44 @@ impl OpenCVExtension {
         });
     }
 
-    /// Bridges the synchronous progress channel that `find_template*` writes to
-    /// onto the per-request IPC stream back to the host.
+    /// Builds the sink a search reports through, and the tasks that carry what
+    /// it writes to the host.
     ///
-    /// The returned handle finishes once the search has dropped its end of the
-    /// channel and every update it wrote has been queued for the host.
-    fn progress_channel(
+    /// Step changes are forwarded one for one. Samples are read from the watch
+    /// channel no more often than [`SAMPLE_INTERVAL`], so a search that reports
+    /// per tile costs the same number of messages as one that reports rarely.
+    ///
+    /// The returned handle finishes once the search has dropped the sink and
+    /// every step change it wrote has been queued for the host.
+    fn progress_sink(
         &self,
         request_id: RequestId,
-    ) -> (mpsc::UnboundedSender<FindImageProgress>, JoinHandle<()>) {
-        let (sender, mut receiver) = mpsc::unbounded_channel();
-        let progress = self.progress.clone();
+    ) -> (ProgressSink, JoinHandle<()>, JoinHandle<()>) {
+        let (steps, mut step_updates) = mpsc::unbounded_channel();
+        let (samples, mut sample_updates) = watch::channel(FindImageProgress::default());
 
+        let sample_progress = self.progress.clone();
+        let sampling = self.task_tracker.spawn(async move {
+            // Ends with the search: the sink holds the only sender, and losing
+            // it closes the channel.
+            while sample_updates.changed().await.is_ok() {
+                let sample = *sample_updates.borrow_and_update();
+                if sample_progress
+                    .send(ProgressReport::Sample(request_id, sample))
+                    .is_err()
+                {
+                    break;
+                }
+
+                sleep(SAMPLE_INTERVAL).await;
+            }
+        });
+
+        let step_progress = self.progress.clone();
         let forwarding = self.task_tracker.spawn(async move {
-            while let Some(update) = receiver.recv().await {
-                if progress
-                    .send(ProgressReport::Update(request_id, update))
+            while let Some(update) = step_updates.recv().await {
+                if step_progress
+                    .send(ProgressReport::Step(request_id, update))
                     .is_err()
                 {
                     break;
@@ -188,15 +217,18 @@ impl OpenCVExtension {
             }
         });
 
-        (sender, forwarding)
+        (ProgressSink::new(steps, samples), forwarding, sampling)
     }
 
-    /// Waits until every progress report queued so far has reached the host.
+    /// Waits until every step change queued so far has reached the host.
     ///
     /// The stream is drained by a task of its own, so without this a reply
-    /// would overtake the updates a search sent just before finishing. The host
+    /// would overtake the changes a search sent just before finishing. The host
     /// stops listening for a request as soon as it has an answer for it, so
-    /// those last stages — including `Finished` at 100% — would be dropped.
+    /// those last steps — including `Finished` at 1 — would be dropped.
+    ///
+    /// Samples need no such care: they are allowed to go missing, which is the
+    /// whole reason the two travel separately.
     async fn flush_progress(&self) {
         let (flushed, delivered) = oneshot::channel();
 
@@ -217,7 +249,7 @@ impl OpenCVExtension {
         search_one: bool,
         cancellation_token: CancellationToken,
     ) -> Result<Vec<Match>> {
-        let (progress, forwarding) = self.progress_channel(request_id);
+        let (progress, forwarding, sampling) = self.progress_sink(request_id);
         let result = self
             .task_tracker
             .spawn_blocking(move || {
@@ -230,6 +262,11 @@ impl OpenCVExtension {
                 }
             })
             .await;
+
+        // Nobody wants a reading from a search that has already finished, and
+        // the sampler may still be holding one it slept through. Stopping it
+        // here keeps that stale sample off the wire entirely.
+        sampling.abort();
 
         // The search has dropped its sender by now, so this only waits for what
         // it already wrote, and then for the host to have seen all of it.
@@ -311,9 +348,9 @@ impl OpenCVProtocolExtension for OpenCVExtension {
             return Ok(FindOutcome::UnknownHandle);
         };
 
-        let _ = self.progress.send(ProgressReport::Update(
+        let _ = self.progress.send(ProgressReport::Step(
             request_id,
-            FindImageProgress::new(FindImageStage::Capturing, 0),
+            FindImageProgress::started(FindImageStep::Capturing, 0.0),
         ));
 
         let captured = self.capturer.capture(&capture, &cancellation_token).await?;

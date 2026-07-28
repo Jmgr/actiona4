@@ -149,19 +149,24 @@ for (const operation of generatedOperations) {
   const template = await Image.load(templatePath);
   const task = source.find(template, { useColors: true });
 
-  const stages: FindImageStage[] = [];
+  const steps: FindImageStep[] = [];
+  let previousProgress = 0;
   for await (const progress of task) {
-    stages.push(progress.stage);
+    steps.push(progress.step);
+    assert(progress.progress >= previousProgress, "find() progress should never go backwards");
+    assert(progress.progress >= 0 && progress.progress <= 1, "find() progress should be a ratio");
+    assert(progress.stepProgress >= 0 && progress.stepProgress <= 1, "find() step progress should be a ratio");
+    previousProgress = progress.progress;
   }
 
   const result = await task;
   assert(result !== undefined, "Image.find should return a match for the known fixture");
   assert(new Point(result).equals(result.position), "FindImageResult can be used as PointLike to construct a Point");
-  assertEq(stages[0], FindImageStage.Downscaling, "find() first stage");
-  assert(stages.includes(FindImageStage.Matching), "find() should report Matching");
-  assert(stages.includes(FindImageStage.Filtering), "find() should report Filtering");
-  assert(stages.includes(FindImageStage.ComputingResults), "find() should report ComputingResults");
-  assertEq(stages[stages.length - 1], FindImageStage.Finished, "find() last stage");
+  assertEq(steps[0], FindImageStep.Downscaling, "find() first step");
+  assert(steps.includes(FindImageStep.Matching), "find() should report Matching");
+  assert(steps.includes(FindImageStep.Filtering), "find() should report Filtering");
+  assert(steps.includes(FindImageStep.ComputingResults), "find() should report ComputingResults");
+  assertEq(steps[steps.length - 1], FindImageStep.Finished, "find() last step");
 }
 
 {
@@ -169,21 +174,27 @@ for (const operation of generatedOperations) {
   const template = await Image.load(templatePath);
   const task = source.findAll(template, { useColors: true });
 
-  const stages: FindImageStage[] = [];
-  let lastPercent = 0;
+  const steps: FindImageStep[] = [];
+  let lastProgress = 0;
+  let lastStepProgress = 0;
   for await (const progress of task) {
-    stages.push(progress.stage);
-    lastPercent = progress.percent;
+    steps.push(progress.step);
+    assert(progress.progress >= lastProgress, "findAll() progress should never go backwards");
+    assert(progress.progress >= 0 && progress.progress <= 1, "findAll() progress should be a ratio");
+    assert(progress.stepProgress >= 0 && progress.stepProgress <= 1, "findAll() step progress should be a ratio");
+    lastProgress = progress.progress;
+    lastStepProgress = progress.stepProgress;
   }
 
   const results = await task;
   assertEq(results.length, 2, "Image.findAll should return the two colored matches");
-  assertEq(lastPercent, 100, "Image.findAll progress should finish at 100%");
-  assertEq(stages[0], FindImageStage.Downscaling, "findAll() first stage");
-  assert(stages.includes(FindImageStage.Matching), "findAll() should report Matching");
-  assert(stages.includes(FindImageStage.Filtering), "findAll() should report Filtering");
-  assert(stages.includes(FindImageStage.ComputingResults), "findAll() should report ComputingResults");
-  assertEq(stages[stages.length - 1], FindImageStage.Finished, "findAll() last stage");
+  assertEq(lastProgress, 1, "Image.findAll progress should finish at 1");
+  assertEq(lastStepProgress, 1, "Image.findAll last step should finish at 1");
+  assertEq(steps[0], FindImageStep.Downscaling, "findAll() first step");
+  assert(steps.includes(FindImageStep.Matching), "findAll() should report Matching");
+  assert(steps.includes(FindImageStep.Filtering), "findAll() should report Filtering");
+  assert(steps.includes(FindImageStep.ComputingResults), "findAll() should report ComputingResults");
+  assertEq(steps[steps.length - 1], FindImageStep.Finished, "findAll() last step");
 }
 
 {

@@ -87,11 +87,18 @@ async fn run(task_tracker: &TaskTracker, cancellation_token: &CancellationToken)
             };
 
             match report {
-                ProgressReport::Update(request_id, progress) => {
+                ProgressReport::Step(request_id, progress) => {
                     if let Err(error) = progress_extension.progress(request_id, progress).await {
                         // A failed report is not worth failing the search over: the
                         // host either went away or is no longer interested.
                         error!("failed to report progress for request {request_id}: {error}");
+                    }
+                }
+                // Nothing to await: the sample is queued and forgotten, so a
+                // busy host slows nothing down here.
+                ProgressReport::Sample(request_id, progress) => {
+                    if let Err(error) = progress_extension.progress_sample(request_id, progress) {
+                        error!("failed to sample progress for request {request_id}: {error}");
                     }
                 }
                 // Every update sent before this one has now been answered for,

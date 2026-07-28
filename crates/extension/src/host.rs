@@ -20,8 +20,11 @@ use tracing::{error, info, warn};
 
 use crate::{IpcHost, RESTART_DELAY, protocol::Protocol};
 
-type HostHandlerFut<P> =
-    Pin<Box<dyn Future<Output = Result<<P as Protocol>::HostResponse, String>> + Send + 'static>>;
+type HostHandlerFut<P> = Pin<
+    Box<
+        dyn Future<Output = Option<Result<<P as Protocol>::HostResponse, String>>> + Send + 'static,
+    >,
+>;
 
 type HostHandler<P> =
     Arc<dyn Fn(<P as Protocol>::ExtensionRequest) -> HostHandlerFut<P> + Send + Sync + 'static>;
@@ -50,11 +53,13 @@ impl<P: Protocol> Host<P> {
         timeout: Duration,
     ) -> Result<Self> {
         Self::with_handler(executable_path, task_tracker, token, timeout, async |_| {
-            Err("unexpected message".to_owned())
+            Some(Err("unexpected message".to_owned()))
         })
         .await
     }
 
+    /// `message_handler` answering `None` leaves the message unanswered, which
+    /// is what a no-reply call expects.
     pub async fn with_handler<F, Fut>(
         executable_path: &Path,
         task_tracker: TaskTracker,
@@ -64,7 +69,7 @@ impl<P: Protocol> Host<P> {
     ) -> Result<Self>
     where
         F: Fn(P::ExtensionRequest) -> Fut + Send + Sync + 'static,
-        Fut: Future<Output = Result<P::HostResponse, String>> + Send + 'static,
+        Fut: Future<Output = Option<Result<P::HostResponse, String>>> + Send + 'static,
     {
         let handler: HostHandler<P> =
             Arc::new(move |request| Box::pin(message_handler(request)) as HostHandlerFut<P>);
@@ -239,6 +244,19 @@ impl<P: Protocol> Host<P> {
             () = self.token.cancelled() => Err(eyre!("host cancelled")),
             result = inner.send(message) => result,
         }
+    }
+
+    /// Sends a request the extension will not answer.
+    ///
+    /// `Ok` only means the message reached the transport: a no-reply call has
+    /// nothing to wait for, so delivery is never confirmed.
+    pub fn notify(&self, message: P::HostRequest) -> Result<()> {
+        if self.token.is_cancelled() {
+            return Err(eyre!("host cancelled"));
+        }
+
+        let inner = self.inner.lock().clone();
+        inner.notify(message)
     }
 
     async fn replace_inner(&self) -> Result<()> {
