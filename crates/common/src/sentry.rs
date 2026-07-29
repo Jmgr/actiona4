@@ -1,4 +1,4 @@
-use std::{panic, sync::Arc};
+use std::{env, panic, sync::Arc};
 
 use color_eyre::{Result, eyre::Context};
 use rfd::{MessageDialog, MessageDialogResult};
@@ -19,12 +19,22 @@ use crate::built_info;
 const SENTRY_DSN: &str =
     "https://4d7d4abdc99f240244aaff1701358119@crash.actiona.app/5428144307680296";
 
+/// Disables Sentry and the minidump crash-reporter helper for this process.
+pub const DISABLE_CRASH_REPORTING_ENV: &str = "ACTIONA_DISABLE_CRASH_REPORTING";
+
 pub struct CrashReportingGuard {
-    _sentry: sentry::ClientInitGuard,
-    _minidump: Arc<Handle>,
+    _sentry: Option<sentry::ClientInitGuard>,
+    _minidump: Option<Arc<Handle>>,
 }
 
 pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
+    if env::var_os(DISABLE_CRASH_REPORTING_ENV).is_some() {
+        return Ok(CrashReportingGuard {
+            _sentry: None,
+            _minidump: None,
+        });
+    }
+
     let options = sentry::ClientOptions {
         release: sentry::release_name!(),
         auto_session_tracking: true,
@@ -79,8 +89,8 @@ pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
     install_abort_panic_metadata_hook(minidump.clone());
 
     Ok(CrashReportingGuard {
-        _sentry: client,
-        _minidump: minidump,
+        _sentry: Some(client),
+        _minidump: Some(minidump),
     })
 }
 

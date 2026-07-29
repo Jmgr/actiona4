@@ -1,5 +1,6 @@
 use std::{fs, io::Write as _, process::Command};
 
+use actiona_common::sentry::DISABLE_CRASH_REPORTING_ENV;
 use assert_cmd::{assert::Assert, prelude::*};
 use httptest::{
     Expectation, Server, all_of,
@@ -42,6 +43,7 @@ pub fn run(name: &str) -> Assert {
     let _ = e2e::extension_bin("opencv");
     let mut command = Command::new(e2e::actiona_run_bin());
     command.arg(script.path());
+    command.env(DISABLE_CRASH_REPORTING_ENV, "1");
 
     let _web_server = if name == "web.ts" {
         Some(configure_web_server(&mut command))

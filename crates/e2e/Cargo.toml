@@ -19,6 +19,8 @@ name = "e2e"
 parking_lot.workspace = true
 
 [dev-dependencies]
+common = { path = "../common" }
+
 assert_cmd.workspace = true
 httptest.workspace = true
 tempfile.workspace = true
