@@ -8,6 +8,8 @@ use std::{
 
 use parking_lot::Mutex;
 
+const ACTIONA_RUN_OVERRIDE_ENV: &str = "ACTIONA4_E2E_RUNNER";
+
 fn target_profile_dir() -> PathBuf {
     // current_exe -> target/{profile}/deps/<test-exe>
     // parent()    -> target/{profile}/deps/
@@ -83,16 +85,30 @@ fn ensure_extension_bin_exists(name: &str, path: &Path) {
     );
 }
 
-/// Return the path to the actiona-run binary built by cargo.
+/// Return the path to the actiona-run executable under test.
 ///
-/// Walks up from the running test binary (target/debug/deps/<exe>) to
-/// target/debug/ and appends the binary name. If the binary is missing,
-/// build it on demand so `cargo test` works without a separate pre-build step.
+/// Uses the executable specified by `ACTIONA4_E2E_RUNNER` when set. Otherwise,
+/// walks up from the running test binary (target/debug/deps/<exe>) to
+/// target/debug/ and appends the binary name. If the binary is missing, build
+/// it on demand so `cargo test` works without a separate pre-build step.
 #[must_use]
 pub fn actiona_run_bin() -> PathBuf {
+    if let Some(path) = env::var_os(ACTIONA_RUN_OVERRIDE_ENV) {
+        return PathBuf::from(path);
+    }
+
     let path = actiona_run_bin_path();
     ensure_actiona_run_bin_exists(&path);
     path
+}
+
+/// Whether the test process should use a pre-built actiona-run executable.
+///
+/// This is used to exercise packaged artifacts such as the AppImage, which
+/// provide their extension executables alongside the main binary.
+#[must_use]
+pub fn actiona_run_is_overridden() -> bool {
+    env::var_os(ACTIONA_RUN_OVERRIDE_ENV).is_some()
 }
 
 /// Return the path to an extension binary built by cargo, building it on

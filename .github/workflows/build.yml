@@ -552,12 +552,20 @@ jobs:
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
         with:
-          extra-packages: appstream
+          extra-packages: appstream libfuse2t64 xvfb openbox
 
       - name: Build unsigned AppImage
         env:
           RUSTFLAGS: -C link-arg=-fuse-ld=mold
         run: cargo make appimage-nosign
+
+      - name: Run e2e tests against AppImage
+        run: |
+          shopt -s nullglob
+          appimages=(target/*.AppImage)
+          test "${#appimages[@]}" -eq 1
+          export ACTIONA4_E2E_RUNNER="$(realpath "${appimages[0]}")"
+          xvfb-run -a -s "-screen 0 1920x1080x24" bash -c 'openbox &>/dev/null & sleep 1 && cargo test --locked -p e2e'
 
   windows-archive:
     name: Windows Archive
