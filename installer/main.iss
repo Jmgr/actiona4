@@ -2,6 +2,9 @@
 #ifndef MyAppVersion
   #error Missing MyAppVersion define. Pass /DMyAppVersion=... to ISCC.
 #endif
+#ifndef MyOutputBaseFilename
+  #error Missing MyOutputBaseFilename define. Pass /DMyOutputBaseFilename=... to ISCC.
+#endif
 #ifndef MyAppFileVersion
   #error Missing MyAppFileVersion define. Pass /DMyAppFileVersion=... to ISCC.
 #endif
@@ -45,7 +48,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=..\target
-OutputBaseFilename=actiona-run-{#MyAppVersion}-x86_64-setup
+OutputBaseFilename={#MyOutputBaseFilename}
 #if MySignTool != ""
   SignTool={#MySignTool}
   SignedUninstaller=yes

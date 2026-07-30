@@ -38,6 +38,9 @@ pub enum Commands {
     /// Build the Actiona Run installer with Inno Setup without signing.
     InstallerNoSign,
     #[cfg(windows)]
+    /// Install the unsigned Actiona Run installer and run end-to-end tests.
+    InstallerE2e,
+    #[cfg(windows)]
     /// Build a zip archive with the installer payload minus the Inno plugin.
     Archive,
     #[cfg(windows)]

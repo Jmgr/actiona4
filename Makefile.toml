@@ -282,6 +282,13 @@ dependencies = ["release-symbols", "build-inno-plugin"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "installer-no-sign"]
 
+[tasks.installer-e2e]
+condition = { platforms = ["windows"] }
+description = "Install and end-to-end test the unsigned Actiona Run installer (Windows only)."
+dependencies = ["installer-nosign"]
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "installer-e2e"]
+
 [tasks.archive]
 condition = { platforms = ["windows"] }
 description = "Build a signed Actiona Run zip archive (Windows only)."

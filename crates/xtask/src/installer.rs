@@ -1,4 +1,8 @@
-use std::{fmt::Write, path::Path, process::Command};
+use std::{
+    fmt::Write,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use color_eyre::{Result, eyre::eyre};
 use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
@@ -16,6 +20,7 @@ pub async fn build_installer(
     workspace_root: &Path,
     workspace_package_info: &WorkspacePackageInfo,
     notification_package_info: &NotificationPackageInfo,
+    output_base_filename: &str,
     should_sign: bool,
 ) -> Result<()> {
     let installer_directory = workspace_root.join("installer");
@@ -24,6 +29,7 @@ pub async fn build_installer(
     let mut command = Command::new("iscc");
     command
         .arg(format!("/DMyAppVersion={}", workspace_package_info.version))
+        .arg(format!("/DMyOutputBaseFilename={output_base_filename}"))
         .arg(format!(
             "/DMyAppFileVersion={}",
             workspace_package_info.file_version
@@ -52,6 +58,25 @@ pub async fn build_installer(
     }
 
     run_command(&mut command, "Failed to run Inno Setup compiler.")
+}
+
+#[must_use]
+pub fn installer_output_base_filename(workspace_package_info: &WorkspacePackageInfo) -> String {
+    format!(
+        "actiona-run-{}-x86_64-setup",
+        workspace_package_info.version
+    )
+}
+
+#[must_use]
+pub fn installer_path(
+    workspace_root: &Path,
+    workspace_package_info: &WorkspacePackageInfo,
+) -> PathBuf {
+    workspace_root.join("target").join(format!(
+        "{}.exe",
+        installer_output_base_filename(workspace_package_info)
+    ))
 }
 
 async fn write_installer_files_include(workspace_root: &Path) -> Result<()> {

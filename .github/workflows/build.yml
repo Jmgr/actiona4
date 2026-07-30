@@ -645,5 +645,5 @@ jobs:
       - name: Setup vcpkg with OpenCV
         uses: ./.github/actions/setup-vcpkg
 
-      - name: Build unsigned installer
-        run: cargo make installer-nosign
+      - name: Install and test unsigned installer
+        run: cargo make installer-e2e
