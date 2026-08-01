@@ -121,16 +121,16 @@ arboard = "3.6.1"
 arc-swap = "1.9.2"
 async-stream = "0.3.6"
 bimap = "0.6.3"
-bytemuck = "1.25.1"
+bytemuck = "1.25.2"
 bytes = "1.12.1"
-clap = "4.6.2"
-clap_complete = "4.6.7"
+clap = "4.6.5"
+clap_complete = "4.6.8"
 color-eyre = "0.6.5"
 console = "0.16.4"
 const-default = "1.0.0"
 const_format = "0.2.36"
 convert_case = "0.11.0"
-darling = "0.23.0"
+darling = "0.24.0"
 derive-where = "1.6.1"
 derive_more = { version = "2.1.1", default-features = false }
 dialoguer = { version = "0.12.0", default-features = false }
@@ -156,12 +156,12 @@ imageproc = { version = "0.27.0", default-features = false }
 indexmap = "2.14.0"
 indicatif = "0.18.6"
 infer = "0.22.0"
-interprocess = "2.4.2"
+interprocess = "2.4.3"
 ipc-rpc = { version = "3.0.1", default-features = false }
 ipnet = "2.12.0"
 itertools = "0.15.0"
-jiff = "0.2.32"
-libc = { version = "0.2.186", default-features = false }
+jiff = "0.2.35"
+libc = { version = "0.2.189", default-features = false }
 log = "0.4.33"
 mime = "0.3.17"
 mime_guess = "2.0.5"
@@ -169,11 +169,11 @@ noiselib = "0.2.4"
 notzero = "1.1.0"
 num-traits = "0.2.19"
 open = "5.4.0"
-opencv = { version = "0.99.0", default-features = false }
+opencv = { version = "0.100.1", default-features = false }
 parking_lot = "0.12.5"
 postcard = "1.1.3"
-proc-macro2 = "1.0.106"
-quote = "1.0.46"
+proc-macro2 = "1.0.107"
+quote = "1.0.47"
 rand = "0.10.2"
 rand_chacha = "0.10.0"
 rayon = "1.12.0"
@@ -181,19 +181,19 @@ regex = "1.13.1"
 reqwest = { version = "0.13.4", default-features = false }
 rfd = "0.17.2"
 rodio = { version = "0.22.2", default-features = false }
-rquickjs = { version = "0.12.1", default-features = false }
+rquickjs = { version = "0.12.2", default-features = false }
 rquickjs-serde = "0.6.1"
 rusqlite = "0.40.1"
 rusqlite_migration = "2.6.0"
-rustdoc-types = "0.60.0"
+rustdoc-types = "0.61.0"
 rustydialogs = "0.4.2"
 rustyline = "18.0.1"
 sadness-generator = "0.7.0"
 satint = "0.3.2"
-sentry = "0.48.5"
+sentry = "0.49.0"
 sentry-rust-minidump = "0.16.0"
-serde = "1.0.228"
-serde_json = "1.0.150"
+serde = "1.0.229"
+serde_json = "1.0.151"
 serde_plain = "1.0.2"
 sha2 = "0.11.0"
 shell-words = "1.1.1"
@@ -201,21 +201,21 @@ slotmap = "1.1.1"
 static-dispatch = "0.3.0"
 strum = "0.28.0"
 swc_common = "24.0.0"
-swc_ecma_ast = "26.0.0"
-swc_ecma_codegen = "29.0.0"
-swc_ecma_parser = "42.0.0"
-swc_ecma_transforms_base = "46.0.0"
-swc_ecma_transforms_typescript = "52.0.0"
+swc_ecma_ast = "27.0.0"
+swc_ecma_codegen = "30.0.0"
+swc_ecma_parser = "43.0.0"
+swc_ecma_transforms_base = "47.0.0"
+swc_ecma_transforms_typescript = "53.0.0"
 swc_sourcemap = "10.0.2"
-syn = "2.0.119"
+syn = "3.0.3"
 sys-locale = "0.3.2"
 sysinfo = "0.39.6"
 system_shutdown = "4.1.0"
-thiserror = "2.0.18"
-time = "0.3.53"
-tokio = "1.53.0"
-tokio-util = "0.7.18"
-toml = "1.1.3"
+thiserror = "2.0.19"
+time = "0.3.55"
+tokio = "1.53.1"
+tokio-util = "0.7.19"
+toml = "1.1.4"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", default-features = false }
 tween = "2.2.0"
@@ -229,7 +229,7 @@ winit = { version = "0.30.13", default-features = false }
 
 # Windows
 pe-parser = "0.7.0"
-tray-icon = { version = "0.24.1", default-features = false }
+tray-icon = { version = "0.24.2", default-features = false }
 windows = "0.62.2"
 windows-result = "0.4.1"
 winreg = "0.56.0"
@@ -255,14 +255,14 @@ zstd = "0.13.3"
 
 # Dev dependencies
 assert_cmd = "2.2.2"
-base64 = "0.22.1"
+base64 = "0.23.0"
 console-subscriber = "0.5.0"
 criterion = { version = "0.8.2", default-features = false }
 fluent-syntax = "0.12.0"
 httptest = "0.16.4"
 libtest-mimic-collect = "0.4.0"
 rstest = "0.26.1"
-serial_test = "3.5.0"
+serial_test = "4.0.1"
 tempfile = "3.27.0"
 tracing-test = "0.2.6"
 unic-langid = "0.9.6"
@@ -274,6 +274,7 @@ embed-resource = "3.0.11"
 
 [patch.crates-io]
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
+sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "1ca7bb5" }
 
 [profile.release]
 opt-level = 3

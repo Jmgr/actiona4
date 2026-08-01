@@ -35,11 +35,11 @@ pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
         });
     }
 
-    let options = sentry::ClientOptions {
-        release: sentry::release_name!(),
-        auto_session_tracking: true,
-        default_integrations: false,
-        before_send: Some(Arc::new(move |mut event| {
+    let options = sentry::ClientOptions::new()
+        .maybe_release(sentry::release_name!())
+        .auto_session_tracking(true)
+        .default_integrations(false)
+        .before_send(move |mut event| {
             if event.message.is_none()
                 && let Some(Value::String(message)) = event.extra.get("panic.message")
             {
@@ -63,13 +63,11 @@ pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
             } else {
                 None
             }
-        })),
-        ..Default::default()
-    }
-    .add_integration(AttachStacktraceIntegration::new())
-    .add_integration(DebugImagesIntegration::new())
-    .add_integration(ContextIntegration::new())
-    .add_integration(ProcessStacktraceIntegration::new());
+        })
+        .add_integration(AttachStacktraceIntegration::new())
+        .add_integration(DebugImagesIntegration::new())
+        .add_integration(ContextIntegration::new())
+        .add_integration(ProcessStacktraceIntegration::new());
 
     #[cfg(windows)]
     let options = options.add_integration(PanicIntegration::new());
