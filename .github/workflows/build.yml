@@ -36,7 +36,8 @@ jobs:
             ~/.cargo/bin/cargo-sort
             ~/.cargo/bin/cargo-xwin
             ~/.cargo/bin/dump_syms
-          key: cargo-tools-linux-v6-${{ hashFiles('rust-toolchain.toml') }}
+            ~/.cargo/bin/trunk
+          key: cargo-tools-linux-v7-${{ hashFiles('rust-toolchain.toml') }}
 
       - name: Install cargo-make
         run: |
@@ -68,6 +69,12 @@ jobs:
             cargo install --locked dump_syms
           fi
 
+      - name: Install Trunk
+        run: |
+          if ! command -v trunk >/dev/null 2>&1; then
+            cargo install --locked trunk
+          fi
+
       - name: Save Linux cargo tools cache
         if: ${{ success() && steps.cache-linux-tools.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
@@ -78,6 +85,7 @@ jobs:
             ~/.cargo/bin/cargo-sort
             ~/.cargo/bin/cargo-xwin
             ~/.cargo/bin/dump_syms
+            ~/.cargo/bin/trunk
           key: ${{ steps.cache-linux-tools.outputs.cache-primary-key }}
 
       - name: Archive Linux cargo tools
@@ -87,7 +95,8 @@ jobs:
             cargo-derivefmt \
             cargo-sort \
             cargo-xwin \
-            dump_syms
+            dump_syms \
+            trunk
 
       - name: Upload Linux cargo tools artifact
         uses: actions/upload-artifact@v7
@@ -114,7 +123,8 @@ jobs:
           path: |
             ~\.cargo\bin\cargo-make.exe
             ~\.cargo\bin\dump_syms.exe
-          key: cargo-tools-windows-v5-${{ hashFiles('rust-toolchain.toml') }}
+            ~\.cargo\bin\trunk.exe
+          key: cargo-tools-windows-v6-${{ hashFiles('rust-toolchain.toml') }}
 
       - name: Install cargo-make
         shell: pwsh
@@ -130,6 +140,13 @@ jobs:
             cargo install --locked dump_syms
           }
 
+      - name: Install Trunk
+        shell: pwsh
+        run: |
+          if (-not (Get-Command trunk -ErrorAction SilentlyContinue)) {
+            cargo install --locked trunk
+          }
+
       - name: Save Windows cargo tools cache
         if: ${{ success() && steps.cache-windows-tools.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
@@ -137,6 +154,7 @@ jobs:
           path: |
             ~\.cargo\bin\cargo-make.exe
             ~\.cargo\bin\dump_syms.exe
+            ~\.cargo\bin\trunk.exe
           key: ${{ steps.cache-windows-tools.outputs.cache-primary-key }}
 
       - name: Prepare Windows cargo tools artifact
@@ -146,6 +164,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
           Copy-Item "$HOME\.cargo\bin\cargo-make.exe" $artifactDir -Force
           Copy-Item "$HOME\.cargo\bin\dump_syms.exe" $artifactDir -Force
+          Copy-Item "$HOME\.cargo\bin\trunk.exe" $artifactDir -Force
 
       - name: Upload Windows cargo tools artifact
         uses: actions/upload-artifact@v7
@@ -562,7 +581,7 @@ jobs:
       - name: Run e2e tests against AppImage
         run: |
           shopt -s nullglob
-          appimages=(target/*.AppImage)
+          appimages=(target/actiona-run-*.AppImage)
           test "${#appimages[@]}" -eq 1
           export ACTIONA4_E2E_RUNNER="$(realpath "${appimages[0]}")"
           xvfb-run -a -s "-screen 0 1920x1080x24" bash -c 'openbox &>/dev/null & sleep 1 && cargo test --locked -p e2e'

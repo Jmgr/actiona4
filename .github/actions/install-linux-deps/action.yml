@@ -19,6 +19,7 @@ runs:
           clang \
           curl \
           libasound2-dev \
+          libadwaita-1-dev \
           libcairo2-dev \
           libclang-dev \
           libdbus-1-dev \
@@ -31,6 +32,7 @@ runs:
           libssl-dev \
           libstdc++-14-dev \
           libwayland-dev \
+          libwebkitgtk-6.0-dev \
           libx11-dev \
           libx11-xcb-dev \
           libxcb-randr0-dev \

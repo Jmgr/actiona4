@@ -25,8 +25,8 @@ use color_eyre::Result;
 
 #[cfg(windows)]
 use crate::{
-    archive::build_archive,
-    installer::{build_installer, installer_output_base_filename},
+    archive::build_archives,
+    installer::build_installers,
     installer_e2e::run_installer_e2e,
     signing::sign_binaries,
     workspace::{read_notification_package_info, read_workspace_package_info},
@@ -48,9 +48,9 @@ async fn main() -> Result<()> {
 
     match cli.command {
         #[cfg(unix)]
-        Commands::AppImage => appimage::build_appimage(&workspace_root, true).await?,
+        Commands::AppImage => appimage::build_appimages(&workspace_root, true).await?,
         #[cfg(unix)]
-        Commands::AppImageNoSign => appimage::build_appimage(&workspace_root, false).await?,
+        Commands::AppImageNoSign => appimage::build_appimages(&workspace_root, false).await?,
         Commands::Doc => generate_docs(&workspace_root).await?,
         Commands::LintTs => lint_e2e_typescript(&workspace_root)?,
         #[cfg(unix)]
@@ -61,11 +61,10 @@ async fn main() -> Result<()> {
         Commands::Installer => {
             let workspace_package_info = read_workspace_package_info(&workspace_root).await?;
             let notification_package_info = read_notification_package_info(&workspace_root).await?;
-            build_installer(
+            build_installers(
                 &workspace_root,
                 &workspace_package_info,
                 &notification_package_info,
-                &installer_output_base_filename(&workspace_package_info),
                 true,
             )
             .await?;
@@ -74,11 +73,10 @@ async fn main() -> Result<()> {
         Commands::InstallerNoSign => {
             let workspace_package_info = read_workspace_package_info(&workspace_root).await?;
             let notification_package_info = read_notification_package_info(&workspace_root).await?;
-            build_installer(
+            build_installers(
                 &workspace_root,
                 &workspace_package_info,
                 &notification_package_info,
-                &installer_output_base_filename(&workspace_package_info),
                 false,
             )
             .await?;
@@ -91,12 +89,12 @@ async fn main() -> Result<()> {
         #[cfg(windows)]
         Commands::Archive => {
             let workspace_package_info = read_workspace_package_info(&workspace_root).await?;
-            build_archive(&workspace_root, &workspace_package_info).await?;
+            build_archives(&workspace_root, &workspace_package_info).await?;
         }
         #[cfg(windows)]
         Commands::ArchiveNoSign => {
             let workspace_package_info = read_workspace_package_info(&workspace_root).await?;
-            build_archive(&workspace_root, &workspace_package_info).await?;
+            build_archives(&workspace_root, &workspace_package_info).await?;
         }
         #[cfg(windows)]
         Commands::SignBinaries => sign_binaries(&workspace_root)?,

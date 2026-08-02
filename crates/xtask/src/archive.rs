@@ -1,7 +1,7 @@
 use std::{fs::File, io::Write, path::Path, time::SystemTime};
 
 use color_eyre::{Result, eyre::eyre};
-use installer_tools::package::{PackagedFile, PackagedFilePlatform, packaged_files};
+use installer_tools::package::{PackageKind, PackagedFile, PackagedFilePlatform, packaged_files};
 use jiff::{Timestamp, tz::TimeZone};
 use tokio::fs::metadata;
 use zip::{CompressionMethod, DateTime, ZipWriter, write::SimpleFileOptions};
@@ -21,23 +21,28 @@ struct ArchiveEntry {
     last_modified_time: DateTime,
 }
 
-pub async fn build_archive(
+pub async fn build_archives(
     workspace_root: &Path,
     workspace_package_info: &WorkspacePackageInfo,
 ) -> Result<()> {
-    let archive_path = workspace_root.join("target").join(format!(
-        "actiona-run-{}-x86_64-portable.zip",
-        workspace_package_info.version
-    ));
-    let archive_entries = read_archive_entries(workspace_root).await?;
-    remove_file_if_exists(&archive_path).await?;
-    write_zip_archive(&archive_path, archive_entries)?;
+    for package_kind in PackageKind::ALL {
+        let archive_path = workspace_root.join("target").join(format!(
+            "actiona-{}-{}-x86_64-portable.zip",
+            package_kind.artifact_name(),
+            workspace_package_info.version
+        ));
+        let archive_entries = read_archive_entries(workspace_root, package_kind).await?;
+        remove_file_if_exists(&archive_path).await?;
+        write_zip_archive(&archive_path, archive_entries)?;
+
+        println!("Archive written to: {}", archive_path.display());
+    }
 
     Ok(())
 }
 
-fn archive_files(workspace_root: &Path) -> Result<Vec<ArchiveFile>> {
-    Ok(packaged_files(workspace_root)?
+fn archive_files(workspace_root: &Path, package_kind: PackageKind) -> Result<Vec<ArchiveFile>> {
+    Ok(packaged_files(workspace_root, package_kind)?
         .iter()
         .filter(|packaged_file| packaged_file.include_in_archive)
         .map(|packaged_file| ArchiveFile {
@@ -46,10 +51,13 @@ fn archive_files(workspace_root: &Path) -> Result<Vec<ArchiveFile>> {
         .collect())
 }
 
-async fn read_archive_entries(workspace_root: &Path) -> Result<Vec<ArchiveEntry>> {
+async fn read_archive_entries(
+    workspace_root: &Path,
+    package_kind: PackageKind,
+) -> Result<Vec<ArchiveEntry>> {
     let mut archive_entries = Vec::new();
 
-    for archive_file in archive_files(workspace_root)? {
+    for archive_file in archive_files(workspace_root, package_kind)? {
         let source_path = workspace_root.join(&archive_file.packaged_file.source_path);
 
         if !source_path.is_file() {

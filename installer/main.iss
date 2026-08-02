@@ -1,4 +1,12 @@
-#define MyAppName "Actiona Run"
+#ifndef MyAppId
+  #error Missing MyAppId define. Pass /DMyAppId=... to ISCC.
+#endif
+#ifndef MyAppName
+  #error Missing MyAppName define. Pass /DMyAppName=... to ISCC.
+#endif
+#ifndef MyAppExeName
+  #error Missing MyAppExeName define. Pass /DMyAppExeName=... to ISCC.
+#endif
 #ifndef MyAppVersion
   #error Missing MyAppVersion define. Pass /DMyAppVersion=... to ISCC.
 #endif
@@ -23,10 +31,8 @@
 #ifndef MyNotificationDisplayName
   #error Missing MyNotificationDisplayName define. Pass /DMyNotificationDisplayName=... to ISCC.
 #endif
-#define MyAppExeName "actiona-runw.exe"
-
 [Setup]
-AppId={{A3D5D4F0-1AFA-4278-9E23-FA4A36632447}
+AppId={#MyAppId}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
