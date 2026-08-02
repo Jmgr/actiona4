@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "dockview": "^7.0.2"
+  },
+  "devDependencies": {
+    "monaco-editor": "^0.55.1",
+    "tailwindcss": "^4.3.0"
+  },
+  "type": "module"
+}

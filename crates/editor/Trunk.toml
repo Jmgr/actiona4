@@ -1,0 +1,13 @@
+[tools]
+tailwindcss = "4.1.13"
+
+[build]
+target = "index.html"
+dist = "dist"
+public_url = "./"
+watch-additional-files = ["locales"]
+
+# Prevent a warning due to WebKit bug https://bugs.webkit.org/show_bug.cgi?id=236009
+pattern_preload = """
+<link rel="modulepreload" href="{base}{js}" crossorigin="{crossorigin}">
+"""

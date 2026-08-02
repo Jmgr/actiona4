@@ -1,0 +1,76 @@
+[package]
+name = "editor"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+color-eyre.workspace = true
+common = { path = "../common" }
+
+include_dir.workspace = true
+tokio.workspace = true
+webview_app.workspace = true
+
+[package.metadata.leptos]
+tailwind-input-file = "tailwind.css"
+
+[[bin]]
+name = "ui"
+path = "src/bin/ui.rs"
+test = false
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { workspace = true, features = ["wasm_js"] }
+
+[dependencies]
+action-definition = { path = "../action-definition" }
+macros = { path = "../macros" }
+
+console_error_panic_hook.workspace = true
+icons = { workspace = true, features = ["leptos"] }
+js-sys.workspace = true
+leptos = { workspace = true, features = ["csr"] }
+leptos-fluent.workspace = true
+leptos_ui.workspace = true
+serde.workspace = true
+serde-wasm-bindgen.workspace = true
+serde_json.workspace = true
+strum.workspace = true
+tw_merge = { workspace = true, features = ["variant"] }
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+web-sys = { workspace = true, features = [
+    "CustomEvent",
+    "CssStyleDeclaration",
+    "DataTransfer",
+    "Document",
+    "DomRect",
+    "DragEvent",
+    "Element",
+    "Event",
+    "EventTarget",
+    "HtmlElement",
+    "KeyboardEvent",
+    "Node",
+    "NodeList",
+    "Performance",
+    "Window",
+] }
+
+[build-dependencies]
+built.workspace = true
+
+[dev-dependencies]
+any_spawner = { workspace = true, features = ["wasm-bindgen"] }
+wasm-bindgen-test.workspace = true
+
+[lints]
+workspace = true

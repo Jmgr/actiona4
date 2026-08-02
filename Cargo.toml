@@ -9,6 +9,7 @@ members = [
     "crates/core",
     "crates/doc-generator",
     "crates/e2e",
+    "crates/editor",
     "crates/extension",
     "crates/extensions/opencv",
     "crates/extensions/selection",
@@ -117,6 +118,7 @@ invalid_html_tags = "allow"
 
 [workspace.dependencies]
 ab_glyph = "0.2.32"
+any_spawner = "0.3.0"
 arboard = "3.6.1"
 arc-swap = "1.9.2"
 async-stream = "0.3.6"
@@ -127,6 +129,7 @@ clap = "4.6.5"
 clap_complete = "4.6.8"
 color-eyre = "0.6.5"
 console = "0.16.4"
+console_error_panic_hook = "0.1.7"
 const-default = "1.0.0"
 const_format = "0.2.36"
 convert_case = "0.11.0"
@@ -145,6 +148,7 @@ flate2 = "1.1.9"
 fluent = "0.17.0"
 futures = "0.3.33"
 futures-util = "0.3.33"
+getrandom = "0.4.3"
 http-body = "1.1.0"
 http-body-util = "0.1.4"
 human-units = "0.5.4"
@@ -153,6 +157,7 @@ humantime = "2.4.0"
 icons = "0.18.3"
 image = { version = "0.25.10", default-features = false }
 imageproc = { version = "0.27.0", default-features = false }
+include_dir = "0.7.4"
 indexmap = "2.14.0"
 indicatif = "0.18.6"
 infer = "0.22.0"
@@ -161,6 +166,11 @@ ipc-rpc = { version = "3.0.1", default-features = false }
 ipnet = "2.12.0"
 itertools = "0.15.0"
 jiff = "0.2.35"
+js-sys = "0.3.103"
+leptos = { version = "0.8.20", features = ["csr"] }
+leptos-fluent = "0.3.1"
+leptos-struct-table = "0.19.0"
+leptos_ui = "0.3.22"
 libc = { version = "0.2.189", default-features = false }
 log = "0.4.33"
 mime = "0.3.17"
@@ -193,6 +203,7 @@ satint = "0.3.2"
 sentry = "0.49.0"
 sentry-rust-minidump = "0.17.0"
 serde = "1.0.229"
+serde-wasm-bindgen = "0.6.5"
 serde_json = "1.0.151"
 serde_plain = "1.0.2"
 sha2 = "0.11.0"
@@ -218,12 +229,19 @@ tokio-util = "0.7.19"
 toml = "1.1.4"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", default-features = false }
+tw_merge = "0.1.21"
 tween = "2.2.0"
 two-face = "0.5.1"
 unicode-segmentation = "1.13.3"
 url = "2.5.8"
 uuid = "1.24.0"
+validator = "0.20.0"
 versions = "7.0.0"
+wasm-bindgen = "0.2.126"
+wasm-bindgen-futures = "0.4.76"
+wasm-bindgen-test = "0.3.76"
+web-sys = "0.3.103"
+webview_app = "1.2.1"
 wildmatch = "2.6.1"
 winit = { version = "0.30.13", default-features = false }
 
@@ -274,6 +292,10 @@ embed-resource = "3.0.11"
 
 [patch.crates-io]
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
+sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "1ca7bb5" }
+webview_app = { git = "https://github.com/Jmgr/webview-app.git", rev = "a296112" }
+# Fix a proc-macro-error2 warning
+proc-macro-error2 = { git = "https://github.com/fgardt/proc-macro-error-2", rev = "53ff94b61c678593158db1a3d50269c6f0de0db7" }
 
 [profile.release]
 opt-level = 3

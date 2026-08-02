@@ -1,0 +1,103 @@
+@layer components {
+    .ui-menubar-label {
+        @apply px-1.5 py-1 text-sm font-medium data-inset:pl-7;
+    }
+
+    .ui-menubar-sub-content {
+        @apply absolute z-100 min-w-40 rounded-md border bg-card p-1 opacity-0 shadow-lg transition-all duration-200 ease-out;
+        inset-inline-start: calc(100% + 8px);
+        inset-block-start: -4px;
+        visibility: hidden;
+        transform: translateX(-8px);
+        pointer-events: none;
+    }
+
+    .ui-menubar-sub-trigger:hover .ui-menubar-sub-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+        pointer-events: auto;
+    }
+
+    .ui-menubar-shortcut {
+        @apply ml-auto text-xs tracking-widest text-muted-foreground;
+    }
+
+    .ui-menubar-separator {
+        @apply -mx-1 my-1 h-px bg-border;
+    }
+
+    .ui-menubar-item {
+        @apply relative inline-flex w-full cursor-default items-center gap-1.5 rounded-sm px-1.5 py-1 text-sm text-popover-foreground no-underline transition-colors duration-200 hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-7 data-disabled:hover:bg-transparent data-disabled:hover:text-popover-foreground;
+    }
+
+    .ui-menubar-item[data-highlighted="true"] {
+        @apply bg-accent text-accent-foreground outline-none;
+    }
+
+    .ui-menubar-item svg:not([class*="size-"]),
+    .ui-menubar-choice-item svg:not([class*="size-"]),
+    .ui-menubar-sub-trigger svg:not([class*="size-"]) {
+        @apply size-4;
+    }
+
+    .ui-menubar-choice-item {
+        @apply relative inline-flex w-full cursor-default items-center gap-1.5 rounded-sm py-1 pr-1.5 pl-7 text-sm text-popover-foreground transition-colors duration-200 hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-disabled:hover:bg-transparent data-disabled:hover:text-popover-foreground;
+    }
+
+    .ui-menubar-check-slot {
+        @apply pointer-events-none absolute left-1.5 flex size-4 items-center justify-center;
+    }
+
+    .ui-menubar-check-icon {
+        @apply size-3.5 opacity-0;
+    }
+
+    .ui-menubar-choice-item[aria-checked="true"] .ui-menubar-check-icon {
+        @apply opacity-100;
+    }
+
+    .ui-menubar {
+        @apply flex h-8 items-center gap-0.5 rounded-lg border bg-background p-0.75;
+    }
+
+    .ui-menubar-menu {
+        @apply relative;
+    }
+
+    .ui-menubar-trigger {
+        @apply flex cursor-default select-none items-center rounded-sm px-2 py-0.5 text-sm font-medium outline-none transition-colors hover:bg-muted aria-expanded:bg-muted;
+    }
+
+    .ui-menubar-content {
+        @apply fixed z-50 min-w-36 rounded-md border bg-card p-1 shadow-md transition-all duration-200 data-[state=closed]:scale-95 data-[state=closed]:opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100;
+    }
+
+    .ui-menubar-content[data-state="closed"] {
+        pointer-events: none;
+    }
+
+    .ui-menubar-content[data-state="open"] {
+        pointer-events: auto;
+    }
+
+    .ui-menubar-sub-trigger {
+        @apply relative inline-flex w-full cursor-default items-center gap-1.5 rounded-sm px-1.5 py-1 text-sm text-popover-foreground no-underline transition-colors duration-200 hover:bg-accent hover:text-accent-foreground;
+    }
+
+    .ui-menubar-sub-trigger-content {
+        @apply flex w-full items-center justify-between;
+    }
+
+    .ui-menubar-sub-trigger-label {
+        @apply flex items-center gap-1.5;
+    }
+
+    .ui-menubar-sub-trigger-icon {
+        @apply size-4 opacity-70;
+    }
+
+    .ui-menubar-sub-item {
+        @apply inline-flex w-full cursor-default items-center gap-1.5 rounded-sm px-3 py-2 text-sm text-popover-foreground transition-all duration-150 ease-in-out hover:translate-x-0.5 hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-disabled:hover:translate-x-0 data-disabled:hover:bg-transparent data-disabled:hover:text-popover-foreground;
+    }
+}

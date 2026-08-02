@@ -3,4 +3,6 @@
 .local.Makefile.toml
 .vscode
 crates/e2e/node_modules/
+crates/editor/node_modules/
+crates/editor/dist/
 .cargo/local.toml
