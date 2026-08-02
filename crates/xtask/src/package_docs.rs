@@ -68,7 +68,7 @@ fn normalize_to_crlf(contents: &str) -> String {
 mod tests {
     use std::fs;
 
-    use installer_tools::package::{PackagedFilePlatform, packaged_files};
+    use installer_tools::package::{PackageKind, PackagedFilePlatform, packaged_files};
     use tempfile::tempdir;
     use tokio::fs as tokio_fs;
 
@@ -83,7 +83,7 @@ mod tests {
         fs::create_dir(workspace.path().join("docs")).unwrap();
         fs::write(workspace.path().join("docs").join("IGNORED.md"), "nested\n").unwrap();
 
-        let packaged_files = packaged_files(workspace.path()).unwrap();
+        let packaged_files = packaged_files(workspace.path(), PackageKind::Run).unwrap();
         let mut linux_document_names: Vec<_> = packaged_files
             .iter()
             .filter(|packaged_file| packaged_file.include_in_appimage)
@@ -129,7 +129,7 @@ mod tests {
         fs::write(workspace.path().join("README.md"), "line1\nline2\n").unwrap();
         fs::write(workspace.path().join("LICENSE"), "license\n").unwrap();
 
-        let packaged_files = packaged_files(workspace.path()).unwrap();
+        let packaged_files = packaged_files(workspace.path(), PackageKind::Run).unwrap();
         let staged_files = stage_packaged_files(
             workspace.path(),
             &destination,

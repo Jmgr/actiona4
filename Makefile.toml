@@ -93,6 +93,57 @@ if not exist docs-site\\node_modules\\.bin\\docusaurus.cmd (
 )
 '''
 
+[tasks.install-editor-ui-deps]
+script_runner = "@shell"
+script = '''
+if [ ! -f crates/editor/node_modules/dockview/dist/dockview.min.js ]; then
+    npm ci --prefix crates/editor
+fi
+'''
+
+[tasks.install-editor-ui-deps.windows]
+script_runner = "@shell"
+script = '''
+if not exist crates\editor\node_modules\dockview\dist\dockview.min.js (
+    npm ci --prefix crates/editor
+)
+'''
+
+[tasks.install-trunk]
+script_runner = "@shell"
+script = '''
+if ! command -v trunk >/dev/null 2>&1; then
+    cargo install --locked trunk
+fi
+'''
+
+[tasks.install-trunk.windows]
+script_runner = "@shell"
+script = '''
+where trunk >NUL 2>NUL
+if %ERRORLEVEL% NEQ 0 (
+    cargo install --locked trunk
+)
+'''
+
+[tasks.install-wasm-target]
+command = "rustup"
+args = ["target", "add", "wasm32-unknown-unknown"]
+
+[tasks.build-editor-ui-release]
+description = "Build the editor web UI for embedding in the native release executable."
+dependencies = ["install-editor-ui-deps", "install-trunk", "install-wasm-target"]
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/crates/editor"
+env = { NO_COLOR = "true" }
+command = "trunk"
+args = ["build", "--release", "--locked"]
+
+[tasks.release-editor]
+description = "Build the native editor with its embedded release UI."
+dependencies = ["build-editor-ui-release"]
+command = "cargo"
+args = ["build", "-p", "editor", "--bin", "editor", "--release"]
+
 [tasks.lint-ts]
 dependencies = ["install-e2e-ts-deps"]
 command = "cargo"
@@ -211,14 +262,14 @@ args = ["upgrade", "--incompatible"]
 
 [tasks.appimage]
 condition = { platforms = ["linux"] }
-description = "Build a signed AppImage for the actiona-run executable."
+description = "Build signed Actiona Run and Actiona Editor AppImages."
 dependencies = ["release-symbols", "upload-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "app-image"]
 
 [tasks.appimage-nosign]
 condition = { platforms = ["linux"] }
-description = "Build an unsigned AppImage for the actiona-run executable."
+description = "Build unsigned Actiona Run and Actiona Editor AppImages."
 dependencies = ["release-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "app-image-no-sign"]
@@ -239,8 +290,8 @@ args = [
 ]
 
 [tasks.release]
-description = "Build release binaries, including the extensions and actiona-runw on Windows."
-dependencies = ["release-runw"]
+description = "Build release binaries, including the editor UI, extensions, and actiona-runw on Windows."
+dependencies = ["release-editor", "release-runw"]
 command = "cargo"
 args = [
     "build",
@@ -282,7 +333,7 @@ args = ["run", "-p", "xtask", "--", "sign-binaries"]
 
 [tasks.release-signed]
 condition = { platforms = ["windows"] }
-description = "Build and sign actiona-run release executables (Windows only)."
+description = "Build and sign packaged release executables (Windows only)."
 dependencies = ["release", "sign"]
 
 [tasks.build-inno-plugin]
@@ -293,14 +344,14 @@ args = ["build", "-p", "inno-plugin", "--release", "--target", "i686-pc-windows-
 
 [tasks.installer]
 condition = { platforms = ["windows"] }
-description = "Build the signed Actiona Run installer with Inno Setup (Windows only)."
+description = "Build signed Actiona Run and Actiona Editor installers with Inno Setup (Windows only)."
 dependencies = ["release-symbols", "sign", "upload-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "installer"]
 
 [tasks.installer-nosign]
 condition = { platforms = ["windows"] }
-description = "Build the unsigned Actiona Run installer with Inno Setup (Windows only)."
+description = "Build unsigned Actiona Run and Actiona Editor installers with Inno Setup (Windows only)."
 dependencies = ["release-symbols", "build-inno-plugin"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "installer-no-sign"]
@@ -314,14 +365,14 @@ args = ["run", "-p", "xtask", "--", "installer-e2e"]
 
 [tasks.archive]
 condition = { platforms = ["windows"] }
-description = "Build a signed Actiona Run zip archive (Windows only)."
+description = "Build signed Actiona Run and Actiona Editor zip archives (Windows only)."
 dependencies = ["release-symbols", "sign", "upload-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "archive"]
 
 [tasks.archive-nosign]
 condition = { platforms = ["windows"] }
-description = "Build an unsigned Actiona Run zip archive (Windows only)."
+description = "Build unsigned Actiona Run and Actiona Editor zip archives (Windows only)."
 dependencies = ["release-symbols"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "archive-no-sign"]

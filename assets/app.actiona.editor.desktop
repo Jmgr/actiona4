@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Actiona Editor
+Exec=editor
+Icon=actiona-editor
+Type=Application
+Categories=Utility;
+Terminal=false

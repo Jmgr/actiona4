@@ -2,6 +2,24 @@ use std::{collections::HashSet, ffi::OsStr, fs, path::Path};
 
 use eyre::{Result, eyre};
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PackageKind {
+    Run,
+    Editor,
+}
+
+impl PackageKind {
+    pub const ALL: [Self; 2] = [Self::Run, Self::Editor];
+
+    #[must_use]
+    pub const fn artifact_name(self) -> &'static str {
+        match self {
+            Self::Run => "run",
+            Self::Editor => "editor",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PackagedFile {
     pub source_path: String,
@@ -46,6 +64,7 @@ struct PackagedFileDefinition {
     should_sign: bool,
     use_dos_line_feeds: bool,
     enumerate_root_markdown_files: bool,
+    editor_only: bool,
 }
 
 impl PackagedFileDefinition {
@@ -61,6 +80,7 @@ impl PackagedFileDefinition {
             should_sign: false,
             use_dos_line_feeds: false,
             enumerate_root_markdown_files: false,
+            editor_only: false,
         }
     }
 
@@ -101,9 +121,14 @@ impl PackagedFileDefinition {
         self.enumerate_root_markdown_files = true;
         self
     }
+
+    const fn editor_only(mut self) -> Self {
+        self.editor_only = true;
+        self
+    }
 }
 
-const PACKAGED_FILES: [PackagedFileDefinition; 7] = [
+const PACKAGED_FILES: [PackagedFileDefinition; 8] = [
     PackagedFileDefinition::new("target/i686-pc-windows-msvc/release/inno_plugin.dll")
         .with_destination_name("inno_plugin.dll")
         .exclude_from_archive()
@@ -112,6 +137,10 @@ const PACKAGED_FILES: [PackagedFileDefinition; 7] = [
     PackagedFileDefinition::new("target/release/actiona-run.exe").signed(),
     PackagedFileDefinition::new("target/release/extension-selection.exe").signed(),
     PackagedFileDefinition::new("target/release/extension-opencv.exe").signed(),
+    PackagedFileDefinition::new("target/release/editor.exe")
+        .with_destination_name("actiona-editor.exe")
+        .signed()
+        .editor_only(),
     PackagedFileDefinition::new("*.md")
         .include_in_appimage()
         .with_dos_line_feeds()
@@ -122,10 +151,17 @@ const PACKAGED_FILES: [PackagedFileDefinition; 7] = [
         .with_dos_line_feeds(),
 ];
 
-pub fn packaged_files(workspace_root: &Path) -> Result<Vec<PackagedFile>> {
+pub fn packaged_files(
+    workspace_root: &Path,
+    package_kind: PackageKind,
+) -> Result<Vec<PackagedFile>> {
     let mut packaged_files = Vec::new();
 
     for definition in PACKAGED_FILES {
+        if definition.editor_only && package_kind == PackageKind::Run {
+            continue;
+        }
+
         if definition.enumerate_root_markdown_files {
             packaged_files.extend(expand_root_markdown_files(workspace_root, definition)?);
         } else {
@@ -211,4 +247,41 @@ fn ensure_unique_destination_names(packaged_files: &[PackagedFile]) -> Result<()
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{collections::HashSet, path::Path};
+
+    use super::{PackageKind, PackagedFilePlatform, packaged_files};
+
+    #[test]
+    fn editor_package_adds_only_the_editor_to_the_run_payload() {
+        let workspace_root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .and_then(Path::parent)
+            .unwrap();
+        let run_files = packaged_files(workspace_root, PackageKind::Run).unwrap();
+        let editor_files = packaged_files(workspace_root, PackageKind::Editor).unwrap();
+        let run_sources: HashSet<_> = run_files
+            .iter()
+            .map(|file| file.source_path.as_str())
+            .collect();
+        let editor_sources: HashSet<_> = editor_files
+            .iter()
+            .map(|file| file.source_path.as_str())
+            .collect();
+
+        assert_eq!(editor_sources.len(), run_sources.len() + 1);
+        assert!(run_sources.is_subset(&editor_sources));
+
+        let editor = editor_files
+            .iter()
+            .find(|file| file.source_path == "target/release/editor.exe")
+            .unwrap();
+        assert_eq!(
+            editor.destination_name_for(PackagedFilePlatform::Windows),
+            "actiona-editor.exe"
+        );
+    }
 }

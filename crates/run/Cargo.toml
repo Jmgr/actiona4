@@ -10,7 +10,6 @@ repository.workspace = true
 readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
-default-run = "actiona-run"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 libc.workspace = true

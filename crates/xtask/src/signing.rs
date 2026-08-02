@@ -4,7 +4,7 @@ use std::{
 };
 
 use color_eyre::{Result, eyre::eyre};
-use installer_tools::package::packaged_files;
+use installer_tools::package::{PackageKind, packaged_files};
 
 use crate::{
     constants::{
@@ -22,7 +22,7 @@ pub fn sign_binaries(workspace_root: &Path) -> Result<()> {
 }
 
 pub fn release_file_paths(workspace_root: &Path) -> Vec<PathBuf> {
-    packaged_files(workspace_root)
+    packaged_files(workspace_root, PackageKind::Editor)
         .expect("failed to enumerate packaged files for signing")
         .iter()
         .filter(|packaged_file| packaged_file.should_sign)

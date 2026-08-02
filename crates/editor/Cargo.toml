@@ -10,13 +10,14 @@ repository.workspace = true
 readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
+default-run = "editor"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 color-eyre.workspace = true
 common = { path = "../common" }
 
 include_dir.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread"] }
 webview_app.workspace = true
 
 [package.metadata.leptos]
