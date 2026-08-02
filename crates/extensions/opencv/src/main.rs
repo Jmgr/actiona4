@@ -11,7 +11,7 @@ use extension_opencv::{
 };
 use tokio::{runtime::Builder, sync::mpsc};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::error;
+use tracing::{error, info};
 use tracing_subscriber::fmt as tracing_fmt;
 
 /// Generous compared to the selection extension's one minute: a full-desktop
@@ -28,6 +28,12 @@ fn main() -> Result<()> {
     tracing_fmt::init();
 
     find_image::setup_threading()?;
+    info!("warming up OpenCV");
+    if let Err(error) = find_image::warm_up() {
+        error!("failed to warm up OpenCV: {error}");
+    } else {
+        info!("finished warming up OpenCV");
+    }
 
     let runtime = Builder::new_multi_thread().enable_all().build()?;
     let task_tracker = TaskTracker::new();
@@ -45,13 +51,6 @@ fn main() -> Result<()> {
 }
 
 async fn run(task_tracker: &TaskTracker, cancellation_token: &CancellationToken) -> Result<()> {
-    // Pre-JIT OpenCV's Lab conversion so the first search isn't paying for it.
-    task_tracker.spawn_blocking(|| {
-        if let Err(error) = find_image::warm_up() {
-            error!("failed to warm up OpenCV: {error}");
-        }
-    });
-
     let (progress_sender, mut progress_receiver) = mpsc::unbounded_channel();
 
     let extension = Arc::new(Extension::<OpenCVProtocol>::with_handler_impl(
@@ -88,6 +87,7 @@ async fn run(task_tracker: &TaskTracker, cancellation_token: &CancellationToken)
 
             match report {
                 ProgressReport::Step(request_id, progress) => {
+                    info!(%request_id, %progress, "forwarding OpenCV progress step");
                     if let Err(error) = progress_extension.progress(request_id, progress).await {
                         // A failed report is not worth failing the search over: the
                         // host either went away or is no longer interested.
@@ -103,7 +103,8 @@ async fn run(task_tracker: &TaskTracker, cancellation_token: &CancellationToken)
                 }
                 // Every update sent before this one has now been answered for,
                 // which is all the waiting search needs to know.
-                ProgressReport::Flush(flushed) => {
+                ProgressReport::Flush(request_id, flushed) => {
+                    info!(%request_id, "finished forwarding queued OpenCV progress");
                     let _ = flushed.send(());
                 }
             }

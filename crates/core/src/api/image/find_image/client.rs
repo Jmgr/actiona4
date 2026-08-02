@@ -12,7 +12,7 @@ use extension::{
 use parking_lot::Mutex;
 use tokio::sync::mpsc;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::warn;
+use tracing::{info, warn};
 
 use crate::{api::image::Image, error::CommonError};
 
@@ -307,10 +307,16 @@ impl OpenCVClient {
             return Ok(cached);
         }
 
+        info!(
+            width = image.width(),
+            height = image.height(),
+            "uploading OpenCV source"
+        );
         let handle = self
             .host
             .upload_source(RgbaPixels::from(image.as_rgba8()))
             .await?;
+        info!(?handle, "uploaded OpenCV source");
         let remote = Arc::new(RemoteSource {
             handle,
             release: Some(self.release.clone()),
@@ -325,10 +331,16 @@ impl OpenCVClient {
             return Ok(cached);
         }
 
+        info!(
+            width = image.width(),
+            height = image.height(),
+            "uploading OpenCV template"
+        );
         let handle = self
             .host
             .upload_template(RgbaPixels::from(image.as_rgba8()))
             .await?;
+        info!(?handle, "uploaded OpenCV template");
         let remote = Arc::new(RemoteTemplate {
             handle,
             release: Some(self.release.clone()),
@@ -383,18 +395,29 @@ impl OpenCVClient {
         let template_handle = self.template_handle(template).await?;
         let (request_id, _guard) = self.begin(progress.clone());
 
-        self.cancellable(
-            request_id,
-            token,
-            self.host.find(
+        info!(%request_id, search_one, "sending OpenCV search request");
+        let outcome = self
+            .cancellable(
                 request_id,
-                source_handle.handle,
-                template_handle.handle,
-                options,
-                search_one,
-            ),
-        )
-        .await
+                token,
+                self.host.find(
+                    request_id,
+                    source_handle.handle,
+                    template_handle.handle,
+                    options,
+                    search_one,
+                ),
+            )
+            .await?;
+        match &outcome {
+            FindOutcome::Matches(matches) => {
+                info!(%request_id, matches = matches.len(), "received OpenCV search reply");
+            }
+            FindOutcome::UnknownHandle => {
+                info!(%request_id, "OpenCV search reported unknown handles");
+            }
+        }
+        Ok(outcome)
     }
 
     /// Captures the area described by `capture` and searches it for `template`.

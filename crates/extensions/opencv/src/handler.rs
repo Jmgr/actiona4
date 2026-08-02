@@ -16,6 +16,7 @@ use tokio::{
     time::sleep,
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
+use tracing::info;
 
 use crate::{
     capture::Capturer,
@@ -37,7 +38,7 @@ pub enum ProgressReport {
 
     /// A marker that answers once every step change queued ahead of it has
     /// reached the host. See [`OpenCVExtension::flush_progress`].
-    Flush(oneshot::Sender<()>),
+    Flush(RequestId, oneshot::Sender<()>),
 }
 
 /// A cancellation token for one request, including an entry made by a cancel
@@ -229,13 +230,19 @@ impl OpenCVExtension {
     ///
     /// Samples need no such care: they are allowed to go missing, which is the
     /// whole reason the two travel separately.
-    async fn flush_progress(&self) {
+    async fn flush_progress(&self, request_id: RequestId) {
         let (flushed, delivered) = oneshot::channel();
 
-        if self.progress.send(ProgressReport::Flush(flushed)).is_ok() {
+        info!(%request_id, "flushing OpenCV progress");
+        if self
+            .progress
+            .send(ProgressReport::Flush(request_id, flushed))
+            .is_ok()
+        {
             // An error means the drain has stopped, leaving nothing to wait for.
             let _ = delivered.await;
         }
+        info!(%request_id, "finished flushing OpenCV progress");
     }
 
     /// Runs one search on the blocking pool, so the IPC reactor stays free to
@@ -250,6 +257,7 @@ impl OpenCVExtension {
         cancellation_token: CancellationToken,
     ) -> Result<Vec<Match>> {
         let (progress, forwarding, sampling) = self.progress_sink(request_id);
+        info!(%request_id, search_one, "starting blocking OpenCV search");
         let result = self
             .task_tracker
             .spawn_blocking(move || {
@@ -262,6 +270,7 @@ impl OpenCVExtension {
                 }
             })
             .await;
+        info!(%request_id, "blocking OpenCV search returned");
 
         // Nobody wants a reading from a search that has already finished, and
         // the sampler may still be holding one it slept through. Stopping it
@@ -270,31 +279,47 @@ impl OpenCVExtension {
 
         // The search has dropped its sender by now, so this only waits for what
         // it already wrote, and then for the host to have seen all of it.
+        info!(%request_id, "waiting for queued OpenCV progress");
         let _ = forwarding.await;
-        self.flush_progress().await;
+        info!(%request_id, "queued OpenCV progress reached the drain");
+        self.flush_progress(request_id).await;
 
-        result.map_err(|error| eyre!("find task failed: {error}"))?
+        let matches = result.map_err(|error| eyre!("find task failed: {error}"))??;
+        info!(%request_id, matches = matches.len(), "finished OpenCV search request");
+        Ok(matches)
     }
 }
 
 impl OpenCVProtocolExtension for OpenCVExtension {
     async fn upload_source(&self, image: RgbaPixels) -> Result<SourceHandle> {
+        info!(
+            width = image.width(),
+            height = image.height(),
+            "preparing OpenCV source"
+        );
         let source = block_in_place(|| Source::from_rgba(image.as_raw(), image.size()))?;
 
         let mut registry = self.registry.lock();
         let handle = SourceHandle::generate();
         registry.sources.insert(handle, source);
 
+        info!(?handle, "finished preparing OpenCV source");
         Ok(handle)
     }
 
     async fn upload_template(&self, image: RgbaPixels) -> Result<TemplateHandle> {
+        info!(
+            width = image.width(),
+            height = image.height(),
+            "preparing OpenCV template"
+        );
         let template = block_in_place(|| Template::from_rgba(image.as_raw(), image.size()))?;
 
         let mut registry = self.registry.lock();
         let handle = TemplateHandle::generate();
         registry.templates.insert(handle, template);
 
+        info!(?handle, "finished preparing OpenCV template");
         Ok(handle)
     }
 
