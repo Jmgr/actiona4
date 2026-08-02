@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Actiona 4</title>
+        <!-- Monaco editor styles and AMD loader (must come before editor.js) -->
+        <!-- --
+        <link rel="stylesheet" href="./static/monaco-editor/editor/editor.main.css">
+        <script>var require = { paths: { vs: './static/monaco-editor' } };</script>
+        <script src="./static/monaco-editor/loader.js"></script>
+        <script src="./static/editor.js"></script>
+        <link data-trunk rel="copy-dir" href="static" />
+        -->
+        <!-- copy-file keeps the source filename (index.d.ts) and treats
+             data-target-path as a directory, so this lands at /types/index.d.ts -->
+        <link
+            data-trunk
+            rel="copy-file"
+            href="../run/assets/index.d.ts"
+            data-target-path="types"
+        />
+        <link
+            data-trunk
+            rel="copy-file"
+            href="node_modules/dockview/dist/dockview.min.js"
+        />
+        <script src="./dockview.min.js"></script>
+        <link data-trunk rel="rust" href="Cargo.toml" data-bin="ui" />
+        <link data-trunk rel="tailwind-css" href="tailwind.css" />
+    </head>
+    <body></body>
+</html>

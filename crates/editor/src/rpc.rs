@@ -1,25 +1,6 @@
-//! Typed RPC protocol shared by the host (native) and the UI (wasm).
-//!
-//! A single `#[rpc] trait Api` declaration generates everything (the tarpc /
-//! tonic pattern):
-//!
-//! * `trait Api` — the **host** implements it with plain `async fn`s.
-//! * `ApiClient<T>` — the **UI** calls `client.add_ten(5).await`, fully typed.
-//! * `api_serve(api, cmd, json)` — host-side dispatch by command name.
-//! * `__rpc_<method>` modules — the by-name argument structs, shared by both
-//!   ends so the wire format can never drift.
-//!
-//! Because the trait and its argument/return types live here in `common`, both
-//! Rust ends are checked against the same definition at compile time — the type
-//! safety a JS frontend (Tauri) only recovers via a codegen step like
-//! `tauri-specta`.
-
-use std::future::Future;
-
+use action_definition::tree::ActionTree;
 use macros::rpc;
 use serde::{Deserialize, Serialize};
-
-use crate::tree::ActionTree;
 
 /// The transport the generated [`ApiClient`] talks through: JSON value in, JSON
 /// value out, async. The wasm UI implements this over the webview bridge; tests
@@ -45,10 +26,6 @@ pub enum RpcError<E> {
     Transport(E),
 }
 
-/// The RPC surface between the UI and the host.
-///
-/// Add a method here and both the typed client and the host dispatcher pick it
-/// up automatically; the host just has to implement the new `async fn`.
 #[rpc]
 pub trait Api {
     async fn load_rows(&self);
