@@ -7,7 +7,7 @@ Received by iterating over the async iterator returned by `find` or `findAll`.
 ```ts
 const task = source.find(template);
 for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
   if (progress.finished) break;
 }
 const result = await task;
@@ -15,19 +15,28 @@ const result = await task;
 
 ## Properties
 
-### stage
+### step
 
-> `readonly` **stage**: [`FindImageStage`](../enumerations/FindImageStage.md)
+> `readonly` **step**: [`FindImageStep`](../enumerations/FindImageStep.md)
 
-The current stage of the find image operation.
+The current step of the find image operation.
 
 ***
 
-### percent
+### progress
 
-> `readonly` **percent**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+> `readonly` **progress**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Completion percentage (0-100).
+Completion of the whole search, from 0 to 1.
+
+***
+
+### stepProgress
+
+> `readonly` **stepProgress**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Completion of the current step, from 0 to 1. Steps that cannot measure
+themselves report 0 when they start and 1 when they end.
 
 ***
 

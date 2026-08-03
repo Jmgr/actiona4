@@ -1,5 +1,10 @@
 # Documentation
 
+## Actions
+
+- [ActionBranch](classes/ActionBranch.md)
+- [ActionResult](classes/ActionResult.md)
+
 ## App
 
 - [WaitAtEnd](enumerations/WaitAtEnd.md)
@@ -97,7 +102,7 @@
 - [Interpolation](enumerations/Interpolation.md)
 - [TextHorizontalAlign](enumerations/TextHorizontalAlign.md)
 - [TextVerticalAlign](enumerations/TextVerticalAlign.md)
-- [FindImageStage](enumerations/FindImageStage.md)
+- [FindImageStep](enumerations/FindImageStep.md)
 - [ResizeOptions](interfaces/ResizeOptions.md)
 - [BlurOptions](interfaces/BlurOptions.md)
 - [DrawImageOptions](interfaces/DrawImageOptions.md)
@@ -146,6 +151,7 @@
 
 ## Mouse
 
+- [ButtonDirection](enumerations/ButtonDirection.md)
 - [Button](enumerations/Button.md)
 - [Axis](enumerations/Axis.md)
 - [Tween](enumerations/Tween.md)

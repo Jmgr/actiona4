@@ -4719,7 +4719,7 @@ if (match) {
 // Track progress while searching
 const task = source.find(template);
 for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
 }
 const match = await task;
 ```
@@ -4741,6 +4741,18 @@ const match = await task;
 > `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### enableGpu?
+
+> `optional` **enableGpu?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use OpenCL/OpenCV's GPU-capable path for template matching.
 
 ###### Default Value
 
@@ -4834,7 +4846,7 @@ for (const match of matches) {
 // Track progress while searching
 const task = source.findAll(template);
 for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
 }
 const matches = await task;
 ```
@@ -4856,6 +4868,18 @@ const matches = await task;
 > `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### enableGpu?
+
+> `optional` **enableGpu?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use OpenCL/OpenCV's GPU-capable path for template matching.
 
 ###### Default Value
 
@@ -4950,7 +4974,7 @@ if (match) {
 const display = displays.primary();
 const task = image.findOnScreen(SearchIn.display(display));
 for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
 }
 const match = await task;
 ```
@@ -4972,6 +4996,18 @@ const match = await task;
 > `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### enableGpu?
+
+> `optional` **enableGpu?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use OpenCL/OpenCV's GPU-capable path for template matching.
 
 ###### Default Value
 
@@ -5072,7 +5108,7 @@ for (const match of matches) {
 ```ts
 const task = image.findAllOnScreen(SearchIn.rect(0, 0, 1920, 1080));
 for await (const progress of task) {
-  println(`${progress.stage}: ${formatPercent(progress.percent)}`);
+  println(`${progress.step}: ${formatPercent(progress.progress * 100)}`);
 }
 const matches = await task;
 ```
@@ -5094,6 +5130,18 @@ const matches = await task;
 > `optional` **useColors?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
 Use color matching.
+
+###### Default Value
+
+`true`
+
+***
+
+###### enableGpu?
+
+> `optional` **enableGpu?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use OpenCL/OpenCV's GPU-capable path for template matching.
 
 ###### Default Value
 

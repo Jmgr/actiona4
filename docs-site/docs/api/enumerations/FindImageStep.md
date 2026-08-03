@@ -1,13 +1,13 @@
-# Enumeration: FindImageStage
+# Enumeration: FindImageStep
 
 
-Stages of a find image operation.
+Steps of a find image operation.
 
 ```ts
 const task = source.find(template);
 for await (const progress of task) {
-  if (progress.stage === FindImageStage.Matching) {
-    println(`Matching: ${formatPercent(progress.percent)}`);
+  if (progress.step === FindImageStep.Matching) {
+    println(`Matching: ${formatPercent(progress.progress * 100)}`);
   }
 }
 ```
@@ -18,7 +18,7 @@ for await (const progress of task) {
 
 > **Capturing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.Capturing`
+`FindImageStep.Capturing`
 
 ***
 
@@ -26,7 +26,7 @@ for await (const progress of task) {
 
 > **Preparing**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.Preparing`
+`FindImageStep.Preparing`
 
 ***
 
@@ -34,7 +34,7 @@ for await (const progress of task) {
 
 > **Downscaling**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.Downscaling`
+`FindImageStep.Downscaling`
 
 ***
 
@@ -42,7 +42,7 @@ for await (const progress of task) {
 
 > **Matching**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.Matching`
+`FindImageStep.Matching`
 
 ***
 
@@ -50,7 +50,7 @@ for await (const progress of task) {
 
 > **Filtering**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.Filtering`
+`FindImageStep.Filtering`
 
 ***
 
@@ -58,7 +58,7 @@ for await (const progress of task) {
 
 > **ComputingResults**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.ComputingResults`
+`FindImageStep.ComputingResults`
 
 ***
 
@@ -66,4 +66,4 @@ for await (const progress of task) {
 
 > **Finished**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-`FindImageStage.Finished`
+`FindImageStep.Finished`

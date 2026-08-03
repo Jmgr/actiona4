@@ -542,13 +542,15 @@ Moves the mouse cursor by the given offset (relative coordinates).
 
 ### click()
 
+#### Call Signature
+
 > <span class="async-badge">async</span> **click**(`options?`: [`ClickOptions`](ClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-Clicks a mouse button.
+Click at the current cursor position with optional configuration.
 
-#### Parameters
+##### Parameters
 
-##### options?
+###### options?
 
 [`ClickOptions`](ClickOptions.md)
 
@@ -697,11 +699,361 @@ Whether the position is relative to the current cursor position.
 
 </div>
 
-#### Returns
+##### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-#### Platform
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **click**(`position`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`ClickOptions`](ClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Click at the given position.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### options?
+
+[`ClickOptions`](ClickOptions.md)
+
+<div class="options-fields">
+
+###### amount?
+
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Number of times to click.
+
+###### Default Value
+
+`1`
+
+***
+
+###### interval?
+
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Delay between consecutive clicks, in seconds.
+
+###### Default Value
+
+`0`
+
+***
+
+###### duration?
+
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+How long to hold each click, in seconds.
+
+###### Default Value
+
+`0`
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the click.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
+
+***
+
+###### position?
+
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`position`](PressOptions.md#position)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`relativePosition`](PressOptions.md#relativeposition)
+
+</div>
+
+##### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **click**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`ClickOptions`](ClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Click at the given position.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`ClickOptions`](ClickOptions.md)
+
+<div class="options-fields">
+
+###### amount?
+
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Number of times to click.
+
+###### Default Value
+
+`1`
+
+***
+
+###### interval?
+
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Delay between consecutive clicks, in seconds.
+
+###### Default Value
+
+`0`
+
+***
+
+###### duration?
+
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+How long to hold each click, in seconds.
+
+###### Default Value
+
+`0`
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the click.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`button`](PressOptions.md#button)
+
+***
+
+###### position?
+
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`position`](PressOptions.md#position)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+###### Inherited from
+
+[`PressOptions`](PressOptions.md).[`relativePosition`](PressOptions.md#relativeposition)
+
+</div>
+
+##### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### Platform
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
@@ -713,13 +1065,15 @@ Whether the position is relative to the current cursor position.
 
 ### doubleClick()
 
+#### Call Signature
+
 > <span class="async-badge">async</span> **doubleClick**(`options?`: [`DoubleClickOptions`](DoubleClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-Double-clicks a mouse button.
+Double-click at the current cursor position with optional configuration.
 
-#### Parameters
+##### Parameters
 
-##### options?
+###### options?
 
 [`DoubleClickOptions`](DoubleClickOptions.md)
 
@@ -896,11 +1250,417 @@ Whether the position is relative to the current cursor position.
 
 </div>
 
-#### Returns
+##### Returns
 
 [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
 
-#### Platform
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **doubleClick**(`position`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`DoubleClickOptions`](DoubleClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Double-click at the given position.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### options?
+
+[`DoubleClickOptions`](DoubleClickOptions.md)
+
+<div class="options-fields">
+
+###### delay?
+
+> `optional` **delay?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Delay between the two clicks, in seconds.
+
+###### Default Value
+
+`0.25`
+
+***
+
+###### amount?
+
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Number of times to click.
+
+###### Default Value
+
+`1`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`amount`](ClickOptions.md#amount)
+
+***
+
+###### interval?
+
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Delay between consecutive clicks, in seconds.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`interval`](ClickOptions.md#interval)
+
+***
+
+###### duration?
+
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+How long to hold each click, in seconds.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`duration`](ClickOptions.md#duration)
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the click.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`signal`](ClickOptions.md#signal)
+
+***
+
+###### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`button`](ClickOptions.md#button)
+
+***
+
+###### position?
+
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`position`](ClickOptions.md#position)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`relativePosition`](ClickOptions.md#relativeposition)
+
+</div>
+
+##### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> <span class="async-badge">async</span> **doubleClick**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`DoubleClickOptions`](DoubleClickOptions.md)): [`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+Double-click at the given position.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`DoubleClickOptions`](DoubleClickOptions.md)
+
+<div class="options-fields">
+
+###### delay?
+
+> `optional` **delay?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Delay between the two clicks, in seconds.
+
+###### Default Value
+
+`0.25`
+
+***
+
+###### amount?
+
+> `optional` **amount?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Number of times to click.
+
+###### Default Value
+
+`1`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`amount`](ClickOptions.md#amount)
+
+***
+
+###### interval?
+
+> `optional` **interval?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Delay between consecutive clicks, in seconds.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`interval`](ClickOptions.md#interval)
+
+***
+
+###### duration?
+
+> `optional` **duration?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+How long to hold each click, in seconds.
+
+###### Default Value
+
+`0`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`duration`](ClickOptions.md#duration)
+
+***
+
+###### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to cancel the click.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`signal`](ClickOptions.md#signal)
+
+***
+
+###### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`button`](ClickOptions.md#button)
+
+***
+
+###### position?
+
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`position`](ClickOptions.md#position)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+###### Inherited from
+
+[`ClickOptions`](ClickOptions.md).[`relativePosition`](ClickOptions.md#relativeposition)
+
+</div>
+
+##### Returns
+
+[`Task`](../type-aliases/Task.md)\<[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)\>
+
+##### Platform
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
@@ -1740,13 +2500,15 @@ Interval in seconds
 
 ### press()
 
+#### Call Signature
+
 > **press**(`options?`: [`PressOptions`](PressOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Presses and holds a mouse button.
+Press at the current cursor position with optional configuration.
 
-#### Parameters
+##### Parameters
 
-##### options?
+###### options?
 
 [`PressOptions`](PressOptions.md)
 
@@ -1835,11 +2597,241 @@ Whether the position is relative to the current cursor position.
 
 </div>
 
-#### Returns
+##### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-#### Platform
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> **press**(`position`: [`PointLike`](../type-aliases/PointLike.md), `options?`: [`PressOptions`](PressOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Press at the given position.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### options?
+
+[`PressOptions`](PressOptions.md)
+
+<div class="options-fields">
+
+###### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+***
+
+###### position?
+
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> **press**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `options?`: [`PressOptions`](PressOptions.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Press at the given position.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### options?
+
+[`PressOptions`](PressOptions.md)
+
+<div class="options-fields">
+
+###### button?
+
+> `optional` **button?**: [`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+Mouse button to press.
+
+###### Default Value
+
+`Button.Left`
+
+***
+
+###### position?
+
+> `optional` **position?**: [`PointLike`](../type-aliases/PointLike.md)
+
+Position to move the cursor to before pressing.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### relativePosition?
+
+> `optional` **relativePosition?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Whether the position is relative to the current cursor position.
+
+###### Default Value
+
+`false`
+
+</div>
+
+##### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
@@ -1851,13 +2843,15 @@ Whether the position is relative to the current cursor position.
 
 ### release()
 
+#### Call Signature
+
 > **release**(`button?`: [`Button`](../enumerations/Button.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Releases a mouse button.
+Release a mouse button without moving the cursor.
 
-#### Parameters
+##### Parameters
 
-##### button?
+###### button?
 
 [`Button`](../enumerations/Button.md)
 
@@ -1908,11 +2902,165 @@ Forward button
 
 </div>
 
-#### Returns
+##### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-#### Platform
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> **release**(`position`: [`PointLike`](../type-aliases/PointLike.md), `button?`: [`Button`](../enumerations/Button.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Move the cursor to the given position, then release.
+
+##### Parameters
+
+###### position
+
+[`PointLike`](../type-aliases/PointLike.md)
+
+###### button?
+
+[`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+##### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+#### Call Signature
+
+> **release**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `button?`: [`Button`](../enumerations/Button.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Move the cursor to the given position, then release.
+
+##### Parameters
+
+###### x
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### y
+
+[`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+###### button?
+
+[`Button`](../enumerations/Button.md)
+
+<div class="options-fields">
+
+###### Left
+
+> **Left**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Left button
+`Button.Left`
+
+***
+
+###### Middle
+
+> **Middle**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Middle button
+`Button.Middle`
+
+***
+
+###### Right
+
+> **Right**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Right button
+`Button.Right`
+
+***
+
+###### Back
+
+> **Back**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Back button
+`Button.Back`
+
+***
+
+###### Forward
+
+> **Forward**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Forward button
+`Button.Forward`
+
+</div>
+
+##### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+##### Platform
 
 <div class="platform-badges">
 <span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
@@ -1926,7 +3074,7 @@ Forward button
 
 > <span class="async-badge">async</span> **waitForButton**(`options?`: [`WaitForButtonOptions`](WaitForButtonOptions.md)): [`Task`](../type-aliases/Task.md)\<[`Button`](../enumerations/Button.md)\>
 
-Waits until a mouse button is pressed.
+Waits until a mouse button is pressed or released.
 
 ```ts
 // Wait for any button press
@@ -1938,6 +3086,7 @@ const button = await mouse.waitForButton();
 const controller = new AbortController();
 const button = await mouse.waitForButton({
   button: Button.Left,
+  direction: ButtonDirection.Press,
   signal: controller.signal
 });
 ```
@@ -2002,6 +3151,36 @@ Forward button
 </div>
 
 Mouse button to wait for. If not specified, waits for any button.
+
+###### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+###### direction?
+
+> `optional` **direction?**: [`ButtonDirection`](../enumerations/ButtonDirection.md)
+
+<div class="options-fields">
+
+###### Press
+
+> **Press**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ButtonDirection.Press`
+
+***
+
+###### Release
+
+> **Release**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`ButtonDirection.Release`
+
+</div>
+
+Button direction to wait for. If not specified, waits for either press or release.
 
 ###### Default Value
 

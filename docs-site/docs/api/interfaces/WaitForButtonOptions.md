@@ -17,6 +17,18 @@ Mouse button to wait for. If not specified, waits for any button.
 
 ***
 
+### direction?
+
+> `optional` **direction?**: [`ButtonDirection`](../enumerations/ButtonDirection.md)
+
+Button direction to wait for. If not specified, waits for either press or release.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
 ### signal?
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)

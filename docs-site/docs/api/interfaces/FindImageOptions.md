@@ -22,6 +22,18 @@ Use color matching.
 
 #### Default Value
 
+`true`
+
+***
+
+### enableGpu?
+
+> `optional` **enableGpu?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Use OpenCL/OpenCV's GPU-capable path for template matching.
+
+#### Default Value
+
 `false`
 
 ***

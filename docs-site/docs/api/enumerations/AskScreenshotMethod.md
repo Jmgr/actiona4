@@ -4,7 +4,7 @@
 Controls which interactive screenshot method is used.
 
 ```ts
-const image = await screen.askScreenshot({ method: ScreenshotMethod.Native });
+const image = await screen.askScreenshot({ method: AskScreenshotMethod.Native });
 ```
 
 ## Enumeration Members

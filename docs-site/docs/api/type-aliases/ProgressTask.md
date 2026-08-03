@@ -7,7 +7,7 @@ A cancellable promise that also emits progress updates.
 ```ts
 const task = source.find(template);
 for await (const progress of task) {
-  console.println(`Stage: ${progress.stage}`);
+  console.println(`Step: ${progress.step}`);
 }
 const match = await task;
 ```
