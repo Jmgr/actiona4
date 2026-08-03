@@ -1,3 +1,5 @@
+#![cfg_attr(windows, windows_subsystem = "windows")]
+
 use std::sync::Arc;
 
 use actiona_common::sentry::setup_crash_reporting;
