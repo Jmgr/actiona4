@@ -77,6 +77,22 @@ if not exist crates\\e2e\\node_modules\\.bin\\tsc.cmd (
 )
 '''
 
+[tasks.install-docs-site-deps]
+script_runner = "@shell"
+script = '''
+if [ ! -x docs-site/node_modules/.bin/docusaurus ]; then
+    npm ci --prefix docs-site
+fi
+'''
+
+[tasks.install-docs-site-deps.windows]
+script_runner = "@shell"
+script = '''
+if not exist docs-site\\node_modules\\.bin\\docusaurus.cmd (
+    npm ci --prefix docs-site
+)
+'''
+
 [tasks.lint-ts]
 dependencies = ["install-e2e-ts-deps"]
 command = "cargo"
@@ -179,6 +195,13 @@ condition = { platforms = ["linux"] }
 dependencies = ["install-e2e-ts-deps"]
 command = "cargo"
 args = ["run", "-p", "xtask", "--", "doc"]
+
+[tasks.docs-site]
+condition = { platforms = ["linux"] }
+description = "Regenerate the TypeScript API declarations and build the documentation site."
+dependencies = ["doc", "install-docs-site-deps"]
+command = "npm"
+args = ["--prefix", "docs-site", "run", "build"]
 
 [tasks.upgrade]
 description = "Upgrade dependencies, including incompatible semver updates."
