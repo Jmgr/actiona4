@@ -42,5 +42,7 @@ runs:
           libxtst-dev \
           llvm-dev \
           mold \
+          ocl-icd-opencl-dev \
           pkg-config \
+          pocl-opencl-icd \
           ${{ inputs.extra-packages }}

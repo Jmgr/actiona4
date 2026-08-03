@@ -13,14 +13,14 @@ use color_eyre::{
 use extension::protocols::opencv::FindImageStep;
 use itertools::Itertools;
 use opencv::{
-    core::{AccessFlag, CV_32FC1, Mat, Rect, UMat, UMatUsageFlags, no_array},
+    core::{AccessFlag, CV_32FC1, Mat, Rect, UMat, UMatUsageFlags, have_opencl, no_array},
     imgproc::{TM_CCOEFF_NORMED, match_template as cv_match_template},
     prelude::{MatTraitConst, MatTraitConstManual, MatTraitManual, UMatTraitConst},
 };
 use rayon::prelude::*;
 use satint::{SaturatingFrom, SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
-use tracing::instrument;
+use tracing::{instrument, warn};
 use types::Size;
 
 use crate::find_image::{
@@ -118,7 +118,12 @@ pub fn match_template(
     );
 
     if enable_gpu {
-        return match_gpu(source_lightness, template_lightness, template_mask);
+        if have_opencl().unwrap_or(false) {
+            return match_gpu(source_lightness, template_lightness, template_mask);
+        }
+        warn!(
+            "GPU matching was requested but no OpenCL platform is available, falling back to CPU"
+        );
     }
 
     let source_size: Size = source_lightness.0.size()?.into();
