@@ -293,7 +293,7 @@ embed-resource = "3.0.11"
 [patch.crates-io]
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
 sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "1ca7bb5" }
-webview_app = { git = "https://github.com/Jmgr/webview-app.git", rev = "a296112" }
+webview_app = { git = "https://github.com/Jmgr/webview-app.git", rev = "adddade" }
 # Fix a proc-macro-error2 warning
 proc-macro-error2 = { git = "https://github.com/fgardt/proc-macro-error-2", rev = "53ff94b61c678593158db1a3d50269c6f0de0db7" }
 

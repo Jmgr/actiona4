@@ -2456,6 +2456,7 @@ dependencies = [
  "color-eyre",
  "common",
  "console_error_panic_hook",
+ "embed-resource",
  "getrandom 0.4.3",
  "icons",
  "include_dir",
@@ -10694,14 +10695,17 @@ dependencies = [
 [[package]]
 name = "webview_app"
 version = "1.2.1"
-source = "git+https://github.com/Jmgr/webview-app.git?rev=a296112#a296112f638b2f96e3b7df071ac67b6809f94c5d"
+source = "git+https://github.com/Jmgr/webview-app.git?rev=adddade#adddade832a0bc47acccf2272229cfe65a944033"
 dependencies = [
  "async-channel",
  "gtk4",
  "include_dir",
  "libadwaita",
+ "mime_guess",
+ "percent-encoding",
  "serde",
  "serde_json",
+ "url",
  "webkit6",
  "webview2-com",
  "windows 0.62.2",

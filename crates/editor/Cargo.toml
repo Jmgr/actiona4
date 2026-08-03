@@ -68,6 +68,7 @@ web-sys = { workspace = true, features = [
 
 [build-dependencies]
 built.workspace = true
+embed-resource.workspace = true
 
 [dev-dependencies]
 any_spawner = { workspace = true, features = ["wasm-bindgen"] }
