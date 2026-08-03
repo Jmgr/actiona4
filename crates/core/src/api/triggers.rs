@@ -59,6 +59,7 @@ pub fn fire_callback<'js>(
 
     if let Some(promise) = value.as_promise() {
         let promise = promise.clone();
+        let promise_ctx = ctx.clone();
         let player_for_spawn = macro_player;
         ctx.spawn(async move {
             match promise.into_future::<Value<'_>>().await {
@@ -68,6 +69,10 @@ pub fn fire_callback<'js>(
                     }
                 }
                 Err(error) => {
+                    let error = promise_ctx
+                        .user_data()
+                        .script_engine()
+                        .process_js_error(&promise_ctx, error);
                     warn!(?function_key, error = %error, "{label} async callback failed");
                 }
             }

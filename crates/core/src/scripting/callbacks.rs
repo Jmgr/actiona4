@@ -138,6 +138,9 @@ impl Callbacks {
                                             match function.call_arg::<Value<'_>>(args) {
                                                 Ok(call_result) => result = call_result,
                                                 Err(error) => {
+                                                    let error = user_data
+                                                        .script_engine()
+                                                        .process_js_error(&ctx, error);
                                                     warn!(
                                                         ?call_key,
                                                         ?function_key,
@@ -176,6 +179,10 @@ impl Callbacks {
                                     .into_future::<Value<'_>>()
                                     .await
                                     .unwrap_or_else(|error| {
+                                        let error = promise_ctx
+                                            .user_data()
+                                            .script_engine()
+                                            .process_js_error(&promise_ctx, error);
                                         warn!(
                                             ?promise_call_key,
                                             error = %error,
@@ -271,6 +278,7 @@ impl Callbacks {
         match function.call_arg::<Value<'_>>(args_obj) {
             Ok(result) => result,
             Err(error) => {
+                let error = ctx.user_data().script_engine().process_js_error(ctx, error);
                 warn!(
                     ?function_key,
                     error = %error,
@@ -342,14 +350,20 @@ impl Callbacks {
             Ok(result) => {
                 if let Some(promise) = result.as_promise() {
                     let promise = promise.clone();
+                    let promise_ctx = ctx.clone();
                     ctx.spawn(async move {
                         if let Err(error) = promise.into_future::<Value<'_>>().await {
+                            let error = promise_ctx
+                                .user_data()
+                                .script_engine()
+                                .process_js_error(&promise_ctx, error);
                             warn!(?function_key, error = %error, "{caller}: async callback failed");
                         }
                     });
                 }
             }
             Err(error) => {
+                let error = ctx.user_data().script_engine().process_js_error(ctx, error);
                 warn!(?function_key, error = %error, "{caller}: callback failed");
             }
         }
