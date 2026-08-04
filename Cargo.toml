@@ -191,7 +191,7 @@ rustyline = "18.0.1"
 sadness-generator = "0.7.0"
 satint = "0.3.2"
 sentry = "0.49.0"
-sentry-rust-minidump = "0.16.0"
+sentry-rust-minidump = "0.17.0"
 serde = "1.0.229"
 serde_json = "1.0.151"
 serde_plain = "1.0.2"
@@ -274,7 +274,6 @@ embed-resource = "3.0.11"
 
 [patch.crates-io]
 enigo = { git = "https://github.com/enigo-rs/enigo", rev = "17fc1d5" }
-sentry-rust-minidump = { git = "https://github.com/Jmgr/sentry-rust-minidump", rev = "1ca7bb5" }
 
 [profile.release]
 opt-level = 3
