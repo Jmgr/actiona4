@@ -574,8 +574,6 @@ jobs:
           extra-packages: appstream libfuse2t64 xvfb openbox
 
       - name: Build unsigned AppImage
-        env:
-          RUSTFLAGS: -C link-arg=-fuse-ld=mold
         run: cargo make appimage-nosign
 
       - name: Run e2e tests against AppImage
