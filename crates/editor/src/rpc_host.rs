@@ -134,7 +134,7 @@ mod tests {
         };
 
         let rows = tree.rows();
-        assert_eq!(rows.len(), 8);
+        assert_eq!(rows.len(), 9);
 
         let kinds = rows
             .iter()
@@ -152,6 +152,7 @@ mod tests {
             [
                 "root",
                 "message_box",
+                "branch:other",
                 "test",
                 "branch:true",
                 "click",
@@ -171,6 +172,7 @@ mod tests {
             [
                 None,
                 Some("confirm_dialog"),
+                None,
                 Some("branch_decision"),
                 None,
                 Some("accepted_click"),
@@ -190,6 +192,7 @@ mod tests {
             [
                 None,
                 Some("Ask the user before continuing"),
+                None,
                 Some("Split the workflow into true and false paths"),
                 None,
                 Some("Click the accepted-state target"),
