@@ -4,3 +4,5 @@
 
 ### Added
 - Initial public release of Actiona Run
+
+## [0.3.0] - 2026-08-05

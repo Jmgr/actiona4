@@ -20,7 +20,7 @@ checksum = "366ffbaa4442f4684d91e2cd7c5ea7c4ed8add41959a31447066e279e432b618"
 
 [[package]]
 name = "action-definition"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "const-default",
  "derive_more",
@@ -43,7 +43,7 @@ dependencies = [
 
 [[package]]
 name = "action-execution"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "action-definition",
  "core",
@@ -984,7 +984,7 @@ dependencies = [
 
 [[package]]
 name = "build-support"
-version = "0.2.0"
+version = "0.3.0"
 
 [[package]]
 name = "built"
@@ -1328,7 +1328,7 @@ dependencies = [
 
 [[package]]
 name = "common"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "ab_glyph",
  "built",
@@ -1365,7 +1365,7 @@ dependencies = [
 
 [[package]]
 name = "config"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "cfg_aliases",
  "color-eyre",
@@ -1500,7 +1500,7 @@ dependencies = [
 
 [[package]]
 name = "core"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "ab_glyph",
  "arboard",
@@ -2162,7 +2162,7 @@ dependencies = [
 
 [[package]]
 name = "doc-generator"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "built",
  "clap",
@@ -2219,7 +2219,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 
 [[package]]
 name = "e2e"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "assert_cmd",
  "common",
@@ -2453,7 +2453,7 @@ checksum = "af9673d8203fcb076b19dfd17e38b3d4ae9f44959416ea532ce72415a6020365"
 
 [[package]]
 name = "extension"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "color-eyre",
  "derive-where",
@@ -2475,7 +2475,7 @@ dependencies = [
 
 [[package]]
 name = "extension-opencv"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "build-support",
  "built",
@@ -2500,7 +2500,7 @@ dependencies = [
 
 [[package]]
 name = "extension-selection"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "build-support",
  "built",
@@ -2570,7 +2570,7 @@ dependencies = [
 
 [[package]]
 name = "file-format"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "action-definition",
  "async-stream",
@@ -3673,7 +3673,7 @@ dependencies = [
 
 [[package]]
 name = "inno-plugin"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "eyre",
  "installer-tools",
@@ -3681,7 +3681,7 @@ dependencies = [
 
 [[package]]
 name = "installer-tools"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "config",
  "eyre",
@@ -4295,7 +4295,7 @@ dependencies = [
 
 [[package]]
 name = "macros"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "convert_case 0.11.0",
  "darling",
@@ -6572,7 +6572,7 @@ dependencies = [
 
 [[package]]
 name = "run"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "build-support",
  "built",
@@ -6836,7 +6836,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "screenshot"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "color-eyre",
  "memfd",
@@ -8609,7 +8609,7 @@ checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
 
 [[package]]
 name = "types"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "color-eyre",
  "derive_more",
@@ -8729,7 +8729,7 @@ checksum = "81e544489bf3d8ef66c953931f56617f423cd4b5494be343d9b9d3dda037b9a3"
 
 [[package]]
 name = "updater"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "cfg_aliases",
  "color-eyre",
@@ -10079,7 +10079,7 @@ checksum = "3ae8337f8a065cfc972643663ea4279e04e7256de865aa66fe25cec5fb912d3f"
 
 [[package]]
 name = "xtask"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "clap",
  "color-eyre",
