@@ -112,6 +112,21 @@ impl Windows {
         self.handler.maximize(id)
     }
 
+    pub fn restore(&self, id: WindowId) -> Result<()> {
+        self.runtime.require_not_wayland()?;
+        self.handler.restore(id)
+    }
+
+    pub fn hide(&self, id: WindowId) -> Result<()> {
+        self.runtime.require_not_wayland()?;
+        self.handler.hide(id)
+    }
+
+    pub fn show(&self, id: WindowId) -> Result<()> {
+        self.runtime.require_not_wayland()?;
+        self.handler.show(id)
+    }
+
     pub fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
         self.runtime.require_not_wayland()?;
         self.handler.set_position(id, position)

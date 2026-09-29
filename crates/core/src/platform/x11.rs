@@ -8,7 +8,35 @@ use x11rb_async::{
     rust_connection::RustConnection as AsyncRustConnection,
 };
 
+pub use self::atoms::Atoms;
 use crate::cancel_on;
+
+mod atoms {
+    // The fields are named after the atoms, and many of those start with an underscore.
+    #![allow(clippy::pub_underscore_fields)]
+
+    x11rb::atom_manager! {
+        /// Atoms used to talk to the window manager (ICCCM and EWMH).
+        pub Atoms: AtomsCookie {
+            _GTK_FRAME_EXTENTS,
+            _NET_ACTIVE_WINDOW,
+            _NET_CLIENT_LIST,
+            _NET_CLOSE_WINDOW,
+            _NET_FRAME_EXTENTS,
+            _NET_MOVERESIZE_WINDOW,
+            _NET_SUPPORTED,
+            _NET_WM_NAME,
+            _NET_WM_PID,
+            _NET_WM_STATE,
+            _NET_WM_STATE_MAXIMIZED_HORZ,
+            _NET_WM_STATE_MAXIMIZED_VERT,
+            _NET_WM_VISIBLE_NAME,
+            UTF8_STRING,
+            WM_CHANGE_STATE,
+            WM_STATE,
+        }
+    }
+}
 
 #[derive(Debug)]
 pub struct X11Connection {

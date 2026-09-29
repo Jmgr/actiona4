@@ -17,6 +17,7 @@ name = "e2e"
 
 [dependencies]
 parking_lot.workspace = true
+winit = { workspace = true, features = ["x11"] }
 
 [dev-dependencies]
 common = { path = "../common" }

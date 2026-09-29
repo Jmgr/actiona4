@@ -8,7 +8,6 @@ use std::{
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::{Deref, DerefMut};
-use libwmctl::AtomCollection;
 use tokio::{runtime::Builder, select, sync::broadcast, task::LocalSet, time::sleep};
 use tokio_util::{
     sync::{CancellationToken, DropGuard},
@@ -46,10 +45,12 @@ use xkeysym::KeyCode;
 
 use crate::{
     api::{
-        displays::Displays, mouse::Button, point::point,
-        windows::platform::x11::events::WindowEvent,
+        displays::Displays,
+        mouse::Button,
+        point::point,
+        windows::platform::x11::{WindowHandle, events::WindowEvent},
     },
-    platform::x11::X11Connection,
+    platform::x11::{Atoms, X11Connection},
     runtime::{
         events::{
             Guard, KeyboardKeyEvent, KeyboardTextEvent, MouseButtonEvent, MouseMoveEvent,
@@ -98,7 +99,7 @@ fn keyboard_text_event(
 pub struct Runtime {
     x11_connection: Arc<X11Connection>,
     has_shm: bool,
-    atoms: AtomCollection,
+    atoms: Atoms,
     mouse_buttons_topic: TopicWrapper<MouseButtonsTopic>,
     mouse_move_topic: TopicWrapper<MouseMoveTopic>,
     mouse_scroll_topic: TopicWrapper<MouseScrollTopic>,
@@ -141,7 +142,7 @@ impl Runtime {
             .await?,
         );
         let connection = x11_connection.async_connection();
-        let atoms = AtomCollection::new(x11_connection.sync_connection())?.reply()?;
+        let atoms = Atoms::new(x11_connection.sync_connection())?.reply()?;
 
         // Make sure XInput2 is available
         let version = xi_query_version(connection, 2, 4).await?.reply().await?;
@@ -476,7 +477,7 @@ impl Runtime {
                     }
                     Event::DestroyNotify(e) => {
                         info!("DestroyNotify: event={:#x} window={:#x}", e.event, e.window);
-                        let handle = libwmctl::window(e.window).into();
+                        let handle = WindowHandle { id: e.window };
                         _ = local_window_event_sender.send(WindowEvent::Closed(handle));
                     }
                     _ => {}
@@ -511,7 +512,7 @@ impl Runtime {
     }
 
     #[must_use]
-    pub const fn atoms(&self) -> &AtomCollection {
+    pub const fn atoms(&self) -> &Atoms {
         &self.atoms
     }
 

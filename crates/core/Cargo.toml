@@ -23,7 +23,6 @@ name = "actiona_core"
 [target.'cfg(unix)'.dependencies]
 ashpd = { workspace = true, features = ["screencast", "screenshot"] }
 ksni.workspace = true
-libwmctl.workspace = true
 notify-rust = { workspace = true, features = ["z-with-tokio", "async", "images"] }
 procfs.workspace = true
 rustix = { workspace = true, features = ["process", "thread"] }
@@ -45,6 +44,7 @@ windows = { workspace = true, features = [
     "Win32_System_DataExchange",
     "Win32_System_Threading",
     "Win32_System_LibraryLoader",
+    "Win32_Graphics_Dwm",
     "Win32_Graphics_Gdi",
     "Win32_System_Memory",
     "Win32_System_StationsAndDesktops",

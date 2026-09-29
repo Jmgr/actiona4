@@ -133,7 +133,7 @@ impl JsWildcard {
 /// @overload
 /// Constructor with a regular expression.
 /// @param regexp: RegExp
-*/
+ */
 
 #[derive(Debug)]
 pub struct JsNameLike<'js>(pub super::Name<'js>);

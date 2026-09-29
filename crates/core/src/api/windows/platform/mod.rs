@@ -45,6 +45,9 @@ pub trait WindowsHandler {
     fn set_active(&self, id: WindowId) -> Result<()>;
     fn minimize(&self, id: WindowId) -> Result<()>;
     fn maximize(&self, id: WindowId) -> Result<()>;
+    fn restore(&self, id: WindowId) -> Result<()>;
+    fn hide(&self, id: WindowId) -> Result<()>;
+    fn show(&self, id: WindowId) -> Result<()>;
     fn set_position(&self, id: WindowId, position: Point) -> Result<()>;
     fn position(&self, id: WindowId) -> Result<Point>;
     fn set_size(&self, id: WindowId, size: Size) -> Result<()>;

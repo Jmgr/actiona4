@@ -1544,7 +1544,6 @@ dependencies = [
  "jiff",
  "ksni",
  "libtest-mimic-collect",
- "libwmctl",
  "macros",
  "mime",
  "mime_guess",
@@ -2226,6 +2225,7 @@ dependencies = [
  "httptest",
  "parking_lot",
  "tempfile",
+ "winit",
 ]
 
 [[package]]
@@ -4172,16 +4172,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.119",
-]
-
-[[package]]
-name = "libwmctl"
-version = "0.0.52"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e87e0ffb5592f97531e94f6b818a516d936889d57b88f474da9697d10981b2e"
-dependencies = [
- "tracing",
- "x11rb 0.14.0",
 ]
 
 [[package]]

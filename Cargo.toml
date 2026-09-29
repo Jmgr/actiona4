@@ -239,7 +239,6 @@ zip = { version = "8.6.0", default-features = false }
 # Unix
 ashpd = "0.13.13"
 ksni = "0.3.6"
-libwmctl = "0.0.52"
 memfd = "0.6.5"
 memmap2 = "0.9.11"
 notify-rust = { version = "4.18.0", default-features = false }

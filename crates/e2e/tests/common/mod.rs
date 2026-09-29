@@ -47,6 +47,13 @@ pub fn run(name: &str) -> Assert {
     command.arg(script.path());
     command.env(DISABLE_CRASH_REPORTING_ENV, "1");
 
+    if name == "windows.ts" {
+        command.env(
+            "ACTIONA4_E2E_TEST_WINDOW",
+            env!("CARGO_BIN_EXE_e2e-test-window"),
+        );
+    }
+
     let _web_server = if name == "web.ts" {
         Some(configure_web_server(&mut command))
     } else {

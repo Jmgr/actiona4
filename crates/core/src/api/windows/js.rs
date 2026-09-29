@@ -390,7 +390,12 @@ impl JsWindowHandle {
         Ok(self.inner.process_id(self.id).into_js_result(&ctx)?.into())
     }
 
-    /// Returns the window's bounding rectangle.
+    /// Returns the window's bounding rectangle, in screen coordinates.
+    ///
+    /// This is the window as it appears on screen: it includes the title bar and borders, but not
+    /// the invisible margins that some windows have around them (resize borders on Windows,
+    /// shadows of client-side decorated windows on Linux). `position()`, `size()`,
+    /// `setPosition()` and `setSize()` use the same rectangle.
     ///
     /// ```ts
     /// const r = win.rect();
@@ -458,7 +463,48 @@ impl JsWindowHandle {
         self.inner.maximize(self.id).into_js_result(&ctx)
     }
 
-    /// Sets the window position.
+    /// Restores this window from the minimized or maximized state.
+    ///
+    /// A minimized window returns to the state it had before being minimized, so a window
+    /// that was maximized when it was minimized is restored maximized; call `restore()` again
+    /// to unmaximize it. A window hidden with `hide()` is shown again.
+    ///
+    /// ```ts
+    /// win.restore();
+    /// ```
+    #[platform(not = "wayland")]
+    pub fn restore(&self, ctx: Ctx<'_>) -> Result<()> {
+        self.inner.restore(self.id).into_js_result(&ctx)
+    }
+
+    /// Hides this window. It disappears from the screen and the taskbar until `show()` is called.
+    ///
+    /// Hidden windows are still listed by `windows.all()` and `windows.find()`; use
+    /// `windows.find({ visible: false })` to find them. On Linux, only windows hidden by
+    /// the current script are listed: windows hidden by other programs are not reported by the
+    /// window manager.
+    ///
+    /// ```ts
+    /// win.hide();
+    /// await sleep("2s");
+    /// win.show();
+    /// ```
+    #[platform(not = "wayland")]
+    pub fn hide(&self, ctx: Ctx<'_>) -> Result<()> {
+        self.inner.hide(self.id).into_js_result(&ctx)
+    }
+
+    /// Shows this window after it was hidden with `hide()`.
+    ///
+    /// ```ts
+    /// win.show();
+    /// ```
+    #[platform(not = "wayland")]
+    pub fn show(&self, ctx: Ctx<'_>) -> Result<()> {
+        self.inner.show(self.id).into_js_result(&ctx)
+    }
+
+    /// Sets the window position: the top-left corner of `rect()`.
     ///
     /// ```ts
     /// win.setPosition(100, 200);
@@ -472,7 +518,7 @@ impl JsWindowHandle {
             .into_js_result(&ctx)
     }
 
-    /// Returns the window position.
+    /// Returns the window position: the top-left corner of `rect()`.
     ///
     /// ```ts
     /// const pos = win.position();
@@ -484,7 +530,7 @@ impl JsWindowHandle {
         Ok(self.inner.position(self.id).into_js_result(&ctx)?.into())
     }
 
-    /// Sets the window size.
+    /// Sets the window size, the size of `rect()`.
     ///
     /// ```ts
     /// win.setSize(800, 600);
@@ -496,7 +542,7 @@ impl JsWindowHandle {
         self.inner.set_size(self.id, size.0).into_js_result(&ctx)
     }
 
-    /// Returns the window size.
+    /// Returns the window size, the size of `rect()`.
     ///
     /// ```ts
     /// const s = win.size();

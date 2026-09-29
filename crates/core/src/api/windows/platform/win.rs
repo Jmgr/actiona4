@@ -11,15 +11,16 @@ use parking_lot::Mutex;
 use satint::{SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
 use windows::Win32::{
-    Foundation::{HWND, LPARAM, RECT, WPARAM},
+    Foundation::{HWND, LPARAM, RECT, SetLastError, WIN32_ERROR, WPARAM},
+    Graphics::Dwm::{DWMWA_EXTENDED_FRAME_BOUNDS, DwmGetWindowAttribute},
     System::StationsAndDesktops::{
         DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
     },
     UI::WindowsAndMessaging::{
         GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
-        GetWindowThreadProcessId, IsWindowVisible, SW_MAXIMIZE, SW_MINIMIZE, SWP_NOACTIVATE,
-        SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SendNotifyMessageW, SetForegroundWindow,
-        SetWindowPos, ShowWindow, WM_CLOSE,
+        GetWindowThreadProcessId, IsWindowVisible, SHOW_WINDOW_CMD, SW_HIDE, SW_MAXIMIZE,
+        SW_MINIMIZE, SW_RESTORE, SW_SHOW, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER,
+        SendNotifyMessageW, SetForegroundWindow, SetWindowPos, ShowWindow, WM_CLOSE,
     },
 };
 use windows_result::BOOL;
@@ -176,18 +177,13 @@ impl WindowsHandler for WindowsWindowHandler {
 
     fn rect(&self, id: WindowId) -> Result<Rect> {
         let handle = self.inner.lock().get_handle(id)?.clone();
-        let mut win_rect = RECT::default();
+        let (_, visible) = window_bounds(*handle)?;
 
-        // SAFETY: `win_rect` is valid writable storage and `handle` is registered.
-        unsafe {
-            GetWindowRect(*handle, &raw mut win_rect)?;
-        }
-
-        let width = (win_rect.right - win_rect.left).max(0);
-        let height = (win_rect.bottom - win_rect.top).max(0);
+        let width = (visible.right - visible.left).max(0);
+        let height = (visible.bottom - visible.top).max(0);
 
         Ok(Rect::new(
-            point(win_rect.left, win_rect.top),
+            point(visible.left, visible.top),
             size(width, height),
         ))
     }
@@ -206,41 +202,40 @@ impl WindowsHandler for WindowsWindowHandler {
     }
 
     fn minimize(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.lock().get_handle(id)?.clone();
-
-        // SAFETY: `handle` is a registered window handle.
-        unsafe {
-            if !ShowWindow(*handle, SW_MINIMIZE).as_bool() {
-                return Err(windows_result::Error::from_thread().into());
-            }
-        }
-
-        Ok(())
+        self.show_window(id, SW_MINIMIZE)
     }
 
     fn maximize(&self, id: WindowId) -> Result<()> {
-        let handle = self.inner.lock().get_handle(id)?.clone();
+        self.show_window(id, SW_MAXIMIZE)
+    }
 
-        // SAFETY: `handle` is a registered window handle.
-        unsafe {
-            if !ShowWindow(*handle, SW_MAXIMIZE).as_bool() {
-                return Err(windows_result::Error::from_thread().into());
-            }
-        }
+    fn restore(&self, id: WindowId) -> Result<()> {
+        self.show_window(id, SW_RESTORE)
+    }
 
-        Ok(())
+    fn hide(&self, id: WindowId) -> Result<()> {
+        self.show_window(id, SW_HIDE)
+    }
+
+    fn show(&self, id: WindowId) -> Result<()> {
+        self.show_window(id, SW_SHOW)
     }
 
     fn set_position(&self, id: WindowId, position: Point) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
+        let (outer, visible) = window_bounds(*handle)?;
+
+        // SetWindowPos positions the outer rectangle, which includes the invisible borders.
+        let x = i32::from(position.x) - (visible.left - outer.left);
+        let y = i32::from(position.y) - (visible.top - outer.top);
 
         // SAFETY: `handle` is a registered window and all position parameters are plain values.
         unsafe {
             SetWindowPos(
                 *handle,
                 None,
-                position.x.into(),
-                position.y.into(),
+                x,
+                y,
                 0,
                 0,
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE,
@@ -256,6 +251,13 @@ impl WindowsHandler for WindowsWindowHandler {
 
     fn set_size(&self, id: WindowId, size: Size) -> Result<()> {
         let handle = self.inner.lock().get_handle(id)?.clone();
+        let (outer, visible) = window_bounds(*handle)?;
+
+        // SetWindowPos sizes the outer rectangle, which includes the invisible borders.
+        let width: i32 = size.width.saturating_into();
+        let height: i32 = size.height.saturating_into();
+        let width = width + (outer.right - outer.left) - (visible.right - visible.left);
+        let height = height + (outer.bottom - outer.top) - (visible.bottom - visible.top);
 
         // SAFETY: `handle` is a registered window and all size parameters are plain values.
         unsafe {
@@ -264,8 +266,8 @@ impl WindowsHandler for WindowsWindowHandler {
                 None,
                 0,
                 0,
-                size.width.saturating_into(),
-                size.height.saturating_into(),
+                width,
+                height,
                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE,
             )?;
         };
@@ -319,5 +321,55 @@ impl WindowsHandler for WindowsWindowHandler {
                 return Ok(());
             }
         }
+    }
+}
+
+/// Returns the outer rectangle of a window and its visible bounds.
+///
+/// Since Windows 10, the outer rectangle (`GetWindowRect`, and what `SetWindowPos` works with)
+/// includes invisible resize borders around the window, while DWM reports the visible bounds.
+/// Both are in physical pixels, as the process is per-monitor DPI aware.
+fn window_bounds(handle: HWND) -> Result<(RECT, RECT)> {
+    let mut outer = RECT::default();
+    let mut visible = RECT::default();
+
+    // SAFETY: `outer` and `visible` are valid writable storage, of the size passed to DWM.
+    unsafe {
+        GetWindowRect(handle, &raw mut outer)?;
+
+        // DWM has no bounds for the windows it does not compose; they have no invisible borders.
+        if DwmGetWindowAttribute(
+            handle,
+            DWMWA_EXTENDED_FRAME_BOUNDS,
+            (&raw mut visible).cast(),
+            u32::try_from(size_of::<RECT>())?,
+        )
+        .is_err()
+        {
+            visible = outer;
+        }
+    }
+
+    Ok((outer, visible))
+}
+
+impl WindowsWindowHandler {
+    fn show_window(&self, id: WindowId, command: SHOW_WINDOW_CMD) -> Result<()> {
+        let handle = self.inner.lock().get_handle(id)?.clone();
+
+        // SAFETY: `handle` is a registered window handle.
+        unsafe {
+            // ShowWindow returns whether the window was previously visible, not whether it
+            // succeeded, so failures are only detectable through the thread's last error.
+            SetLastError(WIN32_ERROR(0));
+            if !ShowWindow(*handle, command).as_bool() {
+                let error = windows_result::Error::from_thread();
+                if error.code().is_err() {
+                    return Err(error.into());
+                }
+            }
+        }
+
+        Ok(())
     }
 }
