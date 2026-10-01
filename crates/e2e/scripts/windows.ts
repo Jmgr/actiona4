@@ -158,13 +158,16 @@ async function waitUntil(what: string, condition: () => boolean): Promise<void> 
     await sleep(200);
     assert(handle.rect().equals(target), `re-applying its own geometry should not move the window, got ${handle.rect()}`);
 
-    // minimize() then restore(). Minimized windows are not visible on Linux, but they stay visible
-    // on Windows, which moves them far off-screen instead: their outer rectangle is placed at
-    // (-32000, -32000), so their visible bounds start a few pixels further, past the borders.
+    // minimize() then restore(). Whether a minimized window stays visible depends on the platform
+    // and the window manager, so only isMinimized() is checked.
+    assert(!handle.isMinimized(), "the test window should not start minimized");
     handle.minimize();
-    await waitUntil("the window to be minimized", () => !handle.isVisible() || handle.position().y < -30000);
+    await waitUntil("the window to be minimized", () => handle.isMinimized());
     handle.restore();
-    await waitUntil("the minimized window to be restored", () => handle.isVisible() && handle.rect().equals(target));
+    await waitUntil(
+      "the minimized window to be restored",
+      () => !handle.isMinimized() && handle.isVisible() && handle.rect().equals(target),
+    );
 
     // maximize() then restore().
     handle.maximize();

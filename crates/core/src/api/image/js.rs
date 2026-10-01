@@ -913,8 +913,8 @@ impl JsImage {
     /// ```
     #[qjs(static)]
     pub fn from_bytes(ctx: Ctx<'_>, bytes: TypedArray<'_, u8>) -> Result<Self> {
-        let bytes = bytes
-            .as_bytes()
+        // SAFETY: the slice is only used synchronously below, so no JS can run while it is alive.
+        let bytes = unsafe { bytes.as_bytes() }
             .ok_or(CommonError::DetachedArrayBuffer)
             .into_js_result(&ctx)?;
 

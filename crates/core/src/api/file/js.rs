@@ -232,8 +232,9 @@ impl JsFile {
         bytes: TypedArray<'_, u8>,
     ) -> Result<()> {
         let opened_file = self.opened_file_mut(&ctx)?;
-        let bytes = bytes
-            .as_bytes()
+        // SAFETY: the bytes are copied immediately, before any await point lets JS run.
+        let bytes = unsafe { bytes.as_bytes() }
+            .map(<[u8]>::to_vec)
             .ok_or(CommonError::DetachedArrayBuffer)
             .into_js_result(&ctx)?;
 
@@ -241,7 +242,7 @@ impl JsFile {
             .file
             .lock()
             .await
-            .write(bytes)
+            .write(&bytes)
             .await
             .map_err(|err| Exception::throw_message(&ctx, &format!("Error writing file: {err}")))?;
         opened_file.file.lock().await.flush().await?;
@@ -257,8 +258,9 @@ impl JsFile {
     /// @param bytes: Uint8Array
     #[qjs(static)]
     pub async fn write_bytes(ctx: Ctx<'_>, path: String, bytes: TypedArray<'_, u8>) -> Result<()> {
-        let bytes = bytes
-            .as_bytes()
+        // SAFETY: the bytes are copied immediately, before any await point lets JS run.
+        let bytes = unsafe { bytes.as_bytes() }
+            .map(<[u8]>::to_vec)
             .ok_or(CommonError::DetachedArrayBuffer)
             .into_js_result(&ctx)?;
 

@@ -350,6 +350,19 @@ impl JsWindowHandle {
         self.inner.is_visible(self.id).into_js_result(&ctx)
     }
 
+    /// Returns whether this window is minimized.
+    ///
+    /// A minimized window can still be reported as visible by `isVisible()`: Windows and some
+    /// Linux window managers keep minimized windows visible, and only hide them from the screen.
+    ///
+    /// ```ts
+    /// const minimized = win.isMinimized();
+    /// ```
+    #[platform(not = "wayland")]
+    pub fn is_minimized(&self, ctx: Ctx<'_>) -> Result<bool> {
+        self.inner.is_minimized(self.id).into_js_result(&ctx)
+    }
+
     /// Returns the window title.
     ///
     /// ```ts
@@ -467,7 +480,8 @@ impl JsWindowHandle {
     ///
     /// A minimized window returns to the state it had before being minimized, so a window
     /// that was maximized when it was minimized is restored maximized; call `restore()` again
-    /// to unmaximize it. A window hidden with `hide()` is shown again.
+    /// to unmaximize it. A hidden window is shown again, whether it was hidden with `hide()` or by
+    /// another program; see `show()`.
     ///
     /// ```ts
     /// win.restore();
@@ -477,7 +491,8 @@ impl JsWindowHandle {
         self.inner.restore(self.id).into_js_result(&ctx)
     }
 
-    /// Hides this window. It disappears from the screen and the taskbar until `show()` is called.
+    /// Hides this window. It disappears from the screen and the taskbar until `show()` or
+    /// `restore()` is called.
     ///
     /// Hidden windows are still listed by `windows.all()` and `windows.find()`; use
     /// `windows.find({ visible: false })` to find them. On Linux, only windows hidden by
@@ -494,7 +509,12 @@ impl JsWindowHandle {
         self.inner.hide(self.id).into_js_result(&ctx)
     }
 
-    /// Shows this window after it was hidden with `hide()`.
+    /// Shows this window if it is hidden, whether it was hidden with `hide()` or by another
+    /// program.
+    ///
+    /// On Linux, windows hidden by other programs are not listed by `windows.all()` and
+    /// `windows.find()`, so this needs a handle obtained before the window was hidden, and only
+    /// works until windows are listed again.
     ///
     /// ```ts
     /// win.show();

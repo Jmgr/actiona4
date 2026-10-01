@@ -37,6 +37,7 @@ pub type Result<T> = color_eyre::Result<T>;
 pub trait WindowsHandler {
     fn all(&self) -> Result<Vec<WindowId>>;
     fn is_visible(&self, id: WindowId) -> Result<bool>;
+    fn is_minimized(&self, id: WindowId) -> Result<bool>;
     fn title(&self, id: WindowId) -> Result<String>;
     fn classname(&self, id: WindowId) -> Result<String>;
     fn close(&self, id: WindowId) -> Result<()>;

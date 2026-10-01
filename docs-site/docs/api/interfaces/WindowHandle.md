@@ -159,7 +159,12 @@ const pid = win.processId();
 
 > **rect**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Rect`](../classes/Rect.md)\>
 
-Returns the window's bounding rectangle.
+Returns the window's bounding rectangle, in screen coordinates.
+
+This is the window as it appears on screen: it includes the title bar and borders, but not
+the invisible margins that some windows have around them (resize borders on Windows,
+shadows of client-side decorated windows on Linux). `position()`, `size()`,
+`setPosition()` and `setSize()` use the same rectangle.
 
 ```ts
 const r = win.rect();
@@ -301,13 +306,96 @@ win.maximize();
 
 ***
 
+### restore()
+
+> **restore**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Restores this window from the minimized or maximized state.
+
+A minimized window returns to the state it had before being minimized, so a window
+that was maximized when it was minimized is restored maximized; call `restore()` again
+to unmaximize it. A window hidden with `hide()` is shown again.
+
+```ts
+win.restore();
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
+### hide()
+
+> **hide**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Hides this window. It disappears from the screen and the taskbar until `show()` is called.
+
+Hidden windows are still listed by `windows.all()` and `windows.find()`; use
+`windows.find({ visible: false })` to find them. On Linux, only windows hidden by
+the current script are listed: windows hidden by other programs are not reported by the
+window manager.
+
+```ts
+win.hide();
+await sleep("2s");
+win.show();
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
+### show()
+
+> **show**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+Shows this window after it was hidden with `hide()`.
+
+```ts
+win.show();
+```
+
+#### Returns
+
+[`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
 ### setPosition()
 
 #### Call Signature
 
 > **setPosition**(`position`: [`PointLike`](../type-aliases/PointLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Sets the window position.
+Sets the window position: the top-left corner of `rect()`.
 
 ```ts
 win.setPosition(100, 200);
@@ -337,7 +425,7 @@ win.setPosition({x: 100, y: 200});
 
 > **setPosition**(`x`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `y`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Sets the window position.
+Sets the window position: the top-left corner of `rect()`.
 
 ```ts
 win.setPosition(100, 200);
@@ -373,7 +461,7 @@ win.setPosition({x: 100, y: 200});
 
 > **position**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Point`](../classes/Point.md)\>
 
-Returns the window position.
+Returns the window position: the top-left corner of `rect()`.
 
 ```ts
 const pos = win.position();
@@ -400,7 +488,7 @@ println(`${pos.x}, ${pos.y}`);
 
 > **setSize**(`size`: [`SizeLike`](../type-aliases/SizeLike.md)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Sets the window size.
+Sets the window size, the size of `rect()`.
 
 ```ts
 win.setSize(800, 600);
@@ -430,7 +518,7 @@ win.setSize({width: 800, height: 600});
 
 > **setSize**(`width`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number), `height`: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Sets the window size.
+Sets the window size, the size of `rect()`.
 
 ```ts
 win.setSize(800, 600);
@@ -466,7 +554,7 @@ win.setSize({width: 800, height: 600});
 
 > **size**(): [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<[`Size`](../classes/Size.md)\>
 
-Returns the window size.
+Returns the window size, the size of `rect()`.
 
 ```ts
 const s = win.size();

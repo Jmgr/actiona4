@@ -19,8 +19,7 @@ ab_glyph.workspace = true
 color-eyre.workspace = true
 rfd.workspace = true
 satint.workspace = true
-sentry.workspace = true
-sentry-rust-minidump = { workspace = true, features = ["ipc"] }
+sentry = { workspace = true, features = ["minidump"] }
 serde = { workspace = true, features = ["derive"] }
 types = { path = "../types" }
 

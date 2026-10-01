@@ -72,6 +72,11 @@ impl Windows {
         self.handler.is_visible(id)
     }
 
+    pub fn is_minimized(&self, id: WindowId) -> Result<bool> {
+        self.runtime.require_not_wayland()?;
+        self.handler.is_minimized(id)
+    }
+
     pub fn title(&self, id: WindowId) -> Result<String> {
         self.runtime.require_not_wayland()?;
         self.handler.title(id)

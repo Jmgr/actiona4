@@ -18,7 +18,7 @@ use windows::Win32::{
     },
     UI::WindowsAndMessaging::{
         GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
-        GetWindowThreadProcessId, IsWindowVisible, SHOW_WINDOW_CMD, SW_HIDE, SW_MAXIMIZE,
+        GetWindowThreadProcessId, IsIconic, IsWindowVisible, SHOW_WINDOW_CMD, SW_HIDE, SW_MAXIMIZE,
         SW_MINIMIZE, SW_RESTORE, SW_SHOW, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER,
         SendNotifyMessageW, SetForegroundWindow, SetWindowPos, ShowWindow, WM_CLOSE,
     },
@@ -118,6 +118,12 @@ impl WindowsHandler for WindowsWindowHandler {
         let handle = self.inner.lock().get_handle(id)?.clone();
         // SAFETY: `handle` is retrieved from this handler's registry of Win32 window handles.
         Ok(unsafe { IsWindowVisible(*handle).as_bool() })
+    }
+
+    fn is_minimized(&self, id: WindowId) -> Result<bool> {
+        let handle = self.inner.lock().get_handle(id)?.clone();
+        // SAFETY: `handle` is retrieved from this handler's registry of Win32 window handles.
+        Ok(unsafe { IsIconic(*handle).as_bool() })
     }
 
     fn title(&self, id: WindowId) -> Result<String> {

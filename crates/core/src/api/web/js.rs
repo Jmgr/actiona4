@@ -150,8 +150,8 @@ impl JsMultipartForm {
         filename: Opt<String>,
         mimetype: Opt<String>,
     ) -> Result<()> {
-        let bytes = bytes
-            .as_bytes()
+        // SAFETY: the slice is only used synchronously below, so no JS can run while it is alive.
+        let bytes = unsafe { bytes.as_bytes() }
             .ok_or(CommonError::DetachedArrayBuffer)
             .into_js_result(&ctx)?;
         let mimetype = Self::parse_mimetype(&ctx, mimetype)?;

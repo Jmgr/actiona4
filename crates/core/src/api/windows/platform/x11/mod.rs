@@ -41,6 +41,10 @@ pub mod events;
 // The WM_STATE property holds the current one.
 const ICCCM_WM_STATE_ICONIC: u32 = 3;
 
+// EWMH source indications, telling the window manager who sent a request.
+const NET_SOURCE_APPLICATION: u32 = 1;
+const NET_SOURCE_PAGER: u32 = 2;
+
 // EWMH _NET_WM_STATE actions.
 const NET_WM_STATE_REMOVE: u32 = 0;
 const NET_WM_STATE_ADD: u32 = 1;
@@ -106,6 +110,14 @@ impl WindowsHandler for X11WindowHandler {
         let attributes = connection.get_window_attributes(handle.id)?.reply()?;
 
         Ok(attributes.map_state == MapState::VIEWABLE)
+    }
+
+    fn is_minimized(&self, id: WindowId) -> Result<bool> {
+        let handle = self.handle(id)?;
+        let platform = self.runtime.platform();
+        let x11_connection = platform.x11_connection();
+
+        self.is_iconic(x11_connection.sync_connection(), handle)
     }
 
     fn title(&self, id: WindowId) -> Result<String> {
@@ -218,10 +230,7 @@ impl WindowsHandler for X11WindowHandler {
 
     fn set_active(&self, id: WindowId) -> Result<()> {
         let handle = self.handle(id)?;
-        let active_window_atom = self.runtime.platform().atoms()._NET_ACTIVE_WINDOW;
-
-        let timestamp = 0;
-        self.send_client_message(handle, active_window_atom, [1, timestamp, 0, 0, 0])
+        self.activate(handle, NET_SOURCE_APPLICATION)
     }
 
     fn minimize(&self, id: WindowId) -> Result<()> {
@@ -242,9 +251,22 @@ impl WindowsHandler for X11WindowHandler {
         let x11_connection = platform.x11_connection();
         let connection = x11_connection.sync_connection();
 
-        if self.is_iconic(connection, handle)? || self.hidden.lock().contains(&handle.id) {
-            // ICCCM 4.1.4: mapping an iconic or withdrawn window returns it to the normal state.
+        if self.is_iconic(connection, handle)? {
+            // ICCCM 4.1.4: mapping an iconic window returns it to the normal state. Compositing
+            // window managers such as Mutter keep minimized windows mapped, so that does nothing
+            // there; they un-minimize a window when a pager activates it.
             connection.map_window(handle.id)?.check()?;
+            self.activate(handle, NET_SOURCE_PAGER)?;
+        } else if connection
+            .get_window_attributes(handle.id)?
+            .reply()?
+            .map_state
+            == MapState::UNMAPPED
+        {
+            // Unmapped without being iconic: withdrawn, by `hide()` or by another program.
+            // ICCCM 4.1.4: mapping a withdrawn window returns it to the normal state.
+            connection.map_window(handle.id)?.check()?;
+            self.hidden.lock().remove(&handle.id);
         } else {
             self.set_maximized(handle, false)?;
         }
@@ -288,6 +310,7 @@ impl WindowsHandler for X11WindowHandler {
         let connection = x11_connection.sync_connection();
 
         connection.map_window(handle.id)?.check()?;
+        self.hidden.lock().remove(&handle.id);
 
         Ok(())
     }
@@ -457,18 +480,24 @@ impl X11WindowHandler {
     ///
     /// Window managers drop withdrawn windows from `_NET_CLIENT_LIST`, so without this their IDs
     /// would be pruned from the registry on the next enumeration, and `show()` could no longer
-    /// reach them. Windows are forgotten once the window manager lists them again or they are
-    /// destroyed.
+    /// reach them. Windows are forgotten once they are mapped again or destroyed. Whether the
+    /// window manager still lists them is no indication: it withdraws them asynchronously, so a
+    /// window hidden a moment ago can still be listed.
     fn hidden_windows(&self, connection: &RustConnection, managed: &[Window]) -> Vec<Window> {
         let mut hidden = self.hidden.lock();
         hidden.retain(|id| {
-            !managed.contains(id)
-                && connection
-                    .get_window_attributes(*id)
-                    .is_ok_and(|cookie| cookie.reply().is_ok())
+            connection
+                .get_window_attributes(*id)
+                .ok()
+                .and_then(|cookie| cookie.reply().ok())
+                .is_some_and(|attributes| attributes.map_state == MapState::UNMAPPED)
         });
 
-        hidden.iter().copied().collect_vec()
+        hidden
+            .iter()
+            .filter(|id| !managed.contains(id))
+            .copied()
+            .collect_vec()
     }
 
     /// Sends a client message to the window manager about `handle`.
@@ -513,6 +542,14 @@ impl X11WindowHandler {
                 0,
             ],
         )
+    }
+
+    /// Asks the window manager to activate `handle`, un-minimizing it if needed.
+    fn activate(&self, handle: WindowHandle, source: u32) -> Result<()> {
+        let active_window_atom = self.atoms()._NET_ACTIVE_WINDOW;
+
+        let timestamp = 0;
+        self.send_client_message(handle, active_window_atom, [source, timestamp, 0, 0, 0])
     }
 
     fn is_maximized(&self, connection: &RustConnection, handle: WindowHandle) -> Result<bool> {

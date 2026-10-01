@@ -751,7 +751,7 @@ fn build_rect_overlay(screenshot_rgba: &[u8], window_width: u32, window_height: 
     let size = window_width as usize * window_height as usize * 4;
     let mut overlay = vec![0_u8; size];
     let factor = u32::from(255 - RECT_OVERLAY_DARKEN);
-    for (i, pixel) in overlay.chunks_exact_mut(4).enumerate() {
+    for (i, pixel) in overlay.as_chunks_mut::<4>().0.iter_mut().enumerate() {
         let src = i * 4;
         if src + 3 < screenshot_rgba.len() {
             pixel[0] = (u32::from(screenshot_rgba[src]) * factor / 255).saturating_into();
