@@ -1,10 +1,4 @@
-use std::{
-    collections::BTreeSet,
-    env,
-    path::{Path, PathBuf},
-    process::Command,
-    sync::OnceLock,
-};
+use std::{collections::BTreeSet, env, path::PathBuf, process::Command, sync::OnceLock};
 
 use parking_lot::Mutex;
 
@@ -43,13 +37,12 @@ fn extension_bin_path(name: &str) -> PathBuf {
     path
 }
 
-fn ensure_actiona_run_bin_exists(path: &Path) {
+fn ensure_actiona_run_bin_is_up_to_date() {
     static BUILD_ONCE: OnceLock<()> = OnceLock::new();
 
-    if path.exists() {
-        return;
-    }
-
+    // Always invoke cargo (once per test process), even if the binary exists:
+    // cargo is a no-op when nothing changed, and skipping it would run a stale
+    // binary after the sources were updated.
     BUILD_ONCE.get_or_init(|| {
         let status = Command::new("cargo")
             .args(["build", "-p", "run", "--bin", "actiona-run"])
@@ -63,13 +56,15 @@ fn ensure_actiona_run_bin_exists(path: &Path) {
     });
 }
 
-fn ensure_extension_bin_exists(name: &str, path: &Path) {
+fn ensure_extension_bin_is_up_to_date(name: &str) {
     // Tests run in parallel threads, so remember what has already been built
     // rather than letting every test race on cargo's target-directory lock.
+    // Like actiona-run, always build once even if the binary exists, so a
+    // stale extension is never used.
     static BUILT: Mutex<BTreeSet<String>> = Mutex::new(BTreeSet::new());
 
     let mut built = BUILT.lock();
-    if !built.insert(name.to_owned()) || path.exists() {
+    if !built.insert(name.to_owned()) {
         return;
     }
 
@@ -97,9 +92,8 @@ pub fn actiona_run_bin() -> PathBuf {
         return PathBuf::from(path);
     }
 
-    let path = actiona_run_bin_path();
-    ensure_actiona_run_bin_exists(&path);
-    path
+    ensure_actiona_run_bin_is_up_to_date();
+    actiona_run_bin_path()
 }
 
 /// Whether the test process should use a pre-built actiona-run executable.
@@ -118,7 +112,6 @@ pub fn actiona_run_is_overridden() -> bool {
 /// them, so making sure they exist is all the wiring the tests need.
 #[must_use]
 pub fn extension_bin(name: &str) -> PathBuf {
-    let path = extension_bin_path(name);
-    ensure_extension_bin_exists(name, &path);
-    path
+    ensure_extension_bin_is_up_to_date(name);
+    extension_bin_path(name)
 }
