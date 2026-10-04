@@ -236,7 +236,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
         }
     }
 
-    let show_tray_icon = args.command.is_run() || args.command.is_eval();
+    let show_tray_icon = show_tray_icon(&args.command);
     let platform = RuntimePlatformSetup::new(show_tray_icon)?;
 
     let tokio_runtime = Builder::new_multi_thread().enable_all().build()?;
@@ -503,6 +503,21 @@ const fn seed_from_command(command: &Commands) -> Option<u64> {
     }
 }
 
+const fn show_tray_icon(command: &Commands) -> bool {
+    use Commands::*;
+    match command {
+        Run { script_args, .. } | Eval { script_args, .. } => !script_args.no_tray,
+        Repl { .. }
+        | Init { .. }
+        | Update
+        | Completions { .. }
+        | Config { .. }
+        | Macros { .. }
+        | Setup
+        | CrashTest { .. } => false,
+    }
+}
+
 fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usize> {
     // Top-level flags and which of them consume a following value.
     let top_level_flags: Vec<(Option<char>, Option<&str>, bool)> = cmd
@@ -625,9 +640,9 @@ mod tests {
 
     use clap::{Parser, error::ErrorKind};
 
-    use super::maybe_insert_default_run;
     #[cfg(unix)]
     use super::{effective_x11_display, ensure_x11_session_available};
+    use super::{maybe_insert_default_run, show_tray_icon};
     use crate::args::{Args, Commands};
 
     #[cfg(unix)]
@@ -763,7 +778,9 @@ mod tests {
         let parsed = Args::try_parse_from(args).expect("parse args");
 
         match parsed.command {
-            Commands::Run { filepath, run_args } => {
+            Commands::Run {
+                filepath, run_args, ..
+            } => {
                 assert_eq!(filepath, PathBuf::from("script.ts"));
                 assert_eq!(run_args.seed, Some(42));
             }
@@ -778,7 +795,7 @@ mod tests {
                 .expect("parse args");
 
         match parsed.command {
-            Commands::Eval { code, run_args } => {
+            Commands::Eval { code, run_args, .. } => {
                 assert_eq!(run_args.seed, Some(123));
                 assert_eq!(code, vec!["console.log('hi')"]);
             }
@@ -797,5 +814,44 @@ mod tests {
             }
             other => panic!("expected repl command, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn parses_default_run_with_no_tray() {
+        let args = vec![
+            OsString::from("actiona-run"),
+            OsString::from("--no-tray"),
+            OsString::from("script.ts"),
+        ];
+        let args = maybe_insert_default_run(args);
+
+        let parsed = Args::try_parse_from(args).expect("parse args");
+
+        assert!(!show_tray_icon(&parsed.command));
+        match parsed.command {
+            Commands::Run {
+                filepath,
+                script_args,
+                ..
+            } => {
+                assert_eq!(filepath, PathBuf::from("script.ts"));
+                assert!(script_args.no_tray);
+            }
+            other => panic!("expected run command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn shows_tray_icon_only_for_run_and_eval_by_default() {
+        let run = Args::try_parse_from(["actiona-run", "run", "script.ts"]).expect("parse args");
+        let eval = Args::try_parse_from(["actiona-run", "eval", "1"]).expect("parse args");
+        let eval_no_tray =
+            Args::try_parse_from(["actiona-run", "eval", "--no-tray", "1"]).expect("parse args");
+        let repl = Args::try_parse_from(["actiona-run", "repl"]).expect("parse args");
+
+        assert!(show_tray_icon(&run.command));
+        assert!(show_tray_icon(&eval.command));
+        assert!(!show_tray_icon(&eval_no_tray.command));
+        assert!(!show_tray_icon(&repl.command));
     }
 }

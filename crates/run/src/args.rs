@@ -92,6 +92,16 @@ pub struct RunArgs {
     pub seed: Option<u64>,
 }
 
+/// Options for commands that run a script in the background (`run` and `eval`), as opposed to
+/// the interactive REPL.
+#[derive(ClapArgs, Clone, Debug)]
+pub struct ScriptArgs {
+    /// Do not display the system tray icon (the script can then only be stopped with Ctrl+C or by
+    /// ending the process)
+    #[arg(long)]
+    pub no_tray: bool,
+}
+
 /// Run Actiona 4 automation scripts from the command line.
 ///
 /// Examples:
@@ -110,6 +120,9 @@ pub enum Commands {
 
         #[command(flatten)]
         run_args: RunArgs,
+
+        #[command(flatten)]
+        script_args: ScriptArgs,
     },
 
     /// 🧪 evaluates code
@@ -120,6 +133,9 @@ pub enum Commands {
 
         #[command(flatten)]
         run_args: RunArgs,
+
+        #[command(flatten)]
+        script_args: ScriptArgs,
     },
 
     /// 💻 starts the interactive terminal (REPL)
