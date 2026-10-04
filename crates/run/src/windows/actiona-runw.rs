@@ -52,6 +52,10 @@ fn main_impl() -> ExitCode {
 
     match result {
         Ok(output) if output.status.success() => ExitCode::SUCCESS,
+        // Stopped by the user: not an error worth a message box.
+        Ok(output) if output.status.code() == Some(i32::from(run::CANCELLED_EXIT_CODE)) => {
+            ExitCode::from(run::CANCELLED_EXIT_CODE)
+        }
         Ok(output) => {
             let stderr = String::from_utf8_lossy(&output.stderr);
             let message = if stderr.trim().is_empty() {

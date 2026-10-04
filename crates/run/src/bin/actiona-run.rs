@@ -5,6 +5,7 @@ use std::process::ExitCode;
 fn main() -> ExitCode {
     match run::run_cli() {
         Ok(()) => ExitCode::SUCCESS,
+        Err(err) if err.is::<run::ScriptCancelled>() => ExitCode::from(run::CANCELLED_EXIT_CODE),
         Err(err) => {
             if !err.is::<run::ScriptFailed>() {
                 eprintln!("{err:?}");

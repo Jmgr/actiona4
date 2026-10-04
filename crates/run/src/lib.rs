@@ -87,6 +87,22 @@ impl fmt::Display for ScriptFailed {
 
 impl error::Error for ScriptFailed {}
 
+/// Returned when a script is stopped by the user (stop hotkey, tray Quit or Ctrl+C). Nothing has
+/// been printed, and callers should not report it as a failure.
+#[derive(Debug)]
+pub struct ScriptCancelled;
+
+impl fmt::Display for ScriptCancelled {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("script cancelled")
+    }
+}
+
+impl error::Error for ScriptCancelled {}
+
+/// Exit code of a script stopped by the user, following the 128 + SIGINT shell convention.
+pub const CANCELLED_EXIT_CODE: u8 = 130;
+
 pub const NO_ARGS_MESSAGE: &str = "Actiona Run is a command-line tool.\n\nUse it from a terminal, for example:\n  actiona-run script.ts\n  actiona-run repl\n\nFor full help, run:\n  actiona-run --help";
 
 pub fn run_cli() -> Result<()> {
@@ -349,6 +365,9 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                             .eval_async_with_filename::<()>(&script, Some(&filename))
                             .await
                         {
+                            if err.is_cancelled() {
+                                return Err(ScriptCancelled.into());
+                            }
                             if !scripting::try_emit_script_diagnostic(&err, &script) {
                                 eprintln!("Error: {err}");
                             }
@@ -376,6 +395,9 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                             Ok(Some(value)) => println!("{value}"),
                             Ok(None) => {}
                             Err(err) => {
+                                if err.is_cancelled() {
+                                    return Err(ScriptCancelled.into());
+                                }
                                 if !scripting::try_emit_script_diagnostic(&err, &code) {
                                     eprintln!("Error: {err}");
                                 }
