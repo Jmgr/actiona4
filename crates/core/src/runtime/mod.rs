@@ -1,16 +1,15 @@
 #[cfg(windows)]
 use std::env::args;
-#[cfg(test)]
-use std::sync::OnceLock;
 #[cfg(windows)]
 #[cfg_attr(test, allow(unused_imports))]
 use std::sync::atomic::AtomicBool;
 use std::{
     future::Future,
     sync::{
-        Arc,
+        Arc, OnceLock,
         atomic::{AtomicU8, AtomicU64, Ordering},
     },
+    time::{Duration, Instant},
 };
 
 use color_eyre::{Result, eyre::eyre};
@@ -22,7 +21,7 @@ use enigo::{Enigo, Settings};
 use ksni::{TrayMethods as _, menu::StandardItem};
 use macros::{FromSerde, IntoSerde};
 use parking_lot::Mutex;
-use rquickjs::{Ctx, JsLifetime, runtime::UserDataGuard};
+use rquickjs::{AsyncRuntime, Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIs, EnumIter, FromRepr};
 #[cfg(test)]
@@ -102,13 +101,14 @@ use crate::{
     cancel_on,
     error::CommonError,
     platform_info::{Platform, is_linux},
-    runtime::{events::Guard, extensions::Extensions, shared_rng::SharedRng},
+    runtime::{events::Guard, extensions::Extensions, hotkey::Hotkey, shared_rng::SharedRng},
     scripting::{Engine as ScriptEngine, UnhandledException, callbacks::Callbacks},
 };
 
 pub mod async_resource;
 pub mod events;
 pub mod extensions;
+pub mod hotkey;
 pub mod platform;
 pub mod shared_rng;
 
@@ -284,6 +284,10 @@ pub struct RuntimeOptions {
     /// Seed for the shared random number generator.
     /// When set, random-dependent APIs become deterministic.
     pub seed: Option<u64>,
+
+    /// Global hotkey that stops execution, in this instance and in every other running instance
+    /// that uses the same hotkey.
+    pub stop_hotkey: Option<Hotkey>,
 }
 
 impl Default for RuntimeOptions {
@@ -295,6 +299,7 @@ impl Default for RuntimeOptions {
             show_tray_icon: true,
             discover_extensions: true,
             seed: None,
+            stop_hotkey: None,
         }
     }
 }
@@ -349,6 +354,7 @@ static TEST_CLIPBOARD: OnceLock<Clipboard> = OnceLock::new();
 #[cfg(unix)]
 struct ActionaTray {
     cancellation_token: CancellationToken,
+    quit_label: String,
 }
 
 #[cfg(unix)]
@@ -385,7 +391,7 @@ impl ksni::Tray for ActionaTray {
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
         vec![
             StandardItem {
-                label: "Quit".into(),
+                label: self.quit_label.clone(),
                 activate: Box::new(|this: &mut Self| {
                     this.cancellation_token.cancel();
                 }),
@@ -427,6 +433,7 @@ enum UiEvent {
 #[cfg(windows)]
 struct App {
     tray_handle: Option<tray_icon::TrayIcon>,
+    quit_label: String,
     show_tray_icon: bool,
     is_shutting_down: Arc<AtomicBool>,
     cancellation_token: CancellationToken,
@@ -449,7 +456,7 @@ impl ApplicationHandler<UiEvent> for App {
     fn new_events(&mut self, _event_loop: &ActiveEventLoop, cause: StartCause) {
         if matches!(cause, StartCause::Init) && self.show_tray_icon {
             let menu = Menu::new();
-            let quit_item = MenuItem::with_id("quit", "Quit", true, None);
+            let quit_item = MenuItem::with_id("quit", &self.quit_label, true, None);
             if let Err(err) = menu.append_items(&[&quit_item]) {
                 error!("Failed to create tray menu: {err}");
             } else {
@@ -567,6 +574,7 @@ impl Runtime {
                 task_tracker,
                 None,
                 displays,
+                None,
             ))
             .map(Arc::new)
             .expect("failed to create shared test X11 runtime");
@@ -632,6 +640,7 @@ impl Runtime {
                         task_tracker.clone(),
                         options.display_name.as_deref(),
                         displays.clone(),
+                        options.stop_hotkey.clone(),
                     )
                     .await?,
                 )
@@ -643,6 +652,7 @@ impl Runtime {
             cancellation_token.clone(),
             task_tracker.clone(),
             displays.clone(),
+            options.stop_hotkey.clone(),
         )
         .await?;
 
@@ -899,6 +909,11 @@ impl Runtime {
         let cancellation_token = CancellationToken::new();
         let task_tracker = TaskTracker::new();
 
+        let quit_label = runtime_options
+            .stop_hotkey
+            .as_ref()
+            .map_or_else(|| "Quit".to_owned(), |hotkey| format!("Quit ({hotkey})"));
+
         #[cfg(unix)]
         let unhandled_exceptions = {
             let show_tray_icon = runtime_options.show_tray_icon;
@@ -906,6 +921,7 @@ impl Runtime {
             let tray_handle = if show_tray_icon {
                 let tray = ActionaTray {
                     cancellation_token: cancellation_token.clone(),
+                    quit_label,
                 };
                 match tray.spawn().await {
                     Ok(handle) => Some(handle),
@@ -965,6 +981,7 @@ impl Runtime {
 
                 let mut app = App {
                     tray_handle: None,
+                    quit_label,
                     show_tray_icon: true,
                     is_shutting_down,
                     cancellation_token,
@@ -982,6 +999,35 @@ impl Runtime {
         };
 
         unhandled_exceptions
+    }
+
+    /// Cancellation only reaches a script at its next `await` or API call, so a busy loop such as
+    /// `while (true) {}` would ignore it. Once the token has been cancelled for a grace period,
+    /// interrupt any JavaScript that is still running. The grace period lets well-behaved scripts
+    /// run their `catch`/`finally` blocks after a cancelled `await` first.
+    async fn interrupt_scripts_on_cancel(
+        js_runtime: &AsyncRuntime,
+        cancellation_token: &CancellationToken,
+        task_tracker: &TaskTracker,
+    ) {
+        const GRACE_PERIOD: Duration = Duration::from_millis(500);
+
+        let cancelled_at = Arc::new(OnceLock::<Instant>::new());
+
+        let local_cancelled_at = cancelled_at.clone();
+        let local_cancellation_token = cancellation_token.clone();
+        task_tracker.spawn(async move {
+            local_cancellation_token.cancelled().await;
+            _ = local_cancelled_at.set(Instant::now());
+        });
+
+        js_runtime
+            .set_interrupt_handler(Some(Box::new(move || {
+                cancelled_at
+                    .get()
+                    .is_some_and(|cancelled_at| cancelled_at.elapsed() >= GRACE_PERIOD)
+            })))
+            .await;
     }
 
     #[instrument(skip_all)]
@@ -1015,6 +1061,7 @@ impl Runtime {
         .await?;
 
         let js_runtime = script_engine.context().runtime().clone();
+        Self::interrupt_scripts_on_cancel(&js_runtime, &cancellation_token, &task_tracker).await;
         // Use a dedicated token so the drive task keeps running until f() returns.
         // Cancelling the root token must not stop the drive task early, because
         // pending JS futures (e.g. sleep) need one more poll to see the
@@ -1330,5 +1377,52 @@ impl Runtime {
             return Err(CommonError::UnsupportedPlatform("not supported on Linux".into()).into());
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::{Duration, Instant};
+
+    use tokio::time::sleep;
+
+    use super::{Runtime, RuntimeOptions, RuntimePlatformSetup};
+
+    #[test]
+    fn busy_loop_is_interrupted_after_cancellation() {
+        Runtime::test_init();
+
+        let platform = RuntimePlatformSetup::new(false).expect("RuntimePlatformSetup::new failed");
+
+        let unhandled_exceptions = Runtime::test_tokio_runtime()
+            .block_on(Runtime::run(
+                platform,
+                async |runtime, script_engine| {
+                    let cancellation_token = runtime.cancellation_token();
+                    tokio::spawn(async move {
+                        sleep(Duration::from_millis(100)).await;
+                        cancellation_token.cancel();
+                    });
+
+                    let start = Instant::now();
+                    let error = script_engine
+                        .eval_async_with_filename::<()>("while (true) {}", None)
+                        .await
+                        .expect_err("the busy loop should have been interrupted");
+
+                    assert!(error.is_cancelled(), "unexpected error: {error}");
+                    assert!(start.elapsed() < Duration::from_secs(5));
+
+                    Ok(())
+                },
+                RuntimeOptions {
+                    show_tray_icon: false,
+                    discover_extensions: false,
+                    ..Default::default()
+                },
+            ))
+            .expect("Runtime::run failed");
+
+        assert!(unhandled_exceptions.is_empty());
     }
 }

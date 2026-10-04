@@ -21,8 +21,8 @@ use windows::{
                 CS_NOCLOSE, CW_USEDEFAULT, CreateWindowExW, DefWindowProcW, DispatchMessageW,
                 EVENT_OBJECT_DESTROY, GetMessageW, MSG, OBJID_WINDOW, PM_NOREMOVE, PeekMessageW,
                 PostQuitMessage, PostThreadMessageW, RegisterClassW, TranslateMessage,
-                WINDOW_EX_STYLE, WINEVENT_OUTOFCONTEXT, WM_DESTROY, WM_DISPLAYCHANGE, WM_QUIT,
-                WNDCLASSW, WS_POPUP,
+                WINDOW_EX_STYLE, WINEVENT_OUTOFCONTEXT, WM_APP, WM_DESTROY, WM_DISPLAYCHANGE,
+                WM_HOTKEY, WM_QUIT, WM_TIMER, WNDCLASSW, WS_POPUP,
             },
         },
     },
@@ -35,19 +35,27 @@ use crate::{
     platform::win::safe_handle::{SafeWinEventHook, SafeWindowHandle},
     runtime::{
         events::Guard,
-        platform::win::events::{
-            WindowEvent, WindowHandle,
-            input::{
-                keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
-                mouse::{
-                    MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic, MouseScrollTopic,
+        hotkey::Hotkey,
+        platform::win::{
+            events::{
+                WindowEvent, WindowHandle,
+                input::{
+                    keyboard::{KeyboardInputDispatcher, KeyboardKeysTopic, KeyboardTextTopic},
+                    mouse::{
+                        MouseButtonsTopic, MouseInputDispatcher, MouseMoveTopic, MouseScrollTopic,
+                    },
                 },
             },
+            stop_hotkey::StopHotkey,
         },
     },
 };
 
 pub mod events;
+mod stop_hotkey;
+
+/// Thread message asking the window thread to register the stop hotkey, once `RUNTIME` is set.
+const MSG_START_STOP_HOTKEY: u32 = WM_APP + 1;
 
 static RUNTIME: LazyLock<Mutex<Weak<Runtime>>> = LazyLock::new(|| Mutex::new(Weak::new()));
 
@@ -62,6 +70,16 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
         WM_DISPLAYCHANGE => {
             runtime.displays.refresh();
         }
+        WM_HOTKEY => {
+            if let Some(stop_hotkey) = &runtime.stop_hotkey {
+                stop_hotkey.on_hotkey(wparam.0);
+            }
+        }
+        WM_TIMER => {
+            if let Some(stop_hotkey) = &runtime.stop_hotkey {
+                stop_hotkey.on_retry_timer(hwnd, wparam.0);
+            }
+        }
         WM_DESTROY => {
             // SAFETY: PostQuitMessage takes a scalar exit code and posts to this thread's queue.
             unsafe {
@@ -69,6 +87,14 @@ extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM
             }
         }
         _ => {
+            if runtime
+                .stop_hotkey
+                .as_ref()
+                .is_some_and(|stop_hotkey| stop_hotkey.on_message(msg))
+            {
+                return LRESULT(0);
+            }
+
             // SAFETY: forwarding preserves the window procedure parameters supplied by Windows.
             return unsafe { DefWindowProcW(hwnd, msg, wparam, lparam) };
         }
@@ -101,8 +127,12 @@ extern "system" fn win_event_proc(
         .send(WindowEvent::Closed(WindowHandle(hwnd.0 as isize)));
 }
 
+/// Owns the hidden top-level window that receives display changes and, when a stop hotkey is
+/// configured, `WM_HOTKEY` and the stop broadcast. It is a regular top-level window rather than a
+/// message-only one because message-only windows do not receive broadcasts. Destroying the
+/// window also releases the hotkey.
 struct DisplayRunner {
-    _window: SafeWindowHandle,
+    window: SafeWindowHandle,
     _win_event_hook: SafeWinEventHook,
 }
 
@@ -166,12 +196,24 @@ impl MessagePumpRunner for DisplayRunner {
         };
 
         Ok(Self {
-            _window: SafeWindowHandle::try_new(hwnd)?,
+            window: SafeWindowHandle::try_new(hwnd)?,
             _win_event_hook: SafeWinEventHook::try_new(hook)?,
         })
     }
 
     fn on_message(&mut self, msg: &MSG) {
+        if msg.hwnd.is_invalid() && msg.message == MSG_START_STOP_HOTKEY {
+            // Release the lock before calling into Win32: wnd_proc takes it too.
+            let runtime = RUNTIME.lock().upgrade();
+            if let Some(stop_hotkey) = runtime
+                .as_ref()
+                .and_then(|runtime| runtime.stop_hotkey.as_ref())
+            {
+                stop_hotkey.start(self.window.as_raw());
+            }
+            return;
+        }
+
         // SAFETY: `msg` is supplied by the Win32 message loop and is valid for translation.
         unsafe {
             _ = TranslateMessage(msg);
@@ -187,9 +229,10 @@ impl MessagePumpRunner for DisplayRunner {
 pub struct Runtime {
     mouse_input_dispatcher: Arc<MouseInputDispatcher>,
     keyboard_input_dispatcher: Arc<KeyboardInputDispatcher>,
-    _message_pump: SafeMessagePump,
+    message_pump: SafeMessagePump,
     displays: Displays,
     window_event_sender: broadcast::Sender<WindowEvent>,
+    stop_hotkey: Option<StopHotkey>,
 }
 
 #[allow(unsafe_code)]
@@ -199,7 +242,12 @@ impl Runtime {
         cancellation_token: CancellationToken,
         task_tracker: TaskTracker,
         displays: Displays,
+        stop_hotkey: Option<Hotkey>,
     ) -> Result<Arc<Self>> {
+        let stop_hotkey = stop_hotkey
+            .map(|hotkey| StopHotkey::new(hotkey, cancellation_token.clone()))
+            .transpose()?;
+
         let message_pump = SafeMessagePump::new::<DisplayRunner>(
             "window",
             cancellation_token.clone(),
@@ -218,17 +266,24 @@ impl Runtime {
 
         let (window_event_sender, _) = broadcast::channel(1024);
 
-        Ok(Arc::new_cyclic(|me| {
+        let runtime = Arc::new_cyclic(|me| {
             *RUNTIME.lock() = me.clone();
 
             Self {
                 mouse_input_dispatcher,
                 keyboard_input_dispatcher,
-                _message_pump: message_pump,
+                message_pump,
                 displays,
                 window_event_sender,
+                stop_hotkey,
             }
-        }))
+        });
+
+        if runtime.stop_hotkey.is_some() {
+            runtime.message_pump.send_message(MSG_START_STOP_HOTKEY);
+        }
+
+        Ok(runtime)
     }
 
     #[must_use]

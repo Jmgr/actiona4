@@ -14,7 +14,10 @@ use actiona_common::sentry::setup_crash_reporting;
 use actiona_core::runtime::ensure_x11_session_available as core_ensure_x11_session_available;
 use actiona_core::{
     format_js_value_for_console,
-    runtime::{Runtime, RuntimeOptions, RuntimePlatformSetup, WaitAtEnd},
+    runtime::{
+        Runtime, RuntimeOptions, RuntimePlatformSetup, WaitAtEnd,
+        hotkey::{DEFAULT_STOP_HOTKEY, Hotkey},
+    },
     scripting::{self},
 };
 use clap::{
@@ -263,7 +266,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
         match &args.command {
             Commands::Init { path } => return init::run(path),
             Commands::Config { key, value } => {
-                return config::run(&config, key, *value).await;
+                return config::run(&config, *key, value.as_deref()).await;
             }
             Commands::Update => {
                 return check_updates_now(&config).await;
@@ -319,6 +322,7 @@ fn run_cli_with_args(args: Args) -> Result<()> {
             show_tray_icon,
             discover_extensions: true,
             seed: seed_from_command(&args.command),
+            stop_hotkey: stop_hotkey(&args.command, &config)?,
         };
 
         Runtime::run(
@@ -516,6 +520,35 @@ const fn show_tray_icon(command: &Commands) -> bool {
         | Setup
         | CrashTest { .. } => false,
     }
+}
+
+/// The stop hotkey only applies to scripts running unattended: the REPL has Ctrl+C and macro
+/// recording has its own stop keys.
+fn stop_hotkey(command: &Commands, config: &CommonConfig) -> Result<Option<Hotkey>> {
+    use Commands::*;
+    let script_args = match command {
+        Run { script_args, .. } | Eval { script_args, .. } => script_args,
+        Repl { .. }
+        | Init { .. }
+        | Update
+        | Completions { .. }
+        | Config { .. }
+        | Macros { .. }
+        | Setup
+        | CrashTest { .. } => return Ok(None),
+    };
+
+    if script_args.no_stop_hotkey {
+        return Ok(None);
+    }
+
+    if let Some(hotkey) = &script_args.stop_hotkey {
+        return Hotkey::parse_optional(hotkey).context("invalid --stop-hotkey");
+    }
+
+    let setting = config.settings(|settings| settings.stop_hotkey.clone());
+    Hotkey::parse_optional(setting.as_deref().unwrap_or(DEFAULT_STOP_HOTKEY))
+        .context("invalid stop_hotkey setting (change it with `actiona-run config stop_hotkey`)")
 }
 
 fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usize> {

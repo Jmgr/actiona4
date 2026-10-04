@@ -96,10 +96,20 @@ pub struct RunArgs {
 /// the interactive REPL.
 #[derive(ClapArgs, Clone, Debug)]
 pub struct ScriptArgs {
-    /// Do not display the system tray icon (the script can then only be stopped with Ctrl+C or by
-    /// ending the process)
+    /// Do not display the system tray icon (the script can then only be stopped with the stop
+    /// hotkey, Ctrl+C or by ending the process)
     #[arg(long)]
     pub no_tray: bool,
+
+    /// Global hotkey that stops the script, and any other running script using the same hotkey
+    /// (e.g. Ctrl+Alt+Shift+Q, Ctrl+F12); defaults to the `stop_hotkey` setting, or
+    /// Ctrl+Alt+Shift+Q
+    #[arg(long, value_name = "HOTKEY")]
+    pub stop_hotkey: Option<String>,
+
+    /// Do not register the global stop hotkey
+    #[arg(long, conflicts_with = "stop_hotkey")]
+    pub no_stop_hotkey: bool,
 }
 
 /// Run Actiona 4 automation scripts from the command line.
@@ -165,13 +175,15 @@ pub enum Commands {
     /// Examples:
     /// - `actiona-run config update_check true`
     /// - `actiona-run config telemetry false`
+    /// - `actiona-run config stop_hotkey Ctrl+Shift+F12` (`none` disables it, `default` resets it)
     /// - `actiona-run config update_check` (prints current value)
+    #[command(verbatim_doc_comment)]
     Config {
-        /// the setting name (update_check, telemetry)
-        key: String,
+        /// the setting name
+        key: ConfigKey,
 
-        /// the value to set (true or false); omit to read the current value
-        value: Option<bool>,
+        /// the value to set; omit to read the current value
+        value: Option<String>,
     },
 
     /// 🔴 records and replays input macros
@@ -190,6 +202,18 @@ pub enum Commands {
         #[arg(long, value_enum, default_value = "segfault")]
         crash_type: CrashType,
     },
+}
+
+/// Settings that `actiona-run config` can read and change.
+#[derive(Clone, Copy, Debug, ValueEnum)]
+#[value(rename_all = "snake_case")]
+pub enum ConfigKey {
+    /// check for updates once per day (true or false)
+    UpdateCheck,
+    /// send anonymous telemetry data (true or false)
+    Telemetry,
+    /// global hotkey that stops running scripts (e.g. Ctrl+Alt+Shift+Q, none, default)
+    StopHotkey,
 }
 
 /// Crash types available via `crash-test --crash-type`.

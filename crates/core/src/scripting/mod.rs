@@ -332,7 +332,10 @@ impl Engine {
             .get("name")
             .unwrap_or_else(|_| "Error".to_owned());
         let raw_message = exception.message().unwrap_or_default();
-        let cancelled = raw_message == CommonError::Cancelled.to_string();
+        // QuickJS throws an uncatchable "InternalError: interrupted" when the runtime's
+        // interrupt handler fires, which only happens after cancellation.
+        let cancelled = raw_message == CommonError::Cancelled.to_string()
+            || (name == "InternalError" && raw_message == "interrupted");
         let message = format!("{name}: {raw_message}");
         let stack = exception.stack().unwrap_or_default();
 

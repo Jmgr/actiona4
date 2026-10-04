@@ -11,6 +11,9 @@ pub const DEFAULT_TELEMETRY: bool = false;
 pub struct CommonSettings {
     pub update_check: bool,
     pub telemetry: Option<Uuid>,
+    /// Global hotkey that stops running scripts, e.g. `Ctrl+Alt+Shift+Q`, or `none` to disable
+    /// it. Unset means the built-in default.
+    pub stop_hotkey: Option<String>,
 }
 
 impl Default for CommonSettings {
@@ -18,6 +21,7 @@ impl Default for CommonSettings {
         let mut settings = Self {
             update_check: DEFAULT_UPDATE_CHECK,
             telemetry: None,
+            stop_hotkey: None,
         };
 
         settings.set_telemetry(DEFAULT_TELEMETRY);

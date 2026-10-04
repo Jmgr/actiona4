@@ -8,12 +8,18 @@ use std::{
 
 use color_eyre::{Result, eyre::eyre};
 use derive_more::{Deref, DerefMut};
-use tokio::{runtime::Builder, select, sync::broadcast, task::LocalSet, time::sleep};
+use tokio::{
+    runtime::Builder,
+    select,
+    sync::broadcast,
+    task::LocalSet,
+    time::{MissedTickBehavior, interval, sleep},
+};
 use tokio_util::{
     sync::{CancellationToken, DropGuard},
     task::TaskTracker,
 };
-use tracing::{error, info, instrument};
+use tracing::{error, info, instrument, warn};
 use x11rb::protocol::{
     xinput::{Device, DeviceType, EventMask, XIEventMask},
     xproto::EventMask as XprotoEventMask,
@@ -56,15 +62,21 @@ use crate::{
             Guard, KeyboardKeyEvent, KeyboardTextEvent, MouseButtonEvent, MouseMoveEvent,
             TopicWrapper,
         },
-        platform::x11::events::input::{
-            ActivationCounter, InputMask, KeyboardKeysTopic, KeyboardTextTopic, MouseButtonsTopic,
-            MouseMoveTopic, MouseScrollTopic, keysym_to_key, scroll_event_from_x11_button,
+        hotkey::Hotkey,
+        platform::x11::{
+            events::input::{
+                ActivationCounter, InputMask, KeyboardKeysTopic, KeyboardTextTopic,
+                MouseButtonsTopic, MouseMoveTopic, MouseScrollTopic, keysym_to_key,
+                scroll_event_from_x11_button,
+            },
+            stop_hotkey::StopHotkey,
         },
     },
     types::input::Direction,
 };
 
 pub mod events;
+mod stop_hotkey;
 
 impl Button {
     const fn from_event(detail: u32) -> Option<Self> {
@@ -132,6 +144,7 @@ impl Runtime {
         task_tracker: TaskTracker,
         display_name: Option<&str>,
         displays: Displays,
+        stop_hotkey: Option<Hotkey>,
     ) -> Result<Self> {
         let x11_connection = Arc::new(
             X11Connection::new(
@@ -164,12 +177,16 @@ impl Runtime {
             .await?;
 
             // Subscribe to SUBSTRUCTURE_NOTIFY on the root so we receive DestroyNotify
-            // for all top-level windows without per-window registration.
+            // for all top-level windows without per-window registration, and to
+            // PROPERTY_CHANGE for stop requests from other instances (see `StopHotkey`).
+            let mut root_event_mask = XprotoEventMask::SUBSTRUCTURE_NOTIFY;
+            if stop_hotkey.is_some() {
+                root_event_mask |= XprotoEventMask::PROPERTY_CHANGE;
+            }
             connection
                 .change_window_attributes(
                     root_window,
-                    &ChangeWindowAttributesAux::new()
-                        .event_mask(XprotoEventMask::SUBSTRUCTURE_NOTIFY),
+                    &ChangeWindowAttributesAux::new().event_mask(root_event_mask),
                 )
                 .await?;
         }
@@ -284,6 +301,11 @@ impl Runtime {
         );
         let (window_event_sender, _) = broadcast::channel(1024);
 
+        let mut stop_hotkey = match stop_hotkey {
+            Some(hotkey) => Some(StopHotkey::new(x11_connection.clone(), hotkey).await?),
+            None => None,
+        };
+
         let local_cancellation_token = cancellation_token.clone();
         let local_x11_connection = x11_connection.clone();
         let local_mouse_buttons_topic = mouse_buttons_topic.clone();
@@ -303,9 +325,24 @@ impl Runtime {
                 KeyRepeat::new(local_x11_connection.clone(), core_keyboard).await?;
             let mut repeating_key = None;
 
+            let mut stop_hotkey_retry = interval(STOP_HOTKEY_RETRY_INTERVAL);
+            stop_hotkey_retry.set_missed_tick_behavior(MissedTickBehavior::Delay);
+
             loop {
+                let needs_stop_hotkey_grab = stop_hotkey
+                    .as_ref()
+                    .is_some_and(|stop_hotkey| !stop_hotkey.is_grabbed());
+
                 let event = select! {
                     () = local_cancellation_token.cancelled() => { break; }
+                    _ = stop_hotkey_retry.tick(), if needs_stop_hotkey_grab => {
+                        if let Some(stop_hotkey) = &mut stop_hotkey
+                            && let Err(err) = stop_hotkey.try_grab(&keyboard_state.get_keymap()).await
+                        {
+                            warn!("failed to grab the stop hotkey: {err}");
+                        }
+                        continue;
+                    }
                     event = connection
                     .wait_for_event() => {
                         let Ok(event) = event else {
@@ -468,9 +505,30 @@ impl Runtime {
                         }
 
                         keyboard_state = KeyboardState::new(&local_x11_connection);
+                        regrab_stop_hotkey(stop_hotkey.as_mut()).await;
                     }
                     Event::XkbMapNotify(_) => {
                         keyboard_state = KeyboardState::new(&local_x11_connection);
+                        regrab_stop_hotkey(stop_hotkey.as_mut()).await;
+                    }
+                    Event::KeyPress(event) => {
+                        if let Some(stop_hotkey) = &stop_hotkey
+                            && stop_hotkey.is_hotkey_press(&event)
+                        {
+                            info!("stop hotkey pressed");
+                            if let Err(err) = stop_hotkey.broadcast_stop().await {
+                                warn!("failed to stop the other instances: {err}");
+                            }
+                            local_cancellation_token.cancel();
+                        }
+                    }
+                    Event::PropertyNotify(event) => {
+                        if let Some(stop_hotkey) = &stop_hotkey
+                            && stop_hotkey.is_stop_broadcast(&event)
+                        {
+                            info!("stop requested by the stop hotkey");
+                            local_cancellation_token.cancel();
+                        }
                     }
                     Event::RandrScreenChangeNotify(_event) => {
                         displays.refresh();
@@ -544,6 +602,18 @@ impl Runtime {
     #[must_use]
     pub fn subscribe_window_events(&self) -> broadcast::Receiver<WindowEvent> {
         self.window_event_sender.subscribe()
+    }
+}
+
+const STOP_HOTKEY_RETRY_INTERVAL: Duration = Duration::from_millis(250);
+
+/// Releases the stop hotkey after a keyboard mapping change; the retry timer grabs it again on
+/// its possibly new keycode.
+async fn regrab_stop_hotkey(stop_hotkey: Option<&mut StopHotkey>) {
+    if let Some(stop_hotkey) = stop_hotkey
+        && let Err(err) = stop_hotkey.ungrab().await
+    {
+        warn!("failed to release the stop hotkey: {err}");
     }
 }
 
