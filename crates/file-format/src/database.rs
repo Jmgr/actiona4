@@ -402,7 +402,6 @@ impl ReadOnlyDatabase {
         self.inner.get_document().await
     }
 
-    #[must_use]
     pub fn read_attachment(&self, attachment_id: Uuid) -> ByteStream<Error> {
         self.inner.read_attachment(attachment_id)
     }
@@ -435,7 +434,6 @@ impl ReadWriteDatabase {
         self.inner.write_attachment(stream).await
     }
 
-    #[must_use]
     pub fn read_attachment(&self, attachment_id: Uuid) -> ByteStream<Error> {
         self.inner.read_attachment(attachment_id)
     }

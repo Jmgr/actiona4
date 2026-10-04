@@ -25,7 +25,6 @@ impl PreparedWait {
         }
     }
 
-    #[must_use]
     pub fn start(self, token: CancellationToken) -> WaitFuture {
         (self.start)(token)
     }

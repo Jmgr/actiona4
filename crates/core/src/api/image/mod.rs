@@ -946,7 +946,7 @@ impl Image {
             .collect();
 
         let extra_lines = u32::try_from(lines.len().saturating_sub(1)).unwrap_or(u32::MAX);
-        let total_height = line_height + Self::u32_to_f32(extra_lines) * line_step;
+        let total_height = Self::u32_to_f32(extra_lines).mul_add(line_step, line_height);
         let total_height_i32 = Self::clamp_f32_to_i32(total_height.ceil());
 
         let vertical_offset = match options.vertical_align {

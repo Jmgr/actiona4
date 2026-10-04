@@ -1288,7 +1288,7 @@ impl Runtime {
     pub fn decrease_background_tasks_counter(&self) {
         if self
             .background_tasks_counter
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |old| {
+            .try_update(Ordering::Relaxed, Ordering::Relaxed, |old| {
                 old.checked_sub(1)
             })
             .is_ok()

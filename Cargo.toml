@@ -44,6 +44,7 @@ pedantic = { level = "warn", priority = -1 }
 perf = { level = "warn", priority = -1 }
 
 as_conversions = "allow"
+assert_is_empty = "allow"
 cast_precision_loss = "allow"
 cast_sign_loss = "allow"
 doc_markdown = "allow"
@@ -57,6 +58,7 @@ multiple_crate_versions = "allow"
 option_if_let_else = "allow"
 or_fun_call = "allow"
 redundant_closure_for_method_calls = "allow"
+redundant_field_names = "allow"
 significant_drop_tightening = "allow"
 struct_excessive_bools = "allow"
 too_long_first_doc_paragraph = "allow"
