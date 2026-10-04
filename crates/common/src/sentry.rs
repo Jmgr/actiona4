@@ -34,7 +34,6 @@ pub fn setup_crash_reporting(app_name: &str) -> Result<CrashReportingGuard> {
 
     let options = sentry::ClientOptions::new()
         .maybe_release(sentry::release_name!())
-        .auto_session_tracking(true)
         .default_integrations(false)
         .before_send(move |mut event| {
             if event.message.is_none()
