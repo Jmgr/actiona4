@@ -1073,31 +1073,37 @@ impl Runtime {
             _ = cancel_on(&drive_token, js_runtime.drive()).await;
         });
 
-        f(runtime.clone(), script_engine.clone()).await?;
+        // Don't return early on error: the cleanup below must still run, otherwise the drive task
+        // never stops and anything waiting on the task tracker (such as the tray's Quit) hangs.
+        let result = f(runtime.clone(), script_engine.clone()).await;
 
-        let wait_at_end = runtime.wait_at_end();
-        info!(
-            "Wait at end: {}, background tasks: {}",
-            wait_at_end,
-            runtime.has_background_tasks()
-        );
-        if wait_at_end.is_yes() {
-            cancellation_token.cancelled().await;
-        } else if wait_at_end.is_automatic() && runtime.has_background_tasks() {
-            while cancel_on(
-                &cancellation_token,
-                runtime.playing_sounds_tracker.notified(),
-            )
-            .await
-            .is_ok()
-            {
-                if !runtime.has_background_tasks() {
-                    break;
+        let unhandled_exceptions = if result.is_ok() {
+            let wait_at_end = runtime.wait_at_end();
+            info!(
+                "Wait at end: {}, background tasks: {}",
+                wait_at_end,
+                runtime.has_background_tasks()
+            );
+            if wait_at_end.is_yes() {
+                cancellation_token.cancelled().await;
+            } else if wait_at_end.is_automatic() && runtime.has_background_tasks() {
+                while cancel_on(
+                    &cancellation_token,
+                    runtime.playing_sounds_tracker.notified(),
+                )
+                .await
+                .is_ok()
+                {
+                    if !runtime.has_background_tasks() {
+                        break;
+                    }
                 }
             }
-        }
 
-        let unhandled_exceptions = script_engine.idle().await;
+            script_engine.idle().await
+        } else {
+            Vec::new()
+        };
 
         // Remove userdata to break the reference cycle:
         // ScriptEngine -> AsyncContext -> JsUserData -> ScriptEngine
@@ -1126,6 +1132,8 @@ impl Runtime {
         drop(script_engine);
         runtime.clear_runtime_back_references();
         drop(runtime);
+
+        result?;
 
         Result::Ok(unhandled_exceptions)
     }
