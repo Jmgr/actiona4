@@ -200,12 +200,12 @@ fn spawn_host<P: Protocol, T: Send + Sync + 'static>(
         }
     });
     task_tracker.spawn(async move {
-        if let Err(error) = ready_receiver.await {
-            error!("{name} extension readiness wait failed: {error}");
-            return;
+        // The sender is only dropped unsent when `run` returns before the
+        // extension connected: either cancelled (shutdown, nothing to report)
+        // or failed, which the task above already logs.
+        if ready_receiver.await.is_ok() {
+            handle.set(Some(value));
         }
-
-        handle.set(Some(value));
     });
 }
 
