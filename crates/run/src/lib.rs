@@ -87,18 +87,7 @@ impl fmt::Display for ScriptFailed {
 
 impl error::Error for ScriptFailed {}
 
-/// Returned when a script is stopped by the user (stop hotkey, tray Quit or Ctrl+C). Nothing has
-/// been printed, and callers should not report it as a failure.
-#[derive(Debug)]
-pub struct ScriptCancelled;
-
-impl fmt::Display for ScriptCancelled {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("script cancelled")
-    }
-}
-
-impl error::Error for ScriptCancelled {}
+pub use actiona_core::runtime::ScriptCancelled;
 
 /// Exit code of a script stopped by the user, following the 128 + SIGINT shell convention.
 pub const CANCELLED_EXIT_CODE: u8 = 130;

@@ -24,6 +24,7 @@ use parking_lot::Mutex;
 use rquickjs::{AsyncRuntime, Ctx, JsLifetime, runtime::UserDataGuard};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIs, EnumIter, FromRepr};
+use thiserror::Error;
 #[cfg(test)]
 use tokio::runtime::{Builder as TokioBuilder, Runtime as TokioRuntime};
 use tokio::{runtime::Handle, select, signal, task::block_in_place};
@@ -264,6 +265,11 @@ pub enum WaitAtEnd {
     /// `WaitAtEnd.No`
     No,
 }
+
+/// The script was stopped by the user (stop hotkey, tray Quit or Ctrl+C). Not a failure.
+#[derive(Debug, Error)]
+#[error("script cancelled")]
+pub struct ScriptCancelled;
 
 #[derive(Debug)]
 pub struct RuntimeOptions {
@@ -1077,7 +1083,15 @@ impl Runtime {
         // never stops and anything waiting on the task tracker (such as the tray's Quit) hangs.
         let result = f(runtime.clone(), script_engine.clone()).await;
 
+        // Only the user cancels the root token before the cleanup below (stop hotkey, tray Quit,
+        // Ctrl+C). If that happens once the main body has returned, while waiting for background
+        // work, the script was stopped just as if it had been during its main body. A cancellation
+        // that happened earlier was handled by the script itself, since it returned normally.
+        let mut stopped_while_waiting = false;
+
         let unhandled_exceptions = if result.is_ok() {
+            let cancelled_before_waiting = cancellation_token.is_cancelled();
+
             let wait_at_end = runtime.wait_at_end();
             info!(
                 "Wait at end: {}, background tasks: {}",
@@ -1100,7 +1114,11 @@ impl Runtime {
                 }
             }
 
-            script_engine.idle().await
+            let unhandled_exceptions = script_engine.idle().await;
+
+            stopped_while_waiting = !cancelled_before_waiting && cancellation_token.is_cancelled();
+
+            unhandled_exceptions
         } else {
             Vec::new()
         };
@@ -1134,6 +1152,10 @@ impl Runtime {
         drop(runtime);
 
         result?;
+
+        if stopped_while_waiting {
+            return Err(ScriptCancelled.into());
+        }
 
         Result::Ok(unhandled_exceptions)
     }
