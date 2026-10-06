@@ -1,0 +1,49 @@
+[package]
+name = "dialogs"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+parking_lot.workspace = true
+windows = { workspace = true, features = [
+    "Win32_System_Com",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Threading",
+    "Win32_UI_Controls",
+    "Win32_UI_Controls_Dialogs",
+    "Win32_UI_Shell",
+    "Win32_UI_Shell_Common",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+[target.'cfg(unix)'.dependencies]
+futures-util.workspace = true
+zbus = { workspace = true, features = ["tokio"] }
+
+[dependencies]
+types = { path = "../types" }
+
+jiff.workspace = true
+static-dispatch.workspace = true
+strum = { workspace = true, features = ["derive"] }
+thiserror.workspace = true
+tokio = { workspace = true, features = ["io-util", "macros", "process", "rt", "sync"] }
+tokio-util.workspace = true
+tracing.workspace = true
+
+[build-dependencies]
+build-support = { path = "../build-support" }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "time"] }
+
+[lints]
+workspace = true
