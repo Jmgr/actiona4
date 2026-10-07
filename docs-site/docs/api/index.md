@@ -62,16 +62,23 @@
 ## Dialogs
 
 - [MessageBoxIcon](enumerations/MessageBoxIcon.md)
+- [MessageBoxButtons](enumerations/MessageBoxButtons.md)
 - [MessageBoxResult](enumerations/MessageBoxResult.md)
 - [TextInputMode](enumerations/TextInputMode.md)
+- [MessageBoxLabels](interfaces/MessageBoxLabels.md)
 - [MessageBoxOptions](interfaces/MessageBoxOptions.md)
 - [FileFilter](interfaces/FileFilter.md)
 - [FileDialogOptions](interfaces/FileDialogOptions.md)
 - [TextInputOptions](interfaces/TextInputOptions.md)
 - [ColorPickerOptions](interfaces/ColorPickerOptions.md)
-- [Dialogs](classes/Dialogs.md)
+- [SelectOneOptions](interfaces/SelectOneOptions.md)
+- [SelectManyOptions](interfaces/SelectManyOptions.md)
+- [DateOptions](interfaces/DateOptions.md)
+- [ProgressOptions](interfaces/ProgressOptions.md)
+- [WaitForCancelOptions](interfaces/WaitForCancelOptions.md)
+- [Dialogs](interfaces/Dialogs.md)
 - [dialogs](variables/dialogs.md)
-- [MessageBoxButtons](classes/MessageBoxButtons.md)
+- [Progress](interfaces/Progress.md)
 
 ## Directory
 

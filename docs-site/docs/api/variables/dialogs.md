@@ -1,3 +1,3 @@
 # Variable: dialogs
 
-> `const` **dialogs**: [`Dialogs`](../classes/Dialogs.md)
+> `const` **dialogs**: [`Dialogs`](../interfaces/Dialogs.md)

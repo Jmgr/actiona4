@@ -7,6 +7,7 @@ members = [
     "crates/common",
     "crates/config",
     "crates/core",
+    "crates/dialogs",
     "crates/doc-generator",
     "crates/e2e",
     "crates/extension",
@@ -189,7 +190,6 @@ rquickjs-serde = "0.8.0"
 rusqlite = "0.40.2"
 rusqlite_migration = "2.6.0"
 rustdoc-types = "0.61.0"
-rustydialogs = "0.4.2"
 rustyline = "18.0.1"
 sadness-generator = "0.7.0"
 satint = "0.3.2"

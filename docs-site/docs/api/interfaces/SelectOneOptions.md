@@ -1,12 +1,11 @@
-# Interface: TextInputOptions
+# Interface: SelectOneOptions
 
 
-Text input dialog options.
+Options for `dialogs.selectOne()`.
 
 ```ts
-const name = await dialogs.textInput("Enter your name:", {
-  title: "Name",
-  mode: TextInputMode.SingleLine,
+const fruit = await dialogs.selectOne("Pick a fruit:", ["Apple", "Pear"], {
+  selected: "Pear",
 });
 ```
 
@@ -24,27 +23,15 @@ Title displayed in the dialog title bar.
 
 ***
 
-### value?
+### selected?
 
-> `optional` **value?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **selected?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-Initial value shown in the text field.
+Initially selected item. The first item if omitted or not one of the items.
 
 #### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### mode?
-
-> `optional` **mode?**: [`TextInputMode`](../enumerations/TextInputMode.md)
-
-Input mode controlling the dialog style.
-
-#### Default Value
-
-`TextInputMode.SingleLine`
 
 ***
 

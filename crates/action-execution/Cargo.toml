@@ -14,6 +14,7 @@ categories.workspace = true
 [dependencies]
 action-definition = { path = "../action-definition" }
 core = { path = "../core" }
+dialogs = { path = "../dialogs" }
 
 eyre.workspace = true
 futures-util.workspace = true

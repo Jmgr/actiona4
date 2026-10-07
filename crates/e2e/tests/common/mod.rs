@@ -7,8 +7,15 @@ use httptest::{
     matchers::{contains, matches, request},
     responders::status_code,
 };
+use parking_lot::Mutex;
 
 const HELPERS: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/scripts/helpers.ts"));
+
+/// Scripts that open windows or check the active one. They run one at a time: a dialog opening or
+/// closing while `windows.ts` reads the active window would make that window disappear under it.
+const WINDOW_SCRIPTS: &[&str] = &["dialogs.ts", "windows.ts"];
+
+static WINDOW_SCRIPTS_LOCK: Mutex<()> = Mutex::new(());
 
 /// Combines helpers.ts with the named test script into a single temp file
 /// that actiona-run can execute directly.
@@ -59,6 +66,10 @@ pub fn run(name: &str) -> Assert {
     } else {
         None
     };
+
+    let _window_scripts_guard = WINDOW_SCRIPTS
+        .contains(&name)
+        .then(|| WINDOW_SCRIPTS_LOCK.lock());
 
     command.assert()
 }

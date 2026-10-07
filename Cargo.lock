@@ -47,6 +47,7 @@ version = "0.4.0"
 dependencies = [
  "action-definition",
  "core",
+ "dialogs",
  "eyre",
  "futures-util",
  "itertools 0.15.0",
@@ -1516,6 +1517,7 @@ dependencies = [
  "criterion",
  "derive-where",
  "derive_more",
+ "dialogs",
  "directories",
  "display-info",
  "encoding_rs",
@@ -1557,13 +1559,11 @@ dependencies = [
  "rayon",
  "regex",
  "reqwest",
- "rfd",
  "rodio",
  "rquickjs",
  "rquickjs-serde",
  "rstest",
  "rustix 1.1.5",
- "rustydialogs",
  "satint",
  "screenshot",
  "serde",
@@ -2034,6 +2034,25 @@ dependencies = [
  "rustc_version",
  "syn 2.0.119",
  "unicode-xid",
+]
+
+[[package]]
+name = "dialogs"
+version = "0.4.0"
+dependencies = [
+ "build-support",
+ "futures-util",
+ "jiff",
+ "parking_lot",
+ "static-dispatch",
+ "strum",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "types",
+ "windows 0.62.2",
+ "zbus",
 ]
 
 [[package]]
@@ -6701,17 +6720,6 @@ name = "rustversion"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
-
-[[package]]
-name = "rustydialogs"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b2a69adaf196e8991b2fd527d6c107200c33a589f666a6f9eec439d33262292"
-dependencies = [
- "libc",
- "raw-window-handle",
- "windows 0.62.2",
-]
 
 [[package]]
 name = "rustyline"

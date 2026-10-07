@@ -6,7 +6,7 @@ Message box options.
 ```ts
 await dialogs.messageBox("Delete this file?", {
   title: "Confirm",
-  buttons: MessageBoxButtons.yesNo(),
+  buttons: MessageBoxButtons.YesNo,
   icon: MessageBoxIcon.Warning,
 });
 ```
@@ -27,13 +27,25 @@ Title displayed in the message box title bar.
 
 ### buttons?
 
-> `optional` **buttons?**: [`MessageBoxButtons`](../classes/MessageBoxButtons.md)
+> `optional` **buttons?**: [`MessageBoxButtons`](../enumerations/MessageBoxButtons.md)
 
 Buttons displayed in the message box.
 
 #### Default Value
 
-`MessageBoxButtons.ok()`
+`MessageBoxButtons.Ok`
+
+***
+
+### labels?
+
+> `optional` **labels?**: [`MessageBoxLabels`](MessageBoxLabels.md)
+
+Labels replacing the default ones of the buttons.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 
 ***
 
@@ -46,3 +58,27 @@ Icon displayed in the message box.
 #### Default Value
 
 `MessageBoxIcon.Info`
+
+***
+
+### timeout?
+
+> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+
+Closes the message box after this duration, which then returns `MessageBoxResult.Timeout`.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+
+***
+
+### signal?
+
+> `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
+
+Abort signal to close the message box.
+
+#### Default Value
+
+[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)

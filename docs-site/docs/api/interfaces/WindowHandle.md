@@ -59,6 +59,33 @@ const visible = win.isVisible();
 
 ***
 
+### isMinimized()
+
+> **isMinimized**(): [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+Returns whether this window is minimized.
+
+A minimized window can still be reported as visible by `isVisible()`: Windows and some
+Linux window managers keep minimized windows visible, and only hide them from the screen.
+
+```ts
+const minimized = win.isMinimized();
+```
+
+#### Returns
+
+[`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+#### Platform
+
+<div class="platform-badges">
+<span class="platform-badge platform-badge--supported" title="Supported on Windows" aria-label="Supported on Windows"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Windows</span></span>
+<span class="platform-badge platform-badge--supported" title="Supported on Linux" aria-label="Supported on Linux"><span class="platform-badge__icon" aria-hidden="true">✓</span><span class="platform-badge__label">Linux</span></span>
+<span class="platform-badge platform-badge--unsupported" title="Not supported on Wayland" aria-label="Not supported on Wayland"><span class="platform-badge__icon" aria-hidden="true">✕</span><span class="platform-badge__label">Wayland</span></span>
+</div>
+
+***
+
 ### title()
 
 > **title**(): [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
@@ -314,7 +341,8 @@ Restores this window from the minimized or maximized state.
 
 A minimized window returns to the state it had before being minimized, so a window
 that was maximized when it was minimized is restored maximized; call `restore()` again
-to unmaximize it. A window hidden with `hide()` is shown again.
+to unmaximize it. A hidden window is shown again, whether it was hidden with `hide()` or by
+another program; see `show()`.
 
 ```ts
 win.restore();
@@ -338,7 +366,8 @@ win.restore();
 
 > **hide**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Hides this window. It disappears from the screen and the taskbar until `show()` is called.
+Hides this window. It disappears from the screen and the taskbar until `show()` or
+`restore()` is called.
 
 Hidden windows are still listed by `windows.all()` and `windows.find()`; use
 `windows.find({ visible: false })` to find them. On Linux, only windows hidden by
@@ -369,7 +398,12 @@ win.show();
 
 > **show**(): [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
 
-Shows this window after it was hidden with `hide()`.
+Shows this window if it is hidden, whether it was hidden with `hide()` or by another
+program.
+
+On Linux, windows hidden by other programs are not listed by `windows.all()` and
+`windows.find()`, so this needs a handle obtained before the window was hidden, and only
+works until windows are listed again.
 
 ```ts
 win.show();

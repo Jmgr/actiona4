@@ -1,20 +1,15 @@
-use std::fmt::Debug;
+use std::time::Duration;
 
-use color_eyre::{Result, eyre::eyre};
-use derive_more::Constructor;
-use macros::{FromJsObject, FromSerde, IntoSerde, options};
-use rfd::{
-    AsyncMessageDialog, MessageButtons as RfdMessageButtons,
-    MessageDialogResult as RfdMessageDialogResult, MessageLevel as RfdMessageLevel,
-};
+use color_eyre::Result;
+use macros::{FromSerde, IntoSerde};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumIter};
+use tokio::time::timeout;
+use tokio_util::sync::CancellationToken;
 
-use crate::api::dialogs::js::JsMessageBoxButtons;
+use crate::cancel_on;
 
-pub mod file_dialog;
 pub mod js;
-pub mod native_dialog;
 
 #[derive(
     Clone,
@@ -42,20 +37,67 @@ pub enum MessageBoxIcon {
     Error,
 }
 
-#[derive(Clone, Debug, Default, Display, Eq, PartialEq)]
-pub enum MessageBoxButtons {
-    #[default]
-    Ok,
-    OkCancel,
-    YesNo,
-    YesNoCancel,
-    OkCustom(String),
-    OkCancelCustom(String, String),
-    YesNoCancelCustom(String, String, String),
+impl From<MessageBoxIcon> for ::dialogs::MessageBoxIcon {
+    fn from(icon: MessageBoxIcon) -> Self {
+        match icon {
+            MessageBoxIcon::Info => Self::Info,
+            MessageBoxIcon::Warning => Self::Warning,
+            MessageBoxIcon::Error => Self::Error,
+        }
+    }
 }
 
 #[derive(
-    Clone, Debug, Deserialize, Display, EnumIter, Eq, FromSerde, IntoSerde, PartialEq, Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+/// @category Dialogs
+/// @expand
+pub enum MessageBoxButtons {
+    #[default]
+    /// `MessageBoxButtons.Ok`
+    Ok,
+    /// `MessageBoxButtons.OkCancel`
+    OkCancel,
+    /// `MessageBoxButtons.YesNo`
+    YesNo,
+    /// `MessageBoxButtons.YesNoCancel`
+    YesNoCancel,
+}
+
+impl From<MessageBoxButtons> for ::dialogs::MessageBoxButtons {
+    fn from(buttons: MessageBoxButtons) -> Self {
+        match buttons {
+            MessageBoxButtons::Ok => Self::Ok,
+            MessageBoxButtons::OkCancel => Self::OkCancel,
+            MessageBoxButtons::YesNo => Self::YesNo,
+            MessageBoxButtons::YesNoCancel => Self::YesNoCancel,
+        }
+    }
+}
+
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
 )]
 /// @category Dialogs
 /// @expand
@@ -68,203 +110,118 @@ pub enum MessageBoxResult {
     Ok,
     /// `MessageBoxResult.Cancel`
     Cancel,
+    /// `MessageBoxResult.Timeout`: the `timeout` option elapsed before the user pressed a button.
+    Timeout,
 }
 
-/// Message box options
-#[options]
-#[derive(Clone, Debug, FromJsObject)]
-pub struct MessageBoxOptions {
-    /// Title displayed in the message box title bar.
-    pub title: Option<String>,
-
-    /// Buttons displayed in the message box.
-    #[default(ts = "MessageBoxButtons.ok()")]
-    pub buttons: Option<JsMessageBoxButtons>,
-
-    /// Icon displayed in the message box.
-    #[default(ts = "MessageBoxIcon.Info")]
-    pub icon: Option<MessageBoxIcon>,
-}
-
-#[derive(Constructor, Debug)]
-pub struct Dialogs;
-
-impl Dialogs {
-    pub async fn message_box(
-        text: impl Into<String>,
-        options: Option<MessageBoxOptions>,
-    ) -> Result<MessageBoxResult> {
-        let options = options.unwrap_or_default();
-        let buttons = options.buttons.unwrap_or_default().into_inner();
-        let dialog_result = AsyncMessageDialog::new()
-            .set_title(options.title.unwrap_or_default())
-            .set_description(text.into())
-            .set_level(message_box_icon_to_rfd_level(
-                options.icon.unwrap_or_default(),
-            ))
-            .set_buttons(message_box_buttons_to_rfd_buttons(&buttons))
-            .show()
-            .await;
-
-        message_box_result_from_rfd(&buttons, dialog_result)
-    }
-}
-
-const fn message_box_icon_to_rfd_level(icon: MessageBoxIcon) -> RfdMessageLevel {
-    match icon {
-        MessageBoxIcon::Info => RfdMessageLevel::Info,
-        MessageBoxIcon::Warning => RfdMessageLevel::Warning,
-        MessageBoxIcon::Error => RfdMessageLevel::Error,
-    }
-}
-
-fn message_box_buttons_to_rfd_buttons(buttons: &MessageBoxButtons) -> RfdMessageButtons {
-    match buttons {
-        MessageBoxButtons::Ok => RfdMessageButtons::Ok,
-        MessageBoxButtons::OkCancel => RfdMessageButtons::OkCancel,
-        MessageBoxButtons::YesNo => RfdMessageButtons::YesNo,
-        MessageBoxButtons::YesNoCancel => RfdMessageButtons::YesNoCancel,
-        MessageBoxButtons::OkCustom(ok_label) => RfdMessageButtons::OkCustom(ok_label.clone()),
-        MessageBoxButtons::OkCancelCustom(ok_label, cancel_label) => {
-            RfdMessageButtons::OkCancelCustom(ok_label.clone(), cancel_label.clone())
-        }
-        MessageBoxButtons::YesNoCancelCustom(yes_label, no_label, cancel_label) => {
-            RfdMessageButtons::YesNoCancelCustom(
-                yes_label.clone(),
-                no_label.clone(),
-                cancel_label.clone(),
-            )
+impl From<::dialogs::MessageBoxResult> for MessageBoxResult {
+    fn from(result: ::dialogs::MessageBoxResult) -> Self {
+        match result {
+            ::dialogs::MessageBoxResult::Ok => Self::Ok,
+            ::dialogs::MessageBoxResult::Cancel => Self::Cancel,
+            ::dialogs::MessageBoxResult::Yes => Self::Yes,
+            ::dialogs::MessageBoxResult::No => Self::No,
         }
     }
 }
 
-fn message_box_result_from_rfd(
-    buttons: &MessageBoxButtons,
-    dialog_result: RfdMessageDialogResult,
-) -> Result<MessageBoxResult> {
-    match dialog_result {
-        RfdMessageDialogResult::Yes => Ok(MessageBoxResult::Yes),
-        RfdMessageDialogResult::No => Ok(MessageBoxResult::No),
-        RfdMessageDialogResult::Ok => Ok(MessageBoxResult::Ok),
-        RfdMessageDialogResult::Cancel => Ok(MessageBoxResult::Cancel),
-        RfdMessageDialogResult::Custom(selected_label) => {
-            message_box_custom_result_from_rfd(buttons, &selected_label)
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deserialize,
+    Display,
+    EnumIter,
+    Eq,
+    FromSerde,
+    IntoSerde,
+    PartialEq,
+    Serialize,
+)]
+/// @category Dialogs
+/// @expand
+pub enum TextInputMode {
+    #[default]
+    /// `TextInputMode.SingleLine`
+    SingleLine,
+    /// `TextInputMode.MultiLine`
+    MultiLine,
+    /// `TextInputMode.Password`
+    Password,
+}
+
+impl From<TextInputMode> for ::dialogs::TextInputMode {
+    fn from(mode: TextInputMode) -> Self {
+        match mode {
+            TextInputMode::SingleLine => Self::SingleLine,
+            TextInputMode::MultiLine => Self::MultiLine,
+            TextInputMode::Password => Self::Password,
         }
     }
 }
 
-fn message_box_custom_result_from_rfd(
-    buttons: &MessageBoxButtons,
-    selected_label: &str,
-) -> Result<MessageBoxResult> {
-    match buttons {
-        MessageBoxButtons::OkCustom(_) => Ok(MessageBoxResult::Ok),
-        MessageBoxButtons::OkCancelCustom(ok_label, cancel_label) => {
-            if selected_label == *ok_label {
-                Ok(MessageBoxResult::Ok)
-            } else if selected_label == *cancel_label {
-                Ok(MessageBoxResult::Cancel)
-            } else {
-                Err(eyre!(
-                    "unsupported message box button result: {selected_label}"
-                ))
-            }
-        }
-        MessageBoxButtons::YesNoCancelCustom(yes_label, no_label, cancel_label) => {
-            if selected_label == *yes_label {
-                Ok(MessageBoxResult::Yes)
-            } else if selected_label == *no_label {
-                Ok(MessageBoxResult::No)
-            } else if selected_label == *cancel_label {
-                Ok(MessageBoxResult::Cancel)
-            } else {
-                Err(eyre!(
-                    "unsupported message box button result: {selected_label}"
-                ))
-            }
-        }
-        _ => Err(eyre!(
-            "unexpected custom message box button result: {selected_label}"
-        )),
-    }
+/// Shows a dialog until the user answers it, `token` is cancelled, or `duration` elapses.
+///
+/// Returns `None` if `duration` elapsed. Either way, the dialog is closed by dropping its future.
+pub(crate) async fn show<T>(
+    token: &CancellationToken,
+    duration: Option<Duration>,
+    dialog: impl Future<Output = ::dialogs::Result<T>>,
+) -> Result<Option<T>> {
+    let result = match duration {
+        Some(duration) => match cancel_on(token, timeout(duration, dialog)).await? {
+            Ok(result) => result,
+            Err(_elapsed) => return Ok(None),
+        },
+        None => cancel_on(token, dialog).await?,
+    };
+    Ok(Some(result?))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        MessageBoxButtons, MessageBoxResult, message_box_buttons_to_rfd_buttons,
-        message_box_result_from_rfd,
-    };
+    use std::{future::pending, time::Duration};
 
-    #[test]
-    fn converts_custom_buttons_to_rfd_buttons() {
+    use tokio_util::sync::CancellationToken;
+
+    use super::show;
+    use crate::error::CommonError;
+
+    #[tokio::test]
+    async fn show_returns_the_answer() {
+        let token = CancellationToken::new();
+        let result = show(&token, Some(Duration::from_secs(60)), async {
+            Ok::<_, dialogs::Error>(42)
+        })
+        .await
+        .unwrap();
+        assert_eq!(result, Some(42));
+    }
+
+    #[tokio::test]
+    async fn show_times_out() {
+        let token = CancellationToken::new();
+        let result = show(
+            &token,
+            Some(Duration::from_millis(10)),
+            pending::<dialogs::Result<()>>(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test]
+    async fn show_is_cancelled() {
+        let token = CancellationToken::new();
+        token.cancel();
+        let error = show(&token, None, pending::<dialogs::Result<()>>())
+            .await
+            .unwrap_err();
         assert!(matches!(
-            message_box_buttons_to_rfd_buttons(&MessageBoxButtons::OkCancelCustom(
-                "Save".to_owned(),
-                "Discard".to_owned(),
-            )),
-            rfd::MessageButtons::OkCancelCustom(ok_label, cancel_label)
-                if ok_label == "Save" && cancel_label == "Discard"
+            error.downcast_ref::<CommonError>(),
+            Some(CommonError::Cancelled)
         ));
-    }
-
-    #[test]
-    fn normalizes_custom_ok_cancel_results() {
-        assert_eq!(
-            message_box_result_from_rfd(
-                &MessageBoxButtons::OkCancelCustom("Save".to_owned(), "Discard".to_owned()),
-                rfd::MessageDialogResult::Custom("Save".to_owned()),
-            )
-            .unwrap(),
-            MessageBoxResult::Ok
-        );
-        assert_eq!(
-            message_box_result_from_rfd(
-                &MessageBoxButtons::OkCancelCustom("Save".to_owned(), "Discard".to_owned()),
-                rfd::MessageDialogResult::Custom("Discard".to_owned()),
-            )
-            .unwrap(),
-            MessageBoxResult::Cancel
-        );
-    }
-
-    #[test]
-    fn normalizes_custom_yes_no_cancel_results() {
-        assert_eq!(
-            message_box_result_from_rfd(
-                &MessageBoxButtons::YesNoCancelCustom(
-                    "Proceed".to_owned(),
-                    "Skip".to_owned(),
-                    "Stop".to_owned(),
-                ),
-                rfd::MessageDialogResult::Custom("Proceed".to_owned()),
-            )
-            .unwrap(),
-            MessageBoxResult::Yes
-        );
-        assert_eq!(
-            message_box_result_from_rfd(
-                &MessageBoxButtons::YesNoCancelCustom(
-                    "Proceed".to_owned(),
-                    "Skip".to_owned(),
-                    "Stop".to_owned(),
-                ),
-                rfd::MessageDialogResult::Custom("Skip".to_owned()),
-            )
-            .unwrap(),
-            MessageBoxResult::No
-        );
-        assert_eq!(
-            message_box_result_from_rfd(
-                &MessageBoxButtons::YesNoCancelCustom(
-                    "Proceed".to_owned(),
-                    "Skip".to_owned(),
-                    "Stop".to_owned(),
-                ),
-                rfd::MessageDialogResult::Custom("Stop".to_owned()),
-            )
-            .unwrap(),
-            MessageBoxResult::Cancel
-        );
     }
 }

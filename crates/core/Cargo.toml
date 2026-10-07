@@ -60,6 +60,7 @@ winrt-toast-reborn.workspace = true
 
 [dependencies]
 common = { path = "../common" }
+dialogs = { path = "../dialogs" }
 extension = { path = "../extension" }
 installer-tools = { path = "../installer-tools" }
 macros = { path = "../macros" }
@@ -108,11 +109,9 @@ rand_chacha.workspace = true
 rayon.workspace = true
 regex.workspace = true
 reqwest = { workspace = true, features = ["native-tls", "stream", "multipart", "json", "form", "query"] }
-rfd.workspace = true
 rodio = { workspace = true, features = ["playback", "flac", "mp3", "mp4", "vorbis", "wav", "tracing"] }
 rquickjs = { workspace = true, features = ["macro", "futures", "parallel", "indexmap"] }
 rquickjs-serde.workspace = true
-rustydialogs.workspace = true
 satint = { workspace = true, features = ["rand"] }
 serde.workspace = true
 serde_json.workspace = true

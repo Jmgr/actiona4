@@ -117,6 +117,11 @@ dependencies = ["build-actiona-run", "build-extensions"]
 command = "cargo"
 args = ["test", "-p", "e2e"]
 
+[tasks.dialogs-manual]
+description = "Show every dialog with each installed tool and print the results."
+command = "cargo"
+args = ["test", "-p", "dialogs", "--test", "manual", "--", "--ignored", "--nocapture", "--test-threads=1"]
+
 [tasks.e2e-manual]
 description = "Build runtime binaries then run ignored/manual end-to-end tests."
 dependencies = ["build-actiona-run", "build-extensions"]
