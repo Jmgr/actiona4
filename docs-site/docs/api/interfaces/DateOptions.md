@@ -1,13 +1,10 @@
-# Interface: TextInputOptions
+# Interface: DateOptions
 
 
-Text input dialog options.
+Date dialog options.
 
 ```ts
-const name = await dialogs.textInput("Enter your name:", {
-  title: "Name",
-  mode: TextInputMode.SingleLine,
-});
+const date = await dialogs.date("Pick a date:", { value: new Date(2030, 0, 1) });
 ```
 
 ## Properties
@@ -26,25 +23,13 @@ Title displayed in the dialog title bar.
 
 ### value?
 
-> `optional` **value?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **value?**: [`Date`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date)
 
-Initial value shown in the text field.
+Initially selected day; its time of day is ignored. Today if omitted.
 
 #### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### mode?
-
-> `optional` **mode?**: [`TextInputMode`](../enumerations/TextInputMode.md)
-
-Input mode controlling the dialog style.
-
-#### Default Value
-
-`TextInputMode.SingleLine`
 
 ***
 

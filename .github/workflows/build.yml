@@ -472,7 +472,7 @@ jobs:
       - name: Install Linux build dependencies
         uses: ./.github/actions/install-linux-deps
         with:
-          extra-packages: xvfb openbox
+          extra-packages: xvfb openbox zenity
 
       - name: Run e2e tests
         env:

@@ -1,12 +1,13 @@
-# Interface: ColorPickerOptions
+# Interface: ProgressOptions
 
 
-Color picker dialog options.
+Progress dialog options.
 
 ```ts
-const color = await dialogs.colorPicker({
-  title: "Choose a color",
-  value: new Color(255, 0, 0),
+const progress = await dialogs.progress("Copying files…", {
+  title: "Copy",
+  cancellable: true,
+  value: 0,
 });
 ```
 
@@ -24,23 +25,23 @@ Title displayed in the dialog title bar.
 
 ***
 
-### value?
+### cancellable?
 
-> `optional` **value?**: [`ColorLike`](../type-aliases/ColorLike.md)
+> `optional` **cancellable?**: [`boolean`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
 
-Initial color shown in the picker. Its alpha channel is ignored.
+Whether the dialog has a Cancel button.
 
 #### Default Value
 
-[`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+`false`
 
 ***
 
-### timeout?
+### value?
 
-> `optional` **timeout?**: [`DurationLike`](../type-aliases/DurationLike.md)
+> `optional` **value?**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
-Closes the dialog after this duration, as if the user had cancelled it.
+Initial progress, between 0 and 1. A busy bar is shown if omitted.
 
 #### Default Value
 
@@ -52,7 +53,7 @@ Closes the dialog after this duration, as if the user had cancelled it.
 
 > `optional` **signal?**: [`AbortSignal`](AbortSignal.md)
 
-Abort signal to close the dialog.
+Abort signal to close the dialog, both while it opens and once it is open.
 
 #### Default Value
 

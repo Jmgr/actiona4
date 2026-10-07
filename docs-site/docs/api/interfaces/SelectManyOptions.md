@@ -1,12 +1,11 @@
-# Interface: TextInputOptions
+# Interface: SelectManyOptions
 
 
-Text input dialog options.
+Options for `dialogs.selectMany()`.
 
 ```ts
-const name = await dialogs.textInput("Enter your name:", {
-  title: "Name",
-  mode: TextInputMode.SingleLine,
+const fruits = await dialogs.selectMany("Pick fruits:", ["Apple", "Pear", "Plum"], {
+  selected: ["Apple", "Plum"],
 });
 ```
 
@@ -24,27 +23,15 @@ Title displayed in the dialog title bar.
 
 ***
 
-### value?
+### selected?
 
-> `optional` **value?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+> `optional` **selected?**: [`string`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)[]
 
-Initial value shown in the text field.
+Initially selected items. Strings that are not one of the items are ignored.
 
 #### Default Value
 
 [`undefined`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-
-***
-
-### mode?
-
-> `optional` **mode?**: [`TextInputMode`](../enumerations/TextInputMode.md)
-
-Input mode controlling the dialog style.
-
-#### Default Value
-
-`TextInputMode.SingleLine`
 
 ***
 

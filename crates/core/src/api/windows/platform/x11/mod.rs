@@ -12,9 +12,13 @@ use tokio_util::sync::CancellationToken;
 use types::{point, size};
 use x11rb::{
     connection::Connection,
-    protocol::xproto::{
-        Atom, AtomEnum, ClientMessageEvent, ConfigureWindowAux, ConnectionExt as _, EventMask,
-        Gravity, MapState, UNMAP_NOTIFY_EVENT, UnmapNotifyEvent, Window,
+    errors::ReplyError,
+    protocol::{
+        ErrorKind,
+        xproto::{
+            Atom, AtomEnum, ClientMessageEvent, ConfigureWindowAux, ConnectionExt as _, EventMask,
+            Gravity, MapState, UNMAP_NOTIFY_EVENT, UnmapNotifyEvent, Window,
+        },
     },
     rust_connection::RustConnection,
 };
@@ -591,10 +595,21 @@ impl X11WindowHandler {
         let reply = connection
             .get_property(false, root, atom, AtomEnum::WINDOW, 0, 1)?
             .reply()?;
-        Ok(reply
+        let Some(id) = reply
             .value32()
             .and_then(|mut iter| iter.next())
-            .filter(|&id| id != 0))
+            .filter(|&id| id != 0)
+        else {
+            return Ok(None);
+        };
+
+        // When the active window is destroyed and nothing else takes the focus, some window
+        // managers (such as Openbox) leave its ID in _NET_ACTIVE_WINDOW.
+        match connection.get_window_attributes(id)?.reply() {
+            Ok(_) => Ok(Some(id)),
+            Err(ReplyError::X11Error(error)) if error.error_kind == ErrorKind::Window => Ok(None),
+            Err(error) => Err(error.into()),
+        }
     }
 
     /// Returns the margins between the client area of a window and its visible bounds.

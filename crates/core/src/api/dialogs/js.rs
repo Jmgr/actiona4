@@ -1,39 +1,88 @@
 #![allow(clippy::needless_pass_by_value)]
 
+use std::{path::PathBuf, sync::Arc};
+
+use dialogs::{
+    ButtonLabels, ColorPickerOptions, DateOptions, Dialogs, FileDialogOptions, FileFilter,
+    MessageBoxOptions, Progress, ProgressOptions, SelectOptions, TextInputOptions,
+};
+use itertools::Itertools;
 use macros::{FromJsObject, js_class, js_methods, options};
+use parking_lot::Mutex;
 use rquickjs::{
-    Ctx, JsLifetime, Result,
+    Ctx, JsLifetime, Promise, Result,
     atom::PredefinedAtom,
     class::{Trace, Tracer},
     prelude::Opt,
 };
+use tokio::select;
+use tokio_util::sync::CancellationToken;
 
 use crate::{
     IntoJsResult,
     api::{
-        color::{
-            Color,
-            js::{JsColor, JsColorLike},
+        color::js::{JsColor, JsColorLike},
+        dialogs::show,
+        js::{
+            abort_controller::JsAbortSignal,
+            classes::{HostClass, SingletonClass, register_enum, register_host_class},
+            date::JsDate,
+            duration::JsDuration,
+            task::task_with_token,
         },
-        dialogs::{
-            Dialogs, MessageBoxButtons,
-            native_dialog::{ColorPickerOptions, TextInputOptions},
-        },
-        js::classes::{HostClass, SingletonClass, register_enum, register_host_class},
     },
+    cancel_on,
     runtime::WithUserData,
 };
 
 pub type JsMessageBoxIcon = super::MessageBoxIcon;
+pub type JsMessageBoxButtons = super::MessageBoxButtons;
 pub type JsMessageBoxResult = super::MessageBoxResult;
-pub type JsTextInputMode = super::native_dialog::TextInputMode;
+pub type JsTextInputMode = super::TextInputMode;
+
+/// Labels replacing the default ones of the message box buttons. A label is only used if its
+/// button is shown.
+///
+/// ```ts
+/// await dialogs.messageBox("Save changes?", {
+///   buttons: MessageBoxButtons.YesNoCancel,
+///   labels: { yes: "Save", no: "Discard" },
+/// });
+/// ```
+/// @category Dialogs
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsMessageBoxLabels {
+    /// Label of the OK button.
+    pub ok: Option<String>,
+
+    /// Label of the Cancel button.
+    pub cancel: Option<String>,
+
+    /// Label of the Yes button.
+    pub yes: Option<String>,
+
+    /// Label of the No button.
+    pub no: Option<String>,
+}
+
+impl From<JsMessageBoxLabels> for ButtonLabels {
+    fn from(labels: JsMessageBoxLabels) -> Self {
+        Self {
+            ok: labels.ok,
+            cancel: labels.cancel,
+            yes: labels.yes,
+            no: labels.no,
+        }
+    }
+}
 
 /// Message box options.
 ///
 /// ```ts
 /// await dialogs.messageBox("Delete this file?", {
 ///   title: "Confirm",
-///   buttons: MessageBoxButtons.yesNo(),
+///   buttons: MessageBoxButtons.YesNo,
 ///   icon: MessageBoxIcon.Warning,
 /// });
 /// ```
@@ -45,22 +94,21 @@ pub struct JsMessageBoxOptions {
     pub title: Option<String>,
 
     /// Buttons displayed in the message box.
-    #[default(ts = "MessageBoxButtons.ok()")]
+    #[default(ts = "MessageBoxButtons.Ok")]
     pub buttons: Option<JsMessageBoxButtons>,
+
+    /// Labels replacing the default ones of the buttons.
+    pub labels: Option<JsMessageBoxLabels>,
 
     /// Icon displayed in the message box.
     #[default(ts = "MessageBoxIcon.Info")]
-    pub icon: Option<super::MessageBoxIcon>,
-}
+    pub icon: Option<JsMessageBoxIcon>,
 
-impl JsMessageBoxOptions {
-    fn into_inner(self) -> super::MessageBoxOptions {
-        super::MessageBoxOptions {
-            title: self.title,
-            buttons: self.buttons,
-            icon: self.icon,
-        }
-    }
+    /// Closes the message box after this duration, which then returns `MessageBoxResult.Timeout`.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the message box.
+    pub signal: Option<JsAbortSignal>,
 }
 
 /// A file type filter for file dialogs.
@@ -78,11 +126,11 @@ pub struct JsFileFilter {
     pub extensions: Vec<String>,
 }
 
-impl JsFileFilter {
-    fn into_inner(self) -> super::file_dialog::FileFilter {
-        super::file_dialog::FileFilter {
-            name: self.name,
-            extensions: self.extensions,
+impl From<JsFileFilter> for FileFilter {
+    fn from(filter: JsFileFilter) -> Self {
+        Self {
+            name: filter.name,
+            extensions: filter.extensions,
         }
     }
 }
@@ -105,20 +153,30 @@ pub struct JsFileDialogOptions {
     /// Initial directory shown in the dialog.
     pub directory: Option<String>,
 
-    /// File type filters shown in the dialog.
+    /// Initial file name. Only used by `saveFile`.
+    pub file_name: Option<String>,
+
+    /// File type filters shown in the dialog. Ignored when picking folders.
     pub filters: Option<Vec<JsFileFilter>>,
+
+    /// Closes the dialog after this duration, as if the user had cancelled it.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the dialog.
+    pub signal: Option<JsAbortSignal>,
 }
 
-impl JsFileDialogOptions {
-    fn into_inner(self) -> super::file_dialog::FileDialogOptions {
-        super::file_dialog::FileDialogOptions {
-            title: self.title,
-            directory: self.directory,
-            filters: self
+impl From<JsFileDialogOptions> for FileDialogOptions {
+    fn from(options: JsFileDialogOptions) -> Self {
+        Self {
+            title: options.title.unwrap_or_default(),
+            directory: options.directory.map(PathBuf::from),
+            file_name: options.file_name,
+            filters: options
                 .filters
                 .unwrap_or_default()
                 .into_iter()
-                .map(JsFileFilter::into_inner)
+                .map(Into::into)
                 .collect(),
         }
     }
@@ -145,6 +203,12 @@ pub struct JsTextInputOptions {
     /// Input mode controlling the dialog style.
     #[default(ts = "TextInputMode.SingleLine")]
     pub mode: Option<JsTextInputMode>,
+
+    /// Closes the dialog after this duration, as if the user had cancelled it.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the dialog.
+    pub signal: Option<JsAbortSignal>,
 }
 
 /// Color picker dialog options.
@@ -162,13 +226,126 @@ pub struct JsColorPickerOptions {
     /// Title displayed in the dialog title bar.
     pub title: Option<String>,
 
-    /// Initial color shown in the picker.
+    /// Initial color shown in the picker. Its alpha channel is ignored.
     pub value: Option<JsColorLike>,
+
+    /// Closes the dialog after this duration, as if the user had cancelled it.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the dialog.
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Options for `dialogs.selectOne()`.
+///
+/// ```ts
+/// const fruit = await dialogs.selectOne("Pick a fruit:", ["Apple", "Pear"], {
+///   selected: "Pear",
+/// });
+/// ```
+/// @category Dialogs
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsSelectOneOptions {
+    /// Title displayed in the dialog title bar.
+    pub title: Option<String>,
+
+    /// Initially selected item. The first item if omitted or not one of the items.
+    pub selected: Option<String>,
+
+    /// Closes the dialog after this duration, as if the user had cancelled it.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the dialog.
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Options for `dialogs.selectMany()`.
+///
+/// ```ts
+/// const fruits = await dialogs.selectMany("Pick fruits:", ["Apple", "Pear", "Plum"], {
+///   selected: ["Apple", "Plum"],
+/// });
+/// ```
+/// @category Dialogs
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsSelectManyOptions {
+    /// Title displayed in the dialog title bar.
+    pub title: Option<String>,
+
+    /// Initially selected items. Strings that are not one of the items are ignored.
+    pub selected: Option<Vec<String>>,
+
+    /// Closes the dialog after this duration, as if the user had cancelled it.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the dialog.
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Date dialog options.
+///
+/// ```ts
+/// const date = await dialogs.date("Pick a date:", { value: new Date(2030, 0, 1) });
+/// ```
+/// @category Dialogs
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsDateOptions {
+    /// Title displayed in the dialog title bar.
+    pub title: Option<String>,
+
+    /// Initially selected day; its time of day is ignored. Today if omitted.
+    pub value: Option<JsDate>,
+
+    /// Closes the dialog after this duration, as if the user had cancelled it.
+    pub timeout: Option<JsDuration>,
+
+    /// Abort signal to close the dialog.
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Progress dialog options.
+///
+/// ```ts
+/// const progress = await dialogs.progress("Copying files…", {
+///   title: "Copy",
+///   cancellable: true,
+///   value: 0,
+/// });
+/// ```
+/// @category Dialogs
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsProgressOptions {
+    /// Title displayed in the dialog title bar.
+    pub title: Option<String>,
+
+    /// Whether the dialog has a Cancel button.
+    pub cancellable: bool,
+
+    /// Initial progress, between 0 and 1. A busy bar is shown if omitted.
+    pub value: Option<f64>,
+
+    /// Abort signal to close the dialog, both while it opens and once it is open.
+    pub signal: Option<JsAbortSignal>,
+}
+
+/// Options for `Progress.waitForCancel()`.
+/// @category Dialogs
+#[options]
+#[derive(Clone, Debug, FromJsObject)]
+pub struct JsWaitForCancelOptions {
+    /// Abort signal to stop waiting.
+    pub signal: Option<JsAbortSignal>,
 }
 
 /// Dialog utilities.
 ///
-/// Provides methods for displaying message boxes and file dialogs.
+/// Every dialog returns a task: cancelling it, aborting its `signal` or stopping the script closes
+/// the dialog. Dialogs also accept a `timeout`, after which they close as if the user had
+/// cancelled them; a message box then returns `MessageBoxResult.Timeout`.
 ///
 /// ```ts
 /// const result = await dialogs.messageBox("Hello, world!");
@@ -177,7 +354,7 @@ pub struct JsColorPickerOptions {
 /// ```ts
 /// const result = await dialogs.messageBox("Delete this file?", {
 ///   title: "Confirm",
-///   buttons: MessageBoxButtons.yesNo(),
+///   buttons: MessageBoxButtons.YesNo,
 ///   icon: MessageBoxIcon.Warning,
 /// });
 /// if (result === MessageBoxResult.Yes) {
@@ -185,18 +362,26 @@ pub struct JsColorPickerOptions {
 /// }
 /// ```
 ///
+/// ```ts
+/// // Give up waiting for an answer after 10 seconds
+/// const name = await dialogs.textInput("Enter your name:", { timeout: "10s" });
+/// ```
+///
 /// @category Dialogs
 /// @singleton
-#[derive(Debug, Default, JsLifetime)]
+#[derive(Debug, JsLifetime)]
 #[js_class]
-pub struct JsDialogs {}
+pub struct JsDialogs {
+    inner: Dialogs,
+}
 
 impl SingletonClass<'_> for JsDialogs {
     fn register_dependencies(ctx: &Ctx<'_>) -> Result<()> {
-        register_host_class::<JsMessageBoxButtons>(ctx)?;
+        register_enum::<JsMessageBoxButtons>(ctx)?;
         register_enum::<JsMessageBoxIcon>(ctx)?;
         register_enum::<JsMessageBoxResult>(ctx)?;
         register_enum::<JsTextInputMode>(ctx)?;
+        register_host_class::<JsProgress>(ctx)?;
         Ok(())
     }
 }
@@ -205,136 +390,217 @@ impl<'js> Trace<'js> for JsDialogs {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-#[js_methods]
 impl JsDialogs {
-    /// @constructor
-    /// @private
-    #[qjs(constructor)]
-    pub fn new() -> Result<Self> {
-        Ok(Self::default())
+    /// @skip
+    #[must_use]
+    pub const fn new(inner: Dialogs) -> Self {
+        Self { inner }
     }
 
-    /// Displays a message box and returns the user's response.
+    fn open_file_dialog<'js, R, F, Fut>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<JsFileDialogOptions>,
+        open: F,
+    ) -> Result<Promise<'js>>
+    where
+        F: FnOnce(Dialogs, FileDialogOptions) -> Fut + 'js,
+        Fut: Future<Output = dialogs::Result<Option<R>>> + 'js,
+        R: PathsResult,
+    {
+        let mut options = options.0.unwrap_or_default();
+        let signal = options.signal.take();
+        let timeout = options.timeout.take().map(Into::into);
+        let dialogs = self.inner.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            let paths = show(&token, timeout, open(dialogs, options.into()))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(R::to_js_paths(paths.flatten()))
+        })
+    }
+}
+
+/// Converts what a file dialog returns into what its JS method returns.
+trait PathsResult: Sized {
+    type Js: for<'js> rquickjs::IntoJs<'js> + 'static;
+
+    /// `None` when the user cancelled or the dialog timed out.
+    fn to_js_paths(result: Option<Self>) -> Self::Js;
+}
+
+fn path_to_string(path: PathBuf) -> String {
+    path.to_string_lossy().into_owned()
+}
+
+impl PathsResult for PathBuf {
+    type Js = Option<String>;
+
+    fn to_js_paths(result: Option<Self>) -> Self::Js {
+        result.map(path_to_string)
+    }
+}
+
+impl PathsResult for Vec<PathBuf> {
+    type Js = Vec<String>;
+
+    fn to_js_paths(result: Option<Self>) -> Self::Js {
+        result
+            .unwrap_or_default()
+            .into_iter()
+            .map(path_to_string)
+            .collect_vec()
+    }
+}
+
+#[js_methods]
+impl JsDialogs {
+    /// Displays a message box and returns the button the user pressed.
+    ///
+    /// Closing the message box without pressing a button returns `MessageBoxResult.Cancel` if
+    /// that button is shown, otherwise `MessageBoxResult.No`, otherwise `MessageBoxResult.Ok`.
     ///
     /// ```ts
     /// const result = await dialogs.messageBox("Operation complete");
     /// ```
-    pub async fn message_box(
+    ///
+    /// ```ts
+    /// const result = await dialogs.messageBox("Save changes?", {
+    ///   buttons: MessageBoxButtons.YesNoCancel,
+    ///   labels: { yes: "Save", no: "Discard" },
+    ///   timeout: "30s",
+    /// });
+    /// if (result === MessageBoxResult.Timeout) {
+    ///   println("Nobody answered");
+    /// }
+    /// ```
+    /// @returns Task<MessageBoxResult>
+    pub fn message_box<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         text: String,
         options: Opt<JsMessageBoxOptions>,
-    ) -> Result<JsMessageBoxResult> {
+    ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
-        Dialogs::message_box(text, Some(options.into_inner()))
-            .await
-            .into_js_result(&ctx)
+        let timeout = options.timeout.map(Into::into);
+        let dialogs = self.inner.clone();
+        let message_box_options = MessageBoxOptions {
+            title: options.title.unwrap_or_default(),
+            text,
+            icon: options.icon.unwrap_or_default().into(),
+            buttons: options.buttons.unwrap_or_default().into(),
+            labels: options.labels.map(Into::into).unwrap_or_default(),
+        };
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let result = show(&token, timeout, dialogs.message_box(message_box_options))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(result.map_or(JsMessageBoxResult::Timeout, Into::into))
+        })
     }
 
-    /// Opens a file picker dialog and returns the selected file path, or `null` if cancelled.
+    /// Opens a file picker dialog and returns the selected file path, or `undefined` if
+    /// cancelled.
     ///
     /// ```ts
     /// const path = await dialogs.pickFile({ title: "Open File" });
-    /// if (path !== null) {
-    ///   print(path);
+    /// if (path !== undefined) {
+    ///   println(path);
     /// }
     /// ```
-    pub async fn pick_file(
+    /// @returns Task<string | undefined>
+    pub fn pick_file<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsFileDialogOptions>,
-    ) -> Result<Option<String>> {
-        Dialogs::pick_file(options.0.unwrap_or_default().into_inner())
-            .await
-            .map(|path| path.map(|path| path.to_string_lossy().into_owned()))
-            .into_js_result(&ctx)
+    ) -> Result<Promise<'js>> {
+        self.open_file_dialog(ctx, options, async move |dialogs, options| {
+            dialogs.pick_file(options).await
+        })
     }
 
-    /// Opens a file picker dialog allowing multiple selections and returns the selected file paths.
+    /// Opens a file picker dialog allowing multiple selections and returns the selected file
+    /// paths.
     ///
     /// Returns an empty array if cancelled.
     ///
     /// ```ts
     /// const paths = await dialogs.pickFiles({ title: "Open Files" });
     /// for (const path of paths) {
-    ///   console.log(path);
+    ///   println(path);
     /// }
     /// ```
-    pub async fn pick_files(
+    /// @returns Task<string[]>
+    pub fn pick_files<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsFileDialogOptions>,
-    ) -> Result<Vec<String>> {
-        Dialogs::pick_files(options.0.unwrap_or_default().into_inner())
-            .await
-            .map(|paths| {
-                paths
-                    .into_iter()
-                    .map(|path| path.to_string_lossy().into_owned())
-                    .collect()
-            })
-            .into_js_result(&ctx)
+    ) -> Result<Promise<'js>> {
+        self.open_file_dialog(ctx, options, async move |dialogs, options| {
+            dialogs.pick_files(options).await
+        })
     }
 
-    /// Opens a folder picker dialog and returns the selected folder path, or `null` if cancelled.
+    /// Opens a folder picker dialog and returns the selected folder path, or `undefined` if
+    /// cancelled.
     ///
     /// ```ts
     /// const path = await dialogs.pickFolder({ title: "Select Folder" });
     /// ```
-    pub async fn pick_folder(
+    /// @returns Task<string | undefined>
+    pub fn pick_folder<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsFileDialogOptions>,
-    ) -> Result<Option<String>> {
-        Dialogs::pick_folder(options.0.unwrap_or_default().into_inner())
-            .await
-            .map(|path| path.map(|path| path.to_string_lossy().into_owned()))
-            .into_js_result(&ctx)
+    ) -> Result<Promise<'js>> {
+        self.open_file_dialog(ctx, options, async move |dialogs, options| {
+            dialogs.pick_folder(options).await
+        })
     }
 
-    /// Opens a folder picker dialog allowing multiple selections and returns the selected folder paths.
+    /// Opens a folder picker dialog allowing multiple selections and returns the selected
+    /// folder paths.
     ///
-    /// Returns an empty array if cancelled.
+    /// Returns an empty array if cancelled. Not supported by kdialog unless the
+    /// xdg-desktop-portal file chooser is available.
     ///
     /// ```ts
     /// const paths = await dialogs.pickFolders({ title: "Select Folders" });
     /// ```
-    pub async fn pick_folders(
+    /// @returns Task<string[]>
+    pub fn pick_folders<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsFileDialogOptions>,
-    ) -> Result<Vec<String>> {
-        Dialogs::pick_folders(options.0.unwrap_or_default().into_inner())
-            .await
-            .map(|paths| {
-                paths
-                    .into_iter()
-                    .map(|path| path.to_string_lossy().into_owned())
-                    .collect()
-            })
-            .into_js_result(&ctx)
+    ) -> Result<Promise<'js>> {
+        self.open_file_dialog(ctx, options, async move |dialogs, options| {
+            dialogs.pick_folders(options).await
+        })
     }
 
-    /// Opens a save file dialog and returns the chosen file path, or `null` if cancelled.
+    /// Opens a save file dialog and returns the chosen file path, or `undefined` if cancelled.
     ///
     /// ```ts
     /// const path = await dialogs.saveFile({
     ///   title: "Save As",
+    ///   fileName: "report.txt",
     ///   filters: [{ name: "Text Files", extensions: ["txt"] }],
     /// });
     /// ```
-    pub async fn save_file(
+    /// @returns Task<string | undefined>
+    pub fn save_file<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsFileDialogOptions>,
-    ) -> Result<Option<String>> {
-        Dialogs::save_file(options.0.unwrap_or_default().into_inner())
-            .await
-            .map(|path| path.map(|path| path.to_string_lossy().into_owned()))
-            .into_js_result(&ctx)
+    ) -> Result<Promise<'js>> {
+        self.open_file_dialog(ctx, options, async move |dialogs, options| {
+            dialogs.save_file(options).await
+        })
     }
 
-    /// Opens a text input dialog and returns the entered text, or `null` if cancelled.
+    /// Opens a text input dialog and returns the entered text, or `undefined` if cancelled.
     ///
     /// ```ts
     /// const name = await dialogs.textInput("Enter your name:", {
@@ -342,57 +608,210 @@ impl JsDialogs {
     ///   mode: TextInputMode.SingleLine,
     /// });
     /// ```
-    pub async fn text_input(
+    /// @returns Task<string | undefined>
+    pub fn text_input<'js>(
         &self,
-        ctx: Ctx<'_>,
-        message: String,
+        ctx: Ctx<'js>,
+        text: String,
         options: Opt<JsTextInputOptions>,
-    ) -> Result<Option<String>> {
+    ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
-        let task_tracker = ctx.user_data().task_tracker();
-        Dialogs::text_input(
-            TextInputOptions {
-                title: options.title.unwrap_or_default(),
-                message,
-                value: options.value.unwrap_or_default(),
-                mode: options.mode.unwrap_or_default(),
-            },
-            task_tracker,
-        )
-        .await
-        .into_js_result(&ctx)
+        let timeout = options.timeout.map(Into::into);
+        let dialogs = self.inner.clone();
+        let text_input_options = TextInputOptions {
+            title: options.title.unwrap_or_default(),
+            text,
+            value: options.value.unwrap_or_default(),
+            mode: options.mode.unwrap_or_default().into(),
+        };
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let text = show(&token, timeout, dialogs.text_input(text_input_options))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(text.flatten())
+        })
     }
 
-    /// Opens a color picker dialog and returns the selected color, or `null` if cancelled.
+    /// Opens a color picker dialog and returns the selected color, or `undefined` if cancelled.
     ///
     /// ```ts
     /// const color = await dialogs.colorPicker({
     ///   title: "Choose a color",
     ///   value: new Color(255, 0, 0),
     /// });
-    /// if (color !== null) {
-    ///   print(`${color}`);
+    /// if (color !== undefined) {
+    ///   println(`${color}`);
     /// }
     /// ```
-    pub async fn color_picker(
+    /// @returns Task<Color | undefined>
+    pub fn color_picker<'js>(
         &self,
-        ctx: Ctx<'_>,
+        ctx: Ctx<'js>,
         options: Opt<JsColorPickerOptions>,
-    ) -> Result<Option<JsColor>> {
+    ) -> Result<Promise<'js>> {
         let options = options.0.unwrap_or_default();
-        let task_tracker = ctx.user_data().task_tracker();
-        Dialogs::color_picker(
-            ColorPickerOptions {
-                title: options.title.unwrap_or_default(),
-                value: options
-                    .value
-                    .map_or(Color::new(0, 0, 0, 255), |color| color.0),
-            },
-            task_tracker,
-        )
-        .await
-        .map(|color| color.map(JsColor::from))
-        .into_js_result(&ctx)
+        let timeout = options.timeout.map(Into::into);
+        let dialogs = self.inner.clone();
+        let mut color_picker_options = ColorPickerOptions {
+            title: options.title.unwrap_or_default(),
+            ..ColorPickerOptions::default()
+        };
+        if let Some(value) = options.value {
+            color_picker_options.value = value.0;
+        }
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let color = show(&token, timeout, dialogs.color_picker(color_picker_options))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(color.flatten().map(JsColor::from))
+        })
+    }
+
+    /// Asks the user to pick one of `items`, and returns it, or `undefined` if cancelled.
+    ///
+    /// ```ts
+    /// const fruit = await dialogs.selectOne("Pick a fruit:", ["Apple", "Pear", "Plum"]);
+    /// if (fruit !== undefined) {
+    ///   println(`You picked ${fruit}`);
+    /// }
+    /// ```
+    /// @returns Task<string | undefined>
+    pub fn select_one<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        text: String,
+        items: Vec<String>,
+        options: Opt<JsSelectOneOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let timeout = options.timeout.map(Into::into);
+        let dialogs = self.inner.clone();
+        let select_options = select_options(options.title, text, items, options.selected);
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let items = select_options.items.clone();
+            let index = show(&token, timeout, dialogs.select_one(select_options))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(index.flatten().map(|index| items[index].clone()))
+        })
+    }
+
+    /// Asks the user to pick any number of `items`, and returns them, or `undefined` if
+    /// cancelled. Accepting without picking any item returns an empty array.
+    ///
+    /// ```ts
+    /// const fruits = await dialogs.selectMany("Pick fruits:", ["Apple", "Pear", "Plum"], {
+    ///   selected: ["Apple"],
+    /// });
+    /// ```
+    /// @returns Task<string[] | undefined>
+    pub fn select_many<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        text: String,
+        items: Vec<String>,
+        options: Opt<JsSelectManyOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let timeout = options.timeout.map(Into::into);
+        let dialogs = self.inner.clone();
+        let select_options = select_options(
+            options.title,
+            text,
+            items,
+            options.selected.unwrap_or_default(),
+        );
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let items = select_options.items.clone();
+            let indices = show(&token, timeout, dialogs.select_many(select_options))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(indices.flatten().map(|indices| {
+                indices
+                    .into_iter()
+                    .map(|index| items[index].clone())
+                    .collect_vec()
+            }))
+        })
+    }
+
+    /// Asks the user to pick a date, and returns it at local midnight, or `undefined` if
+    /// cancelled.
+    ///
+    /// ```ts
+    /// const date = await dialogs.date("Pick a date:");
+    /// if (date !== undefined) {
+    ///   println(date.toDateString());
+    /// }
+    /// ```
+    /// @returns Task<Date | undefined>
+    pub fn date<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        text: String,
+        options: Opt<JsDateOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let timeout = options.timeout.map(Into::into);
+        let dialogs = self.inner.clone();
+        let date_options = DateOptions {
+            title: options.title.unwrap_or_default(),
+            text,
+            value: options.value.map(|value| value.0),
+        };
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let date = show(&token, timeout, dialogs.date(date_options))
+                .await
+                .into_js_result(&ctx)?;
+            Ok(date.flatten().map(JsDate))
+        })
+    }
+
+    /// Opens a progress dialog, and returns it once it is shown.
+    ///
+    /// The dialog stays open until `close()` is called, the `signal` is aborted, or the script
+    /// ends.
+    ///
+    /// ```ts
+    /// const progress = await dialogs.progress("Copying files…", { cancellable: true, value: 0 });
+    /// for (const [i, file] of files.entries()) {
+    ///   if (progress.cancelled) {
+    ///     break;
+    ///   }
+    ///   progress.text = `Copying ${file}`;
+    ///   progress.value = i / files.length;
+    ///   await copy(file);
+    /// }
+    /// await progress.close();
+    /// ```
+    /// @returns Task<Progress>
+    pub fn progress<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        text: String,
+        options: Opt<JsProgressOptions>,
+    ) -> Result<Promise<'js>> {
+        let options = options.0.unwrap_or_default();
+        let dialogs = self.inner.clone();
+        let progress_options = ProgressOptions {
+            title: options.title.unwrap_or_default(),
+            text,
+            cancellable: options.cancellable,
+            value: options.value,
+        };
+
+        task_with_token(ctx, options.signal, async move |ctx, token| {
+            let progress = show(&token, None, dialogs.progress(progress_options.clone()))
+                .await
+                .into_js_result(&ctx)?
+                .expect("there is no timeout");
+            Ok(JsProgress::new(&ctx, progress, &progress_options, token))
+        })
     }
 
     /// Returns a string representation of the `dialogs` singleton.
@@ -403,120 +822,191 @@ impl JsDialogs {
     }
 }
 
-/// Button configurations for message boxes.
-///
-/// Use the static factory methods to create button sets.
-///
-/// ```ts
-/// const buttons = MessageBoxButtons.ok();
-/// const buttons2 = MessageBoxButtons.yesNoCancel();
-/// const buttons3 = MessageBoxButtons.okCancelCustom("Save", "Discard");
-/// ```
-/// @category Dialogs
-#[derive(Clone, Debug, Default, JsLifetime)]
-#[js_class]
-pub struct JsMessageBoxButtons {
-    inner: MessageBoxButtons,
+fn select_options(
+    title: Option<String>,
+    text: String,
+    items: Vec<String>,
+    selected: impl IntoIterator<Item = String>,
+) -> SelectOptions {
+    let selected = selected
+        .into_iter()
+        .filter_map(|selected| items.iter().position(|item| *item == selected))
+        .collect_vec();
+    SelectOptions {
+        title: title.unwrap_or_default(),
+        text,
+        items,
+        selected,
+    }
 }
 
-impl<'js> Trace<'js> for JsMessageBoxButtons {
+/// An open progress dialog, returned by `dialogs.progress()`.
+///
+/// Updates are cheap: only the latest value and text are shown, so they can be set in a tight
+/// loop.
+///
+/// ```ts
+/// const progress = await dialogs.progress("Working…", { cancellable: true });
+/// progress.value = 0.5;
+/// progress.text = "Halfway there";
+/// progress.value = undefined; // show a busy bar
+/// await progress.close();
+/// ```
+///
+/// @category Dialogs
+/// @prop value: number | undefined // Progress between 0 and 1, or `undefined` (or `null`) for a busy bar
+/// @prop text: string // Text shown above the progress bar
+#[derive(JsLifetime)]
+#[js_class]
+pub struct JsProgress {
+    /// `None` once closed.
+    progress: Arc<Mutex<Option<Progress>>>,
+    /// Cancelled when the user cancels or closes the dialog.
+    cancelled: CancellationToken,
+    /// Cancelled by `close()` or when this object is dropped.
+    closed: CancellationToken,
+    value: Option<f64>,
+    text: String,
+}
+
+impl HostClass<'_> for JsProgress {}
+
+impl<'js> Trace<'js> for JsProgress {
     fn trace<'a>(&self, _tracer: Tracer<'a, 'js>) {}
 }
 
-impl HostClass<'_> for JsMessageBoxButtons {}
+impl Drop for JsProgress {
+    fn drop(&mut self) {
+        self.closed.cancel();
+    }
+}
 
-impl JsMessageBoxButtons {
-    /// @skip
-    #[must_use]
-    pub fn into_inner(self) -> MessageBoxButtons {
-        self.inner
+impl JsProgress {
+    /// Wraps an open dialog, which is closed when `token` is cancelled.
+    fn new(
+        ctx: &Ctx<'_>,
+        progress: Progress,
+        options: &ProgressOptions,
+        token: CancellationToken,
+    ) -> Self {
+        let cancelled = progress.cancellation_token();
+        let progress = Arc::new(Mutex::new(Some(progress)));
+        let closed = CancellationToken::new();
+
+        // Not spawned on the script engine, whose idle() would then wait for it.
+        let weak_progress = Arc::downgrade(&progress);
+        let local_closed = closed.clone();
+        ctx.user_data().task_tracker().spawn(async move {
+            select! {
+                () = token.cancelled() => {
+                    local_closed.cancel();
+                    let progress = weak_progress.upgrade().and_then(|progress| progress.lock().take());
+                    if let Some(progress) = progress {
+                        progress.close().await;
+                    }
+                }
+                () = local_closed.cancelled() => {}
+            }
+        });
+
+        Self {
+            progress,
+            cancelled,
+            closed,
+            value: options.value.map(|value| value.clamp(0.0, 1.0)),
+            text: options.text.clone(),
+        }
     }
 }
 
 #[js_methods]
-impl JsMessageBoxButtons {
-    /// @constructor
-    /// @private
-    #[qjs(constructor)]
-    pub fn new(ctx: Ctx<'_>) -> Result<Self> {
-        Err(rquickjs::Exception::throw_message(
-            &ctx,
-            "MessageBoxButtons cannot be instantiated directly",
-        ))
+impl JsProgress {
+    /// @skip
+    #[get("value")]
+    #[must_use]
+    pub const fn get_value(&self) -> Option<f64> {
+        self.value
     }
 
-    /// Creates an OK button.
-    #[qjs(static)]
-    #[must_use]
-    pub const fn ok() -> Self {
-        Self {
-            inner: MessageBoxButtons::Ok,
+    /// @skip
+    #[set("value")]
+    pub fn set_value(&mut self, value: Option<f64>) {
+        self.value = value.map(|value| value.clamp(0.0, 1.0));
+        if let Some(progress) = &*self.progress.lock() {
+            progress.set_value(self.value);
         }
     }
 
-    /// Creates an OK button with a custom label.
-    #[qjs(static)]
+    /// @skip
+    #[get("text")]
     #[must_use]
-    pub const fn ok_custom(ok_label: String) -> Self {
-        Self {
-            inner: MessageBoxButtons::OkCustom(ok_label),
-        }
+    pub fn get_text(&self) -> String {
+        self.text.clone()
     }
 
-    /// Creates OK and Cancel buttons.
-    #[qjs(static)]
-    #[must_use]
-    pub const fn ok_cancel() -> Self {
-        Self {
-            inner: MessageBoxButtons::OkCancel,
+    /// @skip
+    #[set("text")]
+    pub fn set_text(&mut self, text: String) {
+        if let Some(progress) = &*self.progress.lock() {
+            progress.set_text(&text);
         }
+        self.text = text;
     }
 
-    /// Creates OK and Cancel buttons with custom labels.
-    #[qjs(static)]
+    /// Whether the user cancelled or closed the dialog.
+    #[get]
     #[must_use]
-    pub const fn ok_cancel_custom(ok_label: String, cancel_label: String) -> Self {
-        Self {
-            inner: MessageBoxButtons::OkCancelCustom(ok_label, cancel_label),
-        }
+    pub fn cancelled(&self) -> bool {
+        self.cancelled.is_cancelled()
     }
 
-    /// Creates Yes and No buttons.
-    #[qjs(static)]
-    #[must_use]
-    pub const fn yes_no() -> Self {
-        Self {
-            inner: MessageBoxButtons::YesNo,
-        }
+    /// Waits until the user cancels or closes the dialog, or `close()` is called.
+    ///
+    /// ```ts
+    /// const progress = await dialogs.progress("Waiting…", { cancellable: true });
+    /// await progress.waitForCancel();
+    /// ```
+    /// @returns Task<void>
+    pub fn wait_for_cancel<'js>(
+        &self,
+        ctx: Ctx<'js>,
+        options: Opt<JsWaitForCancelOptions>,
+    ) -> Result<Promise<'js>> {
+        let signal = options.0.and_then(|options| options.signal);
+        let cancelled = self.cancelled.clone();
+        let closed = self.closed.clone();
+
+        task_with_token(ctx, signal, async move |ctx, token| {
+            cancel_on(&token, async {
+                select! {
+                    () = cancelled.cancelled() => {}
+                    () = closed.cancelled() => {}
+                }
+            })
+            .await
+            .into_js_result(&ctx)
+        })
     }
 
-    /// Creates Yes, No, and Cancel buttons.
-    #[qjs(static)]
-    #[must_use]
-    pub const fn yes_no_cancel() -> Self {
-        Self {
-            inner: MessageBoxButtons::YesNoCancel,
-        }
+    /// Closes the dialog, and resolves once it is gone. Does nothing if it is already closed.
+    ///
+    /// @returns Promise<void>
+    pub fn close<'js>(&self, ctx: Ctx<'js>) -> Result<Promise<'js>> {
+        self.closed.cancel();
+        let progress = self.progress.lock().take();
+        Promise::wrap_future(&ctx, async move {
+            if let Some(progress) = progress {
+                progress.close().await;
+            }
+            Ok::<_, rquickjs::Error>(())
+        })
     }
 
-    /// Creates Yes, No, and Cancel buttons with custom labels.
-    #[qjs(static)]
-    #[must_use]
-    pub const fn yes_no_cancel_custom(
-        yes_label: String,
-        no_label: String,
-        cancel_label: String,
-    ) -> Self {
-        Self {
-            inner: MessageBoxButtons::YesNoCancelCustom(yes_label, no_label, cancel_label),
-        }
-    }
-
-    /// Returns a string representation of this set of message box buttons.
+    /// Returns a string representation of this progress dialog.
     #[qjs(rename = PredefinedAtom::ToString)]
     #[must_use]
     pub fn to_string_js(&self) -> String {
-        "MessageBoxButtons".to_owned()
+        "Progress".to_owned()
     }
 }
 
@@ -526,21 +1016,58 @@ mod tests {
     use crate::runtime::Runtime;
 
     #[test]
+    fn select_from_no_items() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            for method in ["selectOne", "selectMany"] {
+                let error = script_engine
+                    .eval_async::<()>(&format!(r#"await dialogs.{method}("Pick", []);"#))
+                    .await
+                    .unwrap_err();
+                assert!(
+                    error.to_string().contains("no items"),
+                    "{method}: unexpected error {error}"
+                );
+            }
+        });
+    }
+
+    #[test]
     #[ignore]
     fn message_box() {
         Runtime::test_with_script_engine(|script_engine| async move {
-            let _ = script_engine
+            let result = script_engine
                 .eval_async::<JsMessageBoxResult>(
                     r#"
                     await dialogs.messageBox("Actiona message box JS test", {
                         title: "dialogs.messageBox test",
-                        buttons: MessageBoxButtons.okCancelCustom("Save", "Discard"),
+                        buttons: MessageBoxButtons.OkCancel,
+                        labels: { ok: "Save", cancel: "Discard" },
                         icon: MessageBoxIcon.Info,
                     });
                     "#,
                 )
                 .await
                 .unwrap();
+            println!("message_box result: {result:?}");
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn message_box_timeout() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine
+                .eval_async::<JsMessageBoxResult>(
+                    r#"
+                    await dialogs.messageBox("This closes by itself after 2 seconds", {
+                        title: "dialogs.messageBox timeout test",
+                        timeout: "2s",
+                    });
+                    "#,
+                )
+                .await
+                .unwrap();
+            assert_eq!(result, JsMessageBoxResult::Timeout);
         });
     }
 
@@ -620,6 +1147,7 @@ mod tests {
                     r#"
                     await dialogs.saveFile({
                         title: "dialogs.saveFile test",
+                        fileName: "report.txt",
                         filters: [{ name: "Text Files", extensions: ["txt"] }],
                     });
                     "#,
@@ -661,6 +1189,89 @@ mod tests {
                         value: new Color(255, 128, 0),
                     });
                     println(`color_picker result: ${color}`);
+                    "#,
+                )
+                .await
+                .unwrap();
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn select_one() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine
+                .eval_async::<Option<String>>(
+                    r#"
+                    await dialogs.selectOne("Pick a fruit:", ["Apple", "Pear", "Plum"], {
+                        title: "dialogs.selectOne test",
+                        selected: "Pear",
+                    });
+                    "#,
+                )
+                .await
+                .unwrap();
+            println!("select_one result: {result:?}");
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn select_many() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            let result = script_engine
+                .eval_async::<Option<Vec<String>>>(
+                    r#"
+                    await dialogs.selectMany("Pick fruits:", ["Apple", "Pear", "Plum"], {
+                        title: "dialogs.selectMany test",
+                        selected: ["Apple", "Plum"],
+                    });
+                    "#,
+                )
+                .await
+                .unwrap();
+            println!("select_many result: {result:?}");
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn date() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    const date = await dialogs.date("Pick a date:", {
+                        title: "dialogs.date test",
+                        value: new Date(2030, 0, 15),
+                    });
+                    println(`date result: ${date}`);
+                    "#,
+                )
+                .await
+                .unwrap();
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn progress() {
+        Runtime::test_with_script_engine(|script_engine| async move {
+            script_engine
+                .eval_async::<()>(
+                    r#"
+                    const progress = await dialogs.progress("Starting…", {
+                        title: "dialogs.progress test",
+                        cancellable: true,
+                    });
+                    await sleep("1s");
+                    for (let i = 0; i <= 100 && !progress.cancelled; i++) {
+                        progress.value = i / 100;
+                        progress.text = `Step ${i}`;
+                        await sleep("30ms");
+                    }
+                    println(`progress cancelled: ${progress.cancelled}`);
+                    await progress.close();
                     "#,
                 )
                 .await

@@ -4,47 +4,22 @@ use action_definition::{
     post_run::PostRun,
     tree::BranchKind,
 };
-use actiona_core::api::dialogs::{
-    Dialogs, MessageBoxOptions, MessageBoxResult,
-    js::{JsMessageBoxButtons, JsMessageBoxIcon},
-};
+use actiona_core::api::dialogs::js::JsMessageBoxIcon;
+use dialogs::{ButtonLabels, MessageBoxOptions, MessageBoxResult};
 
 use crate::{
     ExecutionContext, ResolveParam, Runnable,
-    error::RunError,
+    error::{RunError, RunErrorKind},
     resolve_param::{ScriptableParamValue, ValidateParamValue, ValidationError},
 };
 
-fn to_core_buttons(
-    buttons: MessageBoxButtons,
-    ok_label: Option<String>,
-    yes_label: Option<String>,
-    no_label: Option<String>,
-    cancel_label: Option<String>,
-) -> Result<JsMessageBoxButtons, eyre::Report> {
-    Ok(match buttons {
-        MessageBoxButtons::Ok => {
-            ok_label.map_or_else(JsMessageBoxButtons::ok, JsMessageBoxButtons::ok_custom)
-        }
-
-        MessageBoxButtons::OkCancel => match (ok_label, cancel_label) {
-            (None, None) => JsMessageBoxButtons::ok_cancel(),
-            (Some(ok_label), Some(cancel_label)) => {
-                JsMessageBoxButtons::ok_cancel_custom(ok_label, cancel_label)
-            }
-            _ => eyre::bail!("OK/Cancel custom labels must be set together"),
-        },
-
-        MessageBoxButtons::YesNo => JsMessageBoxButtons::yes_no(),
-
-        MessageBoxButtons::YesNoCancel => match (yes_label, no_label, cancel_label) {
-            (None, None, None) => JsMessageBoxButtons::yes_no_cancel(),
-            (Some(yes_label), Some(no_label), Some(cancel_label)) => {
-                JsMessageBoxButtons::yes_no_cancel_custom(yes_label, no_label, cancel_label)
-            }
-            _ => eyre::bail!("Yes/No/Cancel custom labels must be set together"),
-        },
-    })
+const fn to_dialogs_buttons(buttons: MessageBoxButtons) -> dialogs::MessageBoxButtons {
+    match buttons {
+        MessageBoxButtons::Ok => dialogs::MessageBoxButtons::Ok,
+        MessageBoxButtons::OkCancel => dialogs::MessageBoxButtons::OkCancel,
+        MessageBoxButtons::YesNo => dialogs::MessageBoxButtons::YesNo,
+        MessageBoxButtons::YesNoCancel => dialogs::MessageBoxButtons::YesNoCancel,
+    }
 }
 
 const fn to_core_icon(icon: MessageBoxIcon) -> JsMessageBoxIcon {
@@ -81,32 +56,29 @@ impl Runnable for MessageBox {
     async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         let title = self.title.resolve(context).await?;
         let text = self.text.resolve(context).await?;
-        let buttons = self.buttons;
         let icon = self.icon.resolve(context).await?;
-        let ok_label = self.ok_label.resolve(context).await?;
-        let yes_label = self.yes_label.resolve(context).await?;
-        let no_label = self.no_label.resolve(context).await?;
-        let cancel_label = self.cancel_label.resolve(context).await?;
+        let labels = ButtonLabels {
+            ok: self.ok_label.resolve(context).await?,
+            cancel: self.cancel_label.resolve(context).await?,
+            yes: self.yes_label.resolve(context).await?,
+            no: self.no_label.resolve(context).await?,
+        };
 
-        let mut options = MessageBoxOptions::default();
+        let options = MessageBoxOptions {
+            title: title.unwrap_or_default(),
+            text,
+            icon: to_core_icon(icon.unwrap_or_default()).into(),
+            buttons: to_dialogs_buttons(*self.buttons),
+            labels,
+        };
 
-        if let Some(title) = title {
-            options.title = Some(title);
-        }
-
-        options.buttons = Some(to_core_buttons(
-            *buttons,
-            ok_label,
-            yes_label,
-            no_label,
-            cancel_label,
-        )?);
-
-        if let Some(icon) = icon {
-            options.icon = Some(to_core_icon(icon));
-        }
-
-        let result = Dialogs::message_box(text, Some(options)).await?;
+        let dialogs = context.runtime.dialogs();
+        let result = tokio::select! {
+            () = context.cancellation_token.cancelled() => {
+                return Err(RunError::new(RunErrorKind::Canceled));
+            }
+            result = dialogs.message_box(options) => result.map_err(eyre::Report::from)?,
+        };
 
         Ok(match result {
             MessageBoxResult::Yes => PostRun::Branch(BranchKind::Yes),

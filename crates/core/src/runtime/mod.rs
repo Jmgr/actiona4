@@ -15,6 +15,7 @@ use std::{
 use color_eyre::{Result, eyre::eyre};
 use derive_more::Constructor;
 use derive_where::derive_where;
+use dialogs::Dialogs;
 use enigo::{Enigo, Settings};
 #[cfg(unix)]
 #[cfg_attr(test, allow(unused_imports))]
@@ -329,6 +330,7 @@ pub struct Runtime {
     clipboard: Clipboard,
 
     displays: Displays,
+    dialogs: Dialogs,
     platform: Platform,
     mouse: Mutex<Option<Mouse>>,
     keyboard: Mutex<Option<Keyboard>>,
@@ -691,6 +693,7 @@ impl Runtime {
             playing_sounds_tracker: Arc::new(PlayingSoundsTracker::default()),
             clipboard: clipboard.clone(),
             displays: displays.clone(),
+            dialogs: Dialogs::new(),
             platform,
             mouse: Mutex::new(None),
             keyboard: Mutex::new(None),
@@ -723,6 +726,7 @@ impl Runtime {
             cancellation_token.clone(),
         )?;
         let console = JsConsole::default();
+        let dialogs = JsDialogs::new(runtime.dialogs());
         let js_displays = JsDisplays::new(displays.clone())?;
         let windows_inner = Windows::new(runtime.clone());
         let screen_inner =
@@ -771,6 +775,7 @@ impl Runtime {
                     app,
                     mouse,
                     keyboard,
+                    dialogs,
                     console,
                     js_displays,
                     screen,
@@ -799,6 +804,7 @@ impl Runtime {
         app: JsApp,
         mouse: JsMouse,
         keyboard: JsKeyboard,
+        dialogs: JsDialogs,
         console: JsConsole,
         js_displays: JsDisplays,
         screen: JsScreen,
@@ -839,7 +845,7 @@ impl Runtime {
         register_singleton_class::<JsApp>(ctx, app)?;
         register_singleton_class::<JsMouse>(ctx, mouse)?;
         register_singleton_class::<JsKeyboard>(ctx, keyboard)?;
-        register_singleton_class::<JsDialogs>(ctx, JsDialogs::default())?;
+        register_singleton_class::<JsDialogs>(ctx, dialogs)?;
         register_singleton_class::<JsConsole>(ctx, console)?;
         register_singleton_class::<JsDisplays>(ctx, js_displays)?;
         register_singleton_class::<JsScreen>(ctx, screen)?;
@@ -1254,6 +1260,11 @@ impl Runtime {
     #[must_use]
     pub fn displays(&self) -> Displays {
         self.displays.clone()
+    }
+
+    #[must_use]
+    pub fn dialogs(&self) -> Dialogs {
+        self.dialogs.clone()
     }
 
     #[inline]

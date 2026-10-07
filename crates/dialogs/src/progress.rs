@@ -82,6 +82,13 @@ impl Progress {
         self.cancelled.cancelled().await;
     }
 
+    /// A token cancelled when the user cancels or closes the dialog, for waiting on that without
+    /// borrowing the handle. Cancelling it has no effect on the dialog.
+    #[must_use]
+    pub fn cancellation_token(&self) -> CancellationToken {
+        self.cancelled.child_token()
+    }
+
     /// Closes the dialog and waits until it is gone.
     pub async fn close(mut self) {
         self.state = None;

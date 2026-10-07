@@ -32,3 +32,11 @@
 > **Cancel**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 `MessageBoxResult.Cancel`
+
+***
+
+### Timeout
+
+> **Timeout**: [`number`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+`MessageBoxResult.Timeout`: the `timeout` option elapsed before the user pressed a button.
