@@ -57,14 +57,16 @@ impl Tool for KDialog {
         options: &FileDialogOptions,
         mode: OpenMode,
     ) -> Result<Option<Vec<PathBuf>>> {
-        run(TOOL, open_args(options, mode)?, None)
-            .await?
-            .paths(TOOL)
+        let output = run(TOOL, open_args(options, mode)?, None).await?;
+        if mode.multiple {
+            output.paths(TOOL)
+        } else {
+            Ok(output.path(TOOL)?.map(|path| vec![path]))
+        }
     }
 
     async fn save(&self, options: &FileDialogOptions) -> Result<Option<PathBuf>> {
-        let paths = run(TOOL, save_args(options)?, None).await?.paths(TOOL)?;
-        Ok(paths.and_then(|paths| paths.into_iter().next()))
+        run(TOOL, save_args(options)?, None).await?.path(TOOL)
     }
 
     async fn select(&self, options: &SelectOptions, multiple: bool) -> Result<Option<Vec<usize>>> {

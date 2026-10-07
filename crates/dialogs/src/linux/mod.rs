@@ -11,7 +11,7 @@ use std::{
     env,
     ffi::{OsStr, OsString},
     io,
-    os::unix::fs::PermissionsExt,
+    os::unix::{ffi::OsStringExt, fs::PermissionsExt},
     path::{Path, PathBuf},
     process::Stdio,
     sync::Arc,
@@ -232,6 +232,8 @@ struct ToolOutput {
     status: Option<i32>,
     /// Standard output, without the trailing newline the tools print.
     stdout: String,
+    /// The same, as bytes: paths printed by the tools need not be valid UTF-8.
+    stdout_bytes: Vec<u8>,
 }
 
 impl ToolOutput {
@@ -240,6 +242,7 @@ impl ToolOutput {
         Self {
             status: Some(status),
             stdout: stdout.to_owned(),
+            stdout_bytes: stdout.as_bytes().to_vec(),
         }
     }
 
@@ -252,14 +255,25 @@ impl ToolOutput {
 }
 
 impl ToolOutput {
-    /// Paths printed one per line: `None` if the user cancelled.
+    /// The path printed by a dialog that selects one: `None` if the user cancelled. The whole
+    /// output is the path, which can contain line breaks.
+    fn path(self, tool: LinuxTool) -> Result<Option<PathBuf>> {
+        match self.status {
+            Some(0) => Ok(Some(OsString::from_vec(self.stdout_bytes).into())),
+            Some(1) => Ok(None),
+            _ => Err(self.unexpected(tool)),
+        }
+    }
+
+    /// Paths printed one per line: `None` if the user cancelled. A path containing a line break
+    /// cannot be told apart from several paths.
     fn paths(self, tool: LinuxTool) -> Result<Option<Vec<PathBuf>>> {
         match self.status {
             Some(0) => Ok(Some(
-                self.stdout
-                    .lines()
+                self.stdout_bytes
+                    .split(|byte| *byte == b'\n')
                     .filter(|line| !line.is_empty())
-                    .map(PathBuf::from)
+                    .map(|line| OsString::from_vec(line.to_vec()).into())
                     .collect(),
             )),
             Some(1) => Ok(None),
@@ -381,14 +395,15 @@ async fn run_program(
         );
     }
 
-    let mut stdout = String::from_utf8_lossy(&output.stdout).into_owned();
-    if stdout.ends_with('\n') {
-        stdout.pop();
+    let mut stdout_bytes = output.stdout;
+    if stdout_bytes.ends_with(b"\n") {
+        stdout_bytes.pop();
     }
 
     Ok(ToolOutput {
         status: output.status.code(),
-        stdout,
+        stdout: String::from_utf8_lossy(&stdout_bytes).into_owned(),
+        stdout_bytes,
     })
 }
 
@@ -445,6 +460,8 @@ fn parse_color(value: &str) -> Option<Color> {
 
 #[cfg(test)]
 mod tests {
+    use std::{ffi::OsString, os::unix::ffi::OsStringExt, path::PathBuf};
+
     use jiff::civil::date;
     use types::Color;
 
@@ -454,6 +471,36 @@ mod tests {
     use crate::{Error, SelectOptions};
 
     const TOOL: LinuxTool = LinuxTool::Zenity(Zenity);
+
+    fn bytes_output(stdout: &[u8]) -> ToolOutput {
+        ToolOutput {
+            status: Some(0),
+            stdout: String::from_utf8_lossy(stdout).into_owned(),
+            stdout_bytes: stdout.to_vec(),
+        }
+    }
+
+    fn path(bytes: &[u8]) -> PathBuf {
+        OsString::from_vec(bytes.to_vec()).into()
+    }
+
+    #[test]
+    fn single_paths_are_kept_whole() {
+        assert_eq!(
+            bytes_output(b"/tmp/a\nb\xff").path(TOOL).unwrap(),
+            Some(path(b"/tmp/a\nb\xff"))
+        );
+        assert_eq!(ToolOutput::new(1, "").path(TOOL).unwrap(), None);
+        assert!(ToolOutput::new(5, "").path(TOOL).is_err());
+    }
+
+    #[test]
+    fn several_paths_keep_their_bytes() {
+        assert_eq!(
+            bytes_output(b"/tmp/a\xff\n/tmp/b").paths(TOOL).unwrap(),
+            Some(vec![path(b"/tmp/a\xff"), path(b"/tmp/b")])
+        );
+    }
 
     #[test]
     fn parses_indices() {
@@ -537,6 +584,15 @@ mod tests {
 
         assert_eq!(output.status, Some(3));
         assert_eq!(output.stdout, "in out");
+    }
+
+    #[tokio::test]
+    async fn run_keeps_stdout_bytes() {
+        let output = run_program("sh", vec!["-c".into(), "printf '/a\\377\\n'".into()], None)
+            .await
+            .unwrap();
+
+        assert_eq!(output.stdout_bytes, b"/a\xff");
     }
 
     #[tokio::test]

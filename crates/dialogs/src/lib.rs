@@ -139,6 +139,9 @@ impl Dialogs {
     }
 
     /// Asks the user to pick one or more files. Returns `None` if the user cancelled.
+    ///
+    /// zenity and kdialog print one path per line, so with them, a path containing a line break
+    /// comes back as several paths.
     pub async fn pick_files(&self, options: FileDialogOptions) -> Result<Option<Vec<PathBuf>>> {
         self.backends
             .open(
@@ -169,6 +172,9 @@ impl Dialogs {
     /// Asks the user to pick one or more folders. Returns `None` if the user cancelled.
     ///
     /// Not supported by kdialog: without the portal, this fails with [`Error::Unsupported`].
+    ///
+    /// zenity prints one path per line, so with it, a path containing a line break comes back as
+    /// several paths.
     pub async fn pick_folders(&self, options: FileDialogOptions) -> Result<Option<Vec<PathBuf>>> {
         self.backends
             .open(

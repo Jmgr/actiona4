@@ -59,13 +59,17 @@ impl Tool for Zenity {
         mode: OpenMode,
     ) -> Result<Option<Vec<PathBuf>>> {
         let args = open_args(options, mode, version().await);
-        run(TOOL, args, None).await?.paths(TOOL)
+        let output = run(TOOL, args, None).await?;
+        if mode.multiple {
+            output.paths(TOOL)
+        } else {
+            Ok(output.path(TOOL)?.map(|path| vec![path]))
+        }
     }
 
     async fn save(&self, options: &FileDialogOptions) -> Result<Option<PathBuf>> {
         let args = save_args(options, version().await);
-        let paths = run(TOOL, args, None).await?.paths(TOOL)?;
-        Ok(paths.and_then(|paths| paths.into_iter().next()))
+        run(TOOL, args, None).await?.path(TOOL)
     }
 
     async fn select(&self, options: &SelectOptions, multiple: bool) -> Result<Option<Vec<usize>>> {
@@ -107,8 +111,14 @@ fn no_label(labels: &ButtonLabels) -> &str {
     labels.no.as_deref().unwrap_or("No")
 }
 
-fn cancel_label(labels: &ButtonLabels) -> &str {
-    labels.cancel.as_deref().unwrap_or("Cancel")
+/// zenity tells extra buttons apart by printing their label, so when Cancel has the same label as
+/// No, a zero-width space keeps it distinct without changing how it looks.
+fn cancel_label(labels: &ButtonLabels) -> String {
+    let mut label = labels.cancel.as_deref().unwrap_or("Cancel").to_owned();
+    if label == no_label(labels) {
+        label.push('\u{200B}');
+    }
+    label
 }
 
 /// zenity has no OK/Cancel or Yes/No message box with a warning or error icon, so every message
@@ -591,6 +601,21 @@ mod tests {
         assert_eq!(result(1, "Skip"), MessageBoxResult::No);
         assert_eq!(result(1, "Stop"), MessageBoxResult::Cancel);
         assert_eq!(result(1, ""), MessageBoxResult::Cancel);
+    }
+
+    #[test]
+    fn message_box_keeps_clashing_labels_apart() {
+        let mut options = message_box_options(MessageBoxButtons::YesNoCancel);
+        options.labels.no = Some("Cancel".to_owned());
+
+        let args = message_box_args(&options);
+        let args = strings(&args);
+        assert!(args.contains(&"--extra-button=Cancel"));
+        assert!(args.contains(&"--extra-button=Cancel\u{200B}"));
+
+        let result = |stdout| message_box_result(&options, &ToolOutput::new(1, stdout)).unwrap();
+        assert_eq!(result("Cancel"), MessageBoxResult::No);
+        assert_eq!(result("Cancel\u{200B}"), MessageBoxResult::Cancel);
     }
 
     #[test]

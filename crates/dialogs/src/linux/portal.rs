@@ -17,7 +17,8 @@ use futures_util::StreamExt;
 use tokio::runtime::Handle;
 use tracing::debug;
 use zbus::{
-    Connection, Proxy,
+    Connection, MatchRule, MessageStream, Proxy,
+    message::Type,
     proxy::{Builder, CacheProperties},
     zvariant::{ObjectPath, OwnedObjectPath, OwnedValue, Value},
 };
@@ -28,6 +29,8 @@ const DESTINATION: &str = "org.freedesktop.portal.Desktop";
 const DESKTOP_PATH: &str = "/org/freedesktop/portal/desktop";
 const FILE_CHOOSER_INTERFACE: &str = "org.freedesktop.portal.FileChooser";
 const REQUEST_INTERFACE: &str = "org.freedesktop.portal.Request";
+/// Where request objects live.
+const REQUESTS_PATH: &str = "/org/freedesktop/portal/desktop/request";
 
 /// Version of the file chooser interface that added folder selection.
 const DIRECTORY_VERSION: u32 = 3;
@@ -108,30 +111,42 @@ impl Portal {
         let token = next_token();
         options.insert("handle_token", token.as_str().into());
 
-        // Listen for the response before making the call, so it cannot be missed.
-        let mut request = proxy(
-            &self.connection,
-            request_path(&self.connection, &token)?,
-            REQUEST_INTERFACE,
-        )
-        .await?;
-        let mut responses = request.receive_signal("Response").await?;
-        let mut close_guard = CloseOnDrop(Some(request.clone()));
+        // Listen for every request's response before making the call, so that the response
+        // cannot be missed, whatever path the request gets: the token chooses it, except with
+        // portals older than 0.9, which ignore it and choose their own.
+        let rule = MatchRule::builder()
+            .msg_type(Type::Signal)
+            .interface(REQUEST_INTERFACE)?
+            .member("Response")?
+            .path_namespace(REQUESTS_PATH)?
+            .build();
+        let mut responses = MessageStream::for_match_rule(rule, &self.connection, None).await?;
+        let mut close_guard = CloseOnDrop {
+            connection: self.connection.clone(),
+            request: Some(
+                request_path(&self.connection, &token)?
+                    .try_into()
+                    .map_err(zbus::Error::from)?,
+            ),
+        };
 
         let file_chooser = proxy(&self.connection, DESKTOP_PATH, FILE_CHOOSER_INTERFACE).await?;
         let handle: OwnedObjectPath = file_chooser.call(method, &("", title, options)).await?;
+        close_guard.request = Some(handle.clone());
 
-        // Portals older than 0.9 ignore the handle token and choose their own path.
-        if handle.as_str() != request.path().as_str() {
-            request = proxy(&self.connection, handle, REQUEST_INTERFACE).await?;
-            responses = request.receive_signal("Response").await?;
-            close_guard = CloseOnDrop(Some(request.clone()));
-        }
-
-        let message = responses.next().await.ok_or_else(|| {
-            Error::Backend("the portal ended the request without a response".to_owned())
-        })?;
-        close_guard.disarm();
+        let message = loop {
+            let message = responses.next().await.ok_or_else(|| {
+                Error::Backend("the portal ended the request without a response".to_owned())
+            })??;
+            if message
+                .header()
+                .path()
+                .is_some_and(|path| path.as_str() == handle.as_str())
+            {
+                break message;
+            }
+        };
+        close_guard.request = None;
 
         let (response, mut results): (u32, HashMap<String, OwnedValue>) =
             message.body().deserialize()?;
@@ -159,26 +174,30 @@ impl Portal {
     }
 }
 
-/// Calls `Close` on the request when dropped, unless disarmed.
-struct CloseOnDrop(Option<Proxy<'static>>);
-
-impl CloseOnDrop {
-    fn disarm(&mut self) {
-        self.0 = None;
-    }
+/// Calls `Close` on `request` when dropped, unless it is `None`.
+struct CloseOnDrop {
+    connection: Connection,
+    request: Option<OwnedObjectPath>,
 }
 
 impl Drop for CloseOnDrop {
     fn drop(&mut self) {
-        let Some(request) = self.0.take() else {
+        let Some(request) = self.request.take() else {
             return;
         };
         let Ok(runtime) = Handle::try_current() else {
             return;
         };
 
+        let connection = self.connection.clone();
         runtime.spawn(async move {
-            if let Err(error) = request.call_method("Close", &()).await {
+            let closed = async {
+                proxy(&connection, request, REQUEST_INTERFACE)
+                    .await?
+                    .call_method("Close", &())
+                    .await
+            };
+            if let Err(error) = closed.await {
                 debug!("closing the portal request failed: {error}");
             }
         });
@@ -288,9 +307,158 @@ const fn hex_value(digit: u8) -> Option<u8> {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use std::{collections::HashMap, path::PathBuf, time::Duration};
 
-    use super::{path_bytes, uri_to_path};
+    use tokio::{sync::oneshot, time::timeout};
+    use zbus::{
+        Connection, connection, fdo,
+        message::Header,
+        zvariant::{OwnedObjectPath, OwnedValue, Value},
+    };
+
+    use super::{DESKTOP_PATH, DESTINATION, Portal, REQUESTS_PATH, path_bytes, uri_to_path};
+    use crate::{FileDialogOptions, options::OpenMode};
+
+    /// What the fake file chooser does with a request.
+    enum Behaviour {
+        /// Responds before the call returns, on the path the handle token asks for or, like
+        /// portals older than 0.9, on a path of its own.
+        Respond { own_path: bool },
+        /// Never responds, and reports when the request is closed.
+        Wait(Option<oneshot::Sender<()>>),
+    }
+
+    struct FakeFileChooser(Behaviour);
+
+    #[zbus::interface(name = "org.freedesktop.portal.FileChooser")]
+    impl FakeFileChooser {
+        #[zbus(property, name = "version")]
+        #[allow(clippy::unused_self)]
+        const fn version(&self) -> u32 {
+            3
+        }
+
+        async fn open_file(
+            &mut self,
+            #[zbus(connection)] connection: &Connection,
+            #[zbus(header)] header: Header<'_>,
+            parent: &str,
+            title: &str,
+            options: HashMap<String, OwnedValue>,
+        ) -> fdo::Result<OwnedObjectPath> {
+            // The method's signature needs them, but the fake has no use for them.
+            _ = (parent, title);
+            let sender = header
+                .sender()
+                .map(|sender| sender.trim_start_matches(':').replace('.', "_"))
+                .unwrap_or_default();
+            let token = options
+                .get("handle_token")
+                .and_then(|token| token.downcast_ref::<String>().ok())
+                .unwrap_or_default();
+
+            match &mut self.0 {
+                Behaviour::Respond { own_path } => {
+                    let path = if *own_path {
+                        format!("{REQUESTS_PATH}/{sender}/legacy")
+                    } else {
+                        format!("{REQUESTS_PATH}/{sender}/{token}")
+                    };
+                    let results = HashMap::from([(
+                        "uris",
+                        Value::from(vec!["file:///tmp/picked%20file".to_owned()]),
+                    )]);
+                    connection
+                        .emit_signal(
+                            None::<()>,
+                            path.as_str(),
+                            "org.freedesktop.portal.Request",
+                            "Response",
+                            &(0_u32, results),
+                        )
+                        .await?;
+                    Ok(OwnedObjectPath::try_from(path).map_err(zbus::Error::from)?)
+                }
+                Behaviour::Wait(closed) => {
+                    let path = format!("{REQUESTS_PATH}/{sender}/{token}");
+                    connection
+                        .object_server()
+                        .at(path.as_str(), FakeRequest(closed.take()))
+                        .await?;
+                    Ok(OwnedObjectPath::try_from(path).map_err(zbus::Error::from)?)
+                }
+            }
+        }
+    }
+
+    struct FakeRequest(Option<oneshot::Sender<()>>);
+
+    #[zbus::interface(name = "org.freedesktop.portal.Request")]
+    impl FakeRequest {
+        fn close(&mut self) {
+            if let Some(closed) = self.0.take() {
+                _ = closed.send(());
+            }
+        }
+    }
+
+    async fn serve(behaviour: Behaviour) -> Connection {
+        connection::Builder::session()
+            .unwrap()
+            .name(DESTINATION)
+            .unwrap()
+            .serve_at(DESKTOP_PATH, FakeFileChooser(behaviour))
+            .unwrap()
+            .build()
+            .await
+            .unwrap()
+    }
+
+    const PICK_FILE: OpenMode = OpenMode {
+        multiple: false,
+        directory: false,
+    };
+
+    // These tests own the portal's name, so they need a session bus of their own:
+    // `dbus-run-session -- cargo test -p dialogs --lib portal -- --ignored`.
+
+    #[tokio::test]
+    #[ignore = "needs a private session bus"]
+    async fn receives_a_response_sent_before_the_call_returns() {
+        for own_path in [false, true] {
+            let _service = serve(Behaviour::Respond { own_path }).await;
+            let portal = Portal::connect().await.unwrap();
+
+            let paths = timeout(
+                Duration::from_secs(5),
+                portal.open(&FileDialogOptions::default(), PICK_FILE),
+            )
+            .await
+            .expect("the response was missed")
+            .unwrap();
+            assert_eq!(paths, Some(vec![PathBuf::from("/tmp/picked file")]));
+        }
+    }
+
+    #[tokio::test]
+    #[ignore = "needs a private session bus"]
+    async fn closes_the_request_when_dropped() {
+        let (closed, was_closed) = oneshot::channel();
+        let _service = serve(Behaviour::Wait(Some(closed))).await;
+        let portal = Portal::connect().await.unwrap();
+
+        let result = timeout(
+            Duration::from_millis(500),
+            portal.open(&FileDialogOptions::default(), PICK_FILE),
+        )
+        .await;
+        assert!(result.is_err(), "the fake portal never responds");
+
+        timeout(Duration::from_secs(5), was_closed)
+            .await
+            .expect("the request was not closed")
+            .unwrap();
+    }
 
     #[test]
     fn converts_file_uris() {
