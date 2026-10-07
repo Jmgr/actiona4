@@ -143,7 +143,23 @@ The CI `windows-test` job runs the Windows-only unit tests.
     on the real display.
   - Use `pgrep -f '[p]attern'` with the bracket trick, or `pgrep -f` matches the shell running it.
 
-## Phase 5: the remaining Windows dialogs
+## Phase 5: the remaining Windows dialogs (done)
+
+**Done:** the steps below are implemented. `input_dialogs_close_when_dropped`, which needs nobody
+to click anything, passes on Windows, and screenshots of the text input, list and calendar were
+checked. Still to do: run `text_input_modes`, `select_lists` and `date_picker` by hand, checking
+keyboard handling (Tab, Enter, Escape, double-clicking a list item, checking items with Space),
+and run `cargo make lint-windows` on Linux.
+
+Notes on the implementation:
+- `window::show` takes a `Control` trait object: `create`, `size`, `stretches`, `resized`,
+  `can_accept` and `accepts`.
+- Only dialogs whose control stretches can be resized: multi-line input and lists.
+- The window opens on the monitor under the mouse cursor, uses the system message font for its
+  DPI, and handles `WM_DPICHANGED`.
+- When selecting one item, OK is disabled while nothing is selected. Double-clicking an item
+  accepts the dialog.
+- Button labels are English, like relabelled task dialog buttons.
 
 Windows has no ready-made dialogs for text input, selection or dates, so these are small windows
 of our own, built from standard controls so they look native.

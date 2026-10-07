@@ -8,7 +8,8 @@
 //! every dialog, or `portal` for file dialogs only.
 //!
 //! On Windows, dialogs are the system's own: task dialogs, the colour picker and the common
-//! item dialogs. Text input, selection and date dialogs are not available there yet.
+//! item dialogs. Text input, selection and date dialogs, which Windows does not provide, are
+//! windows of our own built from standard controls.
 
 use std::{io, path::PathBuf, result::Result as StdResult};
 
@@ -21,7 +22,6 @@ mod windows;
 
 #[cfg(windows)]
 use ::windows::core::Error as WindowsError;
-#[cfg(unix)]
 use jiff::civil::Date;
 #[cfg(unix)]
 use linux::Linux as Backends;
@@ -113,7 +113,6 @@ impl Dialogs {
     }
 
     /// Asks the user for some text. Returns `None` if the user cancelled.
-    #[cfg(unix)]
     pub async fn text_input(&self, options: TextInputOptions) -> Result<Option<String>> {
         self.backends.text_input(&options).await
     }
@@ -189,7 +188,6 @@ impl Dialogs {
 
     /// Asks the user to pick one of `options.items`, and returns its index. Returns `None` if the
     /// user cancelled.
-    #[cfg(unix)]
     pub async fn select_one(&self, options: SelectOptions) -> Result<Option<usize>> {
         Self::check_items(&options)?;
         let indices = self.backends.select(&options, false).await?;
@@ -198,13 +196,11 @@ impl Dialogs {
 
     /// Asks the user to pick any number of `options.items`, and returns their indices. Returns
     /// `None` if the user cancelled.
-    #[cfg(unix)]
     pub async fn select_many(&self, options: SelectOptions) -> Result<Option<Vec<usize>>> {
         Self::check_items(&options)?;
         self.backends.select(&options, true).await
     }
 
-    #[cfg(unix)]
     const fn check_items(options: &SelectOptions) -> Result<()> {
         if options.items.is_empty() {
             return Err(Error::InvalidOptions("there are no items to select from"));
@@ -213,7 +209,6 @@ impl Dialogs {
     }
 
     /// Asks the user to pick a date. Returns `None` if the user cancelled.
-    #[cfg(unix)]
     pub async fn date(&self, options: DateOptions) -> Result<Option<Date>> {
         self.backends.date(&options).await
     }

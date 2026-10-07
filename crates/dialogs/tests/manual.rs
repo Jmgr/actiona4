@@ -10,14 +10,12 @@ mod tests {
     use std::{env, path::PathBuf, time::Duration};
 
     use dialogs::{
-        ButtonLabels, ColorPickerOptions, Dialogs, FileDialogOptions, FileFilter,
-        MessageBoxButtons, MessageBoxIcon, MessageBoxOptions, ProgressOptions,
+        ButtonLabels, ColorPickerOptions, DateOptions, Dialogs, FileDialogOptions, FileFilter,
+        MessageBoxButtons, MessageBoxIcon, MessageBoxOptions, ProgressOptions, SelectOptions,
+        TextInputMode, TextInputOptions,
     };
     #[cfg(unix)]
-    use dialogs::{
-        DateOptions, LinuxBackends, LinuxTool, SelectOptions, TextInputMode, TextInputOptions,
-    };
-    #[cfg(unix)]
+    use dialogs::{LinuxBackends, LinuxTool};
     use jiff::civil::date;
     #[cfg(unix)]
     use strum::IntoEnumIterator;
@@ -186,7 +184,6 @@ mod tests {
         .await;
     }
 
-    #[cfg(unix)]
     #[tokio::test]
     #[ignore = "shows dialogs"]
     async fn text_input_modes() {
@@ -320,7 +317,6 @@ mod tests {
     /// Text that every dialog should show exactly as written.
     const VERBATIM: &str = "<b>not bold</b> & C:\\path_name";
 
-    #[cfg(unix)]
     #[tokio::test]
     #[ignore = "shows dialogs"]
     async fn select_lists() {
@@ -347,7 +343,6 @@ mod tests {
         .await;
     }
 
-    #[cfg(unix)]
     #[tokio::test]
     #[ignore = "shows dialogs"]
     async fn date_picker() {
@@ -360,6 +355,48 @@ mod tests {
                 })
                 .await;
             println!("{tool} date: {result:?}");
+        })
+        .await;
+    }
+
+    #[tokio::test]
+    #[ignore = "shows dialogs"]
+    async fn input_dialogs_close_when_dropped() {
+        const UNTOUCHED: &str = "Don't touch this one: it closes itself after 3 seconds.";
+
+        for_each_backend(async |dialogs, tool| {
+            let text_input = dialogs.text_input(TextInputOptions {
+                title: tool.to_owned(),
+                text: UNTOUCHED.to_owned(),
+                value: String::new(),
+                mode: TextInputMode::MultiLine,
+            });
+            assert!(
+                timeout(Duration::from_secs(3), text_input).await.is_err(),
+                "{tool}: the text input ended before the timeout"
+            );
+
+            let select = dialogs.select_many(SelectOptions {
+                title: tool.to_owned(),
+                text: UNTOUCHED.to_owned(),
+                items: vec!["First".to_owned(), "Second".to_owned()],
+                selected: vec![1],
+            });
+            assert!(
+                timeout(Duration::from_secs(3), select).await.is_err(),
+                "{tool}: the selection ended before the timeout"
+            );
+
+            let date = dialogs.date(DateOptions {
+                title: tool.to_owned(),
+                text: UNTOUCHED.to_owned(),
+                value: None,
+            });
+            assert!(
+                timeout(Duration::from_secs(3), date).await.is_err(),
+                "{tool}: the date picker ended before the timeout"
+            );
+            println!("{tool}: closed by timeout");
         })
         .await;
     }
