@@ -34,6 +34,7 @@ use installer_tools::path::{PathScope, add_directory_to_path, remove_directory_f
 #[cfg(not(windows))]
 use rfd::{MessageButtons, MessageLevel};
 use tokio::{fs, runtime::Builder};
+use tokio_util::sync::CancellationToken;
 use tracing_subscriber::{
     EnvFilter,
     fmt::{self as tracing_fmt, format::FmtSpan},
@@ -62,6 +63,7 @@ mod init;
 mod macros;
 mod repl;
 mod updates;
+mod watch;
 
 #[cfg(windows)]
 fn is_windows10_1607_or_newer() -> Option<bool> {
@@ -250,10 +252,18 @@ fn run_cli_with_args(args: Args) -> Result<()> {
     let tokio_runtime = Builder::new_multi_thread().enable_all().build()?;
 
     tokio_runtime.block_on(async move {
+        let watch_control = match &args.command {
+            Commands::Run {
+                watch_control: Some(name),
+                ..
+            } => Some(watch::connect_control(name).await?),
+            _ => None,
+        };
         let config = CommonConfig::new().await?;
 
         // Perform first-time setup if needed
         if stdin().is_terminal()
+            && watch_control.is_none()
             && !args.command.is_completions()
             && !args.command.is_setup()
             && !config.state(|state| state.first_time_init)
@@ -320,6 +330,16 @@ fn run_cli_with_args(args: Args) -> Result<()> {
         #[cfg(unix)]
         ensure_x11_session_available(args.display.as_deref(), env::var("DISPLAY").ok().as_deref())?;
 
+        let stop_hotkey = stop_hotkey(&args.command, &config)?;
+        if let Commands::Run {
+            filepath,
+            watch: true,
+            ..
+        } = &args.command
+        {
+            return watch::run(filepath).await;
+        }
+
         let runtime_options = RuntimeOptions {
             #[cfg(unix)]
             display_name: args.display.clone(),
@@ -327,12 +347,24 @@ fn run_cli_with_args(args: Args) -> Result<()> {
             show_tray_icon,
             discover_extensions: true,
             seed: seed_from_command(&args.command),
-            stop_hotkey: stop_hotkey(&args.command, &config)?,
+            stop_hotkey,
         };
 
-        Runtime::run(
+        let supervisor_stop = CancellationToken::new();
+        let local_supervisor_stop = supervisor_stop.clone();
+        let result = Runtime::run(
             platform,
             move |runtime, script_engine| async move {
+                let is_watch_child = watch_control.is_some();
+                let cancellation_token = runtime.cancellation_token();
+                if let Some(control) = watch_control {
+                    watch::listen_for_stop(
+                        control,
+                        runtime.cancellation_token(),
+                        local_supervisor_stop,
+                        &runtime.task_tracker(),
+                    );
+                }
                 check_updates(
                     &args,
                     &config,
@@ -449,11 +481,22 @@ fn run_cli_with_args(args: Args) -> Result<()> {
                     }
                 }
 
+                if is_watch_child && cancellation_token.is_cancelled() {
+                    return Err(ScriptCancelled.into());
+                }
+
                 Ok(())
             },
             runtime_options,
         )
-        .await?;
+        .await;
+
+        if let Err(error) = result {
+            // A supervisor-requested restart is distinct from the user's stop hotkey or tray Quit.
+            if !supervisor_stop.is_cancelled() || !error.is::<ScriptCancelled>() {
+                return Err(error);
+            }
+        }
 
         Ok(())
     })
@@ -521,8 +564,8 @@ const fn seed_from_command(command: &Commands) -> Option<u64> {
 const fn show_tray_icon(command: &Commands) -> bool {
     use Commands::*;
     match command {
-        Run { script_args, .. } | Eval { script_args, .. } => !script_args.no_tray,
-        Repl { .. }
+        Run { watch: true, .. }
+        | Repl { .. }
         | Init { .. }
         | Update
         | Completions { .. }
@@ -530,6 +573,7 @@ const fn show_tray_icon(command: &Commands) -> bool {
         | Macros { .. }
         | Setup
         | CrashTest { .. } => false,
+        Run { script_args, .. } | Eval { script_args, .. } => !script_args.no_tray,
     }
 }
 

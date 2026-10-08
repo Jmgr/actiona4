@@ -34,6 +34,7 @@ windows-bin = []
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
     "Wdk_System_SystemServices",
+    "Win32_Globalization",
     "Win32_System_Console",
     "Win32_System_SystemInformation",
     "Win32_System_Threading",
@@ -57,6 +58,8 @@ enigo.workspace = true
 flate2.workspace = true
 humantime.workspace = true
 indicatif.workspace = true
+interprocess = { workspace = true, features = ["tokio"] }
+notify.workspace = true
 rfd.workspace = true
 rquickjs.workspace = true
 rustyline = { workspace = true, features = ["derive"] }
@@ -69,6 +72,7 @@ tokio-util.workspace = true
 tracing.workspace = true
 tracing-subscriber = { workspace = true, features = ["std", "env-filter", "fmt", "ansi", "tracing-log", "time"] }
 two-face.workspace = true
+uuid = { workspace = true, features = ["v4"] }
 versions.workspace = true
 
 [build-dependencies]

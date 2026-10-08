@@ -128,6 +128,14 @@ pub enum Commands {
         #[arg(value_hint = ValueHint::FilePath)]
         filepath: PathBuf,
 
+        /// Restart the script whenever its file changes
+        #[arg(long)]
+        watch: bool,
+
+        /// Private connection to the watch supervisor
+        #[arg(long, hide = true, conflicts_with = "watch")]
+        watch_control: Option<String>,
+
         #[command(flatten)]
         run_args: RunArgs,
 

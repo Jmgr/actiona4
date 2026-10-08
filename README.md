@@ -103,6 +103,17 @@ actiona-run init
 actiona-run myscript.ts
 ```
 
+**Watch a script** — runs it immediately, then restarts it in a fresh process whenever the file's contents change
+
+```sh
+actiona-run --watch myscript.ts
+```
+
+The previous run is stopped before the next starts, closing its dialogs and cancelling its tasks.
+Watch mode keeps waiting after the script finishes or fails. Ctrl+C ends the watch session.
+While a script is running, its stop hotkey or tray Quit also ends the session.
+Only the specified script file is watched.
+
 **Run code** — evaluates code
 
 ```sh
