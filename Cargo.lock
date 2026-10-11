@@ -6674,6 +6674,7 @@ dependencies = [
  "interprocess",
  "libc",
  "notify",
+ "parking_lot",
  "rfd",
  "rquickjs",
  "rustyline",

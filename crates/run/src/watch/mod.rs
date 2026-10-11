@@ -1,9 +1,12 @@
 use std::{
+    collections::HashSet,
     env,
     ffi::OsString,
+    fs as std_fs,
     io::ErrorKind,
-    path::{Path, absolute},
+    path::{Path, PathBuf, absolute},
     process::{ExitStatus, Stdio},
+    sync::Arc,
     time::Duration,
 };
 
@@ -12,24 +15,18 @@ use color_eyre::{
     eyre::{Context, OptionExt},
 };
 use interprocess::local_socket::{
-    GenericNamespaced, ListenerOptions, ToNsName,
-    tokio::{Listener, Stream, prelude::*},
+    GenericNamespaced, ToNsName,
+    tokio::{Stream, prelude::*},
 };
 use notify::{Event, EventKind, RecursiveMode, Watcher};
-use tokio::{
-    fs,
-    io::AsyncReadExt,
-    process::{Child, Command},
-    select, signal,
-    sync::mpsc,
-    time::{sleep, timeout},
-};
+use parking_lot::RwLock;
+use platform::{RunningScript, paths_match};
+use tokio::{fs, io::AsyncReadExt, process::Command, select, signal, sync::mpsc, time::sleep};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use uuid::Uuid;
-#[cfg(windows)]
-use windows::Win32::System::Threading::CREATE_NEW_PROCESS_GROUP;
 
 use crate::{CANCELLED_EXIT_CODE, ScriptCancelled};
+
+mod platform;
 
 const DEBOUNCE: Duration = Duration::from_millis(150);
 const STOP_TIMEOUT: Duration = Duration::from_secs(3);
@@ -60,76 +57,6 @@ pub fn listen_for_stop(
     });
 }
 
-struct RunningScript {
-    child: Child,
-    listener: Listener,
-    control: Option<Stream>,
-}
-
-impl RunningScript {
-    fn start() -> Result<Self> {
-        let name = format!("actiona-watch-{}", Uuid::new_v4());
-        let listener = ListenerOptions::new()
-            .name(name.as_str().to_ns_name::<GenericNamespaced>()?)
-            .create_tokio()
-            .context("creating watch control socket")?;
-        let mut command = child_command(env::args_os().skip(1), &name)?;
-        let child = command.spawn().context("starting watched script")?;
-        Ok(Self {
-            child,
-            listener,
-            control: None,
-        })
-    }
-
-    async fn stop(&mut self, grace: Duration) -> Result<ExitStatus> {
-        let graceful = async {
-            if self.control.is_none() {
-                select! {
-                    result = self.child.wait() => return result,
-                    connection = self.listener.accept() => {
-                        drop(connection?);
-                    }
-                }
-            }
-            drop(self.control.take());
-            self.child.wait().await
-        };
-
-        if let Ok(status) = timeout(grace, graceful).await {
-            status.context("waiting for watched script to stop")
-        } else {
-            eprintln!("[watch] Script did not stop in time; terminating it.");
-            self.force_stop().await
-        }
-    }
-
-    #[allow(unsafe_code)]
-    async fn force_stop(&mut self) -> Result<ExitStatus> {
-        #[cfg(linux)]
-        if let Some(pid) = self.child.id() {
-            let pid = i32::try_from(pid)?;
-            // SAFETY: the child owns this process group; a negative PID targets the group,
-            // including Linux dialog helpers that cannot clean up after a forced stop.
-            let result = unsafe { libc::kill(-pid, libc::SIGKILL) };
-            if result != 0 {
-                self.child
-                    .start_kill()
-                    .context("terminating watched script")?;
-            }
-        }
-        #[cfg(not(linux))]
-        self.child
-            .start_kill()
-            .context("terminating watched script")?;
-
-        self.child
-            .wait()
-            .await
-            .context("waiting for watched script to stop")
-    }
-}
-
 fn child_command(
     arguments: impl IntoIterator<Item = OsString>,
     control_name: &str,
@@ -152,11 +79,7 @@ fn child_command(
         .stderr(Stdio::inherit());
     command.kill_on_drop(true);
 
-    // Only the supervisor receives terminal Ctrl+C. It stops the child through the socket.
-    #[cfg(unix)]
-    command.process_group(0);
-    #[cfg(windows)]
-    command.creation_flags(CREATE_NEW_PROCESS_GROUP.0);
+    platform::configure_command(&mut command);
     Ok(command)
 }
 
@@ -166,26 +89,83 @@ fn affects_script(event: &Event, filepath: &Path) -> bool {
             && event.paths.iter().any(|path| paths_match(path, filepath)))
 }
 
-#[cfg(not(windows))]
-fn paths_match(left: &Path, right: &Path) -> bool {
-    left == right
-}
-
-#[cfg(windows)]
-#[allow(unsafe_code)]
-fn paths_match(left: &Path, right: &Path) -> bool {
-    use std::os::windows::ffi::OsStrExt as _;
-
-    use windows::Win32::Globalization::{CSTR_EQUAL, CompareStringOrdinal};
-
-    // Windows opens paths without regard to casing, but notifications use the on-disk spelling.
-    let left: Vec<_> = left.as_os_str().encode_wide().collect();
-    let right: Vec<_> = right.as_os_str().encode_wide().collect();
-    // SAFETY: both slices contain valid UTF-16 buffers with explicit lengths.
-    unsafe { CompareStringOrdinal(&left, &right, true) == CSTR_EQUAL }
-}
-
 type Changes = mpsc::Receiver<notify::Result<()>>;
+
+struct ScriptWatcher {
+    watcher: notify::RecommendedWatcher,
+    paths: Arc<RwLock<Vec<PathBuf>>>,
+    directories: HashSet<PathBuf>,
+}
+
+fn script_paths(filepath: &Path) -> Result<Vec<PathBuf>> {
+    let mut paths = Vec::new();
+    let mut path = filepath.to_path_buf();
+    // Include every link so replacing any link in a chain refreshes the target watch.
+    for _ in 0..40 {
+        let directory = path.parent().ok_or_eyre("script has no parent directory")?;
+        let filename = path.file_name().ok_or_eyre("script has no filename")?;
+        path = std_fs::canonicalize(directory)?.join(filename);
+        paths.push(path.clone());
+        match std_fs::symlink_metadata(&path) {
+            Ok(metadata) if metadata.file_type().is_symlink() => {
+                let target = std_fs::read_link(&path)?;
+                path = path.parent().expect("resolved parent").join(target);
+            }
+            Ok(_) => return Ok(paths),
+            Err(error) if error.kind() == ErrorKind::NotFound => return Ok(paths),
+            Err(error) => return Err(error).context("resolving watched script"),
+        }
+    }
+    color_eyre::eyre::bail!("too many symbolic links in watched script path")
+}
+
+impl ScriptWatcher {
+    fn new(filepath: &Path) -> Result<(Self, Changes)> {
+        let paths = Arc::new(RwLock::new(Vec::<PathBuf>::new()));
+        let watched_paths = paths.clone();
+        let (sender, changes) = mpsc::channel(64);
+        let watcher = notify::recommended_watcher(move |event: notify::Result<Event>| {
+            let change = match event {
+                Ok(event)
+                    if watched_paths
+                        .read()
+                        .iter()
+                        .any(|path| affects_script(&event, path)) =>
+                {
+                    Ok(())
+                }
+                Ok(_) => return,
+                Err(error) => Err(error),
+            };
+            let _ = sender.try_send(change);
+        })?;
+        let mut watcher = Self {
+            watcher,
+            paths,
+            directories: HashSet::new(),
+        };
+        watcher.refresh(filepath)?;
+        Ok((watcher, changes))
+    }
+
+    fn refresh(&mut self, filepath: &Path) -> Result<()> {
+        let paths = script_paths(filepath)?;
+        let directories: HashSet<_> = paths
+            .iter()
+            .filter_map(|path| path.parent().map(Path::to_path_buf))
+            .collect();
+        for directory in directories.difference(&self.directories) {
+            self.watcher.watch(directory, RecursiveMode::NonRecursive)?;
+        }
+        *self.paths.write() = paths;
+        for directory in self.directories.difference(&directories) {
+            // A removed directory may already have been detached by the backend.
+            let _ = self.watcher.unwatch(directory);
+        }
+        self.directories = directories;
+        Ok(())
+    }
+}
 
 pub async fn run(filepath: &Path) -> Result<()> {
     // Resolve the directory, keeping the filename so replacing the file does not detach the watch.
@@ -195,23 +175,7 @@ pub async fn run(filepath: &Path) -> Result<()> {
         .ok_or_eyre("script has no parent directory")?;
     let filename = filepath.file_name().ok_or_eyre("script has no filename")?;
     let filepath = fs::canonicalize(directory).await?.join(filename);
-    let (sender, mut changes) = mpsc::channel(64);
-    let watched_path = filepath.clone();
-    let mut watcher = notify::recommended_watcher(move |event: notify::Result<Event>| {
-        let change = match event {
-            Ok(event) if affects_script(&event, &watched_path) => Ok(()),
-            Ok(_) => return,
-            Err(error) => Err(error),
-        };
-        // Events are coalesced; reading the file after the debounce always gets the latest revision.
-        let _ = sender.try_send(change);
-    })?;
-    watcher.watch(
-        filepath
-            .parent()
-            .ok_or_eyre("script has no parent directory")?,
-        RecursiveMode::NonRecursive,
-    )?;
+    let (mut watcher, mut changes) = ScriptWatcher::new(&filepath)?;
     let source = fs::read(&filepath)
         .await
         .context("reading watched script")?;
@@ -229,7 +193,15 @@ pub async fn run(filepath: &Path) -> Result<()> {
     let result = async {
         script = Some(RunningScript::start()?);
         eprintln!("[watch] Watching {}", filepath.display());
-        run_loop(&filepath, source, &mut changes, &shutdown, &mut script).await
+        run_loop(
+            &filepath,
+            source,
+            &mut changes,
+            &shutdown,
+            &mut script,
+            &mut watcher,
+        )
+        .await
     }
     .await;
 
@@ -310,6 +282,7 @@ async fn run_loop(
     changes: &mut Changes,
     shutdown: &CancellationToken,
     script: &mut Option<RunningScript>,
+    watcher: &mut ScriptWatcher,
 ) -> Result<()> {
     let mut source = Some(source);
     loop {
@@ -331,6 +304,7 @@ async fn run_loop(
                 if !debounce(changes, shutdown).await? {
                     return Err(ScriptCancelled.into());
                 }
+                watcher.refresh(filepath)?;
                 if read_script(filepath).await? == source {
                     continue;
                 }
@@ -344,6 +318,7 @@ async fn run_loop(
                 if !debounce(changes, shutdown).await? {
                     return Err(ScriptCancelled.into());
                 }
+                watcher.refresh(filepath)?;
                 source = read_script(filepath).await?;
                 if source.is_some() {
                     eprintln!("[watch] Reloading {}", filepath.display());
@@ -358,13 +333,13 @@ async fn run_loop(
 
 #[cfg(test)]
 mod tests {
-    use std::{env, ffi::OsString, iter::once, path::Path, process::Stdio, thread, time::Duration};
+    use std::{ffi::OsString, iter::once, path::Path, time::Duration};
 
     use clap::Parser;
     use notify::{Event, EventKind, event::AccessKind};
     use tokio::time::timeout;
 
-    use super::{RunningScript, affects_script, child_command, connect_control, listen_for_stop};
+    use super::{affects_script, child_command, connect_control, listen_for_stop};
     use crate::{
         args::{Args, Commands},
         maybe_insert_default_run,
@@ -483,6 +458,21 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn watches_replaced_script_contents() {
+        use std::fs;
+
+        let directory = tempfile::tempdir().expect("script directory");
+        let filepath = directory.path().join("script.ts");
+        fs::write(&filepath, "first").expect("write script");
+        let (_watcher, mut changes) = super::ScriptWatcher::new(&filepath).expect("watch script");
+        fs::write(&filepath, "second").expect("edit script");
+        let change = timeout(Duration::from_secs(2), changes.recv())
+            .await
+            .expect("script edit detected");
+        super::check_change(change).expect("watch event");
+    }
+
+    #[tokio::test]
     async fn supervisor_disconnect_cancels_child() {
         use interprocess::local_socket::{
             GenericNamespaced, ListenerOptions, ToNsName, tokio::prelude::*,
@@ -543,57 +533,5 @@ mod tests {
         tasks.close();
         tasks.wait().await;
         assert!(!supervisor_stop.is_cancelled());
-    }
-
-    #[tokio::test]
-    async fn unresponsive_child_is_killed_after_the_deadline() {
-        use interprocess::local_socket::{GenericNamespaced, ListenerOptions, ToNsName};
-        use tokio::process::Command;
-        use uuid::Uuid;
-
-        let name = format!("actiona-watch-timeout-test-{}", Uuid::new_v4());
-        let listener = ListenerOptions::new()
-            .name(
-                name.as_str()
-                    .to_ns_name::<GenericNamespaced>()
-                    .expect("socket name"),
-            )
-            .create_tokio()
-            .expect("create listener");
-        let mut command = Command::new(env::current_exe().expect("test executable"));
-        command
-            .args(["--ignored", "--exact", "watch::tests::unresponsive_worker"])
-            .env("ACTIONA_WATCH_UNRESPONSIVE_TEST", "1")
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .kill_on_drop(true);
-        #[cfg(unix)]
-        command.process_group(0);
-        let mut script = RunningScript {
-            child: command.spawn().expect("start worker"),
-            listener,
-            control: None,
-        };
-        timeout(
-            Duration::from_secs(2),
-            script.stop(Duration::from_millis(100)),
-        )
-        .await
-        .expect("stop deadline enforced")
-        .expect("stop worker");
-        let status = script
-            .child
-            .try_wait()
-            .expect("child status")
-            .expect("worker reaped");
-        assert!(!status.success());
-    }
-
-    #[test]
-    #[ignore = "subprocess fixture for the shutdown deadline test"]
-    fn unresponsive_worker() {
-        if env::var_os("ACTIONA_WATCH_UNRESPONSIVE_TEST").is_some() {
-            thread::sleep(Duration::from_secs(60));
-        }
     }
 }

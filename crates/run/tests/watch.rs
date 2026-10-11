@@ -203,6 +203,41 @@ mod tests {
         watched.wait_for_output_closed();
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn reloads_symlink_targets_after_retargeting_to_identical_contents() {
+        use std::os::unix::fs::symlink;
+
+        let directory = tempfile::tempdir().expect("script directory");
+        let first_directory = directory.path().join("first");
+        let second_directory = directory.path().join("second");
+        fs::create_dir(&first_directory).expect("first target directory");
+        fs::create_dir(&second_directory).expect("second target directory");
+        let first = first_directory.join("script.ts");
+        let second = second_directory.join("script.ts");
+        let filepath = directory.path().join("linked.ts");
+        fs::write(&first, "println('symlink first');").expect("first script");
+        symlink("first/script.ts", &filepath).expect("relative script link");
+        let mut watched = WatchedScript::start(&filepath);
+        watched.wait_for("symlink first");
+        watched.wait_for("waiting for changes");
+
+        let source = "println('symlink second');";
+        fs::write(&first, source).expect("edit target");
+        watched.wait_for("symlink second");
+        watched.wait_for("waiting for changes");
+
+        fs::write(&second, source).expect("identical second target");
+        fs::remove_file(&filepath).expect("remove link");
+        symlink("second/script.ts", &filepath).expect("retarget link");
+        watched.assert_no_run("symlink second");
+        fs::write(&second, "println('symlink third');").expect("edit new target");
+        watched.wait_for("symlink third");
+        watched.wait_for("waiting for changes");
+        watched.kill_supervisor();
+        watched.wait_for_output_closed();
+    }
+
     #[cfg(windows)]
     #[test]
     fn reloads_with_differently_cased_filename() {
