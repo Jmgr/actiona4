@@ -154,7 +154,7 @@ fn find_dump_entry_name(zip_archive: &mut ZipArchive<File>) -> Result<String> {
     for index in 0..zip_archive.len() {
         let entry_name = {
             let file = zip_archive.by_index(index)?;
-            file.name().to_owned()
+            file.name()?.into_owned()
         };
 
         if Path::new(&entry_name)

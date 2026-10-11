@@ -54,7 +54,6 @@ windows = { workspace = true, features = [
     "ApplicationModel_DataTransfer",
     "Storage_Streams",
 ] }
-windows-result.workspace = true
 winit.workspace = true
 winrt-toast-reborn.workspace = true
 

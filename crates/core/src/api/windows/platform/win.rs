@@ -10,20 +10,23 @@ use derive_more::Deref;
 use parking_lot::Mutex;
 use satint::{SaturatingInto, Su32};
 use tokio_util::sync::CancellationToken;
-use windows::Win32::{
-    Foundation::{HWND, LPARAM, RECT, SetLastError, WIN32_ERROR, WPARAM},
-    Graphics::Dwm::{DWMWA_EXTENDED_FRAME_BOUNDS, DwmGetWindowAttribute},
-    System::StationsAndDesktops::{
-        DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
+use windows::{
+    Win32::{
+        Foundation::{HWND, LPARAM, RECT, SetLastError, WIN32_ERROR, WPARAM},
+        Graphics::Dwm::{DWMWA_EXTENDED_FRAME_BOUNDS, DwmGetWindowAttribute},
+        System::StationsAndDesktops::{
+            DESKTOP_CONTROL_FLAGS, DESKTOP_READOBJECTS, EnumDesktopWindows, OpenInputDesktop,
+        },
+        UI::WindowsAndMessaging::{
+            GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextLengthW,
+            GetWindowTextW, GetWindowThreadProcessId, IsIconic, IsWindowVisible, SHOW_WINDOW_CMD,
+            SW_HIDE, SW_MAXIMIZE, SW_MINIMIZE, SW_RESTORE, SW_SHOW, SWP_NOACTIVATE, SWP_NOMOVE,
+            SWP_NOSIZE, SWP_NOZORDER, SendNotifyMessageW, SetForegroundWindow, SetWindowPos,
+            ShowWindow, WM_CLOSE,
+        },
     },
-    UI::WindowsAndMessaging::{
-        GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
-        GetWindowThreadProcessId, IsIconic, IsWindowVisible, SHOW_WINDOW_CMD, SW_HIDE, SW_MAXIMIZE,
-        SW_MINIMIZE, SW_RESTORE, SW_SHOW, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER,
-        SendNotifyMessageW, SetForegroundWindow, SetWindowPos, ShowWindow, WM_CLOSE,
-    },
+    core::{BOOL, Error},
 };
-use windows_result::BOOL;
 
 use crate::{
     api::{
@@ -200,7 +203,7 @@ impl WindowsHandler for WindowsWindowHandler {
         // SAFETY: `handle` is a registered window handle.
         unsafe {
             if !SetForegroundWindow(*handle).as_bool() {
-                return Err(windows_result::Error::from_thread().into());
+                return Err(Error::from_thread().into());
             }
         }
 
@@ -369,7 +372,7 @@ impl WindowsWindowHandler {
             // succeeded, so failures are only detectable through the thread's last error.
             SetLastError(WIN32_ERROR(0));
             if !ShowWindow(*handle, command).as_bool() {
-                let error = windows_result::Error::from_thread();
+                let error = Error::from_thread();
                 if error.code().is_err() {
                     return Err(error.into());
                 }

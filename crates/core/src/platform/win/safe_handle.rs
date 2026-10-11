@@ -3,13 +3,16 @@
 use std::{fmt, mem};
 
 use tracing::error;
-use windows::Win32::{
-    Foundation::{CloseHandle, HANDLE, HWND},
-    System::StationsAndDesktops::{CloseDesktop, HDESK},
-    UI::{
-        Accessibility::{HWINEVENTHOOK, UnhookWinEvent},
-        WindowsAndMessaging::{DestroyWindow, HHOOK, UnhookWindowsHookEx},
+use windows::{
+    Win32::{
+        Foundation::{CloseHandle, HANDLE, HWND},
+        System::StationsAndDesktops::{CloseDesktop, HDESK},
+        UI::{
+            Accessibility::{HWINEVENTHOOK, UnhookWinEvent},
+            WindowsAndMessaging::{DestroyWindow, HHOOK, UnhookWindowsHookEx},
+        },
     },
+    core::{Error, Result},
 };
 
 pub trait Handle {
@@ -18,7 +21,7 @@ pub trait Handle {
     const NAME: &'static str;
 
     fn is_valid(raw: Self::Raw) -> bool;
-    fn close(raw: Self::Raw) -> windows_result::Result<()>;
+    fn close(raw: Self::Raw) -> Result<()>;
 }
 
 #[repr(transparent)]
@@ -31,11 +34,11 @@ impl<H: Handle> Safe<H> {
         Self { raw }
     }
 
-    pub fn try_new(raw: H::Raw) -> windows_result::Result<Self> {
+    pub fn try_new(raw: H::Raw) -> Result<Self> {
         if H::is_valid(raw) {
             Ok(Self::new(raw))
         } else {
-            Err(windows_result::Error::from_thread())
+            Err(Error::from_thread())
         }
     }
 
@@ -85,7 +88,7 @@ impl Handle for KindHandle {
     fn is_valid(raw: Self::Raw) -> bool {
         !raw.is_invalid()
     }
-    fn close(raw: Self::Raw) -> windows_result::Result<()> {
+    fn close(raw: Self::Raw) -> Result<()> {
         // SAFETY: `raw` is owned by `SafeHandle` and closed exactly once by its `Drop` implementation.
         unsafe { CloseHandle(raw) }
     }
@@ -99,7 +102,7 @@ impl Handle for KindDesktop {
     fn is_valid(raw: Self::Raw) -> bool {
         !raw.is_invalid()
     }
-    fn close(raw: Self::Raw) -> windows_result::Result<()> {
+    fn close(raw: Self::Raw) -> Result<()> {
         // SAFETY: `raw` is owned by `SafeDesktopHandle` and closed exactly once on drop.
         unsafe { CloseDesktop(raw) }
     }
@@ -113,7 +116,7 @@ impl Handle for KindHook {
     fn is_valid(raw: Self::Raw) -> bool {
         !raw.is_invalid()
     }
-    fn close(raw: Self::Raw) -> windows_result::Result<()> {
+    fn close(raw: Self::Raw) -> Result<()> {
         // SAFETY: `raw` is owned by `SafeHookHandle` and unhooked exactly once on drop.
         unsafe { UnhookWindowsHookEx(raw) }
     }
@@ -129,7 +132,7 @@ impl Handle for KindWindow {
     fn is_valid(raw: Self::Raw) -> bool {
         !raw.is_invalid()
     }
-    fn close(raw: Self::Raw) -> windows_result::Result<()> {
+    fn close(raw: Self::Raw) -> Result<()> {
         // SAFETY: `raw` is owned by `SafeWindowHandle` and destroyed exactly once on drop.
         unsafe { DestroyWindow(raw) }
     }
@@ -145,7 +148,7 @@ impl Handle for KindWinEventHook {
     fn is_valid(raw: Self::Raw) -> bool {
         !raw.is_invalid()
     }
-    fn close(raw: Self::Raw) -> windows_result::Result<()> {
+    fn close(raw: Self::Raw) -> Result<()> {
         // SAFETY: `raw` is owned by `SafeWinEventHook` and unhooked exactly once on drop.
         unsafe {
             let _ = UnhookWinEvent(raw);
