@@ -17,6 +17,10 @@ pub enum Commands {
     /// Build unsigned Actiona Run and Actiona Editor AppImages (Linux only).
     #[cfg(unix)]
     AppImageNoSign,
+    /// Start the editor AppImage in a clean container without WebKitGTK and check that its
+    /// WebKit helper processes run (Linux only, needs Docker).
+    #[cfg(unix)]
+    AppImageSmokeTest,
     /// Generate rustdoc JSON and TypeScript declaration files.
     Doc,
     /// Lint and type-check end-to-end TypeScript scripts and shared declarations.

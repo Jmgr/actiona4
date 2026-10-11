@@ -392,11 +392,13 @@ pub fn derive_parameter(input: TokenStream) -> TokenStream {
 /// Generates, in the same module:
 /// * `trait Api` — the host implements it (`impl Api for HostApi { async fn … }`).
 /// * `ApiClient<T: Transport>` — the UI calls `client.add_ten(5).await`, fully typed.
-/// * `api_serve(api, cmd, json) -> Option<Future<json>>` — host dispatch by name.
+/// * `api_serve(api, cmd, json) -> Option<Future<RpcResponse>>` — host dispatch by
+///   name. A request whose arguments do not deserialize, or whose output does not
+///   serialize, yields `RpcResponse::Error` rather than a panic.
 /// * `__rpc_<method>` modules holding the by-name argument struct + the name.
 ///
-/// The surrounding module must have `Transport` and `RpcError` in scope (both
-/// are hand-written in `common::rpc`, where the trait is defined).
+/// The surrounding module must have `Transport`, `RpcError` and `RpcResponse` in
+/// scope (all hand-written in `editor::rpc`, where the trait is defined).
 #[proc_macro_attribute]
 pub fn rpc(attr: TokenStream, item: TokenStream) -> TokenStream {
     editor::rpc::expand(attr, item)

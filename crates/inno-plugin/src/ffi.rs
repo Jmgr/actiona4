@@ -38,6 +38,32 @@ pub fn export_result_to_error_buffer(
     }
 }
 
+const BOOL_RESULT_FALSE: c_int = 0;
+const BOOL_RESULT_TRUE: c_int = 1;
+const BOOL_RESULT_ERROR: c_int = 2;
+
+/// Exports a boolean result as 0 (false), 1 (true) or 2 (error, message in the error buffer).
+pub fn export_bool_result(
+    result: Result<bool>,
+    error_string: *mut c_char,
+    error_string_capacity: usize,
+) -> c_int {
+    match result {
+        Ok(false) => {
+            clear_string_buffer(error_string, error_string_capacity);
+            BOOL_RESULT_FALSE
+        }
+        Ok(true) => {
+            clear_string_buffer(error_string, error_string_capacity);
+            BOOL_RESULT_TRUE
+        }
+        Err(error) => {
+            write_string_to_buffer(&error.to_string(), error_string, error_string_capacity);
+            BOOL_RESULT_ERROR
+        }
+    }
+}
+
 pub fn parse_bool(value: c_int, value_name: &str) -> Result<bool> {
     match value {
         0 => Ok(false),

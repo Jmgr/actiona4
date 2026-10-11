@@ -2480,11 +2480,13 @@ dependencies = [
  "getrandom 0.4.3",
  "icons",
  "include_dir",
+ "itertools 0.15.0",
  "js-sys",
  "leptos",
  "leptos-fluent",
  "leptos_ui",
  "macros",
+ "parking_lot",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
@@ -4402,6 +4404,7 @@ dependencies = [
  "config 0.4.0",
  "eyre",
  "serial_test",
+ "tempfile",
  "tokio",
  "updater",
  "versions",
@@ -10740,7 +10743,7 @@ dependencies = [
 [[package]]
 name = "webview_app"
 version = "1.2.1"
-source = "git+https://github.com/Jmgr/webview-app.git?rev=adddade#adddade832a0bc47acccf2272229cfe65a944033"
+source = "git+https://github.com/Jmgr/webview-app.git?rev=1a2e91a#1a2e91a864759d25d407ccd2a56ff346abcc81b0"
 dependencies = [
  "async-channel",
  "gtk4",
@@ -12012,8 +12015,3 @@ dependencies = [
  "syn 3.0.8",
  "winnow 1.0.4",
 ]
-
-[[patch.unused]]
-name = "proc-macro-error2"
-version = "2.0.1"
-source = "git+https://github.com/fgardt/proc-macro-error-2?rev=53ff94b61c678593158db1a3d50269c6f0de0db7#53ff94b61c678593158db1a3d50269c6f0de0db7"

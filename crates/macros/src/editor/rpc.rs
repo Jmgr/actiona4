@@ -90,7 +90,8 @@ pub fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
         }
     });
 
-    // Client methods: serialize args, hand them to the transport, deserialize.
+    // Client methods: serialize args, hand them to the transport, unwrap the
+    // `RpcResponse` and deserialize the output.
     let client_fns = methods.iter().map(|m| {
         let (ident, module, ai, at, ret) =
             (&m.ident, &m.module, &m.arg_idents, &m.arg_types, &m.ret);
@@ -101,23 +102,39 @@ pub fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
                     .map_err(RpcError::Serialize)?;
                 let __output = self.transport.request(#module::NAME, __input).await
                     .map_err(RpcError::Transport)?;
-                ::serde_json::from_value(__output).map_err(RpcError::Deserialize)
+                match ::serde_json::from_value(__output).map_err(RpcError::Deserialize)? {
+                    RpcResponse::Ok(__value) => {
+                        ::serde_json::from_value(__value).map_err(RpcError::Deserialize)
+                    }
+                    RpcResponse::Error(__message) => {
+                        ::core::result::Result::Err(RpcError::Host(__message))
+                    }
+                }
             }
         }
     });
 
     // Server dispatch arms: deserialize args, call the impl, serialize result.
+    // Failures become an `RpcResponse::Error` instead of a panic.
     let serve_arms = methods.iter().map(|m| {
         let (ident, module, ai) = (&m.ident, &m.module, &m.arg_idents);
         quote! {
             __cmd if __cmd == #module::NAME => {
-                let __args: #module::Args = ::serde_json::from_value(input)
-                    .expect("RPC: failed to deserialize request");
-                ::std::option::Option::Some(::std::boxed::Box::pin(async move {
-                    let __out = api.#ident(#(__args.#ai),*).await;
-                    ::serde_json::to_value(&__out)
-                        .expect("RPC: failed to serialize response")
-                }))
+                ::std::option::Option::Some(
+                    match ::serde_json::from_str::<#module::Args>(input) {
+                        ::core::result::Result::Ok(__args) => {
+                            ::std::boxed::Box::pin(async move {
+                                let __out = api.#ident(#(__args.#ai),*).await;
+                                RpcResponse::from_output(&__out)
+                            })
+                        }
+                        ::core::result::Result::Err(__error) => {
+                            ::std::boxed::Box::pin(::std::future::ready(RpcResponse::Error(
+                                ::std::format!("invalid request for `{}`: {}", #module::NAME, __error),
+                            )))
+                        }
+                    },
+                )
             }
         }
     });
@@ -143,9 +160,9 @@ pub fn expand(_attr: TokenStream, item: TokenStream) -> TokenStream {
         #vis fn #serve_ident<__A>(
             api: ::std::sync::Arc<__A>,
             cmd: &str,
-            input: ::serde_json::Value,
+            input: &str,
         ) -> ::std::option::Option<::std::pin::Pin<::std::boxed::Box<
-            dyn ::std::future::Future<Output = ::serde_json::Value> + ::std::marker::Send,
+            dyn ::std::future::Future<Output = RpcResponse> + ::std::marker::Send,
         >>>
         where
             __A: #trait_ident + ::std::marker::Send + ::std::marker::Sync + 'static,

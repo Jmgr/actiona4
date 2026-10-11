@@ -142,7 +142,7 @@ args = ["build", "--release", "--locked"]
 description = "Build the native editor with its embedded release UI."
 dependencies = ["build-editor-ui-release"]
 command = "cargo"
-args = ["build", "-p", "editor", "--bin", "editor", "--release"]
+args = ["build", "-p", "editor", "--bin", "actiona-editor", "--release"]
 
 [tasks.lint-ts]
 dependencies = ["install-e2e-ts-deps"]
@@ -293,6 +293,12 @@ args = [
     "--features",
     "windows-bin",
 ]
+
+[tasks.appimage-smoke-test]
+condition = { platforms = ["linux"] }
+description = "Start the editor AppImage built by appimage or appimage-nosign in a clean container without WebKitGTK and check that its WebKit helper processes run. Needs Docker."
+command = "cargo"
+args = ["run", "-p", "xtask", "--", "app-image-smoke-test"]
 
 [tasks.release]
 description = "Build release binaries, including the editor UI, extensions, and actiona-runw on Windows."

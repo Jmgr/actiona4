@@ -13,17 +13,22 @@ use crate::{
     package_docs::{StagedPackagedFile, stage_packaged_files},
     signing::signing_arguments,
     util::run_command,
-    workspace::{NotificationPackageInfo, WorkspacePackageInfo},
+    workspace::{WorkspacePackageInfo, read_notification_package_info},
 };
 
 const RUN_APP_ID: &str = "{{A3D5D4F0-1AFA-4278-9E23-FA4A36632447}";
-const EDITOR_APP_ID: &str = "{{9FD328F2-873A-4FC0-921A-42AD7CCCCDA}";
+const EDITOR_APP_ID: &str = "{{279E7094-648C-4B35-8F32-B551468F5DCC}";
 
 struct InstallerProduct {
     package_kind: PackageKind,
     app_id: &'static str,
     app_name: &'static str,
     app_exe_name: &'static str,
+    /// Crate whose `package.metadata.actiona.notification-aumid` the installer registers.
+    notification_crate: &'static str,
+    notification_display_name: &'static str,
+    /// Skip adding to PATH when `actiona-run.exe` is already reachable through PATH.
+    add_to_path_only_if_run_missing: bool,
 }
 
 impl InstallerProduct {
@@ -34,12 +39,18 @@ impl InstallerProduct {
                 app_id: RUN_APP_ID,
                 app_name: "Actiona Run",
                 app_exe_name: "actiona-runw.exe",
+                notification_crate: "core",
+                notification_display_name: RUN_FILE_DESCRIPTION,
+                add_to_path_only_if_run_missing: false,
             },
             PackageKind::Editor => Self {
                 package_kind,
                 app_id: EDITOR_APP_ID,
                 app_name: "Actiona Editor",
                 app_exe_name: "actiona-editor.exe",
+                notification_crate: "editor",
+                notification_display_name: "Actiona Editor",
+                add_to_path_only_if_run_missing: true,
             },
         }
     }
@@ -48,14 +59,12 @@ impl InstallerProduct {
 pub async fn build_installers(
     workspace_root: &Path,
     workspace_package_info: &WorkspacePackageInfo,
-    notification_package_info: &NotificationPackageInfo,
     should_sign: bool,
 ) -> Result<()> {
     for package_kind in PackageKind::ALL {
         build_installer(
             workspace_root,
             workspace_package_info,
-            notification_package_info,
             InstallerProduct::from_package_kind(package_kind),
             should_sign,
         )
@@ -68,11 +77,12 @@ pub async fn build_installers(
 async fn build_installer(
     workspace_root: &Path,
     workspace_package_info: &WorkspacePackageInfo,
-    notification_package_info: &NotificationPackageInfo,
     product: InstallerProduct,
     should_sign: bool,
 ) -> Result<()> {
     let installer_directory = workspace_root.join("installer");
+    let notification_package_info =
+        read_notification_package_info(workspace_root, product.notification_crate).await?;
     write_installer_files_include(workspace_root, product.package_kind).await?;
     let sign_tool = if should_sign { INNO_SIGN_TOOL_NAME } else { "" };
     let output_base_filename =
@@ -101,11 +111,16 @@ async fn build_installer(
             notification_package_info.aumid
         ))
         .arg(format!(
-            "/DMyNotificationDisplayName={RUN_FILE_DESCRIPTION}"
+            "/DMyNotificationDisplayName={}",
+            product.notification_display_name
         ))
-        .arg(format!("/DMySignTool={sign_tool}"))
-        .arg("main.iss")
-        .current_dir(installer_directory);
+        .arg(format!("/DMySignTool={sign_tool}"));
+
+    if product.add_to_path_only_if_run_missing {
+        command.arg("/DMyAddToPathOnlyIfRunMissing=1");
+    }
+
+    command.arg("main.iss").current_dir(installer_directory);
 
     if should_sign {
         command.arg(inno_sign_tool_argument(product.app_name));
@@ -283,6 +298,9 @@ mod tests {
         assert_eq!(editor.app_name, "Actiona Editor");
         assert_eq!(editor.app_exe_name, "actiona-editor.exe");
         assert_ne!(run.app_id, editor.app_id);
+        assert_ne!(run.notification_crate, editor.notification_crate);
+        assert!(!run.add_to_path_only_if_run_missing);
+        assert!(editor.add_to_path_only_if_run_missing);
     }
 
     #[test]

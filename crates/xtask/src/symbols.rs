@@ -13,7 +13,7 @@ use zip::{ZipArchive, result::ZipError};
 #[cfg(unix)]
 const BINARY_NAMES: &[&str] = &[
     "actiona-run",
-    "editor",
+    "actiona-editor",
     "extension-selection",
     "extension-opencv",
 ];
@@ -22,7 +22,7 @@ const BINARY_NAMES: &[&str] = &[
 const BINARY_NAMES: &[&str] = &[
     "actiona-run",
     "actiona-runw",
-    "editor",
+    "actiona-editor",
     "extension-selection",
     "extension-opencv",
 ];

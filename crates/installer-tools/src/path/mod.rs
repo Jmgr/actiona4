@@ -77,6 +77,34 @@ pub fn is_directory_in_path(path_scope: PathScope, directory_path: &Path) -> Res
     Ok(path_contains_entry(&path_entries, &directory_entry))
 }
 
+/// Whether `executable_name` exists in any user or system PATH directory other than
+/// `excluded_directory`.
+pub fn is_executable_in_path(executable_name: &str, excluded_directory: &str) -> Result<bool> {
+    let mut path_entries = read_path_entries(PathScope::User)?;
+    path_entries.extend(read_path_entries(PathScope::System)?);
+    Ok(path_entries_contain_executable(
+        &path_entries,
+        executable_name,
+        excluded_directory,
+    ))
+}
+
+fn path_entries_contain_executable(
+    path_entries: &[impl AsRef<str>],
+    executable_name: &str,
+    excluded_directory: &str,
+) -> bool {
+    path_entries
+        .iter()
+        .map(AsRef::as_ref)
+        .filter(|path_entry| !path_entry_matches(path_entry, excluded_directory))
+        .any(|path_entry| {
+            Path::new(&expand_environment_variables(path_entry))
+                .join(executable_name)
+                .is_file()
+        })
+}
+
 fn path_contains_entry(path_entries: &[impl AsRef<str>], directory_path: &str) -> bool {
     path_entries
         .iter()
@@ -128,4 +156,43 @@ pub(super) fn join_path_entries(path_entries: &[impl AsRef<str>]) -> Result<Stri
     )
     .map(|path_value| path_value.to_string_lossy().into_owned())
     .map_err(|error| eyre!("Failed to serialize PATH entries: {error}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+
+    use tempfile::tempdir;
+
+    use super::path_entries_contain_executable;
+
+    #[test]
+    fn path_entries_contain_executable_ignores_the_excluded_directory() {
+        let excluded = tempdir().unwrap();
+        let other = tempdir().unwrap();
+        let empty = tempdir().unwrap();
+        fs::write(excluded.path().join("actiona-run.exe"), "").unwrap();
+
+        let excluded_path = excluded.path().to_string_lossy().into_owned();
+        let other_path = other.path().to_string_lossy().into_owned();
+        let empty_path = empty.path().to_string_lossy().into_owned();
+
+        assert!(!path_entries_contain_executable(
+            &[&excluded_path, &empty_path],
+            "actiona-run.exe",
+            &excluded_path,
+        ));
+
+        fs::write(other.path().join("actiona-run.exe"), "").unwrap();
+        assert!(path_entries_contain_executable(
+            &[&excluded_path, &empty_path, &other_path],
+            "actiona-run.exe",
+            &excluded_path,
+        ));
+        assert!(path_entries_contain_executable(
+            &[&excluded_path],
+            "actiona-run.exe",
+            &other_path,
+        ));
+    }
 }

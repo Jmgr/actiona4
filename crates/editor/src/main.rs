@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use actiona_common::sentry::setup_crash_reporting;
 use color_eyre::Result;
-use editor::rpc::api_serve;
+use editor::rpc::{RpcResponse, api_serve};
 #[cfg(not(debug_assertions))]
 use include_dir::include_dir;
 use tokio::runtime::{Handle as TokioHandle, Runtime as TokioRuntime};
@@ -32,7 +32,7 @@ fn create_webview(app: &Application, tokio_handle: TokioHandle) -> WebView {
 
     #[cfg(not(debug_assertions))]
     let builder = builder
-        .webroot(include_dir!("$CARGO_MANIFEST_DIR/dist"))
+        .webroot(include_dir!("$EDITOR_WEBROOT"))
         .default_contextmenu_disabled();
 
     let webview = builder.build();
@@ -60,13 +60,18 @@ fn connect_host_bridge(webview: &WebView, tokio_handle: TokioHandle) {
             return true;
         }
 
-        let input = serde_json::from_str(&json).unwrap_or(serde_json::Value::Null);
-        match api_serve(api.clone(), &cmd, input) {
+        match api_serve(api.clone(), &cmd, &json) {
             Some(fut) => {
                 let tokio_handle = tokio_handle.clone();
                 request::request_blocking(req, id, move || {
-                    serde_json::to_string(&tokio_handle.block_on(fut))
-                        .expect("RPC: failed to serialize response")
+                    let response = tokio_handle.block_on(fut);
+                    if let RpcResponse::Error(message) = &response {
+                        eprintln!("RPC: {message}");
+                    }
+                    serde_json::to_string(&response).unwrap_or_else(|error| {
+                        eprintln!("RPC: failed to serialize the response to `{cmd}`: {error}");
+                        r#"{"error":"failed to serialize the response"}"#.to_owned()
+                    })
                 });
                 true
             }

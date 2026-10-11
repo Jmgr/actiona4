@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Actiona Editor
-Exec=editor
+Exec=actiona-editor
 Icon=actiona-editor
 Type=Application
 Categories=Utility;

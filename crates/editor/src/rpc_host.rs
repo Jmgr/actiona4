@@ -102,14 +102,104 @@ impl Api for HostApi {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Mutex;
-
     use action_definition::{
         actions::WithDefinition,
         tree::{BranchKind, NodePayload, Static},
     };
+    use editor::rpc::{ApiClient, RpcError, RpcResponse, Transport, api_serve};
+    use itertools::Itertools;
+    use parking_lot::Mutex;
 
     use super::*;
+
+    /// A [`Transport`] that serves requests in-process, like the webview bridge does.
+    struct LoopbackTransport(Arc<HostApi>);
+
+    impl Transport for LoopbackTransport {
+        type Error = String;
+
+        async fn request(
+            &self,
+            method: &'static str,
+            input: serde_json::Value,
+        ) -> Result<serde_json::Value, String> {
+            let response = api_serve(self.0.clone(), method, &input.to_string())
+                .ok_or_else(|| format!("unknown command `{method}`"))?
+                .await;
+            serde_json::to_value(response).map_err(|error| error.to_string())
+        }
+    }
+
+    /// A [`Transport`] whose host always answers with an error.
+    struct FailingTransport;
+
+    impl Transport for FailingTransport {
+        type Error = String;
+
+        async fn request(
+            &self,
+            _method: &'static str,
+            _input: serde_json::Value,
+        ) -> Result<serde_json::Value, String> {
+            serde_json::to_value(RpcResponse::Error("boom".to_owned()))
+                .map_err(|error| error.to_string())
+        }
+    }
+
+    fn host_api() -> (Arc<RecordingSink>, Arc<HostApi>) {
+        let sink = Arc::new(RecordingSink::default());
+        let api = Arc::new(HostApi::new(sink.clone()));
+        (sink, api)
+    }
+
+    #[tokio::test]
+    async fn serve_answers_malformed_requests_with_an_error() {
+        let (sink, api) = host_api();
+
+        for input in ["not json", "[1, 2]"] {
+            let response = api_serve(api.clone(), "load_rows", input)
+                .expect("load_rows is a known command")
+                .await;
+            let RpcResponse::Error(message) = response else {
+                panic!("expected an error response for {input:?}, got {response:?}");
+            };
+            assert!(
+                message.starts_with("invalid request for `load_rows`: "),
+                "{message}"
+            );
+        }
+
+        assert!(sink.0.lock().is_empty(), "the handler must not have run");
+    }
+
+    #[test]
+    fn serve_ignores_unknown_commands() {
+        let (_sink, api) = host_api();
+
+        assert!(api_serve(api, "no_such_command", "{}").is_none());
+    }
+
+    #[tokio::test]
+    async fn client_calls_go_through_serve() {
+        let (sink, api) = host_api();
+
+        ApiClient::new(LoopbackTransport(api))
+            .load_rows()
+            .await
+            .unwrap();
+
+        assert_eq!(sink.0.lock().len(), 1);
+    }
+
+    #[tokio::test]
+    async fn client_surfaces_host_errors() {
+        let result = ApiClient::new(FailingTransport).load_rows().await;
+
+        assert!(
+            matches!(&result, Err(RpcError::Host(message)) if message == "boom"),
+            "{result:?}"
+        );
+    }
 
     /// An [`EventSink`] that records what the host pushed, so tests can assert on it.
     #[derive(Default)]
@@ -117,7 +207,7 @@ mod tests {
 
     impl EventSink for RecordingSink {
         fn send(&self, event: HostEvent) {
-            self.0.lock().unwrap().push(event);
+            self.0.lock().push(event);
         }
     }
 
@@ -128,7 +218,7 @@ mod tests {
 
         api.load_rows().await;
 
-        let events = sink.0.lock().unwrap();
+        let events = sink.0.lock();
         let [HostEvent::Tree(tree)] = events.as_slice() else {
             panic!("expected a single tree event");
         };
@@ -145,7 +235,7 @@ mod tests {
                 NodePayload::Static(Static::Branch(_)) => "branch:other",
                 NodePayload::Action(action) => action.definition().id,
             })
-            .collect::<Vec<_>>();
+            .collect_vec();
 
         assert_eq!(
             kinds,
@@ -165,7 +255,7 @@ mod tests {
         let labels = rows
             .iter()
             .map(|&id| tree.get_node(id).unwrap().label())
-            .collect::<Vec<_>>();
+            .collect_vec();
 
         assert_eq!(
             labels,
@@ -185,7 +275,7 @@ mod tests {
         let comments = rows
             .iter()
             .map(|&id| tree.get_node(id).unwrap().comment())
-            .collect::<Vec<_>>();
+            .collect_vec();
 
         assert_eq!(
             comments,

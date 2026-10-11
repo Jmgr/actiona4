@@ -137,8 +137,7 @@ const PACKAGED_FILES: [PackagedFileDefinition; 8] = [
     PackagedFileDefinition::new("target/release/actiona-run.exe").signed(),
     PackagedFileDefinition::new("target/release/extension-selection.exe").signed(),
     PackagedFileDefinition::new("target/release/extension-opencv.exe").signed(),
-    PackagedFileDefinition::new("target/release/editor.exe")
-        .with_destination_name("actiona-editor.exe")
+    PackagedFileDefinition::new("target/release/actiona-editor.exe")
         .signed()
         .editor_only(),
     PackagedFileDefinition::new("*.md")
@@ -277,7 +276,7 @@ mod tests {
 
         let editor = editor_files
             .iter()
-            .find(|file| file.source_path == "target/release/editor.exe")
+            .find(|file| file.source_path == "target/release/actiona-editor.exe")
             .unwrap();
         assert_eq!(
             editor.destination_name_for(PackagedFilePlatform::Windows),

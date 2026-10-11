@@ -35,7 +35,7 @@
   </categories>
 
   <provides>
-    <binary>editor</binary>
+    <binary>actiona-editor</binary>
     <binary>actiona-run</binary>
   </provides>
 

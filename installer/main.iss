@@ -68,7 +68,11 @@ WizardSmallImageFile=..\crates\core\icons\icon.png
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
+#ifdef MyAddToPathOnlyIfRunMissing
+Name: "addtopath"; Description: "Add application directory to PATH (skipped if actiona-run is already in PATH)"
+#else
 Name: "addtopath"; Description: "Add application directory to PATH"
+#endif
 
 [Files]
 #include "..\target\files.iss"
@@ -90,7 +94,7 @@ begin
   SaveTelemetrySetting();
   ExecuteSetupNotificationRegistration();
 
-  if WizardIsTaskSelected('addtopath') then
+  if ShouldAddToPath() then
     ExecuteSetupPathOperation(True, ExpandConstant('{app}'))
   else
     ExecuteSetupPathOperation(False, ExpandConstant('{app}'));

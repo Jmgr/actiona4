@@ -24,6 +24,29 @@ pub enum RpcError<E> {
     Deserialize(serde_json::Error),
     /// The transport itself failed (bridge unavailable, etc.).
     Transport(E),
+    /// The host could not serve the request; see [`RpcResponse::Error`].
+    Host(String),
+}
+
+/// What the host answers every request with. The webview bridge can only resolve a
+/// request with JSON, never reject it, so failures travel in the payload.
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RpcResponse {
+    /// The handler's serialized output.
+    Ok(serde_json::Value),
+    /// Why the request could not be served: malformed arguments, or an output that
+    /// does not serialize.
+    Error(String),
+}
+
+impl RpcResponse {
+    pub fn from_output<T: Serialize>(output: &T) -> Self {
+        serde_json::to_value(output).map_or_else(
+            |error| Self::Error(format!("failed to serialize the response: {error}")),
+            Self::Ok,
+        )
+    }
 }
 
 #[rpc]

@@ -16,12 +16,33 @@ const LINUXDEPLOY_URL_BASE: &str =
 const LINUXDEPLOY_PLUGIN_APPIMAGE_URL_BASE: &str =
     "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous";
 const WEBKIT_PACKAGE: &str = "webkitgtk-6.0";
+const WEBKIT_INJECTED_BUNDLE_DIR: &str = "injected-bundle";
 const WEBKIT_RUNTIME_FILES: [&str; 4] = [
     "WebKitGPUProcess",
     "WebKitNetworkProcess",
     "WebKitWebProcess",
     "injected-bundle/libwebkitgtkinjectedbundle.so",
 ];
+
+/// The WebKit helper processes and injected bundle, which `libwebkitgtk` loads from a directory
+/// compiled into it rather than through the dynamic linker.
+struct WebkitRuntime {
+    /// Absolute host directory, e.g. `/usr/lib/x86_64-linux-gnu/webkitgtk-6.0`.
+    dir: PathBuf,
+    files: Vec<PathBuf>,
+}
+
+impl WebkitRuntime {
+    /// Where the runtime is staged, relative to the AppDir root.
+    fn relative_dir(&self) -> Result<&Path> {
+        self.dir.strip_prefix("/").map_err(|_| {
+            eyre!(
+                "WebKit runtime directory must be absolute: {}",
+                self.dir.display()
+            )
+        })
+    }
+}
 
 pub async fn build_appimages(workspace_root: &Path, sign: bool) -> Result<()> {
     let appimage_dir = workspace_root.join("target");
@@ -287,15 +308,13 @@ fn run_linuxdeploy(
         .join("icon.png");
     let icon_file =
         prepare_linuxdeploy_icon(require_file(&icon_source_path)?, tools_dir, package_kind)?;
-    let webkit_runtime_files = if package_kind == PackageKind::Editor {
-        webkit_runtime_files()?
+    let webkit_runtime = if package_kind == PackageKind::Editor {
+        let webkit_runtime = webkit_runtime()?;
+        stage_webkit_runtime(app_dir, &webkit_runtime)?;
+        Some(webkit_runtime)
     } else {
-        Vec::new()
+        None
     };
-
-    if package_kind == PackageKind::Editor {
-        stage_webkit_runtime(app_dir, &webkit_runtime_files)?;
-    }
 
     // APPIMAGE_EXTRACT_AND_RUN=1 avoids the FUSE requirement when linuxdeploy
     // and its AppImage output plugin are distributed as AppImages.
@@ -313,18 +332,26 @@ fn run_linuxdeploy(
         .arg("--executable")
         .arg(opencv_binary);
 
-    if package_kind == PackageKind::Editor {
+    if let Some(webkit_runtime) = &webkit_runtime {
+        let staged_dir = app_dir.join(webkit_runtime.relative_dir()?);
         cmd.arg("--executable")
-            .arg(require_binary(release_dir, "editor")?);
+            .arg(require_binary(release_dir, "actiona-editor")?)
+            // linuxdeploy does not know about the WebKit helpers on its own: this bundles their
+            // dependencies and points their RUNPATH at the bundled libraries, so they never load
+            // the host's WebKit.
+            .arg("--deploy-deps-only")
+            .arg(&staged_dir)
+            .arg("--deploy-deps-only")
+            .arg(staged_dir.join(WEBKIT_INJECTED_BUNDLE_DIR));
     }
 
     configure_linuxdeploy_environment(&mut cmd, tools_dir, output_path, version)?;
 
     run_linuxdeploy_command(&mut cmd)?;
 
-    if package_kind == PackageKind::Editor {
-        patch_webkit_library_paths(app_dir)?;
-        install_editor_apprun(app_dir)?;
+    if let Some(webkit_runtime) = &webkit_runtime {
+        clear_webkit_runtime_paths(app_dir, webkit_runtime)?;
+        install_editor_apprun(app_dir, webkit_runtime)?;
     }
 
     let mut output_cmd = Command::new(appimage_plugin);
@@ -373,7 +400,7 @@ fn run_linuxdeploy_command(cmd: &mut Command) -> Result<()> {
     }
 }
 
-fn webkit_runtime_files() -> Result<Vec<PathBuf>> {
+fn webkit_runtime() -> Result<WebkitRuntime> {
     let output = Command::new("pkg-config")
         .args(["--variable=libdir", WEBKIT_PACKAGE])
         .output()
@@ -386,26 +413,24 @@ fn webkit_runtime_files() -> Result<Vec<PathBuf>> {
     }
 
     let lib_dir = PathBuf::from(String::from_utf8(output.stdout)?.trim());
-    let runtime_dir = lib_dir.join(WEBKIT_PACKAGE);
-
-    WEBKIT_RUNTIME_FILES
+    let dir = lib_dir.join(WEBKIT_PACKAGE);
+    let files = WEBKIT_RUNTIME_FILES
         .iter()
         .map(|filename| {
-            let path = runtime_dir.join(filename);
+            let path = dir.join(filename);
             require_file(&path).map(Path::to_path_buf)
         })
-        .collect()
+        .collect::<Result<_>>()?;
+
+    Ok(WebkitRuntime { dir, files })
 }
 
-fn stage_webkit_runtime(app_dir: &Path, runtime_files: &[PathBuf]) -> Result<()> {
-    for source_path in runtime_files {
-        let relative_path = source_path.strip_prefix("/").map_err(|_| {
-            eyre!(
-                "WebKit runtime path must be absolute: {}",
-                source_path.display()
-            )
-        })?;
-        let destination_path = app_dir.join(relative_path);
+fn stage_webkit_runtime(app_dir: &Path, webkit_runtime: &WebkitRuntime) -> Result<()> {
+    let staged_dir = app_dir.join(webkit_runtime.relative_dir()?);
+
+    for source_path in &webkit_runtime.files {
+        let relative_path = source_path.strip_prefix(&webkit_runtime.dir)?;
+        let destination_path = staged_dir.join(relative_path);
         let destination_dir = destination_path.parent().ok_or_else(|| {
             eyre!(
                 "WebKit runtime path has no parent: {}",
@@ -420,70 +445,92 @@ fn stage_webkit_runtime(app_dir: &Path, runtime_files: &[PathBuf]) -> Result<()>
     Ok(())
 }
 
-fn patch_webkit_library_paths(app_dir: &Path) -> Result<()> {
-    let mut patched_occurrences = 0;
-    patch_webkit_library_paths_in_dir(&app_dir.join("usr"), &mut patched_occurrences)?;
+/// Clears the helper and injected bundle directories compiled into the bundled `libwebkitgtk`.
+///
+/// With an empty helper directory WebKit looks its helper processes up in `PATH`, and with an
+/// empty injected bundle directory it relies on `WEBKIT_INJECTED_BUNDLE_PATH`. The editor AppRun
+/// sets both to the bundled copies. Only these two exact strings are cleared: other embedded
+/// paths (GStreamer helpers, library search paths) keep pointing at the host.
+fn clear_webkit_runtime_paths(app_dir: &Path, webkit_runtime: &WebkitRuntime) -> Result<()> {
+    let helper_dir = webkit_runtime.dir.to_string_lossy().into_owned();
+    let injected_bundle_dir = format!("{helper_dir}/{WEBKIT_INJECTED_BUNDLE_DIR}/");
+    let mut cleared_helper_dirs = 0;
+    let mut cleared_injected_bundle_dirs = 0;
 
-    if patched_occurrences == 0 {
-        Err(eyre!(
-            "No absolute /usr/lib paths were found in the bundled WebKit libraries"
-        ))
-    } else {
-        Ok(())
+    for entry in fs::read_dir(app_dir.join("usr").join("lib"))? {
+        let path = entry?.path();
+        let is_webkit_library = path
+            .file_name()
+            .and_then(|filename| filename.to_str())
+            .is_some_and(|filename| {
+                filename.starts_with("libwebkitgtk-") && filename.contains(".so")
+            });
+        if !is_webkit_library || !path.is_file() {
+            continue;
+        }
+
+        let mut contents = fs::read(&path)?;
+        cleared_helper_dirs += clear_c_string(&mut contents, helper_dir.as_bytes());
+        cleared_injected_bundle_dirs +=
+            clear_c_string(&mut contents, injected_bundle_dir.as_bytes());
+        fs::write(path, contents)?;
     }
-}
 
-fn patch_webkit_library_paths_in_dir(dir: &Path, patched_occurrences: &mut usize) -> Result<()> {
-    for entry in fs::read_dir(dir)? {
-        let entry = entry?;
-        let path = entry.path();
-        let file_type = entry.file_type()?;
-
-        if file_type.is_dir() {
-            patch_webkit_library_paths_in_dir(&path, patched_occurrences)?;
-        } else if file_type.is_file()
-            && path
-                .file_name()
-                .and_then(|filename| filename.to_str())
-                .is_some_and(|filename| {
-                    filename.starts_with("libwebkit") && filename.contains(".so")
-                })
-        {
-            let mut contents = fs::read(&path)?;
-            // WebKit embeds its helper location as an absolute path. AppRun changes into the
-            // AppDir so this equal-length replacement resolves to the bundled runtime.
-            *patched_occurrences += replace_bytes(&mut contents, b"/usr/lib", b"usr//lib");
-            fs::write(path, contents)?;
+    for (cleared, value) in [
+        (cleared_helper_dirs, &helper_dir),
+        (cleared_injected_bundle_dirs, &injected_bundle_dir),
+    ] {
+        if cleared == 0 {
+            return Err(eyre!(
+                "\"{value}\" was not found in the bundled libwebkitgtk; the editor AppImage \
+                 cannot redirect WebKit to its bundled runtime"
+            ));
         }
     }
 
     Ok(())
 }
 
-fn replace_bytes(contents: &mut [u8], from: &[u8], to: &[u8]) -> usize {
-    assert_eq!(from.len(), to.len());
+/// Overwrites every NUL-terminated string in `contents` that is exactly `value` with NULs, and
+/// returns how many were cleared. Longer strings that merely start or end with `value` are left
+/// untouched.
+fn clear_c_string(contents: &mut [u8], value: &[u8]) -> usize {
+    let mut cleared = 0;
 
-    let mut replacements = 0;
-    for offset in 0..=contents.len().saturating_sub(from.len()) {
-        if contents.get(offset..offset + from.len()) == Some(from) {
-            contents[offset..offset + to.len()].copy_from_slice(to);
-            replacements += 1;
+    for start in 1..contents.len().saturating_sub(value.len()) {
+        let end = start + value.len();
+        if contents[start - 1] == 0 && contents[end] == 0 && &contents[start..end] == value {
+            contents[start..end].fill(0);
+            cleared += 1;
         }
     }
 
-    replacements
+    cleared
 }
 
-fn install_editor_apprun(app_dir: &Path) -> Result<()> {
+fn install_editor_apprun(app_dir: &Path, webkit_runtime: &WebkitRuntime) -> Result<()> {
     let apprun_path = app_dir.join("AppRun");
     if apprun_path.exists() || apprun_path.is_symlink() {
         fs::remove_file(&apprun_path)?;
     }
 
-    fs::write(
-        &apprun_path,
-        b"#!/bin/sh\nset -eu\ncd -- \"$APPDIR\"\nexport WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1\nexec ./usr/bin/editor \"$@\"\n",
-    )?;
+    // WebKit finds its helpers through PATH and its injected bundle through
+    // WEBKIT_INJECTED_BUNDLE_PATH (see clear_webkit_runtime_paths), so the editor keeps the
+    // caller's working directory.
+    let webkit_dir = webkit_runtime.relative_dir()?.display();
+    let script = format!(
+        r#"#!/bin/sh
+set -eu
+APPDIR="${{APPDIR:-$(dirname -- "$(readlink -f -- "$0")")}}"
+webkit_dir="$APPDIR/{webkit_dir}"
+export PATH="$webkit_dir${{PATH:+:$PATH}}"
+export WEBKIT_INJECTED_BUNDLE_PATH="$webkit_dir/{WEBKIT_INJECTED_BUNDLE_DIR}"
+export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
+exec "$APPDIR/usr/bin/actiona-editor" "$@"
+"#
+    );
+
+    fs::write(&apprun_path, script)?;
     fs::set_permissions(apprun_path, fs::Permissions::from_mode(0o755))?;
 
     Ok(())
@@ -531,7 +578,7 @@ fn prepend_to_path(dir: &Path) -> Result<String> {
         .map(|value| value.to_string_lossy().into_owned())
 }
 
-fn appimage_arch() -> Result<&'static str> {
+pub fn appimage_arch() -> Result<&'static str> {
     match env::consts::ARCH {
         "x86_64" => Ok("x86_64"),
         "aarch64" => Ok("aarch64"),
@@ -541,7 +588,7 @@ fn appimage_arch() -> Result<&'static str> {
     }
 }
 
-async fn read_version(workspace_root: &Path) -> Result<String> {
+pub async fn read_version(workspace_root: &Path) -> Result<String> {
     let cargo_toml_path = workspace_root.join("Cargo.toml");
     let contents = tokio_fs::read_to_string(&cargo_toml_path).await?;
     let value: toml::Value = toml::from_str(&contents)?;
@@ -555,4 +602,35 @@ async fn read_version(workspace_root: &Path) -> Result<String> {
         .and_then(toml::Value::as_str)
         .map(ToOwned::to_owned)
         .ok_or_else(|| eyre!("Failed to read workspace.package.version from Cargo.toml."))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::clear_c_string;
+
+    #[test]
+    fn clear_c_string_only_clears_exact_nul_terminated_matches() {
+        let dir = b"/usr/lib/x86_64-linux-gnu/webkitgtk-6.0";
+        let mut contents = [
+            b"\0/usr/lib\0".as_slice(),
+            b"/usr/libexec/gstreamer-1.0/gst-plugin-scanner\0",
+            dir,
+            b"\0",
+            dir,
+            b"/injected-bundle/\0",
+            b"/opt",
+            dir,
+            b"\0",
+        ]
+        .concat();
+        let mut expected = contents.clone();
+        let exact_match_start = expected
+            .windows(dir.len())
+            .position(|window| window == dir)
+            .unwrap();
+        expected[exact_match_start..exact_match_start + dir.len()].fill(0);
+
+        assert_eq!(clear_c_string(&mut contents, dir), 1);
+        assert_eq!(contents, expected);
+    }
 }
