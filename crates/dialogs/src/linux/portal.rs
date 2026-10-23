@@ -17,10 +17,10 @@ use futures_util::StreamExt;
 use tokio::runtime::Handle;
 use tracing::debug;
 use zbus::{
-    Connection, MatchRule, MessageStream, Proxy,
+    Connection, MatchRule, MessageStream, ObjectPath, OwnedObjectPath, OwnedVariant, Proxy,
+    Variant,
     message::Type,
     proxy::{Builder, CacheProperties},
-    zvariant::{ObjectPath, OwnedObjectPath, OwnedValue, Value},
 };
 
 use crate::{Error, FileDialogOptions, Result, options::OpenMode};
@@ -106,7 +106,7 @@ impl Portal {
         &self,
         method: &str,
         title: &str,
-        mut options: HashMap<&str, Value<'_>>,
+        mut options: HashMap<&str, Variant<'_>>,
     ) -> Result<Option<Vec<PathBuf>>> {
         let token = next_token();
         options.insert("handle_token", token.as_str().into());
@@ -116,18 +116,14 @@ impl Portal {
         // portals older than 0.9, which ignore it and choose their own.
         let rule = MatchRule::builder()
             .msg_type(Type::Signal)
-            .interface(REQUEST_INTERFACE)?
-            .member("Response")?
-            .path_namespace(REQUESTS_PATH)?
-            .build();
+            .interface(REQUEST_INTERFACE)
+            .member("Response")
+            .path_namespace(REQUESTS_PATH)
+            .build()?;
         let mut responses = MessageStream::for_match_rule(rule, &self.connection, None).await?;
         let mut close_guard = CloseOnDrop {
             connection: self.connection.clone(),
-            request: Some(
-                request_path(&self.connection, &token)?
-                    .try_into()
-                    .map_err(zbus::Error::from)?,
-            ),
+            request: Some(request_path(&self.connection, &token)?.try_into()?),
         };
 
         let file_chooser = proxy(&self.connection, DESKTOP_PATH, FILE_CHOOSER_INTERFACE).await?;
@@ -148,13 +144,13 @@ impl Portal {
         };
         close_guard.request = None;
 
-        let (response, mut results): (u32, HashMap<String, OwnedValue>) =
+        let (response, mut results): (u32, HashMap<String, OwnedVariant>) =
             message.body().deserialize()?;
 
         match response {
             0 => {
                 let uris: Vec<String> = match results.remove("uris") {
-                    Some(uris) => uris.try_into().map_err(zbus::Error::from)?,
+                    Some(uris) => uris.try_into()?,
                     None => Vec::new(),
                 };
                 uris.iter()
@@ -212,16 +208,16 @@ async fn proxy<'p>(
     let path = path.try_into().map_err(Into::into)?.into_owned();
 
     Builder::new(connection)
-        .destination(DESTINATION)?
-        .path(path)?
-        .interface(interface)?
+        .destination(DESTINATION)
+        .path(path)
+        .interface(interface)
         .cache_properties(CacheProperties::No)
         .build()
         .await
 }
 
 /// Options shared by `OpenFile` and `SaveFile`.
-fn common_options(options: &FileDialogOptions) -> HashMap<&'static str, Value<'static>> {
+fn common_options(options: &FileDialogOptions) -> HashMap<&'static str, Variant<'static>> {
     let mut portal_options = HashMap::new();
     portal_options.insert("modal", true.into());
 
@@ -311,9 +307,7 @@ mod tests {
 
     use tokio::{sync::oneshot, time::timeout};
     use zbus::{
-        Connection, connection, fdo,
-        message::Header,
-        zvariant::{OwnedObjectPath, OwnedValue, Value},
+        Connection, OwnedObjectPath, OwnedVariant, Variant, connection, fdo, message::Header,
     };
 
     use super::{DESKTOP_PATH, DESTINATION, Portal, REQUESTS_PATH, path_bytes, uri_to_path};
@@ -344,7 +338,7 @@ mod tests {
             #[zbus(header)] header: Header<'_>,
             parent: &str,
             title: &str,
-            options: HashMap<String, OwnedValue>,
+            options: HashMap<String, OwnedVariant>,
         ) -> fdo::Result<OwnedObjectPath> {
             // The method's signature needs them, but the fake has no use for them.
             _ = (parent, title);
@@ -366,7 +360,7 @@ mod tests {
                     };
                     let results = HashMap::from([(
                         "uris",
-                        Value::from(vec!["file:///tmp/picked%20file".to_owned()]),
+                        Variant::from(vec!["file:///tmp/picked%20file".to_owned()]),
                     )]);
                     connection
                         .emit_signal(
@@ -377,7 +371,7 @@ mod tests {
                             &(0_u32, results),
                         )
                         .await?;
-                    Ok(OwnedObjectPath::try_from(path).map_err(zbus::Error::from)?)
+                    Ok(OwnedObjectPath::try_from(path)?)
                 }
                 Behaviour::Wait(closed) => {
                     let path = format!("{REQUESTS_PATH}/{sender}/{token}");
@@ -385,7 +379,7 @@ mod tests {
                         .object_server()
                         .at(path.as_str(), FakeRequest(closed.take()))
                         .await?;
-                    Ok(OwnedObjectPath::try_from(path).map_err(zbus::Error::from)?)
+                    Ok(OwnedObjectPath::try_from(path)?)
                 }
             }
         }
@@ -404,11 +398,8 @@ mod tests {
 
     async fn serve(behaviour: Behaviour) -> Connection {
         connection::Builder::session()
-            .unwrap()
             .name(DESTINATION)
-            .unwrap()
             .serve_at(DESKTOP_PATH, FakeFileChooser(behaviour))
-            .unwrap()
             .build()
             .await
             .unwrap()

@@ -122,13 +122,17 @@ impl ProcessSignal {
             errno => ProcessSignalErrors::Other(errno.into()),
         })?;
 
-        let async_fd = AsyncFd::try_with_interest(
-            pidfd
-                .try_clone()
-                .map_err(|error| ProcessSignalErrors::Other(error.into()))?,
-            Interest::READABLE,
-        )
-        .map_err(|error| ProcessSignalErrors::Other(error.into()))?;
+        let polling_pidfd = pidfd
+            .try_clone()
+            .map_err(|error| ProcessSignalErrors::Other(error.into()))?;
+        #[allow(unsafe_code)]
+        #[expect(
+            clippy::undocumented_unsafe_blocks,
+            reason = "AsyncFd owns the live OwnedFd, which is never replaced or closed while registered"
+        )]
+        let async_fd =
+            unsafe { AsyncFd::register_with_interest(polling_pidfd, Interest::READABLE) }
+                .map_err(|error| ProcessSignalErrors::Other(error.into()))?;
 
         let _guard = select! {
             () = cancellation_token.cancelled() => {

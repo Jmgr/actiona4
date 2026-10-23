@@ -30,7 +30,7 @@ windows = { workspace = true, features = [
 
 [target.'cfg(unix)'.dependencies]
 futures-util.workspace = true
-zbus = { workspace = true, features = ["tokio"] }
+zbus = { workspace = true, features = ["proxy", "tokio"] }
 
 [dependencies]
 types = { path = "../types" }
@@ -48,6 +48,9 @@ build-support = { path = "../build-support" }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt", "time"] }
+
+[target.'cfg(unix)'.dev-dependencies]
+zbus = { workspace = true, features = ["service"] }
 
 [lints]
 workspace = true

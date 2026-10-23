@@ -92,7 +92,12 @@ fn forward_terminal_input(child: &mut Child) -> Result<Option<JoinHandle<()>>> {
         .custom_flags(libc::O_NONBLOCK)
         .open("/dev/tty")
         .context("opening terminal input")?;
-    let input = AsyncFd::new(input)?;
+    #[allow(unsafe_code)]
+    #[expect(
+        clippy::undocumented_unsafe_blocks,
+        reason = "AsyncFd owns the live File, which is never replaced or closed while registered"
+    )]
+    let input = unsafe { AsyncFd::register(input) }.map_err(io::Error::from)?;
     Ok(Some(tokio::spawn(async move {
         if let Err(error) = forward_input(input, output).await
             && error.kind() != ErrorKind::BrokenPipe

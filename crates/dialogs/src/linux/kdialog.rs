@@ -94,9 +94,9 @@ impl Tool for KDialog {
         let connection = Connection::session().await?;
         wait_for_service(&connection, &service, &mut child).await?;
         let dialog: Proxy<'static> = Builder::new(&connection)
-            .destination(service)?
-            .path("/ProgressDialog")?
-            .interface("org.kde.kdialog.ProgressDialog")?
+            .destination(service)
+            .path("/ProgressDialog")
+            .interface("org.kde.kdialog.ProgressDialog")
             .cache_properties(CacheProperties::No)
             .build()
             .await?;
@@ -387,7 +387,7 @@ async fn wait_for_service(connection: &Connection, service: &str, child: &mut Ch
     let mut registrations = bus
         .receive_name_owner_changed_with_args(&[(0, service)])
         .await?;
-    let name = BusName::try_from(service).map_err(zbus::Error::from)?;
+    let name = BusName::try_from(service)?;
     if bus.name_has_owner(name).await.map_err(zbus::Error::from)? {
         return Ok(());
     }
