@@ -36,7 +36,7 @@ impl CpuCore {
             name: cpu.name().to_owned(),
             vendor: cpu.vendor_id().to_owned(),
             brand: cpu.brand().to_owned(),
-            usage: cpu.cpu_usage().into(),
+            usage: cpu.usage().into(),
             frequency: cpu.frequency().into(),
         }
     }
@@ -154,7 +154,7 @@ impl Cpu {
                     RefreshKind::nothing().with_cpu(CpuRefreshKind::nothing().with_frequency()),
                 )
             })
-            .await?;
+            .await??;
 
         let cpu_variants = system
             .cpus()
@@ -170,7 +170,7 @@ impl Cpu {
         Ok(Self {
             inner: Arc::new(CpuInner {
                 system: Arc::new(Mutex::new(system)),
-                physical_core_count: sysinfo::System::physical_core_count(),
+                physical_core_count: sysinfo::System::physical_core_count().ok(),
                 architecture: sysinfo::System::cpu_arch(),
                 cpu_variants,
                 task_tracker,
@@ -222,7 +222,7 @@ impl Cpu {
                 sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
 
                 system.refresh_cpu_usage();
-                Ok(system.cpus()[index].cpu_usage().into())
+                Ok(system.cpus()[index].usage().into())
             })
             .await??;
         Ok(result)

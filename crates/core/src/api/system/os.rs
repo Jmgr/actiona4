@@ -174,15 +174,15 @@ impl Os {
 
         Ok(Self {
             inner: Arc::new(OsInner {
-                users: Arc::new(Mutex::new(users)),
-                groups: Arc::new(Mutex::new(groups)),
-                name: sysinfo::System::name().into(),
-                kernel_version: sysinfo::System::kernel_version().into(),
-                version: sysinfo::System::os_version().into(),
-                long_version: sysinfo::System::long_os_version().into(),
+                users: Arc::new(Mutex::new(users?)),
+                groups: Arc::new(Mutex::new(groups?)),
+                name: sysinfo::System::name().ok().into(),
+                kernel_version: sysinfo::System::kernel_version().ok().into(),
+                version: sysinfo::System::os_version().ok().into(),
+                long_version: sysinfo::System::long_os_version().ok().into(),
                 distribution_id: sysinfo::System::distribution_id(),
                 distribution_id_like: sysinfo::System::distribution_id_like(),
-                kernel_long_version: sysinfo::System::kernel_long_version(),
+                kernel_long_version: sysinfo::System::kernel_long_version().unwrap_or_default(),
                 task_tracker,
             }),
         })
@@ -225,17 +225,17 @@ impl Os {
 
     #[must_use]
     pub fn uptime(&self) -> DurationUnit {
-        DurationUnit::from_secs(sysinfo::System::uptime())
+        DurationUnit::from_secs(sysinfo::System::uptime().unwrap_or_default())
     }
 
     #[must_use]
     pub fn boot_time(&self) -> SystemTimeUnit {
-        SystemTimeUnit::from_unix_epoch(sysinfo::System::boot_time())
+        SystemTimeUnit::from_unix_epoch(sysinfo::System::boot_time().unwrap_or_default())
     }
 
     #[must_use]
     pub fn open_files_limit(&self) -> Option<usize> {
-        sysinfo::System::open_files_limit()
+        sysinfo::System::open_files_limit().ok()
     }
 
     pub async fn refresh_users(&self) -> Result<HashMap<UidUnit, User>> {
@@ -248,7 +248,6 @@ impl Os {
                 users.refresh();
 
                 users
-                    .list()
                     .iter()
                     .map(|user| (user.id().clone().into(), user.into()))
                     .collect()
@@ -262,7 +261,6 @@ impl Os {
     pub fn users(&self) -> HashMap<UidUnit, User> {
         let users = self.inner.users.lock();
         users
-            .list()
             .iter()
             .map(|user| (user.id().clone().into(), user.into()))
             .collect()
@@ -278,7 +276,6 @@ impl Os {
                 groups.refresh();
 
                 groups
-                    .list()
                     .iter()
                     .map(|group| (**group.id(), group.into()))
                     .collect()
@@ -292,7 +289,6 @@ impl Os {
     pub fn groups(&self) -> HashMap<u32, Group> {
         let groups = self.inner.groups.lock();
         groups
-            .list()
             .iter()
             .map(|group| (**group.id(), group.into()))
             .collect()

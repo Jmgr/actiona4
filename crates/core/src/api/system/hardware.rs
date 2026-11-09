@@ -28,7 +28,7 @@ pub struct Motherboard {
 impl Default for Motherboard {
     fn default() -> Self {
         sysinfo::Motherboard::new().map_or_else(
-            || Self {
+            |_| Self {
                 name: OptionalSystemString::none(),
                 vendor: OptionalSystemString::none(),
                 version: OptionalSystemString::none(),
@@ -201,18 +201,18 @@ impl Hardware {
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let temperature_sensors = task_tracker
             .spawn_blocking(sysinfo::Components::new)
-            .await?;
+            .await??;
 
         Ok(Self {
             inner: Arc::new(HardwareInner {
                 temperature_sensors: Arc::new(Mutex::new(temperature_sensors)),
-                name: Product::name().into(),
-                family: Product::family().into(),
-                serial_number: Product::serial_number().into(),
-                stock_keeping_unit: Product::stock_keeping_unit().into(),
-                uuid: Product::uuid().into(),
-                version: Product::version().into(),
-                vendor_name: Product::vendor_name().into(),
+                name: Product::name().ok().into(),
+                family: Product::family().ok().into(),
+                serial_number: Product::serial_number().ok().into(),
+                stock_keeping_unit: Product::stock_keeping_unit().ok().into(),
+                uuid: Product::uuid().ok().into(),
+                version: Product::version().ok().into(),
+                vendor_name: Product::vendor_name().ok().into(),
                 motherboard: Motherboard::default(),
                 task_tracker,
             }),
@@ -271,7 +271,6 @@ impl Hardware {
                 let mut temperature_sensors = temperature_sensors.lock();
                 temperature_sensors.refresh(rescan);
                 temperature_sensors
-                    .list()
                     .iter()
                     .map(TemperatureSensor::from)
                     .collect_vec()
@@ -293,13 +292,9 @@ impl Hardware {
             .spawn_blocking(move || {
                 let mut temperature_sensors = temperature_sensors.lock();
                 let temperature_sensor = if let Some(id) = temperature_sensor_id.as_ref() {
-                    temperature_sensors
-                        .list_mut()
-                        .iter_mut()
-                        .find(|c| c.id() == Some(id))
+                    temperature_sensors.iter_mut().find(|c| c.id() == Some(id))
                 } else {
                     temperature_sensors
-                        .list_mut()
                         .iter_mut()
                         .find(|c| c.label() == temperature_sensor_label)
                 }?;
@@ -314,7 +309,6 @@ impl Hardware {
         let temperature_sensors = self.inner.temperature_sensors.lock();
 
         temperature_sensors
-            .list()
             .iter()
             .map(TemperatureSensor::from)
             .collect_vec()

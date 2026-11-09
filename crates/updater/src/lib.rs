@@ -247,7 +247,7 @@ impl Updater {
             params.insert("os_distribution", distribution);
         }
 
-        if let Some(os_version) = os_version {
+        if let Ok(os_version) = os_version {
             params.insert("os_version", os_version);
         }
 

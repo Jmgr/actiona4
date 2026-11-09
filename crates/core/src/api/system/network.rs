@@ -220,7 +220,7 @@ impl Network {
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let networks = task_tracker
             .spawn_blocking(sysinfo::Networks::new_with_refreshed_list)
-            .await?;
+            .await??;
 
         Ok(Self {
             networks: Arc::new(Mutex::new(networks)),
@@ -230,7 +230,7 @@ impl Network {
 
     #[must_use]
     pub fn hostname(&self) -> Option<String> {
-        sysinfo::System::host_name()
+        sysinfo::System::host_name().ok()
     }
 
     pub async fn refresh_interfaces(
@@ -244,9 +244,8 @@ impl Network {
                 let mut networks = networks.lock();
                 networks.refresh(rescan);
                 networks
-                    .list()
                     .iter()
-                    .map(|(name, data)| (name.clone(), data.into()))
+                    .map(|(name, data)| (name.to_string_lossy().into_owned(), data.into()))
                     .collect::<HashMap<_, _>>()
             })
             .await?;
@@ -257,9 +256,8 @@ impl Network {
     pub fn interfaces(&self) -> HashMap<String, NetworkInterface> {
         let networks = self.networks.lock();
         networks
-            .list()
             .iter()
-            .map(|(name, data)| (name.clone(), data.into()))
+            .map(|(name, data)| (name.to_string_lossy().into_owned(), data.into()))
             .collect::<HashMap<_, _>>()
     }
 }

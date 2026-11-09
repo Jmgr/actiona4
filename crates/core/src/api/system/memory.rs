@@ -152,7 +152,7 @@ impl Memory {
                     RefreshKind::nothing().with_memory(MemoryRefreshKind::everything()),
                 )
             })
-            .await?;
+            .await??;
 
         Ok(Self {
             system: Arc::new(Mutex::new(system)),

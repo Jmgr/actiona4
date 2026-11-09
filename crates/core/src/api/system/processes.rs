@@ -428,7 +428,7 @@ impl Display for Processes {
 impl Processes {
     #[instrument(name = "processes", skip_all)]
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
-        let system = task_tracker.spawn_blocking(sysinfo::System::new).await?;
+        let system = task_tracker.spawn_blocking(sysinfo::System::new).await??;
 
         Ok(Self {
             system: Arc::new(Mutex::new(system)),

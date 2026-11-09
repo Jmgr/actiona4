@@ -201,7 +201,7 @@ impl Storage {
     pub async fn new(task_tracker: TaskTracker) -> Result<Self> {
         let sysinfo_disks = task_tracker
             .spawn_blocking(sysinfo::Disks::new_with_refreshed_list)
-            .await?;
+            .await??;
 
         Ok(Self {
             sysinfo_disks: Arc::new(Mutex::new(sysinfo_disks)),
@@ -216,7 +216,7 @@ impl Storage {
             .spawn_blocking(move || {
                 let mut sysinfo_disks = sysinfo_disks.lock();
                 sysinfo_disks.refresh(rescan);
-                sysinfo_disks.list().iter().map(Disk::from).collect_vec()
+                sysinfo_disks.iter().map(Disk::from).collect_vec()
             })
             .await?;
         Ok(result)
@@ -230,7 +230,6 @@ impl Storage {
             .spawn_blocking(move || {
                 let mut sysinfo_disks = sysinfo_disks.lock();
                 let disk = sysinfo_disks
-                    .list_mut()
                     .iter_mut()
                     .find(|disk| disk.mount_point() == disk_id)?;
                 disk.refresh();
@@ -242,6 +241,6 @@ impl Storage {
 
     pub fn disks(&self) -> Vec<Disk> {
         let sysinfo_disks = self.sysinfo_disks.lock();
-        sysinfo_disks.list().iter().map(Disk::from).collect_vec()
+        sysinfo_disks.iter().map(Disk::from).collect_vec()
     }
 }
