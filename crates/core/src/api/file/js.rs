@@ -2,14 +2,7 @@
 
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
-#[cfg(windows)]
-use std::os::windows::fs::FileTimesExt;
-use std::{
-    fmt::Debug,
-    fs::{File as StdFile, FileTimes},
-    io::SeekFrom,
-    sync::Arc,
-};
+use std::{fmt::Debug, io::SeekFrom, sync::Arc};
 
 use color_eyre::eyre::eyre;
 use macros::{FromJsObject, js_class, js_methods, options, platform};
@@ -20,11 +13,10 @@ use rquickjs::{
     prelude::Opt,
 };
 use tokio::{
-    fs,
+    fs::{self, FileTimes},
     io::{self, AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
     sync::Mutex,
 };
-use tokio_util::task::TaskTracker;
 
 use crate::{
     IntoJsResult,
@@ -539,22 +531,14 @@ impl JsFile {
     }
 
     #[qjs(skip)]
-    async fn set_times(
-        ctx: &Ctx<'_>,
-        opened_file: &OpenedFile,
-        times: FileTimes,
-        task_tracker: TaskTracker,
-    ) -> Result<()> {
-        let path = opened_file.path.clone();
+    async fn set_times(opened_file: &OpenedFile, times: FileTimes) -> Result<()> {
+        let file = fs::OpenOptions::new()
+            .write(true)
+            .open(&opened_file.path)
+            .await?;
+        file.set_times(times).await?;
 
-        task_tracker
-            .spawn_blocking(move || {
-                let file = StdFile::options().write(true).open(path)?;
-                file.set_times(times)?; // No implemented in tokio::fs
-                Result::<_>::Ok(())
-            })
-            .await
-            .map_err(|err| Exception::throw_message(ctx, &format!("Task join error: {err}")))?
+        Ok(())
     }
 
     /// Sets the last modification time of the file.
@@ -563,13 +547,7 @@ impl JsFile {
         let opened_file = self.opened_file(&ctx)?;
         let system_time = system_time_from_date(ctx.clone(), date)?;
 
-        Self::set_times(
-            &ctx,
-            opened_file,
-            FileTimes::new().set_modified(system_time),
-            ctx.user_data().task_tracker(),
-        )
-        .await?;
+        Self::set_times(opened_file, FileTimes::new().set_modified(system_time)).await?;
 
         Ok(())
     }
@@ -589,13 +567,7 @@ impl JsFile {
         let opened_file = self.opened_file_mut(&ctx)?;
         let system_time = system_time_from_date(ctx.clone(), date)?;
 
-        Self::set_times(
-            &ctx,
-            opened_file,
-            FileTimes::new().set_accessed(system_time),
-            ctx.user_data().task_tracker(),
-        )
-        .await?;
+        Self::set_times(opened_file, FileTimes::new().set_accessed(system_time)).await?;
 
         Ok(())
     }
@@ -624,17 +596,10 @@ impl JsFile {
 
         #[cfg(windows)]
         {
-            let task_tracker = ctx.user_data().task_tracker();
             let system_time = system_time_from_date(ctx.clone(), date)?;
             let opened_file = self.opened_file(&ctx.clone())?;
 
-            Self::set_times(
-                &ctx,
-                opened_file,
-                FileTimes::new().set_created(system_time),
-                task_tracker,
-            )
-            .await?;
+            Self::set_times(opened_file, FileTimes::new().set_created(system_time)).await?;
 
             Ok(())
         }
