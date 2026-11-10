@@ -189,7 +189,7 @@ rodio = { version = "0.23.0", default-features = false }
 rquickjs = { version = "0.14.0", default-features = false }
 rquickjs-serde = "0.8.0"
 rusqlite = "0.41.1"
-rusqlite_migration = { git = "https://github.com/DannyStoll1/rusqlite_migration", rev = "30b941a0850df790091dc58c3ec44f18dbb5e3ba" }
+rusqlite_migration = "2.7.0"
 rustdoc-types = "0.61.0"
 rustyline = "19.0.0"
 sadness-generator = "0.7.0"
