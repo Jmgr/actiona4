@@ -14,7 +14,6 @@
 
 use std::{collections::HashSet, sync::Arc, time::Duration};
 
-use humantime::format_duration;
 use macros::{FromJsObject, js_class, js_methods, options, platform};
 use rquickjs::{
     Class, Ctx, Exception, JsLifetime, Object, Promise, Result,
@@ -40,7 +39,7 @@ use crate::{
         mouse::Mouse,
     },
     runtime::{Runtime, WithUserData},
-    types::display::display_with_type,
+    types::{DurationUnit, display::display_with_type},
 };
 
 /// A recorded macro that can be replayed or saved to disk.
@@ -153,7 +152,7 @@ impl JsMacro {
             format!(
                 "{} events, {}",
                 self.event_count(),
-                format_duration(duration)
+                DurationUnit::from(duration)
             ),
         )
     }

@@ -11,6 +11,10 @@ use std::{
 pub use ::types::{convert, display, point, rect, size};
 use humansize::BINARY;
 use itertools::Itertools;
+use jiff::{
+    Timestamp,
+    fmt::{StdFmtWrite, friendly::SpanPrinter},
+};
 use sysinfo::Uid;
 
 use crate::{api::system::processes::ThreadKind, types::pid::Pid};
@@ -266,7 +270,10 @@ impl SystemTimeUnit {
 
 impl Display for SystemTimeUnit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", humantime::format_rfc3339(self.0))
+        match Timestamp::try_from(self.0) {
+            Ok(timestamp) => Display::fmt(&timestamp, f),
+            Err(_) => write!(f, "{:?}", self.0),
+        }
     }
 }
 
@@ -276,7 +283,9 @@ pub type DurationUnit = Unit<Duration, DurationUnitTag>;
 
 impl Display for DurationUnit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", humantime::format_duration(self.0))
+        SpanPrinter::new()
+            .print_unsigned_duration(&self.0, StdFmtWrite(f))
+            .map_err(|_| fmt::Error)
     }
 }
 

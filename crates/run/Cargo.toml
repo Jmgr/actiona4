@@ -56,9 +56,9 @@ dialoguer.workspace = true
 directories.workspace = true
 enigo.workspace = true
 flate2.workspace = true
-humantime.workspace = true
 indicatif.workspace = true
 interprocess = { workspace = true, features = ["tokio"] }
+jiff.workspace = true
 notify.workspace = true
 parking_lot.workspace = true
 rfd.workspace = true

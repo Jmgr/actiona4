@@ -2,6 +2,10 @@ use std::{fmt, time::Duration};
 
 use const_default::ConstDefault;
 use derive_more::Deref;
+use jiff::fmt::{
+    StdFmtWrite,
+    friendly::{SpanParser, SpanPrinter},
+};
 use macros::Parameter;
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
@@ -22,7 +26,9 @@ impl DurationValue {
 
 impl fmt::Display for DurationValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        humantime::format_duration(self.0).fmt(f)
+        SpanPrinter::new()
+            .print_unsigned_duration(&self.0, StdFmtWrite(f))
+            .map_err(|_| fmt::Error)
     }
 }
 
@@ -44,9 +50,7 @@ impl Serialize for DurationValue {
         S: Serializer,
     {
         if serializer.is_human_readable() {
-            humantime::format_duration(self.0)
-                .to_string()
-                .serialize(serializer)
+            serializer.collect_str(self)
         } else {
             (self.0.as_secs(), self.0.subsec_nanos()).serialize(serializer)
         }
@@ -143,7 +147,8 @@ fn duration_from_str<E>(value: &str) -> Result<Duration, E>
 where
     E: de::Error,
 {
-    humantime::parse_duration(value)
+    SpanParser::new()
+        .parse_unsigned_duration(value.trim())
         .map_err(|err| E::custom(format!("failed to parse duration `{value}`: {err}")))
 }
 
@@ -172,7 +177,8 @@ mod tests {
     #[case(Duration::ZERO, "0s")]
     #[case(Duration::from_millis(250), "250ms")]
     #[case(Duration::new(1, 500_000_000), "1s 500ms")]
-    fn serializes_as_humantime_string(#[case] duration: Duration, #[case] expected: &str) {
+    #[case(Duration::from_hours(25), "25h")]
+    fn serializes_as_friendly_duration(#[case] duration: Duration, #[case] expected: &str) {
         let value = DurationValue::new(duration);
 
         let json = serde_json::to_value(value).expect("serialize duration");
@@ -184,6 +190,7 @@ mod tests {
     #[case(json!("0s"), Duration::ZERO)]
     #[case(json!("250ms"), Duration::from_millis(250))]
     #[case(json!("1.5s"), Duration::from_millis(1_500))]
+    #[case(json!("25h"), Duration::from_hours(25))]
     #[case(json!(250), Duration::from_millis(250))]
     #[case(json!(1.5), Duration::from_micros(1_500))]
     #[case(json!({ "secs": 1, "nanos": 500_000_000 }), Duration::new(1, 500_000_000))]

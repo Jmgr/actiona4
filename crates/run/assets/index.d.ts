@@ -13,7 +13,7 @@
  */
 type ColorLike = Color | { r: number; g: number; b: number; a?: number };
 /**
- * A duration as milliseconds (number) or a humantime string.
+ * A duration as milliseconds (number) or a string such as `"1h 30m"`.
  *
  * ```ts
  * sleep(500);     // 500 milliseconds

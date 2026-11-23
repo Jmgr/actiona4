@@ -6,11 +6,13 @@ use actiona_core::{
         macros::{MacroData, PlayConfig, PlayProgress, RecordConfig, play_impl, record_impl},
     },
     runtime::{Runtime, WaitAtEnd},
+    types::DurationUnit,
 };
 use color_eyre::{
     Result,
     eyre::{bail, eyre},
 };
+use jiff::fmt::friendly::SpanParser;
 use tokio::sync::mpsc;
 
 fn parse_stop_key(s: &str) -> Result<enigo::Key> {
@@ -41,13 +43,16 @@ pub async fn run_record(
         .map(|s| parse_stop_key(s))
         .collect::<Result<_>>()?;
 
-    let timeout = timeout.map(humantime::parse_duration).transpose()?;
-    let mouse_position_interval = humantime::parse_duration(mouse_position_interval)?;
+    let parser = SpanParser::new();
+    let timeout = timeout
+        .map(|value| parser.parse_unsigned_duration(value.trim()))
+        .transpose()?;
+    let mouse_position_interval = parser.parse_unsigned_duration(mouse_position_interval.trim())?;
 
     let stop_display = stop_keys.join(" + ");
     println!("Recording... Press {stop_display} to stop.");
     if let Some(dur) = timeout {
-        println!("(timeout: {})", humantime::format_duration(dur));
+        println!("(timeout: {})", DurationUnit::from(dur));
     }
 
     let config = RecordConfig {
@@ -69,7 +74,7 @@ pub async fn run_record(
     println!(
         "Recorded {} events ({}).",
         data.events.len(),
-        humantime::format_duration(duration)
+        DurationUnit::from(duration)
     );
 
     data.save(file, runtime.task_tracker()).await?;
@@ -101,7 +106,7 @@ pub async fn run_play(
     println!(
         "Loaded macro: {} events, {}.",
         data.events.len(),
-        humantime::format_duration(duration)
+        DurationUnit::from(duration)
     );
     println!("Replaying at {speed}x speed...");
 

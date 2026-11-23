@@ -34,7 +34,6 @@ zbus.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 interprocess = { workspace = true, features = ["tokio"] }
-pe-parser.workspace = true
 tray-icon.workspace = true
 windows = { workspace = true, features = [
     "Win32_UI_Accessibility",
@@ -87,7 +86,6 @@ http-body.workspace = true
 http-body-util.workspace = true
 human-units = { workspace = true, features = ["si-units"] }
 humansize.workspace = true
-humantime.workspace = true
 image = { workspace = true, features = ["png", "jpeg", "bmp", "gif", "tga", "tiff", "webp"] }
 imageproc = { workspace = true, features = ["text"] }
 indexmap = { workspace = true, features = ["serde"] }
@@ -144,7 +142,6 @@ toml.workspace = true
 
 [dev-dependencies]
 base64.workspace = true
-console-subscriber.workspace = true
 criterion.workspace = true
 httptest.workspace = true
 libtest-mimic-collect.workspace = true

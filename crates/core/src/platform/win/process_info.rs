@@ -1,14 +1,7 @@
 #![allow(unsafe_code, dead_code)]
 
-use std::path::Path;
-
 use color_eyre::Result;
-use pe_parser::{
-    optional::{Optional, Subsystem},
-    pe::parse_portable_executable,
-};
 use satint::SaturatingInto;
-use tokio::fs;
 use windows::{
     Win32::{
         Foundation::{HWND, LPARAM, WPARAM},
@@ -22,34 +15,6 @@ use windows::{
 };
 
 use crate::platform::win::safe_handle::SafeHandle;
-
-#[derive(Debug)]
-pub enum ProcessType {
-    Gui,
-    Console,
-    Service,
-    Unknown,
-}
-
-pub async fn find_process_type(path: &Path) -> Result<Option<ProcessType>> {
-    let bytes = fs::read(path).await?;
-    let executable = parse_portable_executable(bytes.as_slice())?;
-    let subsystem = executable
-        .optional_header_64
-        .as_ref()
-        .and_then(|h| h.get_subsystem())
-        .or_else(|| {
-            let h = executable.optional_header_32.as_ref()?;
-            h.get_subsystem()
-        });
-
-    Ok(match subsystem {
-        None => None,
-        Some(Subsystem::WindowsGUI) => Some(ProcessType::Gui),
-        Some(Subsystem::WindowsCUI) => Some(ProcessType::Console),
-        Some(_) => Some(ProcessType::Unknown),
-    })
-}
 
 #[allow(clippy::as_conversions)] // pointer casts required by Windows callback API
 unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
@@ -148,13 +113,6 @@ mod tests {
 
     #[tokio::test]
     async fn subsystem() {
-        /*
-        let result =
-            find_process_type(Path::new(r#"C:\actiona-distribution\output64\actiona.exe"#))
-                .await
-                .unwrap();
-            */
-
         all_windows()
             .unwrap()
             .into_iter()
@@ -165,7 +123,5 @@ mod tests {
             //.map(window_title)
             .collect::<Result<Vec<_>>>()
             .unwrap();
-
-        //println!("{result:?}");
     }
 }

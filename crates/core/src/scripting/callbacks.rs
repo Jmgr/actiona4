@@ -1,7 +1,6 @@
 use std::{sync::Arc, time::Instant};
 
 use derive_where::derive_where;
-use humantime::format_duration;
 use parking_lot::Mutex;
 use rquickjs::{AsyncContext, Ctx, Exception, Function, Persistent, Result, Value, function::Args};
 use slotmap::{SlotMap, new_key_type};
@@ -15,7 +14,7 @@ use tokio::{
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{info, warn};
 
-use crate::runtime::WithUserData;
+use crate::{runtime::WithUserData, types::DurationUnit};
 
 struct Call {
     function_key: FunctionKey,
@@ -471,7 +470,7 @@ impl Callbacks {
         info!(
             "call {:?} finished, duration: {}",
             call_id,
-            format_duration(start.elapsed())
+            DurationUnit::from(start.elapsed())
         );
 
         self.retrieve_result(ctx, call_id)

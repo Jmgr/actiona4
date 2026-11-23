@@ -1,7 +1,7 @@
 #![allow(clippy::needless_pass_by_value)]
 
 //! @verbatim /**
-//! @verbatim  * A duration as milliseconds (number) or a humantime string.
+//! @verbatim  * A duration as milliseconds (number) or a string such as `"1h 30m"`.
 //! @verbatim  *
 //! @verbatim  * ```ts
 //! @verbatim  * sleep(500);     // 500 milliseconds
@@ -13,7 +13,7 @@
 
 use std::time::Duration;
 
-use humantime::parse_duration;
+use jiff::fmt::friendly::SpanParser;
 use rquickjs::{Ctx, Exception, FromJs, Result, Value};
 
 #[derive(Clone, Copy, Debug)]
@@ -36,9 +36,14 @@ impl<'js> FromJs<'js> for JsDuration {
         Ok(Self(if let Some(value) = value.as_string() {
             let value = value.to_string()?;
 
-            parse_duration(&value).map_err(|err| {
-                Exception::throw_message(ctx, &format!("Failed to parse duration '{value}': {err}"))
-            })?
+            SpanParser::new()
+                .parse_unsigned_duration(value.trim())
+                .map_err(|err| {
+                    Exception::throw_message(
+                        ctx,
+                        &format!("Failed to parse duration '{value}': {err}"),
+                    )
+                })?
         } else {
             let milliseconds = f64::from_js(ctx, value)?;
             let seconds = milliseconds / 1_000.0;
@@ -75,7 +80,7 @@ mod tests {
     }
 
     #[test]
-    fn from_js_duration_humantime() {
+    fn from_js_duration_string() {
         Runtime::test_with_script_engine(|script_engine| async move {
             let duration = script_engine
                 .eval_async::<JsDuration>("\"10m\"")

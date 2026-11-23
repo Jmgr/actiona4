@@ -856,10 +856,6 @@ criteria = "safe-to-run"
 version = "2.1.3"
 criteria = "safe-to-deploy"
 
-[[exemptions.humantime]]
-version = "2.2.0"
-criteria = "safe-to-deploy"
-
 [[exemptions.hyper]]
 version = "1.6.0"
 criteria = "safe-to-deploy"

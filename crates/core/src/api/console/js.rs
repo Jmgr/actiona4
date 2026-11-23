@@ -8,7 +8,6 @@ use std::{
 };
 
 use console::{Style, Term};
-use humantime::format_duration;
 use itertools::Itertools;
 use macros::{js_class, js_methods};
 use rquickjs::{
@@ -19,7 +18,7 @@ use rquickjs::{
 };
 use tracing::warn;
 
-use crate::api::js::classes::SingletonClass;
+use crate::{api::js::classes::SingletonClass, types::DurationUnit};
 
 /// The global console singleton for printing output and basic debugging.
 ///
@@ -511,7 +510,7 @@ impl JsConsole {
         if let Some(timer_start) = self.timers.remove(&label) {
             println!(
                 "{label}: {} - timer ended",
-                format_duration(timer_start.elapsed())
+                DurationUnit::from(timer_start.elapsed())
             );
         } else {
             return Err(Exception::throw_message(
