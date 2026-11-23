@@ -65,8 +65,7 @@ impl JsPath {
     pub fn filename(path: String) -> String {
         Path::new(&path)
             .file_name()
-            .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or_default()
+            .map_or_else(String::new, |p| p.to_string_lossy().into_owned())
     }
 
     /// Alias for `filename`.
@@ -86,8 +85,7 @@ impl JsPath {
     pub fn parent(path: String) -> String {
         Path::new(&path)
             .parent()
-            .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or_default()
+            .map_or_else(String::new, |p| p.to_string_lossy().into_owned())
     }
 
     /// Alias for `parent`.
@@ -132,8 +130,7 @@ impl JsPath {
     pub fn extension(path: String) -> String {
         Path::new(&path)
             .extension()
-            .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or_default()
+            .map_or_else(String::new, |p| p.to_string_lossy().into_owned())
     }
 
     /// Alias for `extension`.

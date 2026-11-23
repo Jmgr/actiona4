@@ -2454,7 +2454,6 @@ dependencies = [
 name = "file-format"
 version = "0.4.0"
 dependencies = [
- "action-definition",
  "async-stream",
  "bytes",
  "const_format",
@@ -2462,19 +2461,14 @@ dependencies = [
  "file-format 0.29.0",
  "futures",
  "jiff 0.2.46",
- "parking_lot 0.13.0",
- "rstest",
  "rusqlite",
  "rusqlite_migration",
- "serde",
  "serde_json",
  "sha2",
  "strum",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "tokio-util",
- "types",
  "uuid",
  "zstd",
 ]
@@ -3517,7 +3511,6 @@ dependencies = [
  "tokio",
  "updater",
  "versions",
- "windows 0.62.2",
  "winreg 0.56.0",
  "winrt-toast-reborn",
 ]

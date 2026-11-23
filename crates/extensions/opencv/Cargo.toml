@@ -33,9 +33,11 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 
 [build-dependencies]
+built.workspace = true
+
+[target.'cfg(windows)'.build-dependencies]
 build-support = { path = "../../build-support" }
 
-built.workspace = true
 embed-resource.workspace = true
 
 [dev-dependencies]

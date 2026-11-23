@@ -490,7 +490,9 @@ impl JsDialogs {
             text,
             icon: options.icon.unwrap_or_default().into(),
             buttons: options.buttons.unwrap_or_default().into(),
-            labels: options.labels.map(Into::into).unwrap_or_default(),
+            labels: options
+                .labels
+                .map_or_else(ButtonLabels::default, Into::into),
         };
 
         task_with_token(ctx, options.signal, async move |ctx, token| {

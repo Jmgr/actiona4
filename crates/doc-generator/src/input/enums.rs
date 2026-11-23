@@ -70,7 +70,7 @@ pub fn process_enums(items: &Items) -> Result<Vec<Enum>> {
             }
 
             result_variants.push(EnumVariant {
-                name: name.clone(),
+                name,
                 comments,
                 platforms: instructions.platforms(),
             });

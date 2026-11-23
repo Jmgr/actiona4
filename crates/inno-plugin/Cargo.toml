@@ -11,13 +11,12 @@ readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
+[target.'cfg(windows)'.dependencies]
+eyre.workspace = true
 installer-tools = { path = "../installer-tools" }
 
-eyre.workspace = true
+[lib]
+crate-type = ["cdylib"]
 
 [lints]
 workspace = true

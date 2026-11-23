@@ -11,19 +11,26 @@ readme.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
+[target.'cfg(unix)'.dependencies]
+sha2.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+jiff.workspace = true
+versions.workspace = true
+
 [dependencies]
 clap = { workspace = true, features = ["derive"] }
 color-eyre.workspace = true
 installer-tools = { path = "../installer-tools" }
-jiff.workspace = true
 reqwest.workspace = true
 serde_json.workspace = true
-sha2.workspace = true
 tempfile.workspace = true
-tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+tokio = { workspace = true, features = ["fs", "rt-multi-thread", "macros"] }
 toml.workspace = true
-versions.workspace = true
 zip = { workspace = true, features = ["deflate-flate2-zlib-rs"] }
+
+[dev-dependencies]
+versions.workspace = true
 
 [lints]
 workspace = true

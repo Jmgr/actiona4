@@ -20,7 +20,6 @@ derive_more.workspace = true
 fluent.workspace = true
 icons.workspace = true
 jiff.workspace = true
-postcard = { workspace = true, features = ["use-std"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 slotmap = { workspace = true, features = ["serde"] }
@@ -30,7 +29,7 @@ thiserror.workspace = true
 
 [dev-dependencies]
 fluent-syntax.workspace = true
-postcard.workspace = true
+postcard = { workspace = true, features = ["use-std"] }
 rstest.workspace = true
 serde_json.workspace = true
 unic-langid.workspace = true

@@ -100,8 +100,9 @@ pub fn ensure_session_available(display_name: Option<&str>) -> Result<()> {
     let (connection, _) = RustConnection::connect(display_name).map_err(|err| {
         let display_context = display_name
             .filter(|display_name| !display_name.is_empty())
-            .map(|display_name| format!(" on display `{display_name}`"))
-            .unwrap_or_default();
+            .map_or_else(String::new, |display_name| {
+                format!(" on display `{display_name}`")
+            });
 
         eyre!("unable to connect to an X11 session{display_context}: {err}")
     })?;

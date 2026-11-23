@@ -28,8 +28,6 @@ impl Runnable for Code {
     async fn run(&self, context: &mut ExecutionContext) -> Result<PostRun, RunError> {
         let action_result: Option<ActionResult> = self.source.resolve(context).await?;
 
-        Ok(action_result
-            .map(action_result_to_post_run)
-            .unwrap_or_default())
+        Ok(action_result.map_or_else(PostRun::default, action_result_to_post_run))
     }
 }

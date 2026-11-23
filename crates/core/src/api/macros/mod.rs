@@ -251,11 +251,10 @@ pub async fn record_impl(
     displays: Displays,
     token: CancellationToken,
 ) -> Result<MacroData> {
-    let current_displays = displays
-        .wait_get_info()
-        .await
-        .map(|infos| infos.iter().map(MacroDisplayInfo::from).collect::<Vec<_>>())
-        .unwrap_or_default();
+    let current_displays = displays.wait_get_info().await.map_or_else(
+        |_| Vec::new(),
+        |infos| infos.iter().map(MacroDisplayInfo::from).collect(),
+    );
     let button_guard = runtime.mouse_buttons();
     let mut button_rx = button_guard.subscribe();
     let scroll_guard = runtime.mouse_scroll();
@@ -514,11 +513,10 @@ pub async fn play_impl(
         ));
     }
 
-    let current_displays = displays
-        .wait_get_info()
-        .await
-        .map(|infos| infos.iter().map(MacroDisplayInfo::from).collect::<Vec<_>>())
-        .unwrap_or_default();
+    let current_displays = displays.wait_get_info().await.map_or_else(
+        |_| Vec::new(),
+        |infos| infos.iter().map(MacroDisplayInfo::from).collect(),
+    );
     if current_displays != data.metadata.displays.as_slice() {
         warn!(
             "Display configuration has changed since this macro was recorded. \

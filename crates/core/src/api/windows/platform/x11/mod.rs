@@ -94,8 +94,7 @@ impl WindowsHandler for X11WindowHandler {
             )?
             .reply()?
             .value32()
-            .map(Itertools::collect_vec)
-            .unwrap_or_default();
+            .map_or_else(Vec::new, Itertools::collect_vec);
         let hidden = self.hidden_windows(connection, &windows);
         windows.extend(hidden);
 

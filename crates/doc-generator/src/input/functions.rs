@@ -158,7 +158,7 @@ pub fn extract_functions(
             if rest_params.is_some() || !parameters.is_empty() {
                 overloads.push(MethodOverload {
                     parameters,
-                    return_: return_.unwrap_or(default_result.clone()),
+                    return_: return_.unwrap_or(default_result),
                     is_readonly_type,
                     comments: comments.clone(),
                     rest_params,
@@ -282,7 +282,7 @@ pub fn extract_functions(
         };
 
         methods.push(Method {
-            name: function_name.clone(),
+            name: function_name,
             category,
             overloads,
             is_constructor,

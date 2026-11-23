@@ -618,12 +618,11 @@ fn first_positional_index(args: &[OsString], cmd: &clap::Command) -> Option<usiz
     let run_flags: Vec<(Option<char>, Option<&str>)> = cmd
         .get_subcommands()
         .find(|subcommand| subcommand.get_name() == "run")
-        .map(|run| {
+        .map_or_else(Vec::new, |run| {
             run.get_arguments()
                 .map(|a| (a.get_short(), a.get_long()))
                 .collect()
-        })
-        .unwrap_or_default();
+        });
 
     let flag_matches = |flag: &str, short: Option<char>, long: Option<&str>| {
         // Keep matching logic aligned with the existing parser behavior:

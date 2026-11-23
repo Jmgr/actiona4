@@ -1396,6 +1396,10 @@ mod tests {
     }
 
     #[test]
+    #[allow(
+        clippy::needless_range_loop,
+        reason = "Keep the RGB channel indices explicit in this assertion"
+    )]
     fn draw_rectangle_blends_semi_transparent_color() {
         // White opaque background
         let mut img = Image::from_rgba8(RgbaImage::from_pixel(10, 10, Rgba([255, 255, 255, 255])));

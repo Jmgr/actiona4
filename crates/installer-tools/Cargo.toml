@@ -12,17 +12,16 @@ keywords.workspace = true
 categories.workspace = true
 
 [target.'cfg(windows)'.dependencies]
-windows.workspace = true
+config = { path = "../config" }
+
+tokio.workspace = true
+updater = { path = "../updater" }
+versions.workspace = true
 winreg.workspace = true
 winrt-toast-reborn.workspace = true
 
 [dependencies]
-config = { path = "../config" }
-updater = { path = "../updater" }
-
 eyre.workspace = true
-tokio.workspace = true
-versions.workspace = true
 
 [dev-dependencies]
 serial_test.workspace = true

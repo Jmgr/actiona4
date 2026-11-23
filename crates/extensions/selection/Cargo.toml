@@ -33,9 +33,11 @@ tokio-util.workspace = true
 winit = { workspace = true, features = ["x11", "rwh_06"] }
 
 [build-dependencies]
+built.workspace = true
+
+[target.'cfg(windows)'.build-dependencies]
 build-support = { path = "../../build-support" }
 
-built.workspace = true
 embed-resource.workspace = true
 
 [lints]

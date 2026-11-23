@@ -76,14 +76,16 @@ two-face.workspace = true
 uuid = { workspace = true, features = ["v4"] }
 versions.workspace = true
 
-[build-dependencies]
+[target.'cfg(windows)'.build-dependencies]
 build-support = { path = "../build-support" }
 
+embed-resource.workspace = true
+
+[build-dependencies]
 built.workspace = true
 cfg_aliases.workspace = true
 clap = { workspace = true, features = ["derive", "env"] }
 clap_complete.workspace = true
-embed-resource.workspace = true
 flate2.workspace = true
 strum = { workspace = true, features = ["derive"] }
 

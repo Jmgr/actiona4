@@ -15,31 +15,25 @@ categories.workspace = true
 rusqlite = { workspace = true, features = ["bundled", "jiff", "serde_json", "uuid"] }
 
 [dependencies]
-action-definition = { path = "../action-definition" }
 async-stream.workspace = true
 bytes.workspace = true
 const_format.workspace = true
 file_format_types.workspace = true
 futures.workspace = true
 jiff.workspace = true
-parking_lot.workspace = true
 rusqlite = { workspace = true, features = ["jiff", "serde_json", "uuid"] }
 rusqlite_migration.workspace = true
-serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 sha2.workspace = true
 strum.workspace = true
-tempfile.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt"] }
-tokio-util = { workspace = true, features = ["io", "rt"] }
-types = { path = "../types" }
+tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt", "sync"] }
 uuid = { workspace = true, features = ["serde", "v4"] }
 zstd.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true
-rstest.workspace = true
+tempfile.workspace = true
 
 [lints]
 workspace = true

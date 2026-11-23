@@ -30,20 +30,20 @@ windows = { workspace = true, features = [
 
 [target.'cfg(unix)'.dependencies]
 futures-util.workspace = true
+static-dispatch.workspace = true
 zbus = { workspace = true, features = ["proxy", "tokio"] }
 
 [dependencies]
 types = { path = "../types" }
 
 jiff.workspace = true
-static-dispatch.workspace = true
 strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["io-util", "macros", "process", "rt", "sync"] }
 tokio-util.workspace = true
 tracing.workspace = true
 
-[build-dependencies]
+[target.'cfg(windows)'.build-dependencies]
 build-support = { path = "../build-support" }
 
 [dev-dependencies]

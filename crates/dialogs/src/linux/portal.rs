@@ -342,10 +342,9 @@ mod tests {
         ) -> fdo::Result<OwnedObjectPath> {
             // The method's signature needs them, but the fake has no use for them.
             _ = (parent, title);
-            let sender = header
-                .sender()
-                .map(|sender| sender.trim_start_matches(':').replace('.', "_"))
-                .unwrap_or_default();
+            let sender = header.sender().map_or_else(String::new, |sender| {
+                sender.trim_start_matches(':').replace('.', "_")
+            });
             let token = options
                 .get("handle_token")
                 .and_then(|token| token.downcast_ref::<String>().ok())
