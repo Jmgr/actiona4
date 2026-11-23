@@ -12,16 +12,6 @@ for await (const progress of task) {
 const match = await task;
 ```
 
-## Type Declaration
-
-### \[asyncIterator\]()
-
-> **\[asyncIterator\]**(): [`AsyncIterator`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)\<`Progress`\>
-
-#### Returns
-
-[`AsyncIterator`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)\<`Progress`\>
-
 ## Type Parameters
 
 ### Result
@@ -31,3 +21,13 @@ const match = await task;
 ### Progress
 
 `Progress`
+
+## Type Declaration
+
+### \[asyncIterator\]()
+
+> **\[asyncIterator\]**(): [`AsyncIterator`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)\<`Progress`\>
+
+#### Returns
+
+[`AsyncIterator`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)\<`Progress`\>

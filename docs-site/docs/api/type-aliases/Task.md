@@ -10,6 +10,12 @@ task.cancel(); // cancel early
 await task;    // or await it
 ```
 
+## Type Parameters
+
+### Result
+
+`Result`
+
 ## Type Declaration
 
 ### cancel()
@@ -19,9 +25,3 @@ await task;    // or await it
 #### Returns
 
 [`void`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void)
-
-## Type Parameters
-
-### Result
-
-`Result`
