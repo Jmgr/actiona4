@@ -10,6 +10,7 @@ members = [
     "crates/dialogs",
     "crates/doc-generator",
     "crates/e2e",
+    "crates/editor",
     "crates/extension",
     "crates/extensions/opencv",
     "crates/extensions/selection",
@@ -149,6 +150,7 @@ flate2 = "1.1.11"
 fluent = "0.17.0"
 futures = "0.3.34"
 futures-util = "0.3.34"
+gpui-kit = "0.11.0"
 http-body = "1.1.0"
 http-body-util = "0.1.5"
 human-units = "0.6.0"

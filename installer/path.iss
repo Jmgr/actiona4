@@ -1,6 +1,8 @@
 const
   UserPathScope = 0;
   SystemPathScope = 1;
+  ExecutableInPathFalse = 0;
+  ExecutableInPathTrue = 1;
 
 function AddDirectoryToPathSetup(PathScope: Integer; DirectoryPath: PAnsiChar; ErrorBuffer: PAnsiChar; ErrorBufferCapacity: Cardinal): Integer;
   external 'add_directory_to_path@files:inno_plugin.dll cdecl setuponly';
@@ -10,6 +12,9 @@ function RemoveDirectoryFromPathSetup(PathScope: Integer; DirectoryPath: PAnsiCh
 
 function RemoveDirectoryFromPathUninstall(PathScope: Integer; DirectoryPath: PAnsiChar; ErrorBuffer: PAnsiChar; ErrorBufferCapacity: Cardinal): Integer;
   external 'remove_directory_from_path@{app}\inno_plugin.dll cdecl uninstallonly';
+
+function IsExecutableInPathSetup(ExecutableName: PAnsiChar; ExcludedDirectory: PAnsiChar; ErrorBuffer: PAnsiChar; ErrorBufferCapacity: Cardinal): Integer;
+  external 'is_executable_in_path@files:inno_plugin.dll cdecl setuponly';
 
 function GetPathScope(): Integer;
 begin
@@ -109,4 +114,51 @@ begin
   UnloadDLL(PluginDllPath);
 
   HandlePathOperationResult(ResultCode, 'remove', DirectoryPath, ErrorBuffer, False);
+end;
+
+function IsRunInPathElsewhere(const DirectoryPath: String): Boolean;
+var
+  ExecutableNameAnsi: AnsiString;
+  DirectoryPathAnsi: AnsiString;
+  ErrorBuffer: AnsiString;
+  ResultCode: Integer;
+begin
+  ExecutableNameAnsi := 'actiona-run.exe';
+  DirectoryPathAnsi := AnsiString(DirectoryPath);
+  SetLength(ErrorBuffer, 1024);
+  ErrorBuffer[1] := #0;
+
+  ResultCode := IsExecutableInPathSetup(
+    PAnsiChar(ExecutableNameAnsi),
+    PAnsiChar(DirectoryPathAnsi),
+    PAnsiChar(ErrorBuffer),
+    Length(ErrorBuffer)
+  );
+
+  if ResultCode = ExecutableInPathTrue then
+    Result := True
+  else begin
+    if ResultCode <> ExecutableInPathFalse then
+      Log(Format('Failed to look for actiona-run.exe in PATH, adding "%s" anyway: %s', [DirectoryPath, String(TrimPathErrorBuffer(ErrorBuffer))]));
+    Result := False;
+  end;
+end;
+
+function ShouldAddToPath(): Boolean;
+begin
+  if not WizardIsTaskSelected('addtopath') then begin
+    Result := False;
+    exit;
+  end;
+
+#ifdef MyAddToPathOnlyIfRunMissing
+  // Actiona Run already provides actiona-run on PATH; don't add a second copy.
+  if IsRunInPathElsewhere(ExpandConstant('{app}')) then begin
+    Log('actiona-run.exe is already in PATH; not adding the application directory.');
+    Result := False;
+    exit;
+  end;
+#endif
+
+  Result := True;
 end;

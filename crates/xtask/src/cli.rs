@@ -11,12 +11,15 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    /// Build a signed AppImage for actiona-run (Linux only).
+    /// Build signed Actiona Run and Actiona Editor AppImages (Linux only).
     #[cfg(unix)]
     AppImage,
-    /// Build an unsigned AppImage for actiona-run (Linux only).
+    /// Build unsigned Actiona Run and Actiona Editor AppImages (Linux only).
     #[cfg(unix)]
     AppImageNoSign,
+    /// Check that the editor AppImage initializes in a clean container (Linux only, needs Docker).
+    #[cfg(unix)]
+    AppImageSmokeTest,
     /// Generate rustdoc JSON and TypeScript declaration files.
     Doc,
     /// Lint and type-check end-to-end TypeScript scripts and shared declarations.
@@ -32,21 +35,21 @@ pub enum Commands {
         dump: PathBuf,
     },
     #[cfg(windows)]
-    /// Build the Actiona Run installer with Inno Setup.
+    /// Build the Actiona Run and Actiona Editor installers with Inno Setup.
     Installer,
     #[cfg(windows)]
-    /// Build the Actiona Run installer with Inno Setup without signing.
+    /// Build the Actiona Run and Actiona Editor installers without signing.
     InstallerNoSign,
     #[cfg(windows)]
     /// Install the unsigned Actiona Run installer and run end-to-end tests.
     InstallerE2e,
     #[cfg(windows)]
-    /// Build a zip archive with the installer payload minus the Inno plugin.
+    /// Build Actiona Run and Actiona Editor zip archives.
     Archive,
     #[cfg(windows)]
-    /// Build a zip archive with the installer payload minus the Inno plugin without signing.
+    /// Build unsigned Actiona Run and Actiona Editor zip archives.
     ArchiveNoSign,
     #[cfg(windows)]
-    /// Sign the actiona-run release executables with signtool.
+    /// Sign the packaged release executables with signtool.
     SignBinaries,
 }

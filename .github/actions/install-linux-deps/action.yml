@@ -19,15 +19,9 @@ runs:
           clang \
           curl \
           libasound2-dev \
-          libcairo2-dev \
           libclang-dev \
-          libdbus-1-dev \
-          libglib2.0-dev \
-          libgraphene-1.0-dev \
-          libgtk-4-dev \
-          libnotify-dev \
+          libfontconfig-dev \
           libopencv-dev \
-          libpango1.0-dev \
           libssl-dev \
           libstdc++-14-dev \
           libwayland-dev \

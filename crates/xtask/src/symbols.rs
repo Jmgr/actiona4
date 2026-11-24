@@ -11,12 +11,18 @@ use tempfile::TempDir;
 use zip::{ZipArchive, result::ZipError};
 
 #[cfg(unix)]
-const BINARY_NAMES: &[&str] = &["actiona-run", "extension-selection", "extension-opencv"];
+const BINARY_NAMES: &[&str] = &[
+    "actiona-run",
+    "actiona-editor",
+    "extension-selection",
+    "extension-opencv",
+];
 
 #[cfg(windows)]
 const BINARY_NAMES: &[&str] = &[
     "actiona-run",
     "actiona-runw",
+    "actiona-editor",
     "extension-selection",
     "extension-opencv",
 ];

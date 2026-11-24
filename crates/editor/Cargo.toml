@@ -1,0 +1,33 @@
+[package]
+name = "editor"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+default-run = "actiona-editor"
+
+[package.metadata.actiona]
+notification-aumid = "app.actiona.editor"
+
+[[bin]]
+name = "actiona-editor"
+path = "src/main.rs"
+
+[dependencies]
+common = { path = "../common" }
+
+color-eyre.workspace = true
+gpui-kit.workspace = true
+
+[build-dependencies]
+built.workspace = true
+embed-resource.workspace = true
+
+[lints]
+workspace = true

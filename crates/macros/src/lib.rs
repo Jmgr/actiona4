@@ -4,7 +4,6 @@ mod action_definition;
 mod class;
 mod consts;
 mod default_args;
-mod editor;
 mod from_js_object;
 mod js_enum;
 mod methods;
@@ -374,30 +373,4 @@ pub fn derive_action_enum(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Parameter, attributes(parameter))]
 pub fn derive_parameter(input: TokenStream) -> TokenStream {
     action_definition::parameter::derive(input)
-}
-
-/// Apply to a trait of `async fn` methods. Because the trait lives in a crate
-/// both the host and the wasm UI depend on, the generated client and server
-/// share the exact same method names and argument/return types — the call is
-/// checked at compile time on *both* ends, which a JS frontend (Tauri) cannot
-/// do without a codegen step.
-///
-/// ```ignore
-/// #[rpc]
-/// pub trait Api {
-///     async fn add_ten(&self, value: i32) -> i32;
-/// }
-/// ```
-///
-/// Generates, in the same module:
-/// * `trait Api` — the host implements it (`impl Api for HostApi { async fn … }`).
-/// * `ApiClient<T: Transport>` — the UI calls `client.add_ten(5).await`, fully typed.
-/// * `api_serve(api, cmd, json) -> Option<Future<json>>` — host dispatch by name.
-/// * `__rpc_<method>` modules holding the by-name argument struct + the name.
-///
-/// The surrounding module must have `Transport` and `RpcError` in scope (both
-/// are hand-written in `common::rpc`, where the trait is defined).
-#[proc_macro_attribute]
-pub fn rpc(attr: TokenStream, item: TokenStream) -> TokenStream {
-    editor::rpc::expand(attr, item)
 }

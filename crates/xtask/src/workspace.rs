@@ -104,10 +104,11 @@ fn normalize_windows_file_version(version: &str) -> Result<String> {
 #[cfg(windows)]
 pub async fn read_notification_package_info(
     workspace_root: &Path,
+    crate_directory: &str,
 ) -> Result<NotificationPackageInfo> {
     let cargo_toml_path = workspace_root
         .join("crates")
-        .join("core")
+        .join(crate_directory)
         .join("Cargo.toml");
     let cargo_toml_contents = read_to_string(&cargo_toml_path).await?;
     let cargo_toml: toml::Value = toml::from_str(&cargo_toml_contents)?;
@@ -124,7 +125,8 @@ pub async fn read_notification_package_info(
         .map(ToOwned::to_owned)
         .ok_or_else(|| {
             eyre!(
-                "Failed to read core package.metadata.actiona.notification-aumid from Cargo.toml."
+                "Failed to read package.metadata.actiona.notification-aumid from {}.",
+                cargo_toml_path.display()
             )
         })?;
 
